@@ -226,7 +226,8 @@ describe("Import a font (US-036)", () => {
 
   it(
     "[F15.AC1] [F18.AC19] measures Hello World at 16 in a second family with its metrics, its kerning included",
-    // Inter's tables read: about 1 s alone, 20 s holds a loaded pre-push run.
+    // Inter's tables read. alone: 788 ms, the median of 5 runs of its file (AUD-031); 20 s is 25
+    // times it.
     { timeout: 20_000 },
     async () => {
       await importFiles(

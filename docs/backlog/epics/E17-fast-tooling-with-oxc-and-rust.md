@@ -62,8 +62,18 @@ Ordered by the Product Owner at the refinement of 2026-10-16.
 | [F25](../features/E17-F25-the-test-lanes-rust-tools.md) — The test lane's Rust tools (#370, 2026-10-18) | done |
 | [F26](../features/E17-F26-mutate-stops-on-linux.md) — The mutation runner stops a mutation on Linux (#370, 2026-10-18) | done |
 | [F27](../features/E17-F27-retired-scopes-in-history.md) — The history check reads the scopes a commit was written with (#370, 2026-10-18) | done |
+| [F29](../features/E17-F29-local-checks-stable-and-fast.md) — The local checks stable and fast (SP-024, 2026-10-18), first: a timing test fails about one push in three | done |
+| [F28](../features/E17-F28-one-workflow-per-purpose.md) — One workflow per purpose (2026-10-18, ADR-0088) | done |
+| [F30](../features/E17-F30-a-ci-on-develop-that-blocks-nothing.md) — A CI on develop that blocks nothing (SP-024, ADR-0088) | done |
+| [F23](../features/E17-F23-the-path-of-a-story.md) — The path of a story through the tools (RET-004 and REV-006, moved from E02 by SP-024) | done |
+| [F31](../features/E17-F31-the-guard-and-the-agents-commands.md) — The guard and the agent's commands (SP-024) | done |
+| [F32](../features/E17-F32-reports-that-say-what-happened.md) — Reports that say what happened (SP-024) | done |
+| [F33](../features/E17-F33-the-checks-ret-004-listed.md) — The checks RET-004 listed (SP-024) | done |
+| [F34](../features/E17-F34-the-use-of-each-workflow.md) — The use of each workflow (2026-10-18, its questions answered the same day) | done |
 
 F18 holds the stories decided at RET-003 (ADR-0063, ADR-0064, ADR-0065, ADR-0066), written then as F11 was at RET-001.
+
+The tooling left after 0.3.0's merge into `main` was cut by the Product Owner on 2026-10-18 into small features, each one theme (SP-024, [research note 0026](../../research/notes/0026-the-tooling-features-of-2026-10-18.md)): F29 first, then F28, F30, F23, F31, F32 and F33, the order of the table above. F23, drafted at RET-004 as E02's first feature, moved into E17, its stories EN-118 to EN-121 spread over F23, F31, F32 and F33 with their ids. The review and the method's work are held at the session's end, before the merge into `main` (ADR-0086).
 
 ## Refinement (2026-10-16)
 
@@ -90,3 +100,4 @@ After its last feature is validated (ADR-0023, ADR-0049, ADR-0064). F21's clean-
 | [REV-004](../stories/E17-REV-004-review-e17.md) — Review E17 with the Product Owner | done |
 | [RET-004](../stories/E17-RET-004-retrospective-e17.md) — Retrospective of E17 | done |
 | [REV-006](../stories/E17-REV-006-review-2026-10-18.md) — Review of 2026-10-18, F22 | done |
+| [REV-007](../stories/E17-REV-007-review-2026-10-19.md) — Review of 2026-10-19, F23 to F34 | done |

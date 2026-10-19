@@ -1,8 +1,16 @@
 import { spawnSync } from "node:child_process";
-import { existsSync, readFileSync, readdirSync } from "node:fs";
+import {
+  cpSync,
+  existsSync,
+  mkdtempSync,
+  readFileSync,
+  readdirSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
 import { join } from "node:path";
 
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 
 import { builtOnce } from "./built-once";
 
@@ -13,11 +21,23 @@ type Item = {
   readonly folder: string;
 };
 
+/** Root of the repository. */
+const ROOT = join(import.meta.dirname, "..");
+
 /** Root of the backlog. */
-const BACKLOG = join(import.meta.dirname, "..", "docs", "backlog");
+const BACKLOG = join(ROOT, "docs", "backlog");
 
 /** The Rust tool writing the stories index from the story files (EN-049). */
 const INDEX_TOOL = join(import.meta.dirname, "..", "tools", "backlog-index", "Cargo.toml");
+
+/** The copies of the backlog a test made, removed after it. */
+const COPIES: string[] = [];
+
+afterEach(() => {
+  for (const copy of COPIES.splice(0)) {
+    rmSync(copy, { force: true, recursive: true });
+  }
+});
 
 /** Time limit of a test building the index tool: a cold build of about 5 s, four times, and a margin. */
 const BUILD_TIMEOUT = 60_000;
@@ -490,6 +510,16 @@ function measuresOf(text: string): string {
   return /^## Measures\n(?<body>[\s\S]*?)(?=^## )/mu.exec(text)?.groups?.["body"] ?? "";
 }
 
+/**
+ * A story of E17 attached to its epic only, without a feature, as a story from `develop` is.
+ *
+ * @param id - its id, `REV-007`
+ * @returns the item, its file named after its epic and its id
+ */
+function attached(id: string): Item {
+  return { fields: { epic: "E17", id }, file: `E17-${id}-topic.md`, folder: "stories" };
+}
+
 /** The stories that rewrote the agent-facing pages as principles (F20, criterion 8). */
 const PRINCIPLE_REWRITES = ["EN-096", "EN-097", "EN-098", "EN-099"];
 
@@ -540,6 +570,8 @@ describe("backlog", () => {
 
   it(
     "[F18.AC5] keeps the stories index as the story files generate it",
+    // alone: 77 ms, the median of 5 runs of its file, the tool built (EN-129); 60 s holds its
+    // cold build too, about 5 s.
     { timeout: BUILD_TIMEOUT },
     () => {
       const result = spawnSync(
@@ -551,6 +583,66 @@ describe("backlog", () => {
       // The tool's message names the row that differs and says to run `npm run backlog:index`.
       expect(result.stderr).toBe("");
       expect(result.status).toBe(0);
+    },
+  );
+
+  it(
+    "[F33.AC2] runs the index tool's own check from `npm run backlog:index -- --check`, not the formatter",
+    // alone: 172 ms, the median of 5 runs of the test, the tool built; 60 s holds its cold build.
+    { timeout: BUILD_TIMEOUT },
+    () => {
+      // npm appends the arguments after the script's last command: the index tool's, so that
+      // `--check` reaches it, whose message names the first row that differs (`check.rs`).
+      expect(readFileSync(join(ROOT, "package.json"), "utf8")).toContain(
+        '"backlog:index": "cargo run --release -q -p backlog-index -- docs/backlog",',
+      );
+
+      const result = spawnSync("npm", ["run", "--silent", "backlog:index", "--", "--check"], {
+        cwd: ROOT,
+        encoding: "utf8",
+      });
+
+      expect(result.stderr).toBe("");
+      expect(result.status).toBe(0);
+    },
+  );
+
+  it(
+    "[F33.AC2] fails `npm run backlog:index -- --check` on a stale copy of the backlog, naming its row",
+    // alone: 250 ms, the median of 5 runs of the test, the tool built; 60 s holds its cold build.
+    { timeout: BUILD_TIMEOUT },
+    () => {
+      // A title changed in a copy's story file, its index left as it was (AUD-035, F10): only the
+      // check reaching the tool fails it, a write would pass. The copy sits in Cargo's ignored
+      // `target/`, so that `cargo run -p` from it finds the workspace and its built tool.
+      const copy = mkdtempSync(join(ROOT, "target", "backlog-check-"));
+
+      COPIES.push(copy);
+      cpSync(BACKLOG, join(copy, "docs", "backlog"), { recursive: true });
+      writeFileSync(join(copy, "package.json"), readFileSync(join(ROOT, "package.json"), "utf8"));
+
+      const stories = join(copy, "docs", "backlog", "stories");
+      const first = readdirSync(stories)
+        .filter((name) => name !== "README.md")
+        .toSorted((left, right) => left.localeCompare(right))
+        .at(0);
+      const story = join(stories, first ?? "");
+      const index = readFileSync(join(stories, "README.md"), "utf8");
+
+      writeFileSync(
+        story,
+        readFileSync(story, "utf8").replace(/^title: .*$/mu, (line) => `${line}, stale`),
+      );
+
+      const result = spawnSync("npm", ["run", "--silent", "backlog:index", "--", "--check"], {
+        cwd: copy,
+        encoding: "utf8",
+      });
+
+      expect(result.status).toBe(1);
+      expect(result.stderr).toMatch(/at row \d+/u);
+      expect(result.stderr).toContain(", stale");
+      expect(readFileSync(join(stories, "README.md"), "utf8")).toBe(index);
     },
   );
 
@@ -626,6 +718,22 @@ describe("backlog", () => {
       parentField(featureSpike),
       parentField(storyOf("EN-123")),
     ]).toEqual(["epic", "feature", "feature"]);
+  });
+
+  it("[F23.AC2] accepts a story attached to develop, a review or an epic's refinement spike, and no other story without a feature (C4)", () => {
+    const parents = { epic: idsOf("epics"), feature: idsOf("features") };
+
+    expect(
+      ["REV-007", "SP-030", "EN-114"].map((id) => {
+        const story = attached(id);
+
+        return [id, hasParent(story, parents), story.file.startsWith(expectedPrefix(story))];
+      }),
+    ).toEqual([
+      ["REV-007", true, true],
+      ["SP-030", true, true],
+      ["EN-114", false, true],
+    ]);
   });
 
   it("reads a return's review and a new closing by their ids", () => {

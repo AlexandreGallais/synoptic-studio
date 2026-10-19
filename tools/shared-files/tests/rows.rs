@@ -5,7 +5,7 @@ use std::path::PathBuf;
 use std::process::Command;
 
 use calendar::today;
-use shared_files::rows::{LOGS, Place, SECTION, insert_rows, take_rows};
+use shared_files::rows::{Change, LOGS, Place, SECTION, insert_rows, only_moved_rows, take_rows};
 
 /// The day of the tests that insert rows: the journal's newest section below is that day's.
 const TODAY: &str = "2026-10-16";
@@ -384,6 +384,481 @@ fn leaves_a_line_of_another_shape_in_the_story_and_names_it() {
 
     assert_eq!(String::from_utf8_lossy(&output.stdout), format!("{only}\n"));
     assert_eq!(read(only), "# US-997\n");
+
+    let _ = fs::remove_dir_all(&root);
+}
+
+/// A story file holding two tool cards under `### Incidents`, as a worker writes them (ADR-0085).
+const CARDS: &str = "\
+# EN-999
+
+## For the main thread
+
+### Incidents
+
+#### 2026-10-19 — `replace` without an argument
+
+- Used: `target/release/replace` alone, to see its usage.
+- Failed: it waits on its standard input.
+- Instead: the Edit tool.
+
+#### 2026-10-19 — `page` on a heading
+
+- Seen: no section found for a heading with a colon.
+- Instead: `Read` with an offset.
+";
+
+/// The lines `take_rows` takes from [`CARDS`], each card's heading first, its blank lines dropped.
+fn card_rows() -> Vec<String> {
+    [
+        "#### 2026-10-19 — `replace` without an argument",
+        "- Used: `target/release/replace` alone, to see its usage.",
+        "- Failed: it waits on its standard input.",
+        "- Instead: the Edit tool.",
+        "#### 2026-10-19 — `page` on a heading",
+        "- Seen: no section found for a heading with a colon.",
+        "- Instead: `Read` with an offset.",
+    ]
+    .map(str::to_owned)
+    .to_vec()
+}
+
+#[test]
+fn f23_ac1_takes_the_cards_under_incidents() {
+    let taken = take_rows(CARDS);
+
+    assert_eq!(LOGS[3].path, "docs/process/tool-incidents.md");
+    assert_eq!(LOGS[3].place, Place::Cards);
+    assert_eq!(taken.rows, [(LOGS[3], card_rows())]);
+    assert_eq!(taken.left, Vec::new());
+    // The cards were the section's only content: it goes.
+    assert_eq!(taken.story, "# EN-999\n");
+}
+
+#[test]
+fn f23_ac1_leaves_an_undated_card_and_a_line_outside_a_card() {
+    // A bullet before any card, a card whose heading has no date and its bullet, a paragraph.
+    let story = "## For the main thread\n\n### Incidents\n\n- A bullet before any card.\n\n#### Someday — undated\n\n- Used: a\n\n#### 2026-10-19 — dated\n\n- Used: b\nA paragraph.\n\n### Journal\n\n- `#run` a row\n";
+    let taken = take_rows(story);
+
+    assert_eq!(
+        taken.rows,
+        [
+            (LOGS[0], vec!["- `#run` a row".to_owned()]),
+            (
+                LOGS[3],
+                vec!["#### 2026-10-19 — dated".to_owned(), "- Used: b".to_owned()]
+            ),
+        ]
+    );
+    assert_eq!(
+        taken.left,
+        [(
+            LOGS[3],
+            [
+                "- A bullet before any card.",
+                "#### Someday — undated",
+                "- Used: a",
+                "A paragraph."
+            ]
+            .map(str::to_owned)
+            .to_vec()
+        )]
+    );
+    assert_eq!(
+        taken.story,
+        "## For the main thread\n\n### Incidents\n\n- A bullet before any card.\n#### Someday — undated\n- Used: a\nA paragraph.\n"
+    );
+}
+
+#[test]
+fn f23_ac1_reports_a_deeper_heading_inside_a_card_and_keeps_the_incidents_heading() {
+    // A `#####` heading inside a card is no card (AUD-025): it and the line after it are left
+    // under `### Incidents`, which stays, and named; the card before it moves.
+    let story = "## For the main thread\n\n### Incidents\n\n#### 2026-10-19 — a card\n\n- Used: a\n\n##### A note\n\nkept\n";
+    let taken = take_rows(story);
+
+    assert_eq!(
+        taken.rows,
+        [(
+            LOGS[3],
+            vec![
+                "#### 2026-10-19 — a card".to_owned(),
+                "- Used: a".to_owned()
+            ]
+        )]
+    );
+    assert_eq!(
+        taken.left,
+        [(LOGS[3], vec!["##### A note".to_owned(), "kept".to_owned()])]
+    );
+    assert_eq!(
+        taken.story,
+        "## For the main thread\n\n### Incidents\n\n##### A note\nkept\n"
+    );
+}
+
+#[test]
+fn f23_ac1_appends_the_cards_at_the_end_of_the_incidents_log() {
+    let log = "# Tool incidents\n\nIntro.\n\n## 2026-10-18 — old\n\n- Used: a\n- Failed: b\n- Instead: c\n";
+
+    // Each card under a `## ` heading, a blank line before it and after its heading, oldest first.
+    assert_eq!(
+        insert_rows(log, Place::Cards, &card_rows(), TODAY).unwrap(),
+        format!(
+            "{log}\n## 2026-10-19 — `replace` without an argument\n\n- Used: `target/release/replace` alone, to see its usage.\n- Failed: it waits on its standard input.\n- Instead: the Edit tool.\n\n## 2026-10-19 — `page` on a heading\n\n- Seen: no section found for a heading with a colon.\n- Instead: `Read` with an offset.\n"
+        )
+    );
+    // A log without a card yet, or ending with blank lines, or without its final line break.
+    let one = ["#### 2026-10-19 — x".to_owned(), "- Used: y".to_owned()];
+
+    for log in ["# T\n", "# T\n\n\n", "# T"] {
+        assert_eq!(
+            insert_rows(log, Place::Cards, &one, TODAY).unwrap(),
+            "# T\n\n## 2026-10-19 — x\n\n- Used: y\n",
+            "{log:?}"
+        );
+    }
+}
+
+#[test]
+fn f23_ac1_moves_the_cards_of_a_story_into_the_incidents_log() {
+    let root: PathBuf =
+        std::env::temp_dir().join(format!("move-rows-cards-{}", std::process::id()));
+    let _ = fs::remove_dir_all(&root);
+    fs::create_dir_all(root.join("docs/backlog/stories")).unwrap();
+    fs::create_dir_all(root.join("docs/process")).unwrap();
+
+    let story = "docs/backlog/stories/E17-F23-EN-999-a-story.md";
+    let incidents =
+        "# Tool incidents\n\n## 2026-10-18 — old\n\n- Used: a\n- Failed: b\n- Instead: c\n";
+
+    fs::write(root.join(story), CARDS).unwrap();
+    fs::write(root.join("docs/process/tool-incidents.md"), incidents).unwrap();
+
+    let output = test_support::command(env!("CARGO_BIN_EXE_move-rows"))
+        .arg("chore/en-999-a-story")
+        .current_dir(&root)
+        .output()
+        .unwrap();
+    let read = |path: &str| fs::read_to_string(root.join(path)).unwrap();
+
+    // [F23.AC1] the cards are at the end of the incidents log, gone from the story file.
+    assert!(output.status.success(), "{output:?}");
+    assert_eq!(
+        String::from_utf8_lossy(&output.stdout),
+        format!("docs/process/tool-incidents.md\n{story}\n")
+    );
+    assert!(
+        read("docs/process/tool-incidents.md").starts_with(&format!(
+            "{incidents}\n## 2026-10-19 — `replace` without an argument\n\n- Used: "
+        )),
+        "{}",
+        read("docs/process/tool-incidents.md")
+    );
+    assert_eq!(read(story), "# EN-999\n");
+
+    let _ = fs::remove_dir_all(&root);
+}
+
+#[test]
+fn f23_ac1_reports_a_card_heading_of_another_level_under_incidents() {
+    // A dated `###` or `##` heading is a card written at the wrong level (AUD-025): left with its
+    // bullet under `### Incidents`, which stays, and named; a `## ` section after it still ends
+    // the section, and an undated `###` heading still ends the cards.
+    let three = "# S\n\n## For the main thread\n\n### Incidents\n\n### 2026-10-19 — wrong level\n\n- Used: a\n";
+    let two = "# S\n\n## For the main thread\n\n### Incidents\n\n## 2026-10-19 — wrong level\n\n- Used: a\n\n## Notes\n\nkept\n";
+
+    for (story, heading, after) in [
+        (three, "### 2026-10-19 — wrong level", ""),
+        (two, "## 2026-10-19 — wrong level", "\n## Notes\n\nkept\n"),
+    ] {
+        let taken = take_rows(story);
+
+        assert_eq!(taken.rows, Vec::new(), "{heading}");
+        assert_eq!(
+            taken.left,
+            [(LOGS[3], vec![heading.to_owned(), "- Used: a".to_owned()])],
+            "{heading}"
+        );
+        assert_eq!(
+            taken.story,
+            format!(
+                "# S\n\n## For the main thread\n\n### Incidents\n\n{heading}\n- Used: a\n{after}"
+            ),
+            "{heading}"
+        );
+    }
+
+    let sibling = take_rows(
+        "## For the main thread\n\n### Incidents\n\n#### 2026-10-19 — a\n\n- Used: a\n\n### Decisions\n\n- kept\n",
+    );
+
+    assert_eq!(sibling.left, Vec::new());
+    assert!(
+        sibling.story.contains("### Decisions\n\n- kept\n"),
+        "{}",
+        sibling.story
+    );
+}
+
+#[test]
+fn f23_ac1_takes_the_indented_lines_of_an_open_card() {
+    // A continuation and a nested bullet belong to the card above them (AUD-025); an indented
+    // line before any card is left.
+    let story = "# S\n\n## For the main thread\n\n### Incidents\n\n  before any card\n\n#### 2026-10-19 — a card\n\n- Used: a long\n  continued line\n  - a nested bullet\n\t- a tabbed one\n- Instead: b\n";
+    let taken = take_rows(story);
+    let card = [
+        "#### 2026-10-19 — a card",
+        "- Used: a long",
+        "  continued line",
+        "  - a nested bullet",
+        "\t- a tabbed one",
+        "- Instead: b",
+    ]
+    .map(str::to_owned)
+    .to_vec();
+
+    assert_eq!(taken.rows, [(LOGS[3], card.clone())]);
+    assert_eq!(
+        taken.left,
+        [(LOGS[3], vec!["  before any card".to_owned()])]
+    );
+    // Written under the card's `## ` heading as they were, the indentation kept.
+    assert_eq!(
+        insert_rows("# T\n", Place::Cards, &card, TODAY).unwrap(),
+        "# T\n\n## 2026-10-19 — a card\n\n- Used: a long\n  continued line\n  - a nested bullet\n\t- a tabbed one\n- Instead: b\n"
+    );
+}
+
+#[test]
+fn f23_ac1_closes_the_card_at_a_log_heading() {
+    // A card open when `### Journal` starts is closed: a bullet under a second `### Incidents`,
+    // before any card, is left (AUD-025, the `in_card` reset).
+    let story = "# S\n\n## For the main thread\n\n### Incidents\n\n#### 2026-10-19 — a\n\n- Used: a\n\n### Journal\n\n- `#run` r\n\n### Incidents\n\n- stray\n";
+    let taken = take_rows(story);
+
+    assert_eq!(
+        taken.rows,
+        [
+            (LOGS[0], vec!["- `#run` r".to_owned()]),
+            (
+                LOGS[3],
+                vec!["#### 2026-10-19 — a".to_owned(), "- Used: a".to_owned()]
+            ),
+        ]
+    );
+    assert_eq!(taken.left, [(LOGS[3], vec!["- stray".to_owned()])]);
+    assert_eq!(
+        taken.story,
+        "# S\n\n## For the main thread\n\n### Incidents\n\n- stray\n"
+    );
+}
+
+#[test]
+fn f23_ac1_writes_the_first_card_of_an_empty_log_without_a_blank_line_before_it() {
+    let one = ["#### 2026-10-19 — x".to_owned(), "- Used: y".to_owned()];
+
+    // An empty log, or one of blank lines only: the card is its first line (AUD-025).
+    for log in ["", "\n\n"] {
+        assert_eq!(
+            insert_rows(log, Place::Cards, &one, TODAY).unwrap(),
+            "## 2026-10-19 — x\n\n- Used: y\n",
+            "{log:?}"
+        );
+    }
+}
+
+/// A story file holding a row for the journal, one for the improvement log and a card, before its
+/// `done` commit.
+const MOVING: &str = "---\nstatus: ready\n---\n\n# S\n\n## For the main thread\n\n### Journal\n\n- `#run` a\n\n### Improvements\n\n| 2026-10-19 | S | b | tool |\n\n### Incidents\n\n#### 2026-10-19 — c\n\n- Used: d\n";
+
+/// [`MOVING`] after its `done` commit: its status set, its rows gone.
+const MOVED: &str = "---\nstatus: done\n---\n\n# S\n";
+
+/// The journal before the `done` commit, its newest section today's.
+const JOURNAL: &str = "# Journal\n\n## 2026-10-19 — Run\n\n- `#run` old\n";
+
+/// Whether a log's change, from `before` to `after`, only moves [`MOVING`]'s rows.
+fn moves(log: usize, before: &str, after: &str) -> bool {
+    only_moved_rows(
+        LOGS[log],
+        Change { before, after },
+        Change {
+            before: MOVING,
+            after: MOVED,
+        },
+    )
+}
+
+#[test]
+fn f23_ac1_lets_the_done_commit_add_the_rows_its_story_file_loses() {
+    // [F23.AC1] each log gets the rows of its own heading, as `move-rows` writes them (AUD-025).
+    assert!(moves(0, JOURNAL, &format!("{JOURNAL}- `#run` a\n")));
+    // The journal's section of today opened above an older one, blank lines around it.
+    assert!(moves(
+        0,
+        "# Journal\n\n## 2026-10-18 — Run\n\n- `#run` old\n",
+        "# Journal\n\n## 2026-10-19 — Run continued\n\n- `#run` a\n\n## 2026-10-18 — Run\n\n- `#run` old\n"
+    ));
+    let table = "| Date | Story | Item | Kind |\n| --- | --- | --- | --- |\n";
+
+    assert!(moves(
+        1,
+        table,
+        &format!("{table}| 2026-10-19 | S | b | tool |\n")
+    ));
+    // The card's `#### ` heading written `## `.
+    assert!(moves(
+        3,
+        "# Tool incidents\n",
+        "# Tool incidents\n\n## 2026-10-19 — c\n\n- Used: d\n"
+    ));
+    // A log left as it was.
+    assert!(moves(0, JOURNAL, JOURNAL));
+}
+
+#[test]
+fn f23_ac1_refuses_any_other_change_of_a_log_in_the_done_commit() {
+    let table = "| Date | Story | Item | Kind |\n| --- | --- | --- | --- |\n";
+
+    for (name, log, before, after) in [
+        (
+            "another story's row",
+            0,
+            JOURNAL.to_owned(),
+            format!("{JOURNAL}- `#run` a\n- `#run` z\n"),
+        ),
+        (
+            "a line deleted",
+            0,
+            JOURNAL.to_owned(),
+            "# Journal\n\n## 2026-10-19 — Run\n\n- `#run` a\n".to_owned(),
+        ),
+        (
+            "a line rewritten",
+            0,
+            JOURNAL.to_owned(),
+            format!("{}- `#run` a\n", JOURNAL.replace("old", "older")),
+        ),
+        (
+            "a row added twice",
+            0,
+            JOURNAL.to_owned(),
+            format!("{JOURNAL}- `#run` a\n- `#run` a\n"),
+        ),
+        (
+            "the improvement row in the journal",
+            0,
+            JOURNAL.to_owned(),
+            format!("{JOURNAL}| 2026-10-19 | S | b | tool |\n"),
+        ),
+        (
+            "a section of today in a table log",
+            1,
+            table.to_owned(),
+            format!("{table}## 2026-10-19 — Run continued\n| 2026-10-19 | S | b | tool |\n"),
+        ),
+        (
+            "a card heading left at `####`",
+            3,
+            "# Tool incidents\n".to_owned(),
+            "# Tool incidents\n\n#### 2026-10-19 — c\n\n- Used: d\n".to_owned(),
+        ),
+    ] {
+        assert!(!moves(log, &before, &after), "{name}");
+    }
+
+    // A row the story file still holds after the commit is not moved.
+    assert!(!only_moved_rows(
+        LOGS[0],
+        Change {
+            before: JOURNAL,
+            after: &format!("{JOURNAL}- `#run` a\n"),
+        },
+        Change {
+            before: MOVING,
+            after: &MOVING.replace("ready", "done"),
+        },
+    ));
+}
+
+#[test]
+fn f33_ac2_lists_the_notes_outside_a_log_heading() {
+    // A note before the first log heading, and a heading of the worker's own with its line: three
+    // notes; the lines under a log heading are rows or left lines, never notes.
+    let story = "# S\n\n## For the main thread\n\nA question.\n\n### Journal\n\n- `#run` a\n- not a bullet\n\n### Rule-docs\n\n- none affected\n\n## After\n\nnot in the section\n";
+    let taken = take_rows(story);
+
+    assert_eq!(
+        taken.notes,
+        ["A question.", "### Rule-docs", "- none affected"]
+    );
+    assert_eq!(
+        take_rows(STORY).notes,
+        ["A question for the Product Owner."]
+    );
+    assert_eq!(take_rows("# S\n").notes, Vec::<String>::new());
+}
+
+#[test]
+fn f33_ac2_names_each_note_with_its_story_and_with_notes_writes_nothing() {
+    let root: PathBuf =
+        std::env::temp_dir().join(format!("move-rows-notes-{}", std::process::id()));
+    let _ = fs::remove_dir_all(&root);
+    fs::create_dir_all(root.join("docs/backlog/stories")).unwrap();
+    fs::create_dir_all(root.join("docs/process")).unwrap();
+
+    let story = "docs/backlog/stories/E17-F33-EN-996-a-story.md";
+    let journal = "# Journal\n\n## 2026-10-16 — Run\n\n- `#run` before\n";
+
+    fs::write(root.join(story), STORY).unwrap();
+    fs::write(root.join("docs/process/journal.md"), journal).unwrap();
+    fs::write(
+        root.join("docs/process/improvements.md"),
+        "# Improvements\n\n| Date | From | Item |\n| --- | --- | --- |\n",
+    )
+    .unwrap();
+
+    let run = |arguments: &[&str]| {
+        test_support::command(env!("CARGO_BIN_EXE_move-rows"))
+            .args(arguments)
+            .current_dir(&root)
+            .output()
+            .unwrap()
+    };
+    let note = "move-rows: EN-996: a note for the main thread, not moved: A question for the Product Owner.\n";
+
+    // With `--notes`, as the `commit-msg` hook of the done commit runs it: the note named,
+    // nothing written.
+    let shown = run(&["--notes", "chore/en-996-a-story"]);
+
+    assert!(shown.status.success(), "{shown:?}");
+    assert_eq!(String::from_utf8_lossy(&shown.stdout), "");
+    assert_eq!(String::from_utf8_lossy(&shown.stderr), note);
+    assert_eq!(fs::read_to_string(root.join(story)).unwrap(), STORY);
+
+    // Moving the rows names the note too, which stays in the story file.
+    let moved = run(&["chore/en-996-a-story"]);
+
+    assert!(moved.status.success(), "{moved:?}");
+    assert_eq!(String::from_utf8_lossy(&moved.stderr), note);
+    assert!(
+        fs::read_to_string(root.join(story))
+            .unwrap()
+            .contains("A question for the Product Owner.")
+    );
+
+    // A flag alone, or a flag unknown, prints the usage.
+    for arguments in [&["--notes"][..], &["--notes", "a", "b"], &[]] {
+        let refused = run(arguments);
+
+        assert_eq!(refused.status.code(), Some(2), "{arguments:?}");
+        assert_eq!(
+            String::from_utf8_lossy(&refused.stderr),
+            "usage: move-rows [--notes] <story branch>\n"
+        );
+    }
 
     let _ = fs::remove_dir_all(&root);
 }

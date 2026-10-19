@@ -62,6 +62,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "bench"
+version = "0.1.0"
+dependencies = [
+ "test-support",
+ "tool-use",
+]
+
+[[package]]
 name = "bitflags"
 version = "2.13.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -365,6 +373,7 @@ dependencies = [
  "git-repository",
  "regex",
  "shared-files",
+ "stale-binaries",
  "test-support",
  "tool-use",
 ]
@@ -380,6 +389,8 @@ dependencies = [
 name = "git-sequences"
 version = "0.1.0"
 dependencies = [
+ "git-hooks",
+ "stale-binaries",
  "test-support",
  "tool-use",
  "worktree",
@@ -1181,6 +1192,7 @@ dependencies = [
  "git-repository",
  "hooks",
  "shared-files",
+ "stale-binaries",
  "test-support",
  "tool-use",
 ]
@@ -1770,6 +1782,8 @@ version = "0.1.0"
 dependencies = [
  "git-hooks",
  "git-repository",
+ "shared-files",
+ "stale-binaries",
  "test-support",
  "tool-use",
 ]

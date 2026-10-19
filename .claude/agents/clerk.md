@@ -19,7 +19,7 @@ Why Sonnet (EN-066): a record copies facts the prompt gives into a format its fi
 
 ## Rules
 
-- **Every Bash call starts with `cd "<worktree>" || exit 9`**, since a subagent's calls start in the main checkout; one Git command per call, never chained, never `git -C`; the message from a file, committed by `target/release/git-sequences commit -F <file> [--push] <paths>` (EN-100); every agent tool is called by its binary from the worktree's root, as `docs/tooling/agent-tools.md` lists them (ADR-0078, ADR-0082).
+- **Every Bash call starts with `cd "<worktree>" || exit 9`**, since a subagent's calls start in the main checkout; one Git command per call, never chained, Git reads aside (after the `cd`, a chain of Git commands that only read goes through, `git status; git log -3`, EN-119), never `git -C`; the message from a file, committed by `target/release/git-sequences commit -F <file> [--push] <paths>` (EN-100); every agent tool is called by its binary from the worktree's root, as `docs/tooling/agent-tools.md` lists them (ADR-0078, ADR-0082).
 - The shared files (the logs `journal.md`, `improvements.md`, `feedback.md`, the backlog's indexes, the feature file) are yours only when the prompt says so: the main thread writes them, one merge at a time (ADR-0065).
 - Each log's format is the header of its file: read it first. A log row keeps its columns, its first cell the date; a journal entry opens with its tag (`#run`, `#decision`). Pages follow `docs/conventions/writing.md`.
 - Statuses with `target/release/backlog-status <ID> <status>`; a new story from `docs/backlog/_story.md`.

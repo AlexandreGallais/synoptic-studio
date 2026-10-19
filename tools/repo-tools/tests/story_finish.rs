@@ -1,7 +1,8 @@
 //! `story-finish` run in repositories of its own (EN-103): a bare `origin`, a main checkout on the
 //! feature branch, each story in a linked worktree, as in a run. GitHub's command line and Cargo
 //! are stubs first on `PATH`: `gh pr create` merges by pushing the story onto its base, `cargo`
-//! moves rows when asked. Every command starts through `test_support::command`, without the
+//! records its calls, and would move a row if asked to run `move-rows`, which `story-finish` no
+//! longer does (ADR-0091). Every command starts through `test_support::command`, without the
 //! inherited `GIT_*` variables, its Git configuration a test file of its own.
 
 #![cfg(unix)]
@@ -36,7 +37,8 @@ case "$1 $2" in
 esac
 "#;
 
-/// Cargo: `move-rows` writes a row into the journal when `ROWS` is set and prints the file.
+/// Cargo: `move-rows` writes a row into the journal when `ROWS` is set and prints the file, so that
+/// a test sees a row moved after the merge.
 const CARGO: &str = r#"#!/bin/sh
 echo "$PWD $*" >> "$STUB_LOG"
 case "$*" in
@@ -228,13 +230,48 @@ impl Lab {
         );
     }
 
+    /// A story attached to `develop`, a `REV` or an epic's `SP`: the main checkout on `develop`,
+    /// as in a run, the story's worktree made from it with one task pushed.
+    fn develop_story(&self, branch: &str, id: &str) -> PathBuf {
+        let folder = self.worktree(id);
+        let main = self.main();
+
+        self.git(&main, &["switch", "-q", "-c", "develop", "main"]);
+        self.git(&main, &["push", "-q", "-u", "origin", "develop"]);
+        self.git(
+            &main,
+            &[
+                "worktree",
+                "add",
+                "-q",
+                "-b",
+                branch,
+                folder.to_str().expect("path"),
+                "develop",
+            ],
+        );
+        fs::write(folder.join(format!("{id}.txt")), "work\n").expect("work");
+        self.git(&folder, &["add", "."]);
+        self.git(
+            &folder,
+            &["commit", "-q", "-m", &format!("docs: work of {id}")],
+        );
+        self.git(&folder, &["push", "-q", "-u", "origin", branch]);
+        folder
+    }
+
     /// `story-finish` run in a folder, with the stubs' answers given.
     fn finish(&self, folder: &Path, answers: &[(&str, &str)]) -> Output {
+        self.finish_into(folder, BASE, answers)
+    }
+
+    /// `story-finish` into a base, run in a folder, with the stubs' answers given.
+    fn finish_into(&self, folder: &Path, base: &str, answers: &[(&str, &str)]) -> Output {
         let body = self.root.join("body.md");
 
         fs::write(&body, "A body.\n").expect("body");
         self.command(env!("CARGO_BIN_EXE_story-finish"), folder)
-            .args([BASE, "A title", body.to_str().expect("path")])
+            .args([base, "A title", body.to_str().expect("path")])
             .envs(answers.iter().copied())
             .output()
             .expect("story-finish")
@@ -429,13 +466,33 @@ fn f18_ac7_aborts_a_rebase_that_meets_a_conflict_outside_the_status_rows() {
 }
 
 #[test]
-fn f18_ac7_moves_the_rows_into_the_logs_and_commits_them_alone_on_the_base() {
+fn f23_ac1_pushes_no_commit_after_the_merge_the_rows_in_the_done_commit() {
     let lab = Lab::new("rows");
 
     lab.backlog();
 
     let first = lab.story(FIRST, "en-901");
     let main = lab.main();
+
+    // The main thread moved the story's row into the journal in its done commit.
+    fs::write(
+        first.join("docs/process/journal.md"),
+        "# Journal\n\n- `#run` a row\n",
+    )
+    .expect("journal");
+    lab.git(
+        &first,
+        &[
+            "commit",
+            "-q",
+            "--amend",
+            "--no-edit",
+            "--",
+            "docs/process/journal.md",
+        ],
+    );
+
+    let done = lab.git(&first, &["rev-parse", "HEAD"]);
 
     // The main thread's own work, staged in the main checkout.
     fs::write(main.join("draft.md"), "a draft\n").expect("draft");
@@ -446,41 +503,82 @@ fn f18_ac7_moves_the_rows_into_the_logs_and_commits_them_alone_on_the_base() {
     let calls = lab.calls();
 
     assert!(finished.status.success(), "{out}\n{err}");
-    assert!(
-        out.contains("base pushed, rows moved: docs/process/journal.md\n"),
-        "{out}"
+    assert!(!out.contains("rows moved"), "{out}");
+    // [F23.AC1] the base's head is the story's done commit, its row in it: no commit after it.
+    assert_eq!(
+        lab.git(&main, &["rev-parse", &format!("origin/{BASE}")]),
+        done
     );
     assert_eq!(
-        lab.git(
-            &main,
-            &[
-                "show",
-                "--name-only",
-                "--format=%s",
-                &format!("origin/{BASE}")
-            ]
-        ),
-        "docs(docs): move the rows of EN-901 into the logs\n\ndocs/process/journal.md"
+        lab.show(&format!("origin/{BASE}:docs/process/journal.md")),
+        "# Journal\n\n- `#run` a row"
+    );
+    assert!(
+        !calls.iter().any(|call| call.contains("move-rows")),
+        "{calls:?}"
     );
     assert_eq!(lab.git(&main, &["status", "--porcelain"]), "A  draft.md");
-    // `move-rows` and the formatter ran in the main checkout, the branch deleted from there.
+    // The base's release binaries rebuilt where it is checked out (ADR-0078), the branch deleted
+    // from there.
     let place = main.display().to_string();
 
     assert!(calls.contains(&format!(
-        "{place} run --release -q -p shared-files --bin move-rows -- {FIRST}"
-    )));
-    assert!(calls.contains(&format!(
-        "{place} run --release -q -p format -- --write docs/process/journal.md"
+        "{place} build --release --workspace --locked --quiet"
     )));
     assert!(calls.contains(&format!(
         "{place} api -X DELETE repos/owner/name/git/refs/heads/{FIRST}"
     )));
-    // The base's release binaries rebuilt where it is checked out (ADR-0078).
-    assert!(calls.contains(&format!(
-        "{place} build --release --workspace --locked --quiet"
-    )));
     assert_eq!(lab.git(&main, &["branch", "--list", FIRST]), "");
     assert_eq!(lab.git(&main, &["branch", "--show-current"]), BASE);
+}
+
+#[test]
+fn f23_ac1_opens_no_pull_request_while_the_story_file_holds_rows() {
+    let lab = Lab::new("left");
+
+    lab.backlog();
+
+    let first = lab.story(FIRST, "en-901");
+    let file = first.join("docs/backlog/stories/E99-F99-EN-901-first.md");
+    let story = fs::read_to_string(&file).expect("story");
+
+    // A done commit made without `move-rows`: the row is still in the story file.
+    fs::write(
+        &file,
+        format!("{story}\n## For the main thread\n\n### Journal\n\n- `#run` a row\n"),
+    )
+    .expect("story");
+    lab.git(
+        &first,
+        &["commit", "-q", "--amend", "--no-edit", "--", "docs"],
+    );
+    // The rows removed from the working tree only: the head, which is pushed, still holds them
+    // (AUD-025).
+    fs::write(&file, &story).expect("story");
+
+    let head = lab.git(&first, &["rev-parse", "HEAD"]);
+    let finished = lab.finish(&first, &[]);
+    let (out, err) = text(&finished);
+
+    // [F23.AC1] it stops before pushing or opening anything, and names the command.
+    assert_eq!(finished.status.code(), Some(1), "{out}\n{err}");
+    assert!(
+        err.contains(
+            "docs/backlog/stories/E99-F99-EN-901-first.md still holds lines for the logs (1)"
+        ),
+        "{err}"
+    );
+    assert!(
+        err.contains(&format!("target/release/move-rows {FIRST}")),
+        "{err}"
+    );
+    assert!(!lab.calls().iter().any(|call| call.contains("pr create")));
+    assert_eq!(lab.git(&first, &["rev-parse", "HEAD"]), head);
+    assert_ne!(
+        lab.git(&first, &["rev-parse", &format!("origin/{FIRST}")]),
+        head
+    );
+    assert!(first.exists());
 }
 
 #[test]
@@ -561,6 +659,116 @@ fn f18_ac7_deletes_the_branch_from_the_main_checkout_when_the_base_is_checked_ou
         "{} api -X DELETE repos/owner/name/git/refs/heads/{FIRST}",
         main.display()
     )));
+}
+
+#[test]
+fn f23_ac2_labels_a_review_into_develop_and_awaits_its_merge() {
+    // [F23.AC2] A `REV` from `develop`: its pull request labelled `autonomous`, GitHub's merge
+    // awaited, then the clean-up, as for any story.
+    let lab = Lab::new("review");
+    let branch = "docs/rev-906-review";
+
+    lab.backlog();
+
+    let review = lab.develop_story(branch, "rev-906");
+    let finished = lab.finish_into(&review, "develop", &[]);
+    let (out, err) = text(&finished);
+    let calls = lab.calls();
+
+    assert!(finished.status.success(), "{out}\n{err}");
+    assert_eq!(
+        out,
+        format!(
+            "https://github.com/owner/name/pull/1\nmerged; develop up to date, {branch} deleted here and on GitHub\n"
+        )
+    );
+    assert!(
+        calls
+            .iter()
+            .any(|call| call.contains(" pr create --base develop --label autonomous ")),
+        "{calls:?}"
+    );
+    assert!(
+        calls
+            .iter()
+            .any(|call| call.contains(" pr view https://github.com/owner/name/pull/1 ")),
+        "{calls:?}"
+    );
+    assert!(!review.exists());
+}
+
+#[test]
+fn f23_ac2_leaves_an_epics_spike_to_the_product_owners_merge_without_waiting() {
+    // [F23.AC2] An epic's refinement `SP` into `develop`: opened without the label, which
+    // `feature-automerge.yml` would refuse, and never awaited; run again, it waits no more, and
+    // cleans up once the Product Owner merged it.
+    let lab = Lab::new("spike");
+    let branch = "docs/sp-930-refinement-of-e99";
+    let waits = format!(
+        "{branch} waits for the Product Owner's merge into develop: `feature-automerge.yml` does \
+         not take it (AUD-024); run again once merged, to clean up\n"
+    );
+
+    lab.backlog();
+
+    let spike = lab.develop_story(branch, "sp-930");
+    let opened = lab.finish_into(&spike, "develop", &[("GH_STATE", "OPEN")]);
+    let (out, err) = text(&opened);
+    let calls = lab.calls();
+
+    assert!(opened.status.success(), "{out}\n{err}");
+    assert_eq!(
+        out,
+        format!("https://github.com/owner/name/pull/1\n{waits}")
+    );
+    assert!(
+        calls.iter().any(|call| call.ends_with(&format!(
+            " pr create --base develop --title A title --body-file {}",
+            lab.root.join("body.md").display()
+        ))),
+        "{calls:?}"
+    );
+    assert!(
+        !calls.iter().any(|call| call.contains(" pr view https://")),
+        "{calls:?}"
+    );
+    assert!(spike.exists());
+
+    // Run again while it is open: nothing opened, nothing awaited.
+    let again = lab.finish_into(
+        &spike,
+        "develop",
+        &[("GH_STATE", "OPEN"), ("GH_EXISTING", "OPEN")],
+    );
+    let (out, err) = text(&again);
+    let calls = lab.calls();
+
+    assert!(again.status.success(), "{out}\n{err}");
+    assert_eq!(
+        out,
+        format!("https://github.com/owner/name/pull/1\n{waits}")
+    );
+    assert!(
+        !calls
+            .iter()
+            .any(|call| call.contains(" pr create") || call.contains(" pr view https://")),
+        "{calls:?}"
+    );
+
+    // Merged by the Product Owner: the clean-up.
+    lab.git(&spike, &["push", "-q", "origin", "HEAD:develop"]);
+
+    let merged = lab.finish_into(&spike, "develop", &[("GH_EXISTING", "MERGED")]);
+    let (out, err) = text(&merged);
+
+    assert!(merged.status.success(), "{out}\n{err}");
+    assert!(
+        out.ends_with(&format!(
+            "merged; develop up to date, {branch} deleted here and on GitHub\n"
+        )),
+        "{out}"
+    );
+    assert!(!spike.exists());
 }
 
 #[test]

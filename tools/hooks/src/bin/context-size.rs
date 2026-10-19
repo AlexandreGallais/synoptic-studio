@@ -1,11 +1,12 @@
-//! `target/release/context-size <folder>…` (EN-065): what each subagent carried at its first request.
-//! A folder is a session's (its `subagents/` read) or a `subagents/` folder itself; the agents are
-//! listed in their files' order, then the median of each type.
+//! `target/release/context-size <folder or file>…` (EN-065): what each subagent carried at its
+//! first request. A folder is a session's (its `subagents/` read) or a `subagents/` folder itself;
+//! the agents are listed in their files' order, then the median of each type. A file is a page a
+//! worker would load: its characters and tokens, then their total (I72).
 
 use std::fs;
 use std::path::{Path, PathBuf};
 
-use hooks::context::{Start, first_request, tables};
+use hooks::context::{Start, first_request, pages_table, tables};
 use hooks::json::{self, Value};
 
 /// The subagent transcripts of a folder, sorted by name.
@@ -49,21 +50,44 @@ fn main() -> std::process::ExitCode {
     tool_use::run("context-size", "", sizes)
 }
 
-/// Prints the tables of the folders named; the exit code.
+/// Prints the tables of the folders and files named; the exit code.
 fn sizes() -> u8 {
-    let folders: Vec<String> = std::env::args().skip(1).collect();
+    let arguments: Vec<String> = std::env::args().skip(1).collect();
 
-    if folders.is_empty() {
-        eprintln!("Usage: target/release/context-size <session or subagents folder>…");
+    if arguments.is_empty() {
+        eprintln!("Usage: target/release/context-size <session or subagents folder, or file>…");
         return 2;
     }
 
-    let starts: Vec<Start> = folders
+    let (files, folders): (Vec<&String>, Vec<&String>) = arguments
         .iter()
-        .flat_map(|folder| transcripts(Path::new(folder)))
-        .filter_map(|transcript| start_of(&transcript))
-        .collect();
+        .partition(|argument| Path::new(argument).is_file());
+    let mut pages = Vec::new();
 
-    print!("{}", tables(&starts));
+    for file in files {
+        match fs::read_to_string(file) {
+            Ok(text) => pages.push((file.clone(), text)),
+            Err(error) => {
+                eprintln!("context-size: {file}: {error}");
+                return 1;
+            }
+        }
+    }
+
+    if !folders.is_empty() {
+        let starts: Vec<Start> = folders
+            .iter()
+            .flat_map(|folder| transcripts(Path::new(folder)))
+            .filter_map(|transcript| start_of(&transcript))
+            .collect();
+
+        print!("{}", tables(&starts));
+    }
+    if !pages.is_empty() {
+        if !folders.is_empty() {
+            println!();
+        }
+        print!("{}", pages_table(&pages));
+    }
     0
 }

@@ -1,10 +1,11 @@
-//! `release publish`, by the button of `release.yml` on `main` (ADR-0086): the version from the
-//! last tag `vx.y.z` and the commits since (`REF-SEMVER`), its notes the bodies of the pull
-//! requests into `main` merged since that tag but Dependabot's, each checked as `release check`
-//! does and all against the commits, then the
-//! GitHub release made on `main`'s head, which GitHub tags, the test report of the last pull
-//! request's CI attached. It makes no commit. Every Git and GitHub call goes through a [`Run`],
-//! so that a test gives the answers.
+//! `release publish`, by the button of `release.yml` (ADR-0086), on `main` alone, the tool
+//! refusing another branch before any call, since the workflow chooses nothing by an `if:`
+//! (ADR-0088): the version from the last tag `vx.y.z` and the commits since (`REF-SEMVER`), its
+//! notes the bodies of the pull requests into `main` merged since that tag but Dependabot's, each
+//! checked as `release check` does and all against the commits, then the GitHub release made on
+//! `main`'s head, which GitHub tags, the test report of the last pull request's CI attached. It
+//! makes no commit. Every Git and GitHub call goes through a [`Run`], so that a test gives the
+//! answers.
 
 use std::fs;
 use std::path::Path;
@@ -34,6 +35,30 @@ pub const REPORT_FILE: &str = "test-report.xml";
 /// `main` (`docs/tooling/ci.md`), whose body is Dependabot's, not a release text; its change is
 /// written in the next review's text.
 pub const DEPENDABOT_BRANCH: &str = "dependabot/";
+
+/// The one branch a release is made on: its button may be pressed on any branch, the workflow
+/// choosing nothing by an `if:` (ADR-0088), so the tool refuses the others.
+pub const RELEASE_BRANCH: &str = "main";
+
+/// The fully-formed ref of [`RELEASE_BRANCH`], `refs/heads/<branch>` (`REF-GH-VARIABLES`): its
+/// short name alone would be a tag's too.
+pub const RELEASE_REF: &str = "refs/heads/main";
+
+/// Checks that the run is on [`RELEASE_REF`], before any Git or GitHub call.
+///
+/// # Errors
+///
+/// The ref, `GITHUB_REF` of the run, is another one, a tag named `main` included, or empty.
+pub fn on_release_branch(reference: &str) -> Result<(), String> {
+    if reference == RELEASE_REF {
+        Ok(())
+    } else {
+        Err(format!(
+            "the run is on the ref {reference:?}, not {RELEASE_REF:?}: a release is made from the \
+             branch {RELEASE_BRANCH} only, so press the button on {RELEASE_BRANCH} (GITHUB_REF)"
+        ))
+    }
+}
 
 /// The first line of a command's output, trimmed.
 fn first_line(output: &str) -> String {
@@ -127,14 +152,17 @@ fn ci_run(run: &mut Run<'_>) -> Result<(String, String), String> {
     Ok((head, ci_run))
 }
 
-/// Publishes the release of the head of `main`, the notes and the report written in `folder`.
+/// Publishes the release of the head of `main`, the run's `reference`, the notes and the report
+/// written in `folder`.
 ///
 /// # Errors
 ///
-/// No tag `vx.y.z` is behind the head, a body breaks a rule or two hold a notice, the bodies list
-/// changes the commits do not make or none the commits make, the head is not a merge, no
-/// successful CI run of the pull request's head is found, or a Git or GitHub command fails.
-pub fn publish(run: &mut Run<'_>, folder: &Path) -> Result<Published, String> {
+/// The ref is not `refs/heads/main`, no tag `vx.y.z` is behind the head, a body breaks a rule or
+/// two hold a notice, the bodies list changes the commits do not make or none the commits make,
+/// the head is not a merge, no successful CI run of the pull request's head is found, or a Git or
+/// GitHub command fails.
+pub fn publish(run: &mut Run<'_>, reference: &str, folder: &Path) -> Result<Published, String> {
+    on_release_branch(reference)?;
     let (previous, current) = last_release(run, "HEAD")?;
     let range = format!("{previous}..HEAD");
     let released = commits(run, &range)?;

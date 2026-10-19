@@ -1,6 +1,6 @@
 //! Tests of the report's statistics and tables: the cases of `scripts/metrics-tables.test.ts`.
 
-use metrics::tables::{TimedCall, call_stats, command_key, js_prefix, markdown_table, median};
+use metrics::tables::{TimedCall, call_stats, command_key, js_prefix, markdown_table};
 
 #[test]
 fn names_a_command_by_its_words_without_directory_change_variables_flags_or_quotes() {
@@ -12,23 +12,32 @@ fn names_a_command_by_its_words_without_directory_change_variables_flags_or_quot
     assert_eq!(command_key("gh pr checks 12 --watch"), "gh pr checks");
     assert_eq!(command_key("npm install -D eslint"), "npm install");
     assert_eq!(command_key("grep -n foo bar.ts"), "grep");
-    // `||` cuts too: the brief's `cd … || exit 9` names `exit`, as the TypeScript report did.
-    assert_eq!(command_key("cd \"/w\" || exit 9; ls"), "exit");
     assert_eq!(command_key("npm"), "npm");
+}
+
+#[test]
+fn f32_ac1_names_the_command_after_the_brief_s_cd_or_exit() {
+    // RET-004 (I91): `exit` was the first command by count, 10,573 calls, every worker's call
+    // opening with `cd "<worktree>" || exit 9`; the `exit` after `||` runs only when the `cd`
+    // fails, so the command named is the one after it, behind a `;` or a line break.
+    assert_eq!(command_key("cd \"/w\" || exit 9; ls"), "ls");
+    assert_eq!(
+        command_key("cd \"/w\" || exit 9\ntarget/release/git-sequences sync"),
+        "target/release/git-sequences"
+    );
+    assert_eq!(command_key("cd \"/w\" || exit 9;git status"), "git status");
+    // A command before `||` is the one named, whatever follows it.
+    assert_eq!(command_key("make || exit 1"), "make");
+    // An `exit` that is not after `||` is a command that runs.
+    assert_eq!(command_key("exit 3"), "exit");
+    assert_eq!(command_key("cd /w; exit 3"), "exit");
 }
 
 #[test]
 fn is_empty_when_nothing_runs() {
     assert_eq!(command_key("cd \"/repo\""), "");
     assert_eq!(command_key(""), "");
-}
-
-#[test]
-fn takes_the_middle_value_or_the_mean_of_the_two_middle_ones() {
-    assert!((median(&[5.0, 1.0, 3.0]) - 3.0).abs() < f64::EPSILON);
-    // Sorted 1, 2, 4, 9: (2 + 4) / 2 = 3.
-    assert!((median(&[9.0, 1.0, 4.0, 2.0]) - 3.0).abs() < f64::EPSILON);
-    assert!(median(&[]).abs() < f64::EPSILON);
+    assert_eq!(command_key("cd \"/w\" || exit 9"), "");
 }
 
 #[test]

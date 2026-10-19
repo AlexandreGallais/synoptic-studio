@@ -90,9 +90,44 @@ describe("type errors with the lint (EN-091)", () => {
     );
   });
 
+  it("[F33.AC1] reports a planted type error with the repository's configuration alone, no flag", () => {
+    const folder = mkdtempSync(join(tmpdir(), "en-121-"));
+
+    writeFileSync(
+      join(folder, "tsconfig.json"),
+      JSON.stringify({ compilerOptions: { noEmit: true, strict: true, types: [] } }),
+    );
+
+    // Line 2, column 9, as in the first test: `typeCheck` of `.oxlintrc.json` stands for the flag.
+    writeFileSync(
+      join(folder, "planted.ts"),
+      'export function half(value: number): number {\n  const planted: number = "half";\n  return value / 2 + planted;\n}\n',
+    );
+
+    const result = spawnSync(
+      OXLINT,
+      ["-c", join(ROOT, ".oxlintrc.json"), "--format", "agent", "planted.ts"],
+      {
+        cwd: folder,
+        encoding: "utf8",
+        env: {
+          ...process.env,
+          PATH: `${join(ROOT, "node_modules", ".bin")}:${process.env["PATH"] ?? ""}`,
+        },
+      },
+    );
+
+    rmSync(folder, { force: true, recursive: true });
+
+    expect(result.stdout).toContain(
+      "planted.ts:2:9: error typescript(TS2322): Type 'string' is not assignable to type 'number'.",
+    );
+  });
+
   it("runs the type check in every oxlint pass: the lint, the fix, and no script runs tsc", () => {
+    // The check comes from `.oxlintrc.json` since EN-121, `[F33.AC1]` in tests/oxlint-config.test.ts.
     for (const name of ["lint", "fix"]) {
-      expect(scriptOf(name)).toContain("oxlint --type-check ");
+      expect(scriptOf(name)).toMatch(/(?:^|&& )oxlint --/u);
     }
 
     // `typecheck` went with EN-115: `npx tsc --noEmit` stays for a person who wants tsc's own run.

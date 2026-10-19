@@ -1,14 +1,17 @@
-# Autonomous runs (ADR-0028, ADR-0045, ADR-0086): merges, always by a merge commit, a pull request
-# labeled `autonomous` — a story into its feature branch (`feature/f22-…`), or into `develop` a
-# feature branch or a review (`…/rev-…`, ADR-0086, decision 4). Their checks ran
-# locally before the push (pre-push hook, `check:all`): no CI runs on them. Nothing reaches `main`
-# this way: the Product Owner merges it after each review. The agent never merges; removing the
-# label before the merge stops it.
+# The stories' auto-merge (ADR-0028, ADR-0045, ADR-0086, ADR-0088): merges, always by a merge
+# commit, a story pull request of the owner labeled `autonomous` into its feature branch
+# (`feature/f22-…`). Its checks ran locally before the push (pre-push hook, `check:all`): no CI
+# runs on it. A feature or a review goes into `develop` by `feature-automerge.yml`; nothing reaches
+# `main` this way. The agent never merges; removing the label before the merge stops it.
 name: Story auto-merge
 
+# The base is chosen by `branches` alone (ADR-0088, decision 2, EN-134). Not `opened`: a pull
+# request opened with its label sends `opened` and `labeled`, which started two runs (research
+# note 0026, §2); `ready_for_review` merges a draft once it is ready, its `labeled` run skipped.
 on:
   pull_request:
-    types: [labeled, opened, reopened, ready_for_review]
+    types: [labeled, reopened, ready_for_review]
+    branches: ["feature/**"]
 
 permissions:
   contents: write
@@ -17,41 +20,40 @@ permissions:
 jobs:
   auto-merge:
     name: Merge
+    # A guard on the pull request's label, author and draft state, which no trigger expresses.
     if: >-
       contains(github.event.pull_request.labels.*.name, 'autonomous')
       && github.event.pull_request.author_association == 'OWNER'
-      && (startsWith(github.event.pull_request.base.ref, 'feature/')
-        || github.event.pull_request.base.ref == 'develop')
       && !github.event.pull_request.draft
     runs-on: ubuntu-latest
     steps:
-      - name: Check the branch is a story or a feature allowed in autonomous runs
+      - name: Check the branch is a story allowed in autonomous runs
         env:
           BASE: ${{ github.event.pull_request.base.ref }}
           BRANCH: ${{ github.event.pull_request.head.ref }}
         run: |
-          if [ "$BASE" = develop ]; then
-            allowed='^(feature/f[0-9]{2}-|[a-z]+/rev-[0-9]{3}-)'
-            kinds='a feature branch or a REV'
-          else
-            allowed='^[a-z]+/(us|en|sp|chk|aud|val)-[0-9]{3}-'
-            kinds='a US, EN, SP, CHK, AUD or VAL branch'
-          fi
-          if ! printf '%s' "$BRANCH" | grep -Eq "$allowed"; then
-            echo "Branch $BRANCH into $BASE is not $kinds: no auto-merge (ADR-0028, ADR-0045, ADR-0086)."
+          if ! printf '%s' "$BRANCH" | grep -Eq '^[a-z]+/(us|en|sp|chk|aud|val)-[0-9]{3}-'; then
+            echo "Branch $BRANCH into $BASE is not a US, EN, SP, CHK, AUD or VAL branch: no auto-merge (ADR-0028, ADR-0045, ADR-0086)."
             exit 1
           fi
       - name: Merge (merge commit)
         env:
-          # Built-in token: a merge into a feature branch or develop needs no release, hence no
-          # personal token.
+          # Built-in token: a merge into a feature branch needs no release, hence no personal token.
           GH_TOKEN: ${{ github.token }}
           PR_URL: ${{ github.event.pull_request.html_url }}
-        # GitHub computes the mergeability of a new pull request after a few seconds: retry.
+        # GitHub computes the mergeability of a new pull request after a few seconds: retry. With
+        # `--auto`, a pull request not yet mergeable gets the auto-merge only, merged later
+        # (`REF-GH-CLI-MERGE`), and `gh pr merge` then refuses it, already merged: each attempt
+        # reads its state (`REF-GH-CLI-PR-VIEW`). Not merged after the attempts, its auto-merge is
+        # kept: no `develop` CI follows a merge into a feature branch, so GitHub's later merge does.
         run: |
           for attempt in 1 2 3 4 5; do
-            gh pr merge "$PR_URL" --auto --merge && exit 0
-            echo "Attempt $attempt: not mergeable yet."
+            gh pr merge "$PR_URL" --auto --merge || echo "Attempt $attempt: gh pr merge failed."
+            if [ "$(gh pr view "$PR_URL" --json state --jq .state)" = MERGED ]; then
+              exit 0
+            fi
+            echo "Attempt $attempt: $PR_URL not merged yet."
             sleep 10
           done
+          echo "$PR_URL is not merged after 5 attempts: its auto-merge kept." >&2
           exit 1

@@ -382,6 +382,42 @@ fn runs_the_hooks_and_stops_on_their_failure() {
 }
 
 #[test]
+fn f33_ac2_prints_what_the_hooks_write_when_the_commit_succeeds() {
+    let repos = repos();
+
+    // `commit-msg` runs `move-rows --notes`, whose notes go to standard error and pass (EN-140):
+    // they reach the agent, though the commit succeeds (AUD-035, F3).
+    write(
+        &repos.work,
+        ".git/hooks/commit-msg",
+        "#!/bin/sh\necho \"move-rows: 1 note left in the story file\" >&2\nexit 0\n",
+    );
+    let chmod = clean("chmod", &repos.work)
+        .args(["+x", ".git/hooks/commit-msg"])
+        .status()
+        .expect("chmod runs");
+    assert!(chmod.success());
+    write(&repos.work, "a.md", "a\n");
+
+    let output = tool(&repos.work, &["commit", "-F", "-", "a.md"], "chore: x\n");
+
+    assert!(output.status.success(), "{}", stderr(&output));
+    assert_eq!(
+        stderr(&output),
+        "move-rows: 1 note left in the story file\n"
+    );
+    assert!(stdout(&output).contains("chore: x on chore/en-100"));
+
+    // A commit whose hooks write nothing prints nothing on standard error.
+    fs::remove_file(repos.work.join(".git/hooks/commit-msg")).expect("hook removed");
+    write(&repos.work, "b.md", "b\n");
+    let quiet = tool(&repos.work, &["commit", "-F", "-", "b.md"], "chore: y\n");
+
+    assert!(quiet.status.success(), "{}", stderr(&quiet));
+    assert_eq!(stderr(&quiet), "");
+}
+
+#[test]
 fn refuses_a_force_push_on_a_shared_branch() {
     let repos = repos();
 
@@ -510,4 +546,44 @@ fn rebuilds_the_release_binaries_of_a_cargo_workspace_after_a_sync() {
     assert_eq!(output.status.code(), Some(1));
     assert!(stderr(&output).contains("synced, but the rebuild of target/release failed"));
     assert!(stderr(&output).contains("error: it broke"));
+}
+
+#[test]
+fn f31_ac1_prints_a_worktree_s_state_in_one_call() {
+    let other = repos();
+    let repos = repos();
+
+    write(&repos.work, "story.md", "story\n");
+    git(&repos.work, &["add", "story.md"]);
+    git(&repos.work, &["commit", "--quiet", "-m", "story work"]);
+    write(&repos.work, "README.md", "two\n");
+    write(&repos.work, "new.md", "new\n");
+
+    let output = tool(&repos.work, &["state"], "");
+    let head = git(&repos.work, &["log", "-1", "--format=%h"]);
+
+    assert!(output.status.success(), "{}", stderr(&output));
+    // The leading space of each `status --short` and `diff --stat` line is kept.
+    assert_eq!(
+        stdout(&output),
+        format!(
+            "work: {STORY} on origin/{FEATURE}, 1 commit(s) ahead\nstatus --short:\n M README.md\n?? new.md\ndiff --stat HEAD:\n README.md | 2 +-\n 1 file changed, 1 insertion(+), 1 deletion(-)\ncommits ahead:\n{head} story work\n"
+        )
+    );
+    // It only reads: the tree is as it was.
+    assert_eq!(
+        git(&repos.work, &["status", "--short"]),
+        "M README.md\n?? new.md"
+    );
+
+    // A feature branch is counted from its upstream.
+    git(&other.work, &["switch", "--quiet", FEATURE]);
+    let output = tool(&other.work, &["state"], "");
+
+    assert_eq!(
+        stdout(&output),
+        format!(
+            "work: {FEATURE} on origin/{FEATURE}, 0 commit(s) ahead\nstatus --short: clean\ndiff --stat HEAD: none\ncommits ahead: none\n"
+        )
+    );
 }

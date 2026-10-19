@@ -195,6 +195,8 @@ describe("collectionFaceToParts (REF-OT-OTFF, REF-SKIA-MAC-STREAM-CODE)", () => 
 
   it(
     "[F17.AC10] [F18.AC19] gives a table of 191 134 509 bytes as a view, no array of its bytes",
+    // alone: 1 ms, the median of 5 runs of its file (EN-129); 20 s, as for the other tests of a
+    // table this large.
     { timeout: 20_000 },
     () => {
       // Before US-052 the face was spread into an array of numbers, past the longest array V8

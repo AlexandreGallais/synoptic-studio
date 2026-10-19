@@ -72,12 +72,6 @@
 | [VAL-009](./E01-F06-VAL-009-validate-stretched-polygon.md) | F06 | Validate F06 on the reference cases | done |
 | [REV-001](./E01-REV-001-review-e01.md) | E01 | Review E01 with the Product Owner | done |
 | [RET-001](./E01-RET-001-retrospective-e01.md) | E01 | Retrospective of E01 | done |
-| [EN-118](./E02-F23-EN-118-stories-outside-a-feature-and-the-cards.md) | F23 | Stories outside a feature, and the cards as a log | draft |
-| [EN-119](./E02-F23-EN-119-the-guard-in-a-worktree.md) | F23 | The guard in a worktree, and the feature rebased with lease | draft |
-| [EN-120](./E02-F23-EN-120-reports-that-say-what-happened.md) | F23 | Reports that say what happened | draft |
-| [EN-121](./E02-F23-EN-121-builds-lanes-and-checks.md) | F23 | Builds, lanes and the checks RET-004 listed | draft |
-| [AUD-025](./E02-F23-AUD-025-audit-f23.md) | F23 | Audit F23 | draft |
-| [VAL-024](./E02-F23-VAL-024-validate-f23.md) | F23 | Validate F23 | draft |
 | [SP-010](./E14-F11-SP-010-research-f11.md) | F11 | Research for F11: folder layouts and test placement | done |
 | [EN-020](./E14-F11-EN-020-property-tests.md) | F11 | Property tests for the nine functions without one | done |
 | [EN-021](./E14-F11-EN-021-shared-test-helpers.md) | F11 | Shared test helpers, one path writer, one pass per corner | done |
@@ -293,7 +287,42 @@
 | [EN-128](./E17-F27-EN-128-retired-scopes-in-history.md) | F27 | The history check reads the scopes a commit was written with | done |
 | [AUD-029](./E17-F27-AUD-029-audit-f27.md) | F27 | Audit F27 | done |
 | [VAL-028](./E17-F27-VAL-028-validate-f27.md) | F27 | Validate F27 | done |
+| [EN-129](./E17-F29-EN-129-timing-tests-that-hold-under-load.md) | F29 | Timing tests that hold under load | done |
+| [EN-130](./E17-F29-EN-130-the-rust-lane-only-when-rust-changed.md) | F29 | The Rust lane only when Rust changed, its coverage a lane | done |
+| [EN-131](./E17-F29-EN-131-binaries-rebuilt-after-a-pull.md) | F29 | The binaries rebuilt after a pull | done |
+| [AUD-031](./E17-F29-AUD-031-audit-f29.md) | F29 | Audit F29 | done |
+| [VAL-030](./E17-F29-VAL-030-validate-f29.md) | F29 | Validate F29 | done |
+| [SP-024](./E17-F28-SP-024-the-tooling-features-of-2026-10-18.md) | F28 | The tooling features of 2026-10-18 | done |
+| [EN-132](./E17-F28-EN-132-the-site-the-release-and-the-caches-apart.md) | F28 | The site, the release and the Rust caches apart | done |
+| [EN-133](./E17-F28-EN-133-the-ci-into-main-its-checks-only.md) | F28 | The CI into main, its checks only | done |
+| [AUD-030](./E17-F28-AUD-030-audit-f28.md) | F28 | Audit F28 | done |
+| [VAL-029](./E17-F28-VAL-029-validate-f28.md) | F28 | Validate F28 | done |
+| [EN-135](./E17-F30-EN-135-the-develop-ci-started-by-the-auto-merge.md) | F30 | The develop CI, started by the auto-merge | done |
+| [EN-136](./E17-F30-EN-136-each-job-finds-its-tools.md) | F30 | Each CI job finds the tools its scripts call | done |
+| [AUD-032](./E17-F30-AUD-032-audit-f30.md) | F30 | Audit F30 | done |
+| [VAL-031](./E17-F30-VAL-031-validate-f30.md) | F30 | Validate F30 | done |
+| [EN-137](./E17-F23-EN-137-the-log-rows-in-the-done-commit.md) | F23 | The log rows and the cards in the done commit | done |
+| [EN-118](./E17-F23-EN-118-a-story-outside-a-feature.md) | F23 | A story outside a feature, by the same tools | done |
+| [AUD-025](./E17-F23-AUD-025-audit-f23.md) | F23 | Audit F23 | done |
+| [VAL-024](./E17-F23-VAL-024-validate-f23.md) | F23 | Validate F23 | done |
+| [EN-119](./E17-F31-EN-119-the-guard-reads-by-words.md) | F31 | The guard reads a command by its words | done |
+| [EN-138](./E17-F31-EN-138-replace-and-fix-do-what-they-say.md) | F31 | replace and npm run fix do what they say | done |
+| [AUD-033](./E17-F31-AUD-033-audit-f31.md) | F31 | Audit F31 | done |
+| [VAL-032](./E17-F31-VAL-032-validate-f31.md) | F31 | Validate F31 | done |
+| [EN-120](./E17-F32-EN-120-the-status-line-and-metrics.md) | F32 | The status line and metrics say what ran | done |
+| [EN-139](./E17-F32-EN-139-the-checks-and-reports-of-a-review.md) | F32 | The reports of a review say what happened | done |
+| [AUD-034](./E17-F32-AUD-034-audit-f32.md) | F32 | Audit F32 | done |
+| [VAL-033](./E17-F32-VAL-033-validate-f32.md) | F32 | Validate F32 | done |
+| [EN-121](./E17-F33-EN-121-floors-and-versions-checked.md) | F33 | The floors, versions and paths checked | done |
+| [EN-140](./E17-F33-EN-140-anchors-rows-and-agent-pages-checked.md) | F33 | The anchors, the rows and the agent pages checked | done |
+| [EN-141](./E17-F33-EN-141-a-bench-binary.md) | F33 | A bench binary for the stories' measures | done |
+| [AUD-035](./E17-F33-AUD-035-audit-f33.md) | F33 | Audit F33 | done |
+| [VAL-034](./E17-F33-VAL-034-validate-f33.md) | F33 | Validate F33 | done |
+| [EN-134](./E17-F34-EN-134-the-other-workflows-reviewed.md) | F34 | The auto-merge per base and the other workflows reviewed | done |
+| [AUD-036](./E17-F34-AUD-036-audit-f34.md) | F34 | Audit F34 | done |
+| [VAL-035](./E17-F34-VAL-035-validate-f34.md) | F34 | Validate F34 | done |
 | [NAM-002](./E17-NAM-002-naming-pass-e17.md) | E17 | Naming pass over the code of E17 | done |
 | [REV-004](./E17-REV-004-review-e17.md) | E17 | Review E17 with the Product Owner | done |
 | [RET-004](./E17-RET-004-retrospective-e17.md) | E17 | Retrospective of E17 | done |
 | [REV-006](./E17-REV-006-review-2026-10-18.md) | E17 | Review of 2026-10-18, F22 | done |
+| [REV-007](./E17-REV-007-review-2026-10-19.md) | E17 | Review of 2026-10-19, F23 to F34 | done |

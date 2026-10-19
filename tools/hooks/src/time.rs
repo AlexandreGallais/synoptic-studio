@@ -27,14 +27,16 @@ pub fn epoch_ms(instant: &str) -> i64 {
 }
 
 /// A duration written short: `45 s`, `12 min` or `2 h 05`, as `Math.floor` and `Math.round` give:
-/// the minutes rounded down, the seconds to the nearest, a half up. The one copy of the hooks,
-/// the status line's and the run's (NAM-002).
+/// the minutes rounded down, the seconds to the nearest, a half up. The unit is chosen from the
+/// seconds rounded as shown, so 59.5 s is `1 min`, never `60 s` (AUD-034). The one copy of the
+/// hooks, the status line's and the run's (NAM-002).
 #[must_use]
 pub fn short_duration(milliseconds: i64) -> String {
-    let minutes = milliseconds.div_euclid(MINUTE_MS);
+    let seconds = (milliseconds + SECOND_MS / 2).div_euclid(SECOND_MS);
+    let minutes = milliseconds.div_euclid(MINUTE_MS).max(1);
 
-    if minutes < 1 {
-        format!("{} s", (milliseconds + SECOND_MS / 2).div_euclid(SECOND_MS))
+    if seconds < MINUTE_MS / SECOND_MS {
+        format!("{seconds} s")
     } else if minutes < 60 {
         format!("{minutes} min")
     } else {

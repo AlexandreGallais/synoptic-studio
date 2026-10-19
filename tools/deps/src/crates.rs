@@ -91,22 +91,37 @@ pub fn behind(name: &str, current: &str, releases: &[Release], now_ms: i64) -> O
     })
 }
 
+/// The release of a version written `text`; `None` when the index lacks it or `text` is no
+/// version number.
+#[must_use]
+pub fn release<'a>(releases: &'a [Release], text: &str) -> Option<&'a Release> {
+    let version = Version::parse(text)?;
+
+    releases.iter().find(|release| release.version == version)
+}
+
+/// The greatest version compatible with `version`, not yanked and at least 7 days old at
+/// `now_ms`: the one to pin a version too new or yanked to.
+#[must_use]
+pub fn compatible_pin(releases: &[Release], version: &Version, now_ms: i64) -> Option<String> {
+    greatest(releases, now_ms, version.is_pre(), |candidate| {
+        candidate.version.is_compatible(version)
+    })
+    .map(|release| release.text.clone())
+}
+
 /// A crate locked at `locked` that was published less than 7 days before `now_ms`, with the
 /// greatest compatible version old enough to pin it to; `None` when it is old enough.
 #[must_use]
 pub fn too_new(name: &str, locked: &str, releases: &[Release], now_ms: i64) -> Option<TooNew> {
-    let version = Version::parse(locked)?;
-    let release = releases.iter().find(|release| release.version == version)?;
+    let release = release(releases, locked)?;
     let published_ms = release.published_ms?;
 
     (!is_past_cooldown(published_ms, now_ms)).then(|| TooNew {
         name: name.to_owned(),
         locked: locked.to_owned(),
         published_ms,
-        pin: greatest(releases, now_ms, version.is_pre(), |candidate| {
-            candidate.version.is_compatible(&version)
-        })
-        .map(|release| release.text.clone()),
+        pin: compatible_pin(releases, &release.version, now_ms),
     })
 }
 

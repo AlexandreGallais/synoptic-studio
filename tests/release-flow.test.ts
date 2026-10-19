@@ -7,8 +7,26 @@ import { describe, expect, it } from "vitest";
 /** The repository's root. */
 const ROOT = join(import.meta.dirname, "..");
 
+/**
+ * Text of a workflow.
+ *
+ * @param file - its file name in `.github/workflows/`
+ * @returns its text, or an empty text when it is missing
+ */
+function workflowOf(file: string): string {
+  const path = join(ROOT, ".github", "workflows", file);
+
+  return existsSync(path) ? readFileSync(path, "utf8") : "";
+}
+
 /** Text of the release workflow. */
-const WORKFLOW = readFileSync(join(ROOT, ".github", "workflows", "release.yml"), "utf8");
+const WORKFLOW = workflowOf("release.yml");
+
+/** Text of the site's workflow. */
+const SITE = workflowOf("site.yml");
+
+/** Text of the Rust caches' workflow. */
+const RUST_CACHES = workflowOf("rust-caches.yml");
 
 /**
  * A Markdown link or reference definition to a file of the repository named `CHANGELOG.md`; an
@@ -19,13 +37,14 @@ const CHANGELOG_LINK =
   /\]\((?!`?https?:)[^)\s]*CHANGELOG\.md|^\[[^\]]+\]: (?!https?:)\S*CHANGELOG\.md/mu;
 
 /**
- * One job of the release workflow, from its name to the next job.
+ * One job of a workflow, from its name to the next job.
  *
+ * @param workflow - text of the workflow
  * @param name - the job's key under `jobs:`
  * @returns the job's lines, comments left out, or an empty text when it is missing
  */
-function jobOf(name: string): string {
-  const jobs = WORKFLOW.slice(WORKFLOW.indexOf("\njobs:\n"));
+function jobOf(workflow: string, name: string): string {
+  const jobs = workflow.slice(workflow.indexOf("\njobs:\n"));
   const start = jobs.indexOf(`\n  ${name}:\n`);
 
   if (start === -1) {
@@ -71,20 +90,17 @@ function versionAt(value: unknown, keys: readonly string[]): string {
 }
 
 describe("release flow (ADR-0086)", () => {
-  it("[F22.AC2] [F24.AC3] runs on pushes to develop and main and by its button", () => {
-    // A push to develop saves the Rust caches alone, which the review's pull request restores.
-    expect(WORKFLOW).toContain(
-      "on:\n  push:\n    branches: [develop, main]\n  workflow_dispatch:\n",
-    );
+  it("[F22.AC2] [F28.AC2] runs the release by its button alone", () => {
+    // The site is deployed by its own workflow, the caches saved by theirs.
+    expect(WORKFLOW).toContain("\non:\n  workflow_dispatch:\n\n");
+    expect(WORKFLOW).not.toContain("push:");
   });
 
-  it("[F22.AC2] releases by the button on main only, with the project's tool, on GITHUB_TOKEN", () => {
-    const job = jobOf("release");
+  it("[F22.AC2] [F28.AC2] releases with the project's tool, which checks the branch, on GITHUB_TOKEN", () => {
+    const job = jobOf(WORKFLOW, "release");
 
-    expect(job).toContain(
-      "if: github.event_name == 'workflow_dispatch' && github.ref_name == 'main'\n",
-    );
-
+    // `release publish` refuses a branch other than main (tools/release/tests/publish.rs).
+    expect(job).not.toContain("if:");
     expect(job).toContain("- run: cargo build --release --locked -q -p release\n");
     expect(job).toContain("run: target/release/release publish\n");
     expect(job).toContain(`GH_TOKEN: \${{ github.token }}`);
@@ -93,28 +109,33 @@ describe("release flow (ADR-0086)", () => {
     expect(job).not.toContain("outputs:");
   });
 
-  it("[F22.AC2] deploys the site on a push to main, never on develop nor by the button", () => {
-    const job = jobOf("docs");
+  it("[F22.AC2] [F28.AC2] deploys the site on a push to main alone, never on develop nor by the button", () => {
+    const job = jobOf(SITE, "site");
 
-    expect(job).toContain("if: github.event_name == 'push' && github.ref_name == 'main'\n");
+    expect(SITE).toContain("\non:\n  push:\n    branches: [main]\n\n");
+    expect(job).not.toContain("if:");
     expect(job).not.toContain("needs:");
     expect(job).toContain("uses: actions/deploy-pages@");
+    expect(WORKFLOW).not.toContain("deploy-pages");
   });
 
-  it("[F22.AC2] [F24.AC3] fetches every target's crates on develop and main before its caches are saved", () => {
-    const job = jobOf("rust-cache");
+  it("[F22.AC2] [F24.AC3] [F28.AC2] fetches every target's crates on main before its caches are saved", () => {
+    const job = jobOf(RUST_CACHES, "rust-caches");
     const fetch = job.indexOf("- run: cargo fetch --locked\n");
 
-    // Every push the workflow runs on, so to develop and to main.
-    expect(job).toContain("if: github.event_name == 'push'\n");
+    // Every push to main, the one trigger of the workflow: no condition on the job; develop's
+    // caches are the develop CI's (tests/ci-caches.test.ts).
+    expect(job).not.toMatch(/^ {4}if:/mu);
     expect(fetch).toBeGreaterThan(job.indexOf("key: rust-build-"));
     expect(fetch).toBeLessThan(job.indexOf("- run: npm run rust:build\n"));
   });
 
   it("[F18.AC1] [F22.AC2] only releases on main: no release-please, no personal token, no merge, no commit", () => {
-    expect(WORKFLOW).not.toMatch(
-      /release-please|secrets\.|gh pr merge|git commit|git push|git tag/u,
-    );
+    for (const workflow of [WORKFLOW, SITE, RUST_CACHES]) {
+      expect(workflow).not.toMatch(
+        /release-please|secrets\.|gh pr merge|git commit|git push|git tag/u,
+      );
+    }
   });
 
   it("[F22.AC2] keeps no version in the manifests: the tags hold it", () => {

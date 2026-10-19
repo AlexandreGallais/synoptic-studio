@@ -1,5 +1,6 @@
 //! `worktree-new <ID> [--type <type>]` (`target/release/worktree-new US-061`): fetches GitHub, adds
-//! `.claude/worktrees/us-061` on `feat/us-061-<topic>` from the story's feature branch, and links
+//! `.claude/worktrees/us-061` on `feat/us-061-<topic>` from the story's feature branch — the one of
+//! `origin` holding the story's file when the checkout lacks it (`git ls-tree`, EN-118) — and links
 //! the main checkout's `node_modules` into it, then sets the hooks folder `.githooks` if it is not
 //! yet, relative so that a push runs the worktree's own `.githooks/pre-push` (EN-052, EN-108), and
 //! builds the release binaries of the Rust tools in the new worktree (EN-068), from a copy of the
@@ -11,6 +12,7 @@ use std::process::{Command, ExitCode};
 
 use git_hooks::install::install;
 use git_repository::stdout_of;
+use stale_binaries::RELEASE_BUILD;
 use worktree::seed::seed_release;
 use worktree::{Plan, Request, plan};
 
@@ -34,6 +36,25 @@ fn arguments(argv: &[String]) -> Result<(&str, Option<&str>), String> {
 fn story_files(top: &Path) -> Result<Vec<String>, String> {
     worktree::story_files(top)
         .map_err(|error| format!("{}: {error}", top.join(worktree::STORIES).display()))
+}
+
+/// The story files of each feature branch of `origin`, read by `git ls-tree`: the main checkout,
+/// on `develop`, lacks the stories written on a feature branch (EN-118).
+fn branch_story_files(remote_branches: &[String]) -> Result<Vec<(String, Vec<String>)>, String> {
+    let folder = format!("{}/", worktree::STORIES);
+
+    remote_branches
+        .iter()
+        .map(|branch| {
+            let names = git(&["ls-tree", "--name-only", branch, &folder])?
+                .lines()
+                .filter_map(|path| path.strip_prefix(&folder))
+                .map(str::to_owned)
+                .collect();
+
+            Ok((branch.clone(), names))
+        })
+        .collect()
 }
 
 /// Links a folder at `link` to the folder `target`: a symbolic link (`std::os::unix::fs::symlink`).
@@ -82,7 +103,7 @@ fn build_tools(dir: &Path) -> Result<(), String> {
     }
 
     let output = Command::new("cargo")
-        .args(["build", "--release", "--workspace", "--locked", "--quiet"])
+        .args(RELEASE_BUILD)
         .current_dir(dir)
         .output()
         .map_err(|error| format!("cargo: {error}"))?;
@@ -122,11 +143,13 @@ fn run(argv: &[String]) -> Result<Plan, String> {
     .map(str::to_owned)
     .collect();
     let files = story_files(&top)?;
+    let branch_files = branch_story_files(&remote_branches)?;
     let request = Request {
         id,
         branch_type,
         story_files: &files,
         remote_branches: &remote_branches,
+        branch_files: &branch_files,
         main: &main,
     };
     let plan = plan(&request, |path| path.symlink_metadata().is_ok())?;

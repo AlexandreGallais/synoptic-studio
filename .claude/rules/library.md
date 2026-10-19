@@ -12,7 +12,7 @@ Each is a trap met in this code, with the story that met it. The rules themselve
 
 - Importing from another folder imports **the folder** (`../geometry`); `npm run fix` corrects the path and the folder's `index.ts`.
 - A new module goes into the folder of its business domain (ADR-0043, `local/folder-layout`), and a new domain or layer (`src/<layer>/`) exists only with its first module and its `index.ts`, a layer re-exported by `src/index.ts`.
-- The barrel autofix writes `export type *` for a folder holding only types and never switches back once it holds values: `barrels.test.ts` then fails; write `export *`.
+- The barrel autofix keeps a line written `export type *` and never switches it back once its module holds values: `barrels.test.ts` then fails; write `export *` (EN-138).
 - Module constants are `UPPER_CASE` and documented, and so are type members: the API pages' generator (`tools/api-pages`) fails otherwise. A JSDoc description is sentences, `@param` and `@returns` fragments without a final period; `@kind` is a custom tag, its own section of an API page.
 - Procedure verbs and the limits per kind live in `tools/lint/src/settings.rs`: a verb is added sorted; a limit changes only with an ADR.
 - More than three parameters are grouped in a named type (`CornerPoints`).

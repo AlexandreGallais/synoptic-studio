@@ -8,7 +8,7 @@ import { describe, expect, it, onTestFinished } from "vitest";
 /** Repository root, where `Cargo.toml` and `deny.toml` sit. */
 const ROOT = join(import.meta.dirname, "..");
 
-/** Time limit of a test running `cargo metadata` then cargo-deny: about 0.4 s alone, ten times. */
+/** Time limit of a test running `cargo metadata` then cargo-deny: its measure is beside it. */
 const DENY_TIMEOUT = 5000;
 
 /** A JSON object, as Cargo writes its metadata. */
@@ -154,6 +154,7 @@ function checkAdvisories(metadataPath: string): {
 describe("the advisories of the Rust crates (EN-069)", () => {
   it(
     "[F19.AC9] [F22.AC1] fails on a crate with a known advisory planted in a copy, naming it",
+    // alone: 331 ms, the median of 5 runs of its file (EN-129); 5 s is 15 times it.
     { timeout: DENY_TIMEOUT },
     () => {
       const metadata = workspaceMetadata();

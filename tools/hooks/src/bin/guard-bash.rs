@@ -1,24 +1,33 @@
 //! `PreToolUse` hook on `Bash` (ADR-0021, EN-104): denies the shell commands the project forbids,
 //! whatever the instructions say (`hooks::guard`), a push naming no destination judged by the
-//! current branch of the folder it runs in. A command opening with `cd "<folder>"` is judged
-//! in that folder: a story's worktree refuses a Git command chained with another, the brief's
-//! `cd "<worktree>" || exit 9` aside, and a script missing from that folder's `package.json` is
-//! refused with the rebase that brings it. Input: the hook JSON on stdin; output: a deny decision
-//! on stdout, or nothing to let the call proceed. An input that is not JSON exits 1, a hook error,
-//! which blocks the call since its handler sets `onFailure` to `block` (AUD-023).
+//! current branch of each repository it may run against (`hooks::place`, AUD-033). A command
+//! opening with `cd "<folder>"` is judged in that folder: a story's worktree refuses a Git command
+//! chained with another, the brief's `cd "<worktree>" || exit 9` followed by Git reads aside
+//! (EN-119), and a script missing from that folder's `package.json` is refused with the rebase
+//! that brings it. Run on `Write`, `Edit` and `NotebookEdit` too, it refuses a worker's write
+//! outside the worktree its prompt names (`hooks::written`, EN-119). Input: the hook JSON on
+//! stdin; output: a deny decision on stdout, or nothing to let the call proceed. An input that is
+//! not JSON exits 1, a hook error, which blocks the call since both its handlers, the shell's and
+//! the writes', set `onFailure` to `block` (AUD-023, AUD-033).
 
-use std::fs;
-use std::io::{self, Read};
+use std::fs::{self, File};
+use std::io::{self, BufRead, BufReader, Read};
 use std::path::Path;
 use std::process::ExitCode;
 
+use worktree::WORKTREES;
+
 use hooks::git::git;
-use hooks::guard::{
-    denied_reason_on, entered, entered_worktree_reason, later_folders, missing_script,
-    missing_script_reason, scripts_of, worktree_reason,
-};
-use hooks::json;
+use hooks::guard::{missing_script, missing_script_reason, scripts_of, shell_reason};
+use hooks::handback::{agent_transcript, is_checked};
+use hooks::json::{self, Value};
 use hooks::limit::deny_output;
+use hooks::place::Repository;
+use hooks::worktrees::prompt_worktree;
+use hooks::written::{as_seen_from, misplaced_write};
+
+/// The lines of a worker's transcript read for its worktree: its prompt opens it.
+const PROMPT_LINES: usize = 20;
 
 fn main() -> ExitCode {
     tool_use::run("guard-bash", "", hook)
@@ -35,27 +44,68 @@ fn hook() -> u8 {
         eprintln!("guard-bash: the hook's input is not JSON");
         return 1;
     };
-    let command = input.get("tool_input").get("command").text();
-    let judged = entered(command, input.get("cwd").text());
-    // A push naming no destination updates the current branch of the folder it runs in.
-    let branch =
-        || git(Path::new(&judged.folder), &["branch", "--show-current"]).unwrap_or_default();
-    let reason = denied_reason_on(command, &branch)
-        .map(str::to_owned)
-        .or_else(|| {
-            entered_worktree_reason(&judged)
-                .or_else(|| {
-                    later_folders(command, &judged.folder)
-                        .iter()
-                        .find_map(|folder| worktree_reason(&judged.command, folder))
-                })
-                .or_else(|| missing_script_refusal(&judged.command, &judged.folder))
-        });
+    let reason = match input.get("tool_name").text() {
+        "Write" | "Edit" | "NotebookEdit" => write_refusal(&input),
+        _ => shell_refusal(&input),
+    };
 
     if let Some(reason) = reason {
         print!("{}", deny_output(&reason));
     }
     0
+}
+
+/// The refusal of a shell command, judged in the folder it runs in.
+fn shell_refusal(input: &Value) -> Option<String> {
+    let command = input.get("tool_input").get("command").text();
+    let judged = hooks::guard::entered(command, input.get("cwd").text());
+    // A push naming no destination updates the current branch of the repository it runs against.
+    let branch = |repository: &Repository| {
+        let mut arguments = Vec::new();
+
+        if let Some(git_dir) = &repository.git_dir {
+            arguments.extend(["--git-dir", git_dir.as_str()]);
+        }
+        arguments.extend(["branch", "--show-current"]);
+        git(Path::new(&repository.folder), &arguments)
+    };
+
+    shell_reason(command, input.get("cwd").text(), &branch)
+        .or_else(|| missing_script_refusal(&judged.command, &judged.folder))
+}
+
+/// The refusal of a worker's write outside the worktree its prompt names; nothing for the main
+/// thread, an agent that only reads, a prompt naming no worktree, or one no longer there.
+fn write_refusal(input: &Value) -> Option<String> {
+    let agent_id = input.get("agent_id").text();
+
+    if !is_checked(agent_id, input.get("agent_type").text()) {
+        return None;
+    }
+    let tool_input = input.get("tool_input");
+    let file = [tool_input.get("file_path"), tool_input.get("notebook_path")]
+        .into_iter()
+        .map(Value::text)
+        .find(|path| !path.is_empty())?;
+    let transcript = File::open(agent_transcript(
+        input.get("transcript_path").text(),
+        agent_id,
+    ))
+    .ok()?;
+    let prompt = BufReader::new(transcript)
+        .lines()
+        .take(PROMPT_LINES)
+        .map_while(Result::ok)
+        .collect::<Vec<_>>()
+        .join("\n");
+    let worktree = prompt_worktree(&prompt)?;
+    let project =
+        std::env::var("CLAUDE_PROJECT_DIR").unwrap_or_else(|_| input.get("cwd").text().to_owned());
+
+    if !Path::new(&project).join(WORKTREES).join(worktree).is_dir() {
+        return None;
+    }
+    misplaced_write(&as_seen_from(file, &project), &project, worktree)
 }
 
 /// The refusal of a script missing from the `package.json` npm would read in a folder, the nearest

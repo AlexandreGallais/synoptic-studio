@@ -1,8 +1,9 @@
 //! Tests of what `git-sequences sync` and `commit` run (EN-100), decided without Git.
 
 use git_sequences::{
-    Branch, Push, Request, Source, Target, branch_of, changes_refusal, changes_step,
-    commit_refusal, commit_steps, fetch_step, message_refusal, parse, sync_steps, sync_target,
+    Branch, Push, Request, Source, State, Target, USAGE, branch_of, changes_refusal, changes_step,
+    commit_refusal, commit_steps, fetch_step, message_refusal, parse, state_base, state_report,
+    state_steps, sync_steps, sync_target,
 };
 
 fn words(line: &str) -> Vec<String> {
@@ -92,6 +93,11 @@ fn tells_main_a_story_branch_and_the_shared_ones_apart() {
         Branch::Other("feature/f20-a-context-diet".to_owned())
     );
     assert_eq!(branch_of("develop"), Branch::Other("develop".to_owned()));
+    // A name the pre-push refuses is no shared branch: `sync` refuses it, never fast-forwards it
+    // (AUD-025, the branch form of `git_hooks::branch`).
+    for name in ["chore/tidy-up", "docs/ret-005-retro", "scratch"] {
+        assert_eq!(branch_of(name), Branch::Story(name.to_owned()), "{name}");
+    }
 }
 
 #[test]
@@ -246,5 +252,136 @@ fn f21_ac2_refuses_to_rebase_a_tree_with_uncommitted_changes_naming_its_files() 
     assert_eq!(
         changes_refusal("develop", &Target::FastForward, changes),
         None
+    );
+}
+
+#[test]
+fn f31_ac1_parses_state_alone() {
+    assert_eq!(parse(&words("state")), Ok(Request::State));
+    assert!(parse(&words("state --base origin/develop")).is_err());
+    assert!(USAGE.contains("target/release/git-sequences state"));
+}
+
+#[test]
+fn f31_ac1_counts_a_branch_from_the_base_sync_would_use() {
+    let feature = "origin/feature/f20-a-context-diet";
+
+    // A story: its feature branch, its own copy on `origin` being no base.
+    assert_eq!(
+        state_base(
+            &branch_of(STORY),
+            &files(),
+            &remotes(),
+            Some("origin/chore/en-100-git-sequences-as-rust-commands")
+        )
+        .as_deref(),
+        Some(feature)
+    );
+    // An epic's own story: `develop`.
+    assert_eq!(
+        state_base(
+            &branch_of("docs/rev-003-review-e15"),
+            &files(),
+            &remotes(),
+            None
+        )
+        .as_deref(),
+        Some("origin/develop")
+    );
+    // A shared branch and `main`: their upstream.
+    assert_eq!(
+        state_base(
+            &branch_of("feature/f20-a-context-diet"),
+            &files(),
+            &remotes(),
+            Some(feature)
+        )
+        .as_deref(),
+        Some(feature)
+    );
+    assert_eq!(
+        state_base(&Branch::Main, &[], &[], Some("origin/main")).as_deref(),
+        Some("origin/main")
+    );
+    // A detached head, a story without its file, a shared branch without upstream: none.
+    assert_eq!(
+        state_base(&Branch::Detached, &files(), &remotes(), Some(feature)),
+        None
+    );
+    assert_eq!(
+        state_base(
+            &branch_of("chore/en-101-other"),
+            &files(),
+            &remotes(),
+            Some("origin/chore/en-101-other")
+        ),
+        None
+    );
+    assert_eq!(
+        state_base(&branch_of("develop"), &files(), &remotes(), None),
+        None
+    );
+}
+
+#[test]
+fn f31_ac1_reads_the_state_by_read_only_steps() {
+    assert_eq!(
+        state_steps(Some("origin/feature/f20-x")),
+        vec![
+            words("status --short"),
+            words("diff --stat HEAD"),
+            vec![
+                "log".to_owned(),
+                "--format=%h %s".to_owned(),
+                "origin/feature/f20-x..HEAD".to_owned()
+            ],
+        ]
+    );
+    assert_eq!(
+        state_steps(None),
+        vec![words("status --short"), words("diff --stat HEAD")]
+    );
+}
+
+#[test]
+fn f31_ac1_prints_each_part_of_the_state_under_its_command() {
+    let busy = State {
+        place: "en-119".to_owned(),
+        branch: STORY.to_owned(),
+        base: Some("origin/feature/f20-a-context-diet".to_owned()),
+        status: " M README.md\n?? new.md".to_owned(),
+        diff: " README.md | 2 +-\n 1 file changed, 1 insertion(+), 1 deletion(-)".to_owned(),
+        commits: "abc1234 story work\ndef5678 first task".to_owned(),
+    };
+
+    // Two lines of `git log`: two commits ahead.
+    assert_eq!(
+        state_report(&busy),
+        format!(
+            "en-119: {STORY} on origin/feature/f20-a-context-diet, 2 commit(s) ahead\nstatus --short:\n M README.md\n?? new.md\ndiff --stat HEAD:\n README.md | 2 +-\n 1 file changed, 1 insertion(+), 1 deletion(-)\ncommits ahead:\nabc1234 story work\ndef5678 first task"
+        )
+    );
+    let clean = State {
+        status: String::new(),
+        diff: String::new(),
+        commits: String::new(),
+        ..busy.clone()
+    };
+
+    assert_eq!(
+        state_report(&clean),
+        format!(
+            "en-119: {STORY} on origin/feature/f20-a-context-diet, 0 commit(s) ahead\nstatus --short: clean\ndiff --stat HEAD: none\ncommits ahead: none"
+        )
+    );
+    let detached = State {
+        branch: "HEAD".to_owned(),
+        base: None,
+        ..clean
+    };
+
+    assert_eq!(
+        state_report(&detached),
+        "en-119: HEAD, no base found\nstatus --short: clean\ndiff --stat HEAD: none\ncommits ahead: no base"
     );
 }

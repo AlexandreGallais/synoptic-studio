@@ -12,7 +12,7 @@ How a run's worker works one story in its own worktree. The `story-worker` and `
 
 1. **Work only inside the worktree.** The main thread made it with `target/release/worktree-new <ID>`: `.claude/worktrees/<id>`, on the story's branch from the feature branch, with its own hooks. The main checkout stays on `develop` during a run, so a page read there may be older: read every rule from the worktree.
 2. **Every Bash call starts with `cd "<worktree>" || exit 9`**: a subagent's calls start in the main checkout whatever its prompt says, and files once landed there (EN-049). Write and Edit take absolute paths inside the worktree; never `git -C`; never a file outside the worktree.
-3. **One Git command per call**, never chained to another by `&&`, `;` or a pipe: Claude Code refuses compound commands in a worktree. The frequent sequences are one command each (EN-100), called by their binary from the worktree's root (ADR-0078): `target/release/git-sequences sync` fetches, rebases the story on its feature branch and rebuilds the release binaries; `target/release/git-sequences commit -F <message file|-> [--push] <paths>` stages the files named, commits and pushes, and stops at the first failing step with Git's message. Start with `target/release/git-sequences sync`. Every agent tool is called so, as `docs/tooling/agent-tools.md` lists them (The binaries the agent calls); `npm run` stays for the scripts `package.json` keeps (ADR-0082).
+3. **One Git command per call**, never chained to another by `&&`, `;` or a pipe, Git reads aside: after the brief's `cd`, a chain of Git commands that only read goes through (`git status; git log -3`), and `target/release/git-sequences state` prints the branch, its base, `status --short`, `diff --stat HEAD` and the commits ahead in one call (EN-119). The frequent sequences are one command each (EN-100), called by their binary from the worktree's root (ADR-0078): `target/release/git-sequences sync` fetches, rebases the story on its feature branch and rebuilds the release binaries; `target/release/git-sequences commit -F <message file|-> [--push] <paths>` stages the files named, commits and pushes, and stops at the first failing step with Git's message. Start with `target/release/git-sequences sync`. Every agent tool is called so, as `docs/tooling/agent-tools.md` lists them (The binaries the agent calls); `npm run` stays for the scripts `package.json` keeps (ADR-0082).
 4. A scratch folder of its own: `<scratchpad>/<story id>-<role>`.
 
 ## Read first
@@ -28,18 +28,20 @@ How a run's worker works one story in its own worktree. The `story-worker` and `
 - **Before each commit**: `npm run fix`, which reports the type errors with the lint (EN-091), and the touched tests (`npx vitest run <paths>`, `cargo test -p <crate>`).
 - **Edge cases and mutations** (ADR-0064): no review checks a story, so its worker writes the story's edge cases into its tests and breaks each new test once on purpose to see it fail.
 - **Docs in the same task as the code** they describe: domain, derivations, references, playground.
+- **A binary that runs a command given to it** (`heavy-lock`, `bench`, a wrapper): `guard-bash`'s reading of that command lands in a task before the one that builds the binary, and the worker hands back once that task is pushed, before building the binary, so that the main thread rebuilds the main checkout's `guard-bash` from the branch, whose judgment every call goes through (AUD-035).
 - **The current step**, one short line in French, goes to `.git/metrics/step` of the main checkout (`git rev-parse --git-common-dir` gives its folder): the status line shows it.
 
-## Shared files (ADR-0065)
+## Shared files (ADR-0065, ADR-0091)
 
-The files every story touches are written only by the main thread, at merge, so that a story's pull request never conflicts with the rows the main thread wrote meanwhile: the indexes of `docs/backlog/`, the logs (`journal.md`, `improvements.md`, `feedback.md`), the feature file and the checklists (`playground/checklists/epic-*`). The pre-push hook refuses a branch that changes one and names it (EN-050).
+The files every story touches are written only by the main thread, so that a story's pull request never conflicts with the rows the main thread wrote meanwhile: the indexes of `docs/backlog/`, the logs (`journal.md`, `improvements.md`, `feedback.md`, `tool-incidents.md`), the feature file and the checklists (`playground/checklists/epic-*`). The pre-push hook refuses a branch that changes one and names it (EN-050), except in the story's `done` commit, the main thread's.
 
-A row meant for a log goes in the story file, under `## For the main thread`, beneath `### Journal`, `### Improvements` or `### Feedback`, written as the log writes it; `story:finish` moves it at merge:
+A row meant for a log goes in the story file, under `## For the main thread`, beneath `### Journal`, `### Improvements`, `### Feedback` or `### Incidents`, written as the log writes it; `move-rows` moves it in the story's `done` commit:
 
 - under `### Journal`, a bullet opening with its tag: ``- `#run` EN-050: …``;
-- under `### Improvements` and `### Feedback`, a table row of the log's columns, its first cell the date (`| 2026-10-17 | EN-050 | … | tool |`), with no header nor separator.
+- under `### Improvements` and `### Feedback`, a table row of the log's columns, its first cell the date (`| 2026-10-17 | EN-050 | … | tool |`), with no header nor separator;
+- under `### Incidents`, a card for a tool that failed (ADR-0085): its heading `#### 2026-10-19 — <tool, and what for>`, then its bullets `- Used: …` (how it was used), `- Failed: …` (why it failed) and `- Instead: …` (what was done instead).
 
-Rows only, one per line, and no heading without rows (never `- None.`): any other line stays in the story file and is reported by `move-rows`. Anything else for the main thread goes in that section, outside those headings.
+Rows only, one per line, and no heading without rows (never `- None.`): any other line stays in the story file, is reported by `move-rows` and stops `story:finish` (AUD-025). A card is `#### <date> — <title>` and its bullets, a continuation indented under its bullet. Anything else for the main thread goes in that section, outside those headings.
 
 ## Heavy commands (ADR-0072)
 

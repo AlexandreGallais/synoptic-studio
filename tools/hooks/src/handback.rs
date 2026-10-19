@@ -1,7 +1,8 @@
 //! The hand-back check (EN-088): when a worker hands its report back, its story branch must be
 //! pushed — so its pre-push `check:all` passed, since a push without it is refused (`guard-bash`) —
 //! and the report must name its commits. A worker's transcript names the main checkout, never its
-//! worktree (research note 0024): the worktree is the first one its transcript names, its prompt's.
+//! worktree (research note 0024): the worktree is its prompt's, the folder of the brief's
+//! `cd "<worktree>" || exit 9` ([`crate::worktrees::prompt_worktree`], AUD-033).
 
 use std::path::{Path, PathBuf};
 
@@ -21,9 +22,6 @@ const READ_ONLY_AGENTS: [&str; 9] = [
     "claude-code-guide",
     "statusline-setup",
 ];
-
-/// Where the worktrees of the stories are, inside the project.
-const WORKTREES: &str = ".claude/worktrees/";
 
 /// Characters of a hash shown.
 const SHORT_HASH: usize = 7;
@@ -114,17 +112,6 @@ pub fn agent_transcript(transcript_path: &str, agent_id: &str) -> PathBuf {
     )
     .join("subagents")
     .join(format!("agent-{agent_id}.jsonl"))
-}
-
-/// The folder name of the first worktree a text names, `None` when it names none.
-#[must_use]
-pub fn worktree_id(text: &str) -> Option<&str> {
-    let rest = &text[text.find(WORKTREES)? + WORKTREES.len()..];
-    let end = rest
-        .find(|character: char| !(character.is_ascii_alphanumeric() || character == '-'))
-        .unwrap_or(rest.len());
-
-    (end > 0).then(|| &rest[..end])
 }
 
 /// The story of a worktree: its branch's, `chore/en-088-…` → `EN-088`, else its folder's when that

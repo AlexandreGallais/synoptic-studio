@@ -19,6 +19,10 @@ use std::time::Instant;
 
 use calendar::{iso_instant, now_ms};
 
+pub mod median;
+
+pub use median::{Median, median};
+
 /// The file of the uses, in the Git common folder.
 const USES_FILE: &str = "tool-uses.jsonl";
 

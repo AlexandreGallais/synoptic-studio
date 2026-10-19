@@ -1,6 +1,7 @@
 //! `epic-check <epic> <first day>` (`target/release/epic-check`, RET-002, EN-103): the full check of what
 //! an epic produced, at its start and its end — every check of the code and the site, the branches
-//! and pull requests left, the code scanning alerts on GitHub, the calls that failed during the epic
+//! and pull requests left, the code scanning alerts on GitHub, the CI of the last pull request into
+//! `main` and its failed jobs, the calls that failed during the epic
 //! and why (the worktree isolation's refusals apart), calls lost at a force-quit, the backlog of the
 //! epic, the last save of the private records. A failed `check:all` is named by its failing checks, their lanes
 //! and their failing tests (EN-055). Prints a Markdown table to copy into the retrospective's
@@ -16,7 +17,7 @@ use std::time::SystemTime;
 use calendar::now_ms;
 use hooks::json::{Value, parse};
 use repo_tools::epic_check::{
-    Finding, check_all_finding, failed_calls, left_branches, lost_calls, open_items, table,
+    Finding, check_all_finding, failed_calls, left_branches, lost_calls, main_ci, open_items, table,
 };
 use repo_tools::records_save::{LAST_SAVE, ROOT_VARIABLE, project_name, records_folder};
 
@@ -113,7 +114,8 @@ fn backlog_files(root: &Path) -> Vec<(String, String)> {
         .collect()
 }
 
-/// What GitHub holds open: the pull requests, the issues, the code scanning alerts.
+/// What GitHub holds: the pull requests and issues open, the code scanning alerts, the CI of the
+/// last pull request into `main`.
 fn github_findings(root: &Path) -> Vec<Finding> {
     let prs = run(
         root,
@@ -142,6 +144,22 @@ fn github_findings(root: &Path) -> Vec<Finding> {
             r#".[] | "\(.rule.id) \(.most_recent_instance.location.path) on \(.most_recent_instance.ref)""#,
         ],
     );
+    let into_main = run(
+        root,
+        "gh",
+        &[
+            "pr",
+            "list",
+            "--base",
+            "main",
+            "--state",
+            "all",
+            "--limit",
+            "1",
+            "--json",
+            "number,title,statusCheckRollup",
+        ],
+    );
     let listed = |out: &str| {
         if out.is_empty() {
             "none".to_owned()
@@ -166,6 +184,7 @@ fn github_findings(root: &Path) -> Vec<Finding> {
             is_ok: alerts.0 && alerts.1.is_empty(),
             detail: listed(&alerts.1),
         },
+        main_ci(into_main.0, &into_main.1),
     ]
 }
 

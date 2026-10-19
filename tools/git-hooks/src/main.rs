@@ -8,10 +8,14 @@
 //!   `Refs:` or `Closes:` footer;
 //! - `commits --from <commit> --to <commit>`: checks the message of each commit of the range, as
 //!   `commitlint --from --to` did in the CI;
-//! - `branch [--name <name>]`: checks the current branch's name, or the one given (the CI's).
+//! - `branch [--name <name>]`: checks the current branch's name, or the one given (the CI's);
+//! - `post-merge [<squash flag>]` and `post-rewrite <amend | rebase>`: after a merge, a
+//!   fast-forward or a rebase, rebuilds the release binaries when a Rust input changed
+//!   (`rebuild`, EN-131); always exits 0, since a post hook cannot undo the pull.
 
 use std::env;
 use std::fs;
+use std::io;
 use std::process::{Command, ExitCode};
 
 use git_hooks::branch::branch_refusal;
@@ -19,12 +23,14 @@ use git_hooks::footer::footer_refusal;
 use git_hooks::install::{HOOKS_FOLDER, Installed, install};
 use git_hooks::message::{format_report, lint, without_retired_scopes};
 use git_hooks::pre_commit::pre_commit;
+use git_hooks::rebuild::{AfterPull, after_pull, message};
 use git_hooks::staged::{parse_tasks, repository_tasks};
 use git_repository::stdout_of;
 
 /// The usage, printed on a call without a known command.
 const USAGE: &str = "usage: git-hooks install | pre-commit [--tasks <file>] | commit-msg <file> \
-                     | commits --from <commit> --to <commit> | branch [--name <name>]";
+                     | commits --from <commit> --to <commit> | branch [--name <name>] \
+                     | post-merge [<flag>] | post-rewrite <amend | rebase>";
 
 /// Git's comment character when `core.commentChar` is not set.
 const COMMENT: &str = "#";
@@ -188,6 +194,29 @@ fn run_branch(options: &[String]) -> u8 {
     }
 }
 
+/// Rebuilds the release binaries after a merge, a fast-forward or a rebase, and prints what it did;
+/// an amend (`post-rewrite amend`) builds nothing. Always 0.
+fn run_after_pull(hook: &str, options: &[String]) -> u8 {
+    let rebuilds = hook == "post-merge" || options.first().is_some_and(|kind| kind == "rebase");
+
+    // `post-rewrite` gets the rewritten commits on its standard input: read whole, so Git never
+    // writes into a closed pipe. `post-merge` gets none, its input left untouched.
+    if hook == "post-rewrite" {
+        let _ = io::read_to_string(io::stdin());
+    }
+
+    if let (true, Ok(root)) = (rebuilds, env::current_dir()) {
+        let outcome = after_pull(&root);
+        let printed = message(&outcome);
+
+        match outcome {
+            AfterPull::Failed(_) => eprint!("{printed}"),
+            _ => print!("{printed}"),
+        }
+    }
+    0
+}
+
 fn main() -> ExitCode {
     let arguments: Vec<String> = env::args().skip(1).collect();
     let command = arguments.first().map_or("", String::as_str);
@@ -199,6 +228,7 @@ fn main() -> ExitCode {
         "commit-msg" => run_commit_msg(options),
         "commits" => run_commits(options),
         "branch" => run_branch(options),
+        "post-merge" | "post-rewrite" => run_after_pull(command, options),
         _ => {
             eprintln!("{USAGE}");
             2

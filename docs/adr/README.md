@@ -17,7 +17,7 @@ All ADRs were translated from French to English on 2026-10-08 (project rule: Eng
 | [0009](./0009-toolchain.md) | Toolchain: TypeScript 6, Vite, Vitest, ESLint, Prettier, VitePress | Superseded by ADR-0075 |
 | [0010](./0010-lint-first-strictness.md) | Strictness carried by ESLint first, TypeScript second | Superseded by ADR-0075, partly by 0071 before |
 | [0011](./0011-function-kinds.md) | Function kinds: `@kind` tag and per-kind limits | Accepted |
-| [0012](./0012-folder-barrels.md) | One `index.ts` per folder, canonical import paths | Accepted |
+| [0012](./0012-folder-barrels.md) | One `index.ts` per folder, canonical import paths | Accepted; in decision 1, a types-only module re-exported by `export type *` since 0092 |
 | [0013](./0013-prettier-alongside-eslint.md) | Prettier next to ESLint, not inside it | Superseded by ADR-0075 |
 | [0014](./0014-functional-core-imperative-shell.md) | Functional core, imperative shell | Accepted, its DOM layers' scope moved to `tools/lint` by 0075 |
 | [0015](./0015-one-export-per-file.md) | One export per file, named like the file | Superseded by ADR-0019 |
@@ -31,7 +31,7 @@ All ADRs were translated from French to English on 2026-10-08 (project rule: Eng
 | [0023](./0023-inspection-cadence.md) | Inspection cadence: demo at each feature, review and retrospective at each epic | Accepted, extended by ADR-0049; its review and retrospective per epic superseded by 0086 (each review) |
 | [0024](./0024-session-journal.md) | Session journal and transcript search instead of a database | Accepted, partly superseded by 0039 |
 | [0025](./0025-portable-core.md) | A portable core: any JavaScript engine, transcribable to another language | Accepted |
-| [0026](./0026-contributions-through-issues.md) | Contributions through issues only; the agent writes every change | Accepted |
+| [0026](./0026-contributions-through-issues.md) | Contributions through issues only; the agent writes every change | Accepted; its second barrier, `external-prs.yml`, superseded by 0094 |
 | [0027](./0027-requirements-and-traceability.md) | Acceptance criteria as requirements, tests traced to them, a test report per release | Accepted |
 | [0028](./0028-autonomous-runs.md) | Feature branches and autonomous runs: stories merge into their feature, the Product Owner merges the feature | Superseded by ADR-0072 |
 | [0029](./0029-one-radius-per-vertex.md) | One requested corner radius per vertex in the model | Accepted, superseded by 0033 for free shapes |
@@ -69,26 +69,33 @@ All ADRs were translated from French to English on 2026-10-08 (project rule: Eng
 | [0062](./0062-an-imported-font-follows-the-rules-of-an-installed-one.md) | An imported font follows the rules of an installed one | Accepted |
 | [0063](./0063-runs-with-a-limited-number-of-agents.md) | Runs with a limited number of agents, enforced by the tools | Superseded by ADR-0072 |
 | [0064](./0064-checks-by-level.md) | Checks by level: the story, the feature, the epic | Accepted, from E02 |
-| [0065](./0065-parallel-branches-merged-without-conflicts.md) | Parallel branches merged without conflicts on shared files | Accepted, decision 1 superseded by ADR-0068 |
+| [0065](./0065-parallel-branches-merged-without-conflicts.md) | Parallel branches merged without conflicts on shared files | Accepted, decision 1 superseded by ADR-0068; in decision 4, "at merge" for the logs superseded by 0091 (the `done` commit) |
 | [0066](./0066-a-register-of-exceptions.md) | A register of exceptions, and a byte buffer written once | Accepted |
 | [0067](./0067-release-pull-request-on-develop.md) | The release pull request on `develop`, only the release on `main` | Accepted, confirmed at VAL-019; decisions 1 to 3 and 5 superseded by 0079 |
 | [0068](./0068-tables-without-padding-moved-to-f19.md) | Tables without padding moved to F19's formatter | Accepted, confirmed at VAL-019 |
 | [0069](./0069-tooling-fast-for-the-agent.md) | Tooling as fast as it can be, for the agent | Accepted |
 | [0070](./0070-tests-without-over-testing.md) | Tests without over-testing: one claim, one place; slow preparation done once | Accepted |
 | [0071](./0071-type-errors-with-the-lint-declarations-by-oxc.md) | Type errors with the lint, declarations by Oxc | Accepted |
-| [0072](./0072-how-a-run-works.md) | How a run works: the go-ahead, the branches and merges, three agents and one heavy command | Accepted, its release lines superseded by 0079, its checkpoint per feature and its branch start in part by 0084 |
+| [0072](./0072-how-a-run-works.md) | How a run works: the go-ahead, the branches and merges, three agents and one heavy command | Accepted, its release lines superseded by 0079, its checkpoint per feature and its branch start in part by 0084, its "no workflow on `develop`" by 0087 and 0088 |
 | [0073](./0073-every-new-tool-in-rust.md) | Every new script, hook or agent tool written in Rust | Accepted, decision 1 partly superseded by 0078 |
 | [0074](./0074-the-agent-shapes-its-own-method-and-tools.md) | The agent shapes its own method and tools, the Product Owner decides | Accepted, amended by 0085 (the tool incident cards) |
-| [0075](./0075-the-toolchain-on-oxc.md) | The toolchain on Oxc: oxlint, the project's Rust linter, oxfmt and TypeScript 7 | Accepted |
+| [0075](./0075-the-toolchain-on-oxc.md) | The toolchain on Oxc: oxlint, the project's Rust linter, oxfmt and TypeScript 7 | Accepted; its consequence on `.vscode/settings.json`'s TypeScript path superseded by 0093, TypeScript 7's extension on the installed package |
 | [0076](./0076-ported-tooling-code-under-its-licence.md) | Code ported into the tools under its licence, never into the library | Accepted |
 | [0077](./0077-the-library-server-in-rust-on-rmcp.md) | The library's server in Rust on rmcp, its file named by its own variable | Accepted |
-| [0078](./0078-the-agents-tools-called-by-their-binary.md) | The hooks, the Git hooks and the agent call the Rust tools by their binary's path | Accepted, its `.husky/` superseded by 0080, its scripts of the agent's tools by 0082 |
+| [0078](./0078-the-agents-tools-called-by-their-binary.md) | The hooks, the Git hooks and the agent call the Rust tools by their binary's path | Accepted, its `.husky/` superseded by 0080, its scripts of the agent's tools by 0082, its list of the rebuilds by 0089 |
 | [0079](./0079-the-release-on-a-release-branch-by-our-own-tool.md) | The release prepared on a release branch from `develop`, published by our own tool | Superseded by 0083 |
-| [0080](./0080-the-git-hooks-in-githooks-installed-by-our-own-tool.md) | The Git hooks in `.githooks/`, installed by `git-hooks install` | Accepted |
+| [0080](./0080-the-git-hooks-in-githooks-installed-by-our-own-tool.md) | The Git hooks in `.githooks/`, installed by `git-hooks install` | Accepted, its list of the hooks superseded by 0089 |
 | [0081](./0081-the-private-records-in-a-local-folder-shared-by-projects.md) | The private records in a local folder shared by every project, never sent | Accepted |
 | [0082](./0082-npm-scripts-kept-for-a-person-or-a-caller.md) | The npm scripts kept for a person or a caller, the agent's tools by their binary only | Accepted |
 | [0083](./0083-the-release-made-by-the-merge-into-main-from-a-tag.md) | The release made by the merge into `main`: the version from the tags, no release branch nor version commit | Superseded by 0086 |
 | [0084](./0084-small-features-tests-first-and-a-linear-history.md) | Small features, tests first, a linear history, and agents that work apart | Accepted, from E02; in decision 3 its rebases and its `develop` → `main` at the epic's end, decision 4 and its parallel researchers superseded by 0086 |
-| [0085](./0085-tool-incident-cards-tools-changed-at-an-epics-end.md) | A tool that fails is a card; tools change only at an epic's end | Accepted; tools changed at each review since 0086 |
+| [0085](./0085-tool-incident-cards-tools-changed-at-an-epics-end.md) | A tool that fails is a card; tools change only at an epic's end | Accepted; tools changed at each review since 0086; the cards moved in the story's `done` commit since 0091 |
 | [0086](./0086-one-story-at-a-time-into-develop-the-release-by-a-button.md) | One story at a time, a merge commit for every merge, a review at each return, the release by a button | Accepted, implemented by EN-122, EN-117 and EN-123; its Consequences' `release prepare` was removed by EN-117, `release notes` drafting the text alone (AUD-024) |
-| [0087](./0087-the-ci-in-parallel-jobs-its-rust-cache-saved-from-develop.md) | The CI in parallel jobs, its Rust cache saved by a push to `develop` | Accepted, implemented by EN-124 and EN-125 |
+| [0087](./0087-the-ci-in-parallel-jobs-its-rust-cache-saved-from-develop.md) | The CI in parallel jobs, its Rust cache saved by a push to `develop` | Accepted, implemented by EN-124 and EN-125; decision 2 superseded by 0088; its count of the jobs corrected by 0089, six lanes |
+| [0088](./0088-one-workflow-per-purpose-the-ci-into-main-the-only-blocking-one.md) | One workflow per purpose, its trigger its only condition; the CI into `main` the only blocking one | Accepted, implemented by F28, F30 and F34; the Rust caches saved on `develop` and on `main` by `rust-caches.yml`, the site restoring them (AUD-030); its second consequence superseded by 0090, `develop`'s caches the `develop` CI's |
+| [0089](./0089-five-git-hooks-the-binaries-rebuilt-after-a-pull.md) | Five Git hooks, the release binaries rebuilt after a pull too | Accepted, implemented by EN-131 (AUD-031) |
+| [0090](./0090-the-develop-ci-beside-the-rust-caches-of-main.md) | The `develop` CI in its own workflow, beside the Rust caches of `main` | Accepted, implemented by EN-135 (AUD-032) |
+| [0091](./0091-a-storys-log-rows-and-cards-in-its-done-commit.md) | A story's log rows and cards moved in its `done` commit | Accepted, implemented by EN-137; in decision 2, the `done` commit may only add to a log the rows it removes from the story file, and in decision 3 a story file read at `HEAD` and its lines left stop `story:finish`, whose recovery is the `done` commit made again (`git reset --soft HEAD~1`, `move-rows`, `git-sequences commit … --push-with-lease`), never an amend (AUD-025) |
+| [0092](./0092-a-barrel-re-exports-a-types-only-module-as-types.md) | A barrel re-exports a types-only module as types | Accepted (AUD-033), the barrels' existing form; supersedes ADR-0012's decision 1 for a types-only module |
+| [0093](./0093-the-editors-typescript-the-installed-typescript-7.md) | The editor's TypeScript, the installed TypeScript 7 | Accepted (AUD-035), the editor's existing setup since EN-121; supersedes a sentence of ADR-0075's Consequences |
+| [0094](./0094-outside-pull-requests-kept-out-by-the-setting-alone.md) | Outside pull requests kept out by the repository's setting alone | Accepted, implemented by EN-134; supersedes ADR-0026's second barrier, `external-prs.yml` |

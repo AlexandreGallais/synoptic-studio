@@ -1,6 +1,7 @@
-//! `val-prepare <root> <feature>` (EN-056): a feature's lines in its epic's checklist, one per acceptance
-//! criterion to rewrite as what to try and what to see, the epic's checklist registered for
-//! `?checklist=<epic>`, and no guided-steps file (Product Owner, 2026-10-15: the guided steps
+//! `val-prepare <root> <feature>` (EN-056): a feature's lines in its epic's checklist, one per
+//! acceptance criterion not struck through, tagged with its own number (EN-139), to rewrite as
+//! what to try and what to see, the epic's checklist registered for `?checklist=<epic>`, and no
+//! guided-steps file (Product Owner, 2026-10-15: the guided steps
 //! written up to E15 stay in `?guide=epic` only).
 
 use std::fs;
@@ -19,8 +20,17 @@ pub struct Feature {
     pub epic: String,
     /// Its title.
     pub title: String,
-    /// Its acceptance criteria, in order, each one line.
-    pub criteria: Vec<String>,
+    /// Its acceptance criteria still standing, in order, each one line.
+    pub criteria: Vec<Criterion>,
+}
+
+/// An acceptance criterion of a feature.
+#[derive(Debug, PartialEq, Eq)]
+pub struct Criterion {
+    /// Its number in the feature, `5` for `F20.AC5`.
+    pub number: usize,
+    /// Its line, its number removed.
+    pub text: String,
 }
 
 /// A file to write: its path from the repository's root, and its whole text.
@@ -46,6 +56,12 @@ pub struct Plan {
 const FEATURES: &str = "docs/backlog/features";
 const CHECKLISTS: &str = "playground/checklists";
 
+/// Markdown's strikethrough, opening a criterion dropped from its feature.
+const STRUCK: &str = "~~";
+
+/// The marks that end a sentence.
+const SENTENCE_ENDS: [char; 3] = ['.', '!', '?'];
+
 /// A feature id from the argument, in either case: `f18` gives `F18`.
 #[must_use]
 pub fn feature_id(argument: &str) -> Option<String> {
@@ -70,17 +86,43 @@ fn field(text: &str, key: &str) -> Option<String> {
         .map(|(_, value)| value.trim().trim_matches('"').to_owned())
 }
 
-/// The numbered items of the `## Acceptance criteria` section, their numbers removed.
-fn criteria(text: &str) -> Vec<String> {
+/// Whether a criterion is struck through as a whole: its text opens with a struck span, closed,
+/// that nothing follows but a new sentence (`~~…~~ Dropped on …`, `~~…~~. Dropped …`); F18's
+/// `~~Release pull request on develop~~, only the release on main.` stands, its second half kept
+/// (AUD-034).
+fn is_struck(text: &str) -> bool {
+    let Some((span, rest)) = text
+        .strip_prefix(STRUCK)
+        .and_then(|inner| inner.split_once(STRUCK))
+    else {
+        return false;
+    };
+    let after_stop = rest.trim_start_matches(SENTENCE_ENDS);
+    let is_stopped = span.ends_with(SENTENCE_ENDS) || after_stop.len() < rest.len();
+
+    rest.trim().is_empty() || (is_stopped && after_stop.starts_with(char::is_whitespace))
+}
+
+/// The numbered items of the `## Acceptance criteria` section with their numbers, a criterion
+/// struck through (`5. ~~…~~ Dropped on …`) left out (I88).
+fn criteria(text: &str) -> Vec<Criterion> {
     text.lines()
         .skip_while(|line| line.trim() != "## Acceptance criteria")
         .skip(1)
         .take_while(|line| !line.starts_with("## "))
         .filter_map(|line| {
             let (number, criterion) = line.split_once(". ")?;
+            let text = criterion.trim();
 
-            (!number.is_empty() && number.bytes().all(|byte| byte.is_ascii_digit()))
-                .then(|| criterion.trim().to_owned())
+            (!number.is_empty()
+                && number.bytes().all(|byte| byte.is_ascii_digit())
+                && !is_struck(text))
+            .then(|| number.parse().ok())
+            .flatten()
+            .map(|number| Criterion {
+                number,
+                text: text.to_owned(),
+            })
         })
         .collect()
 }
@@ -139,7 +181,7 @@ pub fn checklist_names(epic: &str) -> (String, String) {
     )
 }
 
-/// The module of a feature's lines: one per criterion, what to try being the criterion and what
+/// The module of a feature's lines: one per criterion standing, tagged with its number, what to try being the criterion and what
 /// to see a line to write, both rewritten before the validation.
 #[must_use]
 pub fn lines_module(feature: &Feature) -> String {
@@ -147,14 +189,13 @@ pub fn lines_module(feature: &Feature) -> String {
     let lines = feature
         .criteria
         .iter()
-        .enumerate()
-        .map(|(index, criterion)| {
-            let tag = format!("{}.AC{}", feature.id, index + 1);
+        .map(|criterion| {
+            let tag = format!("{}.AC{}", feature.id, criterion.number);
 
             format!(
                 "  {{\n    feature: {},\n    todo: {},\n    see: {},\n  }},\n",
                 ts_string(&feature.id),
-                ts_string(&format!("{tag}: {criterion}")),
+                ts_string(&format!("{tag}: {}", criterion.text)),
                 ts_string(&format!("What to see for {tag}, to write")),
             )
         })

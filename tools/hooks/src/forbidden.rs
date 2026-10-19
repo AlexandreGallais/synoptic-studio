@@ -1,15 +1,19 @@
 //! The commands the project forbids, read word by word (AUD-023): every simple command of a line,
 //! its substitutions' and subshells' included ([`crate::shell`]), then the command each wrapper
-//! runs (`env`, `command`, `sudo`, `heavy-lock`, `cargo run … --`, `bash -c`, `eval`, `xargs`,
+//! runs (`env`, `command`, `sudo`, `heavy-lock`, `bench`, `cargo [options] run|r … --`, `bash -c`, `eval`, `xargs`,
 //! `find -exec` and the like), each judged as Git or `gh` would read it: bundled short options
 //! (`-uf`), a long option by any unique prefix (`--no-veri`, `REF-GITCLI`), configuration keys
 //! without case (`core.hookspath`, `REF-GIT-HOOKS-PATH`), the destination of each refspec of a
 //! push (`REF-GIT-PUSH`).
 //!
-//! The guard keeps an agent from a mistake, not an adversary from the repository: a program that
-//! runs a command of its own (`node -e`, `python -c`), a script file, an alias written earlier by
-//! `git config` are not read.
+//! The text a shell reads from its input is judged too, a here-document's, a here-string's or
+//! what the line's other commands may print into it, as are the substitutions of an unquoted
+//! here-document's body (AUD-033). The guard keeps an agent from a mistake, not an adversary from
+//! the repository: a program that runs a command of its own (`node -e`, `python -c`), a script
+//! file, an alias written earlier by `git config` are not read.
 
+use crate::heredoc::{expanded_in_bodies, heredoc_bodies, without_heredocs};
+use crate::place::{BranchOf, Folders, folders_at, repositories, walk};
 use crate::shell::{Simple, commands};
 
 /// One command a line runs, a wrapper's looked through: the assignments before it, then its words.
@@ -19,6 +23,10 @@ pub struct Invocation {
     pub assignments: Vec<String>,
     /// The program and its arguments, unquoted.
     pub words: Vec<String>,
+    /// The redirections of the simple command it is, or that its wrapper is: `<<<text`, `>out`.
+    pub redirections: Vec<String>,
+    /// The byte of the line its simple command starts at; a quoted command's is its wrapper's.
+    pub at: usize,
 }
 
 /// How deep wrappers and quoted commands are looked through.
@@ -32,19 +40,29 @@ const RESERVED: [&str; 14] = [
 /// The branches no agent pushes to (AGENTS.md, Never).
 pub const PROTECTED_BRANCHES: [&str; 2] = ["main", "develop"];
 
-/// Every command a line runs, each simple command's and the ones its wrappers run.
+/// Every command a line runs, each simple command's and the ones its wrappers run, each with the
+/// byte its simple command starts at and the redirections that apply to it.
 #[must_use]
 pub fn invocations(line: &str) -> Vec<Invocation> {
     let mut found = Vec::new();
 
     for simple in commands(line) {
+        let first = found.len();
+
         unwrap(&simple.words, Vec::new(), 0, &mut found);
+        for invocation in &mut found[first..] {
+            invocation.at = simple.at;
+            invocation
+                .redirections
+                .splice(0..0, simple.redirections.iter().cloned());
+        }
     }
     found
 }
 
 /// Whether a word is a shell assignment, `NAME=value`.
-fn is_assignment(word: &str) -> bool {
+#[must_use]
+pub fn is_assignment(word: &str) -> bool {
     word.split_once('=').is_some_and(|(name, _)| {
         name.starts_with(|first: char| first.is_ascii_alphabetic() || first == '_')
             && name
@@ -82,8 +100,18 @@ fn after_options<'a>(words: &'a [String], valued: &[&str]) -> &'a [String] {
 
 /// The commands of a text a shell would run, `bash -c "…"` or `eval …`, each looked through.
 fn unwrap_text(text: &str, assignments: &[String], depth: usize, found: &mut Vec<Invocation>) {
-    for Simple { words, .. } in commands(text) {
+    for Simple {
+        words,
+        redirections,
+        ..
+    } in commands(text)
+    {
+        let first = found.len();
+
         unwrap(&words, assignments.to_vec(), depth + 1, found);
+        for invocation in &mut found[first..] {
+            invocation.redirections.extend(redirections.iter().cloned());
+        }
     }
 }
 
@@ -114,6 +142,7 @@ fn unwrap(
             found.push(Invocation {
                 assignments,
                 words: Vec::new(),
+                ..Invocation::default()
             });
         }
         return;
@@ -123,6 +152,7 @@ fn unwrap(
     found.push(Invocation {
         assignments: assignments.clone(),
         words: words[at..].to_vec(),
+        ..Invocation::default()
     });
     match program {
         "env" => unwrap_env(rest, assignments, depth, found),
@@ -133,6 +163,7 @@ fn unwrap(
                 .cloned()
                 .collect(),
             words: Vec::new(),
+            ..Invocation::default()
         }),
         "bash" | "sh" | "zsh" | "dash" | "ksh" => {
             if let Some(text) = shell_text(rest) {
@@ -150,11 +181,15 @@ fn unwrap(
                 unwrap(inner, assignments.clone(), depth + 1, found);
             }
         }
-        // `cargo run … -- <arguments>`: the arguments are a command for `heavy-lock`, its
-        // `--lock <name>` first.
-        "cargo" if rest.first().is_some_and(|word| word == "run") => {
-            if let Some(dashes) = rest.iter().position(|word| word == "--") {
-                let inner = after_options(&rest[dashes + 1..], &["--lock"]);
+        // `cargo [options] run … -- <arguments>`: the arguments are a command for `heavy-lock`,
+        // its `--lock <name>` first, or for `bench`, after its `--runs <count> --` (EN-141).
+        "cargo" => {
+            let Some(run) = cargo_run_arguments(rest) else {
+                return;
+            };
+
+            if let Some(dashes) = run.iter().position(|word| word == "--") {
+                let inner = after_options(&run[dashes + 1..], &["--lock", "--runs"]);
 
                 unwrap(inner, assignments, depth + 1, found);
             }
@@ -174,6 +209,33 @@ fn unwrap(
     }
 }
 
+/// Cargo's global options that take the next word as their value (`REF-CARGO-CLI`).
+const CARGO_VALUED: [&str; 4] = ["--config", "-Z", "-C", "--color"];
+
+/// The arguments of a `cargo` whose subcommand is `run` or its built-in alias `r`, after cargo's
+/// global options (`REF-CARGO-CLI`): `+<toolchain>` and every word opening with `-`, the next one
+/// too after `--config`, `-Z`, `-C` or `--color` written apart (AUD-035, F1). `None` for another
+/// subcommand. An alias of `run` set in a Cargo configuration is not read, as a Git alias written
+/// earlier by `git config` is not.
+fn cargo_run_arguments(words: &[String]) -> Option<&[String]> {
+    let mut at = 0;
+
+    while let Some(word) = words.get(at) {
+        if !word.starts_with(['-', '+']) || word == "-" || word == "--" {
+            break;
+        }
+        at += if CARGO_VALUED.contains(&word.as_str()) {
+            2
+        } else {
+            1
+        };
+    }
+    words
+        .get(at)
+        .filter(|subcommand| matches!(subcommand.as_str(), "run" | "r"))
+        .map(|_| &words[at + 1..])
+}
+
 /// The options taking a value of a program that runs the command after its options, `None` for
 /// any other program.
 fn wrapper_options(program: &str) -> Option<&'static [&'static str]> {
@@ -189,6 +251,7 @@ fn wrapper_options(program: &str) -> Option<&'static [&'static str]> {
         "caffeinate" => &["-t", "-w"],
         "xargs" => &["-I", "-L", "-n", "-P", "-s", "-d", "-E", "-a"],
         "heavy-lock" => &["--lock"],
+        "bench" => &["--runs"],
         _ => return None,
     })
 }
@@ -458,11 +521,22 @@ pub fn git_line(words: &[String]) -> GitLine {
 }
 
 /// Why a Git command is forbidden: it skips the hooks, switches them off, forces a push or pushes
-/// to a protected branch; `branch` gives the current branch, which a push without a destination
-/// updates.
+/// to a protected branch; `branch` gives the current branch of each repository it may run
+/// against, from the `folders` it may run in, which a push without a destination updates.
 #[must_use]
-pub fn git_reason(words: &[String], branch: &dyn Fn() -> String) -> Option<Forbidden> {
+pub fn git_reason(
+    invocation: &Invocation,
+    folders: &Folders,
+    branch: BranchOf,
+) -> Option<Forbidden> {
+    let words = &invocation.words;
     let line = git_line(words);
+    let current = || {
+        repositories(words, &invocation.assignments, folders)?
+            .iter()
+            .map(branch)
+            .collect::<Option<Vec<String>>>()
+    };
 
     if line
         .settings
@@ -472,9 +546,16 @@ pub fn git_reason(words: &[String], branch: &dyn Fn() -> String) -> Option<Forbi
         return Some(Forbidden::HooksOff);
     }
     if !line.shell_alias.is_empty() {
-        return invocations(&line.shell_alias)
-            .iter()
-            .find_map(|invocation| reason(invocation, branch));
+        // Git runs a shell alias at the top of the working tree: in its own folders, unknown when
+        // a Git folder or a working tree is named apart.
+        let own = repositories(words, &invocation.assignments, folders).and_then(|found| {
+            found
+                .into_iter()
+                .map(|repository| repository.git_dir.is_none().then_some(repository.folder))
+                .collect::<Option<Vec<String>>>()
+        });
+
+        return first_forbidden(&line.shell_alias, &own, branch);
     }
     match line.subcommand.as_str() {
         "commit" => {
@@ -514,7 +595,7 @@ pub fn git_reason(words: &[String], branch: &dyn Fn() -> String) -> Option<Forbi
         )
         .has_long("--no-verify")
         .then_some(Forbidden::NoVerify),
-        "push" => push_reason(&line.arguments, branch),
+        "push" => push_reason(&line.arguments, &current),
         "config" => config_sets_hooks_path(&line.arguments).then_some(Forbidden::HooksOff),
         _ => None,
     }
@@ -523,8 +604,13 @@ pub fn git_reason(words: &[String], branch: &dyn Fn() -> String) -> Option<Forbi
 /// Why a push is forbidden: forced without lease (`-f`, `--force`, `--mirror`, a `+` refspec), its
 /// hooks skipped, or one of [`PROTECTED_BRANCHES`] updated: named as a refspec's destination
 /// (`HEAD:develop`, `refs/heads/main`, `:develop`), matched by a pattern or by `:`, every branch
-/// pushed (`--all`, `--branches`), or the current branch when no refspec or `HEAD` names it.
-fn push_reason(arguments: &[String], branch: &dyn Fn() -> String) -> Option<Forbidden> {
+/// pushed (`--all`, `--branches`), or the current branch when no refspec or `HEAD` names it, in
+/// any repository it may run against; `current` gives their branches, `None` when one cannot be
+/// read, which refuses such a push (AUD-033).
+fn push_reason(
+    arguments: &[String],
+    current: &dyn Fn() -> Option<Vec<String>>,
+) -> Option<Forbidden> {
     let read = Arguments::read(
         arguments,
         "o",
@@ -548,18 +634,33 @@ fn push_reason(arguments: &[String], branch: &dyn Fn() -> String) -> Option<Forb
         name.contains('*') || PROTECTED_BRANCHES.contains(&name)
     };
     let every_branch = read.has_long("--all") || read.has_long("--branches");
-    let named = refspecs
+    let pushed: Vec<&String> = refspecs
         .iter()
         .filter(|refspec| !refspec.starts_with('^') && *refspec != "tag")
-        .any(|refspec| match refspec.rsplit_once(':') {
-            Some((_, "")) => true,
-            Some((_, destination)) => protected(destination),
-            None if *refspec == "HEAD" || *refspec == "@" => protected(&branch()),
-            None => protected(refspec),
-        });
-    let current = refspecs.is_empty() && !every_branch && protected(&branch());
+        .collect();
+    let named = pushed.iter().any(|refspec| match refspec.rsplit_once(':') {
+        Some((_, "")) => true,
+        Some((_, destination)) => protected(destination),
+        None => protected(refspec),
+    });
+    let asks_current = (refspecs.is_empty() && !every_branch)
+        || pushed
+            .iter()
+            .any(|refspec| *refspec == "HEAD" || *refspec == "@");
 
-    (every_branch || named || current).then_some(Forbidden::ProtectedPush)
+    if every_branch || named {
+        return Some(Forbidden::ProtectedPush);
+    }
+    if !asks_current {
+        return None;
+    }
+    match current() {
+        None => Some(Forbidden::UnknownPlace),
+        Some(branches) => branches
+            .iter()
+            .any(|name| protected(name))
+            .then_some(Forbidden::ProtectedPush),
+    }
 }
 
 /// Whether a `git config` changes `core.hooksPath`: sets it (a value after the key, `set`,
@@ -631,6 +732,11 @@ pub enum Forbidden {
     ForcePush,
     /// A push to `main` or `develop`.
     ProtectedPush,
+    /// The heavy lock, `.git/heavy.lock`, taken by hand (EN-047, EN-119).
+    HandLock,
+    /// A push naming no destination, run where the guard cannot read the branch it updates
+    /// (AUD-033).
+    UnknownPlace,
 }
 
 /// Whether a `gh` command merges a pull request: `gh pr merge`, `pr`'s `-R <repository>` before
@@ -661,15 +767,145 @@ fn gh_merges(words: &[String]) -> bool {
     }
 }
 
-/// Why one command is forbidden, if it is.
+/// The first forbidden command of a line, its here-documents left out, the line starting in
+/// `folders`: each command judged in the folders the part of the line holding it may run in
+/// ([`crate::place::walk`]), then the commands an unquoted here-document's substitutions run,
+/// and, when a shell of the line reads its commands from its input, every text it may be fed: the
+/// bodies, the here-strings and the words of the line's other commands (AUD-033). Those texts are
+/// judged in every folder the line may run in.
 #[must_use]
-pub fn reason(invocation: &Invocation, branch: &dyn Fn() -> String) -> Option<Forbidden> {
+pub fn first_forbidden(line: &str, folders: &Folders, branch: BranchOf) -> Option<Forbidden> {
+    judged(line, folders, branch, 0)
+}
+
+/// [`first_forbidden`], `depth` texts deep.
+fn judged(line: &str, folders: &Folders, branch: BranchOf, depth: usize) -> Option<Forbidden> {
+    if depth > DEPTH {
+        return None;
+    }
+    let text = without_heredocs(line);
+    let walk = walk(&text, folders);
+    let found = invocations(&text);
+
+    found
+        .iter()
+        .find_map(|invocation| reason(invocation, &folders_at(&walk, invocation.at), branch))
+        .or_else(|| {
+            fed(line, &found)
+                .iter()
+                .find_map(|text| judged(text, &walk.every, branch, depth + 1))
+        })
+}
+
+/// The texts a line runs besides its commands: an unquoted body's substitutions, and what a shell
+/// reading its input may be fed (see [`first_forbidden`]).
+fn fed(line: &str, found: &[Invocation]) -> Vec<String> {
+    let mut texts = expanded_in_bodies(line);
+
+    if found.iter().any(reads_commands_from_input) {
+        texts.extend(heredoc_bodies(line).into_iter().map(str::to_owned));
+        for invocation in found {
+            texts.extend(
+                invocation
+                    .redirections
+                    .iter()
+                    .filter_map(|redirection| redirection.strip_prefix("<<<"))
+                    .map(str::to_owned),
+            );
+            if !reads_commands_from_input(invocation) {
+                let arguments = invocation.words.get(1..).unwrap_or_default();
+
+                texts.extend(arguments.iter().cloned());
+                texts.push(arguments.join(" "));
+            }
+        }
+    }
+    texts
+}
+
+/// Whether a command is a shell reading its commands from its standard input (`REF-POSIX-SH`):
+/// `sh`, `bash`, `zsh`, `dash` or `ksh` without `-c`, given `-s`, `-`, `/dev/stdin` or no script;
+/// `source` or `.` of `/dev/stdin`.
+fn reads_commands_from_input(invocation: &Invocation) -> bool {
+    let Some((program, arguments)) = invocation.words.split_first() else {
+        return false;
+    };
+    let from_input = |word: &str| matches!(word, "-" | "/dev/stdin" | "/dev/fd/0");
+
+    match program_name(program) {
+        "source" | "." => arguments.first().is_some_and(|word| from_input(word)),
+        "bash" | "sh" | "zsh" | "dash" | "ksh" => {
+            if shell_text(arguments).is_some() {
+                return false;
+            }
+            let mut at = 0;
+
+            while let Some(word) = arguments.get(at) {
+                at += 1;
+                if matches!(word.as_str(), "-o" | "+o" | "-O" | "+O") {
+                    at += 1;
+                } else if word == "--" {
+                    return arguments.get(at).is_none_or(|script| from_input(script));
+                } else if word.starts_with("--") {
+                } else if let Some(letters) = word
+                    .strip_prefix(['-', '+'])
+                    .filter(|letters| !letters.is_empty())
+                {
+                    if letters.contains('s') {
+                        return true;
+                    }
+                } else {
+                    return from_input(word);
+                }
+            }
+            true
+        }
+        _ => false,
+    }
+}
+
+/// Why one command is forbidden, if it is, run in `folders`.
+#[must_use]
+pub fn reason(invocation: &Invocation, folders: &Folders, branch: BranchOf) -> Option<Forbidden> {
     if sets_hooks_path_by_environment(&invocation.assignments) {
         return Some(Forbidden::HooksOff);
     }
     match invocation.words.first().map(|word| program_name(word)) {
-        Some("git") => git_reason(&invocation.words, branch),
+        Some("git") => git_reason(invocation, folders, branch),
         Some("gh") => gh_merges(&invocation.words).then_some(Forbidden::Merge),
+        Some("mkdir") => makes_heavy_lock(&invocation.words[1..]).then_some(Forbidden::HandLock),
+        Some("install") => {
+            let read = Arguments::read(
+                &invocation.words[1..],
+                "mogSt",
+                &[
+                    "--mode",
+                    "--owner",
+                    "--group",
+                    "--suffix",
+                    "--target-directory",
+                    "--strip-program",
+                ],
+            );
+
+            ((read.shorts.contains(&'d') || read.has_long("--directory"))
+                && makes_heavy_lock(&read.operands))
+            .then_some(Forbidden::HandLock)
+        }
         _ => None,
     }
+}
+
+/// The folder of the heavy lock (EN-047), which only the heavy commands make.
+const HEAVY_LOCK: &str = "heavy.lock";
+
+/// Whether the folders a `mkdir` or an `install -d` makes may be the heavy lock: an operand named
+/// `heavy.lock`, a trailing `/` allowed (EN-119, I22), or one under `.git` named by a variable or
+/// a pattern (`.git/$LOCK`, `.git/heavy.*`, AUD-033), which the guard cannot expand.
+fn makes_heavy_lock(operands: &[String]) -> bool {
+    operands.iter().any(|word| {
+        !word.starts_with('-')
+            && (program_name(word.trim_end_matches('/')) == HEAVY_LOCK
+                || (word.contains(".git") && word.contains(['$', '`', '*', '?', '['])))
+    })
 }

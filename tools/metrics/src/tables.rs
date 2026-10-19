@@ -87,34 +87,27 @@ fn segment_key(segment: &str) -> String {
 }
 
 /// What a shell command runs, without its directory change, variables, flags and arguments: the
-/// first segment between `&&`, `||`, `;` and line breaks that runs something.
+/// first segment between `&&`, `||`, `;` and line breaks that runs something, an `exit` after `||`
+/// left out, since it runs only when the command before it fails: the brief's
+/// `cd "<worktree>" || exit 9` names the command after it (EN-120).
 #[must_use]
 pub fn command_key(command: &str) -> String {
     command
         .replace("&&", "\n")
-        .replace("||", "\n")
+        .replace("||", "\n\u{0}")
         .replace(';', "\n")
         .split('\n')
-        .map(|segment| segment_key(segment.trim_matches(crate::transcript::is_js_space)))
+        .filter_map(|segment| {
+            let (is_after_or, text) = match segment.strip_prefix('\u{0}') {
+                Some(rest) => (true, rest),
+                None => (false, segment),
+            };
+            let key = segment_key(text.trim_matches(crate::transcript::is_js_space));
+
+            (!(is_after_or && key == "exit")).then_some(key)
+        })
         .find(|key| !key.is_empty())
         .unwrap_or_default()
-}
-
-/// The median of numbers in any order: the middle one, the mean of the two middle ones for an
-/// even count, 0 for none.
-#[must_use]
-pub fn median(values: &[f64]) -> f64 {
-    let mut sorted = values.to_vec();
-
-    sorted.sort_by(f64::total_cmp);
-
-    let middle = sorted.len() / 2;
-
-    match sorted.len() {
-        0 => 0.0,
-        length if length % 2 == 1 => sorted[middle],
-        _ => f64::midpoint(sorted[middle - 1], sorted[middle]),
-    }
 }
 
 /// Statistics of calls grouped by a key, in the order each group first came.
@@ -129,7 +122,7 @@ pub fn call_stats<K: Fn(&TimedCall) -> String>(calls: &[TimedCall], key_of: K) -
                 count: group.len(),
                 failures: group.iter().filter(|call| !call.is_ok).count(),
                 max_ms: durations.iter().copied().fold(0.0, f64::max),
-                median_ms: median(&durations),
+                median_ms: tool_use::median(&durations).unwrap_or(0.0),
                 total_ms: durations.iter().sum(),
             }
         })

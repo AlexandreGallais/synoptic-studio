@@ -110,10 +110,10 @@ pass docs/chk-020-checkpoint-f19
 pass docs/chk-021-checkpoint-f20
 pass docs/en-044-checklist-skills
 pass docs/en-060-documentation-pass-on-e15-pages
-pass docs/f21-refinement
-pass docs/product-scope-v1
-pass docs/ret-002-retrospective-e14
-pass docs/ret-003-retrospective-e15
+fail docs/f21-refinement
+fail docs/product-scope-v1
+fail docs/ret-002-retrospective-e14
+fail docs/ret-003-retrospective-e15
 pass docs/rev-001-review-e01
 pass docs/rev-002-review-e14
 pass docs/rev-003-close-e15
@@ -144,7 +144,7 @@ pass docs/sp-023-research-f21
 pass docs/val-014-remarks-e15
 pass docs/val-017-validation-e15
 pass docs/val-018-second-pass
-pass docs/val-remarks-e15
+fail docs/val-remarks-e15
 pass feat/en-001-fixed-precision-numbers
 pass feat/en-002-sharp-contour-path-data
 pass feat/en-003-corner-turning-angle
@@ -274,7 +274,7 @@ pass fix/en-051-branch-deleted-from-main
 pass fix/en-069-target-race-in-check-all
 pass fix/en-073-shared-files-table-padding
 pass fix/en-092-weekly-usage-for-the-run
-pass fix/shared-files-table-padding
+fail fix/shared-files-table-padding
 pass fix/us-049-band-ends-with-line
 pass fix/us-056-usable-fonts-only
 pass fix/us-057-box-size-kept

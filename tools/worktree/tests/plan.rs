@@ -7,7 +7,7 @@ use std::process::{Command, Output};
 
 use worktree::{
     Request, base_branch, branch_refusal, branch_type, plan, story_id, story_of_branch,
-    story_of_file,
+    story_of_file, story_on_branches,
 };
 
 const FILE: &str = "E17-F18-US-061-font-list-held-while-the-default-font-is-read.md";
@@ -77,8 +77,34 @@ fn types_a_branch_by_the_story_kind() {
     assert_eq!(branch_type("US"), Some("feat"));
     assert_eq!(branch_type("EN"), Some("chore"));
     assert_eq!(branch_type("SP"), Some("docs"));
-    assert_eq!(branch_type("NAM"), Some("refactor"));
+    assert_eq!(branch_type("AUD"), Some("docs"));
+    assert_eq!(branch_type("VAL"), Some("feat"));
+    // No `NAM` nor `RET` story since EN-123: the pre-push refuses their branches (AUD-025).
+    assert_eq!(branch_type("NAM"), None);
+    assert_eq!(branch_type("RET"), None);
     assert_eq!(branch_type("XY"), None);
+}
+
+#[test]
+fn f23_ac2_refuses_the_branches_the_pre_push_refuses() {
+    // [F23.AC2] one branch form, the pre-push's (`git_hooks::branch`, AUD-025): a topic without
+    // a story id, or the id of a kind the auto-merge does not take, is refused here too.
+    for name in [
+        "docs/topic-only",
+        "fix/a-fix",
+        "chore/nam-003-naming",
+        "docs/ret-005-retro",
+        "chore/en-12-short-id",
+    ] {
+        assert!(branch_refusal(name).is_some(), "{name}");
+    }
+    for name in [
+        "docs/aud-025-audit-f23",
+        "chore/en-118-a-story",
+        "fix/us-061-x",
+    ] {
+        assert_eq!(branch_refusal(name), None, "{name}");
+    }
 }
 
 #[test]
@@ -122,6 +148,7 @@ fn plans_the_worktree_of_a_story() {
         branch_type: None,
         story_files: &files,
         remote_branches: &remotes,
+        branch_files: &[],
         main: Path::new("/work/repo"),
     };
     let made = plan(&request, |_| false).expect("a plan");
@@ -157,6 +184,7 @@ fn refuses_what_it_cannot_make() {
         branch_type: None,
         story_files: &files,
         remote_branches: &remotes,
+        branch_files: &[],
         main: Path::new("/work/repo"),
     };
     let refusal = |request: &Request| plan(request, |_| false).expect_err("a refusal");
@@ -194,6 +222,151 @@ fn refuses_what_it_cannot_make() {
         })
         .contains("on GitHub")
     );
+}
+
+/// A story file written on a feature branch only, never on `develop`.
+const ONLY_ON_THE_FEATURE: &str = "E17-F18-EN-200-only-on-the-feature.md";
+
+/// The story files of two feature branches of `origin`, the second holding `EN-200` or not.
+fn branch_files(second_holds_it: bool) -> Vec<(String, Vec<String>)> {
+    let second = if second_holds_it {
+        vec!["README.md".to_owned(), ONLY_ON_THE_FEATURE.to_owned()]
+    } else {
+        vec!["README.md".to_owned()]
+    };
+
+    vec![
+        (
+            "origin/feature/f17-text-fixes".to_owned(),
+            vec!["README.md".to_owned()],
+        ),
+        (
+            "origin/feature/f18-safe-and-cheap-parallel-run".to_owned(),
+            vec![FILE.to_owned(), ONLY_ON_THE_FEATURE.to_owned()],
+        ),
+        ("origin/feature/f19-other".to_owned(), second),
+    ]
+}
+
+#[test]
+fn f23_ac2_starts_a_review_or_an_epics_spike_from_develop() {
+    // [F23.AC2] A story attached to `develop`, a `REV` or an epic's refinement `SP`, has no
+    // feature in its file name: its worktree starts from `origin/develop`, on a `docs/` branch.
+    let files = [
+        "E17-REV-006-review-2026-10-18.md".to_owned(),
+        "E18-SP-030-refinement-of-e18.md".to_owned(),
+    ];
+    let remotes = remotes();
+    let made = |id: &str| {
+        plan(
+            &Request {
+                id,
+                branch_type: None,
+                story_files: &files,
+                remote_branches: &remotes,
+                branch_files: &[],
+                main: Path::new("/work/repo"),
+            },
+            |_| false,
+        )
+        .map(|made| (made.branch, made.base))
+    };
+
+    assert_eq!(
+        made("REV-006"),
+        Ok((
+            "docs/rev-006-review-2026-10-18".to_owned(),
+            "origin/develop".to_owned()
+        ))
+    );
+    assert_eq!(
+        made("sp-030"),
+        Ok((
+            "docs/sp-030-refinement-of-e18".to_owned(),
+            "origin/develop".to_owned()
+        ))
+    );
+}
+
+#[test]
+fn f23_ac2_finds_a_story_missing_from_the_checkout_on_the_one_feature_branch_holding_it() {
+    // [F23.AC2] The main checkout on `develop` lacks EN-200's file, which only F18's branch
+    // holds: the story is read from there and its worktree starts from that branch.
+    let files = files();
+    let remotes = remotes();
+    let held = branch_files(false);
+    let request = Request {
+        id: "EN-200",
+        branch_type: None,
+        story_files: &files,
+        remote_branches: &remotes,
+        branch_files: &held,
+        main: Path::new("/work/repo"),
+    };
+    let made = plan(&request, |_| false).expect("a plan");
+
+    assert_eq!(made.branch, "chore/en-200-only-on-the-feature");
+    assert_eq!(made.base, "origin/feature/f18-safe-and-cheap-parallel-run");
+    assert_eq!(
+        story_on_branches("EN-200", &held).map(|(story, branch)| (story.topic, branch)),
+        Ok((
+            "only-on-the-feature".to_owned(),
+            "origin/feature/f18-safe-and-cheap-parallel-run".to_owned()
+        ))
+    );
+    // A story the checkout holds is read there, whatever the branches hold.
+    assert_eq!(
+        plan(
+            &Request {
+                id: "US-061",
+                ..request
+            },
+            |_| false
+        )
+        .map(|made| made.branch)
+        .as_deref(),
+        Ok("feat/us-061-font-list-held-while-the-default-font-is-read")
+    );
+}
+
+#[test]
+fn f23_ac2_refuses_a_story_two_feature_branches_hold_naming_them() {
+    let files = files();
+    let remotes = remotes();
+    let twice = branch_files(true);
+    let request = Request {
+        id: "EN-200",
+        branch_type: None,
+        story_files: &files,
+        remote_branches: &remotes,
+        branch_files: &twice,
+        main: Path::new("/work/repo"),
+    };
+    let refusal = plan(&request, |_| false).expect_err("a refusal");
+
+    assert!(
+        refusal.contains("EN-200")
+            && refusal.contains("several feature branches")
+            && refusal.contains(
+                "origin/feature/f18-safe-and-cheap-parallel-run, origin/feature/f19-other"
+            ),
+        "{refusal}"
+    );
+    // Held nowhere: the checkout and the branches both named.
+    let nowhere = plan(
+        &Request {
+            id: "EN-201",
+            ..request
+        },
+        |_| false,
+    )
+    .expect_err("a refusal");
+
+    assert!(
+        nowhere.contains("no file") && nowhere.contains("feature branch of origin"),
+        "{nowhere}"
+    );
+    assert!(story_on_branches("EN-201", &twice).is_err());
 }
 
 /// A command cut off from the Git repository running the tests: a hook (`pre-push` running
@@ -411,6 +584,98 @@ fn f18_ac8_a_push_from_a_new_worktree_runs_its_own_pre_push() {
 
     assert!(pushed.status.success(), "{pushed:?}");
     assert_eq!(fs::read_to_string(&marker).unwrap(), "worktree\n");
+
+    let _ = fs::remove_dir_all(main.parent().unwrap());
+}
+
+/// A story file committed on F18's branch of `origin` only, then pushed to each other branch
+/// named; the main checkout back on `develop`, without the file.
+fn story_only_on_feature_branches(main: &Path, others: &[&str]) {
+    let feature = "feature/f18-safe-and-cheap-parallel-run";
+
+    git(
+        main,
+        &[
+            "switch",
+            "--quiet",
+            "-c",
+            "side",
+            &format!("origin/{feature}"),
+        ],
+    );
+    fs::write(
+        main.join("docs/backlog/stories").join(ONLY_ON_THE_FEATURE),
+        "# EN-200\n",
+    )
+    .unwrap();
+    git(main, &["add", "--all"]);
+    git(main, &["commit", "--quiet", "-m", "docs: write EN-200"]);
+    for branch in [feature].iter().chain(others) {
+        git(
+            main,
+            &["push", "--quiet", "origin", &format!("side:{branch}")],
+        );
+    }
+    git(main, &["switch", "--quiet", "develop"]);
+    git(main, &["branch", "--quiet", "-D", "side"]);
+    assert!(
+        !main
+            .join("docs/backlog/stories")
+            .join(ONLY_ON_THE_FEATURE)
+            .exists()
+    );
+}
+
+#[test]
+fn f23_ac2_worktree_new_in_the_main_checkout_finds_a_story_only_on_its_feature_branch() {
+    // [F23.AC2] Run in the main checkout on `develop`, which lacks the file: found by
+    // `git ls-tree` on the feature branches of `origin`, the worktree made from that branch.
+    let main = repository("ls-tree");
+
+    story_only_on_feature_branches(&main, &[]);
+
+    let made = worktree_new(&main, "EN-200");
+    let dir = main.join(".claude/worktrees/en-200");
+
+    assert!(made.status.success(), "{made:?}");
+    assert_eq!(
+        git(&dir, &["branch", "--show-current"]),
+        "chore/en-200-only-on-the-feature"
+    );
+    assert_eq!(
+        git(&dir, &["rev-parse", "HEAD"]),
+        git(
+            &main,
+            &[
+                "rev-parse",
+                "origin/feature/f18-safe-and-cheap-parallel-run"
+            ]
+        )
+    );
+    assert!(
+        dir.join("docs/backlog/stories")
+            .join(ONLY_ON_THE_FEATURE)
+            .exists()
+    );
+
+    let _ = fs::remove_dir_all(main.parent().unwrap());
+}
+
+#[test]
+fn f23_ac2_worktree_new_refuses_a_story_two_feature_branches_hold() {
+    let main = repository("ls-tree-twice");
+
+    story_only_on_feature_branches(&main, &["feature/f19-other"]);
+
+    let made = worktree_new(&main, "EN-200");
+    let said = String::from_utf8_lossy(&made.stderr);
+
+    assert!(!made.status.success());
+    assert!(
+        said.contains("origin/feature/f18-safe-and-cheap-parallel-run, origin/feature/f19-other"),
+        "{made:?}"
+    );
+    assert!(!main.join(".claude/worktrees/en-200").exists());
 
     let _ = fs::remove_dir_all(main.parent().unwrap());
 }

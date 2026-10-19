@@ -3,7 +3,9 @@
 //!
 //! Usage: `backlog-index <backlog folder>` writes the index; `backlog-index <backlog folder>
 //! --check` writes nothing and fails when the index differs from the story files, padding
-//! aside. Prettier aligns the written table afterwards (`npm run backlog:index`).
+//! aside. The table is written without padding, as the formatter writes it (ADR-0068), so the
+//! script `backlog:index` runs this tool alone and npm passes its arguments to it: `npm run
+//! backlog:index -- --check` reaches the check (EN-140).
 
 mod front_matter;
 mod order;

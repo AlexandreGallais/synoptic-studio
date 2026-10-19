@@ -1,82 +1,30 @@
-# The documentation site, the release and the Rust caches (docs/tooling/releases.md, ADR-0086): a
-# push to main, a review's merge, deploys the site and makes no release; the button of the Actions
-# tab (`workflow_dispatch`, `REF-GH-WORKFLOW-DISPATCH`) on main makes the release, its version from
-# the last tag and the commits since, with no commit. A push to develop or main saves the Rust
-# caches the CI restores (EN-125).
+# The release, by its button alone (docs/tooling/releases.md, ADR-0086, ADR-0088): the Actions
+# tab's _Run workflow_ (`workflow_dispatch`, `REF-GH-WORKFLOW-DISPATCH`) on main makes the release,
+# its version from the last tag and the commits since, with no commit. `release publish` refuses
+# any other branch. The site is deployed by site.yml, the Rust caches saved by rust-caches.yml.
 name: Release
 
 on:
-  push:
-    branches: [develop, main]
   workflow_dispatch:
 
 permissions:
   contents: read
 
 env:
-  # The cargo tools of the Rust checks, the same as ci.yml's (EN-069, EN-111).
+  # The versions in the cargo tools' key, the same as ci.yml's (EN-069, EN-111).
   CARGO_LLVM_COV_VERSION: 0.9.1
   CARGO_DENY_VERSION: 0.20.2
-  # No incremental build: its state, kept for the workspace's own crates only, would grow the cache
-  # and never be reused, those crates being compiled again in each run.
   CARGO_INCREMENTAL: 0
 
 jobs:
-  # On a push to develop or main: saves the Rust caches the next pull request into main restores
-  # (EN-111, EN-125). A cache saved by a pull request's run is scoped to its merge ref and never
-  # restored by the next pull request; a pull request's run restores those of its head branch, of
-  # its base branch and of the default branch, so the review's, from develop into main, those
-  # saved on develop and on main (`REF-GH-CACHE`). It fetches every target's crates, as the CI
-  # does before its lanes (`REF-CARGO-FETCH`, EN-116), then builds what `check:all` compiles, with
-  # the same commands and flags, and checks nothing: the tests are compiled and listed, never run
-  # (ADR-0072: nothing is re-checked after the merge). Its keys and paths are ci.yml's. Without
-  # `restore-keys`, a new key starts from an empty target/, which so never keeps the artifacts of
-  # an older Cargo.lock.
-  rust-cache:
-    if: github.event_name == 'push'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    steps:
-      - uses: actions/checkout@v7
-      - id: toolchain
-        run: echo "name=$(sed -n 's/^channel = "\(.*\)"$/\1/p' rust-toolchain.toml)-x86_64-unknown-linux-gnu" >> "$GITHUB_OUTPUT"
-      - id: tools
-        uses: actions/cache@v6
-        with:
-          path: |
-            ~/.rustup/toolchains/${{ steps.toolchain.outputs.name }}
-            ~/.cargo/bin/cargo-llvm-cov
-            ~/.cargo/bin/cargo-deny
-          key: rust-tools-${{ runner.os }}-${{ hashFiles('rust-toolchain.toml') }}-cargo-llvm-cov-${{ env.CARGO_LLVM_COV_VERSION }}-cargo-deny-${{ env.CARGO_DENY_VERSION }}
-      - if: steps.tools.outputs.cache-hit != 'true'
-        run: cargo install --locked cargo-llvm-cov@${{ env.CARGO_LLVM_COV_VERSION }} cargo-deny@${{ env.CARGO_DENY_VERSION }}
-      - uses: actions/cache@v6
-        with:
-          path: |
-            ~/.cargo/registry/index/
-            ~/.cargo/registry/cache/
-            ~/.cargo/git/db/
-            target/
-          key: rust-build-${{ runner.os }}-${{ hashFiles('rust-toolchain.toml', 'Cargo.lock') }}
-      # Every crate of Cargo.lock for every target, not the host's alone, which the build fetches:
-      # the CI's `cargo metadata --offline` and `cargo deny --offline` read them all (EN-116).
-      - run: cargo fetch --locked
-      # The compilations of `rust:build` and `check:rust` (package.json): the release binaries,
-      # Clippy, the tests under coverage, the Windows check.
-      - run: npm run rust:build
-      - run: cargo clippy --workspace --all-targets --locked --quiet
-      - run: cargo llvm-cov --workspace --locked --no-report -- --list
-      - run: cargo check --workspace --all-targets --locked --quiet --target x86_64-pc-windows-msvc
-
-  # By the button on main: `release publish` computes the version from the last tag `vx.y.z` and
-  # the commits since, and makes the GitHub release on main's head, which GitHub tags: its notes
-  # the bodies of the pull requests into main merged since that tag, the test report of the last
-  # one's CI attached (ADR-0027, ADR-0038: the report of the code released, not a new run). It
-  # makes no commit; without a commit since the last tag it does nothing. GITHUB_TOKEN suffices:
-  # nothing has to start from the release, the site being deployed by the push.
+  # `release publish` checks that the run is on the branch main (`GITHUB_REF`, `REF-GH-VARIABLES`),
+  # computes the version from the last tag `vx.y.z` and the commits since, and makes the GitHub
+  # release on main's head, which GitHub tags: its notes the bodies of the pull requests into main
+  # merged since that tag, the test report of the last one's CI attached (ADR-0027, ADR-0038: the
+  # report of the code released, not a new run). It makes no commit; without a commit since the
+  # last tag it does nothing. GITHUB_TOKEN suffices: nothing has to start from the release, the
+  # site being deployed by the push.
   release:
-    if: github.event_name == 'workflow_dispatch' && github.ref_name == 'main'
     runs-on: ubuntu-latest
     # The CI's report downloaded, the release made, the bodies read (`REF-GH-JOB-PERMISSIONS`).
     permissions:
@@ -89,8 +37,8 @@ jobs:
           # Every commit and tag (`REF-GH-CHECKOUT`): the last tag, the commits since and the
           # merges of the pull requests; the head's second parent is the last one's head.
           fetch-depth: 0
-      # The rust-cache job's caches, restored only (`REF-GH-CACHE-RESTORE`): the release tool is
-      # compiled on them, saved by that job at the previous push to main.
+      # The Rust caches, restored only (`REF-GH-CACHE-RESTORE`): the release tool is compiled on
+      # the build site.yml saved at the push to main of the head released (`REF-GH-CACHE`).
       - id: toolchain
         run: echo "name=$(sed -n 's/^channel = "\(.*\)"$/\1/p' rust-toolchain.toml)-x86_64-unknown-linux-gnu" >> "$GITHUB_OUTPUT"
       - uses: actions/cache/restore@v6
@@ -114,56 +62,3 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
-
-  # On a push to main, a review's merge: deploys the documentation site and the playground, so
-  # that they follow each review without a release (ADR-0086). A push to develop deploys nothing,
-  # nor does the button: the push of the head it releases already did.
-  docs:
-    if: github.event_name == 'push' && github.ref_name == 'main'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pages: write
-      id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deploy.outputs.page_url }}
-    steps:
-      - uses: actions/checkout@v7
-      # The rust-cache job's caches, restored only (`REF-GH-CACHE-RESTORE`): the API pages' build
-      # runs Rust binaries, compiled on them; that job, running beside this one, saves them.
-      - id: toolchain
-        run: echo "name=$(sed -n 's/^channel = "\(.*\)"$/\1/p' rust-toolchain.toml)-x86_64-unknown-linux-gnu" >> "$GITHUB_OUTPUT"
-      - uses: actions/cache/restore@v6
-        with:
-          path: |
-            ~/.rustup/toolchains/${{ steps.toolchain.outputs.name }}
-            ~/.cargo/bin/cargo-llvm-cov
-            ~/.cargo/bin/cargo-deny
-          key: rust-tools-${{ runner.os }}-${{ hashFiles('rust-toolchain.toml') }}-cargo-llvm-cov-${{ env.CARGO_LLVM_COV_VERSION }}-cargo-deny-${{ env.CARGO_DENY_VERSION }}
-      - uses: actions/cache/restore@v6
-        with:
-          path: |
-            ~/.cargo/registry/index/
-            ~/.cargo/registry/cache/
-            ~/.cargo/git/db/
-            target/
-          key: rust-build-${{ runner.os }}-${{ hashFiles('rust-toolchain.toml', 'Cargo.lock') }}
-          restore-keys: rust-build-${{ runner.os }}-
-      - uses: actions/setup-node@v7
-        with:
-          node-version-file: .nvmrc
-          cache: npm
-      - run: npm ci
-      - run: npm run docs:build
-        env:
-          DOCS_BASE: /${{ github.event.repository.name }}/
-      - run: npm run playground:build
-        env:
-          PLAYGROUND_BASE: /${{ github.event.repository.name }}/playground/
-      - uses: actions/configure-pages@v6
-      - uses: actions/upload-pages-artifact@v5
-        with:
-          path: docs/.vitepress/dist
-      - id: deploy
-        uses: actions/deploy-pages@v5

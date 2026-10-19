@@ -7,7 +7,7 @@ import { describe, expect, it } from "vitest";
 /** Repository root. */
 const ROOT = join(import.meta.dirname, "..");
 
-/** Time limit of a test asking a tool about every tracked file: about 4.3 s alone (EN-054), seven times. */
+/** Time limit of a test asking a tool about every tracked file: its measure is beside it. */
 const WALK_TIMEOUT = 30_000;
 
 /** The start of a script run under the heavy lock (EN-047), a crate of the workspace (EN-068). */
@@ -227,6 +227,8 @@ describe("check tools given explicit targets (EN-045)", () => {
 
   it(
     "[F19.AC5] leaves no file that oxfmt formats out of the formatter's targets",
+    // alone: 458 ms, the median of 5 runs of its file (EN-129); 30 s, over 60 times it, holds the
+    // 4.3 s once seen alone (EN-054).
     { timeout: WALK_TIMEOUT },
     () => {
       const named = oxfmtCount(targetsOf("format:check", FORMAT));
@@ -258,16 +260,21 @@ describe("heavy commands and Rust tools (AUD-020)", () => {
     );
   });
 
-  it("[F19.AC9] checks the whole Rust workspace in check:rust, its binaries built before the lanes", () => {
+  it("[F19.AC9] [F33.AC1] checks the whole Rust workspace in check:rust and rust:coverage, its binaries built before the lanes", () => {
+    // The tests under the coverage floor are a lane of their own since EN-130, `rust:coverage`
+    // (`[F29.AC2]` in tools/repo-tools/tests/check_all.rs).
     expect(SCRIPTS.get("check:rust")?.split(" && ")).toEqual([
       "cargo fmt --all --check",
       "cargo clippy --workspace --all-targets --locked --quiet",
       "npm run --silent rust:advisories",
-      "npm run --silent rust:coverage",
       "cargo check --workspace --all-targets --locked --quiet --target x86_64-pc-windows-msvc",
       // The release binaries the hooks and the agent call by their path, none older than its sources (ADR-0078).
       "npm run --silent rust:fresh",
     ]);
+
+    expect(SCRIPTS.get("rust:coverage")).toContain(
+      "cargo llvm-cov --workspace --locked --quiet --summary-only --fail-under-lines 95 --fail-under-functions 95",
+    );
   });
 
   it("fixes the Rust code in fix too: Clippy's fixes when a Rust file changed, then rustfmt (EN-113)", () => {
@@ -303,7 +310,7 @@ describe("heavy commands and Rust tools (AUD-020)", () => {
     // `cargo deny` runs in the Rust lane and in the test lane, by `[F19.AC9]`'s advisories test
     // (EN-126): both fetch the database just before the lane's step.
     expect(workflow).toMatch(
-      /- if: matrix\.scripts == 'check:rust' \|\| matrix\.scripts == 'test'\n {8}run: cargo deny fetch db\n(?: {6}#.*\n)* {6}- run: for script in \$SCRIPTS; do npm run "\$script"; done\n/u,
+      /- if: matrix\.cargo-deny\n {8}run: cargo deny fetch db\n(?: {6}#.*\n)* {6}- run: for script in \$SCRIPTS; do npm run "\$script"; done\n/u,
     );
   });
 
@@ -311,11 +318,11 @@ describe("heavy commands and Rust tools (AUD-020)", () => {
     const workflow = readFileSync(join(ROOT, ".github", "workflows", "ci.yml"), "utf8");
 
     expect(workflow).toMatch(
-      /- if: \(matrix\.scripts == 'check:rust' \|\| matrix\.scripts == 'test'\) && steps\.tools\.outputs\.cache-hit != 'true'\n {8}run: cargo install --locked /u,
+      /- if: matrix\.cargo-deny && steps\.tools\.outputs\.cache-hit != 'true'\n {8}run: cargo install --locked cargo-deny@/u,
     );
   });
 
-  it("[F19.AC9] runs the workspace's tests under a floor of lines and functions, failing aloud without the tool", () => {
+  it("[F19.AC9] [F33.AC1] runs the workspace's tests under a floor of lines and functions, failing aloud without the tool", () => {
     const coverage = SCRIPTS.get("rust:coverage") ?? "";
 
     expect(coverage).toMatch(
@@ -323,8 +330,27 @@ describe("heavy commands and Rust tools (AUD-020)", () => {
     );
 
     expect(coverage).toContain(
-      "cargo llvm-cov --workspace --locked --quiet --summary-only --fail-under-lines 93 --fail-under-functions 93 || { echo 'Rust tests failed, or their coverage fell under the floor of 93 % of lines and 93 % of functions",
+      "cargo llvm-cov --workspace --locked --quiet --summary-only --fail-under-lines 95 --fail-under-functions 95 || { echo 'Rust tests failed, or their coverage fell under the floor of 95 % of lines and 95 % of functions",
     );
+  });
+
+  it("[F33.AC1] gives the floor of 95 % in the rules and the pages that name it", () => {
+    expect(readFileSync(join(ROOT, ".claude/rules/tooling.md"), "utf8")).toContain(
+      "`rust:coverage` (95 % of lines and functions covered)",
+    );
+
+    const coverageRow =
+      readFileSync(join(ROOT, "docs/tooling/commands.md"), "utf8")
+        .split("\n")
+        .find((line) => line.startsWith("| `npm run rust:coverage` |")) ?? "";
+    const coverageBullet =
+      readFileSync(join(ROOT, "docs/tooling/agent-tools.md"), "utf8")
+        .split("\n")
+        .find((line) => line.startsWith("- **Coverage**: `npm run rust:coverage`")) ?? "";
+
+    expect(coverageRow).toContain("95 % of lines or of functions");
+    expect(coverageBullet).toContain("fails under 95 % of lines or of functions");
+    expect([coverageRow, coverageBullet].filter((line) => line.includes("93 %"))).toEqual([]);
   });
 });
 
@@ -392,8 +418,8 @@ describe("the Rust tools run as crates of the workspace (EN-068)", () => {
   });
 
   it("[F21.AC1] calls the release binaries by their path from the Git hooks (ADR-0078)", () => {
-    const hooks = ["pre-commit", "pre-push", "commit-msg"].map((hook) =>
-      readFileSync(join(ROOT, ".githooks", hook), "utf8"),
+    const hooks = ["pre-commit", "pre-push", "commit-msg", "post-merge", "post-rewrite"].map(
+      (hook) => readFileSync(join(ROOT, ".githooks", hook), "utf8"),
     );
     const tool = readFileSync(join(ROOT, ".githooks", "tool.sh"), "utf8");
 
@@ -404,10 +430,22 @@ describe("the Rust tools run as crates of the workspace (EN-068)", () => {
     expect(hooks[1]).toMatch(/^tool git-hooks git-hooks branch$/mu);
     expect(hooks[2]).toMatch(/^tool git-hooks git-hooks commit-msg "\$1"$/mu);
     expect(hooks[2]).toContain('then tool rule-docs check-rule-docs "$1"; fi');
+    // After a pull, the binaries rebuilt when a Rust input changed (EN-131).
+    expect(hooks[3]).toMatch(/^tool git-hooks git-hooks post-merge "\$@"$/mu);
+    expect(hooks[4]).toMatch(/^tool git-hooks git-hooks post-rewrite "\$@"$/mu);
     expect(hooks.join("\n")).not.toContain("cargo run");
 
     expect(tool).toMatch(
       /if \[ -x "target\/release\/\$binary" \]; then\n\s+"target\/release\/\$binary" "\$@"\n\s+else\n\s+cargo run --release -q -p "\$crate" --bin "\$binary" -- "\$@"/u,
+    );
+  });
+
+  it("[F33.AC2] shows at a done commit the notes its story file keeps for the main thread", () => {
+    const hook = readFileSync(join(ROOT, ".githooks", "commit-msg"), "utf8");
+
+    // `move-rows --notes` names each note with its story and writes nothing (`rows.rs`).
+    expect(hook).toContain(
+      `if grep -q '^Closes:' "$1"; then tool shared-files move-rows --notes "$(git branch --show-current)"; fi`,
     );
   });
 

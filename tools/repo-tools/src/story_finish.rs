@@ -3,7 +3,10 @@
 //! merged story and the same steps to type when it stopped midway — and the Git sequences it runs,
 //! each given its folder: the rebase on the base, whose conflicts in the backlog's status rows only
 //! are left to the base and the rows written again after it, the push with lease of a head that
-//! differs from its remote's, the rows moved into the logs on the base.
+//! differs from its remote's. The story's rows for the logs are in its `done` commit (ADR-0091):
+//! a story file still holding some stops it before its pull request, and nothing is committed on
+//! the base after the merge. Who merges, GitHub or the Product Owner, as the auto-merge of its
+//! base, `story-automerge.yml` or `feature-automerge.yml`, takes the branch (EN-118, EN-134).
 
 use std::fs;
 use std::io::{self, Write};
@@ -11,27 +14,15 @@ use std::path::Path;
 use std::process::{Command, Stdio};
 
 use git_repository::stdout_of;
+use shared_files::backlog::{STORIES, file_of};
+use shared_files::rows::take_rows;
 use shared_files::shared::story_of;
+use stale_binaries::RELEASE_BUILD;
 
 use crate::backlog_status::{front_field, item_file, write_status};
 
 /// Readings of the pull request's state before giving up: three minutes, one each 10 s.
 pub const POLLS: u32 = 18;
-
-/// The Rust tool moving a story's rows into the logs, a binary of the Cargo workspace (EN-068).
-pub const MOVE_ROWS: [&str; 8] = [
-    "run",
-    "--release",
-    "-q",
-    "-p",
-    "shared-files",
-    "--bin",
-    "move-rows",
-    "--",
-];
-
-/// The repository's formatter writing files: oxfmt, then the tables without padding (EN-073).
-pub const FORMAT_WRITE: [&str; 7] = ["run", "--release", "-q", "-p", "format", "--", "--write"];
 
 /// The generated stories index: a conflict there is left to the base, then written again.
 const STORIES_INDEX: &str = "docs/backlog/stories/README.md";
@@ -78,6 +69,50 @@ pub fn next_step(state: &str, readings: u32) -> Next {
         Next::Wait
     } else {
         Next::Stop
+    }
+}
+
+/// Who merges a story's pull request.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum Merger {
+    /// The auto-merge of its base, once the pull request is labelled `autonomous`: awaited.
+    GitHub,
+    /// The Product Owner: opened without the label, never awaited (AUD-024).
+    ProductOwner,
+}
+
+/// Who merges a story branch into its base, as the auto-merge of that base lets it through: into
+/// a feature branch a `US`, `EN`, `SP`, `CHK`, `AUD` or `VAL`, into `develop` a `REV`; anything else,
+/// an epic's refinement `SP` into `develop` first, is the Product Owner's.
+#[must_use]
+pub fn merger(base: &str, branch: &str) -> Merger {
+    let kind = story_of(branch)
+        .and_then(|id| id.split_once('-').map(|(kind, _)| kind.to_owned()))
+        .unwrap_or_default();
+    let taken: &[&str] = if base == "develop" {
+        &["REV"]
+    } else if base.starts_with("feature/") {
+        &["US", "EN", "SP", "CHK", "AUD", "VAL"]
+    } else {
+        &[]
+    };
+
+    if taken.contains(&kind.as_str()) {
+        Merger::GitHub
+    } else {
+        Merger::ProductOwner
+    }
+}
+
+/// The auto-merge workflow a pull request into a base starts, as its trigger's `branches` filter
+/// chooses it (EN-134): `feature-automerge.yml` into `develop`, `story-automerge.yml` otherwise,
+/// the one into a feature branch; its runs are what a merge not done is read from.
+#[must_use]
+pub fn auto_merge_of(base: &str) -> &'static str {
+    if base == "develop" {
+        "feature-automerge.yml"
+    } else {
+        "story-automerge.yml"
     }
 }
 
@@ -145,7 +180,7 @@ impl Step {
 /// The clean-up of a merged story.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct CleanUp {
-    /// The checkout of the base, where its rows are moved.
+    /// The checkout of the base, brought up to date.
     pub place: String,
     /// The base brought up to its remote.
     pub update: Vec<Step>,
@@ -205,11 +240,7 @@ pub fn clean_up_plan(story: Story, here: &str, checkouts: &[Worktree]) -> CleanU
     // The base's checkout rebuilds its release binaries, which its hooks and the agent call by
     // their path (ADR-0078); a worktree switched to the base is removed, so nothing is built there.
     if place != here || here == main {
-        update.push(Step::new(
-            "cargo",
-            place,
-            &["build", "--release", "--workspace", "--locked", "--quiet"],
-        ));
+        update.push(Step::new("cargo", place, &RELEASE_BUILD));
     }
     if here != main {
         remove.push(Step::new("git", main, &["worktree", "remove", here]));
@@ -225,13 +256,68 @@ pub fn clean_up_plan(story: Story, here: &str, checkouts: &[Worktree]) -> CleanU
     }
 }
 
-/// The message of the commit moving a merged story's rows into the logs, its `Refs:` footer
-/// naming the story.
+/// The rows and card lines a story file still holds for the logs, which its `done` commit moves
+/// (`move-rows`, ADR-0091), and the lines `move-rows` leaves under a log's heading, a card at
+/// another level among them (AUD-025): `story-finish` opens no pull request while there are some.
 #[must_use]
-pub fn rows_message(branch: &str) -> String {
-    let id = story_of(branch).unwrap_or_default();
+pub fn rows_left(story: &str) -> usize {
+    let taken = take_rows(story);
 
-    format!("docs(docs): move the rows of {id} into the logs\n\nRefs: {id}\n")
+    taken
+        .rows
+        .iter()
+        .chain(&taken.left)
+        .map(|(_, lines)| lines.len())
+        .sum()
+}
+
+/// Why a story cannot be finished yet, from its file's text at the head, or the error reading it:
+/// the rows and lines for the logs it still holds, which its `done` commit, made again, moves;
+/// `None` when it holds none.
+#[must_use]
+pub fn story_refusal(path: &str, branch: &str, story: Result<&str, &str>) -> Option<String> {
+    let text = match story {
+        Ok(text) => text,
+        Err(error) => {
+            return Some(format!(
+                "{path} cannot be read at HEAD ({error}): its rows for the logs are unknown, \
+                 so the story is not finished (ADR-0091)"
+            ));
+        }
+    };
+    let count = rows_left(text);
+
+    (count > 0).then(|| {
+        format!(
+            "{path} still holds lines for the logs ({count}) at HEAD: make the done commit again \
+             (ADR-0091): `git reset --soft HEAD~1`, `target/release/move-rows {branch}`, the lines \
+             it names as left written as rows or moved out of their heading by hand, then \
+             `target/release/git-sequences commit -F <message file> --push-with-lease <the files \
+             it printed> docs/backlog`, and run again"
+        )
+    })
+}
+
+/// Why the story cannot be finished yet: its file, read at the head that is pushed (`git show
+/// HEAD:<path>`), still holds rows or lines for the logs, or cannot be read; `None` when it holds
+/// none, or the branch names no story file at the head (AUD-025).
+#[must_use]
+pub fn rows_refusal(branch: &str, cwd: &Path) -> Option<String> {
+    let id = story_of(branch)?;
+    let folder = format!("{STORIES}/");
+    let names: Vec<String> =
+        match run_words("git", &["ls-tree", "--name-only", "HEAD", &folder], cwd) {
+            Ok(listed) => listed
+                .lines()
+                .filter_map(|path| path.strip_prefix(&folder))
+                .map(str::to_owned)
+                .collect(),
+            Err(error) => return story_refusal(STORIES, branch, Err(&error)),
+        };
+    let path = format!("{folder}{}", file_of(&names, &id)?);
+    let story = run_words("git", &["show", &format!("HEAD:{path}")], cwd);
+
+    story_refusal(&path, branch, story.as_deref().map_err(String::as_str))
 }
 
 /// A step written as a command to type: `cd "<folder>" && <command> <arguments>`.
@@ -245,33 +331,13 @@ fn typed(step: &Step) -> String {
 }
 
 /// The clean-up's commands to type when it stopped midway, one per line: the base brought up to
-/// date, the rows moved, committed and pushed, then the worktree and the branch removed (AUD-020).
+/// date, then the worktree and the branch removed (AUD-020).
 #[must_use]
-pub fn manual_steps(plan: &CleanUp, branch: &str) -> String {
-    let paragraphs: Vec<String> = rows_message(branch)
-        .split('\n')
-        .filter(|line| !line.is_empty())
-        .map(|line| format!("-m \"{line}\""))
-        .collect();
-    let rows = [
-        format!(
-            "cd \"{}\" && cargo {} {branch}",
-            plan.place,
-            MOVE_ROWS.join(" ")
-        ),
-        format!(
-            "cd \"{}\" && git commit {} -- <the files it printed>",
-            plan.place,
-            paragraphs.join(" ")
-        ),
-        format!("cd \"{}\" && git push", plan.place),
-    ];
-
+pub fn manual_steps(plan: &CleanUp) -> String {
     plan.update
         .iter()
+        .chain(&plan.remove)
         .map(typed)
-        .chain(rows)
-        .chain(plan.remove.iter().map(typed))
         .collect::<Vec<_>>()
         .join("\n")
 }
@@ -545,7 +611,7 @@ pub fn write_status_again(branch: &str, cwd: &Path) -> Result<Vec<String>, Strin
         return Ok(Vec::new());
     }
 
-    let story = fs::read_to_string(cwd.join("docs/backlog/stories").join(&file))
+    let story = fs::read_to_string(cwd.join(STORIES).join(&file))
         .map_err(|error| format!("{file}: {error}"))?;
     let status = front_field(&story, "status");
 
@@ -601,89 +667,18 @@ pub fn push_with_lease(branch: &str, cwd: &Path) -> Result<(), String> {
     )
 }
 
-/// Commits the files a merged story's rows were moved into, and only them: whatever else the
-/// checkout of the base holds staged stays staged, out of the commit (AUD-020).
-///
-/// # Errors
-/// When the commit fails.
-pub fn commit_rows(branch: &str, files: &[String], cwd: &Path) -> Result<(), String> {
-    let message = rows_message(branch);
-    let mut words = vec!["commit", "--quiet", "-m", message.as_str(), "--"];
-
-    words.extend(files.iter().map(String::as_str));
-    run_words("git", &words, cwd).map(|_| ())
-}
-
-/// Pushes the base when it holds commits its remote has not: those of this run, or those a run
-/// stopped before pushing (AUD-020); whether it pushed.
-///
-/// # Errors
-/// When Git fails.
-pub fn push_ahead(cwd: &Path) -> Result<bool, String> {
-    if run_words("git", &["rev-list", "--count", "@{upstream}..HEAD"], cwd)? == "0" {
-        return Ok(false);
-    }
-
-    run_shown("git", &["push", "--quiet"], cwd)?;
-    Ok(true)
-}
-
-/// Moves a merged story's rows into the logs, then commits and pushes them on the base.
-///
-/// # Errors
-/// When a step fails.
-pub fn move_rows(branch: &str, cwd: &Path) -> Result<(), String> {
-    let mut words: Vec<&str> = MOVE_ROWS.to_vec();
-
-    words.push(branch);
-
-    let moved = run_words("cargo", &words, cwd)?;
-    let files: Vec<String> = moved
-        .split('\n')
-        .filter(|line| !moved.is_empty() && !line.is_empty())
-        .map(str::to_owned)
-        .collect();
-
-    if !files.is_empty() {
-        let mut format: Vec<&str> = FORMAT_WRITE.to_vec();
-
-        format.extend(files.iter().map(String::as_str));
-        run_words("cargo", &format, cwd)?;
-        commit_rows(branch, &files, cwd)?;
-    }
-    if push_ahead(cwd)? {
-        println!(
-            "base pushed, rows moved: {}",
-            if files.is_empty() {
-                "none new".to_owned()
-            } else {
-                files.join(", ")
-            }
-        );
-    }
-    Ok(())
-}
-
-/// Cleans up a story once its pull request merged: the base brought up to date, the rows moved
-/// there, the worktree and the branch removed here and on GitHub. A pull request not merged keeps
-/// everything: false.
+/// Cleans up a story once its pull request merged: the base brought up to date, the worktree and
+/// the branch removed here and on GitHub; nothing is committed on the base (ADR-0091). A pull
+/// request not merged keeps everything: false.
 ///
 /// # Errors
 /// The first step that failed.
-pub fn clean_up(
-    state: &str,
-    plan: &CleanUp,
-    move_rows_in: impl FnOnce(&Path) -> Result<(), String>,
-) -> Result<bool, String> {
+pub fn clean_up(state: &str, plan: &CleanUp) -> Result<bool, String> {
     if state != "MERGED" {
         return Ok(false);
     }
 
-    for step in &plan.update {
-        run(step.command, &step.options, Path::new(&step.cwd))?;
-    }
-    move_rows_in(Path::new(&plan.place))?;
-    for step in &plan.remove {
+    for step in plan.update.iter().chain(&plan.remove) {
         run(step.command, &step.options, Path::new(&step.cwd))?;
     }
     Ok(true)
@@ -730,6 +725,44 @@ mod tests {
     }
 
     #[test]
+    fn f23_ac2_leaves_to_the_product_owner_what_the_auto_merge_does_not_take() {
+        // [F23.AC2] A `REV` into `develop` and a story into its feature are merged by GitHub;
+        // an epic's `SP`, or any other story, into `develop` by the Product Owner (AUD-024).
+        assert_eq!(merger("develop", "docs/rev-006-review"), Merger::GitHub);
+        assert_eq!(
+            merger("develop", "docs/sp-030-refinement-of-e18"),
+            Merger::ProductOwner
+        );
+        assert_eq!(
+            merger("develop", "chore/en-114-a-tool"),
+            Merger::ProductOwner
+        );
+        for branch in [
+            "feat/us-061-x",
+            "chore/en-118-x",
+            "docs/sp-023-x",
+            "docs/chk-012-x",
+            "docs/aud-025-x",
+            "feat/val-024-x",
+        ] {
+            assert_eq!(merger(BASE, branch), Merger::GitHub, "{branch}");
+        }
+        // A review into a feature, a branch without a story id: the auto-merge refuses both.
+        assert_eq!(merger(BASE, "docs/rev-006-review"), Merger::ProductOwner);
+        assert_eq!(merger(BASE, "fix/tidy-up"), Merger::ProductOwner);
+        assert_eq!(merger("develop", "fix/tidy-up"), Merger::ProductOwner);
+        // Nothing reaches `main` by the auto-merge.
+        assert_eq!(merger("main", "chore/en-118-x"), Merger::ProductOwner);
+    }
+
+    #[test]
+    fn f34_ac1_names_the_auto_merge_each_base_starts() {
+        // [F34.AC1] A feature or a review into `develop`, a story into its feature branch.
+        assert_eq!(auto_merge_of("develop"), "feature-automerge.yml");
+        assert_eq!(auto_merge_of(BASE), "story-automerge.yml");
+    }
+
+    #[test]
     fn opens_a_pull_request_when_there_is_none_awaits_an_open_one_cleans_after_a_merged_one() {
         assert_eq!(start_step(""), Start::Create);
         assert_eq!(start_step("CLOSED"), Start::Create);
@@ -747,16 +780,12 @@ mod tests {
         );
 
         assert_eq!(
-            manual_steps(&plan, STORY).split('\n').collect::<Vec<_>>(),
+            manual_steps(&plan).split('\n').collect::<Vec<_>>(),
             [
                 format!("cd \"{here}\" && git fetch --quiet --prune origin"),
                 format!("cd \"/repo\" && git merge --ff-only --quiet origin/{BASE}"),
                 "cd \"/repo\" && cargo build --release --workspace --locked --quiet".to_owned(),
-                format!(
-                    "cd \"/repo\" && cargo run --release -q -p shared-files --bin move-rows -- {STORY}"
-                ),
-                "cd \"/repo\" && git commit -m \"docs(docs): move the rows of EN-999 into the logs\" -m \"Refs: EN-999\" -- <the files it printed>".to_owned(),
-                "cd \"/repo\" && git push".to_owned(),
+                // [F23.AC1] no rows moved nor pushed after the merge: they are in the done commit.
                 format!("cd \"/repo\" && git worktree remove {here}"),
                 format!("cd \"/repo\" && git branch -D {STORY}"),
                 format!("cd \"/repo\" && gh {}", remote_deletion().join(" ")),
@@ -765,15 +794,50 @@ mod tests {
     }
 
     #[test]
-    fn names_the_merged_story_in_the_commit_moving_its_rows_into_the_logs() {
+    fn f23_ac1_counts_the_rows_and_card_lines_a_story_file_still_holds() {
+        // Two journal bullets and one card of two lines: 4; a note, a placeholder and a line of
+        // another shape are not rows (`move-rows` leaves them).
+        let story = "# S\n\n## For the main thread\n\nA note.\n\n### Journal\n\n- `#run` a\n- `#open` b\n\n### Feedback\n\n- None.\n\n### Improvements\n\n- Not a row.\n\n### Incidents\n\n#### 2026-10-19 — a card\n\n- Used: c\n";
+
+        assert_eq!(rows_left(story), 5);
+        assert_eq!(rows_left("# S\n\n## For the main thread\n\nA note.\n"), 0);
+        assert_eq!(rows_left("# S\n"), 0);
+        // A card written at the wrong level moves nothing but its two lines are left: 2
+        // (AUD-025).
         assert_eq!(
-            rows_message("chore/en-050-shared-files-written-at-merge"),
-            "docs(docs): move the rows of EN-050 into the logs\n\nRefs: EN-050\n"
+            rows_left(
+                "# S\n\n## For the main thread\n\n### Incidents\n\n### 2026-10-19 — a card\n\n- Used: a\n"
+            ),
+            2
         );
-        assert_eq!(
-            rows_message("feat/us-061-font-list"),
-            "docs(docs): move the rows of US-061 into the logs\n\nRefs: US-061\n"
-        );
+    }
+
+    #[test]
+    fn f23_ac1_refuses_a_story_whose_file_holds_lines_or_cannot_be_read() {
+        let path = "docs/backlog/stories/E99-F99-EN-901-first.md";
+        let branch = "chore/en-901-first";
+        let rows = "# S\n\n## For the main thread\n\n### Journal\n\n- `#run` a\n";
+        let refusal = story_refusal(path, branch, Ok(rows)).unwrap_or_default();
+
+        // The done commit made again (ADR-0091): undone, the rows moved, committed and pushed by
+        // `git-sequences`, never amended (AUD-025).
+        for part in [
+            "docs/backlog/stories/E99-F99-EN-901-first.md still holds lines for the logs (1)",
+            "git reset --soft HEAD~1",
+            "target/release/move-rows chore/en-901-first",
+            "target/release/git-sequences commit -F",
+            "--push-with-lease",
+        ] {
+            assert!(refusal.contains(part), "{part}: {refusal}");
+        }
+        assert!(!refusal.contains("--amend"), "{refusal}");
+        assert_eq!(story_refusal(path, branch, Ok("# S\n")), None);
+
+        // A story file that cannot be read at the head is a refusal, never a pass.
+        let unread = story_refusal(path, branch, Err("fatal: bad object")).unwrap_or_default();
+
+        assert!(unread.contains(path), "{unread}");
+        assert!(unread.contains("fatal: bad object"), "{unread}");
     }
 
     #[test]

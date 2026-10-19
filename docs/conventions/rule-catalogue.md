@@ -163,7 +163,7 @@ A domain modelled with objects that hold state and behaviour, or a framework tha
 | Setting | Why |
 | --- | --- |
 | one formatter for every file kind (oxfmt), run by the fix and at the commit | the layout is never a choice nor a review comment |
-| a print width measured on the project's own edits (100 here) | the smallest change for a small edit and the fewest conflicts ([rules](./rules.md#the-formatters-settings)) |
+| a print width measured on the project's own edits (100 here) | the smallest change for a small edit and the fewest conflicts ([rules](./rules.md#the-settings-of-the-formatter)) |
 | trailing commas, one property per line once wrapped, sorted imports | adding an item changes one line |
 | Markdown tables without padding, paragraphs kept on their lines | a wider cell changes its own row (ADR-0068) |
 

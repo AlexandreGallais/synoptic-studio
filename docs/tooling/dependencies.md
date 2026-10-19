@@ -16,7 +16,7 @@ Every dependency is code the project did not write and must trust, so each one i
 
 | Package | Why | Alternatives rejected |
 | --- | --- | --- |
-| `typescript` | TypeScript 7, the native compiler (`REF-TS7-ANNOUNCEMENT`): its checker runs under oxlint's `--type-check` and as `npx tsc --noEmit`; no tool of the repository imports its API, which 7.0 lacks (ADR-0075) | TypeScript 6's `tsc`: about 4.3 s against 0.9 s on this tree |
+| `typescript` | TypeScript 7, the native compiler (`REF-TS7-ANNOUNCEMENT`): its checker runs under oxlint's type check, `typeCheck` in the `options` of `.oxlintrc.json` (EN-121), and as `npx tsc --noEmit`; no tool of the repository imports its API, which 7.0 lacks (ADR-0075) | TypeScript 6's `tsc`: about 4.3 s against 0.9 s on this tree |
 | `@types/node` | Node.js types for the tooling | — |
 | `vite` | development server of the playground and library build (ADR-0009, ADR-0075) | — |
 | `vitest` | tests, sharing Vite's configuration and transforms | Jest: a separate transform pipeline |
@@ -42,7 +42,7 @@ Every dependency is code the project did not write and must trust, so each one i
 
 ## Rust tools
 
-The tools outside npm that the Rust checks run. `deps:outdated` does not see them (it reads `Cargo.toml` and `Cargo.lock`, not the installed tools): each version is pinned where it is installed — the `env` of `.github/workflows/ci.yml` and `release.yml`, which key their cache ([CI](./ci.md#the-rust-build-and-its-caches)), the install line of [agent tools](./agent-tools.md#rust), the messages of `rust:coverage` and `rust:advisories` in `package.json` — and a newer release is looked for by hand (`cargo search <tool>`) at each retrospective.
+The tools outside npm that the Rust checks run, in neither `Cargo.toml` nor `Cargo.lock`. Each version is pinned where it is installed — the `CARGO_<TOOL>_VERSION` of the `env` of `.github/workflows/ci.yml`, `develop-ci.yml`, `rust-caches.yml`, `site.yml` and `release.yml`, which key their cache ([CI](./ci.md#the-rust-build-and-its-caches)), the `cargo install --locked <tool>@<version>` of [agent tools](./agent-tools.md#rust), the messages of `rust:coverage` and `rust:advisories` in `package.json` — and in its row below. `deps:outdated` reads every one of those places (`tools/deps/src/cargo_tools.rs`, EN-121): a tool written at two versions, or without its row, is a finding, and so is a newer release on crates.io 7 days old, as for a crate, and a version under 7 days old, yanked or missing from the index, as for a crate of `Cargo.lock`, each read from its file of the crates.io index (`REF-CARGO-REGISTRY-INDEX`, AUD-035).
 
 | Tool | Version, released | Why | Alternatives rejected |
 | --- | --- | --- | --- |

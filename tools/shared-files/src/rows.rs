@@ -1,8 +1,8 @@
 //! The rows a worker writes for the logs in its story file, under `## For the main thread`, moved
-//! into the logs when the story is merged: a heading the tool knows names the log, each line under
-//! it is a row.
+//! into the logs by the story's `done` commit (ADR-0091): a heading the tool knows names the log,
+//! each line under it is a row, or a line of a tool card (ADR-0085).
 
-/// The story file's section holding what the main thread writes at merge.
+/// The story file's section holding what the main thread writes, or moves in the `done` commit.
 pub const SECTION: &str = "## For the main thread";
 
 /// Where a log takes new rows.
@@ -12,6 +12,9 @@ pub enum Place {
     Table,
     /// At the end of its newest dated section, the first `## ` heading (`journal.md`, newest first).
     NewestSection,
+    /// At its end, each card under a `## ` heading (`tool-incidents.md`, oldest first): a card is
+    /// written `#### <date> — <title>` in a story file, its bullets under it (ADR-0085).
+    Cards,
 }
 
 /// A log fed from story files: the heading naming it there, its path and where its rows go.
@@ -26,7 +29,7 @@ pub struct Log {
 }
 
 /// The logs whose rows the tool moves.
-pub const LOGS: [Log; 3] = [
+pub const LOGS: [Log; 4] = [
     Log {
         heading: "### Journal",
         path: "docs/process/journal.md",
@@ -42,6 +45,11 @@ pub const LOGS: [Log; 3] = [
         path: "docs/process/feedback.md",
         place: Place::Table,
     },
+    Log {
+        heading: "### Incidents",
+        path: "docs/process/tool-incidents.md",
+        place: Place::Cards,
+    },
 ];
 
 /// The rows taken out of a story file, log by log, the lines left in it, and its new text.
@@ -54,6 +62,9 @@ pub struct Taken {
     /// The lines under a log's heading that are not one of its rows, left in the story file under
     /// that heading, in the order of [`LOGS`].
     pub left: Vec<(Log, Vec<String>)>,
+    /// The notes for the main thread: the lines of the section outside a log's heading, blank
+    /// lines aside, which stay in the story file (EN-140).
+    pub notes: Vec<String>,
 }
 
 /// What a line under a log's heading is to the tool.
@@ -143,9 +154,34 @@ fn is_tagged_bullet(line: &str) -> bool {
         })
 }
 
+/// The heading opening a card in a story file, `#### `.
+const CARD: &str = "#### ";
+
+/// Whether a line opens a dated card, `#### 2026-10-19 — …`.
+fn is_dated_card(line: &str) -> bool {
+    line.strip_prefix(CARD).and_then(date_at_start).is_some()
+}
+
+/// Whether a heading under `### Incidents` is a card at another level, which the tool leaves and
+/// reports (AUD-025): a dated `## ` or `### ` heading, or any heading deeper than a card's.
+fn is_misplaced_card(line: &str) -> bool {
+    line.starts_with("#####")
+        || ["## ", "### "]
+            .iter()
+            .any(|level| line.strip_prefix(level).and_then(date_at_start).is_some())
+}
+
+/// Whether a line under an open card belongs to it: a bullet, or an indented line, a
+/// continuation or a nested bullet (AUD-025).
+fn is_card_line(line: &str) -> bool {
+    line.starts_with("- ") || line.starts_with(char::is_whitespace)
+}
+
 /// What a line under a log's heading is: a table log takes dated table rows, its header (a row
-/// followed by a separator) and separator dropped; the journal takes tagged bullets.
-fn shape(place: Place, line: &str, next: Option<&str>) -> Shape {
+/// followed by a separator) and separator dropped; the journal takes tagged bullets; the incidents
+/// log takes a dated card's heading and the bullets and indented lines under it, `in_card`
+/// telling whether one is open.
+fn shape(place: Place, line: &str, next: Option<&str>, in_card: bool) -> Shape {
     let line = line.trim_end();
 
     if line.trim().is_empty() || is_placeholder(line) {
@@ -160,6 +196,7 @@ fn shape(place: Place, line: &str, next: Option<&str>) -> Shape {
         }
         Place::Table if is_table_row(line) && is_dated(line) => Shape::Row,
         Place::NewestSection if is_tagged_bullet(line) => Shape::Row,
+        Place::Cards if is_dated_card(line) || (in_card && is_card_line(line)) => Shape::Row,
         _ => Shape::Other,
     }
 }
@@ -191,8 +228,13 @@ fn put_back<'a>(kept: &mut Vec<&'a str>, block: &mut Vec<&'a str>) {
 /// The rows under the known headings of a story file's `## For the main thread`, and the story
 /// file without them: a heading whose lines all moved goes, and a section left empty too. A line
 /// that is not a row of its log stays under its heading, listed in [`Taken::left`]; a blank line,
-/// a placeholder (`- None.`) and a table's header and separator are dropped. Other headings stay as
-/// they are.
+/// a placeholder (`- None.`) and a table's header and separator are dropped. Under `### Incidents`
+/// a `#### ` heading opens a card, taken with its bullets and indented lines when it starts with a
+/// date, left with them otherwise; a card at another level (a dated `## ` or `### ` heading, a
+/// heading deeper than `#### `) is left with the lines after it, `### Incidents` kept above them
+/// (AUD-025). Other headings stay as they are; the section ends at the next `## ` heading that is
+/// not dated, or a `# ` one. The lines outside a log's heading, blank lines aside, are the notes
+/// for the main thread, kept and listed in [`Taken::notes`] (EN-140).
 #[must_use]
 pub fn take_rows(story: &str) -> Taken {
     let lines: Vec<&str> = story.split('\n').collect();
@@ -201,22 +243,31 @@ pub fn take_rows(story: &str) -> Taken {
             story: story.to_owned(),
             rows: Vec::new(),
             left: Vec::new(),
+            notes: Vec::new(),
         };
     };
     let end = lines[start + 1..]
         .iter()
-        .position(|line| line.starts_with("## ") || line.starts_with("# "))
+        .position(|line| {
+            (line.starts_with("## ") && heading_date(line).is_none()) || line.starts_with("# ")
+        })
         .map_or(lines.len(), |offset| start + 1 + offset);
     let body = &lines[start + 1..end];
     let mut kept: Vec<&str> = Vec::new();
     let mut block: Vec<&str> = Vec::new();
     let mut found: Vec<(Log, Vec<String>)> = Vec::new();
     let mut left: Vec<(Log, Vec<String>)> = Vec::new();
+    let mut notes: Vec<String> = Vec::new();
     let mut current: Option<Log> = None;
+    let mut in_card = false;
 
     for (index, line) in body.iter().enumerate() {
-        if is_heading(line) {
+        let cards = current.is_some_and(|log| log.place == Place::Cards);
+        let misplaced = cards && is_misplaced_card(line);
+
+        if is_heading(line) && !(cards && line.starts_with(CARD)) && !misplaced {
             put_back(&mut kept, &mut block);
+            in_card = false;
             current = LOGS
                 .iter()
                 .find(|log| log.heading == line.trim_end())
@@ -230,10 +281,22 @@ pub fn take_rows(story: &str) -> Taken {
 
         let Some(log) = current else {
             kept.push(line);
+            if !line.trim().is_empty() {
+                notes.push((*line).to_owned());
+            }
             continue;
         };
 
-        match shape(log.place, line, body.get(index + 1).copied()) {
+        let shape = if misplaced {
+            Shape::Other
+        } else {
+            shape(log.place, line, body.get(index + 1).copied(), in_card)
+        };
+
+        if cards && (misplaced || line.starts_with(CARD)) {
+            in_card = shape == Shape::Row;
+        }
+        match shape {
             Shape::Row => add(&mut found, log, line),
             Shape::Skip => {}
             Shape::Other => {
@@ -270,7 +333,93 @@ pub fn take_rows(story: &str) -> Taken {
         story: joined,
         rows: found,
         left,
+        notes,
     }
+}
+
+/// A file's text before a commit and after it.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct Change<'a> {
+    /// Its text in the commit's parent.
+    pub before: &'a str,
+    /// Its text in the commit.
+    pub after: &'a str,
+}
+
+/// Whether a `done` commit's change of a log only adds the rows and card lines the same commit
+/// removes from the story file (AUD-025): the log before is the log after with lines taken out,
+/// and each line taken out is blank, the journal's `## <date> — Run continued` heading, or one of
+/// that log's rows under `## For the main thread` before the commit and not after it, a card's
+/// `#### ` heading written `## `. Any other change, another story's row, a line deleted or
+/// rewritten, is not.
+#[must_use]
+pub fn only_moved_rows(log: Log, log_change: Change, story_change: Change) -> bool {
+    let Some(added) = added_lines(log_change.before, log_change.after) else {
+        return false;
+    };
+    let mut moved = rows_of(log, story_change.before);
+
+    for row in rows_of(log, story_change.after) {
+        take_one(&mut moved, &row);
+    }
+
+    added.into_iter().all(|line| {
+        line.trim().is_empty()
+            || (log.place == Place::NewestSection && is_continued(line))
+            || story_line(log.place, line).is_some_and(|row| take_one(&mut moved, &row))
+    })
+}
+
+/// The lines added to a text, `None` when it lost or changed one: `before` is `after` with lines
+/// taken out, found in order, each kept line matched at its first occurrence.
+fn added_lines<'a>(before: &str, after: &'a str) -> Option<Vec<&'a str>> {
+    let mut old = before.split('\n').peekable();
+    let mut added = Vec::new();
+
+    for line in after.split('\n') {
+        if old.peek() == Some(&line) {
+            old.next();
+        } else {
+            added.push(line);
+        }
+    }
+
+    old.next().is_none().then_some(added)
+}
+
+/// The rows of a log a story file holds under `## For the main thread`.
+fn rows_of(log: Log, story: &str) -> Vec<String> {
+    take_rows(story)
+        .rows
+        .into_iter()
+        .find(|(known, _)| *known == log)
+        .map(|(_, rows)| rows)
+        .unwrap_or_default()
+}
+
+/// Takes one copy of a row out of a list; false when the list holds none.
+fn take_one(rows: &mut Vec<String>, row: &str) -> bool {
+    rows.iter()
+        .position(|known| known == row)
+        .map(|at| rows.remove(at))
+        .is_some()
+}
+
+/// Whether a line is the journal's heading of a section opened for today's rows.
+fn is_continued(line: &str) -> bool {
+    heading_date(line).is_some_and(|date| line == format!("## {date} — {CONTINUED}"))
+}
+
+/// A log's line as the story file wrote it: a card's `## ` heading was `#### `, any other heading
+/// in the incidents log none; the other lines as they are.
+fn story_line(place: Place, line: &str) -> Option<String> {
+    if place == Place::Cards && is_heading(line) {
+        return line
+            .strip_prefix("## ")
+            .map(|title| format!("{CARD}{title}"));
+    }
+
+    Some(line.to_owned())
 }
 
 /// The title of the journal's section opened for today's rows when the newest one is older.
@@ -281,12 +430,35 @@ fn heading_date(heading: &str) -> Option<&str> {
     date_at_start(heading.strip_prefix("## ")?)
 }
 
+/// The incidents log with cards at its end: each card's `#### ` heading written `## `, between
+/// blank lines, its bullets under it.
+fn append_cards(log: &str, rows: &[String]) -> String {
+    let mut text = log.trim_end().to_owned();
+
+    for row in rows {
+        if let Some(title) = row.strip_prefix(CARD) {
+            if !text.is_empty() {
+                text.push_str("\n\n");
+            }
+            text.push_str("## ");
+            text.push_str(title);
+            text.push('\n');
+        } else {
+            text.push('\n');
+            text.push_str(row);
+        }
+    }
+    text.push('\n');
+    text
+}
+
 /// A log with new rows at its place. In the journal, rows dated after its newest section go into
-/// a new section, `## <today> — Run continued`, opened above it.
+/// a new section, `## <today> — Run continued`, opened above it; cards go at the incidents log's
+/// end, oldest first.
 ///
 /// # Errors
 ///
-/// When the log has no table, or no `## ` section, to take them.
+/// When a table log has no table, or the journal no `## ` section, to take them.
 pub fn insert_rows(
     log: &str,
     place: Place,
@@ -296,6 +468,7 @@ pub fn insert_rows(
     let lines: Vec<&str> = log.split('\n').collect();
     let mut opened: Vec<String> = Vec::new();
     let at = match place {
+        Place::Cards => return Ok(append_cards(log, rows)),
         Place::Table => {
             let first = lines
                 .iter()

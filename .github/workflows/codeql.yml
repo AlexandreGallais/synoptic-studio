@@ -1,5 +1,6 @@
-# Static security analysis of the TypeScript code (docs/tooling/ci.md, ADR-0038): pull requests
-# into main, compared with the analysis of main, refreshed on each push to main and weekly.
+# Static security analysis of the TypeScript code and of the workflows (docs/tooling/ci.md,
+# ADR-0038, EN-134): pull requests into main, compared with the analysis of main, refreshed on
+# each push to main and weekly.
 name: CodeQL
 
 on:
@@ -17,12 +18,14 @@ permissions:
 
 jobs:
   analyze:
+    # One job for both languages, analysed in turn: a job per language would be named
+    # `Analyze (<language>)`, and `Analyze` is the check main's ruleset requires (EN-134).
     name: Analyze
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
       - uses: github/codeql-action/init@v4
         with:
-          languages: javascript-typescript
+          languages: javascript-typescript, actions
           queries: security-and-quality
       - uses: github/codeql-action/analyze@v4

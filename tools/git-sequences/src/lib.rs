@@ -4,6 +4,7 @@
 //! checkout they are started from and stop at the first failing step with Git's own message. What
 //! they run is decided here, without Git.
 
+use git_hooks::branch::is_valid_branch;
 use worktree::{base_branch, branch_refusal, story_of_branch, story_of_file};
 
 /// The remote every sequence talks to.
@@ -49,10 +50,12 @@ pub enum Request {
         /// Whether the commit is pushed.
         push: Push,
     },
+    /// `state`: the branch, its base, the status, the diff's stat and the commits ahead (EN-119).
+    State,
 }
 
 /// The usage printed on a malformed call.
-pub const USAGE: &str = "usage: target/release/git-sequences sync [--base <ref>] | target/release/git-sequences commit -F <file|-> [--push|--push-with-lease] [--] <path>…";
+pub const USAGE: &str = "usage: target/release/git-sequences sync [--base <ref>] | target/release/git-sequences commit -F <file|-> [--push|--push-with-lease] [--] <path>… | target/release/git-sequences state";
 
 /// The request of a command line, the subcommand first.
 ///
@@ -63,6 +66,7 @@ pub fn parse(argv: &[String]) -> Result<Request, String> {
     match argv.split_first() {
         Some((command, rest)) if command == "sync" => parse_sync(rest),
         Some((command, rest)) if command == "commit" => parse_commit(rest),
+        Some((command, [])) if command == "state" => Ok(Request::State),
         _ => Err(USAGE.to_owned()),
     }
 }
@@ -120,19 +124,23 @@ pub enum Branch {
     Main,
     /// No branch checked out.
     Detached,
-    /// `<type>/<id>-<topic>`, a story's branch.
+    /// `<type>/<id>-<topic>`, a story's branch, or a name the pre-push refuses.
     Story(String),
     /// Any other branch: `develop`, `feature/f20-…`.
     Other(String),
 }
 
-/// The branch of `git rev-parse --abbrev-ref HEAD`.
+/// The branch of `git rev-parse --abbrev-ref HEAD`: a name the pre-push refuses is taken as a
+/// story branch, so that `sync` refuses it for its missing story id rather than fast-forwarding it
+/// as a shared one (AUD-025).
 #[must_use]
 pub fn branch_of(name: &str) -> Branch {
     match name.trim() {
         "main" => Branch::Main,
         "" | "HEAD" => Branch::Detached,
-        name if branch_refusal(name).is_none() => Branch::Story(name.to_owned()),
+        name if branch_refusal(name).is_none() || !is_valid_branch(name) => {
+            Branch::Story(name.to_owned())
+        }
         name => Branch::Other(name.to_owned()),
     }
 }
@@ -288,4 +296,98 @@ pub fn commit_steps(paths: &[String], push: Push) -> Vec<Vec<String>> {
 
 fn owned(words: &[&str]) -> Vec<String> {
     words.iter().map(|&word| word.to_owned()).collect()
+}
+
+/// What `git-sequences state` prints of a checkout (EN-119, I93): the reads a worker chained most,
+/// each a step of its own.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct State {
+    /// The checkout's folder name, `en-119`.
+    pub place: String,
+    /// The checked-out branch, `HEAD` when detached.
+    pub branch: String,
+    /// The branch its commits are counted from, `None` when none is found.
+    pub base: Option<String>,
+    /// `git status --short`.
+    pub status: String,
+    /// `git diff --stat HEAD`: the changes of tracked files, staged or not.
+    pub diff: String,
+    /// `git log --format='%h %s' <base>..HEAD`.
+    pub commits: String,
+}
+
+/// The base `git-sequences state` counts a branch's commits from: a story's feature branch on
+/// `origin` (`origin/develop` for an epic's own story), as `sync` rebases it; another branch's
+/// upstream; `None` for a detached head, a story whose file or feature branch is not found, or a
+/// branch without upstream.
+#[must_use]
+pub fn state_base(
+    branch: &Branch,
+    story_files: &[String],
+    remote_branches: &[String],
+    upstream: Option<&str>,
+) -> Option<String> {
+    match branch {
+        Branch::Detached => None,
+        Branch::Story(_) => match sync_target(branch, None, story_files, remote_branches) {
+            Ok(Target::Rebase(base)) => Some(base),
+            _ => None,
+        },
+        Branch::Main | Branch::Other(_) => upstream.map(str::to_owned),
+    }
+}
+
+/// The Git steps of `git-sequences state`, each read-only: the status, the diff's stat, and the
+/// commits ahead of the base when there is one.
+#[must_use]
+pub fn state_steps(base: Option<&str>) -> Vec<Vec<String>> {
+    let mut steps = vec![
+        owned(&["status", "--short"]),
+        owned(&["diff", "--stat", "HEAD"]),
+    ];
+
+    if let Some(base) = base {
+        steps.push(vec![
+            "log".to_owned(),
+            "--format=%h %s".to_owned(),
+            format!("{base}..HEAD"),
+        ]);
+    }
+    steps
+}
+
+/// The text `git-sequences state` prints: a line naming the branch, its base and how many commits
+/// are ahead, then each part under its Git command, `clean` or `none` when empty.
+#[must_use]
+pub fn state_report(state: &State) -> String {
+    let part = |title: &str, text: &str, empty: &str| {
+        if text.is_empty() {
+            format!("{title}: {empty}")
+        } else {
+            format!("{title}:\n{text}")
+        }
+    };
+    let (head, commits) = match &state.base {
+        Some(base) => (
+            format!(
+                "{}: {} on {base}, {} commit(s) ahead",
+                state.place,
+                state.branch,
+                state.commits.lines().count()
+            ),
+            part("commits ahead", &state.commits, "none"),
+        ),
+        None => (
+            format!("{}: {}, no base found", state.place, state.branch),
+            "commits ahead: no base".to_owned(),
+        ),
+    };
+
+    [
+        head,
+        part("status --short", &state.status, "clean"),
+        part("diff --stat HEAD", &state.diff, "none"),
+        commits,
+    ]
+    .join("\n")
 }

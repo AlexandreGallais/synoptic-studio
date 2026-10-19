@@ -28,4 +28,11 @@
 | [F25](./E17-F25-the-test-lanes-rust-tools.md) | E17 | The test lane's Rust tools | done |
 | [F26](./E17-F26-mutate-stops-on-linux.md) | E17 | The mutation runner stops a mutation on Linux | done |
 | [F27](./E17-F27-retired-scopes-in-history.md) | E17 | The history check reads the scopes a commit was written with | done |
-| [F23](./E02-F23-e17s-tool-incidents-fixed.md) | E02 | E17's tool incidents fixed | draft |
+| [F28](./E17-F28-one-workflow-per-purpose.md) | E17 | One workflow per purpose | done |
+| [F23](./E17-F23-the-path-of-a-story.md) | E17 | The path of a story through the tools | done |
+| [F29](./E17-F29-local-checks-stable-and-fast.md) | E17 | The local checks stable and fast | done |
+| [F30](./E17-F30-a-ci-on-develop-that-blocks-nothing.md) | E17 | A CI on develop that blocks nothing | done |
+| [F31](./E17-F31-the-guard-and-the-agents-commands.md) | E17 | The guard and the agent's commands | done |
+| [F32](./E17-F32-reports-that-say-what-happened.md) | E17 | Reports that say what happened | done |
+| [F33](./E17-F33-the-checks-ret-004-listed.md) | E17 | The checks RET-004 listed | done |
+| [F34](./E17-F34-the-use-of-each-workflow.md) | E17 | The use of each workflow | done |

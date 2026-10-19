@@ -13,10 +13,12 @@ use std::path::Path;
 use hooks::git::git;
 use hooks::handback::{
     Branch, Commit, agent_transcript, allow_output, base_of, earlier_handbacks, finish_line,
-    is_checked, missing, read_refs, refusal, story_of, worktree_id,
+    is_checked, missing, read_refs, refusal, story_of,
 };
 use hooks::json::{self, Value};
 use hooks::limit::deny_output;
+use hooks::worktrees::prompt_worktree;
+use worktree::WORKTREES;
 
 /// The story of a worktree, its branch as the worktree sees it, its commits not on its base, and
 /// that base: two Git calls. Without a story or a base, no commit is listed: the report's naming
@@ -79,10 +81,10 @@ fn answer(input: &Value) -> Option<String> {
     ))
     .ok()?;
     let lines = String::from_utf8_lossy(&lines);
-    let id = worktree_id(&lines)?;
+    let id = prompt_worktree(&lines)?;
     let project =
         std::env::var("CLAUDE_PROJECT_DIR").unwrap_or_else(|_| input.get("cwd").text().to_owned());
-    let worktree = Path::new(&project).join(".claude/worktrees").join(id);
+    let worktree = Path::new(&project).join(WORKTREES).join(id);
 
     if !worktree.is_dir() {
         return None;
