@@ -6,7 +6,7 @@ status: draft
 
 # E20 — Make the editor easy to use
 
-The later epic on ease of use the Product Owner named at the validations of E15 and F08, its ideas gathered here from E02 on 2026-10-19 (SP-025). Not in the run order: the Product Owner places it later. Its aim is the fewest options doing the most; its edition, free V1 or pro, is decided then (ADR-0030).
+The later epic on ease of use the Product Owner named at the validations of E15 and F08, its ideas gathered here from E02 on 2026-10-19 (SP-025). It is the design of the editors' interface, placed after every epic that builds the library and before the release (Product Owner, 2026-10-19, [order of the epics](./)): the library's epics may offer more options than needed, so that they move fast; here each button and option is questioned — whether it matters, whether the same option sits in two places, whether it is clear, whether it helps or slows the designer. Its aim is the fewest options doing the most.
 
 | Field | Content |
 | --- | --- |
@@ -20,12 +20,12 @@ The later epic on ease of use the Product Owner named at the validations of E15 
 | Business outcomes | to refine |
 | Leading indicators | to refine |
 | Non-functional requirements | to refine |
-| In scope | the ideas below |
+| In scope | a review of every button, option and message of the editors (each needed, said once, clear, helping); the ideas below |
 | Out of scope | to refine |
 
 ## Features
 
-Candidates grouped by the agent at SP-025 (2026-10-19), to be cut again at the epic's refinement.
+Candidates grouped by the agent at SP-025 (2026-10-19), to be cut again at the epic's refinement, which starts with the review of the editors' options as a whole.
 
 | Feature | Expected stories | Status |
 | --- | --- | --- |
