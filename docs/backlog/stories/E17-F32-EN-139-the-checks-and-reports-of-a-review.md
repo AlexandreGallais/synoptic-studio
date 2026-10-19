@@ -3,7 +3,7 @@ id: EN-139
 epic: E17
 feature: F32
 title: The reports of a review say what happened
-status: ready
+status: done
 points: 2
 ---
 
@@ -20,7 +20,13 @@ From the rows I36, I72, I82, I88, I110 and I111 (RET-004) and its finding that `
 
 ## Tasks
 
-- [ ] T1 — Each criterion's tests in `epic-check`, `session-report`, `val-prepare` and `context-size`, from the recorded cases, failing (1 h)
-- [ ] T2 — The four tools fixed, `docs/tooling/agent-tools.md` (2 h)
+- [x] T1 — Each criterion's tests in `epic-check`, `session-report`, `val-prepare` and `context-size`, from the recorded cases, failing (1 h)
+- [x] T2 — The four tools fixed, `docs/tooling/agent-tools.md` (2 h)
 
 One task = one commit, referenced as `EN-139.T1` in the commit footer.
+
+## For the main thread
+
+Rule-docs: none affected, a tooling story: no rule of `docs/domain/` changes.
+
+Decisions taken: `context-size` counts a file named at 2.30 characters per token, the ratio EN-097 measured from its requests' input and EN-098 and EN-099 used, since no tokenizer is available offline (I72); `format_duration` chooses its unit from the duration rounded as shown, so 59.6 s is `1 min 00 s` and 999.6 ms `1.0 s`, in every report of `tools/metrics`, not only `session-report`; `val-prepare` tags a criterion with its own number, so F20's criterion 6 stays `F20.AC6` once the fifth is struck; `epic-check` reads the last pull request into `main` whatever its state (`gh pr list --base main --state all --limit 1`), a job skipped or neutral passing, one still running to look at. I88's other half, the barrel `export type *` rewritten as `export *`, is outside the story's criteria and left as it was.

@@ -23,7 +23,7 @@ In delivery order.
 | ID | Type | Title | Status |
 | --- | --- | --- | --- |
 | [EN-120](../stories/E17-F32-EN-120-the-status-line-and-metrics.md) | EN | The status line and metrics say what ran | done |
-| [EN-139](../stories/E17-F32-EN-139-the-checks-and-reports-of-a-review.md) | EN | The reports of a review say what happened | ready |
+| [EN-139](../stories/E17-F32-EN-139-the-checks-and-reports-of-a-review.md) | EN | The reports of a review say what happened | done |
 | [AUD-034](../stories/E17-F32-AUD-034-audit-f32.md) | AUD | Audit F32 | ready |
 | [VAL-033](../stories/E17-F32-VAL-033-validate-f32.md) | VAL | Validate F32 | ready |
 

@@ -1,7 +1,8 @@
 //! The findings of `epic-check` (RET-002, EN-055, EN-103), read from logs and outputs: the
 //! branches left, the failed calls (the worktree isolation's refusals apart), the calls lost at a
 //! force-quit, the checks of a failed `check:all`, each named with its lane and its failing tests,
-//! and the table they make for the retrospective's record.
+//! the CI of the last pull request into `main`, and the table they make for the retrospective's
+//! record.
 
 use calendar::{HOUR_MS, iso_minute};
 use hooks::json::Value;
@@ -40,6 +41,9 @@ const SUMMARY_SHOWN: usize = 60;
 /// Start of the error Claude Code returns when a worktree subagent's command leaves its worktree:
 /// a refusal before the command runs, not a command that failed (549 of them in E15).
 const ISOLATION_REFUSAL: &str = "This agent is isolated in the worktree";
+
+/// The finding of the last pull request into `main`.
+const MAIN_CI: &str = "CI of the last pull request into main";
 
 /// The first characters of a text.
 fn first_chars(text: &str, count: usize) -> &str {
@@ -347,15 +351,19 @@ pub fn check_all_finding(is_ok: bool, out: &str) -> Finding {
     }
 }
 
-/// The backlog items of an epic not `done`, its retrospective left out: each file's name, without
-/// `.md`, and its text.
+/// The backlog items of an epic neither `done` nor `dropped` (I110), its retrospective left out:
+/// each file's name, without `.md`, and its text.
 #[must_use]
 pub fn open_items(epic: &str, files: &[(String, String)]) -> Finding {
     let start = format!("{epic}-");
     let open: Vec<&str> = files
         .iter()
         .filter(|(name, _)| name.starts_with(&start) && !name.contains("-RET-"))
-        .filter(|(_, text)| !text.lines().any(|line| line == "status: done"))
+        .filter(|(_, text)| {
+            !text
+                .lines()
+                .any(|line| line == "status: done" || line == "status: dropped")
+        })
         .map(|(name, _)| name.strip_suffix(".md").unwrap_or(name))
         .collect();
 
@@ -363,11 +371,111 @@ pub fn open_items(epic: &str, files: &[(String, String)]) -> Finding {
         what: format!("backlog of {epic}"),
         is_ok: open.is_empty(),
         detail: if open.is_empty() {
-            "every feature and story done".to_owned()
+            "every feature and story done or dropped".to_owned()
         } else {
             open.join(", ")
         },
     }
+}
+
+/// The CI of the last pull request into `main`, from `gh pr list --base main --state all
+/// --limit 1 --json number,title,statusCheckRollup`: whether `gh` answered and its output. Its
+/// result, its failed jobs and those still running, each named `<workflow> / <job>` (I110).
+#[must_use]
+pub fn main_ci(answered: bool, out: &str) -> Finding {
+    let finding = |is_ok: bool, detail: String| Finding {
+        what: MAIN_CI.to_owned(),
+        is_ok,
+        detail,
+    };
+
+    if !answered {
+        return finding(false, out.to_owned());
+    }
+
+    let Some(Value::Array(pulls)) = hooks::json::parse(out) else {
+        return finding(false, format!("gh pr list answered no JSON list: {out}"));
+    };
+    let Some(pull) = pulls.first() else {
+        return finding(true, "no pull request into main".to_owned());
+    };
+    let number = match pull.get("number") {
+        Value::Number(number) => format!("{number:.0}"),
+        _ => "?".to_owned(),
+    };
+    let named = format!("#{number} {}", text(pull, "title"));
+    let jobs: Vec<(String, Option<bool>)> = pull
+        .get("statusCheckRollup")
+        .items()
+        .iter()
+        .map(job)
+        .collect();
+    let failed: Vec<&str> = jobs
+        .iter()
+        .filter(|(_, passed)| *passed == Some(false))
+        .map(|(name, _)| name.as_str())
+        .collect();
+    let running: Vec<&str> = jobs
+        .iter()
+        .filter(|(_, passed)| passed.is_none())
+        .map(|(name, _)| name.as_str())
+        .collect();
+
+    if jobs.is_empty() {
+        return finding(true, format!("{named}: no CI ran"));
+    }
+    if failed.is_empty() && running.is_empty() {
+        return finding(true, format!("{named}: passed, {} jobs", jobs.len()));
+    }
+
+    let failures = (!failed.is_empty()).then(|| {
+        format!(
+            "failed, {} of {} jobs: {}",
+            failed.len(),
+            jobs.len(),
+            failed.join(", ")
+        )
+    });
+    let runs = (!running.is_empty()).then(|| format!("running: {}", running.join(", ")));
+
+    finding(
+        false,
+        format!(
+            "{named}: {}",
+            failures
+                .into_iter()
+                .chain(runs)
+                .collect::<Vec<_>>()
+                .join("; ")
+        ),
+    )
+}
+
+/// A job of a pull request's `statusCheckRollup`, `<workflow> / <job>` for a check run, its
+/// context for a commit status, and whether it passed: `None` while it runs. A check run passes
+/// when it succeeded, was skipped or neutral; a commit status when it succeeded.
+fn job(check: &Value) -> (String, Option<bool>) {
+    if text(check, "__typename") == "StatusContext" {
+        let state = text(check, "state");
+
+        return (
+            text(check, "context").to_owned(),
+            (!matches!(state, "PENDING" | "EXPECTED")).then_some(state == "SUCCESS"),
+        );
+    }
+
+    let workflow = text(check, "workflowName");
+    let name = text(check, "name");
+
+    (
+        if workflow.is_empty() {
+            name.to_owned()
+        } else {
+            format!("{workflow} / {name}")
+        },
+        (text(check, "status") == "COMPLETED")
+            .then(|| matches!(text(check, "conclusion"), "SUCCESS" | "SKIPPED" | "NEUTRAL")),
+    )
 }
 
 /// The Markdown table of the findings, for the retrospective's record.
@@ -698,7 +806,7 @@ mod tests {
         assert!(!open.is_ok);
         assert_eq!(
             open_items("E14", &files[..1]).detail,
-            "every feature and story done"
+            "every feature and story done or dropped"
         );
         assert_eq!(
             table(&[
@@ -710,6 +818,145 @@ mod tests {
                 }
             ]),
             "| Check | Result | Detail |\n| --- | --- | --- |\n| backlog of E14 | **to look at** | E14-F01-US-001-a |\n| w | ok | a \\| b |"
+        );
+    }
+
+    #[test]
+    fn f32_ac2_counts_a_dropped_story_as_closed() {
+        // EN-064 was `dropped` in E17 and listed among the backlog to look at (I110).
+        let files = [
+            (
+                "E17-F20-EN-064-x.md".to_owned(),
+                "---\nstatus: dropped\n---\n".to_owned(),
+            ),
+            (
+                "E17-F20-EN-065-y.md".to_owned(),
+                "---\nstatus: done\n---\n".to_owned(),
+            ),
+            (
+                "E17-F20-EN-066-z.md".to_owned(),
+                "---\nstatus: in-progress\n---\n".to_owned(),
+            ),
+        ];
+
+        assert_eq!(open_items("E17", &files).detail, "E17-F20-EN-066-z");
+        assert_eq!(
+            open_items("E17", &files[..2]),
+            Finding {
+                what: "backlog of E17".to_owned(),
+                is_ok: true,
+                detail: "every feature and story done or dropped".to_owned(),
+            }
+        );
+        // A status only written in a story's text is not its front matter's line.
+        let quoted = [(
+            "E17-F20-EN-067-q.md".to_owned(),
+            "status: dropped later\n".to_owned(),
+        )];
+
+        assert!(!open_items("E17", &quoted).is_ok);
+    }
+
+    /// A check run of a workflow, as `statusCheckRollup` gives it.
+    fn run(workflow: &str, name: &str, status: &str, conclusion: &str) -> String {
+        format!(
+            r#"{{"__typename":"CheckRun","name":"{name}","workflowName":"{workflow}","status":"{status}","conclusion":"{conclusion}"}}"#
+        )
+    }
+
+    /// The last pull request into `main` and its checks, as `gh pr list` writes it.
+    fn pull_request(checks: &[String]) -> String {
+        format!(
+            r#"[{{"number":259,"title":"Release E17","statusCheckRollup":[{}]}}]"#,
+            checks.join(",")
+        )
+    }
+
+    #[test]
+    fn f32_ac2_reports_the_failed_jobs_of_the_last_pull_request_into_main() {
+        // #259, develop → main, closed 2026-10-18: CI failed three tests' job, CodeQL its analysis.
+        let out = pull_request(&[
+            run("CI", "Lint and types", "COMPLETED", "SUCCESS"),
+            run("CI", "TypeScript tests", "COMPLETED", "FAILURE"),
+            run("CodeQL", "Analyze", "COMPLETED", "FAILURE"),
+            run("Story auto-merge", "Merge", "COMPLETED", "SKIPPED"),
+            run("CI", "Rust", "COMPLETED", "TIMED_OUT"),
+            run("CI", "Dependency review", "COMPLETED", "CANCELLED"),
+            r#"{"__typename":"StatusContext","context":"license/cla","state":"ERROR"}"#.to_owned(),
+        ]);
+
+        assert_eq!(
+            main_ci(true, &out),
+            Finding {
+                what: "CI of the last pull request into main".to_owned(),
+                is_ok: false,
+                detail: "#259 Release E17: failed, 5 of 7 jobs: CI / TypeScript tests, CodeQL / Analyze, CI / Rust, CI / Dependency review, license/cla".to_owned(),
+            }
+        );
+    }
+
+    #[test]
+    fn f32_ac2_reports_a_ci_passed_running_or_absent() {
+        // Skipped and neutral jobs pass, as GitHub counts them.
+        let passed = pull_request(&[
+            run("CI", "Rust", "COMPLETED", "SUCCESS"),
+            run("Story auto-merge", "Merge", "COMPLETED", "SKIPPED"),
+            run("CI", "Notes", "COMPLETED", "NEUTRAL"),
+            r#"{"__typename":"StatusContext","context":"license/cla","state":"SUCCESS"}"#
+                .to_owned(),
+        ]);
+
+        assert_eq!(
+            main_ci(true, &passed),
+            Finding {
+                what: "CI of the last pull request into main".to_owned(),
+                is_ok: true,
+                detail: "#259 Release E17: passed, 4 jobs".to_owned(),
+            }
+        );
+
+        // Not finished: neither passed nor failed, so to look at.
+        let running = pull_request(&[
+            run("CI", "Rust", "IN_PROGRESS", ""),
+            run("CI", "Lint and types", "COMPLETED", "FAILURE"),
+            r#"{"__typename":"StatusContext","context":"license/cla","state":"PENDING"}"#
+                .to_owned(),
+        ]);
+        let found = main_ci(true, &running);
+
+        assert!(!found.is_ok);
+        assert_eq!(
+            found.detail,
+            "#259 Release E17: failed, 1 of 3 jobs: CI / Lint and types; running: CI / Rust, license/cla"
+        );
+
+        let none = main_ci(true, &pull_request(&[]));
+
+        assert!(none.is_ok);
+        assert_eq!(none.detail, "#259 Release E17: no CI ran");
+        assert_eq!(
+            main_ci(true, "[]"),
+            Finding {
+                what: "CI of the last pull request into main".to_owned(),
+                is_ok: true,
+                detail: "no pull request into main".to_owned(),
+            }
+        );
+    }
+
+    #[test]
+    fn f32_ac2_says_why_the_ci_could_not_be_read() {
+        assert_eq!(
+            main_ci(false, "Error: spawnSync gh ENOENT"),
+            Finding {
+                what: "CI of the last pull request into main".to_owned(),
+                is_ok: false,
+                detail: "Error: spawnSync gh ENOENT".to_owned(),
+            }
+        );
+        assert_eq!(
+            main_ci(true, "not JSON").detail,
+            "gh pr list answered no JSON list: not JSON"
         );
     }
 }

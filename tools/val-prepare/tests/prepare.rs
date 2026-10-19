@@ -6,8 +6,8 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 
 use val_prepare::{
-    Feature, LINE_LIMIT, epic_number, feature_id, lines_module, parse_feature, plan, ts_string,
-    with_checklist, with_exports, with_feature_lines,
+    Criterion, Feature, LINE_LIMIT, epic_number, feature_id, lines_module, parse_feature, plan,
+    ts_string, with_checklist, with_exports, with_feature_lines,
 };
 
 const CHECKLISTS: &str = "../../playground/checklists";
@@ -104,8 +104,14 @@ fn reads_the_numbered_criteria_only() {
             epic: "E17".to_owned(),
             title: "A title: with a colon".to_owned(),
             criteria: vec![
-                "Criterion 1 of F18.".to_owned(),
-                "Criterion 2 of F18.".to_owned()
+                Criterion {
+                    number: 1,
+                    text: "Criterion 1 of F18.".to_owned()
+                },
+                Criterion {
+                    number: 2,
+                    text: "Criterion 2 of F18.".to_owned()
+                },
             ],
         }
     );
@@ -311,4 +317,82 @@ fn warns_at_the_limit_the_playground_holds() {
     assert!(limit.contains(&format!(
         "export const CHECKLIST_LINE_LIMIT = {LINE_LIMIT};"
     )));
+}
+
+/// F20's criteria as its file wrote them on 2026-10-18: the fifth struck through and dropped.
+const STRUCK: &str = "---\nid: F20\nepic: E17\ntitle: A context diet\n---\n\n## Acceptance criteria\n\n\
+    4. A worker's first request is measured (EN-065).\n\
+    5. ~~A claude.ai page shows a run's tree (EN-087).~~ Dropped on 2026-10-17: the page was judged not useful.\n\
+    6. A hand-back names its commits (EN-088).\n\n## Stories\n";
+
+#[test]
+fn f32_ac2_writes_no_line_for_a_struck_criterion() {
+    let feature = parse_feature(STRUCK).unwrap();
+
+    // Criteria 4 and 6 kept with their own numbers, never renumbered 1 and 2; the fifth left out.
+    assert_eq!(
+        feature.criteria,
+        [
+            Criterion {
+                number: 4,
+                text: "A worker's first request is measured (EN-065).".to_owned()
+            },
+            Criterion {
+                number: 6,
+                text: "A hand-back names its commits (EN-088).".to_owned()
+            },
+        ]
+    );
+
+    let module = lines_module(&feature);
+
+    assert!(module.contains("todo: \"F20.AC4: A worker's first request is measured (EN-065).\""));
+    assert!(module.contains("see: \"What to see for F20.AC6, to write\""));
+    assert!(!module.contains("AC5"));
+    assert!(!module.contains("claude.ai"));
+    assert_eq!(module.matches("feature: \"F20\"").count(), 2);
+}
+
+#[test]
+fn f32_ac2_refuses_a_feature_whose_criteria_are_all_struck_and_counts_only_those_standing() {
+    // A criterion struck and the rest of its line apart: a strike only inside the text stands.
+    let text = "---\nid: F21\nepic: E17\ntitle: T\n---\n\n## Acceptance criteria\n\n\
+        1. ~~Dropped.~~\n2. ~~Dropped too.~~ Moved to F22.\n\n## Stories\n";
+
+    assert_eq!(parse_feature(text).unwrap().criteria, []);
+
+    let inside = "---\nid: F21\nepic: E17\ntitle: T\n---\n\n## Acceptance criteria\n\n\
+        1. A ~~struck~~ word.\n";
+
+    assert_eq!(parse_feature(inside).unwrap().criteria.len(), 1);
+
+    let root = repository("struck", &[]);
+
+    fs::write(
+        root.join("docs/backlog/features/E17-F21-a-feature.md"),
+        text,
+    )
+    .unwrap();
+    assert_eq!(
+        plan(&root, "F21").unwrap_err(),
+        "F21 has no numbered acceptance criteria yet: refine it first"
+    );
+
+    // Thirteen criteria, one struck: twelve stand, the limit itself, so no warning.
+    let thirteen: String = (1..=13)
+        .map(|number| {
+            if number == 7 {
+                "7. ~~Struck.~~\n".to_owned()
+            } else {
+                format!("{number}. Criterion {number}.\n")
+            }
+        })
+        .collect();
+
+    fs::write(
+        root.join("docs/backlog/features/E17-F22-a-feature.md"),
+        format!("---\nid: F22\nepic: E17\ntitle: T\n---\n\n## Acceptance criteria\n\n{thirteen}"),
+    )
+    .unwrap();
+    assert_eq!(plan(&root, "F22").unwrap().warning, None);
 }
