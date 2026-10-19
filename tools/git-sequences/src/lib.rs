@@ -55,7 +55,7 @@ pub enum Request {
 }
 
 /// The usage printed on a malformed call.
-pub const USAGE: &str = "usage: target/release/git-sequences sync [--base <ref>] | target/release/git-sequences commit -F <file|-> [--push|--push-with-lease] [--] <path>…";
+pub const USAGE: &str = "usage: target/release/git-sequences sync [--base <ref>] | target/release/git-sequences commit -F <file|-> [--push|--push-with-lease] [--] <path>… | target/release/git-sequences state";
 
 /// The request of a command line, the subcommand first.
 ///
@@ -66,6 +66,7 @@ pub fn parse(argv: &[String]) -> Result<Request, String> {
     match argv.split_first() {
         Some((command, rest)) if command == "sync" => parse_sync(rest),
         Some((command, rest)) if command == "commit" => parse_commit(rest),
+        Some((command, [])) if command == "state" => Ok(Request::State),
         _ => Err(USAGE.to_owned()),
     }
 }
@@ -326,20 +327,67 @@ pub fn state_base(
     remote_branches: &[String],
     upstream: Option<&str>,
 ) -> Option<String> {
-    (story_files.is_empty() && remote_branches.is_empty() && matches!(branch, Branch::Main))
-        .then(|| upstream.unwrap_or_default().to_owned())
+    match branch {
+        Branch::Detached => None,
+        Branch::Story(_) => match sync_target(branch, None, story_files, remote_branches) {
+            Ok(Target::Rebase(base)) => Some(base),
+            _ => None,
+        },
+        Branch::Main | Branch::Other(_) => upstream.map(str::to_owned),
+    }
 }
 
 /// The Git steps of `git-sequences state`, each read-only: the status, the diff's stat, and the
 /// commits ahead of the base when there is one.
 #[must_use]
 pub fn state_steps(base: Option<&str>) -> Vec<Vec<String>> {
-    base.map(|_| Vec::new()).into_iter().collect()
+    let mut steps = vec![
+        owned(&["status", "--short"]),
+        owned(&["diff", "--stat", "HEAD"]),
+    ];
+
+    if let Some(base) = base {
+        steps.push(vec![
+            "log".to_owned(),
+            "--format=%h %s".to_owned(),
+            format!("{base}..HEAD"),
+        ]);
+    }
+    steps
 }
 
 /// The text `git-sequences state` prints: a line naming the branch, its base and how many commits
-/// are ahead, then each section under its Git command, `clean` or `none` when empty.
+/// are ahead, then each part under its Git command, `clean` or `none` when empty.
 #[must_use]
 pub fn state_report(state: &State) -> String {
-    state.place.clone()
+    let part = |title: &str, text: &str, empty: &str| {
+        if text.is_empty() {
+            format!("{title}: {empty}")
+        } else {
+            format!("{title}:\n{text}")
+        }
+    };
+    let (head, commits) = match &state.base {
+        Some(base) => (
+            format!(
+                "{}: {} on {base}, {} commit(s) ahead",
+                state.place,
+                state.branch,
+                state.commits.lines().count()
+            ),
+            part("commits ahead", &state.commits, "none"),
+        ),
+        None => (
+            format!("{}: {}, no base found", state.place, state.branch),
+            "commits ahead: no base".to_owned(),
+        ),
+    };
+
+    [
+        head,
+        part("status --short", &state.status, "clean"),
+        part("diff --stat HEAD", &state.diff, "none"),
+        commits,
+    ]
+    .join("\n")
 }
