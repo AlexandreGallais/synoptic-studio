@@ -3,7 +3,7 @@ id: EN-141
 epic: E17
 feature: F33
 title: A bench binary for the stories' measures
-status: ready
+status: done
 points: 2
 ---
 
