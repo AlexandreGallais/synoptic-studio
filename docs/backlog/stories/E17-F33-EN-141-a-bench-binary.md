@@ -19,7 +19,7 @@ From RET-004's "Builds and lanes" (P8, story 4), the rows of that theme F29 does
 
 ## Tasks
 
-- [ ] T1 — The crate's interface and its tests, failing (1 h)
+- [x] T1 — The crate's interface and its tests, failing (1 h)
 - [ ] T2 — `bench`, its row in the agent's tools and its permission (2 h)
 
 One task = one commit, referenced as `EN-141.T1` in the commit footer.

@@ -1,0 +1,16 @@
+[package]
+name = "bench"
+version = "0.1.0"
+edition.workspace = true
+description = "A command's median duration over runs, with the load average before and after, for the stories that set a limit from a measure (EN-141)"
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+tool-use = { path = "../tool-use" }
+
+[dev-dependencies]
+test-support = { path = "../test-support" }
+
+[lints]
+workspace = true
