@@ -2,7 +2,7 @@
 id: F33
 epic: E17
 title: The checks RET-004 listed
-status: ready
+status: in-progress
 ---
 
 # E17 · F33 — The checks RET-004 listed
