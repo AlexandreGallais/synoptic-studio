@@ -137,7 +137,7 @@ No raw logs: quote the one line that matters. Questions come last, so they are n
 
 ## Checked by the linter
 
-Markdown pages are linted by the project's linter (`tools/lint`, [lint.md](./lint.md#markdown-rules)): heading levels, one `#` title, code block languages, no bare URL, no missing link fragment, table column counts, alternative texts. Layout is the formatter's (oxfmt, tables without padding: `formatting.md`).
+Markdown pages are linted by the project's linter (`tools/lint`, [lint.md](./lint.md#markdown-rules)): heading levels, one `#` title, code block languages, no bare URL, no missing link fragment, table column counts, alternative texts. A heading a link targets has one anchor on GitHub and on the site (`local/anchor-slugs`): the site turns `'`, `/` and `.` into hyphens where GitHub drops them, `_` into a hyphen where GitHub keeps it, keeps `—` where GitHub drops it, and puts `_` before a leading digit, so such a heading is reworded (`The settings of the formatter`, not `The formatter's settings`), a rule's name moving to the section's first line. Layout is the formatter's (oxfmt, tables without padding: `formatting.md`).
 
 ## Where things go
 

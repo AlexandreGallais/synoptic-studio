@@ -8,7 +8,9 @@ One way to import a thing, written by the autofix, so that an import is never a 
 - A barrel holds one line per module and subfolder, sorted (`local/barrel-exports`): `export type * from "./module";` for one holding only types, `export * from "./module";` for any other (ADR-0092). It is autofixed: create a file, then run `npm run fix`, which writes `export *` for it, then `export type *` when it holds only types (`typescript/consistent-type-exports`), and keeps a line written `export type *` as it is (EN-138).
 - Not barrels: tests are never exported, `playground/index.ts` is the playground's entry point (each of its subfolders has a barrel), and `tests/index.ts` gathers the shared test fixtures.
 
-## Canonical path (`local/canonical-import-path`, autofixed)
+## Canonical path
+
+Checked by `local/canonical-import-path`, autofixed.
 
 Import the child of the common ancestor that contains the target: a file of the same folder, otherwise the folder. Never write a `.ts` extension nor `/index`.
 

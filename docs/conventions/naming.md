@@ -2,7 +2,9 @@
 
 Names are what a reader searches for and reads instead of a body, so a name tells its role and its concept without a look at the type or the code.
 
-## Casing (`@typescript-eslint/naming-convention`)
+## Casing
+
+Checked by `@typescript-eslint/naming-convention`.
 
 | Element | Form | Example |
 | --- | --- | --- |
@@ -19,7 +21,9 @@ Names are what a reader searches for and reads instead of a body, so a name tell
 - A name has 2 to 40 characters (`id-length`). Single letters are kept for the standard variables of a formula: `a b c d h i j k n p q r s t u v w x y z`.
 - A name that says no concept is refused (`id-denylist`): `tmp`, `temp`, `info`, `obj`, `val`, `res`, `ret`, `stuff`, `thing`, `util(s)`, `helper(s)`, `manager`, `foo`, `bar`, `baz`.
 
-## Names by kind (`local/kind-naming`)
+## Names by kind
+
+Checked by `local/kind-naming`.
 
 | `@kind` | The name… | Good | Refused |
 | --- | --- | --- | --- |

@@ -313,11 +313,11 @@
 | [EN-139](./E17-F32-EN-139-the-checks-and-reports-of-a-review.md) | F32 | The reports of a review say what happened | done |
 | [AUD-034](./E17-F32-AUD-034-audit-f32.md) | F32 | Audit F32 | done |
 | [VAL-033](./E17-F32-VAL-033-validate-f32.md) | F32 | Validate F32 | done |
-| [EN-121](./E17-F33-EN-121-floors-and-versions-checked.md) | F33 | The floors, versions and paths checked | ready |
-| [EN-140](./E17-F33-EN-140-anchors-rows-and-agent-pages-checked.md) | F33 | The anchors, the rows and the agent pages checked | ready |
-| [EN-141](./E17-F33-EN-141-a-bench-binary.md) | F33 | A bench binary for the stories' measures | ready |
-| [AUD-035](./E17-F33-AUD-035-audit-f33.md) | F33 | Audit F33 | ready |
-| [VAL-034](./E17-F33-VAL-034-validate-f33.md) | F33 | Validate F33 | ready |
+| [EN-121](./E17-F33-EN-121-floors-and-versions-checked.md) | F33 | The floors, versions and paths checked | done |
+| [EN-140](./E17-F33-EN-140-anchors-rows-and-agent-pages-checked.md) | F33 | The anchors, the rows and the agent pages checked | done |
+| [EN-141](./E17-F33-EN-141-a-bench-binary.md) | F33 | A bench binary for the stories' measures | done |
+| [AUD-035](./E17-F33-AUD-035-audit-f33.md) | F33 | Audit F33 | done |
+| [VAL-034](./E17-F33-VAL-034-validate-f33.md) | F33 | Validate F33 | done |
 | [EN-134](./E17-F34-EN-134-the-other-workflows-reviewed.md) | F34 | The auto-merge per base and the other workflows reviewed | ready |
 | [AUD-036](./E17-F34-AUD-036-audit-f34.md) | F34 | Audit F34 | ready |
 | [VAL-035](./E17-F34-VAL-035-validate-f34.md) | F34 | Validate F34 | ready |

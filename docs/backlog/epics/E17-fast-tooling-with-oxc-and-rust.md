@@ -68,7 +68,7 @@ Ordered by the Product Owner at the refinement of 2026-10-16.
 | [F23](../features/E17-F23-the-path-of-a-story.md) — The path of a story through the tools (RET-004 and REV-006, moved from E02 by SP-024) | done |
 | [F31](../features/E17-F31-the-guard-and-the-agents-commands.md) — The guard and the agent's commands (SP-024) | done |
 | [F32](../features/E17-F32-reports-that-say-what-happened.md) — Reports that say what happened (SP-024) | done |
-| [F33](../features/E17-F33-the-checks-ret-004-listed.md) — The checks RET-004 listed (SP-024) | ready |
+| [F33](../features/E17-F33-the-checks-ret-004-listed.md) — The checks RET-004 listed (SP-024) | done |
 | [F34](../features/E17-F34-the-use-of-each-workflow.md) — The use of each workflow (2026-10-18, its questions waiting) | ready |
 
 F18 holds the stories decided at RET-003 (ADR-0063, ADR-0064, ADR-0065, ADR-0066), written then as F11 was at RET-001.

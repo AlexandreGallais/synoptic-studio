@@ -4,6 +4,7 @@
 //! reference definitions appear on one copied page, and a link whose URL is a label is a dead
 //! link, which the site's build already refuses in `docs/`.
 
+pub mod anchor_slugs;
 pub mod fenced_code_language;
 pub mod fenced_code_meta;
 pub mod heading_increment;
@@ -30,6 +31,7 @@ use super::MarkdownRule;
 
 /// Every Markdown rule, run on every page.
 pub const ALL: &[&dyn MarkdownRule] = &[
+    &anchor_slugs::AnchorSlugs,
     &fenced_code_language::FencedCodeLanguage,
     &fenced_code_meta::FencedCodeMeta,
     &heading_increment::HeadingIncrement,

@@ -1,6 +1,7 @@
 //! `git-sequences sync|commit|state` (EN-100, EN-119): one call for a Git sequence the agent ran
 //! step by step, in the checkout it is started from. Each step's output is kept back and printed
-//! only when the step fails, then the sequence stops; on success one line says where the branch
+//! only when the step fails, then the sequence stops, but the commit hooks' standard error is
+//! printed when the commit succeeds too (AUD-035); on success one line says where the branch
 //! stands; the Git hooks run as for any commit. A sync then rebuilds the release binaries of a
 //! checkout that has a Cargo workspace (ADR-0078). `state` only reads: the branch, its base, the
 //! status, the diff's stat and the commits ahead, without a fetch.
@@ -20,6 +21,12 @@ use stale_binaries::RELEASE_BUILD;
 
 /// Runs one Git step, the text given on its standard input; its output, or Git's own message.
 fn git(step: &[String], input: Option<&str>) -> Result<String, String> {
+    git_with_errors(step, input).map(|(out, _)| out)
+}
+
+/// Runs one Git step as [`git`] does; on success, its output and its standard error, where the
+/// hooks of a commit write (AUD-035, F3).
+fn git_with_errors(step: &[String], input: Option<&str>) -> Result<(String, String), String> {
     let mut child = Command::new("git")
         .args(step)
         .stdin(if input.is_some() {
@@ -46,11 +53,12 @@ fn git(step: &[String], input: Option<&str>) -> Result<String, String> {
         .trim_end()
         .to_owned();
 
+    let err = String::from_utf8_lossy(&output.stderr).trim().to_owned();
+
     if output.status.success() {
-        return Ok(out);
+        return Ok((out, err));
     }
 
-    let err = String::from_utf8_lossy(&output.stderr).trim().to_owned();
     let message = [out, err]
         .into_iter()
         .filter(|text| !text.is_empty())
@@ -154,9 +162,14 @@ fn commit(
     let text = read_message(message)?;
 
     for step in commit_steps(paths, push) {
-        let input = (step.first().map(String::as_str) == Some("commit")).then_some(text.as_str());
+        let is_commit = step.first().map(String::as_str) == Some("commit");
+        let (_, errors) = git_with_errors(&step, is_commit.then_some(text.as_str()))?;
 
-        git(&step, input)?;
+        // What the commit's hooks wrote, the notes of `move-rows --notes` among them, is shown
+        // though the commit succeeded; a push's, `check:all`'s report, only when it fails.
+        if is_commit && !errors.is_empty() {
+            eprintln!("{errors}");
+        }
     }
 
     let head = git_words(&["log", "-1", "--format=%h %s"])?;

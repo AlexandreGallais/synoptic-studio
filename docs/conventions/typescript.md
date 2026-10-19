@@ -2,7 +2,7 @@
 
 ## Version
 
-TypeScript 7 (`typescript` 7.0.2, the native compiler) is the only TypeScript (ADR-0075). It checks the types inside `npm run lint`, through oxlint's `--type-check` (ADR-0071), and alone with `npx tsc --noEmit`.
+TypeScript 7 (`typescript` 7.0.2, the native compiler) is the only TypeScript (ADR-0075). It checks the types inside `npm run lint`, through oxlint's type check, `typeCheck` in the `options` of `.oxlintrc.json` (ADR-0071, EN-121), and alone with `npx tsc --noEmit`.
 
 ## What TypeScript checks, what the linters check (ADR-0075)
 
@@ -26,4 +26,4 @@ The linters handle `noUnusedLocals`, `noUnusedParameters` and `noFallthroughCase
 
 ## Rules that need types
 
-The type-aware rules (`strict-boolean-expressions`, `no-unnecessary-condition`, `switch-exhaustiveness-check`, `no-floating-promises`…) run in oxlint on `tsgolint`. Oxc has no type checker, so a rule of the project's linter that needs a type reads the written code instead ([lint](./lint.md#the-project-s-linter-tools-lint)).
+The type-aware rules (`strict-boolean-expressions`, `no-unnecessary-condition`, `switch-exhaustiveness-check`, `no-floating-promises`…) run in oxlint on `tsgolint`. Oxc has no type checker, so a rule of the project's linter that needs a type reads the written code instead ([lint](./lint.md#the-linter-of-the-project)).

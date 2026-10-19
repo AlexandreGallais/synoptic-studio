@@ -64,7 +64,7 @@ fn f21_ac4_plans_the_tasks_of_lint_staged_s_configuration() {
         vec![
             strings(&[
                 "format --write",
-                "oxlint --type-check --fix --deny-warnings \
+                "oxlint --fix --deny-warnings \
                  --report-unused-disable-directives-severity=error --no-error-on-unmatched-pattern",
                 "lint --fix",
             ]),

@@ -133,7 +133,7 @@ fn html_headings(text: &str) -> Vec<&str> {
 }
 
 /// A fragment decoded as `decodeURIComponent` does; the fragment itself when it cannot be.
-fn decode(fragment: &str) -> String {
+pub(crate) fn decode(fragment: &str) -> String {
     let bytes = fragment.as_bytes();
     let mut decoded = Vec::with_capacity(bytes.len());
     let mut at = 0;
@@ -159,7 +159,7 @@ fn decode(fragment: &str) -> String {
 }
 
 /// Whether a fragment names lines of a file as GitHub does: `^L\d+(?:C\d+)?(?:-L\d+(?:C\d+)?)?$`.
-fn is_line_reference(fragment: &str) -> bool {
+pub(crate) fn is_line_reference(fragment: &str) -> bool {
     let line = |text: &str| -> bool {
         let Some(rest) = text.strip_prefix('L') else {
             return false;
@@ -179,25 +179,11 @@ impl MarkdownRule for NoMissingLinkFragments {
     }
 
     fn check(&self, page: &Page, findings: &mut Vec<Finding>) {
-        let mut ids: HashSet<String> = HashSet::from(["top".to_owned()]);
-        let mut slugger = Slugger::default();
+        let mut ids: HashSet<String> = page_ids(&page.root).into_iter().map(|id| id.id).collect();
         let mut links: Vec<(&Node, &str)> = Vec::new();
 
+        ids.insert("top".to_owned());
         walk(&page.root, &mut |node, entering| match (node, entering) {
-            // A heading's anchor is given when it is left, after the HTML inside it.
-            (Node::Heading(_), false) => {
-                let text = heading_text(node);
-                ids.insert(slugger.slug(custom_id(&text).unwrap_or(&text)));
-            }
-            (Node::Html(html), true) => {
-                let text = strip_html_comments(&html.value);
-                for id in html_ids(&text) {
-                    ids.insert(slugger.slug(id));
-                }
-                for content in html_headings(&text) {
-                    ids.insert(slugger.slug(&without_tags(content)));
-                }
-            }
             (Node::Link(link), true) => links.push((node, &link.url)),
             (Node::Definition(definition), true) => links.push((node, &definition.url)),
             _ => {}
@@ -222,6 +208,55 @@ impl MarkdownRule for NoMissingLinkFragments {
             }
         }
     }
+}
+
+/// One id of a page a link's fragment may name.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct PageId {
+    /// The id, as GitHub's slugger gives it.
+    pub id: String,
+    /// The text of the Markdown heading it is the anchor of, `None` for a heading's custom
+    /// `{#id}`, an HTML `id` or `name`, or an HTML heading.
+    pub heading: Option<String>,
+}
+
+/// The ids of a page in its order, one slugger numbering them all: each heading's anchor, from its
+/// custom `{#id}` when it ends with one, given when the heading is left, after the HTML inside it;
+/// each HTML `id` or `name` and each HTML heading. Read by this rule and by `local/anchor-slugs`
+/// on another page (AUD-035, F5).
+#[must_use]
+pub fn page_ids(root: &Node) -> Vec<PageId> {
+    let mut ids = Vec::new();
+    let mut slugger = Slugger::default();
+    let mut add = |text: &str, heading: Option<String>| {
+        ids.push(PageId {
+            id: slugger.slug(text),
+            heading,
+        });
+    };
+
+    walk(root, &mut |node, entering| match (node, entering) {
+        (Node::Heading(_), false) => {
+            let text = heading_text(node);
+
+            match custom_id(&text) {
+                Some(id) => add(id, None),
+                None => add(&text, Some(text.clone())),
+            }
+        }
+        (Node::Html(html), true) => {
+            let text = strip_html_comments(&html.value);
+
+            for id in html_ids(&text) {
+                add(id, None);
+            }
+            for content in html_headings(&text) {
+                add(&without_tags(content), None);
+            }
+        }
+        _ => {}
+    });
+    ids
 }
 
 /// The text of a heading for its anchor: the values of its descendants, HTML left out.

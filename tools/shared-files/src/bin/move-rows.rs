@@ -8,7 +8,11 @@
 //! a card for `tool-incidents.md`, its dated `#### ` heading and its bullets, written at the log's
 //! end under `## ` (ADR-0085); a placeholder (`- None.`), a table's header and its separator are
 //! dropped, and any other line is left in the story file and named on standard error, never
-//! copied.
+//! copied. The notes for the main thread, the section's lines outside a log's heading, stay in the
+//! story file, each named on standard error with its story (EN-140).
+//!
+//! `move-rows --notes <story branch>`, run by the `commit-msg` hook of a `done` commit, writes
+//! nothing and names those notes only, so that the commit shows them.
 
 use std::env;
 use std::fs;
@@ -18,16 +22,29 @@ use std::process::ExitCode;
 
 use calendar::today;
 use shared_files::backlog::{STORIES, story_file};
-use shared_files::rows::{insert_rows, take_rows};
+use shared_files::rows::{Taken, insert_rows, take_rows};
 use shared_files::shared::story_of;
 
+/// Names on standard error each note of a story file for the main thread, with its story.
+fn name_notes(story: &str, taken: &Taken) {
+    for note in &taken.notes {
+        eprintln!("move-rows: {story}: a note for the main thread, not moved: {note}");
+    }
+}
+
 /// Moves the rows of a story file into their logs; the files written. Each line under a log's
-/// heading that is not one of its rows is left in the story file and named on standard error.
-fn move_rows(path: &Path) -> io::Result<Vec<String>> {
+/// heading that is not one of its rows is left in the story file and named on standard error, and
+/// so is each note; with `notes_only`, the notes are named and nothing is written.
+fn move_rows(story_id: &str, path: &Path, notes_only: bool) -> io::Result<Vec<String>> {
     let story = fs::read_to_string(path)?;
     let taken = take_rows(&story);
     let today = today();
     let mut written = Vec::new();
+
+    name_notes(story_id, &taken);
+    if notes_only {
+        return Ok(written);
+    }
 
     for (log, lines) in &taken.left {
         for line in lines {
@@ -60,18 +77,23 @@ fn main() -> ExitCode {
     tool_use::run("move-rows", "", move_story_rows)
 }
 
-/// Moves the rows of the branch's story; the exit code.
+/// Moves the rows of the branch's story, or names its notes with `--notes`; the exit code.
 fn move_story_rows() -> u8 {
-    let Some(branch) = env::args().nth(1) else {
-        eprintln!("usage: move-rows <story branch>");
-        return 2;
+    let arguments: Vec<String> = env::args().skip(1).collect();
+    let (notes_only, branch) = match arguments.as_slice() {
+        [flag, branch] if flag == "--notes" => (true, branch),
+        [branch] if branch != "--notes" => (false, branch),
+        _ => {
+            eprintln!("usage: move-rows [--notes] <story branch>");
+            return 2;
+        }
     };
-    let Some(story) = story_of(&branch) else {
+    let Some(story) = story_of(branch) else {
         return 0;
     };
     let result = story_file(Path::new("."), &story).and_then(|file| {
         file.map_or(Ok(Vec::new()), |name| {
-            move_rows(&Path::new(STORIES).join(name))
+            move_rows(&story, &Path::new(STORIES).join(name), notes_only)
         })
     });
 

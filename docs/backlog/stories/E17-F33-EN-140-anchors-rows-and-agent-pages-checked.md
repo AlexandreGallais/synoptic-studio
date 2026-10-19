@@ -3,7 +3,7 @@ id: EN-140
 epic: E17
 feature: F33
 title: The anchors, the rows and the agent pages checked
-status: ready
+status: done
 points: 2
 ---
 
@@ -20,7 +20,14 @@ From RET-004's "Checks to add" (P8), split from EN-121 on 2026-10-18 (SP-024): o
 
 ## Tasks
 
-- [ ] T1 — Each criterion's test, failing (1 h)
-- [ ] T2 — The slug, `move-rows`'s notes, the index check, the pages fixed (2 h)
+- [x] T1 — Each criterion's test, failing (1 h)
+- [x] T2 — The slug, `move-rows`'s notes, the index check, the pages fixed (2 h)
 
 One task = one commit, referenced as `EN-140.T1` in the commit footer.
+
+## For the main thread
+
+- `.claude/settings.json` still allows `"Bash(npm run library *)"`, a script `package.json` lacks since EN-115 (the agent calls `target/release/library …`): the line can go. `tests/agent-pages.test.ts` reads the Markdown pages of `.claude/` only, so that this branch passes before that change; once it is made, the test may read the settings too.
+- `.claude/rules/docs.md` could take the pitfall: "A heading a link targets keeps one anchor on GitHub and on the site: no `'`, `/`, `_`, `.` nor `—` in it, no leading digit; reword it and name a rule in the section's first line (`local/anchor-slugs`, EN-140)."
+- `.claude/rules/tooling.md` names `npm run deps:outdated`, a script kept as a lane of `check:all`: the test lets it through.
+- Rule-docs: none affected, no rule of `docs/domain/` changed (the guide `f16-colors.md` only links `#colors` of `interaction.md` now).

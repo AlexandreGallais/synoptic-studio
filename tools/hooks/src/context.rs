@@ -90,18 +90,6 @@ pub fn first_request(transcript: &str, meta: &Value) -> Option<Start> {
     None
 }
 
-/// The median of whole numbers, the lower middle for an even count, 0 for none.
-#[must_use]
-pub fn median(values: &[u64]) -> u64 {
-    let mut sorted = values.to_vec();
-
-    sorted.sort_unstable();
-    sorted
-        .get(sorted.len().saturating_sub(1) / 2)
-        .copied()
-        .unwrap_or(0)
-}
-
 /// One row per subagent, then one per type with its median, as Markdown tables.
 #[must_use]
 pub fn tables(starts: &[Start]) -> String {
@@ -143,7 +131,7 @@ pub fn tables(starts: &[Start]) -> String {
             text,
             "| {agent_type} | {} | {} |",
             tokens.len(),
-            median(&tokens)
+            tool_use::median(&tokens).unwrap_or(0)
         );
     }
     text
