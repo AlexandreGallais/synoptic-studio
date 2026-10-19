@@ -108,7 +108,7 @@ No `enum`, no `for…in`, no getter or setter, no `export * as name`, no dynamic
 | `local/barrel-exports` | an `index.ts` holds only sorted `export * from "./x";` lines, `export type * from "./x";` for a module holding only types; autofixed, a line written `export type *` kept so (EN-138) | ADR-0012, ADR-0092 |
 | `local/canonical-import-path` | the shortest legal import path, never `index` nor `.ts`; autofixed | [imports](./imports.md#canonical-path) |
 | `local/image-alt-text` | an image's text alternative under 155 characters, never opening with "Image of" | [writing](./writing.md#building-blocks) |
-| `local/anchor-slugs` | a link to a heading's anchor, on its page or on another Markdown page, reaches a heading whose anchor is the same on GitHub (`REF-GITHUB-SLUGGER`) and on the site (`REF-VITEPRESS-SLUGIFY`), the page and the heading named otherwise; a fragment naming no heading of another page | EN-140, [writing](./writing.md#checked-by-the-linter) |
+| `local/anchor-slugs` | a link to a heading's anchor, on its page or on another Markdown page, reaches a heading whose anchor is the same on GitHub (`REF-GITHUB-SLUGGER`) and on the site (`REF-VITEPRESS-SLUGIFY`), the page and the heading named otherwise; a fragment naming no heading nor id of another page, its ids those `markdown/no-missing-link-fragments` reads on its own (a custom `{#id}`, an HTML `id` or `name`), `#top` and a line reference (`#L3`) accepted | EN-140, AUD-035, [writing](./writing.md#checked-by-the-linter) |
 
 ### Markdown rules
 

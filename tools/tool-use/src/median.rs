@@ -20,8 +20,7 @@ impl Median for u64 {
     /// Rounded down; `low + (high - low) / 2` rather than `(low + high) / 2`, which overflows near
     /// `u64::MAX`.
     fn mean(self, greater: Self) -> Self {
-        let _ = greater;
-        self
+        self + (greater - self) / 2
     }
 }
 
@@ -31,8 +30,7 @@ impl Median for f64 {
     }
 
     fn mean(self, greater: Self) -> Self {
-        let _ = greater;
-        self
+        f64::midpoint(self, greater)
     }
 }
 
@@ -40,6 +38,15 @@ impl Median for f64 {
 /// middle ones, a whole number's rounded down; `None` for none.
 #[must_use]
 pub fn median<T: Median>(values: &[T]) -> Option<T> {
-    let _ = values;
-    None
+    let mut sorted = values.to_vec();
+    let middle = sorted.len() / 2;
+
+    sorted.sort_by(Median::order);
+    let high = *sorted.get(middle)?;
+
+    Some(if sorted.len() % 2 == 1 {
+        high
+    } else {
+        sorted[middle - 1].mean(high)
+    })
 }

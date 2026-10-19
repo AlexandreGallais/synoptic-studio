@@ -7,7 +7,7 @@
 //! fragment that names no heading of another page is reported too, which
 //! `markdown/no-missing-link-fragments` only checks on the link's own page.
 
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::fs;
 use std::path::Path;
 
@@ -16,8 +16,10 @@ use markdown::mdast::Node;
 use crate::finding::Finding;
 use crate::markdown::MarkdownRule;
 use crate::markdown::page::{Page, nodes, start};
-use crate::markdown::rules::no_missing_link_fragments::{decode, heading_text, is_line_reference};
-use crate::markdown::slugger::{SiteSlugger, Slugger};
+use crate::markdown::rules::no_missing_link_fragments::{
+    PageId, decode, is_line_reference, page_ids,
+};
+use crate::markdown::slugger::SiteSlugger;
 
 /// The rule.
 pub struct AnchorSlugs;
@@ -36,25 +38,42 @@ pub struct Anchor {
     pub site: Option<String>,
 }
 
-/// The anchors of a page's headings, in the page's order, each made unique as its slugger does.
+/// The anchors of a page's headings, in the page's order, each made unique as its slugger does:
+/// GitHub's from the page's ids ([`page_ids`]), a heading with a custom `{#id}` left out.
 #[must_use]
-pub fn anchors(root: &Node) -> Vec<Anchor> {
-    let mut github = Slugger::default();
+pub fn anchors(ids: &[PageId]) -> Vec<Anchor> {
     let mut site = SiteSlugger::default();
 
-    nodes(root)
-        .into_iter()
-        .filter(|node| matches!(node, Node::Heading(_)))
-        .map(|heading| {
-            let text = heading_text(heading);
+    ids.iter()
+        .filter_map(|id| {
+            let text = id.heading.clone()?;
 
-            Anchor {
-                github: github.slug(&text),
+            Some(Anchor {
+                github: id.id.clone(),
                 site: site.slug(&text),
                 text,
-            }
+            })
         })
         .collect()
+}
+
+/// What a link to a page's fragment is checked against: its headings' anchors, and every id
+/// `markdown/no-missing-link-fragments` reads on it.
+struct Targets {
+    /// The anchors of its headings.
+    anchors: Vec<Anchor>,
+    /// Its ids, its headings' included.
+    ids: HashSet<String>,
+}
+
+/// A page's targets, from its tree.
+fn targets(root: &Node) -> Targets {
+    let ids = page_ids(root);
+
+    Targets {
+        anchors: anchors(&ids),
+        ids: ids.into_iter().map(|id| id.id).collect(),
+    }
 }
 
 /// The page and the fragment a link's URL names: `None` for this page, the path as written for
@@ -99,20 +118,23 @@ pub fn joined(page: &str, link: &str) -> Option<String> {
     Some(parts.join("/"))
 }
 
-/// What is wrong with a link to a fragment, given the anchors of its target page: a heading whose
-/// GitHub and site anchors differ, or, on another page, a fragment naming no heading.
-fn problem(anchors: &[Anchor], fragment: &str, page: &str, other: bool) -> Option<String> {
-    let wanted = decode(fragment).to_lowercase();
+/// What is wrong with a link to a fragment, given the targets of its page: a heading whose GitHub
+/// and site anchors differ, or, on another page, a fragment naming no heading nor id. `#top` and a
+/// line reference (`#L3`, read before the case is dropped) name none (AUD-035, F4).
+fn problem(targets: &Targets, fragment: &str, page: &str, other: bool) -> Option<String> {
+    let decoded = decode(fragment);
+    let wanted = decoded.to_lowercase();
 
-    if wanted == "top" || is_line_reference(&wanted) {
+    if wanted == "top" || is_line_reference(&decoded) {
         return None;
     }
 
-    let Some(anchor) = anchors
+    let Some(anchor) = targets
+        .anchors
         .iter()
         .find(|anchor| anchor.github == wanted || anchor.site.as_deref() == Some(&wanted))
     else {
-        return other.then(|| {
+        return (other && !targets.ids.contains(&wanted)).then(|| {
             format!("Link fragment '#{fragment}' does not reference a heading of {page}.")
         });
     };
@@ -147,8 +169,8 @@ fn links(root: &Node) -> Vec<(&Node, &str)> {
 /// The findings of the rule on a page, another page's text given by `read` from its path (`None`
 /// when it cannot be read, the link then left to the site's build and the reader).
 pub fn check_with(page: &Page, read: &dyn Fn(&str) -> Option<String>, findings: &mut Vec<Finding>) {
-    let own = anchors(&page.root);
-    let mut others: HashMap<String, Option<Vec<Anchor>>> = HashMap::new();
+    let own = targets(&page.root);
+    let mut others: HashMap<String, Option<Targets>> = HashMap::new();
 
     for (node, url) in links(&page.root) {
         let Some((path, fragment)) = target(url) else {
@@ -163,10 +185,10 @@ pub fn check_with(page: &Page, read: &dyn Fn(&str) -> Option<String>, findings: 
                     let text = read(&other)?;
                     Page::parse(&other, &text)
                         .ok()
-                        .map(|parsed| anchors(&parsed.root))
+                        .map(|parsed| targets(&parsed.root))
                 })
-                .as_deref()
-                .and_then(|anchors| problem(anchors, fragment, &other, true)),
+                .as_ref()
+                .and_then(|targets| problem(targets, fragment, &other, true)),
         };
 
         if let Some(message) = message {
@@ -194,6 +216,7 @@ impl MarkdownRule for AnchorSlugs {
 mod tests {
     use super::{Anchor, anchors, check_with, joined, target};
     use crate::markdown::page::Page;
+    use crate::markdown::rules::no_missing_link_fragments::page_ids;
     use crate::testing::{NONE, messages};
 
     /// The messages of the rule on a page at `docs/a.md`, `docs/b.md` reading `other`.
@@ -216,7 +239,7 @@ mod tests {
         // GitHub drops the slash and the dash, the site turns them into hyphens; the second
         // "A b/c" is numbered by both.
         assert_eq!(
-            anchors(&page.root),
+            anchors(&page_ids(&page.root)),
             [
                 ("A b/c", "a-bc", "a-b-c"),
                 ("A b/c", "a-bc-1", "a-b-c-1"),

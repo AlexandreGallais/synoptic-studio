@@ -17,8 +17,8 @@ Audit F33 following [audit.md](../../conventions/audit.md) (ADR-0020), the `audi
 
 ## Tasks
 
-- [ ] T1 — The findings and the tests of their fixes, seen failing; the mutations of the criteria's tests (1 h)
-- [ ] T2 — The findings fixed: `guard-bash` through cargo's global options and `r` first, then `git-sequences commit`'s hook notes, `local/anchor-slugs`' ids and exemptions, one `median`, the cargo tools' pins, with the pages that describe them (2 h)
+- [x] T1 — The findings and the tests of their fixes, seen failing; the mutations of the criteria's tests (1 h)
+- [x] T2 — The findings fixed: `guard-bash` through cargo's global options and `r` first, then `git-sequences commit`'s hook notes, `local/anchor-slugs`' ids and exemptions, one `median`, the cargo tools' pins, with the pages that describe them (2 h)
 - [ ] T3 — ADR-0093 for the editor's TypeScript, the type check's pages, and a binary that runs a command guarded before it is built, in the run skill and the worker brief (1 h)
 
 One task = one commit, referenced as `AUD-035.T1`.
@@ -48,3 +48,4 @@ Reviewed by the `auditor` alone (ADR-0086), read-only; each finding reproduced b
 | C6 | A4 — `tests/agent-pages.test.ts`: the finder keeping no script | caught | `[F33.AC2] finds an npm run naming a script package.json lacks, its line named` | restored |
 | C7 | A4 — `bench`: the last failing status kept rather than the first | caught | `f33_ac3_exits_with_the_first_failing_status_its_median_of_the_passing_runs` | restored |
 | C8 | A5 — properties: F33 adds no `math` nor `geometry` function | no finding | `src/` unchanged | — |
+| C9 | A4 — T2's fixes: `cargo_run_arguments` without `r`, without `+<toolchain>`, or without `--config` taking a value; the hooks' notes printed only when empty; the line reference read lower-cased, `#top` not exempt, another page's ids not read; the median's whole mean rounded up, its decimal mean the greater value; a yanked tool pin left unreported | caught, each; the release `guard-bash` rebuilt in the worktree denies `cargo r -q -p heavy-lock -- gh pr merge 3` and `cargo +stable run -p bench -- --runs 1 -- gh pr merge 3`, and lets `cargo --config k=v r -p heavy-lock -- true` through | `f33_ac3_refuses_every_listed_refusal_run_through_cargo_s_global_options_and_its_alias`, `f33_ac2_prints_what_the_hooks_write_when_the_commit_succeeds`, `f33_ac2_accepts_a_link_whose_heading_has_one_anchor`, `f33_ac2_accepts_a_custom_or_an_html_id_of_another_page`, `tools/tool-use/tests/median.rs`, `f33_ac1_a_tool_pinned_too_new_yanked_or_missing_is_listed_as_a_locked_crate_is` | restored |

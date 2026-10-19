@@ -3,7 +3,8 @@
 //! Node.js's major in `.nvmrc`, the crates of `[workspace.dependencies]`, the cargo tools the Rust
 //! checks install (EN-121) — and every crate of `Cargo.lock` published less than 7 days ago, which
 //! Cargo picks by itself (research note 0025, The crates, checked). One line per finding, with the
-//! version and its date, and one per cargo tool whose places disagree.
+//! version and its date, and one per cargo tool whose places disagree or whose version is under 7
+//! days old, yanked or missing from the index (AUD-035).
 
 use std::collections::BTreeSet;
 use std::fs;
@@ -328,7 +329,32 @@ fn crate_report(
     tool_report(&pins.tools, releases_of, now_ms, report);
 }
 
-/// The cargo tools' lines: their places that disagree, then each version behind, as a crate's.
+/// What a version a cargo tool is pinned at is wrong by, as `Cargo.lock`'s check reads a locked
+/// crate (AUD-035, F7): missing from the index, yanked, or published less than 7 days before
+/// `now_ms`, with the greatest compatible version 7 days old to pin it to.
+fn tool_pin_line(name: &str, pinned: &str, releases: &[Release], now_ms: i64) -> Option<String> {
+    let Some(release) = crates::release(releases, pinned) else {
+        return Some(format!("tool {name} {pinned} not in the crates.io index"));
+    };
+    let or_none =
+        |pin: Option<String>| pin.unwrap_or_else(|| "no compatible version 7 days old".to_owned());
+
+    if release.is_yanked {
+        let pin = crates::compatible_pin(releases, &release.version, now_ms);
+
+        return Some(format!("tool {name} {pinned} yanked: {}", or_none(pin)));
+    }
+    crates::too_new(name, pinned, releases, now_ms).map(|new| {
+        format!(
+            "tool {name} {pinned}, {}, under 7 days: {}",
+            date(Some(new.published_ms)),
+            or_none(new.pin)
+        )
+    })
+}
+
+/// The cargo tools' lines: their places that disagree, then each version wrong as
+/// [`tool_pin_line`] reads it or behind, as a crate's.
 fn tool_report<'a>(
     tools: &[ToolPin],
     releases_of: impl Fn(&str) -> Option<&'a Vec<Release>>,
@@ -342,9 +368,14 @@ fn tool_report<'a>(
 
     report.lines.extend(cargo_tools::disagreements(tools));
     for (name, current) in versions {
-        if let Some(behind) =
-            releases_of(name).and_then(|r| crates::behind(name, current, r, now_ms))
-        {
+        let Some(releases) = releases_of(name) else {
+            continue;
+        };
+
+        report
+            .lines
+            .extend(tool_pin_line(name, current, releases, now_ms));
+        if let Some(behind) = crates::behind(name, current, releases, now_ms) {
             report.lines.push(behind_line("tool", &behind));
         }
     }

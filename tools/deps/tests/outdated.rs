@@ -567,7 +567,15 @@ fn f33_ac1_a_tool_behind_is_listed_once_its_release_is_7_days_old() {
             "tool cargo-llvm-cov 0.9.0 → 0.9.1, 2026-09-06",
         ]
     );
-    assert_eq!(lines(at - 1), disagreement);
+    // 1 ms before, 0.9.0 is not behind, and the 0.9.1 of package.json is too new (AUD-035, F7).
+    assert_eq!(
+        lines(at - 1),
+        [
+            disagreement[0],
+            disagreement[1],
+            "tool cargo-llvm-cov 0.9.1, 2026-09-06, under 7 days: 0.9.0",
+        ]
+    );
 }
 
 #[test]
