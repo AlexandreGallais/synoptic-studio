@@ -37,3 +37,15 @@ fn writes_durations_in_seconds_minutes_then_hours() {
     // 125 min = 2 h 05.
     assert_eq!(short_duration(7_500_000), "2 h 05");
 }
+
+#[test]
+fn chooses_the_unit_from_the_seconds_rounded_as_shown() {
+    // AUD-034: 59.5 s rounds to 60 s, so a minute, never `60 s`; 59.499 s stays 59 s.
+    assert_eq!(short_duration(59_499), "59 s");
+    assert_eq!(short_duration(59_500), "1 min");
+    assert_eq!(short_duration(59_999), "1 min");
+    assert_eq!(short_duration(60_000), "1 min");
+    // The minutes stay rounded down: 119.5 s is 1 min, 3 599.9 s 59 min.
+    assert_eq!(short_duration(119_500), "1 min");
+    assert_eq!(short_duration(3_599_900), "59 min");
+}

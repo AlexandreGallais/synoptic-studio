@@ -13,15 +13,20 @@ use serde_json::json;
 /// written, its `npm run lint` call answered at 10:00:30 with two findings of one rule, then a
 /// refusal of a hook at 10:01:00.
 fn transcript() -> Transcript {
+    transcript_then(&[])
+}
+
+/// [`transcript`], then some lines more.
+fn transcript_then(more: &[&str]) -> Transcript {
     let lines = [
         r#"{"type":"assistant","sessionId":"s1","gitBranch":"chore/en-107-x","timestamp":"2026-10-12T10:00:00Z","message":{"id":"m1","model":"claude-opus-5-5","usage":{"cache_read_input_tokens":1000,"output_tokens":10},"content":[{"type":"tool_use","id":"t1","name":"Bash","input":{"command":"npm run lint"}}]}}"#,
         r#"{"type":"user","sessionId":"s1","gitBranch":"chore/en-107-x","timestamp":"2026-10-12T10:00:30Z","message":{"content":[{"type":"tool_result","tool_use_id":"t1","is_error":true,"content":"src/a.ts:1:1 local/kind-limits x\nsrc/b.ts:2:1 local/kind-limits y"}]}}"#,
         r#"{"type":"assistant","sessionId":"s1","gitBranch":"chore/en-107-x","timestamp":"2026-10-12T10:00:40Z","message":{"id":"m2","usage":{"output_tokens":5},"content":[{"type":"tool_use","id":"t2","name":"Bash","input":{"command":"git add a && git commit"}}]}}"#,
         r#"{"type":"user","sessionId":"s1","gitBranch":"chore/en-107-x","timestamp":"2026-10-12T10:01:00Z","message":{"content":[{"type":"tool_result","tool_use_id":"t2","is_error":true,"content":"PreToolUse:Bash hook error: A worktree refuses a chained Git command: run it alone"}]}}"#,
-        "",
     ];
+    let text: Vec<&str> = lines.iter().chain(more).chain(&[""]).copied().collect();
 
-    read_chunk(Transcript::default(), &lines.join("\n"))
+    read_chunk(Transcript::default(), &text.join("\n"))
 }
 
 /// The report's inputs around [`transcript`]: the hook timed `t1` at 25 s, a commit of EN-107.T1
@@ -152,6 +157,39 @@ fn f32_ac1_cuts_the_findings_to_the_period_as_it_cuts_the_totals() {
     ));
     // The totals alike: both requests, at 10:00:00 and 10:00:40, and their calls left out.
     assert!(report.contains("0 model requests, 0 tool calls"));
+}
+
+/// Claude Code's count of session `s1` once it was left, its Sonnet subagent's included: Opus
+/// 3 + 57 + 900 + 40 = 1 000, Sonnet 4 451 + 92 320 + 1 693 941 + 23 875 = 1 814 587.
+const COUNT: &str = r#"{"type":"cost-state","sessionId":"s1","modelUsage":{"claude-opus-5-5":{"inputTokens":3,"outputTokens":40,"cacheReadInputTokens":900,"cacheCreationInputTokens":57},"claude-sonnet-5-5":{"inputTokens":4451,"outputTokens":23875,"cacheReadInputTokens":1693941,"cacheCreationInputTokens":92320}}}"#;
+
+#[test]
+fn f32_ac1_counts_a_session_s_tokens_from_its_model_usage_in_the_sessions_table() {
+    let counted = ReportInputs {
+        transcripts: vec![transcript_then(&[COUNT])],
+        ..inputs(0)
+    };
+    let shown = sections(&metrics_report(&counted, &HashMap::new()));
+
+    // 1 000 + 1 814 587 = 1 815 587 tokens, 40 + 23 875 = 23 915 written, where the requests hold
+    // 1 015 and 15 (I83).
+    assert!(shown["Sessions"].contains("| 2026-10-12 s1 | 1 min 00 s | 23,915 | 1,815,587 | 2 |"));
+    // The tables cut by time keep the requests: the count is the session's, not a story's.
+    assert!(shown["Features"].contains("| F21 | 1 min 00 s | 15 | 1,015 | 2 |"));
+    assert!(shown["Stories and branches"].contains("| EN-107 | 1 min 00 s | 15 | 1,015 |"));
+
+    // From 2026-10-12T10:00:20Z, 1 791 849 600 000 less 13 h 59 min 40 s (50 380 000 ms): the
+    // session started before, so its count cannot be cut; m2's 5 tokens written, from 10:00:40 to
+    // t2's end at 10:01:00, 20 s.
+    let cut = ReportInputs {
+        since: 1_791_799_220_000,
+        ..counted
+    };
+
+    assert!(
+        sections(&metrics_report(&cut, &HashMap::new()))["Sessions"]
+            .contains("| 2026-10-12 s1 | 20.0 s | 5 | 5 | 1 |")
+    );
 }
 
 #[test]

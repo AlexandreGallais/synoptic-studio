@@ -930,6 +930,18 @@ mod tests {
             "#259 Release E17: failed, 1 of 3 jobs: CI / Lint and types; running: CI / Rust, license/cla"
         );
 
+        // A required status not reported yet is `EXPECTED`: still to come, as `PENDING`.
+        let expected = pull_request(&[
+            run("CI", "Rust", "COMPLETED", "SUCCESS"),
+            r#"{"__typename":"StatusContext","context":"license/cla","state":"EXPECTED"}"#
+                .to_owned(),
+        ]);
+
+        assert_eq!(
+            main_ci(true, &expected).detail,
+            "#259 Release E17: running: license/cla"
+        );
+
         let none = main_ci(true, &pull_request(&[]));
 
         assert!(none.is_ok);
