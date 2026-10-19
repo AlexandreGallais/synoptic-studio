@@ -45,6 +45,22 @@ impl Slugger {
     }
 }
 
+/// The characters outside ASCII that `normalize("NFKD")` leaves as they are, among those the
+/// repository's headings hold, each checked with Node.js 24's `String.prototype.normalize` on
+/// 2026-10-19.
+const NFKD_UNCHANGED: [char; 5] = ['—', '“', '”', '‘', '’'];
+
+/// The characters outside ASCII that `normalize("NFKD")` decomposes, among those the repository's
+/// headings hold, written as the site's slug keeps them, their combining marks removed: `é` is
+/// `e` and U+0301, `ⁱ` is `i` (Node.js 24, 2026-10-19).
+const NFKD_DECOMPOSED: [(char, char); 2] = [('é', 'e'), ('ⁱ', 'i')];
+
+/// The characters the site's slug turns into a hyphen, a run of them into one: JavaScript's `\s`
+/// and ``~`!@#$%^&*()-_+=[]{}|\;:"'“”‘’<>,.?/`` (`rSpecial`).
+fn is_site_special(character: char) -> bool {
+    character.is_whitespace() || "~`!@#$%^&*()-_+=[]{}|\\;:\"'“”‘’<>,.?/".contains(character)
+}
+
 /// A text's anchor on the site (`slugify`): decomposed (`NFKD`), its combining marks
 /// (U+0300–U+036F) and control characters removed, each run of special characters turned into a
 /// hyphen, the hyphens at both ends removed, an underscore before a leading digit, lower-cased.
@@ -52,8 +68,37 @@ impl Slugger {
 /// know.
 #[must_use]
 pub fn site_slug(text: &str) -> Option<String> {
-    // Placeholder (EN-140.T1): the text lower-cased.
-    Some(text.to_lowercase())
+    let mut decomposed = String::new();
+
+    for character in text.chars() {
+        if character.is_ascii() || NFKD_UNCHANGED.contains(&character) {
+            decomposed.push(character);
+        } else if let Some((_, base)) = NFKD_DECOMPOSED.iter().find(|(from, _)| *from == character)
+        {
+            decomposed.push(*base);
+        } else if !('\u{300}'..='\u{36f}').contains(&character) {
+            return None;
+        }
+    }
+
+    let mut hyphenated = String::new();
+
+    for character in decomposed.chars().filter(|character| *character >= ' ') {
+        if !is_site_special(character) {
+            hyphenated.push(character);
+        } else if !hyphenated.ends_with('-') {
+            hyphenated.push('-');
+        }
+    }
+
+    let trimmed = hyphenated.trim_matches('-');
+    let prefix = if trimmed.starts_with(|first: char| first.is_ascii_digit()) {
+        "_"
+    } else {
+        ""
+    };
+
+    Some(format!("{prefix}{trimmed}").to_lowercase())
 }
 
 /// The anchors given so far on a page of the site (`markdown-it-anchor`'s `uniqueSlug`).

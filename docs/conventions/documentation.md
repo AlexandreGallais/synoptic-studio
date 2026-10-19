@@ -29,7 +29,9 @@ Every top-level function, type and module constant carries a `/** … */` block.
 - Keep a block on one line when it fits: `/** Separator between commands. */`.
 - Never write `@todo`, `@author`, `@version` nor `@since`: history is in Git, and open work is in the backlog.
 
-## `@see` references (`local/see-references`)
+## `@see` references
+
+Checked by `local/see-references`.
 
 Every function cites at least one source it was written from, so that its formula can be checked against that source.
 

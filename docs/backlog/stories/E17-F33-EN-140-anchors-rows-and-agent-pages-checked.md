@@ -21,6 +21,21 @@ From RET-004's "Checks to add" (P8), split from EN-121 on 2026-10-18 (SP-024): o
 ## Tasks
 
 - [x] T1 — Each criterion's test, failing (1 h)
-- [ ] T2 — The slug, `move-rows`'s notes, the index check, the pages fixed (2 h)
+- [x] T2 — The slug, `move-rows`'s notes, the index check, the pages fixed (2 h)
 
 One task = one commit, referenced as `EN-140.T1` in the commit footer.
+
+## For the main thread
+
+- `.claude/settings.json` still allows `"Bash(npm run library *)"`, a script `package.json` lacks since EN-115 (the agent calls `target/release/library …`): the line can go. `tests/agent-pages.test.ts` reads the Markdown pages of `.claude/` only, so that this branch passes before that change; once it is made, the test may read the settings too.
+- `.claude/rules/docs.md` could take the pitfall: "A heading a link targets keeps one anchor on GitHub and on the site: no `'`, `/`, `_`, `.` nor `—` in it, no leading digit; reword it and name a rule in the section's first line (`local/anchor-slugs`, EN-140)."
+- `.claude/rules/tooling.md` names `npm run deps:outdated`, a script kept as a lane of `check:all`: the test lets it through.
+- Rule-docs: none affected, no rule of `docs/domain/` changed (the guide `f16-colors.md` only links `#colors` of `interaction.md` now).
+
+### Journal
+
+- `#run` EN-140: `local/anchor-slugs` compares each linked heading's GitHub anchor with the site's (VitePress's `slugify`, read upstream and in its bundle) across pages; it found 14 links, 13 to headings holding `'`, `/` or a leading digit, reworded, and one to a heading gone (`#your-feedback`, now `#review`). `npm run backlog:index` is the index tool's call alone, its table already unpadded, so `-- --check` reaches the check. `move-rows` names the notes, and the done commit's `commit-msg` hook runs `move-rows --notes`.
+
+### Improvements
+
+| 2026-10-19 | EN-140 | The site's slug decomposes (`NFKD`) only the characters outside ASCII the headings held on 2026-10-19 (`—`, the curly quotes, `é`, `ⁱ`), Rust's standard library having no normalization; a linked heading holding another one is reported as not computed, to be written in ASCII or the table extended | tool |

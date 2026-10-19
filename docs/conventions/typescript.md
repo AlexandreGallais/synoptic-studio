@@ -26,4 +26,4 @@ The linters handle `noUnusedLocals`, `noUnusedParameters` and `noFallthroughCase
 
 ## Rules that need types
 
-The type-aware rules (`strict-boolean-expressions`, `no-unnecessary-condition`, `switch-exhaustiveness-check`, `no-floating-promises`…) run in oxlint on `tsgolint`. Oxc has no type checker, so a rule of the project's linter that needs a type reads the written code instead ([lint](./lint.md#the-project-s-linter-tools-lint)).
+The type-aware rules (`strict-boolean-expressions`, `no-unnecessary-condition`, `switch-exhaustiveness-check`, `no-floating-promises`…) run in oxlint on `tsgolint`. Oxc has no type checker, so a rule of the project's linter that needs a type reads the written code instead ([lint](./lint.md#the-linter-of-the-project)).

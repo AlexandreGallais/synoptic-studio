@@ -571,7 +571,7 @@ describe("backlog", () => {
 
   it(
     "[F33.AC2] runs the index tool's own check from `npm run backlog:index -- --check`, not the formatter",
-    // alone: 520 ms, the median of 5 runs of the test, the tool built; 60 s holds its cold build.
+    // alone: 172 ms, the median of 5 runs of the test, the tool built; 60 s holds its cold build.
     { timeout: BUILD_TIMEOUT },
     () => {
       // npm appends the arguments after the script's last command: the index tool's, so that

@@ -48,9 +48,9 @@ Turn a rule off for one line only, with its reason, and register the line ([regi
 
 `unicorn/prefer-import-meta-properties` replaces `fileURLToPath(new URL(".", import.meta.url))`, which ends with a slash, by `import.meta.dirname`, which does not: a path concatenated to it breaks. Always build paths with `join()`.
 
-## The project's linter (`tools/lint`)
+## The linter of the project
 
-A crate of the Rust workspace on Oxc's parser and semantic model (research note 0023): `cargo run --release -q -p lint -- [--fix] <targets>`, on oxlint's targets. It prints each finding as `file:line:column rule message`, then a count, and fails on any.
+`tools/lint`, a crate of the Rust workspace on Oxc's parser and semantic model (research note 0023): `cargo run --release -q -p lint -- [--fix] <targets>`, on oxlint's targets. It prints each finding as `file:line:column rule message`, then a count, and fails on any.
 
 - **One rule, one module** of `tools/lint/src/rules/`, with its tests beside it. A rule ported from a plugin keeps the plugin's name, message and options, and its tests run the cases of the plugin's documentation; the plugin's documentation is its reference. To add a rule: write the module, add its line in `rules::ALL`, and add its name to `ON_EVERYWHERE` or to a scope of `tools/lint/src/scopes.rs`. `rules::tests` fails when a rule is in no scope, or a scoped name has no rule.
 - **Each file once**: each file is read and parsed once, with its comments and semantic model, then every rule its scopes turn on runs over that tree. Markdown pages are parsed into an mdast tree (`REF-MARKDOWN-RS`). What the rules read beside a file, such as folder listings, the bibliography or the ADRs, is read once per run. The whole tree takes about 0.2 s.
@@ -64,7 +64,7 @@ Oxc has no type checker, so a rule that once asked the compiler for a type reads
 
 | Rule | How it reads the code |
 | --- | --- |
-| `@typescript-eslint/naming-convention` | a name's type from its annotation, else its initializer; a call's result is not read, so the next option applies ([naming](./naming.md#casing-typescript-eslint-naming-convention)) |
+| `@typescript-eslint/naming-convention` | a name's type from its annotation, else its initializer; a call's result is not read, so the next option applies ([naming](./naming.md#casing)) |
 | `unicorn/no-non-function-verb-prefix` | a `getX`, `setX`, `addX`, `createX`… holds a function, read from its written type or initializer; an unknown value is not reported |
 | `functional/no-return-void` | a core function returns a value: no `void`, `undefined` nor `null` return type; without a written type, the body is read |
 | `functional/no-mixed-types` | a type holds only data or only functions; a member is a function when it is a method, a call or construct signature, or a property typed as a function |
@@ -76,7 +76,9 @@ Oxc has no type checker, so a rule that once asked the compiler for a type reads
 
 In the functional core, no existing object or array is changed. That rules out an assignment, a `delete`, `++` or `--` on a member; a call by name of `copyWithin`, `fill`, `pop`, `push`, `reverse`, `shift`, `sort`, `splice`, `unshift`, `add`, `clear`, `delete` or `set`, whatever the object; and `Object.assign`, `defineProperty`, `defineProperties` or `setPrototypeOf` on an existing object.
 
-### `functional/prefer-immutable-types` and `functional/type-declaration-immutability`
+### The deeply read-only types
+
+Checked by `functional/prefer-immutable-types` and `functional/type-declaration-immutability`.
 
 In the functional core, every parameter with a written type, and every declared type, is deeply read-only, written in place: each property, index signature, mapped type, array and tuple is marked `readonly`, or sits inside `Readonly<…>`. The rule cannot look a type up, so a named type passes only when its own declaration is checked the same way:
 
@@ -97,16 +99,17 @@ No `enum`, no `for…in`, no getter or setter, no `export * as name`, no dynamic
 | --- | --- | --- |
 | `local/require-kind` | every top-level function carries exactly one known `@kind` | ADR-0011 |
 | `local/kind-in-layer` | the `@kind` is allowed in the file's layer | [architecture](./architecture.md#layers) |
-| `local/kind-limits` | lines, statements, complexity and depth by `@kind` | [functions](./functions.md#limits-per-kind-local-kind-limits) |
-| `local/kind-naming` | a verb for `procedure`, a conversion for `format`, no vague verb for `math`, `geometry` and `domain`, a predicate prefix exactly when it returns a boolean | [naming](./naming.md#names-by-kind-local-kind-naming) |
-| `local/see-references` | every function has a `@see`, each pointing to an existing, verified reference | [documentation](./documentation.md#see-references-local-see-references) |
+| `local/kind-limits` | lines, statements, complexity and depth by `@kind` | [functions](./functions.md#limits-per-kind) |
+| `local/kind-naming` | a verb for `procedure`, a conversion for `format`, no vague verb for `math`, `geometry` and `domain`, a predicate prefix exactly when it returns a boolean | [naming](./naming.md#names-by-kind) |
+| `local/see-references` | every function has a `@see`, each pointing to an existing, verified reference | [documentation](./documentation.md#see-references) |
 | `local/one-export-per-file` | one exported value per module, the file named after it, a type beside it only when part of its signature | ADR-0019 |
 | `local/folder-has-index` | every code folder holds an `index.ts` | ADR-0012 |
 | `local/folder-layout` | a folder holds modules or domain folders, never both; a folder past 15 modules is listed with its reason | ADR-0043, [files](./files.md#folders-past-15-modules) |
 | `local/barrel-exports` | an `index.ts` holds only sorted `export * from "./x";` lines, `export type * from "./x";` for a module holding only types; autofixed, a line written `export type *` kept so (EN-138) | ADR-0012, ADR-0092 |
-| `local/canonical-import-path` | the shortest legal import path, never `index` nor `.ts`; autofixed | [imports](./imports.md#canonical-path-local-canonical-import-path-autofixed) |
+| `local/canonical-import-path` | the shortest legal import path, never `index` nor `.ts`; autofixed | [imports](./imports.md#canonical-path) |
 | `local/image-alt-text` | an image's text alternative under 155 characters, never opening with "Image of" | [writing](./writing.md#building-blocks) |
+| `local/anchor-slugs` | a link to a heading's anchor, on its page or on another Markdown page, reaches a heading whose anchor is the same on GitHub (`REF-GITHUB-SLUGGER`) and on the site (`REF-VITEPRESS-SLUGIFY`), the page and the heading named otherwise; a fragment naming no heading of another page | EN-140, [writing](./writing.md#checked-by-the-linter) |
 
 ### Markdown rules
 
-Every Markdown page is checked by `@eslint/markdown`'s 20 rules, with that plugin's names, options and messages (`REF-ESLINT-MARKDOWN-RULES`), and by `local/image-alt-text`. They check heading levels, one title, link targets and their anchors, link definitions, table column counts, code fence languages, text alternatives, bare URLs and raw HTML (only `<span>` is allowed, for `<span v-pre>`). The list is in [rules](./rules.md#every-rule-run-by-theme). The formatter fixes none of these.
+Every Markdown page is checked by `@eslint/markdown`'s 20 rules, with that plugin's names, options and messages (`REF-ESLINT-MARKDOWN-RULES`), and by `local/image-alt-text` and `local/anchor-slugs`. They check heading levels, one title, link targets and their anchors, link definitions, table column counts, code fence languages, text alternatives, bare URLs and raw HTML (only `<span>` is allowed, for `<span v-pre>`). The list is in [rules](./rules.md#every-rule-run-by-theme). The formatter fixes none of these.

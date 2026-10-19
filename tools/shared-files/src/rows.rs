@@ -257,8 +257,7 @@ pub fn take_rows(story: &str) -> Taken {
     let mut block: Vec<&str> = Vec::new();
     let mut found: Vec<(Log, Vec<String>)> = Vec::new();
     let mut left: Vec<(Log, Vec<String>)> = Vec::new();
-    // Placeholder (EN-140.T1): no note listed.
-    let notes: Vec<String> = Vec::new();
+    let mut notes: Vec<String> = Vec::new();
     let mut current: Option<Log> = None;
     let mut in_card = false;
 
@@ -282,6 +281,9 @@ pub fn take_rows(story: &str) -> Taken {
 
         let Some(log) = current else {
             kept.push(line);
+            if !line.trim().is_empty() {
+                notes.push((*line).to_owned());
+            }
             continue;
         };
 

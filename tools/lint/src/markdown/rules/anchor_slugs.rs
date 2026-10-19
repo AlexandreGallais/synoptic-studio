@@ -7,6 +7,7 @@
 //! fragment that names no heading of another page is reported too, which
 //! `markdown/no-missing-link-fragments` only checks on the link's own page.
 
+use std::collections::HashMap;
 use std::fs;
 use std::path::Path;
 
@@ -15,7 +16,7 @@ use markdown::mdast::Node;
 use crate::finding::Finding;
 use crate::markdown::MarkdownRule;
 use crate::markdown::page::{Page, nodes, start};
-use crate::markdown::rules::no_missing_link_fragments::heading_text;
+use crate::markdown::rules::no_missing_link_fragments::{decode, heading_text, is_line_reference};
 use crate::markdown::slugger::{SiteSlugger, Slugger};
 
 /// The rule.
@@ -98,6 +99,39 @@ pub fn joined(page: &str, link: &str) -> Option<String> {
     Some(parts.join("/"))
 }
 
+/// What is wrong with a link to a fragment, given the anchors of its target page: a heading whose
+/// GitHub and site anchors differ, or, on another page, a fragment naming no heading.
+fn problem(anchors: &[Anchor], fragment: &str, page: &str, other: bool) -> Option<String> {
+    let wanted = decode(fragment).to_lowercase();
+
+    if wanted == "top" || is_line_reference(&wanted) {
+        return None;
+    }
+
+    let Some(anchor) = anchors
+        .iter()
+        .find(|anchor| anchor.github == wanted || anchor.site.as_deref() == Some(&wanted))
+    else {
+        return other.then(|| {
+            format!("Link fragment '#{fragment}' does not reference a heading of {page}.")
+        });
+    };
+
+    match &anchor.site {
+        Some(site) if *site == anchor.github => None,
+        Some(site) => Some(format!(
+            "Heading '{}' of {page} has the anchor '#{}' on GitHub and '#{site}' on the site: \
+             write it so that both are the same.",
+            anchor.text, anchor.github
+        )),
+        None => Some(format!(
+            "Heading '{}' of {page} holds a character whose anchor on the site is not computed: \
+             write it in ASCII, its anchor on GitHub being '#{}'.",
+            anchor.text, anchor.github
+        )),
+    }
+}
+
 /// The link and definition nodes of a page with their URL.
 fn links(root: &Node) -> Vec<(&Node, &str)> {
     nodes(root)
@@ -113,13 +147,32 @@ fn links(root: &Node) -> Vec<(&Node, &str)> {
 /// The findings of the rule on a page, another page's text given by `read` from its path (`None`
 /// when it cannot be read, the link then left to the site's build and the reader).
 pub fn check_with(page: &Page, read: &dyn Fn(&str) -> Option<String>, findings: &mut Vec<Finding>) {
-    // Placeholder (EN-140.T1): the links read, no finding made.
-    let read_links = links(&page.root)
-        .iter()
-        .filter_map(|(_, url)| target(url))
-        .count();
-    findings.reserve(read_links);
-    let _ = (read, NAME, start(&page.root));
+    let own = anchors(&page.root);
+    let mut others: HashMap<String, Option<Vec<Anchor>>> = HashMap::new();
+
+    for (node, url) in links(&page.root) {
+        let Some((path, fragment)) = target(url) else {
+            continue;
+        };
+        let message = match path.map(|path| joined(page.path, path)) {
+            None => problem(&own, fragment, page.path, false),
+            Some(None) => None,
+            Some(Some(other)) => others
+                .entry(other.clone())
+                .or_insert_with(|| {
+                    let text = read(&other)?;
+                    Page::parse(&other, &text)
+                        .ok()
+                        .map(|parsed| anchors(&parsed.root))
+                })
+                .as_deref()
+                .and_then(|anchors| problem(anchors, fragment, &other, true)),
+        };
+
+        if let Some(message) = message {
+            findings.push(page.finding(NAME, start(node), message));
+        }
+    }
 }
 
 impl MarkdownRule for AnchorSlugs {

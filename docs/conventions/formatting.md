@@ -8,7 +8,7 @@ Layout is written by tools, never chosen by hand nor discussed in a review. Each
 | the formatter (`tools/format`) | the whole layout of every file kind it knows: oxfmt, then Markdown tables without padding (ADR-0068); the order of imports (`sortImports`, [imports](./imports.md#order)) | `.oxfmtrc.json` (`printWidth` 100) |
 | the linters | what the formatter leaves: blank lines between statements, comments, import members, JSDoc layout, braces | `.oxlintrc.json`, `tools/lint` |
 
-The reasons for each setting, measured on this repository's edits, are in [rules](./rules.md#the-formatters-settings).
+The reasons for each setting, measured on this repository's edits, are in [rules](./rules.md#the-settings-of-the-formatter).
 
 ## The formatter
 

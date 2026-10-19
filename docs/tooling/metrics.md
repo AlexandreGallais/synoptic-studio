@@ -9,7 +9,7 @@ Measure first, then make each epic faster than the last (Product Owner, RET-001)
 | `.git/metrics/tool-calls.jsonl` | the hook `log-tool-call` (Rust), after each tool call, in the background | one line per call ([the record of each call](#the-record-of-each-call)) |
 | `.git/metrics/tool-uses.jsonl` | each Rust tool of the workspace, at its end (`tools/tool-use`) | one line per use of a tool ([the uses of each tool](#the-uses-of-each-tool)) |
 | `~/.claude/projects/<main checkout's path>/` | Claude Code: one JSON Lines transcript per session, its subagents' beside it | every request with its tokens, every tool call and result, each line with its time, session and branch |
-| `.git/metrics/run.json`, `run-cache.json` | `target/release/run-totals start` and `end`; the cache by `run-totals` | the open or last run: start, end (0 while open), sessions; the cache, where each transcript was read up to ([a run's totals](#a-runs-totals)) |
+| `.git/metrics/run.json`, `run-cache.json` | `target/release/run-totals start` and `end`; the cache by `run-totals` | the open or last run: start, end (0 while open), sessions; the cache, where each transcript was read up to ([a run's totals](#the-totals-of-a-run)) |
 | `.git/metrics/turns.jsonl` | `target/release/session-report` without `--all` | one line per turn: start, session, duration, active time, tokens, calls, failures, commits |
 | `.git/metrics/transcripts-cache.jsonl` | the metrics' Rust tools (`tools/metrics`, EN-107) | each transcript's events as last read and the offset reached ([reading the transcripts](#reading-the-transcripts)) |
 | `.git/metrics/usage.json` | the status line, at each refresh | the subscription's usage ([status line](#status-line)) |
@@ -124,7 +124,7 @@ A background task is a subagent, a monitor or a call run in the background, and 
 | the state | the transcript and its background tasks (`tools/hooks/src/tasks.rs`, which `limit-agents` reads too) |
 | `⏱ turn` | the time since the turn started; once the agent ends its turn, `last turn`, stopped at its last answer. A turn starts at the first prompt after the agent ended its turn; a message sent while it works, or a compaction, stays in the turn |
 | tokens this turn | the exact sum of the turn's requests, as in the session report, the part written in brackets; they grow by steps, as a request's tokens reach the transcript only once its answer is complete. A request written over several lines is counted once, from its last line: a subagent's transcript repeats its usage with a growing `output_tokens` (EN-104) |
-| `run` | while a run is open: its duration, its tokens with the subagents', then the week's usage ([a run's totals](#a-runs-totals)) |
+| `run` | while a run is open: its duration, its tokens with the subagents', then the week's usage ([a run's totals](#the-totals-of-a-run)) |
 | conversation memory | how full the context window is; near 100 %, Claude Code compacts the conversation |
 | `▶` | the main agent's oldest call running, its description and for how long; in red after 5 minutes |
 | `↳` | one line per background task: a subagent with its type, task, time and current call, or a command with its description |
@@ -150,7 +150,7 @@ A background task older than 3 hours is taken as lost, its end never arrived (`L
 
 On 2026-10-18 the status line showed a story worker running for 9 min 20 while no agent ran: 169 files of calls `guard-bash` had refused, which nothing removed (C5).
 
-## A run's totals
+## The totals of a run
 
 A turn restarts at each message, so a run's totals count from its start to its end instead, whatever happens between:
 
