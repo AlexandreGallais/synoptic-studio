@@ -8,6 +8,7 @@ use std::fs;
 use std::path::{Path, PathBuf};
 
 use deps::actions::{self, ActionUse};
+use deps::cargo_tools::{self, DEPENDENCIES_PAGE, ToolPin};
 use deps::fetch::{self, Answer};
 use deps::outdated::{self, Network, Pins, Report};
 use deps::version::Version;
@@ -403,6 +404,183 @@ fn f21_ac4_node_takes_the_newest_lts_release_7_days_old() {
     assert_eq!(node::latest_lts(&serde_json::json!([]), now()), None);
 }
 
+// --- The cargo tools (EN-121) ---
+
+fn tool(name: &str, version: &str, place: &str) -> ToolPin {
+    ToolPin {
+        name: name.to_owned(),
+        version: version.to_owned(),
+        place: place.to_owned(),
+    }
+}
+
+#[test]
+fn f33_ac1_reads_a_tool_s_version_from_a_workflow_s_env() {
+    let workflow = [
+        "env:",
+        "  CARGO_TERM_COLOR: always",
+        "  CARGO_LLVM_COV_VERSION: 0.9.1",
+        "  CARGO_DENY_VERSION: 0.20.2",
+        "  NODE_VERSION: 24.11.0",
+        "  CARGO_NEXT_VERSION: ${{ inputs.version }}",
+        "  # CARGO_OLD_VERSION: 0.1.0",
+    ]
+    .join("\n");
+
+    // Only a `CARGO_<TOOL>_VERSION` key with a version: not `CARGO_TERM_COLOR`, nor Node.js's,
+    // nor an expression, nor a comment.
+    assert_eq!(
+        cargo_tools::env_pins(&workflow, "ci.yml"),
+        [
+            tool("cargo-llvm-cov", "0.9.1", "ci.yml"),
+            tool("cargo-deny", "0.20.2", "ci.yml"),
+        ]
+    );
+    assert_eq!(cargo_tools::env_pins("", "ci.yml"), []);
+}
+
+#[test]
+fn f33_ac1_reads_the_tools_of_each_cargo_install_line() {
+    let cases = [
+        // Two tools on one line, closed by a backtick.
+        (
+            "then `cargo install --locked cargo-llvm-cov@0.9.1 cargo-deny@0.20.2` and",
+            vec![
+                tool("cargo-llvm-cov", "0.9.1", "p"),
+                tool("cargo-deny", "0.20.2", "p"),
+            ],
+        ),
+        // Closed by a comma, the words after it no tool.
+        (
+            "run cargo install --locked cargo-deny@0.20.2, then cargo deny fetch db",
+            vec![tool("cargo-deny", "0.20.2", "p")],
+        ),
+        // Without `--locked`, and twice in one text.
+        (
+            "cargo install cargo-nextest@0.9.0\nlater: cargo install --locked cargo-deny@0.20.1",
+            vec![
+                tool("cargo-nextest", "0.9.0", "p"),
+                tool("cargo-deny", "0.20.1", "p"),
+            ],
+        ),
+        // An expression of a workflow, a placeholder of a page, a tool without a version.
+        (
+            "cargo install --locked cargo-llvm-cov@${{ env.CARGO_LLVM_COV_VERSION }}",
+            Vec::new(),
+        ),
+        ("`cargo install --locked cargo-deny@<version>`", Vec::new()),
+        ("cargo install --locked cargo-deny", Vec::new()),
+    ];
+
+    for (text, pins) in cases {
+        assert_eq!(cargo_tools::install_pins(text, "p"), pins, "{text}");
+    }
+}
+
+#[test]
+fn f33_ac1_reads_the_rows_of_the_rust_tools_table_only() {
+    let page = [
+        "## Packages",
+        "",
+        "| typescript | 7.0.2, 2026-07-08 | the compiler |",
+        "",
+        "## Rust tools",
+        "",
+        "| Tool | Version, released | Why |",
+        "| --- | --- | --- |",
+        "| cargo-llvm-cov | 0.9.1, 2026-09-06 | coverage |",
+        "| cargo-deny | 0.20.2, 2026-07-09 | advisories |",
+        "| llvm-tools, rustup's component | of the pinned Rust | its LLVM |",
+        "",
+        "## Assets",
+        "",
+        "| a-font | 4.1.0, 2026-01-01 | the text |",
+    ]
+    .join("\n");
+
+    // The header, the separator and a row without a version are no tool; the other tables none.
+    assert_eq!(
+        cargo_tools::row_pins(&page),
+        [
+            tool("cargo-llvm-cov", "0.9.1", DEPENDENCIES_PAGE),
+            tool("cargo-deny", "0.20.2", DEPENDENCIES_PAGE),
+        ]
+    );
+    assert_eq!(
+        cargo_tools::row_pins("| cargo-deny | 0.20.2, 2026-07-09 |"),
+        []
+    );
+}
+
+#[test]
+fn f33_ac1_names_a_tool_at_two_versions_or_without_its_row() {
+    let pins = [
+        tool("cargo-deny", "0.20.2", ".github/workflows/ci.yml"),
+        tool("cargo-deny", "0.20.2", DEPENDENCIES_PAGE),
+        tool("cargo-deny", "0.20.10", "docs/tooling/agent-tools.md"),
+        tool("cargo-deny", "0.20.1", "package.json"),
+        tool("cargo-llvm-cov", "0.9.1", ".github/workflows/ci.yml"),
+        tool("cargo-nextest", "0.9.0", DEPENDENCIES_PAGE),
+    ];
+
+    // Versions by precedence, 0.20.10 after 0.20.2; a row alone agrees with itself.
+    assert_eq!(
+        cargo_tools::disagreements(&pins),
+        [
+            "tool cargo-deny at 0.20.1 in package.json, at 0.20.2 in .github/workflows/ci.yml, \
+             docs/tooling/dependencies.md, at 0.20.10 in docs/tooling/agent-tools.md",
+            "tool cargo-llvm-cov without its row in docs/tooling/dependencies.md (Rust tools)",
+        ]
+    );
+    assert_eq!(cargo_tools::disagreements(&pins[..2]), [] as [String; 0]);
+}
+
+#[test]
+fn f33_ac1_a_tool_behind_is_listed_once_its_release_is_7_days_old() {
+    // cargo-llvm-cov 0.9.1 was published 2026-09-06T16:20:49Z (`fixtures/crates/cargo-llvm-cov`,
+    // recorded on 2026-10-19): 0.9.0 is behind from 7 days later to the millisecond, not 1 ms
+    // before. Its disagreement is listed first: two versions, and no row.
+    let pins = Pins {
+        tools: vec![
+            tool("cargo-llvm-cov", "0.9.0", ".github/workflows/ci.yml"),
+            tool("cargo-llvm-cov", "0.9.1", "package.json"),
+        ],
+        ..Pins::default()
+    };
+    let at = epoch_ms("2026-09-13T16:20:49Z");
+    let lines = |now_ms| outdated::outdated(&pins, &Recorded::new(), now_ms).lines;
+    let disagreement = [
+        "tool cargo-llvm-cov at 0.9.0 in .github/workflows/ci.yml, at 0.9.1 in package.json",
+        "tool cargo-llvm-cov without its row in docs/tooling/dependencies.md (Rust tools)",
+    ];
+
+    assert_eq!(
+        lines(at),
+        [
+            disagreement[0],
+            disagreement[1],
+            "tool cargo-llvm-cov 0.9.0 → 0.9.1, 2026-09-06",
+        ]
+    );
+    assert_eq!(lines(at - 1), disagreement);
+}
+
+#[test]
+fn f33_ac1_the_repository_s_cargo_tools_agree_and_have_their_rows() {
+    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../..");
+    let tools = outdated::read_pins(&root).tools;
+    let names: std::collections::BTreeSet<&str> =
+        tools.iter().map(|pin| pin.name.as_str()).collect();
+
+    assert_eq!(
+        names.into_iter().collect::<Vec<_>>(),
+        ["cargo-deny", "cargo-llvm-cov"]
+    );
+    // Each in the five workflows, `package.json`, the install line and its row.
+    assert!(tools.len() >= 16, "{tools:?}");
+    assert_eq!(cargo_tools::disagreements(&tools), [] as [String; 0]);
+}
+
 // --- The check, from the files to the report ---
 
 /// The recorded answers, by address or GitHub path; anything else is a 404.
@@ -420,6 +598,14 @@ impl Recorded {
                 "crates/serde_json",
             ),
             ("https://index.crates.io/3/s/syn", "crates/syn"),
+            (
+                "https://index.crates.io/ca/rg/cargo-deny",
+                "crates/cargo-deny",
+            ),
+            (
+                "https://index.crates.io/ca/rg/cargo-llvm-cov",
+                "crates/cargo-llvm-cov",
+            ),
             ("https://nodejs.org/dist/index.json", "node-index.json"),
             (
                 "repos/actions/checkout/git/matching-refs/tags/v7",
@@ -503,6 +689,10 @@ fn pins() -> Pins {
             ("serde_json".to_owned(), "1.0.152".to_owned()),
             ("syn".to_owned(), "3.0.9".to_owned()),
         ],
+        tools: vec![
+            tool("cargo-deny", "0.20.1", ".github/workflows/ci.yml"),
+            tool("cargo-deny", "0.20.1", DEPENDENCIES_PAGE),
+        ],
     }
 }
 
@@ -520,6 +710,7 @@ fn f21_ac4_lists_each_version_behind_with_its_date_and_exits_1() {
                 "crate serde_json 1.0.151 → 1.0.152, 2026-10-10".to_owned(),
                 "lock syn 3.0.9, 2026-10-12, under 7 days: cargo update -p syn@3.0.9 --precise 3.0.7"
                     .to_owned(),
+                "tool cargo-deny 0.20.1 → 0.20.2, 2026-07-09".to_owned(),
             ],
             failures: Vec::new(),
         }
@@ -540,6 +731,7 @@ fn f21_ac4_an_action_s_next_major_is_listed_at_exactly_7_days() {
         node: None,
         crates: Vec::new(),
         locked: Vec::new(),
+        tools: Vec::new(),
     };
     let at = epoch_ms("2026-06-24T17:51:53Z");
     let lines = |now_ms| outdated::outdated(&only_checkout, &Recorded::new(), now_ms).lines;
@@ -564,6 +756,7 @@ fn f21_ac4_a_source_that_does_not_answer_is_named_and_exits_2() {
             "GitHub: actions/checkout: error connecting to api.github.com",
             "GitHub: actions/checkout: error connecting to api.github.com",
             "Node.js index: Could not resolve host",
+            "crates.io index: cargo-deny: Could not resolve host",
             "crates.io index: serde_json: Could not resolve host",
             "crates.io index: syn: Could not resolve host",
         ]
@@ -607,6 +800,10 @@ fn an_up_to_date_tree_lists_nothing_and_exits_0() {
         node: Some(24),
         crates: vec![("serde_json".to_owned(), "1.0.152".to_owned())],
         locked: vec![("syn".to_owned(), "3.0.7".to_owned())],
+        tools: vec![
+            tool("cargo-deny", "0.20.2", ".github/workflows/ci.yml"),
+            tool("cargo-deny", "0.20.2", DEPENDENCIES_PAGE),
+        ],
     };
     let report = outdated::outdated(&pins, &Recorded::new(), now());
 
@@ -667,6 +864,7 @@ fn checkout(name: &str) -> PathBuf {
     let _ = fs::remove_dir_all(&root);
 
     fs::create_dir_all(root.join(".github/workflows")).expect("a folder");
+    fs::create_dir_all(root.join("docs/tooling")).expect("a folder");
     root
 }
 
@@ -676,7 +874,7 @@ fn reads_the_pins_of_a_checkout() {
     let files = [
         (
             "package.json",
-            r#"{ "dependencies": {}, "devDependencies": { "oxlint": "1.87.0", "vitepress": "2.0.0-alpha.20" } }"#,
+            r#"{ "scripts": { "advisories": "echo 'run cargo install --locked cargo-deny@0.20.2, then cargo deny fetch db'" }, "dependencies": {}, "devDependencies": { "oxlint": "1.87.0", "vitepress": "2.0.0-alpha.20" } }"#,
         ),
         (".nvmrc", "24\n"),
         (
@@ -685,7 +883,15 @@ fn reads_the_pins_of_a_checkout() {
         ),
         (
             ".github/workflows/a.yml",
-            "    - uses: actions/checkout@v7\n",
+            "env:\n  CARGO_DENY_VERSION: 0.20.2\n\njobs:\n    - uses: actions/checkout@v7\n    - run: cargo install --locked cargo-deny@${{ env.CARGO_DENY_VERSION }}\n",
+        ),
+        (
+            "docs/tooling/agent-tools.md",
+            "then `cargo install --locked cargo-llvm-cov@0.9.1 cargo-deny@0.20.2` and\n",
+        ),
+        (
+            "docs/tooling/dependencies.md",
+            "## Rust tools\n\n| Tool | Version, released | Why |\n| --- | --- | --- |\n| cargo-llvm-cov | 0.9.1, 2026-09-06 | coverage |\n| cargo-deny | 0.20.2, 2026-07-09 | advisories |\n",
         ),
         (".github/workflows/notes.md", "uses: other/action@v1\n"),
         (
@@ -726,6 +932,15 @@ fn reads_the_pins_of_a_checkout() {
                 ("rmcp".to_owned(), "3.5.1".to_owned()),
             ],
             locked: vec![("syn".to_owned(), "3.0.7".to_owned())],
+            // Sorted by name, version and place; the workflow's `@${{ env.… }}` is no version.
+            tools: vec![
+                tool("cargo-deny", "0.20.2", ".github/workflows/a.yml"),
+                tool("cargo-deny", "0.20.2", "docs/tooling/agent-tools.md"),
+                tool("cargo-deny", "0.20.2", DEPENDENCIES_PAGE),
+                tool("cargo-deny", "0.20.2", "package.json"),
+                tool("cargo-llvm-cov", "0.9.1", "docs/tooling/agent-tools.md"),
+                tool("cargo-llvm-cov", "0.9.1", DEPENDENCIES_PAGE),
+            ],
         }
     );
     fs::remove_dir_all(&root).expect("removed");

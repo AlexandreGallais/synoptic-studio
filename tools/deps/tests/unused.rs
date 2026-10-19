@@ -37,7 +37,11 @@ fn tree(root: &Path, files: &[(&str, &str)]) -> Tree {
 const BASE: &[(&str, &str)] = &[
     (
         "package.json",
-        "{\n  \"scripts\": {\n    \"test\": \"vitest run\",\n    \"lint\": \"oxlint --type-check src\",\n    \"font\": \"node scripts/font.ts\"\n  },\n  \"devDependencies\": {\n    \"@types/node\": \"26.6.5\",\n    \"@vitest/coverage-v8\": \"5.0.4\",\n    \"fast-check\": \"4.10.2\",\n    \"happy-dom\": \"21.0.1\",\n    \"is-number\": \"7.0.0\",\n    \"oxlint\": \"1.87.0\",\n    \"oxlint-tsgolint\": \"7.0.2004\",\n    \"typescript\": \"7.0.2\",\n    \"vite\": \"8.3.4\",\n    \"vitest\": \"5.0.4\"\n  }\n}\n",
+        "{\n  \"scripts\": {\n    \"test\": \"vitest run\",\n    \"lint\": \"oxlint src\",\n    \"font\": \"node scripts/font.ts\"\n  },\n  \"devDependencies\": {\n    \"@types/node\": \"26.6.5\",\n    \"@vitest/coverage-v8\": \"5.0.4\",\n    \"fast-check\": \"4.10.2\",\n    \"happy-dom\": \"21.0.1\",\n    \"is-number\": \"7.0.0\",\n    \"oxlint\": \"1.87.0\",\n    \"oxlint-tsgolint\": \"7.0.2004\",\n    \"typescript\": \"7.0.2\",\n    \"vite\": \"8.3.4\",\n    \"vitest\": \"5.0.4\"\n  }\n}\n",
+    ),
+    (
+        ".oxlintrc.json",
+        "{\n  \"options\": {\n    \"typeAware\": true,\n    \"typeCheck\": true\n  }\n}\n",
     ),
     (
         "tsconfig.json",
@@ -77,7 +81,8 @@ fn check(name: &str, planted: &[(&str, &str)]) -> Findings {
 fn f21_ac4_finds_only_the_dev_package_nothing_names_on_the_base_tree() {
     // Every package is named: by an import (`vitest`), `tsconfig.json`'s types (`@types/node`,
     // `vite`), a script's binary (`oxlint`), Vitest's coverage provider, the DOM comment, oxlint's
-    // `--type-check`, the compiler's configuration; `fast-check` is ignored, as `knip.json` did.
+    // `typeAware` in `.oxlintrc.json` (EN-121), the compiler's configuration; `fast-check` is
+    // ignored, as `knip.json` did.
     // Knip reported `is-number  package.json:12:6`: line 12, its name after the quote at column 5.
     assert_eq!(
         check("base", &[]).report(),

@@ -296,6 +296,30 @@ function lintScriptReports(code: string): readonly string[] {
     .toArray();
 }
 
+describe("the type check set in `.oxlintrc.json` (EN-121)", () => {
+  it("[F33.AC1] sets `typeCheck` beside `typeAware` in its options", () => {
+    const options = propertyOf(CONFIG, "options");
+
+    expect([propertyOf(options, "typeAware"), propertyOf(options, "typeCheck")]).toEqual([
+      true,
+      true,
+    ]);
+  });
+
+  it("[F33.AC1] leaves it there: no oxlint command nor script passes `--type-check`", () => {
+    const scripts = Object.entries(entriesOf(SCRIPTS));
+
+    expect(OXLINT_COMMANDS).toHaveLength(3);
+    expect(OXLINT_COMMANDS.filter((command) => command.includes("--type-check"))).toEqual([]);
+
+    expect(
+      scripts
+        .filter(([, command]) => String(command).includes("--type-check"))
+        .map(([name]) => name),
+    ).toEqual([]);
+  });
+});
+
 describe("a disable directive that silences nothing (ESLint's `reportUnusedDisableDirectives`)", () => {
   it("[F19.AC1] is an error in every oxlint command", () => {
     expect(OXLINT_COMMANDS).toHaveLength(3);

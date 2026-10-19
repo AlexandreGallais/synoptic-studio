@@ -260,7 +260,7 @@ describe("heavy commands and Rust tools (AUD-020)", () => {
     );
   });
 
-  it("[F19.AC9] checks the whole Rust workspace in check:rust and rust:coverage, its binaries built before the lanes", () => {
+  it("[F19.AC9] [F33.AC1] checks the whole Rust workspace in check:rust and rust:coverage, its binaries built before the lanes", () => {
     // The tests under the coverage floor are a lane of their own since EN-130, `rust:coverage`
     // (`[F29.AC2]` in tools/repo-tools/tests/check_all.rs).
     expect(SCRIPTS.get("check:rust")?.split(" && ")).toEqual([
@@ -273,7 +273,7 @@ describe("heavy commands and Rust tools (AUD-020)", () => {
     ]);
 
     expect(SCRIPTS.get("rust:coverage")).toContain(
-      "cargo llvm-cov --workspace --locked --quiet --summary-only --fail-under-lines 93 --fail-under-functions 93",
+      "cargo llvm-cov --workspace --locked --quiet --summary-only --fail-under-lines 95 --fail-under-functions 95",
     );
   });
 
@@ -322,7 +322,7 @@ describe("heavy commands and Rust tools (AUD-020)", () => {
     );
   });
 
-  it("[F19.AC9] runs the workspace's tests under a floor of lines and functions, failing aloud without the tool", () => {
+  it("[F19.AC9] [F33.AC1] runs the workspace's tests under a floor of lines and functions, failing aloud without the tool", () => {
     const coverage = SCRIPTS.get("rust:coverage") ?? "";
 
     expect(coverage).toMatch(
@@ -330,8 +330,27 @@ describe("heavy commands and Rust tools (AUD-020)", () => {
     );
 
     expect(coverage).toContain(
-      "cargo llvm-cov --workspace --locked --quiet --summary-only --fail-under-lines 93 --fail-under-functions 93 || { echo 'Rust tests failed, or their coverage fell under the floor of 93 % of lines and 93 % of functions",
+      "cargo llvm-cov --workspace --locked --quiet --summary-only --fail-under-lines 95 --fail-under-functions 95 || { echo 'Rust tests failed, or their coverage fell under the floor of 95 % of lines and 95 % of functions",
     );
+  });
+
+  it("[F33.AC1] gives the floor of 95 % in the rules and the pages that name it", () => {
+    const coverageRow =
+      readFileSync(join(ROOT, "docs/tooling/commands.md"), "utf8")
+        .split("\n")
+        .find((line) => line.startsWith("| `npm run rust:coverage` |")) ?? "";
+    const coverageBullet =
+      readFileSync(join(ROOT, "docs/tooling/agent-tools.md"), "utf8")
+        .split("\n")
+        .find((line) => line.startsWith("- **Coverage**: `npm run rust:coverage`")) ?? "";
+
+    expect(readFileSync(join(ROOT, ".claude/rules/tooling.md"), "utf8")).toContain(
+      "`rust:coverage` (95 % of lines and functions covered)",
+    );
+
+    expect(coverageRow).toContain("95 % of lines or of functions");
+    expect(coverageBullet).toContain("fails under 95 % of lines or of functions");
+    expect([coverageRow, coverageBullet].filter((line) => line.includes("93 %"))).toEqual([]);
   });
 });
 

@@ -734,7 +734,7 @@ fn f29_ac2_runs_the_rust_coverage_as_a_lane_of_its_own() {
     assert!(!script("check:rust").contains("rust:coverage"));
     assert!(script("check:rust").contains("rust:advisories"));
     assert!(script("rust:coverage").contains(
-        "cargo llvm-cov --workspace --locked --quiet --summary-only --fail-under-lines 93 --fail-under-functions 93"
+        "cargo llvm-cov --workspace --locked --quiet --summary-only --fail-under-lines 95 --fail-under-functions 95"
     ));
 }
 

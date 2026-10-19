@@ -10,6 +10,7 @@ use std::path::Path;
 use std::thread;
 
 use crate::actions::{self, ActionUse};
+use crate::cargo_tools::ToolPin;
 use crate::fetch::Answer;
 use crate::{Behind, crates, node, npm};
 
@@ -46,6 +47,8 @@ pub struct Pins {
     pub crates: Vec<(String, String)>,
     /// The crates.io packages of `Cargo.lock`, name and version.
     pub locked: Vec<(String, String)>,
+    /// The cargo tools, each version where it is written (EN-121).
+    pub tools: Vec<ToolPin>,
 }
 
 /// The findings: one line per version behind, and one per source that did not answer.
@@ -152,6 +155,7 @@ pub fn read_pins(root: &Path) -> Pins {
         node: read(".nvmrc").trim().trim_start_matches('v').parse().ok(),
         crates: crate_pins(&read("Cargo.toml")),
         locked: locked_pins(&read("Cargo.lock")),
+        tools: Vec::new(),
     }
 }
 
