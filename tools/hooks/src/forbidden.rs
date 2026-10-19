@@ -1,6 +1,6 @@
 //! The commands the project forbids, read word by word (AUD-023): every simple command of a line,
 //! its substitutions' and subshells' included ([`crate::shell`]), then the command each wrapper
-//! runs (`env`, `command`, `sudo`, `heavy-lock`, `cargo run … --`, `bash -c`, `eval`, `xargs`,
+//! runs (`env`, `command`, `sudo`, `heavy-lock`, `bench`, `cargo run … --`, `bash -c`, `eval`, `xargs`,
 //! `find -exec` and the like), each judged as Git or `gh` would read it: bundled short options
 //! (`-uf`), a long option by any unique prefix (`--no-veri`, `REF-GITCLI`), configuration keys
 //! without case (`core.hookspath`, `REF-GIT-HOOKS-PATH`), the destination of each refspec of a
@@ -182,10 +182,10 @@ fn unwrap(
             }
         }
         // `cargo run … -- <arguments>`: the arguments are a command for `heavy-lock`, its
-        // `--lock <name>` first.
+        // `--lock <name>` first, or for `bench`, after its `--runs <count> --` (EN-141).
         "cargo" if rest.first().is_some_and(|word| word == "run") => {
             if let Some(dashes) = rest.iter().position(|word| word == "--") {
-                let inner = after_options(&rest[dashes + 1..], &["--lock"]);
+                let inner = after_options(&rest[dashes + 1..], &["--lock", "--runs"]);
 
                 unwrap(inner, assignments, depth + 1, found);
             }
@@ -220,6 +220,7 @@ fn wrapper_options(program: &str) -> Option<&'static [&'static str]> {
         "caffeinate" => &["-t", "-w"],
         "xargs" => &["-I", "-L", "-n", "-P", "-s", "-d", "-E", "-a"],
         "heavy-lock" => &["--lock"],
+        "bench" => &["--runs"],
         _ => return None,
     })
 }
