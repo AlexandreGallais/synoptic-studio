@@ -1,8 +1,9 @@
-//! `git-sequences sync|commit` (EN-100): one call for a Git sequence the agent ran step by step,
-//! in the checkout it is started from. Each step's output is kept back and printed only when the
-//! step fails, then the sequence stops; on success one line
-//! says where the branch stands; the Git hooks run as for any commit. A sync then rebuilds the
-//! release binaries of a checkout that has a Cargo workspace (ADR-0078).
+//! `git-sequences sync|commit|state` (EN-100, EN-119): one call for a Git sequence the agent ran
+//! step by step, in the checkout it is started from. Each step's output is kept back and printed
+//! only when the step fails, then the sequence stops; on success one line says where the branch
+//! stands; the Git hooks run as for any commit. A sync then rebuilds the release binaries of a
+//! checkout that has a Cargo workspace (ADR-0078). `state` only reads: the branch, its base, the
+//! status, the diff's stat and the commits ahead, without a fetch.
 
 use std::env;
 use std::fs;
@@ -11,8 +12,9 @@ use std::path::{Path, PathBuf};
 use std::process::{Command, ExitCode, Stdio};
 
 use git_sequences::{
-    Branch, Request, Source, Target, branch_of, changes_refusal, changes_step, commit_refusal,
-    commit_steps, fetch_step, message_refusal, parse, sync_steps, sync_target,
+    Branch, Request, Source, State, Target, branch_of, changes_refusal, changes_step,
+    commit_refusal, commit_steps, fetch_step, message_refusal, parse, state_base, state_report,
+    state_steps, sync_steps, sync_target,
 };
 use stale_binaries::RELEASE_BUILD;
 
@@ -39,7 +41,10 @@ fn git(step: &[String], input: Option<&str>) -> Result<String, String> {
     let output = child
         .wait_with_output()
         .map_err(|error| format!("git: {error}"))?;
-    let out = String::from_utf8_lossy(&output.stdout).trim().to_owned();
+    // The leading spaces are kept: `status --short` and `diff --stat` open their lines with one.
+    let out = String::from_utf8_lossy(&output.stdout)
+        .trim_end()
+        .to_owned();
 
     if output.status.success() {
         return Ok(out);
@@ -209,9 +214,41 @@ fn run(argv: &[String]) -> Result<String, String> {
             paths,
             push,
         } => commit(&branch, message, paths, *push),
+        Request::State => return state(&branch, &top, place),
     }?;
 
     Ok(format!("{place}: {result}"))
+}
+
+/// The state of the checkout, read without a fetch: the remote branches as last fetched, the
+/// upstream when the branch has one.
+fn state(branch: &Branch, top: &Path, place: String) -> Result<String, String> {
+    let remotes: Vec<String> = git_words(&[
+        "for-each-ref",
+        "--format=%(refname:short)",
+        "refs/remotes/origin/",
+    ])?
+    .lines()
+    .map(str::to_owned)
+    .collect();
+    let upstream = git_words(&["rev-parse", "--abbrev-ref", "@{upstream}"]).ok();
+    let base = state_base(branch, &story_files(top), &remotes, upstream.as_deref());
+    let mut parts = Vec::new();
+
+    for step in state_steps(base.as_deref()) {
+        parts.push(git(&step, None)?);
+    }
+    let mut parts = parts.into_iter();
+    let mut next = || parts.next().unwrap_or_default();
+
+    Ok(state_report(&State {
+        place,
+        branch: branch_name(branch).to_owned(),
+        base,
+        status: next(),
+        diff: next(),
+        commits: next(),
+    }))
 }
 
 fn main() -> ExitCode {

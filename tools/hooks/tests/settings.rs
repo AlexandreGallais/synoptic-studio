@@ -74,7 +74,7 @@ fn f21_ac1_every_hook_and_the_status_line_call_a_hooks_binary_by_its_path() {
 /// publishes or deletes, by its subcommand (AUD-023): `heavy-lock` runs any command given after it,
 /// `branches-clean` deletes branches and worktrees, `git-hooks install` sets the hooks folder and
 /// `release publish` makes a release, so each of them asks.
-const ALLOWED_BINARIES: [&str; 20] = [
+const ALLOWED_BINARIES: [&str; 21] = [
     "activity",
     "backlog-status",
     "context-size",
@@ -82,6 +82,7 @@ const ALLOWED_BINARIES: [&str; 20] = [
     "dependencies unused",
     "epic-check",
     "git-sequences commit",
+    "git-sequences state",
     "git-sequences sync",
     "library",
     "metrics",
