@@ -5,6 +5,7 @@
 //! (`REF-NCU-COOLDOWN`, `REF-KNIP-ISSUE-TYPES`), checked against their findings on this tree.
 
 pub mod actions;
+pub mod cargo_tools;
 pub mod crates;
 pub mod fetch;
 pub mod modules;

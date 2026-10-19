@@ -63,8 +63,7 @@ pub struct Task {
 }
 
 /// oxlint's options at the commit, those of `npm run fix`.
-const OXLINT: [&str; 5] = [
-    "--type-check",
+const OXLINT: [&str; 4] = [
     "--fix",
     "--deny-warnings",
     "--report-unused-disable-directives-severity=error",

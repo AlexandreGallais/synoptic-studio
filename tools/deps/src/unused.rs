@@ -49,8 +49,8 @@ pub const SCRIPT_FILES: &[&str] = &[
 pub const PLUGIN_USES: &[(&str, &str, &str)] = &[
     // Vitest's coverage provider (`test.coverage.provider`).
     ("@vitest/coverage-v8", "vite.config.ts", "provider: \"v8\""),
-    // oxlint's type-aware rules, loaded by `--type-check`.
-    ("oxlint-tsgolint", "package.json", "oxlint --type-check"),
+    // oxlint's type-aware rules and type check, set in its configuration since EN-121.
+    ("oxlint-tsgolint", ".oxlintrc.json", "\"typeAware\": true"),
     // The compiler `tsconfig.json` configures, whatever runs it.
     ("typescript", "tsconfig.json", "\"compilerOptions\""),
 ];

@@ -10,9 +10,10 @@ Every package is on its **latest version published at least 7 days ago** (ADR-00
 | each GitHub Action of `.github/workflows/` | the next major, once its first tag's commit is 7 days old (Product Owner, 2026-10-09) | GitHub's tags and commits (`REF-GH-MATCHING-REFS`, `REF-GH-COMMIT`) |
 | `.nvmrc` | the major of the newest Node.js LTS release 7 days old | Node.js's index of releases (`REF-NODE-DIST-INDEX`) |
 | `[workspace.dependencies]` of `Cargo.toml` | the greatest version, not yanked, 7 days old | the crates.io index (`REF-CARGO-REGISTRY-INDEX`) |
+| each cargo tool of the Rust checks, `cargo-llvm-cov` and `cargo-deny`: the `CARGO_<TOOL>_VERSION` of the workflows, the `cargo install --locked <tool>@<version>` of `package.json`, the workflows and `docs/tooling/`, its row of [Rust tools](./dependencies.md#rust-tools) (EN-121) | the greatest version, not yanked, 7 days old, as a crate; and one version in every place, its row included | the crates.io index |
 | each crates.io package of `Cargo.lock` | not newer than 7 days: Cargo picks the newest compatible version by itself, so a lock may hold one published that day; the line gives the `cargo update -p <crate>@<version> --precise <version>` that pins it back to the greatest compatible version 7 days old (`REF-CARGO-SEMVER`) | the crates.io index |
 
-Each finding is one line with the version and its date, and the command exits 1; a source that does not answer is named and the command exits 2, never 0. `curl` reads the registries and Node.js's index, every address in one process, and `gh api` GitHub, with `gh auth`'s token or `GH_TOKEN`; requests carry no personal data, the `User-Agent` names the project's repository. The Rust tools of the checks are looked at by hand ([dependencies](./dependencies.md#rust-tools)).
+Each finding is one line with the version and its date, and the command exits 1; a source that does not answer is named and the command exits 2, never 0. `curl` reads the registries and Node.js's index, every address in one process, and `gh api` GitHub, with `gh auth`'s token or `GH_TOKEN`; requests carry no personal data, the `User-Agent` names the project's repository.
 
 A pre-release is never adopted, except VitePress 2.0 alpha (ADR-0075, decision 1).
 
