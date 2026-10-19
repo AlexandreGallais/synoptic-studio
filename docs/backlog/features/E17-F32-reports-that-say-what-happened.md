@@ -2,7 +2,7 @@
 id: F32
 epic: E17
 title: Reports that say what happened
-status: ready
+status: in-progress
 ---
 
 # E17 · F32 — Reports that say what happened
