@@ -62,6 +62,9 @@ pub struct Taken {
     /// The lines under a log's heading that are not one of its rows, left in the story file under
     /// that heading, in the order of [`LOGS`].
     pub left: Vec<(Log, Vec<String>)>,
+    /// The notes for the main thread: the lines of the section outside a log's heading, blank
+    /// lines aside, which stay in the story file (EN-140).
+    pub notes: Vec<String>,
 }
 
 /// What a line under a log's heading is to the tool.
@@ -230,7 +233,8 @@ fn put_back<'a>(kept: &mut Vec<&'a str>, block: &mut Vec<&'a str>) {
 /// date, left with them otherwise; a card at another level (a dated `## ` or `### ` heading, a
 /// heading deeper than `#### `) is left with the lines after it, `### Incidents` kept above them
 /// (AUD-025). Other headings stay as they are; the section ends at the next `## ` heading that is
-/// not dated, or a `# ` one.
+/// not dated, or a `# ` one. The lines outside a log's heading, blank lines aside, are the notes
+/// for the main thread, kept and listed in [`Taken::notes`] (EN-140).
 #[must_use]
 pub fn take_rows(story: &str) -> Taken {
     let lines: Vec<&str> = story.split('\n').collect();
@@ -239,6 +243,7 @@ pub fn take_rows(story: &str) -> Taken {
             story: story.to_owned(),
             rows: Vec::new(),
             left: Vec::new(),
+            notes: Vec::new(),
         };
     };
     let end = lines[start + 1..]
@@ -252,6 +257,8 @@ pub fn take_rows(story: &str) -> Taken {
     let mut block: Vec<&str> = Vec::new();
     let mut found: Vec<(Log, Vec<String>)> = Vec::new();
     let mut left: Vec<(Log, Vec<String>)> = Vec::new();
+    // Placeholder (EN-140.T1): no note listed.
+    let notes: Vec<String> = Vec::new();
     let mut current: Option<Log> = None;
     let mut in_card = false;
 
@@ -324,6 +331,7 @@ pub fn take_rows(story: &str) -> Taken {
         story: joined,
         rows: found,
         left,
+        notes,
     }
 }
 

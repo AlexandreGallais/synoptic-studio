@@ -20,7 +20,7 @@ From RET-004's "Checks to add" (P8), split from EN-121 on 2026-10-18 (SP-024): o
 
 ## Tasks
 
-- [ ] T1 — Each criterion's test, failing (1 h)
+- [x] T1 — Each criterion's test, failing (1 h)
 - [ ] T2 — The slug, `move-rows`'s notes, the index check, the pages fixed (2 h)
 
 One task = one commit, referenced as `EN-140.T1` in the commit footer.

@@ -440,6 +440,15 @@ describe("the Rust tools run as crates of the workspace (EN-068)", () => {
     );
   });
 
+  it("[F33.AC2] shows at a done commit the notes its story file keeps for the main thread", () => {
+    const hook = readFileSync(join(ROOT, ".githooks", "commit-msg"), "utf8");
+
+    // `move-rows --notes` names each note with its story and writes nothing (`rows.rs`).
+    expect(hook).toContain(
+      `if grep -q '^Closes:' "$1"; then tool shared-files move-rows --notes "$(git branch --show-current)"; fi`,
+    );
+  });
+
   it("[F19.AC9] builds the release binaries of the workspace from prepare", () => {
     expect(SCRIPTS.get("rust:build")).toBe("cargo build --release --workspace --locked");
     expect(SCRIPTS.get("prepare")).toBe("npm run rust:build && target/release/git-hooks install");
