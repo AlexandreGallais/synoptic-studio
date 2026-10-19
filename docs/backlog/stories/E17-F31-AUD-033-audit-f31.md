@@ -18,8 +18,8 @@ Audit F31 following [audit.md](../../conventions/audit.md) (ADR-0020), the `audi
 ## Tasks
 
 - [x] T1 — The findings, the interfaces of the fixes and their tests, seen failing (1 h)
-- [ ] T2 — The findings fixed: the here-documents and the shell fed, the push's own folder, the Python check, the heavy lock, the write guard's paths and worktree, with the references they cite (2 h)
-- [ ] T3 — ADR-0092 for the type-only barrels, the docs, the criteria traced (1 h)
+- [x] T2 — The findings fixed: the here-documents and the shell fed, the push's own folder, the Python check, the heavy lock, the write guard's paths and worktree, with the references they cite (2 h)
+- [x] T3 — ADR-0092 for the type-only barrels, the docs, the criteria traced (1 h)
 
 One task = one commit, referenced as `AUD-033.T1`.
 
@@ -43,3 +43,37 @@ Reviewed by the `auditor` alone (ADR-0086), each finding reproduced before it is
 | F12 | D1 — three constants of the worktrees' folder (`guard.rs`, `handback.rs`, `written.rs`) beside the `worktree` crate's, and three readers | reproduced | the three modules | `tools/hooks/src/worktrees.rs`: `worktree::WORKTREES`, one reader of the names (`worktree_id`, `worktree_root`, `prompt_worktree`), the three constants removed (T1) |
 | F13 | E2 — `.claude/agents/clerk.md` forbids every chained Git command and `.claude/rules/tooling.md` says a worker is refused "a file outside its prompt's worktree", while the brief lets a chain of Git reads through and the guard lets a file outside the project be written | reproduced by reading | `.claude/agents/clerk.md:22`; `.claude/rules/tooling.md:39` | `clerk.md` on chained Git reads as the brief; the rule says "a file of the main checkout or of another worktree" (T3) |
 | F14 | E1 — EN-138's T2 edited `.claude/rules/library.md`, a shared rule, from a story | no action: the change made its own pitfall line true (the autofix keeps `export type *`), which a story may do for the rule it changes | EN-138, T2 | — |
+| C1 | A1, A2 — F31 holds no formula: its code reads shell lines, Python texts and paths | no finding | `tools/hooks/src/` | — |
+| C2 | A4 — `place.rs`: the brief's `cd` certain without its top-level check; a `cd` not refused as unseen; `env -C` let through; `GIT_WORK_TREE` let through; `cd -` read as known; an uncertain `cd` read as certain; a `GIT_DIR` set apart let through | caught, each | `f31_ac1_reads_the_branch_of_a_push_in_the_folder_it_runs_in` fails on each | restored |
+| C3 | A4 — `heredoc.rs`: comments, backquotes, a substitution's close and the quoted word's flag ignored; an empty word accepted | caught, each, once `AUDIT_CASES` gained `` echo `cat <<EOF ` ``, `echo $(cat <<EOF) $(true⏎…)`, a quoted body's `$(git push -f)` and `cat <<⏎…` | `judges_each_case_of_the_audit_word_by_word`, `removes_the_bodies_of_here_documents_only` | restored |
+| C4 | A4 — `forbidden.rs`: `-s` not read as input; the other commands' words not fed; an unknown place let through; the heavy lock's pattern rule dropped | caught, each, once `bash -s x y <<'EOF'` joined the cases | `judges_each_case_…`, `f31_ac1_reads_the_branch_…`, `f31_ac1_refuses_a_heavy_lock_…` | restored |
+| C5 | A4 — `guard.rs`: the streams' exception inverted; a method's `.open(` read by its second argument only; the `tee` rule dropped | caught, each | `f31_ac1_tells_a_python_text_that_writes_a_file`, `f31_ac1_refuses_a_python_script_writing_a_file_in_a_worktree` | restored |
+| C6 | A4 — `worktrees.rs`: a `cd` followed by any `\|\|` read as the brief's; `written.rs`: no path resolved; `shell.rs`: no byte offset recorded | caught, each, once a prompt with `cd … \|\| true` joined the cases | `f31_ac1_reads_a_worker_s_worktree_from_the_brief_s_cd`, `f31_ac1_the_hook_resolves_a_link_or_a_case_before_it_compares`, `f31_ac1_the_hook_reads_the_branch_of_a_push_in_its_own_repository` | restored |
+| C7 | A4 — `replace`: the empty input not refused; `local/barrel-exports`: no type-only line kept | caught | `f31_ac2_ends_at_once_on_a_closed_input_without_an_argument`, `f31_ac2_npm_run_fix_keeps_a_type_only_reexport_…` | restored |
+| C8 | A3 — `settings.rs`: the writes' handler without `onFailure` | caught, by the settings text of the test itself, not by changing `.claude/settings.json` | `the_guard_that_cannot_run_blocks_the_shell_command_and_the_write` | — |
+| C9 | A5 — properties: F31 adds no `math` nor `geometry` function | no finding | `src/` unchanged | — |
+| C10 | B — the pages cited read again through the library: POSIX §2.7.4 (`REF-POSIX-SHELL-QUOTING`, one URL for both sections), sh, git, git-diff, git-log, git-grep, Python's command line and pathlib, typescript-eslint's `consistent-type-exports` | done | the rows' quotes | `REF-POSIX-SHELL-QUOTING` extended; `REF-GIT`, `REF-GIT-DIFF`, `REF-GIT-LOG`, `REF-GIT-GREP`, `REF-POSIX-SH`, `REF-PYTHON-CMDLINE`, `REF-PYTHON-PATHLIB`, `REF-TSESLINT-TYPE-EXPORTS` added |
+| C11 | C, D — no third-party code; the worktrees' folder read once (F12) | no other finding | `tools/hooks/src/worktrees.rs` | — |
+| C12 | `[F31.AC1]` traced | caught | C2 to C6, C8 | restored |
+| C13 | `[F31.AC2]` traced | caught | C7 | restored |
+| C14 | F — `check:all` green on the head | run by the pre-push hook | the push of T3 | — |
+
+## G. Next feature
+
+The guard now reads here-documents and folders as the shell does; what it still does not read is said in `forbidden.rs`'s header: a program running its own command (`node -e`), a script file, an alias set by `git config`, and a `cd` changed by `CDPATH` or a shell function. No source is needed beyond those read here.
+
+## H. Light evolvability check
+
+- Size: `guard.rs` lost its here-document reader to `heredoc.rs` and the folders to `place.rs`; its Python check could become a module of its own when it grows again.
+- Tools: none failed; four hand mutations first "survived" because a warning denied by the build stopped the tests, so a mutation run reads the build's errors too.
+- Fitness functions: every way past the guard the audit found is a case of `AUDIT_CASES`, run alone and after the brief's `cd`.
+- Patterns: one reader of the worktrees (`worktrees.rs`), on the `worktree` crate's constant.
+- Agent configuration: `clerk.md` and `tooling.md` agree with the brief again; the writes' handler fails closed, and a test says so.
+- Process: findings 1 and 2 were found by reading the guard as an adversary would; the next audit of a guard does the same.
+
+## For the main thread
+
+- F2 makes more refused than before: `cd "<worktree>" && git push` from the main checkout on `develop` is now refused, since a `cd` joined by `&&` is read as possibly failing beside the folder before it; the brief's `cd "<worktree>" || exit 9`, then the push, goes through. A push run where the guard cannot read the branch (a folder outside any repository) is refused too, with `UNKNOWN_PUSH`, which names the form that works.
+- F7: the barrels hold `export type *` because oxlint's `typescript/consistent-type-exports` asks for it, and `oxlint --fix` writes it (checked on `src/math/vector/index.ts`, restored); ADR-0092 was accepted by the agent, to be told to the Product Owner, as ADR-0091 was. The auditor's "10 barrels" are 37 in `src/` and 11 in `playground/`.
+- F13: `CLAUDE.md`'s guard line was left as it is: it lists what the guard denies, which this audit did not change in kind.
+- `docs/domain/` is not affected: F31 is tooling. Footer `Rule-docs: none affected, a tooling feature, no business rule changed`.

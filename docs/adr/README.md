@@ -17,7 +17,7 @@ All ADRs were translated from French to English on 2026-10-08 (project rule: Eng
 | [0009](./0009-toolchain.md) | Toolchain: TypeScript 6, Vite, Vitest, ESLint, Prettier, VitePress | Superseded by ADR-0075 |
 | [0010](./0010-lint-first-strictness.md) | Strictness carried by ESLint first, TypeScript second | Superseded by ADR-0075, partly by 0071 before |
 | [0011](./0011-function-kinds.md) | Function kinds: `@kind` tag and per-kind limits | Accepted |
-| [0012](./0012-folder-barrels.md) | One `index.ts` per folder, canonical import paths | Accepted |
+| [0012](./0012-folder-barrels.md) | One `index.ts` per folder, canonical import paths | Accepted; in decision 1, a types-only module re-exported by `export type *` since 0092 |
 | [0013](./0013-prettier-alongside-eslint.md) | Prettier next to ESLint, not inside it | Superseded by ADR-0075 |
 | [0014](./0014-functional-core-imperative-shell.md) | Functional core, imperative shell | Accepted, its DOM layers' scope moved to `tools/lint` by 0075 |
 | [0015](./0015-one-export-per-file.md) | One export per file, named like the file | Superseded by ADR-0019 |
@@ -96,3 +96,4 @@ All ADRs were translated from French to English on 2026-10-08 (project rule: Eng
 | [0089](./0089-five-git-hooks-the-binaries-rebuilt-after-a-pull.md) | Five Git hooks, the release binaries rebuilt after a pull too | Accepted, implemented by EN-131 (AUD-031) |
 | [0090](./0090-the-develop-ci-beside-the-rust-caches-of-main.md) | The `develop` CI in its own workflow, beside the Rust caches of `main` | Accepted, implemented by EN-135 (AUD-032) |
 | [0091](./0091-a-storys-log-rows-and-cards-in-its-done-commit.md) | A story's log rows and cards moved in its `done` commit | Accepted, implemented by EN-137; in decision 2, the `done` commit may only add to a log the rows it removes from the story file, and in decision 3 a story file read at `HEAD` and its lines left stop `story:finish`, whose recovery is the `done` commit made again (`git reset --soft HEAD~1`, `move-rows`, `git-sequences commit … --push-with-lease`), never an amend (AUD-025) |
+| [0092](./0092-a-barrel-re-exports-a-types-only-module-as-types.md) | A barrel re-exports a types-only module as types | Accepted (AUD-033), the barrels' existing form; supersedes ADR-0012's decision 1 for a types-only module |
