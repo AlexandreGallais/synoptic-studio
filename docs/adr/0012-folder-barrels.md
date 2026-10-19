@@ -1,6 +1,6 @@
 # ADR-0012 — One `index.ts` per folder, canonical import paths
 
-**Status**: Accepted
+**Status**: Accepted; in decision 1, "only `export * from "./x";`" superseded by ADR-0092 (2026-10-19) for a module holding only types, re-exported by `export type * from "./x";`.
 
 ## Context
 

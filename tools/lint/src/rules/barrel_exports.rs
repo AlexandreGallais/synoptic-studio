@@ -1,6 +1,6 @@
 //! `local/barrel-exports`: a folder's `index.ts` only re-exports, `export * from "./x";`, every
 //! module and barrelled sub-folder of its folder, sorted (ADR-0012). Autofixed: the barrel is
-//! written again from the folder.
+//! written again from the folder, a line written `export type * from "./x";` kept so (EN-138).
 
 use std::cmp::Ordering;
 
@@ -83,12 +83,16 @@ impl Rule for BarrelExports {
 
     fn check_file(&self, source: &Source, findings: &mut Vec<Finding>) {
         let mut actual = Vec::new();
+        let mut types_only = Vec::new();
         for statement in &source.program.body {
             match statement {
                 Statement::ExportAllDeclaration(export)
                     if export.exported.is_none() && export.source.value.starts_with("./") =>
                 {
                     actual.push(export.source.value.as_str());
+                    if export.export_kind.is_type() {
+                        types_only.push(export.source.value.as_str());
+                    }
                 }
                 _ => {
                     findings.push(
@@ -108,7 +112,12 @@ impl Rule for BarrelExports {
             return;
         }
         let text = expected.iter().fold(String::new(), |text, specifier| {
-            text + "export * from \"" + specifier + "\";\n"
+            let kind = if types_only.contains(&specifier.as_str()) {
+                "export type * from \""
+            } else {
+                "export * from \""
+            };
+            text + kind + specifier + "\";\n"
         });
         let fix = Fix {
             start: 0,
@@ -179,6 +188,28 @@ mod tests {
         let findings = lint_at(&BarrelExports, &folder(), "index.ts", code);
 
         assert_eq!(fixed(code, &findings), EXPECTED);
+    }
+
+    #[test]
+    fn f31_ac2_npm_run_fix_keeps_a_type_only_reexport_when_local_barrel_exports_writes_the_barrel()
+    {
+        // The card of 2026-10-18: `npm run fix`, `tools/lint`'s `--fix`, met a barrel out of sync
+        // with a module just added (`epic-17-f22-lines.ts`) and `local/barrel-exports` wrote it
+        // again as `export *` lines only, `export type * from "./checklist-line"` with them.
+        let code = "export type * from \"./angle\";\nexport * from \"./vector\";\n";
+        let findings = lint_at(&BarrelExports, &folder(), "index.ts", code);
+
+        assert_eq!(
+            fixed(code, &findings),
+            "export type * from \"./angle\";\nexport * from \"./arc\";\nexport * from \"./vector\";\n"
+        );
+        // In sync, a type-only re-export is left as it is.
+        let synced = "export type * from \"./angle\";\nexport * from \"./arc\";\nexport * from \"./vector\";\n";
+
+        assert_eq!(
+            messages(&lint_at(&BarrelExports, &folder(), "index.ts", synced)),
+            NONE
+        );
     }
 
     #[test]

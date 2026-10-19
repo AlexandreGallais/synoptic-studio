@@ -103,7 +103,7 @@ No `enum`, no `for…in`, no getter or setter, no `export * as name`, no dynamic
 | `local/one-export-per-file` | one exported value per module, the file named after it, a type beside it only when part of its signature | ADR-0019 |
 | `local/folder-has-index` | every code folder holds an `index.ts` | ADR-0012 |
 | `local/folder-layout` | a folder holds modules or domain folders, never both; a folder past 15 modules is listed with its reason | ADR-0043, [files](./files.md#folders-past-15-modules) |
-| `local/barrel-exports` | an `index.ts` holds only sorted `export * from "./x";` lines; autofixed | ADR-0012 |
+| `local/barrel-exports` | an `index.ts` holds only sorted `export * from "./x";` lines, `export type * from "./x";` for a module holding only types; autofixed, a line written `export type *` kept so (EN-138) | ADR-0012, ADR-0092 |
 | `local/canonical-import-path` | the shortest legal import path, never `index` nor `.ts`; autofixed | [imports](./imports.md#canonical-path-local-canonical-import-path-autofixed) |
 | `local/image-alt-text` | an image's text alternative under 155 characters, never opening with "Image of" | [writing](./writing.md#building-blocks) |
 

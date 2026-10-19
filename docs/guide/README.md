@@ -45,6 +45,7 @@ Written at the end of each feature (`VAL`, demo page) and of each epic (`REV`, e
 | [F29 — The local checks stable and fast](./f29-local-checks-stable-and-fast.md) | timing limits at four times their measure, the Rust lanes skipped without a Rust change, the binaries rebuilt after a pull |
 | [F30 — A CI on develop that blocks nothing](./f30-a-ci-on-develop-that-blocks-nothing.md) | the Rust tests on Linux and the caches after each merge into `develop`, dispatched by the auto-merge, blocking nothing |
 | [F23 — The path of a story through the tools](./f23-the-path-of-a-story.md) | the log rows and cards in each story's `done` commit, nothing between the bubbles; a review or an epic's refinement through the same tools |
+| [F31 — The guard and the agent's commands](./f31-the-guard-and-the-agents-commands.md) | the guard reading by words, two ways past it closed, writes outside a worktree refused, `git-sequences state`, `replace`'s usage, a types-only barrel line kept |
 | [E01 — Drawing symbol shapes from numbers](./e01-draw-shapes.md) | the eight features of E01, the words, a user test crossing them, the decisions |
 | [E14 — Drawing curves with handles, ellipses and round shapes](./e14-draw-curves.md) | the four features of E14, the words, the walk-through of the review, the decisions |
 | [E15 — Placing text in symbols](./e15-place-text.md) | the five features of E15, the words, the tour of the review, the decisions, the direction to remove |
