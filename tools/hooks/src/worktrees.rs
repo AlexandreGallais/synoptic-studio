@@ -50,5 +50,20 @@ pub fn worktree_root(folder: &str) -> Option<&str> {
 /// escapes it; else the first worktree the text names.
 #[must_use]
 pub fn prompt_worktree(text: &str) -> Option<&str> {
-    worktree_id(text)
+    text.match_indices("cd ")
+        .find_map(|(at, call)| {
+            let rest = &text[at + call.len()..];
+            let (quote, rest) = rest
+                .strip_prefix("\\\"")
+                .map(|rest| ("\\\"", rest))
+                .or_else(|| rest.strip_prefix('"').map(|rest| ("\"", rest)))?;
+            let (folder, after) = rest.split_once(quote)?;
+
+            after
+                .trim_start()
+                .starts_with("|| exit")
+                .then(|| worktree_id(folder))
+                .flatten()
+        })
+        .or_else(|| worktree_id(text))
 }

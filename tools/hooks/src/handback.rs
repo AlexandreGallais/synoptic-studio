@@ -1,7 +1,8 @@
 //! The hand-back check (EN-088): when a worker hands its report back, its story branch must be
 //! pushed — so its pre-push `check:all` passed, since a push without it is refused (`guard-bash`) —
 //! and the report must name its commits. A worker's transcript names the main checkout, never its
-//! worktree (research note 0024): the worktree is the first one its transcript names, its prompt's.
+//! worktree (research note 0024): the worktree is its prompt's, the folder of the brief's
+//! `cd "<worktree>" || exit 9` ([`crate::worktrees::prompt_worktree`], AUD-033).
 
 use std::path::{Path, PathBuf};
 

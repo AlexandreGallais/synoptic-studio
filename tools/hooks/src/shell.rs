@@ -15,6 +15,8 @@ pub struct Simple {
     pub redirections: Vec<String>,
     /// Whether a word held a substitution, whose commands are read as commands of their own.
     pub substituted: bool,
+    /// The byte of the line it starts at; a backquoted command's is its backquote's (AUD-033).
+    pub at: usize,
 }
 
 /// The simple commands of a command line, those of its substitutions and subshells included,
@@ -23,6 +25,8 @@ pub struct Simple {
 pub fn commands(text: &str) -> Vec<Simple> {
     let mut reader = Reader {
         chars: text.chars().collect(),
+        bytes: text.char_indices().map(|(byte, _)| byte).collect(),
+        length: text.len(),
         at: 0,
         out: Vec::new(),
     };
@@ -34,6 +38,10 @@ pub fn commands(text: &str) -> Vec<Simple> {
 /// The command line being read and the simple commands read so far.
 struct Reader {
     chars: Vec<char>,
+    /// The byte each character starts at.
+    bytes: Vec<usize>,
+    /// The line's length in bytes.
+    length: usize,
     at: usize,
     out: Vec<Simple>,
 }
@@ -62,11 +70,24 @@ impl Current {
     fn word(&mut self) -> &mut String {
         self.word.get_or_insert_with(String::new)
     }
+
+    /// Whether nothing of the simple command is read yet.
+    fn is_empty(&self) -> bool {
+        self.word.is_none()
+            && self.redirection.is_none()
+            && self.simple.words.is_empty()
+            && self.simple.redirections.is_empty()
+    }
 }
 
 impl Reader {
     fn peek(&self, ahead: usize) -> Option<char> {
         self.chars.get(self.at + ahead).copied()
+    }
+
+    /// The byte the character being read starts at.
+    fn byte(&self) -> usize {
+        self.bytes.get(self.at).copied().unwrap_or(self.length)
     }
 
     /// The simple command read ends: kept unless empty.
@@ -88,6 +109,9 @@ impl Reader {
             if Some(character) == close {
                 self.at += 1;
                 break;
+            }
+            if current.is_empty() && !matches!(character, ' ' | '\t' | '\n' | ';' | '|' | ')') {
+                current.simple.at = self.byte();
             }
             match character {
                 ' ' | '\t' => {
@@ -286,6 +310,8 @@ impl Reader {
     /// parameter kept as text, or a lone `$`.
     fn dollar_or_backquote(&mut self, current: &mut Current) {
         if self.peek(0) == Some('`') {
+            let at = self.byte();
+
             self.at += 1;
             let mut inner = String::new();
 
@@ -300,7 +326,11 @@ impl Reader {
                     _ => inner.push(character),
                 }
             }
-            self.out.extend(commands(&inner));
+            self.out.extend(
+                commands(&inner)
+                    .into_iter()
+                    .map(|simple| Simple { at, ..simple }),
+            );
             current.simple.substituted = true;
             current.word();
             return;

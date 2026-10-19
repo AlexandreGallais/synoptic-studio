@@ -1,13 +1,14 @@
 //! `PreToolUse` hook on `Bash` (ADR-0021, EN-104): denies the shell commands the project forbids,
 //! whatever the instructions say (`hooks::guard`), a push naming no destination judged by the
-//! current branch of the folder it runs in. A command opening with `cd "<folder>"` is judged
-//! in that folder: a story's worktree refuses a Git command chained with another, the brief's
-//! `cd "<worktree>" || exit 9` followed by Git reads aside (EN-119), and a script missing from that
-//! folder's `package.json` is refused with the rebase that brings it. Run on `Write`, `Edit` and
-//! `NotebookEdit` too, it refuses a worker's write outside the worktree its prompt names
-//! (`hooks::written`, EN-119). Input: the hook JSON on stdin; output: a deny decision on stdout,
-//! or nothing to let the call proceed. An input that is not JSON exits 1, a hook error, which
-//! blocks the call since its handler sets `onFailure` to `block` (AUD-023).
+//! current branch of each repository it may run against (`hooks::place`, AUD-033). A command
+//! opening with `cd "<folder>"` is judged in that folder: a story's worktree refuses a Git command
+//! chained with another, the brief's `cd "<worktree>" || exit 9` followed by Git reads aside
+//! (EN-119), and a script missing from that folder's `package.json` is refused with the rebase
+//! that brings it. Run on `Write`, `Edit` and `NotebookEdit` too, it refuses a worker's write
+//! outside the worktree its prompt names (`hooks::written`, EN-119). Input: the hook JSON on
+//! stdin; output: a deny decision on stdout, or nothing to let the call proceed. An input that is
+//! not JSON exits 1, a hook error, which blocks the call since both its handlers, the shell's and
+//! the writes', set `onFailure` to `block` (AUD-023, AUD-033).
 
 use std::fs::{self, File};
 use std::io::{self, BufRead, BufReader, Read};

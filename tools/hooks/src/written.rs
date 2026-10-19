@@ -3,6 +3,9 @@
 //! prompt names. The `guard-bash` hook, run on those tools too, refuses such a write and names the
 //! same file in the worktree.
 
+use std::fs;
+use std::path::{Path, PathBuf};
+
 use git_repository::lexical_join;
 use worktree::WORKTREES;
 
@@ -51,7 +54,29 @@ pub fn misplaced_write(file: &str, project: &str, worktree: &str) -> Option<Stri
 /// as given. Any other path is returned resolved, or as given when nothing of it can be read.
 #[must_use]
 pub fn as_seen_from(file: &str, project: &str) -> String {
-    let _ = project;
+    if !file.starts_with('/') {
+        return file.to_owned();
+    }
+    let Some(real) = resolved(file) else {
+        return file.to_owned();
+    };
+    let real_project = resolved(project).unwrap_or_else(|| PathBuf::from(project));
 
-    file.to_owned()
+    match real.strip_prefix(&real_project) {
+        Ok(rest) if rest.as_os_str().is_empty() => project.to_owned(),
+        Ok(rest) => Path::new(project).join(rest).to_string_lossy().into_owned(),
+        Err(_) => real.to_string_lossy().into_owned(),
+    }
+}
+
+/// A path, its `..` removed by its letters, then its longest existing folder resolved by the file
+/// system (`fs::canonicalize`) and the rest kept; `None` when no folder of it can be resolved.
+fn resolved(path: &str) -> Option<PathBuf> {
+    let lexical = PathBuf::from(lexical_join("/", path));
+
+    lexical.ancestors().find_map(|ancestor| {
+        let real = fs::canonicalize(ancestor).ok()?;
+
+        Some(real.join(lexical.strip_prefix(ancestor).ok()?))
+    })
 }

@@ -2,8 +2,9 @@
 //! whatever the instructions say, read word by word ([`crate::forbidden`], AUD-023), the forms a
 //! story's worktree refuses, and a script missing from the `package.json` a command runs against.
 //! The worktree's forms read each segment word by word too (EN-119), the segments split by
-//! [`separated`] outside quotes; the here-documents are found as `.claude/hooks/guard-bash.ts`
-//! found them (EN-104), their word read as the shell reads it.
+//! [`separated`] outside quotes; the here-documents are read as the shell reads them
+//! ([`crate::heredoc`], AUD-033), and a push naming no destination is judged in the folders it
+//! may run in ([`crate::place`], AUD-033).
 //!
 //! After the brief's `cd "<worktree>" || exit <n>`, a chain of Git commands that only read goes
 //! through ([`is_read_only_git`], EN-119), as does one Git command of any kind (EN-104), each alone
@@ -14,8 +15,8 @@
 use git_repository::lexical_join;
 
 use crate::forbidden::{
-    Arguments, Forbidden, abbreviates, first_forbidden, git_line, invocations, is_assignment,
-    program_name,
+    Arguments, Forbidden, Invocation, abbreviates, first_forbidden, git_line, invocations,
+    is_assignment, program_name,
 };
 use crate::place::BranchOf;
 use crate::shell::{Simple, commands};
@@ -86,13 +87,8 @@ fn is_line_break(character: char) -> bool {
     matches!(character, '\n' | '\r' | '\u{2028}' | '\u{2029}')
 }
 
-/// JavaScript's `\w` without the `i` flag: an ASCII letter, digit or underscore.
-pub(crate) fn is_word(byte: u8) -> bool {
-    byte.is_ascii_alphanumeric() || byte == b'_'
-}
-
 /// The end of `\s*` from `at`.
-pub(crate) fn after_spaces(text: &str, at: usize) -> usize {
+fn after_spaces(text: &str, at: usize) -> usize {
     text[at..]
         .char_indices()
         .find(|(_, character)| !is_space(*character))
@@ -136,7 +132,7 @@ pub fn separated(command: &str) -> Vec<(&'static str, String)> {
 
 /// The segments of [`separated`] as byte ranges of the command, untrimmed, each with the
 /// separator before it.
-fn spans(command: &str) -> Vec<(&'static str, usize, usize)> {
+pub(crate) fn spans(command: &str) -> Vec<(&'static str, usize, usize)> {
     let mut pieces = Vec::new();
     let mut start = 0;
     let mut before = "";
@@ -270,7 +266,10 @@ const BRANCH_LISTING: [&str; 11] = [
     "--no-color",
 ];
 
-/// Git's options that write a file or run a program, read by any unique prefix (`REF-GITCLI`).
+/// Git's options that write a file or run a program, read by any unique prefix (`REF-GITCLI`):
+/// `--output=<file>` writes the output "to a specific file instead of stdout" (`REF-GIT-DIFF`,
+/// `REF-GIT-LOG`), `--ext-diff` allows "an external diff helper to be executed", and `grep`'s
+/// `-O` and `--open-files-in-pager` open the matching files in a pager (`REF-GIT-GREP`).
 const GIT_WRITING_OPTIONS: [&str; 3] = ["--output", "--ext-diff", "--open-files-in-pager"];
 
 /// Whether the words of a Git command only read the repository: no option before its subcommand,
@@ -324,7 +323,9 @@ const READ_ONLY_FILTERS: [&str; 5] = ["head", "tail", "grep", "wc", "cut"];
 
 /// The Git subcommands that only read the repository, which a chain after the brief's `cd` may
 /// join (EN-119): the reads the transcripts chain most (`status`, `diff`, `show`, `log`, I93) and
-/// the plumbing that prints a reference or an object.
+/// the plumbing that prints a reference or an object. `diff` shows changes, `log` "shows the
+/// commit logs" and `grep` looks for patterns in the tracked files (`REF-GIT-DIFF`, `REF-GIT-LOG`,
+/// `REF-GIT-GREP`), none writing but by the options of [`GIT_WRITING_OPTIONS`].
 pub const READ_ONLY_GIT: [&str; 15] = [
     "blame",
     "branch",
@@ -564,10 +565,9 @@ pub fn shell_reason(command: &str, cwd: &str, branch: BranchOf) -> Option<String
         })
 }
 
-/// The calls by which a Python program writes, moves or removes a file (EN-119).
-const PYTHON_WRITES: [&str; 14] = [
-    ".write(",
-    ".writelines(",
+/// The calls by which a Python program writes, moves or removes a file (EN-119), or runs a program
+/// or a text that may (AUD-033); `shutil` by its functions that write, `.write(` read apart.
+const PYTHON_WRITES: [&str; 25] = [
     "write_text(",
     "write_bytes(",
     ".touch(",
@@ -578,33 +578,82 @@ const PYTHON_WRITES: [&str; 14] = [
     ".mkdir(",
     "os.makedirs(",
     "json.dump(",
-    "shutil.",
+    "shutil.copy",
+    "shutil.move(",
+    "shutil.rmtree(",
+    "shutil.make_archive(",
+    "shutil.unpack_archive(",
+    "shutil.chown(",
     "inplace=",
+    "os.system(",
+    "os.popen(",
+    "os.exec",
+    "os.spawn",
+    "os.posix_spawn",
+    "pty.spawn(",
+    "subprocess",
+    "exec(",
 ];
 
-/// Whether a Python program's text writes a file (EN-119): a call of [`PYTHON_WRITES`] (`.write(`,
-/// `write_text(`, `os.replace(`, `shutil.`, `fileinput`'s `inplace=`…), or an `open(` given a
-/// quoted mode holding `w`, `a`, `x` or `+`. A script read from a file is not read.
+/// The streams a `.write(` may print to without writing a file.
+const PYTHON_STREAMS: [&str; 2] = ["sys.stdout", "sys.stderr"];
+
+/// Whether a Python program's text writes a file (EN-119): a call of [`PYTHON_WRITES`]
+/// (`write_text(`, `os.replace(`, `shutil.copy`, `fileinput`'s `inplace=`, `os.system(`,
+/// `subprocess`, `exec(`…), a `.write(` or `.writelines(` on anything but `sys.stdout` or
+/// `sys.stderr`, an `open(` given a quoted mode holding `w`, `a`, `x` or `+` (its first argument
+/// for a method, `Path.open(mode)`, `REF-PYTHON-PATHLIB`), or an `os.open(` given flags other
+/// than `O_RDONLY` (AUD-033). A script read from a file is not read.
 #[must_use]
 pub fn python_writes(code: &str) -> bool {
+    let writes_to_a_file = [".write(", ".writelines("].iter().any(|call| {
+        code.match_indices(call).any(|(at, _)| {
+            !PYTHON_STREAMS
+                .iter()
+                .any(|stream| code[..at].ends_with(stream))
+        })
+    });
+
     PYTHON_WRITES.iter().any(|call| code.contains(call))
-        || code
-            .match_indices("open(")
-            .any(|(at, call)| opens_to_write(&code[at + call.len()..]))
+        || writes_to_a_file
+        || code.match_indices("open(").any(|(at, call)| {
+            let arguments = &code[at + call.len()..];
+            let before = &code[..at];
+
+            if before.ends_with("os.") {
+                opens_flags_to_write(arguments)
+            } else if before.ends_with('.') {
+                opens_to_write(arguments, &[0, 1])
+            } else {
+                opens_to_write(arguments, &[1])
+            }
+        })
+}
+
+/// Whether the arguments of an `os.open(` give flags other than reading only: its second argument
+/// is not `os.O_RDONLY`, `O_RDONLY` nor `0`.
+fn opens_flags_to_write(arguments: &str) -> bool {
+    top_level_arguments(arguments)
+        .get(1)
+        .is_some_and(|flags| !matches!(*flags, "os.O_RDONLY" | "O_RDONLY" | "0"))
 }
 
 /// Whether the arguments of an `open(` call, from after its parenthesis, give a mode that writes:
-/// its second argument or its `mode=`, a quoted string of `r`, `w`, `a`, `x`, `b`, `t` and `+`
-/// holding one of `w`, `a`, `x`, `+`.
-fn opens_to_write(arguments: &str) -> bool {
+/// one of its arguments at `positions` or its `mode=`, a quoted string of `r`, `w`, `a`, `x`, `b`,
+/// `t` and `+` holding one of `w`, `a`, `x`, `+`.
+fn opens_to_write(arguments: &str, positions: &[usize]) -> bool {
     let parts = top_level_arguments(arguments);
-    let positional = parts.get(1).filter(|part| !part.contains('='));
+    let positional = positions
+        .iter()
+        .filter_map(|position| parts.get(*position))
+        .filter(|part| !part.contains('='))
+        .copied();
     let keyword = parts
         .iter()
         .find_map(|part| part.strip_prefix("mode").map(str::trim_start))
         .and_then(|rest| rest.strip_prefix('='));
 
-    positional.copied().into_iter().chain(keyword).any(|mode| {
+    positional.chain(keyword).any(|mode| {
         let mode = mode.trim();
         let text = ["'", "\""]
             .iter()
@@ -713,7 +762,7 @@ pub fn entered(command: &str, cwd: &str) -> Entered {
 /// The folder a segment `cd <folder>` enters, its one word unquoted, and whether it is known before
 /// the shell runs: not when a variable, a substitution or a `~` gives it. `None` for any other
 /// segment.
-fn cd_folder(segment: &str) -> Option<(String, bool)> {
+pub(crate) fn cd_folder(segment: &str) -> Option<(String, bool)> {
     let simples = commands(segment);
     let [simple] = simples.as_slice() else {
         return None;
@@ -727,7 +776,7 @@ fn cd_folder(segment: &str) -> Option<(String, bool)> {
 }
 
 /// Whether a segment is `exit` or `exit <n>`, alone.
-fn is_exit(segment: &str) -> bool {
+pub(crate) fn is_exit(segment: &str) -> bool {
     matches!(commands(segment).as_slice(), [simple] if simple.redirections.is_empty()
         && matches!(simple.words.as_slice(), [exit] if exit == "exit")
             | matches!(simple.words.as_slice(), [exit, code] if exit == "exit" && !code.is_empty() && code.bytes().all(|byte| byte.is_ascii_digit())))
@@ -769,13 +818,40 @@ pub fn worktree_reason(command: &str, folder: &str) -> Option<String> {
     if simples.iter().any(writes_golden) {
         return Some(GOLDEN_WRITE.to_owned());
     }
-    if simples
+    let found = invocations(&without_heredocs(command));
+    let python = found.iter().any(|invocation| {
+        invocation
+            .words
+            .first()
+            .is_some_and(|program| is_python(program))
+    });
+
+    if found
         .iter()
-        .any(|simple| python_writes_file(simple, command))
+        .any(|invocation| python_writes_file(invocation, command))
+        || (python && found.iter().any(tees_a_file))
     {
         return Some(PYTHON_WRITE.to_owned());
     }
     chained_git_hint(&pieces, root)
+}
+
+/// Whether a command is a `tee` writing a file: an operand other than `-`, `/dev/null`,
+/// `/dev/stdout` and `/dev/stderr` (AUD-033).
+fn tees_a_file(invocation: &Invocation) -> bool {
+    invocation
+        .words
+        .split_first()
+        .is_some_and(|(program, operands)| {
+            program_name(program) == "tee"
+                && operands.iter().any(|operand| {
+                    !operand.starts_with('-')
+                        && !matches!(
+                            operand.as_str(),
+                            "/dev/null" | "/dev/stdout" | "/dev/stderr"
+                        )
+                })
+        })
 }
 
 /// Whether a simple command runs Vitest's mode `golden-write` (`--mode golden-write` or
@@ -787,6 +863,59 @@ fn writes_golden(simple: &Simple) -> bool {
         || words
             .windows(2)
             .any(|pair| pair[0] == "--mode" && pair[1] == "golden-write")
+}
+
+/// Where a Python program's text comes from (`REF-PYTHON-CMDLINE`).
+enum PythonProgram<'a> {
+    /// The text of `-c`, glued to it (`-ccode`, `-Ic`) or the next word.
+    Inline(&'a str),
+    /// Its standard input: no script, `-`, or `/dev/stdin`.
+    Input,
+    /// A script file or a module, which the guard does not read.
+    Elsewhere,
+}
+
+/// The program a Python command line runs, its options read as Python reads them: short ones
+/// bundled (`-Ic`), `-W` and `-X` taking a value, the first of `-c`, `-m`, `-` or a script ending
+/// the options.
+fn python_program(arguments: &[String]) -> PythonProgram<'_> {
+    let mut at = 0;
+
+    while let Some(word) = arguments.get(at) {
+        at += 1;
+        if word == "-" {
+            return PythonProgram::Input;
+        }
+        if word.starts_with("--") {
+            continue;
+        }
+        let Some(letters) = word.strip_prefix('-') else {
+            return if matches!(word.as_str(), "/dev/stdin" | "/dev/fd/0") {
+                PythonProgram::Input
+            } else {
+                PythonProgram::Elsewhere
+            };
+        };
+        for (index, letter) in letters.char_indices() {
+            let rest = &letters[index + letter.len_utf8()..];
+
+            match letter {
+                'c' if rest.is_empty() => {
+                    return arguments
+                        .get(at)
+                        .map_or(PythonProgram::Input, |code| PythonProgram::Inline(code));
+                }
+                'c' => return PythonProgram::Inline(rest),
+                'm' => return PythonProgram::Elsewhere,
+                'W' | 'X' => {
+                    at += usize::from(rest.is_empty());
+                    break;
+                }
+                _ => {}
+            }
+        }
+    }
+    PythonProgram::Input
 }
 
 /// The words of a simple command from its program on, the assignments before it skipped.
@@ -811,19 +940,19 @@ fn is_python(word: &str) -> bool {
         })
 }
 
-/// Whether a simple command runs Python writing a file: its output redirected to a file other than
-/// `/dev/null`, or its program text writing one ([`python_writes`]), given by `-c`, by a
-/// here-string, or by a here-document of `command` when it reads its program from its input.
-fn python_writes_file(simple: &Simple, command: &str) -> bool {
-    let words = program_words(simple);
-    let Some((program, arguments)) = words.split_first() else {
+/// Whether a command runs Python writing a file, a wrapper's looked through (AUD-033): its output
+/// redirected to a file other than `/dev/null`, or its program text writing one
+/// ([`python_writes`]), given by `-c`, or by a here-string or a here-document of `command` when it
+/// reads its program from its input.
+fn python_writes_file(invocation: &Invocation, command: &str) -> bool {
+    let Some((program, arguments)) = invocation.words.split_first() else {
         return false;
     };
 
     if !is_python(program) {
         return false;
     }
-    let redirects_output = simple.redirections.iter().any(|redirection| {
+    let redirects_output = invocation.redirections.iter().any(|redirection| {
         let operator = redirection.trim_start_matches(|digit: char| digit.is_ascii_digit());
         let target = operator.trim_start_matches(['&', '>', '|']);
 
@@ -831,29 +960,20 @@ fn python_writes_file(simple: &Simple, command: &str) -> bool {
             && !operator.starts_with(">&")
             && target != "/dev/null"
     });
-    let inline = arguments
-        .iter()
-        .position(|word| word == "-c")
-        .and_then(|at| arguments.get(at + 1));
-    // No script, nor `-c` text, given as an operand (`-` alone is an option here): the program
-    // comes from its input.
-    let reads_input = arguments.iter().all(|word| word.starts_with('-'));
-    let here_strings = simple
+    let here_strings = invocation
         .redirections
         .iter()
         .filter_map(|redirection| redirection.strip_prefix("<<<"));
-    let fed: Vec<&str> = if reads_input {
-        heredoc_bodies(command)
-            .into_iter()
-            .chain(here_strings)
-            .collect()
-    } else {
-        Vec::new()
-    };
 
     redirects_output
-        || inline.is_some_and(|code| python_writes(code))
-        || fed.iter().any(|code| python_writes(code))
+        || match python_program(arguments) {
+            PythonProgram::Inline(code) => python_writes(code),
+            PythonProgram::Input => heredoc_bodies(command)
+                .into_iter()
+                .chain(here_strings)
+                .any(python_writes),
+            PythonProgram::Elsewhere => false,
+        }
 }
 
 /// The program a segment runs, its assignments skipped, and the subcommand of a Git one: `None`

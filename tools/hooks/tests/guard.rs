@@ -166,6 +166,29 @@ fn removes_the_bodies_of_here_documents_only() {
     );
     assert_eq!(without_heredocs("cat <<< \"x\""), "cat <<< \"x\"");
     assert_eq!(without_heredocs("cat <<EOF\nbody"), "cat <<EOF\nbody");
+    // No word, or one the shell expands: no document; an empty quoted word closes at an empty line.
+    assert_eq!(without_heredocs("cat <<\nx\n\ny"), "cat <<\nx\n\ny");
+    assert_eq!(without_heredocs("cat <<$W\nx\n$W"), "cat <<$W\nx\n$W");
+    assert_eq!(without_heredocs("cat <<''\nx\n\ny"), "cat <<''\ny");
+    // A word escaped or quoted with an escape inside, as the shell removes its quotes.
+    assert_eq!(without_heredocs("cat <<\\EOF\nx\nEOF\ny"), "cat <<\\EOF\ny");
+    assert_eq!(
+        without_heredocs("cat <<\"E\\\"F\"\nx\nE\"F\ny"),
+        "cat <<\"E\\\"F\"\ny"
+    );
+    // A `<<` in an array's index, a parameter or `$[…]` opens nothing; a backquote inside double
+    // quotes is skipped.
+    for line in [
+        "a[1<<2]=x\nb\n2",
+        "echo ${x<<y}\nb\ny",
+        "echo $[1<<2]\nb\n2",
+    ] {
+        assert_eq!(without_heredocs(line), line);
+    }
+    assert_eq!(
+        without_heredocs("x \"`a`$(cat <<A\n1\nA\n)\""),
+        "x \"`a`$(cat <<A\n)\""
+    );
     // An empty body goes with its line; two documents in a row, or on one line, all go.
     assert_eq!(without_heredocs("cat <<A\nA\nB"), "cat <<A\nB");
     assert_eq!(without_heredocs("cat <<A\n\nA\nB"), "cat <<A\nB");
@@ -775,7 +798,7 @@ fn tells_a_read_only_filter() {
 
 /// The cases of AUD-023's review, each with the reason expected, `None` for a command that goes
 /// through: forms that passed the text matchers, and commands they refused for a text.
-const AUDIT_CASES: [(&str, Option<&str>); 105] = [
+const AUDIT_CASES: [(&str, Option<&str>); 109] = [
     // A force push, its option bundled, quoted, after a global option, an assignment, a wrapper,
     // in a subshell, a substitution, a `-c` text, an `eval`, or across a line continuation.
     ("git push -uf origin x", Some(FORCE_PUSH)),
@@ -880,7 +903,12 @@ const AUDIT_CASES: [(&str, Option<&str>); 105] = [
     ("echo \\<<EOF\ngit push -f\nEOF", Some(FORCE_PUSH)),
     ("echo $((1<<2))\ngit push -f\n2", Some(FORCE_PUSH)),
     ("echo `cat <<EOF`\ngit push -f\nEOF", Some(FORCE_PUSH)),
+    ("echo `cat <<EOF `\ngit push -f\nEOF", Some(FORCE_PUSH)),
     ("echo $(cat <<EOF)\ngit push -f\nEOF", Some(FORCE_PUSH)),
+    (
+        "echo $(cat <<EOF) $(true\ngit push -f\nEOF\n)",
+        Some(FORCE_PUSH),
+    ),
     (
         "cat <<EOF; bash -c \"\ngit push -f\n\"\nEOF",
         Some(FORCE_PUSH),
@@ -890,6 +918,7 @@ const AUDIT_CASES: [(&str, Option<&str>); 105] = [
     ("bash <<EOF\ngit push -f\nEOF", Some(FORCE_PUSH)),
     ("bash <<'EOF'\ngit push -f\nEOF", Some(FORCE_PUSH)),
     ("sh -s <<'EOF'\ngit push -f\nEOF", Some(FORCE_PUSH)),
+    ("bash -s x y <<'EOF'\ngit push -f\nEOF", Some(FORCE_PUSH)),
     ("zsh - <<'EOF'\ngit push -f\nEOF", Some(FORCE_PUSH)),
     ("env bash <<'EOF'\ngit push -f\nEOF", Some(FORCE_PUSH)),
     (
@@ -919,6 +948,7 @@ const AUDIT_CASES: [(&str, Option<&str>); 105] = [
     ),
     ("cat <<A <<'B'\ngit push -f\nA\ngit push -f\nB", None),
     ("cat <<EOF\ngit push -f is $(date)\nEOF", None),
+    ("cat <<'EOF'\n$(git push -f) is not run\nEOF", None),
     ("cat <<EOF\ngit push -f\nEOF\n# <<X", None),
     ("bash script.sh <<'EOF'\ngit push -f\nEOF", None),
     ("echo 'git push -f' | grep push", None),
@@ -1012,22 +1042,29 @@ fn f31_ac1_reads_the_branch_of_a_push_in_the_folder_it_runs_in() {
         format!("git --git-dir=\"{MAIN_GIT}\" push -u origin HEAD"),
         format!("env GIT_DIR=\"{MAIN_GIT}\" git push"),
         format!("cd \"{MAIN}\" && git push; cd \"{WORKTREE}\" || exit 9"),
-        // A `cd` that may fail leaves the push where it was too.
-        format!("cd \"{WORKTREE}\"; git push"),
+        format!("git -c 'alias.p=!cd \"{MAIN}\" && git push' p"),
     ] {
         let from_tmp = |cwd: &str| denied_reason_on(&command, cwd, &main_on_develop);
 
         assert_eq!(from_tmp("/tmp"), Some(PROTECTED_PUSH), "{command}");
     }
-    // A push before the brief's `cd`, from the main checkout, is judged there.
-    assert_eq!(
-        denied_reason_on(
-            &format!("git push; cd \"{WORKTREE}\" || exit 9"),
-            MAIN,
-            &main_on_develop
-        ),
-        Some(PROTECTED_PUSH)
-    );
+    // From the main checkout: a push before the brief's `cd` is judged there, and a `cd` that may
+    // fail leaves the push where it was too.
+    for command in [
+        format!("git push; cd \"{WORKTREE}\" || exit 9"),
+        format!("cd \"{WORKTREE}\"; git push"),
+        format!("cd \"{WORKTREE}\" && git push"),
+        format!("true || cd \"{WORKTREE}\" || exit 9; git push"),
+        format!("(\ncd \"{WORKTREE}\" || exit 9\n)\ngit push"),
+        format!("{{\ncd \"{WORKTREE}\" || exit 9\n}} &\ngit push"),
+        format!("if false\nthen\ncd \"{WORKTREE}\" || exit 9\nfi\ngit push"),
+    ] {
+        assert_eq!(
+            denied_reason_on(&command, MAIN, &main_on_develop),
+            Some(PROTECTED_PUSH),
+            "{command}"
+        );
+    }
     // Where the guard cannot know the folder or the branch: refused, the reason saying how.
     for command in [
         "cd \"$HOME\" && git push".to_owned(),
@@ -1043,7 +1080,7 @@ fn f31_ac1_reads_the_branch_of_a_push_in_the_folder_it_runs_in() {
         "git -C \"$X\" push".to_owned(),
         "git -C /unreadable push".to_owned(),
         format!("if cd \"{MAIN}\"; then git push; fi"),
-        format!("git -c 'alias.p=!cd \"{MAIN}\" && git push' p"),
+        "git -c 'alias.p=!cd ~ && git push' p".to_owned(),
     ] {
         assert_eq!(
             denied_reason_on(&command, "/tmp", &main_on_develop),

@@ -580,5 +580,11 @@ fn f31_ac1_reads_a_worker_s_worktree_from_the_brief_s_cd() {
         Some("en-2")
     );
     assert_eq!(prompt_worktree("cd \"/r/other\" || exit 9"), None);
+    assert_eq!(
+        prompt_worktree(
+            "cd \"/r/.claude/worktrees/en-2\" || true; cd \"/r/.claude/worktrees/en-1\" || exit 9"
+        ),
+        Some("en-1")
+    );
     assert_eq!(prompt_worktree("nothing"), None);
 }
