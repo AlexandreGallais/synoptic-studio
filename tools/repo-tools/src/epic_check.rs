@@ -1,7 +1,8 @@
 //! The findings of `epic-check` (RET-002, EN-055, EN-103), read from logs and outputs: the
 //! branches left, the failed calls (the worktree isolation's refusals apart), the calls lost at a
 //! force-quit, the checks of a failed `check:all`, each named with its lane and its failing tests,
-//! and the table they make for the retrospective's record.
+//! the CI of the last pull request into `main`, and the table they make for the retrospective's
+//! record.
 
 use calendar::{HOUR_MS, iso_minute};
 use hooks::json::Value;
@@ -350,15 +351,19 @@ pub fn check_all_finding(is_ok: bool, out: &str) -> Finding {
     }
 }
 
-/// The backlog items of an epic not `done`, its retrospective left out: each file's name, without
-/// `.md`, and its text.
+/// The backlog items of an epic neither `done` nor `dropped` (I110), its retrospective left out:
+/// each file's name, without `.md`, and its text.
 #[must_use]
 pub fn open_items(epic: &str, files: &[(String, String)]) -> Finding {
     let start = format!("{epic}-");
     let open: Vec<&str> = files
         .iter()
         .filter(|(name, _)| name.starts_with(&start) && !name.contains("-RET-"))
-        .filter(|(_, text)| !text.lines().any(|line| line == "status: done"))
+        .filter(|(_, text)| {
+            !text
+                .lines()
+                .any(|line| line == "status: done" || line == "status: dropped")
+        })
         .map(|(name, _)| name.strip_suffix(".md").unwrap_or(name))
         .collect();
 
@@ -366,7 +371,7 @@ pub fn open_items(epic: &str, files: &[(String, String)]) -> Finding {
         what: format!("backlog of {epic}"),
         is_ok: open.is_empty(),
         detail: if open.is_empty() {
-            "every feature and story done".to_owned()
+            "every feature and story done or dropped".to_owned()
         } else {
             open.join(", ")
         },
@@ -378,13 +383,99 @@ pub fn open_items(epic: &str, files: &[(String, String)]) -> Finding {
 /// result, its failed jobs and those still running, each named `<workflow> / <job>` (I110).
 #[must_use]
 pub fn main_ci(answered: bool, out: &str) -> Finding {
-    let _ = (answered, out);
-
-    Finding {
+    let finding = |is_ok: bool, detail: String| Finding {
         what: MAIN_CI.to_owned(),
-        is_ok: true,
-        detail: String::new(),
+        is_ok,
+        detail,
+    };
+
+    if !answered {
+        return finding(false, out.to_owned());
     }
+
+    let Some(Value::Array(pulls)) = hooks::json::parse(out) else {
+        return finding(false, format!("gh pr list answered no JSON list: {out}"));
+    };
+    let Some(pull) = pulls.first() else {
+        return finding(true, "no pull request into main".to_owned());
+    };
+    let number = match pull.get("number") {
+        Value::Number(number) => format!("{number:.0}"),
+        _ => "?".to_owned(),
+    };
+    let named = format!("#{number} {}", text(pull, "title"));
+    let jobs: Vec<(String, Option<bool>)> = pull
+        .get("statusCheckRollup")
+        .items()
+        .iter()
+        .map(job)
+        .collect();
+    let failed: Vec<&str> = jobs
+        .iter()
+        .filter(|(_, passed)| *passed == Some(false))
+        .map(|(name, _)| name.as_str())
+        .collect();
+    let running: Vec<&str> = jobs
+        .iter()
+        .filter(|(_, passed)| passed.is_none())
+        .map(|(name, _)| name.as_str())
+        .collect();
+
+    if jobs.is_empty() {
+        return finding(true, format!("{named}: no CI ran"));
+    }
+    if failed.is_empty() && running.is_empty() {
+        return finding(true, format!("{named}: passed, {} jobs", jobs.len()));
+    }
+
+    let failures = (!failed.is_empty()).then(|| {
+        format!(
+            "failed, {} of {} jobs: {}",
+            failed.len(),
+            jobs.len(),
+            failed.join(", ")
+        )
+    });
+    let runs = (!running.is_empty()).then(|| format!("running: {}", running.join(", ")));
+
+    finding(
+        false,
+        format!(
+            "{named}: {}",
+            failures
+                .into_iter()
+                .chain(runs)
+                .collect::<Vec<_>>()
+                .join("; ")
+        ),
+    )
+}
+
+/// A job of a pull request's `statusCheckRollup`, `<workflow> / <job>` for a check run, its
+/// context for a commit status, and whether it passed: `None` while it runs. A check run passes
+/// when it succeeded, was skipped or neutral; a commit status when it succeeded.
+fn job(check: &Value) -> (String, Option<bool>) {
+    if text(check, "__typename") == "StatusContext" {
+        let state = text(check, "state");
+
+        return (
+            text(check, "context").to_owned(),
+            (!matches!(state, "PENDING" | "EXPECTED")).then_some(state == "SUCCESS"),
+        );
+    }
+
+    let workflow = text(check, "workflowName");
+    let name = text(check, "name");
+
+    (
+        if workflow.is_empty() {
+            name.to_owned()
+        } else {
+            format!("{workflow} / {name}")
+        },
+        (text(check, "status") == "COMPLETED")
+            .then(|| matches!(text(check, "conclusion"), "SUCCESS" | "SKIPPED" | "NEUTRAL")),
+    )
 }
 
 /// The Markdown table of the findings, for the retrospective's record.

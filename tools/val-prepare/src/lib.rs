@@ -1,6 +1,7 @@
-//! `val-prepare <root> <feature>` (EN-056): a feature's lines in its epic's checklist, one per acceptance
-//! criterion to rewrite as what to try and what to see, the epic's checklist registered for
-//! `?checklist=<epic>`, and no guided-steps file (Product Owner, 2026-10-15: the guided steps
+//! `val-prepare <root> <feature>` (EN-056): a feature's lines in its epic's checklist, one per
+//! acceptance criterion not struck through, tagged with its own number (EN-139), to rewrite as
+//! what to try and what to see, the epic's checklist registered for `?checklist=<epic>`, and no
+//! guided-steps file (Product Owner, 2026-10-15: the guided steps
 //! written up to E15 stay in `?guide=epic` only).
 
 use std::fs;
@@ -55,6 +56,9 @@ pub struct Plan {
 const FEATURES: &str = "docs/backlog/features";
 const CHECKLISTS: &str = "playground/checklists";
 
+/// Markdown's strikethrough, opening a criterion dropped from its feature.
+const STRUCK: &str = "~~";
+
 /// A feature id from the argument, in either case: `f18` gives `F18`.
 #[must_use]
 pub fn feature_id(argument: &str) -> Option<String> {
@@ -88,14 +92,17 @@ fn criteria(text: &str) -> Vec<Criterion> {
         .take_while(|line| !line.starts_with("## "))
         .filter_map(|line| {
             let (number, criterion) = line.split_once(". ")?;
+            let text = criterion.trim();
 
-            (!number.is_empty() && number.bytes().all(|byte| byte.is_ascii_digit()))
-                .then(|| criterion.trim().to_owned())
-        })
-        .enumerate()
-        .map(|(index, text)| Criterion {
-            number: index + 1,
-            text,
+            (!number.is_empty()
+                && number.bytes().all(|byte| byte.is_ascii_digit())
+                && !text.starts_with(STRUCK))
+            .then(|| number.parse().ok())
+            .flatten()
+            .map(|number| Criterion {
+                number,
+                text: text.to_owned(),
+            })
         })
         .collect()
 }
@@ -154,7 +161,7 @@ pub fn checklist_names(epic: &str) -> (String, String) {
     )
 }
 
-/// The module of a feature's lines: one per criterion, what to try being the criterion and what
+/// The module of a feature's lines: one per criterion standing, tagged with its number, what to try being the criterion and what
 /// to see a line to write, both rewritten before the validation.
 #[must_use]
 pub fn lines_module(feature: &Feature) -> String {

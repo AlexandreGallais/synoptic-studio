@@ -68,25 +68,27 @@ fn whole_text(value: f64) -> String {
     to_fixed(value, 0)
 }
 
-/// A duration written for a person: `850 ms`, `12.4 s` or `3 min 05 s`.
+/// A duration written for a person: `850 ms`, `12.4 s` or `3 min 05 s`. The unit is chosen from
+/// the duration rounded as it is shown, so that a rounding never reaches the next unit: 999.6 ms
+/// is `1.0 s`, 59.6 s `1 min 00 s`, 1617 min 59.6 s `1618 min 00 s`, never `1617 min 60 s` (I111).
 #[must_use]
 pub fn format_duration(milliseconds: f64) -> String {
-    let seconds = milliseconds / SECOND_MS;
+    let rounded_ms = js_round(milliseconds);
 
-    if seconds < 1.0 {
-        return format!("{} ms", whole_text(js_round(milliseconds)));
+    if rounded_ms < SECOND_MS {
+        return format!("{} ms", whole_text(rounded_ms));
     }
+
+    let seconds = js_round(milliseconds / SECOND_MS);
 
     if seconds < MINUTE_SECONDS {
-        return format!("{} s", to_fixed(seconds, 1));
+        return format!("{} s", to_fixed(milliseconds / SECOND_MS, 1));
     }
-
-    let minutes = (seconds / MINUTE_SECONDS).floor();
 
     format!(
         "{} min {:0>2} s",
-        whole_text(minutes),
-        whole_text(js_round(seconds % MINUTE_SECONDS))
+        whole_text((seconds / MINUTE_SECONDS).floor()),
+        whole_text(seconds % MINUTE_SECONDS)
     )
 }
 
