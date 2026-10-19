@@ -111,3 +111,35 @@ fn says_when_it_read_no_block() {
         "no edit block read\nnothing written\n"
     );
 }
+
+/// `replace` called with arguments, its standard input empty and closed.
+fn replace_with(arguments: &[&str]) -> Output {
+    Command::new(env!("CARGO_BIN_EXE_replace"))
+        .args(arguments)
+        .stdin(Stdio::null())
+        .output()
+        .expect("replace runs")
+}
+
+#[test]
+fn f31_ac2_prints_its_usage_for_help_and_exits_0() {
+    let output = replace_with(&["--help"]);
+    let stdout = String::from_utf8_lossy(&output.stdout);
+
+    assert_eq!(output.status.code(), Some(0));
+    assert!(
+        stdout.starts_with("usage: target/release/replace < <blocks>"),
+        "{stdout}"
+    );
+    assert!(stdout.contains("\n  @@ path/to/file\n  <<<\n"), "{stdout}");
+    assert_eq!(output.stderr, b"");
+}
+
+#[test]
+fn f31_ac2_refuses_an_argument_with_its_usage_and_exits_2() {
+    let output = replace_with(&["edits.txt"]);
+
+    assert_eq!(output.status.code(), Some(2));
+    assert_eq!(output.stdout, b"");
+    assert!(String::from_utf8_lossy(&output.stderr).starts_with("usage: target/release/replace"));
+}

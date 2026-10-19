@@ -182,6 +182,28 @@ mod tests {
     }
 
     #[test]
+    fn f31_ac2_npm_run_fix_keeps_a_type_only_reexport_when_local_barrel_exports_writes_the_barrel()
+    {
+        // The card of 2026-10-18: `npm run fix`, `tools/lint`'s `--fix`, met a barrel out of sync
+        // with a module just added (`epic-17-f22-lines.ts`) and `local/barrel-exports` wrote it
+        // again as `export *` lines only, `export type * from "./checklist-line"` with them.
+        let code = "export type * from \"./angle\";\nexport * from \"./vector\";\n";
+        let findings = lint_at(&BarrelExports, &folder(), "index.ts", code);
+
+        assert_eq!(
+            fixed(code, &findings),
+            "export type * from \"./angle\";\nexport * from \"./arc\";\nexport * from \"./vector\";\n"
+        );
+        // In sync, a type-only re-export is left as it is.
+        let synced = "export type * from \"./angle\";\nexport * from \"./arc\";\nexport * from \"./vector\";\n";
+
+        assert_eq!(
+            messages(&lint_at(&BarrelExports, &folder(), "index.ts", synced)),
+            NONE
+        );
+    }
+
+    #[test]
     fn refuses_anything_but_star_reexports() {
         for code in [
             "export { a } from \"./vector\";",

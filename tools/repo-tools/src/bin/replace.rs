@@ -2,12 +2,15 @@
 //! once, the blocks read from standard input, from the repository's root. Nothing is written unless
 //! every block is read and every old text is found exactly once; then it prints `<n> edits in <m>
 //! files`. Otherwise each problem, then `nothing written`, on standard error, and it exits 1.
+//! Called with `--help`, it prints its usage and exits 0; with another argument, or none and a
+//! terminal for input, its usage on standard error and exits 2 (EN-138).
 
+use std::env;
 use std::fs;
-use std::io::{self, Read};
+use std::io::{self, IsTerminal, Read};
 use std::process::ExitCode;
 
-use repo_tools::replace::{Edit, apply_edits, files_of, parse_edits};
+use repo_tools::replace::{Call, Edit, USAGE, apply_edits, call, files_of, parse_edits};
 
 /// The new text of each file, or the problems met, one line per file.
 fn results(edits: &[Edit]) -> Result<Vec<(String, String)>, Vec<String>> {
@@ -40,6 +43,20 @@ fn refuse(problems: &[String]) -> u8 {
 }
 
 fn work() -> u8 {
+    let arguments: Vec<String> = env::args().skip(1).collect();
+
+    match call(&arguments, io::stdin().is_terminal()) {
+        Call::Usage(0) => {
+            println!("{USAGE}");
+            return 0;
+        }
+        Call::Usage(code) => {
+            eprintln!("{USAGE}");
+            return code;
+        }
+        Call::Blocks => {}
+    }
+
     let mut spec = String::new();
 
     if let Err(error) = io::stdin().read_to_string(&mut spec) {
