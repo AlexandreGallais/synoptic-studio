@@ -43,3 +43,22 @@ fn groups_thousands() {
     assert_eq!(grouped(2_949_836_831), "2,949,836,831");
     assert_eq!(grouped(75), "75");
 }
+
+#[test]
+fn f32_ac2_carries_the_minute_a_rounded_second_reaches() {
+    // 59.6 s rounds to 60 s, a whole minute: 1 min 00 s, never 59.6 s beside a 0 min 60 s (I111).
+    assert_eq!(format_duration(59_600.0), "1 min 00 s");
+    // 59.4 s rounds to 59 s, under the minute: its tenth kept.
+    assert_eq!(format_duration(59_400.0), "59.4 s");
+    // 59.5 s is a tie, up to 60 s as `Math.round` does: the minute.
+    assert_eq!(format_duration(59_500.0), "1 min 00 s");
+    // 1617 min 59.6 s = 97 079.6 s, rounded to 97 080 s = 1618 min 00 s, not 1617 min 60 s.
+    assert_eq!(duration_text(97_079_600), "1618 min 00 s");
+    // 2 min 59.4 s = 179.4 s, rounded to 179 s = 2 min 59 s.
+    assert_eq!(duration_text(179_400), "2 min 59 s");
+    // 999.6 ms rounds to 1000 ms, a whole second: 1.0 s, never 1000 ms.
+    assert_eq!(format_duration(999.6), "1.0 s");
+    assert_eq!(format_duration(999.4), "999 ms");
+    // 60 s exactly is the first minute.
+    assert_eq!(duration_text(60_000), "1 min 00 s");
+}

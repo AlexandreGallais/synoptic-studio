@@ -283,3 +283,18 @@ fn f32_ac1_counts_a_turn_from_its_requests_since_the_session_s_count_cannot_be_c
         ]
     );
 }
+
+#[test]
+fn f32_ac2_the_session_report_carries_the_minute() {
+    // REV-004's session lasted 1617 min 59.6 s: 97 079 600 ms, shown 1618 min 00 s (I111).
+    let figures = metrics::session::SessionFigures {
+        wall_ms: 97_079_600,
+        active_ms: 59_600,
+        ..Default::default()
+    };
+
+    assert_eq!(
+        report_rows(&figures)[0],
+        ("Duration", "1618 min 00 s (active 1 min 00 s)".to_owned())
+    );
+}
