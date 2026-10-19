@@ -13,8 +13,11 @@ type Item = {
   readonly folder: string;
 };
 
+/** Root of the repository. */
+const ROOT = join(import.meta.dirname, "..");
+
 /** Root of the backlog. */
-const BACKLOG = join(import.meta.dirname, "..", "docs", "backlog");
+const BACKLOG = join(ROOT, "docs", "backlog");
 
 /** The Rust tool writing the stories index from the story files (EN-049). */
 const INDEX_TOOL = join(import.meta.dirname, "..", "tools", "backlog-index", "Cargo.toml");
@@ -561,6 +564,27 @@ describe("backlog", () => {
       );
 
       // The tool's message names the row that differs and says to run `npm run backlog:index`.
+      expect(result.stderr).toBe("");
+      expect(result.status).toBe(0);
+    },
+  );
+
+  it(
+    "[F33.AC2] runs the index tool's own check from `npm run backlog:index -- --check`, not the formatter",
+    // alone: 172 ms, the median of 5 runs of the test, the tool built; 60 s holds its cold build.
+    { timeout: BUILD_TIMEOUT },
+    () => {
+      // npm appends the arguments after the script's last command: the index tool's, so that
+      // `--check` reaches it, whose message names the first row that differs (`check.rs`).
+      expect(readFileSync(join(ROOT, "package.json"), "utf8")).toContain(
+        '"backlog:index": "cargo run --release -q -p backlog-index -- docs/backlog",',
+      );
+
+      const result = spawnSync("npm", ["run", "--silent", "backlog:index", "--", "--check"], {
+        cwd: ROOT,
+        encoding: "utf8",
+      });
+
       expect(result.stderr).toBe("");
       expect(result.status).toBe(0);
     },

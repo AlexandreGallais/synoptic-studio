@@ -16,7 +16,7 @@ A color is now typed or pasted in any common hexadecimal form, or picked with a 
 | **Opacity bar** | the opacity from 0 to 100 %, a whole percent |
 | **Model**, **H**, **S**, **B** or **L** | HSB or HSL, and their three values as whole numbers, typed or shown |
 
-Rules: [domain, "Colors"](../domain/interaction.md#_5-colors-align-and-distribute) and Q38; formulas: [`DERIV-color-spaces`](../derivations/color-spaces.md); decisions: [ADR-0056](../adr/0056-color-stored-as-hexadecimal-hsl-and-hsb-as-views.md), [ADR-0058](../adr/0058-hsl-and-hsb-shown-and-typed-as-integers.md), [ADR-0059](../adr/0059-an-open-picker-rebuilds-against-the-color-it-read.md).
+Rules: [domain, "Colors"](../domain/interaction.md#colors) and Q38; formulas: [`DERIV-color-spaces`](../derivations/color-spaces.md); decisions: [ADR-0056](../adr/0056-color-stored-as-hexadecimal-hsl-and-hsb-as-views.md), [ADR-0058](../adr/0058-hsl-and-hsb-shown-and-typed-as-integers.md), [ADR-0059](../adr/0059-an-open-picker-rebuilds-against-the-color-it-read.md).
 
 ## The ideas behind it
 

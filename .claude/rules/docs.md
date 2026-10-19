@@ -14,3 +14,4 @@ How a page is written: `docs/conventions/writing.md`. What breaks a page in the 
 - A backlog status is changed by `target/release/backlog-status <ID> <status>`, which writes the item, its index and its parent's table together (`tests/backlog.test.ts` checks the three).
 - A reference gets its row in `docs/references.md`, `[verified] YYYY-MM-DD`, before it is cited.
 - Commit body lines are at most 100 characters.
+- A heading a link targets keeps one anchor on GitHub and on the site: no `'`, `/`, `_`, `.` nor `—` in it, no leading digit; reword it and name a rule in the section's first line (`local/anchor-slugs`, EN-140).

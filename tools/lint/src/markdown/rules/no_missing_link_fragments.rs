@@ -133,7 +133,7 @@ fn html_headings(text: &str) -> Vec<&str> {
 }
 
 /// A fragment decoded as `decodeURIComponent` does; the fragment itself when it cannot be.
-fn decode(fragment: &str) -> String {
+pub(crate) fn decode(fragment: &str) -> String {
     let bytes = fragment.as_bytes();
     let mut decoded = Vec::with_capacity(bytes.len());
     let mut at = 0;
@@ -159,7 +159,7 @@ fn decode(fragment: &str) -> String {
 }
 
 /// Whether a fragment names lines of a file as GitHub does: `^L\d+(?:C\d+)?(?:-L\d+(?:C\d+)?)?$`.
-fn is_line_reference(fragment: &str) -> bool {
+pub(crate) fn is_line_reference(fragment: &str) -> bool {
     let line = |text: &str| -> bool {
         let Some(rest) = text.strip_prefix('L') else {
             return false;

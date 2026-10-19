@@ -27,7 +27,9 @@ Every top-level function carries exactly one `@kind`. A function that mixes two 
 | `format` | conversion between representations (model ↔ SVG, JSON) | no |
 | `procedure` | action with a side effect (DOM, state, events) | yes |
 
-## Limits per kind (`local/kind-limits`)
+## Limits per kind
+
+Checked by `local/kind-limits`.
 
 The values are in `tools/lint/src/settings.rs`. The loosest of them are the global ceilings of `.oxlintrc.json` (`complexity`, `max-lines-per-function`…), for code without a `@kind`.
 
@@ -68,7 +70,7 @@ Here `orthogonalRoute`, `pipeFromRoute` and `addPipeCommand` are pure `domain` f
 
 ## Inputs and outputs
 
-- **A function never modifies its arguments**: it takes values and returns a result (ADR-0014). `no-param-reassign` (properties included) checks it everywhere. In the core, `functional/immutable-data`, `functional/prefer-immutable-types` and `functional/type-declaration-immutability` also apply: a parameter's type is written deeply read-only (`readonly`, `Readonly<…>`; [lint](./lint.md#functional-prefer-immutable-types-and-functional-type-declaration-immutability)). Model types are `readonly`, so the compiler refuses a mutation even in the shell. A `procedure` that receives a DOM element may still call its methods (`append`, `setAttribute`), since changing the DOM is its job.
+- **A function never modifies its arguments**: it takes values and returns a result (ADR-0014). `no-param-reassign` (properties included) checks it everywhere. In the core, `functional/immutable-data`, `functional/prefer-immutable-types` and `functional/type-declaration-immutability` also apply: a parameter's type is written deeply read-only (`readonly`, `Readonly<…>`; [lint](./lint.md#the-deeply-read-only-types)). Model types are `readonly`, so the compiler refuses a mutation even in the shell. A `procedure` that receives a DOM element may still call its methods (`append`, `setAttribute`), since changing the DOM is its job.
 - **Explicit inputs** (ADR-0016): no default and no optional parameter in `src/`. A caller must see every value a function uses. Defaults belong to the model, where a symbol's parameters declare them. A variant of a behavior is a separate named function, or an explicit field of a named parameter object.
 - **No magic number**: only `-1`, `0`, `1` and `2` appear inline. Any other number is a named, documented constant, so its meaning and source are written once.
 

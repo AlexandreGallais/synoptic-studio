@@ -24,7 +24,7 @@ In delivery order.
 | ID | Type | Title | Status |
 | --- | --- | --- | --- |
 | [EN-121](../stories/E17-F33-EN-121-floors-and-versions-checked.md) | EN | The floors, versions and paths checked | done |
-| [EN-140](../stories/E17-F33-EN-140-anchors-rows-and-agent-pages-checked.md) | EN | The anchors, the rows and the agent pages checked | ready |
+| [EN-140](../stories/E17-F33-EN-140-anchors-rows-and-agent-pages-checked.md) | EN | The anchors, the rows and the agent pages checked | done |
 | [EN-141](../stories/E17-F33-EN-141-a-bench-binary.md) | EN | A bench binary for the stories' measures | ready |
 | [AUD-035](../stories/E17-F33-AUD-035-audit-f33.md) | AUD | Audit F33 | ready |
 | [VAL-034](../stories/E17-F33-VAL-034-validate-f33.md) | VAL | Validate F33 | ready |

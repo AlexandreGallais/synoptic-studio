@@ -782,3 +782,83 @@ fn f23_ac1_refuses_any_other_change_of_a_log_in_the_done_commit() {
         },
     ));
 }
+
+#[test]
+fn f33_ac2_lists_the_notes_outside_a_log_heading() {
+    // A note before the first log heading, and a heading of the worker's own with its line: three
+    // notes; the lines under a log heading are rows or left lines, never notes.
+    let story = "# S\n\n## For the main thread\n\nA question.\n\n### Journal\n\n- `#run` a\n- not a bullet\n\n### Rule-docs\n\n- none affected\n\n## After\n\nnot in the section\n";
+    let taken = take_rows(story);
+
+    assert_eq!(
+        taken.notes,
+        ["A question.", "### Rule-docs", "- none affected"]
+    );
+    assert_eq!(
+        take_rows(STORY).notes,
+        ["A question for the Product Owner."]
+    );
+    assert_eq!(take_rows("# S\n").notes, Vec::<String>::new());
+}
+
+#[test]
+fn f33_ac2_names_each_note_with_its_story_and_with_notes_writes_nothing() {
+    let root: PathBuf =
+        std::env::temp_dir().join(format!("move-rows-notes-{}", std::process::id()));
+    let _ = fs::remove_dir_all(&root);
+    fs::create_dir_all(root.join("docs/backlog/stories")).unwrap();
+    fs::create_dir_all(root.join("docs/process")).unwrap();
+
+    let story = "docs/backlog/stories/E17-F33-EN-996-a-story.md";
+    let journal = "# Journal\n\n## 2026-10-16 — Run\n\n- `#run` before\n";
+
+    fs::write(root.join(story), STORY).unwrap();
+    fs::write(root.join("docs/process/journal.md"), journal).unwrap();
+    fs::write(
+        root.join("docs/process/improvements.md"),
+        "# Improvements\n\n| Date | From | Item |\n| --- | --- | --- |\n",
+    )
+    .unwrap();
+
+    let run = |arguments: &[&str]| {
+        test_support::command(env!("CARGO_BIN_EXE_move-rows"))
+            .args(arguments)
+            .current_dir(&root)
+            .output()
+            .unwrap()
+    };
+    let note = "move-rows: EN-996: a note for the main thread, not moved: A question for the Product Owner.\n";
+
+    // With `--notes`, as the `commit-msg` hook of the done commit runs it: the note named,
+    // nothing written.
+    let shown = run(&["--notes", "chore/en-996-a-story"]);
+
+    assert!(shown.status.success(), "{shown:?}");
+    assert_eq!(String::from_utf8_lossy(&shown.stdout), "");
+    assert_eq!(String::from_utf8_lossy(&shown.stderr), note);
+    assert_eq!(fs::read_to_string(root.join(story)).unwrap(), STORY);
+
+    // Moving the rows names the note too, which stays in the story file.
+    let moved = run(&["chore/en-996-a-story"]);
+
+    assert!(moved.status.success(), "{moved:?}");
+    assert_eq!(String::from_utf8_lossy(&moved.stderr), note);
+    assert!(
+        fs::read_to_string(root.join(story))
+            .unwrap()
+            .contains("A question for the Product Owner.")
+    );
+
+    // A flag alone, or a flag unknown, prints the usage.
+    for arguments in [&["--notes"][..], &["--notes", "a", "b"], &[]] {
+        let refused = run(arguments);
+
+        assert_eq!(refused.status.code(), Some(2), "{arguments:?}");
+        assert_eq!(
+            String::from_utf8_lossy(&refused.stderr),
+            "usage: move-rows [--notes] <story branch>\n"
+        );
+    }
+
+    let _ = fs::remove_dir_all(&root);
+}
