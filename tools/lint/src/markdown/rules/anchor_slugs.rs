@@ -232,9 +232,25 @@ mod tests {
 
     #[test]
     fn f33_ac2_accepts_a_link_whose_heading_has_one_anchor() {
-        let page = "# The tools\n\n[Same](#the-tools) [Other](./b.md#rust) [Line](#L3) [Top](#top)\n\n[Web](https://a.example/b.md#x) [Root](/b.md#x) [Code](./c.rs#x) [None](./b.md)\n";
+        // `#top` and a line reference name no heading, on this page as on another (AUD-035, F4).
+        let page = "# The tools\n\n[Same](#the-tools) [Other](./b.md#rust) [Line](#L3) [Top](#top)\n\n[Its top](./b.md#top) [Its line](./b.md#L3)\n\n[Web](https://a.example/b.md#x) [Root](/b.md#x) [Code](./c.rs#x) [None](./b.md)\n";
 
         assert_eq!(found(page, "# Rust\n"), NONE);
+    }
+
+    #[test]
+    fn f33_ac2_accepts_a_custom_or_an_html_id_of_another_page() {
+        // Another page's ids are those `markdown/no-missing-link-fragments` reads on its own
+        // page: a heading's custom `{#id}` and an HTML `id` or `name` (AUD-035, F5).
+        let page = "# A\n\n[Custom](./b.md#rust-tools) [Html](./b.md#here) [Name](./b.md#there) [Heading](./b.md#rust)\n";
+        let other =
+            "# Rust {#rust-tools}\n\n<a id=\"here\"></a>\n\n<a name=\"there\"></a>\n\n## Rust\n";
+
+        assert_eq!(found(page, other), NONE);
+        assert_eq!(
+            found("[Gone](./b.md#gone)\n", other),
+            ["Link fragment '#gone' does not reference a heading of docs/b.md."]
+        );
     }
 
     #[test]
