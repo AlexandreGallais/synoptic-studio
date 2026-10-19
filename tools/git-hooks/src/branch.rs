@@ -8,8 +8,8 @@ use std::sync::LazyLock;
 use regex::Regex;
 
 /// The branches the repository accepts: `main`, `develop`, `feature/f<nn>-<topic>`,
-/// `<type>/<story-id>-<topic>` in kebab case, the id of a story `story-automerge.yml` takes (`US`,
-/// `EN`, `SP`, `CHK`, `AUD`, `VAL`, `REV`), so that a fix without a story id is refused at its push
+/// `<type>/<story-id>-<topic>` in kebab case, the id of a story an auto-merge takes (`US`, `EN`,
+/// `SP`, `CHK`, `AUD`, `VAL` by `story-automerge.yml`, `REV` by `feature-automerge.yml`), so that a fix without a story id is refused at its push
 /// as at its merge (EN-118, I50), a release branch `release/x.y.z` (ADR-0079), and the bot's
 /// `dependabot/…`; release-please's `release-please--…` no longer since EN-112. Written as
 /// JavaScript read it: its `.` stops at every line terminator.

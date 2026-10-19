@@ -31,7 +31,7 @@ All ADRs were translated from French to English on 2026-10-08 (project rule: Eng
 | [0023](./0023-inspection-cadence.md) | Inspection cadence: demo at each feature, review and retrospective at each epic | Accepted, extended by ADR-0049; its review and retrospective per epic superseded by 0086 (each review) |
 | [0024](./0024-session-journal.md) | Session journal and transcript search instead of a database | Accepted, partly superseded by 0039 |
 | [0025](./0025-portable-core.md) | A portable core: any JavaScript engine, transcribable to another language | Accepted |
-| [0026](./0026-contributions-through-issues.md) | Contributions through issues only; the agent writes every change | Accepted |
+| [0026](./0026-contributions-through-issues.md) | Contributions through issues only; the agent writes every change | Accepted; its second barrier, `external-prs.yml`, superseded by 0094 |
 | [0027](./0027-requirements-and-traceability.md) | Acceptance criteria as requirements, tests traced to them, a test report per release | Accepted |
 | [0028](./0028-autonomous-runs.md) | Feature branches and autonomous runs: stories merge into their feature, the Product Owner merges the feature | Superseded by ADR-0072 |
 | [0029](./0029-one-radius-per-vertex.md) | One requested corner radius per vertex in the model | Accepted, superseded by 0033 for free shapes |
@@ -98,3 +98,4 @@ All ADRs were translated from French to English on 2026-10-08 (project rule: Eng
 | [0091](./0091-a-storys-log-rows-and-cards-in-its-done-commit.md) | A story's log rows and cards moved in its `done` commit | Accepted, implemented by EN-137; in decision 2, the `done` commit may only add to a log the rows it removes from the story file, and in decision 3 a story file read at `HEAD` and its lines left stop `story:finish`, whose recovery is the `done` commit made again (`git reset --soft HEAD~1`, `move-rows`, `git-sequences commit … --push-with-lease`), never an amend (AUD-025) |
 | [0092](./0092-a-barrel-re-exports-a-types-only-module-as-types.md) | A barrel re-exports a types-only module as types | Accepted (AUD-033), the barrels' existing form; supersedes ADR-0012's decision 1 for a types-only module |
 | [0093](./0093-the-editors-typescript-the-installed-typescript-7.md) | The editor's TypeScript, the installed TypeScript 7 | Accepted (AUD-035), the editor's existing setup since EN-121; supersedes a sentence of ADR-0075's Consequences |
+| [0094](./0094-outside-pull-requests-kept-out-by-the-setting-alone.md) | Outside pull requests kept out by the repository's setting alone | Accepted, implemented by EN-134; supersedes ADR-0026's second barrier, `external-prs.yml` |
