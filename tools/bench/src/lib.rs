@@ -53,23 +53,59 @@ pub enum Line {
 /// No `--runs`, a count that is not a whole number of at least 1, no `--`, no command after it, or
 /// an argument before `--` other than `--runs <count>`.
 pub fn parse(arguments: &[String]) -> Result<Request, String> {
-    let _ = arguments;
-    Err(String::new())
+    if arguments == ["--help"] {
+        return Ok(Request::Help);
+    }
+    let Some(separator) = arguments.iter().position(|argument| argument == "--") else {
+        return Err("no `--` before the command".to_owned());
+    };
+    let (options, command) = arguments.split_at(separator);
+    let command = command.get(1..).unwrap_or_default();
+    let [flag, count] = options else {
+        return Err(format!(
+            "`--runs <count>` alone before `--`, not {options:?}"
+        ));
+    };
+
+    if flag != "--runs" {
+        return Err(format!("`--runs <count>` before `--`, not `{flag}`"));
+    }
+    let runs = count
+        .parse::<usize>()
+        .ok()
+        .filter(|runs| *runs >= 1)
+        .ok_or_else(|| format!("the count `{count}` is not a whole number of at least 1"))?;
+
+    if command.is_empty() {
+        return Err("no command after `--`".to_owned());
+    }
+    Ok(Request::Bench {
+        runs,
+        command: command.to_vec(),
+    })
 }
 
 /// The median of durations: the middle one, or the mean of the two middle ones rounded down;
 /// `None` for none.
 #[must_use]
 pub fn median(values: &[u64]) -> Option<u64> {
-    let _ = values;
-    None
+    let mut sorted = values.to_vec();
+    let middle = values.len() / 2;
+
+    sorted.sort_unstable();
+    if values.len() % 2 == 1 {
+        return sorted.get(middle).copied();
+    }
+    // `low + (high - low) / 2` rather than `(low + high) / 2`, which overflows near `u64::MAX`.
+    let low = sorted.get(middle.checked_sub(1)?)?;
+    let high = sorted.get(middle)?;
+    Some(low + (high - low) / 2)
 }
 
 /// A duration in microseconds, written in whole milliseconds rounded to the nearest: `210 ms`.
 #[must_use]
 pub fn milliseconds(micros: u64) -> String {
-    let _ = micros;
-    String::new()
+    format!("{} ms", micros / 1000 + u64::from(micros % 1000 >= 500))
 }
 
 /// The three load averages of `/proc/loadavg` (`0.52 0.58 0.59 1/389 12345`) or of
@@ -77,8 +113,23 @@ pub fn milliseconds(micros: u64) -> String {
 /// a decimal point; `None` when the text holds fewer than three.
 #[must_use]
 pub fn load_average(text: &str) -> Option<String> {
-    let _ = text;
-    None
+    let numbers: Vec<String> = text
+        .split_whitespace()
+        .map(|word| word.replace(',', "."))
+        .filter(|word| {
+            word.chars()
+                .all(|character| character.is_ascii_digit() || character == '.')
+                && word.parse::<f64>().is_ok()
+        })
+        .take(3)
+        .collect();
+
+    (numbers.len() == 3).then(|| numbers.join(" "))
+}
+
+/// `run` or `runs`, after a count.
+const fn runs_word(count: usize) -> &'static str {
+    if count == 1 { "run" } else { "runs" }
 }
 
 /// Runs the bench: the load average before, `runs` runs, each printed as it ends, the median of the
@@ -86,10 +137,51 @@ pub fn load_average(text: &str) -> Option<String> {
 /// Returns the first failing status, 0 when every run passed.
 pub fn bench(
     runs: usize,
-    run_once: impl FnMut() -> Run,
-    load: impl FnMut() -> String,
-    print: impl FnMut(Line),
+    mut run_once: impl FnMut() -> Run,
+    mut load: impl FnMut() -> String,
+    mut print: impl FnMut(Line),
 ) -> u8 {
-    let _ = (runs, run_once, load, print);
-    0
+    let mut passing = Vec::new();
+    let mut first_failure = 0;
+
+    print(Line::Out(format!("load average before: {}", load())));
+    for index in 1..=runs {
+        let run = run_once();
+        let duration = milliseconds(run.micros);
+
+        if run.code == 0 {
+            passing.push(run.micros);
+            print(Line::Out(format!("run {index}: {duration}")));
+        } else if index == 1 {
+            print(Line::Error(format!(
+                "bench: the first run failed with exit {}: nothing measured",
+                run.code
+            )));
+            return run.code;
+        } else {
+            if first_failure == 0 {
+                first_failure = run.code;
+            }
+            print(Line::Out(format!(
+                "run {index}: {duration}, failed with exit {}",
+                run.code
+            )));
+        }
+    }
+    let over = if passing.len() == runs {
+        format!("over {runs} {}", runs_word(runs))
+    } else {
+        format!(
+            "over {} passing {} of {runs}",
+            passing.len(),
+            runs_word(passing.len())
+        )
+    };
+
+    print(Line::Out(format!(
+        "median: {} {over}",
+        milliseconds(median(&passing).unwrap_or_default())
+    )));
+    print(Line::Out(format!("load average after: {}", load())));
+    first_failure
 }
