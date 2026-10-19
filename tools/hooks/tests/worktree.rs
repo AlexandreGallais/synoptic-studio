@@ -547,6 +547,7 @@ fn f31_ac1_the_hook_reads_the_worktree_of_the_brief_s_cd_line() {
 }
 
 #[test]
+#[cfg(unix)]
 fn f31_ac1_the_hook_resolves_a_link_or_a_case_before_it_compares() {
     // The file system's path, not the written one (AUD-033): a symbolic link into the main
     // checkout, and the project's folder in another case where the file system ignores case.

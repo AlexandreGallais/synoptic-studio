@@ -26,7 +26,7 @@
 
 ## Consequences
 
-- [imports](../conventions/imports.md) and [lint](../conventions/lint.md) give a barrel's two forms and point here; ADR-0012's status in the [index](./README.md) names this decision.
+- [imports](../conventions/imports.md) and [lint](../conventions/lint.md) give a barrel's two forms and point here; ADR-0012's status in the [index](./) names this decision.
 - A module that gains its first value keeps its `export type *` line, which `barrels.test.ts` then fails (`.claude/rules/library.md`): the line is written `export *` by hand.
 
 ## References
