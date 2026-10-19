@@ -314,7 +314,7 @@
 | [AUD-034](./E17-F32-AUD-034-audit-f32.md) | F32 | Audit F32 | done |
 | [VAL-033](./E17-F32-VAL-033-validate-f32.md) | F32 | Validate F32 | done |
 | [EN-121](./E17-F33-EN-121-floors-and-versions-checked.md) | F33 | The floors, versions and paths checked | done |
-| [EN-140](./E17-F33-EN-140-anchors-rows-and-agent-pages-checked.md) | F33 | The anchors, the rows and the agent pages checked | ready |
+| [EN-140](./E17-F33-EN-140-anchors-rows-and-agent-pages-checked.md) | F33 | The anchors, the rows and the agent pages checked | done |
 | [EN-141](./E17-F33-EN-141-a-bench-binary.md) | F33 | A bench binary for the stories' measures | ready |
 | [AUD-035](./E17-F33-AUD-035-audit-f33.md) | F33 | Audit F33 | ready |
 | [VAL-034](./E17-F33-VAL-034-validate-f33.md) | F33 | Validate F33 | ready |

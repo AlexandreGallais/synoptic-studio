@@ -3,7 +3,7 @@ id: EN-140
 epic: E17
 feature: F33
 title: The anchors, the rows and the agent pages checked
-status: ready
+status: done
 points: 2
 ---
 
@@ -31,11 +31,3 @@ One task = one commit, referenced as `EN-140.T1` in the commit footer.
 - `.claude/rules/docs.md` could take the pitfall: "A heading a link targets keeps one anchor on GitHub and on the site: no `'`, `/`, `_`, `.` nor `—` in it, no leading digit; reword it and name a rule in the section's first line (`local/anchor-slugs`, EN-140)."
 - `.claude/rules/tooling.md` names `npm run deps:outdated`, a script kept as a lane of `check:all`: the test lets it through.
 - Rule-docs: none affected, no rule of `docs/domain/` changed (the guide `f16-colors.md` only links `#colors` of `interaction.md` now).
-
-### Journal
-
-- `#run` EN-140: `local/anchor-slugs` compares each linked heading's GitHub anchor with the site's (VitePress's `slugify`, read upstream and in its bundle) across pages; it found 14 links, 13 to headings holding `'`, `/` or a leading digit, reworded, and one to a heading gone (`#your-feedback`, now `#review`). `npm run backlog:index` is the index tool's call alone, its table already unpadded, so `-- --check` reaches the check. `move-rows` names the notes, and the done commit's `commit-msg` hook runs `move-rows --notes`.
-
-### Improvements
-
-| 2026-10-19 | EN-140 | The site's slug decomposes (`NFKD`) only the characters outside ASCII the headings held on 2026-10-19 (`—`, the curly quotes, `é`, `ⁱ`), Rust's standard library having no normalization; a linked heading holding another one is reported as not computed, to be written in ASCII or the table extended | tool |
