@@ -2,6 +2,7 @@ export * from "./color";
 export * from "./color-picker";
 export * from "./corner-radius";
 export * from "./document";
+export * from "./drawing";
 export * from "./font";
 export * from "./font-embedding";
 export * from "./font-import";
