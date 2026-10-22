@@ -27,5 +27,5 @@ The short spike that opens F37 (ADR-0086), longer than F35's and F36's: the Prod
 
 One task = one commit, referenced as `SP-027.Tn`.
 
-- [ ] T1 — The sources found, read and recorded, the research note, the table of shortcuts (2 h)
+- [x] T1 — The sources found, read and recorded, the research note, the table of shortcuts (2 h)
 - [ ] T2 — The code read, F37's stories written, the questions for the Product Owner listed (2 h)

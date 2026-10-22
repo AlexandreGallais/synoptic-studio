@@ -18,6 +18,24 @@ No pen tool and no freehand drawing (see `shapes.md` §3).
 
 **Keys editable** (Product Owner, 2026-10-22): every shortcut and modifier key (Shift, Ctrl, Delete, the arrows…) can be changed by the user, simply, in a standard place for settings; the defaults follow Figma's. For E20.
 
+**The default keys** (SP-027, 2026-10-22; Figma's where its pages were read, the agent's choice where they were not, to confirm at VAL-038; each editor's keys and the reasons in [note 0028](../research/notes/0028-f37-select-shapes.md)). Ctrl stands for Cmd on macOS; a key pressed while a field of the panel has the focus edits the field, never the drawing.
+
+| Action | Default | From | For |
+| --- | --- | --- | --- |
+| select a shape | a click with the Selector | Figma, Inkscape, Sketch, Penpot | F36 |
+| add or remove a shape | Shift + click; Ctrl + click too (Product Owner, 2026-10-11), where Figma's Ctrl + click picks inside groups | Figma, Inkscape, Sketch, Penpot (Shift) | F37 |
+| select by a rectangle | a drag with the Selector from an empty place of the drawing; Shift + drag adds; what it takes is open (SP-027) | Figma, Sketch, Inkscape | F37 |
+| select all | Ctrl + A | Figma, Inkscape, Penpot, macOS, Windows | F37 |
+| select none | Escape, or a click on the empty drawing | Figma, Inkscape | F37 |
+| delete the selection | Delete or Backspace | Inkscape, Penpot; Figma's not read | F37 |
+| nudge | an arrow key, by 1 | Figma (Inkscape: 2) | moving shapes |
+| nudge further | Shift + an arrow key, by 10 | Figma (Inkscape: 10 nudges, Penpot: "fast") | moving shapes |
+| undo | Ctrl + Z | Figma, Inkscape, Penpot, macOS, Windows | undo and redo |
+| redo | Ctrl + Shift + Z, and Ctrl + Y | Penpot, macOS; Ctrl + Y Inkscape's and Windows'; Figma's not read | undo and redo |
+| keep the proportions while resizing by a handle | Shift held | Figma (Inkscape: Ctrl) | E18 |
+| turn by steps of 15° by a handle | Shift held | Figma (Inkscape: Ctrl) | E18 |
+| snapping off for a while | Ctrl held while dragging | Figma (Inkscape: Shift) | E19 |
+
 **Adding a shape** (Product Owner, 2026-10-22, F35), as Figma does:
 
 - a tool chosen, a click on the drawing adds a shape 100 × 100 centred on the point clicked, on integers; a text fits its content instead;
@@ -60,7 +78,7 @@ No pen tool and no freehand drawing (see `shapes.md` §3).
   - **None selected** (agent's choice, US-067): every shape stays drawn, in the order drawn; the panel hides its fields, its title says no shape is selected and its status how to select one or add one; a tool then places a shape as usual, on top of all.
 - **A picked shape in the panel** (Product Owner, 2026-10-22, F36): a rectangle shows as a Rectangle with its radius, though stored as a free shape (ADR-0032); a text loads its whole style — family, weight, italic, strokes and every option — the font session taking its family, since typing next is likely meant in that style.
   - **How** (agent's choice, US-067): each shape is kept with the kind the panel showed it as, beside the model, so that a rectangle comes back as a Rectangle and a polygon converted as a free shape; a picked rectangle shows its x, y, width, height, angle and radius, a polygon also its corners, stretched option and anchor, a round shape its box and angle; a picked text fills every field of the Text tool, its family chosen in the font list, which the font session then measures with, and X and Y show its turned top-left corner (US-054), so that it is drawn again exactly where it was, a turned text's fractions kept. A text in Roboto 700 italic, struck through, picked while the current family is Inter, shows Roboto, 700, italic, the strike-through and its content, and the next text typed is in Roboto.
-- Selection rectangle (marquee).
+- Selection rectangle (marquee): started by a drag from an empty place of the drawing with the Selector, as Figma and Sketch do (§1, The default keys); whether it takes the shapes it touches or those it encloses, and by their painted area or their box, is open (SP-027, F37).
 - Moving and resizing: **integer** values.
 - **A move lands its anchor on integers** (Product Owner, 2026-10-22): while dragged the shape follows the pointer freely; at the release its anchor is placed on integers, the top-left of its box by default, the anchor chosen once anchors exist; the shape itself is never changed by a move: a side 10.5 long stays 10.5, its points keep their fractions until edited by hand (ADR-0033, ADR-0035). An option of free positions, off the integers, is an open question (Q43).
 - Properties panel: x, y, width, height typed on the keyboard.
