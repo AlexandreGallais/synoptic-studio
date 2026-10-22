@@ -60,7 +60,7 @@
     "@vitest/coverage-v8": "5.0.5",
     "fast-check": "4.10.2",
     "happy-dom": "21.0.1",
-    "mermaid": "12.1.0",
+    "mermaid": "12.2.0",
     "oxfmt": "0.72.0",
     "oxlint": "1.87.0",
     "oxlint-tsgolint": "7.0.2004",
