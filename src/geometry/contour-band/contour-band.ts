@@ -7,7 +7,7 @@ import { segmentBand } from "./segment-band";
 import type { ContourPiece, Segment } from "../contour";
 
 /**
- * The band about a contour, a fill standing for a stroke with round joins (`REF-SVG2-STROKE-SHAPE`):
+ * The band about a contour, a fill standing for a stroke with round joins (`REF-SVG2-PAINT`):
  * for each piece, a disc at its start (`circleArcs`), then the band about each chord between its
  * points (`pieceSamples`, `segmentBand`); each a closed subpath turning in the positive direction,
  * so that the nonzero rule fills them as one. A curve is followed by its chords, as the source
@@ -18,7 +18,7 @@ import type { ContourPiece, Segment } from "../contour";
  * @param halfWidth - the half width of the band, in user units, > 0
  * @param step - the longest chord wanted along a curve, in user units, > 0
  * @returns its closed subpaths, the disc first for each piece; none for no piece
- * @see REF-SVG2-STROKE-SHAPE
+ * @see REF-SVG2-PAINT
  */
 export function contourBand(
   pieces: readonly ContourPiece[],

@@ -18,7 +18,7 @@ const QUARTERS_PER_TURN = 4;
  * @param center - its center C
  * @param radius - its radius r, > 0
  * @returns the four arcs, each starting where the previous one ends, the last ending at the first's start
- * @see REF-SVG2-STROKE-SHAPE
+ * @see REF-SVG2-PAINT
  */
 export function circleArcs(center: Point, radius: number): readonly Arc[] {
   const points = Array.from({ length: QUARTERS_PER_TURN }, (unused, count) =>

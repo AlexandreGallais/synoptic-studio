@@ -15,7 +15,7 @@ import type { Segment } from "../contour";
  * @param segment - its start A and its end B
  * @param halfWidth - the half width h of the band, in user units, > 0
  * @returns the rectangle's four sides, from A − n; none for a segment of length 0
- * @see REF-SVG2-STROKE-SHAPE
+ * @see REF-SVG2-PAINT
  */
 export function segmentBand(segment: Segment, halfWidth: number): readonly Segment[] {
   const direction = subtract(segment.end, segment.start);

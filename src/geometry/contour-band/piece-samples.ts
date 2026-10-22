@@ -22,7 +22,7 @@ import type { Arc, ContourPiece, Cubic } from "../contour";
  * @param length - the length to cut, ≥ 0
  * @param step - the longest step, > 0
  * @returns the number of steps
- * @see REF-SVG2-STROKE-SHAPE
+ * @see REF-SVG2-PAINT
  */
 function stepCount(length: number, step: number): number {
   return Math.max(ceiling(length / step), 1);
@@ -39,7 +39,7 @@ function stepCount(length: number, step: number): number {
  * @param arc - its center, radius, start and end
  * @param step - the longest step along it
  * @returns the points between its ends, in its direction
- * @see REF-SVG2-STROKE-SHAPE
+ * @see REF-SVG2-PAINT
  */
 function arcInnerSamples(arc: Arc, step: number): readonly Point[] {
   const fromCenter = subtract(arc.start, arc.center);
@@ -61,7 +61,7 @@ function arcInnerSamples(arc: Arc, step: number): readonly Point[] {
  * @param cubic - its start, control points and end
  * @param step - the longest step wanted along it
  * @returns the points between its ends
- * @see REF-SVG2-STROKE-SHAPE
+ * @see REF-SVG2-PAINT
  */
 function cubicInnerSamples(cubic: Cubic, step: number): readonly Point[] {
   const length =
@@ -85,7 +85,7 @@ function cubicInnerSamples(cubic: Cubic, step: number): readonly Point[] {
  * @param piece - a segment, an arc or a cubic of a contour
  * @param step - the longest step wanted along a curve, in user units, > 0
  * @returns its start, the points between, then its end, exactly; at least two points
- * @see REF-SVG2-STROKE-SHAPE
+ * @see REF-SVG2-PAINT
  */
 export function pieceSamples(piece: ContourPiece, step: number): readonly Point[] {
   if (piece.kind === "segment") {
