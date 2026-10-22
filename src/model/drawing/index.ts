@@ -8,6 +8,7 @@ export * from "./is-pick-area-at";
 export type * from "./pick-area";
 export * from "./pick-tolerance";
 export * from "./placed-shape-size";
+export * from "./screen-to-user";
 export * from "./shape-at-point";
 export * from "./shape-pick-area";
 export * from "./split-drawing";

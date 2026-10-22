@@ -11,6 +11,7 @@ import {
   pressAndClick,
   pressPointer,
   readDisplay,
+  readShapeModel,
   readText,
   selectPageElement,
   setElementBox,
@@ -58,16 +59,6 @@ function pick(point: Point): void {
 }
 
 /**
- * Reads the model of the shape the panel edits.
- *
- * @returns the shape
- */
-function readModel(): Shape {
-  // oxlint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-type-assertion -- the model shown, a shape of the drawing
-  return JSON.parse(readText("#model")) as Shape;
-}
-
-/**
  * Reads the path data of the shapes drawn, the editor's frames, boxes and handles left out.
  *
  * @returns each shape's `d`, the first drawn first
@@ -112,15 +103,15 @@ function drawThreeShapes(): {
   readonly c: Shape;
   readonly paths: readonly string[];
 } {
-  const a = { model: readModel(), path: readText("#path-data") };
+  const a = { model: readShapeModel(), path: readText("#path-data") };
 
   placeShape("polygon", { x: 300, y: 200 });
 
-  const b = { model: readModel(), path: readText("#path-data") };
+  const b = { model: readShapeModel(), path: readText("#path-data") };
 
   placeShape("round", { x: 500, y: 200 });
 
-  const c = { model: readModel(), path: readText("#path-data") };
+  const c = { model: readShapeModel(), path: readText("#path-data") };
 
   return { a: a.model, b: b.model, c: c.model, paths: [a.path, b.path, c.path] };
 }
@@ -141,7 +132,7 @@ describe("a click with the selector selects the shape under it (US-067)", () => 
     // (60, 40) is in A alone.
     pick({ x: 60, y: 40 });
 
-    expect(readModel()).toEqual(a);
+    expect(readShapeModel()).toEqual(a);
     expect(readText("#shape-title")).toBe("Rectangle");
     expect(readText("#path-data")).toBe(paths[0]);
     expect(readSelectionOutline()).toBe(outlineOf(a));
@@ -159,13 +150,13 @@ describe("a click with the selector selects the shape under it (US-067)", () => 
     // (300, 200), the middle of B's box, is in the hexagon.
     pick({ x: 300, y: 200 });
 
-    expect(readModel()).toEqual(b);
+    expect(readShapeModel()).toEqual(b);
     expect(readText("#shape-title")).toBe("Polygon");
     expect(readShapePaths()).toEqual(paths);
 
     pick({ x: 500, y: 200 });
 
-    expect(readModel()).toEqual(c);
+    expect(readShapeModel()).toEqual(c);
     expect(readText("#shape-title")).toBe("Round shape");
     expect(readShapePaths()).toEqual(paths);
   });
@@ -230,6 +221,6 @@ describe("a click with the selector selects the shape under it (US-067)", () => 
     pressPointer("#canvas", "pointerup", { ...toWindow({ x: 100, y: 60 }), buttons: 0 });
     clickAt("#canvas", toWindow({ x: 100, y: 60 }));
 
-    expect(readModel()).toMatchObject({ height: 90, width: 100, x: 100, y: 60 });
+    expect(readShapeModel()).toMatchObject({ height: 90, width: 100, x: 100, y: 60 });
   });
 });

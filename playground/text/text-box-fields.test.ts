@@ -8,6 +8,7 @@ import {
   clickElement,
   openServedPage,
   readDisplay,
+  readModel,
   readText,
   selectPageElement,
   typeValue,
@@ -21,16 +22,6 @@ const BOX_ONLY = [
   "text-ellipsis",
   "text-vertical-alignment",
 ];
-
-/**
- * Reads the text model the pipeline column shows.
- *
- * @returns the JSON written in `#model`, parsed
- */
-function readModel(): Record<string, unknown> {
-  // oxlint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-type-assertion -- written by JSON.stringify of a Text
-  return JSON.parse(readText("#model")) as Record<string, unknown>;
-}
 
 describe("Text tool: the box's fields (US-033)", () => {
   beforeEach(() => {

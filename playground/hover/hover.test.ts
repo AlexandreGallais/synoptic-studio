@@ -10,7 +10,7 @@ import {
   clickAt,
   clickElement,
   openServedPage,
-  readText,
+  readShapeModel,
   selectPageElement,
   setElementBox,
   typeValue,
@@ -73,16 +73,6 @@ function placeShape(tool: string, point: Point): void {
 }
 
 /**
- * Reads the model of the shape the panel edits.
- *
- * @returns the shape
- */
-function readModel(): Shape {
-  // oxlint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-type-assertion -- the model shown, a shape of the drawing
-  return JSON.parse(readText("#model")) as Shape;
-}
-
-/**
  * Reads the outline the layer above the drawing holds.
  *
  * @returns its path data; undefined for none
@@ -111,16 +101,16 @@ describe("the shape under the pointer outlined in the layer above (US-065)", () 
   });
 
   it("[F36.AC2] outlines the shape under the pointer, and nothing once it leaves", () => {
-    const first = readModel();
+    const first = readShapeModel();
 
     // Centred on the points clicked: (250, 150) and (450, 150), each 100 × 100.
     placeShape("rectangle", { x: 300, y: 200 });
 
-    const second = readModel();
+    const second = readShapeModel();
 
     placeShape("round", { x: 500, y: 200 });
 
-    const third = readModel();
+    const third = readShapeModel();
 
     hover({ x: 60, y: 40 });
     expect(readOutline()).toBe(outlineOf(first));
@@ -141,12 +131,12 @@ describe("the shape under the pointer outlined in the layer above (US-065)", () 
   });
 
   it("[F36.AC2] outlines the top one of two shapes overlapping", () => {
-    const first = readModel();
+    const first = readShapeModel();
 
     // A rectangle 100 × 100 at (50, 10), above the first, 120 × 80 at (0, 0).
     placeShape("rectangle", { x: 100, y: 60 });
 
-    const second = readModel();
+    const second = readShapeModel();
 
     hover({ x: 75, y: 40 });
     expect(readOutline()).toBe(outlineOf(second));
@@ -156,7 +146,7 @@ describe("the shape under the pointer outlined in the layer above (US-065)", () 
   });
 
   it("[F36.AC2] outlines nothing in the cut corner of a rounded rectangle", () => {
-    const first = readModel();
+    const first = readShapeModel();
 
     // The corner's arc is centred on (10, 10), radius 10: (1, 1) is 12.7 from it, outside;
     // (4, 4) is 8.5 from it, inside.
@@ -201,8 +191,8 @@ describe("the shape under the pointer outlined in the layer above (US-065)", () 
     hover({ x: 60, y: 40 });
     typeValue("width", "200");
 
-    expect(readModel().width).toBe(200);
-    expect(readOutline()).toBe(outlineOf(readModel()));
+    expect(readShapeModel().width).toBe(200);
+    expect(readOutline()).toBe(outlineOf(readShapeModel()));
   });
 
   it("[F36.AC2] outlines a text anywhere in its block, between its letters too", () => {
@@ -256,7 +246,7 @@ describe("the shape under the pointer outlined in the layer above (US-065)", () 
     firePointer("pointerup", { x: 300, y: 180 });
     firePointer("click", { x: 300, y: 180 });
 
-    const flat = readModel();
+    const flat = readShapeModel();
 
     expect(flat.width).toBe(0);
 

@@ -1,4 +1,4 @@
-import { PICK_TOLERANCE, shapeAtPoint, splitDrawing } from "../../src";
+import { PICK_TOLERANCE, screenToUser, shapeAtPoint, splitDrawing } from "../../src";
 import { readPickAreas } from "../hover";
 import {
   DRAWING_KEYS,
@@ -27,7 +27,11 @@ import type { Point } from "../../src";
  * @see docs/domain/interaction.md#_2-selector
  */
 export function selectShapeAt(document: Document, point: Point): void {
-  const index = shapeAtPoint(readPickAreas(document), point, PICK_TOLERANCE / VIEW_SCALE);
+  const index = shapeAtPoint(
+    readPickAreas(document),
+    point,
+    screenToUser(PICK_TOLERANCE, VIEW_SCALE),
+  );
   const { above, below, edited } = splitDrawing(readKeptDrawing(document), index);
   const [picked] = edited;
 

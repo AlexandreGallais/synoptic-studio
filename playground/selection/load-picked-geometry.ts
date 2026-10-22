@@ -1,10 +1,4 @@
-import {
-  NO_VERTEX_SELECTION,
-  commonRadius,
-  freeShapeRadii,
-  isFreeShape,
-  isRegularPolygon,
-} from "../../src";
+import { NO_VERTEX_SELECTION, freeShapeRadii, isFreeShape, isRegularPolygon } from "../../src";
 import { writeAnchorValue, writeStretchedValue } from "../guided-test";
 import { selectElement, writeEditedKind, writeInputValue, writeSelection } from "../page";
 import { writeStoredFreeShape } from "../shape";
@@ -12,8 +6,9 @@ import { writeStoredFreeShape } from "../shape";
 import type { RegularPolygon, Shape } from "../../src";
 
 /**
- * Writes the radius of each vertex of a shape picked on the radius field, and their common
- * radius in it when they share one; a field of different radii is shown mixed at the redraw.
+ * Writes the radius of each vertex of a shape picked on the radius field (`data-radii`): the
+ * redraw that follows a pick shows in the field their common radius, or Mixed when they differ
+ * (`writeRadiusField`).
  *
  * @kind procedure
  * @param document - page document
@@ -21,13 +16,7 @@ import type { RegularPolygon, Shape } from "../../src";
  * @see docs/domain/interaction.md#_2-selector
  */
 function writePickedRadii(document: Document, radii: readonly number[]): void {
-  const common = commonRadius(radii);
-
   selectElement(document, "radius").dataset["radii"] = radii.join(" ");
-
-  if (common !== undefined) {
-    writeInputValue(document, "radius", common);
-  }
 }
 
 /**

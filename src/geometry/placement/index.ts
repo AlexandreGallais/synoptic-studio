@@ -1,6 +1,7 @@
 export * from "./arc-axis-points";
 export * from "./bounding-box";
 export * from "./contour-bounding-box";
+export * from "./cubic-axis-turns";
 export * from "./cubic-bernstein";
 export * from "./cubic-degree";
 export * from "./cubic-derivative-weights";

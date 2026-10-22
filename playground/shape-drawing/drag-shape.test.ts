@@ -5,7 +5,9 @@ import {
   chooseOption,
   clickElement,
   openServedPage,
+  readModel,
   readPressedState,
+  readShapeModel,
   readText,
   readValue,
   selectPageElement,
@@ -75,25 +77,15 @@ function dragDrawing(
 }
 
 /**
- * Reads the model of the shape the panel edits.
- *
- * @returns its fields, by name
- */
-function readModel(): Record<string, unknown> {
-  // oxlint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-type-assertion -- the model shown, a shape's fields
-  return JSON.parse(readText("#model")) as Record<string, unknown>;
-}
-
-/**
  * Reads the box of the shape the panel edits, from its model: the top-left of its box before it
  * turns (ADR-0035), its width and its height.
  *
  * @returns x, y, width and height, in that order
  */
 function readBox(): readonly unknown[] {
-  const model = readModel();
+  const model = readShapeModel();
 
-  return [model["x"], model["y"], model["width"], model["height"]];
+  return [model.x, model.y, model.width, model.height];
 }
 
 /**
@@ -206,17 +198,16 @@ describe("a drag with a tool draws the shape's box (US-064)", () => {
 
     dragDrawing("text", { from: { x: 10, y: 10 }, isShift: false, to: { x: 210, y: 70 } });
 
-    const model = readModel();
+    expect(readModel()).toMatchObject({
+      boxHeight: 60,
+      boxWidth: 200,
+      content: "Text",
+      isInBox: true,
+      x: 10,
+      y: 10,
+    });
 
-    expect([model["x"], model["y"], model["boxWidth"], model["boxHeight"]]).toEqual([
-      10, 10, 200, 60,
-    ]);
-
-    expect([model["isInBox"], model["content"], readValue("text-fit")]).toEqual([
-      true,
-      "Text",
-      "box",
-    ]);
+    expect(readValue("text-fit")).toBe("box");
 
     expect(select.mock.contexts).toEqual([selectPageElement("#text-content")]);
     expect(readPressedState("tool-selector")).toBe("true");

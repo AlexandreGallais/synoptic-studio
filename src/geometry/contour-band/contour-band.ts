@@ -15,7 +15,9 @@ import type { ContourPiece, Segment } from "../contour";
  *
  * @kind geometry
  * @param pieces - the contour, each piece starting where the previous one ends
- * @param halfWidth - the half width of the band, in user units, > 0
+ * @param halfWidth - the half width of the band, in user units, > 0: half a stroke's width, the
+ * radius of its round join, a sector "of diameter stroke-width" (`REF-SVG2-PAINT`, whose
+ * sentence on a dash says stroke-width where half is meant)
  * @param step - the longest chord wanted along a curve, in user units, > 0
  * @returns its closed subpaths, the disc first for each piece; none for no piece
  * @see REF-SVG2-PAINT
