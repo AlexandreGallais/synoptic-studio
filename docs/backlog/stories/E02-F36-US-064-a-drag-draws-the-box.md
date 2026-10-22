@@ -3,7 +3,7 @@ id: US-064
 epic: E02
 feature: F36
 title: A drag with a tool draws the shape's box
-status: ready
+status: done
 points: 3
 ---
 
