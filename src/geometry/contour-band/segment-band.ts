@@ -1,3 +1,6 @@
+import { add, isZeroVector, opposite, quarterTurn, scale, subtract, unit } from "../../math";
+import { polygonSegments } from "../painted-area";
+
 import type { Segment } from "../contour";
 
 /**
@@ -15,5 +18,19 @@ import type { Segment } from "../contour";
  * @see REF-SVG2-STROKE-SHAPE
  */
 export function segmentBand(segment: Segment, halfWidth: number): readonly Segment[] {
-  return [segment].slice(0, Math.min(halfWidth, 0));
+  const direction = subtract(segment.end, segment.start);
+
+  if (isZeroVector(direction)) {
+    return [];
+  }
+
+  const across = scale(unit(quarterTurn(direction)), halfWidth);
+  const back = opposite(across);
+
+  return polygonSegments([
+    add(segment.start, back),
+    add(segment.end, back),
+    add(segment.end, across),
+    add(segment.start, across),
+  ]);
 }

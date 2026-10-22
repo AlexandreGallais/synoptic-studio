@@ -1,4 +1,24 @@
-import type { PickArea } from "../../src";
+import { isDrawnText, shapePickArea, textPickArea } from "../../src";
+import { DRAWING_KEYS, KEPT_TEXT_METRICS, readStoredDrawing } from "../kept-shapes";
+import { readTextMeasure, readTextMetrics } from "../text-measure";
+
+import type { PickArea, Text } from "../../src";
+
+/**
+ * Reads what a text of the drawing offers the pointer: its frame (`textPickArea`) from its block
+ * measured with its font's metrics, or with those it was last drawn with (`KEPT_TEXT_METRICS`).
+ *
+ * @kind procedure
+ * @param document - page document
+ * @param text - a text of the drawing
+ * @returns its area; none for a text never measured, which is not drawn
+ * @see docs/domain/interaction.md#_2-selector
+ */
+function readTextPickArea(document: Document, text: Text): readonly PickArea[] {
+  const metrics = readTextMetrics(document, text) ?? KEPT_TEXT_METRICS.get(JSON.stringify(text));
+
+  return metrics === undefined ? [] : [textPickArea(text, readTextMeasure(metrics, text).block)];
+}
 
 /**
  * Reads what each shape of the drawing offers the pointer, in the order drawn (`shapePickArea`,
@@ -12,5 +32,10 @@ import type { PickArea } from "../../src";
  * @see docs/domain/interaction.md#_2-selector
  */
 export function readPickAreas(document: Document): readonly PickArea[] {
-  return [document].map(() => ({ corners: [], isFlat: false, pieces: [] })).slice(0, 0);
+  return [
+    ...readStoredDrawing(document, DRAWING_KEYS.below),
+    ...readStoredDrawing(document, DRAWING_KEYS.edited),
+  ].flatMap((shape) =>
+    isDrawnText(shape) ? readTextPickArea(document, shape) : [shapePickArea(shape)],
+  );
 }

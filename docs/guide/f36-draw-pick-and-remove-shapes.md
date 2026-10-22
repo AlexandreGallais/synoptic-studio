@@ -2,7 +2,7 @@
 
 ## What you can do now
 
-Choose the Rectangle, Polygon, Round shape or Text tool, press the drawing and drag: the new shape follows the pointer, from the point pressed to the pointer, in any direction, and stays where you release it, at the size dragged. A text dragged sits in a box of that size, Fit set to Box. Hold Shift and the box stays square, so that a round shape is a circle; pressing or releasing Shift during the drag changes the shape at once. A text is never made square. Released where you pressed, the drag is a click: the shape is placed 100 × 100 centred on the point, as in F35. The rest of this page is written at F36's validation (VAL-037).
+Choose the Rectangle, Polygon, Round shape or Text tool, press the drawing and drag: the new shape follows the pointer, from the point pressed to the pointer, in any direction, and stays where you release it, at the size dragged. A text dragged sits in a box of that size, Fit set to Box. Hold Shift and the box stays square, so that a round shape is a circle; pressing or releasing Shift during the drag changes the shape at once. A text is never made square. Released where you pressed, the drag is a click: the shape is placed 100 × 100 centred on the point, as in F35. With the Selector, pass the pointer over the drawing: the shape under it is outlined in blue, the top one where shapes overlap, and the outline goes when the pointer leaves it; the outline is never in the SVG exported. The rest of this page is written at F36's validation (VAL-037).
 
 ## The ideas behind it
 
@@ -13,6 +13,8 @@ Choose the Rectangle, Polygon, Round shape or Text tool, press the drawing and d
 **Only what is painted is under the pointer.** The shape under the pointer is the last one drawn whose painted area holds it, computed from the shapes themselves, never read back from the page: the cut corner of a rounded rectangle, or the inside of a circle's box outside the circle, picks nothing. A text counts anywhere in its block, or in its box when it sits in one, so that the room between its words and lines picks it too; the agent chose this, its letters' outlines and its backgrounds being the other ways. To confirm at VAL-037.
 
 **A shape of width or height 0 is reached within 4 pixels.** It paints nothing, so the agent chose to find it when the pointer is within 4 pixels of the screen of its outline, whatever the zoom. Never picking it, or widening it to a side of 1, were the other ways. To confirm at VAL-037.
+
+**The outline follows the shape's own edge.** The shape under the pointer is outlined by a line 2 pixels wide along its edge as drawn, rounded corners and curves included, a text along its block; the agent chose this, outlining its box or tinting it being the other ways. It shows only with the Selector, since with a tool a click places a shape rather than picks one. It is drawn in a layer above the drawing which the pointer passes through, so the drawing and its export never hold it. To confirm at VAL-037.
 
 | Term | In plain words |
 | --- | --- |

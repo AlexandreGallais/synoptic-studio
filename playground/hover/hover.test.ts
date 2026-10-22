@@ -2,8 +2,10 @@
 import { beforeEach, describe, expect, it } from "vitest";
 
 import { contourBand, contourPiecesToPathData, shapePickArea } from "../../src";
+import { HELLO_TEXT } from "../../tests";
 import { readExportedSvg } from "../document";
-import { readDrawnTexts } from "../kept-shapes";
+import { readFontSession, writeFontSession } from "../fonts";
+import { DRAWING_KEYS, readDrawnTexts, writeStoredDrawing } from "../kept-shapes";
 import {
   clickAt,
   clickElement,
@@ -211,6 +213,34 @@ describe("the shape under the pointer outlined in the layer above (US-065)", () 
     expect(readOutline()).toMatch(/^M/u);
 
     hover({ x: 400, y: 450 });
+    expect(readOutline()).toBeUndefined();
+  });
+
+  it("[F36.AC2] outlines a kept text whose font's metrics are no longer read, as it is drawn", () => {
+    placeShape("text", { x: 400, y: 300 });
+    placeShape("rectangle", { x: 600, y: 300 });
+    hover({ x: 400, y: 300 });
+
+    const outline = readOutline();
+
+    // No family measures the kept text any more (US-061, US-056): it is drawn with the metrics
+    // it was last drawn with, and outlined with them.
+    writeFontSession(document, { ...readFontSession(document), kept: [] });
+    placeShape("round", { x: 600, y: 500 });
+    hover({ x: 400, y: 300 });
+
+    expect(outline).toMatch(/^M/u);
+    expect(readOutline()).toBe(outline);
+  });
+
+  it("[F36.AC2] outlines no text that no metrics ever measured, as it is not drawn", () => {
+    // A text kept by hand at (0, 0), never drawn: no family measures it, and none did before.
+    writeFontSession(document, { ...readFontSession(document), kept: [] });
+    writeStoredDrawing(document, DRAWING_KEYS.below, [{ ...HELLO_TEXT, content: "Never drawn" }]);
+    placeShape("round", { x: 500, y: 300 });
+    // In its block were it measured, and in the cut corner of the first rectangle, radius 10.
+    hover({ x: 1, y: 1 });
+
     expect(readOutline()).toBeUndefined();
   });
 

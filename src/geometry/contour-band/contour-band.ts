@@ -1,4 +1,10 @@
-import type { ContourPiece } from "../contour";
+import { cyclicItem } from "../contour";
+
+import { circleArcs } from "./circle-arcs";
+import { pieceSamples } from "./piece-samples";
+import { segmentBand } from "./segment-band";
+
+import type { ContourPiece, Segment } from "../contour";
 
 /**
  * The band about a contour, a fill standing for a stroke with round joins (`REF-SVG2-STROKE-SHAPE`):
@@ -19,5 +25,17 @@ export function contourBand(
   halfWidth: number,
   step: number,
 ): readonly (readonly ContourPiece[])[] {
-  return [pieces].slice(0, Math.min(halfWidth, step, 0));
+  return pieces.flatMap((piece) => {
+    const samples = pieceSamples(piece, step);
+    const chords: readonly Segment[] = samples.slice(0, -1).map((start, index) => ({
+      end: cyclicItem(samples, index + 1, start),
+      kind: "segment",
+      start,
+    }));
+    const bands = chords
+      .map((chord) => segmentBand(chord, halfWidth))
+      .filter((band) => band.length > 0);
+
+    return [circleArcs(piece.start, halfWidth), ...bands];
+  });
 }
