@@ -26,7 +26,7 @@ function writeNewTextFields(document: Document): void {
 /**
  * Places a text by a click (F35): a new text (`writeNewTextFields`) whose measured block is
  * centred on the point on integers (`centredPosition`), a text whose font has no metrics yet
- * sitting on the point; its fields shown and its content selected in the Content field, so that
+ * (US-056) taken as 0 × 0, its top-left on the point; its fields shown and its content selected in the Content field, so that
  * typing replaces it.
  *
  * @kind procedure

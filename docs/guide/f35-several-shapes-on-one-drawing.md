@@ -4,7 +4,7 @@
 
 Choose the Rectangle, Polygon, Round shape or Text tool, click the drawing, and a shape is added where you clicked, above the shapes already there. The export holds every shape, in the order drawn.
 
-Choosing a tool changes nothing yet: its button stays pressed until you click the drawing. The new shape is then the one the panel edits, and the Selector button is pressed again, as in Figma; a click with the Selector places nothing. A shape the page refuses, a value out of its range, is not kept when you place the next one. Reset, and each step of the guided test, start the drawing again as the page opens. The rest of this page is written at F35's validation (VAL-036).
+Choosing a tool changes nothing yet: its button stays pressed until you click the drawing. The new shape is then the one the panel edits, and the Selector button is pressed again, as in Figma; a click with the Selector places nothing. A shape the page refuses, a value out of its range, is not kept when you place the next one. Reset, and each step of the guided test, start the drawing again as the page opens, the next text Inter 32 Regular again. A text placed before any font can measure it has its top-left corner on the click; a text kept in the drawing stays as it was drawn, in the export too, even if its font is later dropped from the list. The rest of this page is written at F35's validation (VAL-036).
 
 ## The ideas behind it
 

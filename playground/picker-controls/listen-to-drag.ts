@@ -1,6 +1,6 @@
-import { readPointerOffset } from "./read-pointer-offset";
+import { readPointerOffset } from "../page";
 
-import type { PointerOffset } from "./read-pointer-offset";
+import type { PointerOffset } from "../page";
 
 /**
  * Listens to a click or a drag on a slider or the plane: the element takes the focus and the

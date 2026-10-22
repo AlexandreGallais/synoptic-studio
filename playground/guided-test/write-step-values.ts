@@ -1,4 +1,5 @@
 import { NO_VERTEX_SELECTION } from "../../src";
+import { OPENING_TEXT } from "../guided-steps";
 import { DRAWING_KEYS, writeStoredDrawing } from "../kept-shapes";
 import { clearKindSettings } from "../kind-settings";
 import { selectElement, writeInputValue, writeSelection } from "../page";
@@ -49,8 +50,8 @@ function writeKeptShapeCleared(document: Document): void {
 }
 
 /**
- * Types the values of a step of the guided test into the inputs, without firing any event; a
- * step of a text types the Text tool's fields too.
+ * Types the values of a step of the guided test into the inputs, without firing any event, and
+ * the Text tool's fields: a step of a text its own, any other step the page's.
  *
  * @kind procedure
  * @param document - page document
@@ -69,12 +70,11 @@ export function writeStepValues(document: Document, step: GuidedStep): void {
   writeInputValue(document, "height", step.values.height);
   writeInputValue(document, "radius", step.values.radius);
   // A step of F01 to F09 draws a straight shape at (0, 0) (F04).
-  writeInputValue(document, "angle", 0);
   delete selectElement(document, "shape").dataset["x"];
   delete selectElement(document, "shape").dataset["y"];
 
-  // A step of F05 chooses the Text tool and types its fields (VAL-014).
-  if (step.values.text !== undefined) {
-    writeTextStepValues(document, step.values.text);
-  }
+  // A step of F05 types the Text tool's fields (VAL-014); any other step, and Reset, the page's,
+  // so that the next text placed is the page's and not the last one's (F35, SP-026). Either
+  // writes the X, Y and angle fields: 0 for a step of F01 to F09, as the opening text.
+  writeTextStepValues(document, step.values.text ?? OPENING_TEXT);
 }

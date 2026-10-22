@@ -101,9 +101,10 @@ function writeTextStyleValues(document: Document, text: GuidedText): void {
 
 /**
  * Types a step's text into the Text tool's fields, its font and weight chosen in their lists
- * (US-036), its box's and its background's among them (VAL-015), its strokes' colors (US-041), the drawing's options off (US-036), and its X, Y and angle into the placement fields, without firing any event; the
- * placements each tool kept go, and the text last drawn (US-038), so that the step starts from
- * its own values (VAL-014).
+ * (US-036), its box's and its background's among them (VAL-015), its strokes' colors (US-041),
+ * the drawing's options off (US-036), and its X, Y and angle into the placement fields, without
+ * firing any event; the text last drawn goes (US-038), so that the step starts from its own
+ * values (VAL-014).
  *
  * @kind procedure
  * @param document - page document
