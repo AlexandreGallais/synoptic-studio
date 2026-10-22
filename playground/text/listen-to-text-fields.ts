@@ -1,5 +1,6 @@
 import { listenToExport } from "../document";
 import { listenToFonts } from "../installed-fonts";
+import { readDrawnTexts } from "../kept-shapes";
 import { selectElement } from "../page";
 import { resetFittedBox, writeFittedBox } from "../text-box";
 import { listenToTextPosition } from "../text-placement";
@@ -74,7 +75,7 @@ export function listenToTextFields(document: Document, update: () => void): void
 
   listenToBoxChoice(document);
   listenToFonts(document, update);
-  listenToExport(document, () => [readTextModel(document)]);
+  listenToExport(document, () => readDrawnTexts(document));
   options.addEventListener("input", update);
   options.addEventListener("change", update);
 

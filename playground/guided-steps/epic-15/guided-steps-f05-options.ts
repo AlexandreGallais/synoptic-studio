@@ -128,9 +128,9 @@ export const GUIDED_STEPS_F05_OPTIONS: readonly GuidedStep[] = [
     values: createTextStepValues({}),
   },
   {
-    explanation: "Rectangle; Angle 30; then Text.",
-    look: "The rectangle has its own X, Y, angle (not 100, 50, 90); the text 100, 50, 90 again.",
-    title: "F05 · Each tool keeps its placement",
+    explanation: "The Rectangle tool, then a click on the drawing.",
+    look: "The text stays as it was, at 100, 50, turned by 90; a rectangle 100 × 100 added on top, straight, centred on the click; the tool back to the selector.",
+    title: "F05 · A new shape leaves the text as it was (US-063)",
     values: createTextStepValues({ angle: 90, x: 100, y: 50 }),
   },
 ];

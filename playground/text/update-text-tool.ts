@@ -1,12 +1,12 @@
 import { isValidText, isValidTextBox } from "../../src";
 import { writeColorSwatches, writeFollowedColors } from "../color-fields";
 import { DEFAULT_FONT_MISSING, writeFontAvailability } from "../default-font";
-import { writeLeftOutFaces } from "../document";
 import { writeFontFields } from "../fonts";
 import { selectElement, writeText } from "../page";
 import { readTextMeasure, readTextMetrics } from "../text-measure";
 import { writeTextPosition } from "../text-placement";
 
+import { clearTextDrawing } from "./clear-text-drawing";
 import { readTextModel } from "./read-text-model";
 import { showText } from "./show-text";
 
@@ -58,20 +58,6 @@ function writeBoldState(document: Document, weight: number): void {
   const bold = selectElement(document, "text-bold");
 
   bold.setAttribute("aria-pressed", String(weight === BOLD || "heldWeight" in bold.dataset));
-}
-
-/**
- * Clears what a refused text drew: the drawing, its straight box's line (US-039) and the faces
- * left out of its document.
- *
- * @kind procedure
- * @param document - page document
- * @see docs/backlog/stories/E15-F14-US-039-straight-box-of-a-turned-text.md
- */
-function clearTextDrawing(document: Document): void {
-  selectElement(document, "canvas").replaceChildren();
-  selectElement(document, "straight-box").hidden = true;
-  writeLeftOutFaces(document, []);
 }
 
 /**

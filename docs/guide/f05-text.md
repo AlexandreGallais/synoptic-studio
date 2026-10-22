@@ -18,7 +18,7 @@ A **Text** tool writes a label in a symbol: "Pump P-101" over "Running", in the 
 | **Case** | the text written in upper, lower or title case, or as `camelCase`, `kebab-case` and more |
 | **Direction** | left to right, or right to left (Hebrew) |
 | **Alignment** | each line on the left, the center or the right of the block |
-| **X**, **Y**, **Angle** | the block's top-left corner, and a turn about its middle; each tool keeps its own |
+| **X**, **Y**, **Angle** | the block's top-left corner, and a turn about its middle; a new text starts straight, centred on the click (F35) |
 
 Rules: [domain, "Text"](../domain/shapes.md#text); decisions: [ADR-0052](../adr/0052-text-measured-and-drawn-as-positioned-lines.md), [ADR-0054](../adr/0054-text-font-list-and-spaces-kept.md), [ADR-0055](../adr/0055-text-fallback-metrics-and-turn-on-its-group.md), [ADR-0057](../adr/0057-a-turned-text-keeps-its-turned-corner-when-it-grows.md); formula: [`DERIV-text-width`](../derivations/text-width.md).
 
@@ -58,7 +58,7 @@ Install Inter 4.1 first (Font Book on macOS shows it). Then `npm run dev` and `h
 | --- | --- |
 | 1 | Inter installed: the frame hugs the letters |
 | 2–14 | every field: content, empty text, size, weight, italic, color, spacing, underline, cases, alignment, right to left, Hebrew |
-| 15–21 | position, turning, the angle kept, the dashed frame, the turn on a group, values refused, each tool's placement |
+| 15–21 | position, turning, the angle kept, the dashed frame, the turn on a group, values refused, a new shape leaving the text as it was |
 | 22–32 | the decisions to confirm and the audit's questions, one step each with its example |
 | 33–34 | two checks in Chrome, Firefox and Safari, in the browser's console |
 | 35 | a turned text grows in place, its turned top-left corner kept (ADR-0057) |

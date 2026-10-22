@@ -4,6 +4,8 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { CURRENT_GUIDED_STEPS, GUIDED_STEPS } from "../guided-steps";
 import { mountPlayground } from "../mount";
 import {
+  chooseShapeKind,
+  clickAt,
   clickElement,
   clickWithKeys,
   commitField,
@@ -23,18 +25,23 @@ describe("toolbar", () => {
     openServedPage("?guide=epic");
   });
 
-  it("starts on the rectangle, its button pressed and the polygon's options hidden", () => {
-    expect(readPressedState("tool-rectangle") === "true").toBe(true);
-    expect(readPressedState("tool-polygon") === "true").toBe(false);
+  it("starts with the selector armed, a rectangle edited and the polygon's options hidden", () => {
+    expect(readPressedState("tool-selector") === "true").toBe(true);
+    expect(readPressedState("tool-rectangle") === "true").toBe(false);
     expect(readText("#shape-title")).toBe("Rectangle");
     expect(readDisplay("polygon-options") === "none").toBe(true);
   });
 
-  it("draws a polygon from its button, its options shown", () => {
+  it("[F35.AC1] draws a polygon placed by its tool, its options shown, the selector armed again", () => {
     clickElement("tool-polygon");
 
     expect(readPressedState("tool-polygon") === "true").toBe(true);
-    expect(readPressedState("tool-rectangle") === "true").toBe(false);
+    expect(readPressedState("tool-selector") === "true").toBe(false);
+
+    clickAt("#canvas", { clientX: 290, clientY: 180 });
+
+    expect(readPressedState("tool-polygon") === "true").toBe(false);
+    expect(readPressedState("tool-selector") === "true").toBe(true);
     expect(readText("#shape-title")).toBe("Polygon");
     expect(readDisplay("polygon-options") === "none").toBe(false);
     // A hexagon, the default number of corners, has six vertices in its contour.
@@ -47,7 +54,7 @@ describe("toolbar after a free shape", () => {
     // The epic's step 1, radius 10, whatever feature is being validated.
     openServedPage("?guide=epic");
     // A pentagon 120 × 80 converted to a free shape: its width becomes 84.11698.
-    clickWithKeys("#tool-polygon", {});
+    chooseShapeKind("polygon");
 
     typeValue("corners", "5");
 
@@ -60,18 +67,33 @@ describe("toolbar after a free shape", () => {
     commitField("point-x");
   });
 
-  it("draws a valid rectangle, its width rounded and one radius for every corner", () => {
+  it("[F35.AC1] places a valid rectangle after it, the free shape kept below as it was", () => {
     expect(readValue("width")).toBe("84.11698");
 
-    clickWithKeys("#tool-rectangle", {});
+    const free = readText("#path-data");
 
-    expect(readValue("width")).toBe("84");
-    // The radius field was empty (Mixed): the first radius kept, 10, goes to every corner.
-    expect(readValue("radius")).toBe("10");
+    clickWithKeys("#tool-rectangle", {});
+    clickAt("#canvas", { clientX: 290, clientY: 180 });
+
+    // A rectangle 100 × 100 with the page's radius, 10: no rectangle was placed before it.
+    expect([readValue("width"), readValue("height"), readValue("radius")]).toEqual([
+      "100",
+      "100",
+      "10",
+    ]);
+
+    expect(readText("#shape-title")).toBe("Rectangle");
     expect(document.querySelectorAll('[aria-invalid="true"]')).toHaveLength(0);
+
+    expect(
+      [...document.querySelectorAll("#canvas svg > path:not([class])")].map((path) =>
+        path.getAttribute("d"),
+      ),
+    ).toEqual([free, readText("#path-data")]);
   });
 
-  it("goes back to the shape the page opens with on Reset, in Shape mode", () => {
+  it("goes back to the shape the page opens with on Reset, in Shape mode, the selector armed", () => {
+    clickWithKeys("#tool-polygon", {});
     clickWithKeys("#tool-reset", {});
 
     expect([readValue("width"), readValue("height"), readValue("radius")]).toEqual([
@@ -80,7 +102,8 @@ describe("toolbar after a free shape", () => {
       "10",
     ]);
 
-    expect(readPressedState("tool-rectangle") === "true").toBe(true);
+    expect(readText("#shape-title")).toBe("Rectangle");
+    expect(readPressedState("tool-selector") === "true").toBe(true);
     expect(readPressedState("mode-shape") === "true").toBe(true);
     expect(document.querySelectorAll('[aria-invalid="true"]')).toHaveLength(0);
   });

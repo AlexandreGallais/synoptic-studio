@@ -37,6 +37,14 @@
         height: 100%;
         background: repeating-conic-gradient(#8881 0 25%, transparent 0 50%) 0 0 / 20px 20px;
       }
+      /* A tool armed places a shape where the drawing is clicked (F35). */
+      #stage:has(
+          #toolbar
+            button[aria-pressed="true"]:is(#tool-rectangle, #tool-polygon, #tool-round, #tool-text)
+        )
+        #canvas {
+        cursor: crosshair;
+      }
       #canvas svg {
         display: block;
         width: 100%;
@@ -482,8 +490,14 @@
     <div id="stage">
       <main id="canvas"></main>
       <nav id="toolbar" aria-label="Tools">
-        <p role="group" aria-label="Shape kind">
-          <button id="tool-rectangle" type="button" aria-pressed="true" title="Rectangle">
+        <p role="group" aria-label="Tool">
+          <button id="tool-selector" type="button" aria-pressed="true" title="Selector">
+            <svg viewBox="0 0 16 16" aria-hidden="true">
+              <path d="M3 1.5v12l3.2-3 2.3 4.8 2-1-2.3-4.7H12.5z" />
+            </svg>
+            Selector
+          </button>
+          <button id="tool-rectangle" type="button" aria-pressed="false" title="Rectangle">
             <svg viewBox="0 0 16 16" aria-hidden="true">
               <path d="M2 3h12v10H2zM3.5 4.5v7h9v-7z" fill-rule="evenodd" />
             </svg>
@@ -553,7 +567,7 @@
     </section>
     <aside>
       <h1 id="shape-title">Rectangle</h1>
-      <!-- The shape kind, kept as the page's state; the toolbar sets it. -->
+      <!-- The kind of the shape the panel edits, kept as the page's state; a placed shape sets it. -->
       <select id="shape" aria-label="Shape kind" hidden>
         <option value="rectangle" selected>Rectangle</option>
         <option value="polygon">Polygon</option>

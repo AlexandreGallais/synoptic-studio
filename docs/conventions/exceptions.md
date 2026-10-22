@@ -36,6 +36,9 @@ Every place where the code turns a lint rule off, with its reason (ADR-0066). A 
 | `playground/guided-steps/epic-15/f05-steps.test.ts` | `readBlock` | `@typescript-eslint/consistent-type-assertions`, `@typescript-eslint/no-unsafe-type-assertion` | the block is written by `showText` from a `TextBlock` |
 | `playground/guided-steps/epic-15/f14-steps.test.ts` | `readBlock` | `@typescript-eslint/consistent-type-assertions`, `@typescript-eslint/no-unsafe-type-assertion` | the block is written by `showText` from a `TextBlock` |
 | `playground/installed-fonts/listen-to-installed-fonts.ts` | `readLocalFontAccess` | `@typescript-eslint/consistent-type-assertions`, `@typescript-eslint/no-unsafe-type-assertion` | the DOM types do not hold the draft Local Font Access API, detected as Chrome advises |
+| `playground/kept-shapes/read-stored-drawing.ts` | `readStoredDrawing` | `@typescript-eslint/consistent-type-assertions`, `@typescript-eslint/no-unsafe-type-assertion` | written by `writeStoredDrawing` only, from shapes drawn valid |
+| `playground/kind-settings/write-kind-settings.ts` | `readKindMemory` | `@typescript-eslint/consistent-type-assertions`, `@typescript-eslint/no-unsafe-type-assertion` | written by `saveKindSettings` only, from the same inputs |
+| `playground/placing/place-shape.test.ts` | `readBox` | `@typescript-eslint/consistent-type-assertions`, `@typescript-eslint/no-unsafe-type-assertion` | the page writes the model shown by `JSON.stringify` of a shape with a box |
 | `playground/position/write-resized-position.ts` | `readDrawnBox` | `@typescript-eslint/consistent-type-assertions`, `@typescript-eslint/no-unsafe-type-assertion` | written by `writeDrawnBox` only, from a valid shape |
 | `playground/redraw/schedule-redraw.test.ts` | `readBlockHeight` | `@typescript-eslint/consistent-type-assertions`, `@typescript-eslint/no-unsafe-type-assertion` | the block is written by `showText` from a `TextBlock` |
 | `playground/shape/read-stored-free-shape.ts` | `readKeptText` | `@typescript-eslint/consistent-type-assertions`, `@typescript-eslint/no-unsafe-type-assertion` | written by `writeStoredFreeShape` only, from a `FreeShape`, and checked just after |
@@ -49,7 +52,6 @@ Every place where the code turns a lint rule off, with its reason (ADR-0066). A 
 | `playground/text/read-text-model.ts` | `readTextModel` | `@typescript-eslint/consistent-type-assertions`, `@typescript-eslint/no-unsafe-type-assertion` | the page offers only the values of this type: the horizontal alignment |
 | `playground/text/read-text-model.ts` | `readTextModel` | `@typescript-eslint/consistent-type-assertions`, `@typescript-eslint/no-unsafe-type-assertion` | the page offers only the values of this type: the text direction |
 | `playground/text/text-box-fields.test.ts` | `readModel` | `@typescript-eslint/consistent-type-assertions`, `@typescript-eslint/no-unsafe-type-assertion` | written by `JSON.stringify` of a `Text` |
-| `playground/text/write-tool-placement.ts` | `readKeptPlacement` | `@typescript-eslint/consistent-type-assertions`, `@typescript-eslint/no-unsafe-type-assertion` | written by `saveToolPlacement` or `TOOL_PLACEMENT.start` only |
 
 ## Tooling and tests
 

@@ -2,7 +2,9 @@
 
 ## What you can do now
 
-Choose the Rectangle, Polygon, Round shape or Text tool, click the drawing, and a shape is added where you clicked, above the shapes already there. The export holds every shape, in the order drawn. The rest of this page is written at F35's validation (VAL-036).
+Choose the Rectangle, Polygon, Round shape or Text tool, click the drawing, and a shape is added where you clicked, above the shapes already there. The export holds every shape, in the order drawn.
+
+Choosing a tool changes nothing yet: its button stays pressed until you click the drawing. The new shape is then the one the panel edits, and the Selector button is pressed again, as in Figma; a click with the Selector places nothing. A shape the page refuses, a value out of its range, is not kept when you place the next one. Reset, and each step of the guided test, start the drawing again as the page opens. The rest of this page is written at F35's validation (VAL-036).
 
 ## The ideas behind it
 
@@ -14,3 +16,5 @@ Graphic editors do this in three ways (research note 0027): Figma gives every ne
 | --- | --- |
 | kind | rectangle, polygon, round shape or text: each keeps its own last settings |
 | starting values | the settings a new shape has before you change any |
+| on integers | the click's point may fall between two pixels once the view is scaled: the shape's corner is rounded to the nearest whole number, a half rounded up, so (250.5, 140.4) gives a shape at (201, 90) |
+| selector | the arrow tool, pressed when no shape tool waits for a click |

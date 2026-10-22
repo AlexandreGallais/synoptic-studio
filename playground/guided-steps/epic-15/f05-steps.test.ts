@@ -5,6 +5,7 @@ import { writeTextStepValues } from "../../guided-test";
 import {
   chooseOption,
   chooseShapeKind,
+  clickAt,
   clickElement,
   openOnStep,
   readDisplay,
@@ -346,14 +347,16 @@ describe("the guided test of F05 (VAL-014): placing and turning", () => {
     expect([readLines().length, readText("#status")]).toEqual([2, ""]);
   });
 
-  it("[F05.AC5] each tool keeps its placement", () => {
-    openStep("Each tool keeps its placement");
+  it("[F35.AC1] a new shape leaves the text as it was", () => {
+    openStep("A new shape leaves the text as it was (US-063)");
     clickElement("tool-rectangle");
-    expect(["shape-x", "shape-y", "angle"].map((id) => readValue(id))).toEqual(["0", "0", "0"]);
-    typeValue("angle", "30");
-    clickElement("tool-text");
-    expect(["shape-x", "shape-y", "angle"].map((id) => readValue(id))).toEqual(["100", "50", "90"]);
-    // The corner at (100, 50) (US-054): the middle (100 − 38.71875, 50 + 87.953125).
+    // The drawing's point (250, 140): the canvas at the window's corner, its origin 40 in.
+    clickAt("#canvas", { clientX: 290, clientY: 180 });
+    // The rectangle straight, 100 × 100 centred on (250, 140); the tool back to the selector.
+    expect(["shape-x", "shape-y", "angle"].map((id) => readValue(id))).toEqual(["200", "90", "0"]);
+    expect(readPressedState("tool-selector")).toBe("true");
+    // The text kept below, still turned about its middle, its corner at (100, 50) (US-054): the
+    // middle (100 − 38.71875, 50 + 87.953125).
     expect(readTransforms()[0]).toBe("rotate(90 61.28125 137.95313)");
   });
 });

@@ -1,7 +1,5 @@
 import {
   RECTANGLE_CORNER_COUNT,
-  curveCornerOf,
-  freeShapeCorners,
   freeShapeRadii,
   isRegularPolygonCornerCount,
   isValidFreeShape,
@@ -9,9 +7,7 @@ import {
   isValidRegularPolygon,
   isValidRoundShape,
   rectangleAsFreeShape,
-  regularPolygonCorners,
-  roundShapeCorners,
-  turnedCorners,
+  shapeCorners,
 } from "../../src";
 import { readNumber, readShapeKind } from "../page";
 import { readAngle } from "../position";
@@ -100,7 +96,7 @@ function readRectangleShape(document: Document): ShapeReading {
   const isValid = isValidRectangle(rectangle) && isValidFreeShape(model);
 
   return {
-    corners: isValid ? turnedCorners(freeShapeCorners(model), model) : [],
+    corners: isValid ? shapeCorners(model) : [],
     isValid,
     message: INVALID_RECTANGLE,
     model,
@@ -121,12 +117,7 @@ function readPolygonShape(document: Document): ShapeReading {
   const isValid = isValidRegularPolygon(model);
 
   return {
-    corners: isValid
-      ? turnedCorners(
-          regularPolygonCorners(model).map((corner) => curveCornerOf(corner)),
-          model,
-        )
-      : [],
+    corners: isValid ? shapeCorners(model) : [],
     isValid,
     message: INVALID_POLYGON,
     model,
@@ -154,7 +145,7 @@ function readRoundShape(document: Document): ShapeReading {
   const isValid = isValidRoundShape(model);
 
   return {
-    corners: isValid ? turnedCorners(roundShapeCorners(model), model) : [],
+    corners: isValid ? shapeCorners(model) : [],
     isValid,
     message: INVALID_ROUND,
     model,
