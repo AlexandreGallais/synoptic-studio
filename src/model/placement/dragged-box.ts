@@ -1,3 +1,5 @@
+import { nearestInteger } from "../../math";
+
 import type { Size } from "../../geometry";
 import type { Point } from "../../math";
 
@@ -10,6 +12,21 @@ export type ShapeDrag = {
   /** Whether the box stays square, Shift held for every tool but text. */
   readonly isSquare: boolean;
 };
+
+/**
+ * Start of a box's side laid from the press toward the release: the press less the side when the
+ * release lies before it, the press otherwise.
+ *
+ * @kind domain
+ * @param press - the coordinate pressed, an integer
+ * @param release - the coordinate released, an integer
+ * @param side - the side's length, an integer ≥ 0
+ * @returns the smaller end of the side
+ * @see docs/domain/interaction.md#_1-tools
+ */
+function sideStart(press: number, release: number, side: number): number {
+  return release < press ? press - side : press;
+}
 
 /**
  * Box of a shape drawn by a drag (F36): the press and the release each rounded to the nearest
@@ -27,5 +44,16 @@ export type ShapeDrag = {
  * @see docs/domain/interaction.md#_1-tools
  */
 export function draggedBox(drag: ShapeDrag): Point & Size {
-  return { ...drag.press, height: 0, width: 0 };
+  const press = { x: nearestInteger(drag.press.x), y: nearestInteger(drag.press.y) };
+  const release = { x: nearestInteger(drag.release.x), y: nearestInteger(drag.release.y) };
+  const width = Math.abs(release.x - press.x);
+  const height = Math.abs(release.y - press.y);
+  const side = Math.max(width, height);
+  const size = drag.isSquare ? { height: side, width: side } : { height, width };
+
+  return {
+    ...size,
+    x: sideStart(press.x, release.x, size.width),
+    y: sideStart(press.y, release.y, size.height),
+  };
 }

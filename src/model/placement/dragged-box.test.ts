@@ -104,8 +104,8 @@ describe("draggedBox (F36)", () => {
     "gives integers whose box has the rounded press and release at two opposite corners",
     ({ press, release }) => {
       const box = draggedBox({ isSquare: false, press, release });
-      const xs = [Math.round(press.x), Math.round(release.x)].toSorted((a, b) => a - b);
-      const ys = [Math.round(press.y), Math.round(release.y)].toSorted((a, b) => a - b);
+      const xs = [Math.round(press.x) + 0, Math.round(release.x) + 0].toSorted((a, b) => a - b);
+      const ys = [Math.round(press.y) + 0, Math.round(release.y) + 0].toSorted((a, b) => a - b);
 
       expect([box.x, box.x + box.width, box.y, box.y + box.height]).toEqual([...xs, ...ys]);
     },
