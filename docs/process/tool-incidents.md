@@ -104,3 +104,9 @@ The cards of E17 were decided at RET-004 ([record](./retrospectives/E17-retrospe
 - Used: `npm run mutate -- <files>`, the audit's new modules not yet committed.
 - Failed: the copy takes tracked files only, so every test importing a new module failed in it, and each file was skipped as "its related tests fail, or none was found", the cause unsaid.
 - Instead: the new modules staged with `git add` before the run, which the copy then took.
+
+## 2026-10-22 — `worktree-new`, to make each worktree of F36
+
+- Used: `target/release/worktree-new <ID>` for the stories of F36, a feature started on F35's branch (`feature/f36-draw-pick-and-remove-shapes` stacked on `feature/f35-several-shapes-on-one-drawing`).
+- Failed: it refuses a story whose file is on two feature branches, which every story file of F36 is while F35's branch is not merged.
+- Instead: each worktree was made by hand, `git worktree add` on the story's branch from F36's, then `npm ci`, about 2 min each.

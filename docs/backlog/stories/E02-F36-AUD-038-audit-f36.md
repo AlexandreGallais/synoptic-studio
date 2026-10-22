@@ -3,7 +3,7 @@ id: AUD-038
 epic: E02
 feature: F36
 title: Audit F36
-status: ready
+status: done
 points: 1
 ---
 
@@ -57,13 +57,3 @@ Evolvability (H):
 - Patterns: the two duplicates were a named calculation (finding 7) and a shared formula (finding 8); the test helper (finding 9) shows a test file's helper copied by the next story, which the naming pass at each review catches.
 - Agent configuration: nothing.
 - Process: F36's worktrees were made by hand (see the incident below).
-
-## For the main thread
-
-### Incidents
-
-#### 2026-10-22 — `worktree-new`, to make each worktree of F36
-
-- Used: `target/release/worktree-new <ID>` for the stories of F36, a feature started on F35's branch (`feature/f36-draw-pick-and-remove-shapes` stacked on `feature/f35-several-shapes-on-one-drawing`).
-- Failed: it refuses a story whose file is on two feature branches, which every story file of F36 is while F35's branch is not merged.
-- Instead: each worktree was made by hand, `git worktree add` on the story's branch from F36's, then `npm ci`, about 2 min each.
