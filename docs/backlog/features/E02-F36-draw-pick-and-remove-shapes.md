@@ -2,7 +2,7 @@
 id: F36
 epic: E02
 title: Draw, pick and remove shapes
-status: draft
+status: in-progress
 ---
 
 # E02 · F36 — Draw, pick and remove shapes
