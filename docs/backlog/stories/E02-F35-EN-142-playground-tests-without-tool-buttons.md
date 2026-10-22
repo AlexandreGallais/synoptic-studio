@@ -3,7 +3,7 @@ id: EN-142
 epic: E02
 feature: F35
 title: The playground's tests set their shape without the tool buttons
-status: ready
+status: done
 points: 3
 ---
 
