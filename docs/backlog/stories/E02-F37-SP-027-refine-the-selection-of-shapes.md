@@ -3,7 +3,7 @@ id: SP-027
 epic: E02
 feature: F37
 title: Refine the selection of several shapes
-status: ready
+status: done
 points: 3
 ---
 

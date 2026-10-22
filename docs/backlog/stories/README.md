@@ -83,7 +83,7 @@
 | [US-067](./E02-F36-US-067-a-click-selects-a-shape.md) | F36 | A click selects a shape, the panel loads it | done |
 | [AUD-038](./E02-F36-AUD-038-audit-f36.md) | F36 | Audit F36 | done |
 | [VAL-037](./E02-F36-VAL-037-validate-f36.md) | F36 | Validate F36 | ready |
-| [SP-027](./E02-F37-SP-027-refine-the-selection-of-shapes.md) | F37 | Refine the selection of several shapes | ready |
+| [SP-027](./E02-F37-SP-027-refine-the-selection-of-shapes.md) | F37 | Refine the selection of several shapes | done |
 | [US-068](./E02-F37-US-068-shift-click-adds-a-shape.md) | F37 | Shift + click adds or removes a shape, Ctrl + A selects all, Escape none | draft |
 | [US-066](./E02-F37-US-066-delete-removes-the-shape.md) | F37 | Delete removes the selected shapes | ready |
 | [US-069](./E02-F37-US-069-a-rectangle-selects-shapes.md) | F37 | A selection rectangle selects shapes | draft |
