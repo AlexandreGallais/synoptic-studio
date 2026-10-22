@@ -10,6 +10,10 @@ Choose the Rectangle, Polygon, Round shape or Text tool, press the drawing and d
 
 **A drag straight down or straight across keeps its width or height of 0.** A shape may have a side of 0, so the agent chose to keep it as drawn: nothing shows until a side is typed, but the panel edits it. Placing it as a click, adding nothing, or making the side 1 were the other ways. To confirm at VAL-037.
 
+**Only what is painted is under the pointer.** The shape under the pointer is the last one drawn whose painted area holds it, computed from the shapes themselves, never read back from the page: the cut corner of a rounded rectangle, or the inside of a circle's box outside the circle, picks nothing. A text counts anywhere in its block, or in its box when it sits in one, so that the room between its words and lines picks it too; the agent chose this, its letters' outlines and its backgrounds being the other ways. To confirm at VAL-037.
+
+**A shape of width or height 0 is reached within 4 pixels.** It paints nothing, so the agent chose to find it when the pointer is within 4 pixels of the screen of its outline, whatever the zoom. Never picking it, or widening it to a side of 1, were the other ways. To confirm at VAL-037.
+
 | Term | In plain words |
 | --- | --- |
 | drag | press the drawing, move the pointer with the button held, release |

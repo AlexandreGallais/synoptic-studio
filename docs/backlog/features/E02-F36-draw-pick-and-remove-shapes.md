@@ -24,7 +24,7 @@ In delivery order.
 | ID | Type | Title | Status |
 | --- | --- | --- | --- |
 | [US-064](../stories/E02-F36-US-064-a-drag-draws-the-box.md) | US | A drag with a tool draws the shape's box | done |
-| [EN-143](../stories/E02-F36-EN-143-the-shape-at-a-point.md) | EN | The shape at a point, by its painted area | ready |
+| [EN-143](../stories/E02-F36-EN-143-the-shape-at-a-point.md) | EN | The shape at a point, by its painted area | done |
 | [US-065](../stories/E02-F36-US-065-the-shape-under-the-pointer-shown.md) | US | The shape under the pointer shown | ready |
 | [US-067](../stories/E02-F36-US-067-a-click-selects-a-shape.md) | US | A click selects a shape, the panel loads it | ready |
 | [AUD-038](../stories/E02-F36-AUD-038-audit-f36.md) | AUD | Audit F36 | ready |

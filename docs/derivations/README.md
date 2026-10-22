@@ -26,3 +26,4 @@ Each file: statement and domain, steps each citing a read source, cross-check, c
 | [`DERIV-color-spaces`](./color-spaces.md) | A color in hexadecimal and its opacity; HSL and HSB from it and back, exact on the round trip, shown as integers read from exact fractions (ADR-0058); the picker's plane (F16) |
 | [`DERIV-font-embedding`](./font-embedding.md) | A font file embedded in an SVG: whether its `fsType` permits it, its base64 `data:` URL and its length, once per face in a view (F15) |
 | [`DERIV-html-layer`](./html-layer.md) | Where a browser puts the HTML layer's first baseline, and the layer raised by half the line gap to meet the library's (F15, a record: the layer removed, ADR-0060) |
+| [`DERIV-painted-area`](./painted-area.md) | Whether a point is in a contour's painted area: a ray's crossings with segments, fillet arcs by their chord, cubic sides by their parts monotone in y; the distance to an outline without area (EN-143) |

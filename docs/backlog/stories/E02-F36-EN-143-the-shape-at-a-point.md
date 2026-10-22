@@ -3,7 +3,7 @@ id: EN-143
 epic: E02
 feature: F36
 title: The shape at a point, by its painted area
-status: ready
+status: done
 points: 3
 ---
 
