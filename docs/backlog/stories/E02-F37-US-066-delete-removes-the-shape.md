@@ -1,13 +1,13 @@
 ---
 id: US-066
 epic: E02
-feature: F36
+feature: F37
 title: Delete removes the selected shape
 status: ready
 points: 2
 ---
 
-# E02 · F36 · US-066 — Delete removes the selected shape
+# E02 · F37 · US-066 — Delete removes the selected shape
 
 As a symbol designer, I want to remove the selected shape by a key, so that a mistake is cleared at once.
 

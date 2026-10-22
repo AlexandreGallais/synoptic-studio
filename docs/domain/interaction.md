@@ -48,6 +48,8 @@ No pen tool and no freehand drawing (see `shapes.md` §3).
 
 - Click: select an object; Shift + click or Ctrl + click (Cmd on macOS): add / remove (Product Owner, 2026-10-11). No range on the drawing.
 - **Two layers** (Product Owner, 2026-10-22, F35): the drawing's SVG holds only the shapes and receives the clicks; a transparent SVG above it, which the pointer passes through, draws the outline of the shape under the pointer, the selection and every other help, so that the drawing is never polluted by them.
+- **Under the pointer** (Product Owner, 2026-10-22, F36): the top shape whose painted area holds the point, only what is visible, so that shapes are picked precisely: a click in the cut corner of a rounded rectangle, or inside a circle's box but outside the circle, picks nothing; computed in the model (ADR-0005, EN-143).
+- **A picked shape in the panel** (Product Owner, 2026-10-22, F36): a rectangle shows as a Rectangle with its radius, though stored as a free shape (ADR-0032); a text loads its whole style — family, weight, italic, strokes and every option — the font session taking its family, since typing next is likely meant in that style.
 - Selection rectangle (marquee).
 - Moving and resizing: **integer** values.
 - **A move lands its anchor on integers** (Product Owner, 2026-10-22): while dragged the shape follows the pointer freely; at the release its anchor is placed on integers, the top-left of its box by default, the anchor chosen once anchors exist; the shape itself is never changed by a move: a side 10.5 long stays 10.5, its points keep their fractions until edited by hand (ADR-0033, ADR-0035). An option of free positions, off the integers, is an open question (Q43).

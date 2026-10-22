@@ -37,4 +37,5 @@
 | [F33](./E17-F33-the-checks-ret-004-listed.md) | E17 | The checks RET-004 listed | done |
 | [F34](./E17-F34-the-use-of-each-workflow.md) | E17 | The use of each workflow | done |
 | [F35](./E02-F35-several-shapes-on-one-drawing.md) | E02 | Several shapes on one drawing | in-progress |
-| [F36](./E02-F36-draw-pick-and-remove-shapes.md) | E02 | Draw, pick and remove shapes | in-progress |
+| [F36](./E02-F36-draw-pick-and-remove-shapes.md) | E02 | Draw and pick shapes | in-progress |
+| [F37](./E02-F37-select-shapes.md) | E02 | Select shapes | draft |

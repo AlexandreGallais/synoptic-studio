@@ -78,10 +78,14 @@
 | [AUD-037](./E02-F35-AUD-037-audit-f35.md) | F35 | Audit F35 | done |
 | [VAL-036](./E02-F35-VAL-036-validate-f35.md) | F35 | Validate F35 | ready |
 | [US-064](./E02-F36-US-064-a-drag-draws-the-box.md) | F36 | A drag with a tool draws the shape's box | done |
-| [US-065](./E02-F36-US-065-a-click-selects-a-shape.md) | F36 | The shape under the pointer shown, a click selects it | parked |
-| [US-066](./E02-F36-US-066-delete-removes-the-shape.md) | F36 | Delete removes the selected shape | ready |
+| [EN-143](./E02-F36-EN-143-the-shape-at-a-point.md) | F36 | The shape at a point, by its painted area | ready |
+| [US-065](./E02-F36-US-065-the-shape-under-the-pointer-shown.md) | F36 | The shape under the pointer shown | ready |
+| [US-067](./E02-F36-US-067-a-click-selects-a-shape.md) | F36 | A click selects a shape, the panel loads it | ready |
 | [AUD-038](./E02-F36-AUD-038-audit-f36.md) | F36 | Audit F36 | ready |
 | [VAL-037](./E02-F36-VAL-037-validate-f36.md) | F36 | Validate F36 | ready |
+| [US-066](./E02-F37-US-066-delete-removes-the-shape.md) | F37 | Delete removes the selected shape | ready |
+| [AUD-039](./E02-F37-AUD-039-audit-f37.md) | F37 | Audit F37 | draft |
+| [VAL-038](./E02-F37-VAL-038-validate-f37.md) | F37 | Validate F37 | draft |
 | [SP-025](./E02-SP-025-cut-the-editing-work-into-small-features.md) | E02 | Cut the editing work into small features | done |
 | [SP-010](./E14-F11-SP-010-research-f11.md) | F11 | Research for F11: folder layouts and test placement | done |
 | [EN-020](./E14-F11-EN-020-property-tests.md) | F11 | Property tests for the nine functions without one | done |
