@@ -1,6 +1,7 @@
 export * from "./choose-files";
 export * from "./choose-option";
 export * from "./choose-radio";
+export * from "./choose-shape-kind";
 export * from "./click-element";
 export * from "./click-point";
 export * from "./click-with-keys";
