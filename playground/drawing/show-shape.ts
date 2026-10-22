@@ -10,7 +10,7 @@ import {
   isReducedRadius,
 } from "../../src";
 import { DRAWING_KEYS, createDrawingSvg, writeStoredDrawing } from "../kept-shapes";
-import { selectElement, writeText } from "../page";
+import { readShapeKind, selectElement, writeText } from "../page";
 import { showPoints } from "../points";
 
 import { createBoxElements } from "./create-box-elements";
@@ -66,8 +66,8 @@ function writeEffectiveRadius(document: Document, reading: ShapeReading): void {
 
 /**
  * Draws a shape with its rounded corners at a fixed scale (1 user unit = 1 CSS pixel, US-004),
- * above the shapes placed before it, and keeps it as the shape edited (F35); shows each pipeline
- * stage: model, contour, evaluated contour, path data.
+ * between the shapes below and above it, and keeps it as the shape edited (F35), with the kind the
+ * panel shows it as (F36); shows each pipeline stage: model, contour, evaluated contour, path data.
  *
  * @kind procedure
  * @param document - page document
@@ -79,17 +79,19 @@ export function showShape(document: Document, reading: ShapeReading): void {
   const pieces = curveContour(reading.corners);
   const pathData = contourPiecesToPathData(pieces);
   const box = contourBoundingBox(pieces);
-  const svg = createDrawingSvg(document);
   const handles = showPoints(document, reading);
-
-  svg.append(
+  const svg = createDrawingSvg(document, [
     ...createBoxElements(document, reading.model, box),
     createPathElement(document, pathData),
     ...handles,
-  );
+  ]);
 
   selectElement(document, "canvas").replaceChildren(svg);
-  writeStoredDrawing(document, DRAWING_KEYS.edited, [reading.model]);
+
+  writeStoredDrawing(document, DRAWING_KEYS.edited, [
+    { kind: readShapeKind(document), shape: reading.model },
+  ]);
+
   writeText(document, "model", JSON.stringify(reading.model, undefined, JSON_INDENT));
   writeText(document, "contour", JSON.stringify(contour, undefined, JSON_INDENT));
   writeText(document, "pieces", JSON.stringify(pieces, undefined, JSON_INDENT));

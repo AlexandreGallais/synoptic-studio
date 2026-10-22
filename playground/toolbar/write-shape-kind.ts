@@ -3,6 +3,7 @@ import { readShapeKind, selectElement, writeText } from "../page";
 /** Title of the panel for each shape kind of the selector. */
 const TITLES = new Map([
   ["free", "Free shape"],
+  ["none", "No shape selected"],
   ["polygon", "Polygon"],
   ["rectangle", "Rectangle"],
   ["round", "Round shape"],

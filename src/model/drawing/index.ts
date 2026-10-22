@@ -1,5 +1,6 @@
 export type * from "./drawing";
 export type * from "./drawing-shape";
+export type * from "./drawing-split";
 export * from "./drawing-with-shape";
 export * from "./is-drawn-text";
 export * from "./is-flat-box";
@@ -9,4 +10,5 @@ export * from "./pick-tolerance";
 export * from "./placed-shape-size";
 export * from "./shape-at-point";
 export * from "./shape-pick-area";
+export * from "./split-drawing";
 export * from "./text-pick-area";

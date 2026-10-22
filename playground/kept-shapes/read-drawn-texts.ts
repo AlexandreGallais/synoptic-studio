@@ -1,22 +1,20 @@
 import { isDrawnText } from "../../src";
 
-import { DRAWING_KEYS } from "./drawing-keys";
-import { readStoredDrawing } from "./read-stored-drawing";
+import { readKeptDrawing } from "./read-kept-drawing";
 
 import type { Text } from "../../src";
 
 /**
- * Reads the texts of the drawing, in the order drawn: those placed below the shape the panel
- * edits, then that one when it is a text drawn (F35).
+ * Reads the texts of the drawing, in the order drawn (`readKeptDrawing`): those below the shape
+ * the panel edits, that one when it is a text drawn, then those above it (F35, F36).
  *
  * @kind procedure
  * @param document - page document
- * @returns the texts below, then the one edited
- * @see docs/backlog/stories/E02-F35-US-063-a-click-adds-a-shape.md
+ * @returns the texts, the first drawn first
+ * @see docs/domain/interaction.md#_2-selector
  */
 export function readDrawnTexts(document: Document): readonly Text[] {
-  return [
-    ...readStoredDrawing(document, DRAWING_KEYS.below),
-    ...readStoredDrawing(document, DRAWING_KEYS.edited),
-  ].filter((shape) => isDrawnText(shape));
+  return readKeptDrawing(document)
+    .map((kept) => kept.shape)
+    .filter((shape) => isDrawnText(shape));
 }

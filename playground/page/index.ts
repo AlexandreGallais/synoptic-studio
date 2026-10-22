@@ -7,6 +7,7 @@ export * from "./read-shape-kind";
 export * from "./run-task";
 export * from "./select-element";
 export * from "./wait-for-next-task";
+export * from "./write-edited-kind";
 export * from "./write-input-value";
 export * from "./write-select-options";
 export * from "./write-selection";

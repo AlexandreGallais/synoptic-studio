@@ -236,7 +236,11 @@ describe("the shape under the pointer outlined in the layer above (US-065)", () 
   it("[F36.AC2] outlines no text that no metrics ever measured, as it is not drawn", () => {
     // A text kept by hand at (0, 0), never drawn: no family measures it, and none did before.
     writeFontSession(document, { ...readFontSession(document), kept: [] });
-    writeStoredDrawing(document, DRAWING_KEYS.below, [{ ...HELLO_TEXT, content: "Never drawn" }]);
+
+    writeStoredDrawing(document, DRAWING_KEYS.below, [
+      { kind: "text", shape: { ...HELLO_TEXT, content: "Never drawn" } },
+    ]);
+
     placeShape("round", { x: 500, y: 300 });
     // In its block were it measured, and in the cut corner of the first rectangle, radius 10.
     hover({ x: 1, y: 1 });

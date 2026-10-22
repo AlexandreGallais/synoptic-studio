@@ -244,7 +244,11 @@ describe("a click with a tool adds a shape where it is clicked (US-063)", () => 
 
     // A text kept by hand, never drawn: no family measures it, and none did before.
     writeFontSession(document, { ...readFontSession(document), kept: [] });
-    writeStoredDrawing(document, DRAWING_KEYS.below, [{ ...HELLO_TEXT, content: "Never drawn" }]);
+
+    writeStoredDrawing(document, DRAWING_KEYS.below, [
+      { kind: "text", shape: { ...HELLO_TEXT, content: "Never drawn" } },
+    ]);
+
     placeShape("round", { x: 500, y: 300 });
 
     expect(document.querySelectorAll("#canvas text")).toHaveLength(0);
