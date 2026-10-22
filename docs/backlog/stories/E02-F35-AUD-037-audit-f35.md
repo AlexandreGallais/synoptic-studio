@@ -3,7 +3,7 @@ id: AUD-037
 epic: E02
 feature: F35
 title: Audit F35
-status: ready
+status: done
 points: 1
 ---
 
@@ -51,19 +51,3 @@ Evolvability (H):
 - Patterns: the pointer-on-element calculation was the one duplicate (finding 5).
 - Agent configuration: `AGENTS.md` and `CLAUDE.md` hold 158 lines together; `npm run mutate`'s message for a skipped file hides why (see the incident below).
 - Process: nothing.
-
-## For the main thread
-
-### Incidents
-
-#### 2026-10-22 — epic-check, to read its usage
-
-- Used: `target/release/epic-check --help`, by the auditor of AUD-037, to read its options.
-- Failed: it ignores `--help` and runs the whole epic check, `check:all` included, in the worktree it was called from.
-- Instead: the check was left to end; it left no file in the worktree, as `git status --ignored` showed at the fixes' start.
-
-#### 2026-10-22 — mutate, for the mutation spot-checks of F35
-
-- Used: `npm run mutate -- <files>`, the audit's new modules not yet committed.
-- Failed: the copy takes tracked files only, so every test importing a new module failed in it, and each file was skipped as "its related tests fail, or none was found", the cause unsaid.
-- Instead: the new modules staged with `git add` before the run, which the copy then took.
