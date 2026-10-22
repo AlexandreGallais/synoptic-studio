@@ -3,7 +3,7 @@ id: US-065
 epic: E02
 feature: F36
 title: The shape under the pointer shown
-status: ready
+status: done
 points: 3
 ---
 
