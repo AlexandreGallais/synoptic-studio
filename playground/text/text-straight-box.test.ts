@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 
 import {
   chooseOption,
-  clickElement,
+  chooseShapeKind,
   openServedPage,
   readDisplay,
   readText,
@@ -56,7 +56,7 @@ function typeBox(width: string, height: string): void {
 describe("Text tool: the straight box of a turned text (US-039)", () => {
   beforeEach(() => {
     openServedPage("");
-    clickElement("tool-text");
+    chooseShapeKind("text");
     typeValue("text-size", "16");
     // happy-dom loses the option marked `selected` once the page is moved into its document.
     chooseOption("text-weight", "400");
@@ -158,7 +158,7 @@ describe("Text tool: the straight box of a turned text (US-039)", () => {
 
   it("[F14.AC7] draws a turned shape's straight box as before once the text is left", () => {
     typeValue("angle", "30");
-    clickElement("tool-rectangle");
+    chooseShapeKind("rectangle");
     typeValue("angle", "90");
 
     // The rectangle 120 × 80 at (0, 0) turned by 90 about (60, 40): x 20, y −20, 80 × 120.

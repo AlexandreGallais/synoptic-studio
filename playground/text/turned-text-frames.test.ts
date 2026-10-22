@@ -2,7 +2,7 @@
 
 import { beforeEach, describe, expect, it } from "vitest";
 
-import { chooseOption, clickElement, openServedPage, typeValue } from "../user-actions";
+import { chooseOption, chooseShapeKind, openServedPage, typeValue } from "../user-actions";
 
 /**
  * Reads the path data of the canvas's paths of a class, in order.
@@ -29,7 +29,7 @@ function typeTextBox(box: {
   readonly height: string;
   readonly angle: string;
 }): void {
-  clickElement("tool-text");
+  chooseShapeKind("text");
   chooseOption("text-fit", "box");
   typeValue("text-box-width", box.width);
   typeValue("text-box-height", box.height);
@@ -45,7 +45,7 @@ function typeTextBox(box: {
  * @returns the paths of its turned box and of its straight box
  */
 function readRectangleFrames(angle: string): readonly (readonly (string | null)[])[] {
-  clickElement("tool-rectangle");
+  chooseShapeKind("rectangle");
   typeValue("width", "60");
   typeValue("height", "40");
   typeValue("radius", "0");
@@ -64,6 +64,8 @@ describe("A turned text's frames drawn as a turned shape's (US-050)", () => {
   it("[F17.AC7] draws a box 60 × 40 turned by 30 with the blue turned box and the dashed straight box of a rectangle", () => {
     const [, rectangleStraight] = readRectangleFrames("30");
 
+    // A page opened again: the text drawn alone, not placed from the rectangle (EN-142).
+    openServedPage("");
     typeTextBox({ angle: "30", height: "40", width: "60" });
 
     // The straight box, upright, the same dashes as the rectangle's.

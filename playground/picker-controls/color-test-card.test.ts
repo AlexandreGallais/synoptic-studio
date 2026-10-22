@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   chooseOption,
+  chooseShapeKind,
   clickElement,
   commitField,
   openServedPage,
@@ -59,7 +60,7 @@ function readFills(): readonly (string | null | undefined)[] {
 describe("US-035 Product Owner test card", () => {
   it("follows the card from step 1 to step 9, one step after the other", () => {
     openServedPage("");
-    clickElement("tool-text");
+    chooseShapeKind("text");
     chooseOption("text-weight", "400");
     chooseOption("text-fit", "content");
     chooseOption("color-model", "hsb");
@@ -132,7 +133,7 @@ describe("US-035 Product Owner test card", () => {
 
   it("[F16.AC2] follows US-040's card: whole numbers, one value edited, the hexadecimal kept", () => {
     openServedPage("");
-    clickElement("tool-text");
+    chooseShapeKind("text");
     chooseOption("text-weight", "400");
     chooseOption("text-fit", "content");
     chooseOption("color-model", "hsb");

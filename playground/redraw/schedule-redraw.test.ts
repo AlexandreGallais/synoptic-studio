@@ -2,7 +2,7 @@
 
 import { beforeEach, describe, expect, it } from "vitest";
 
-import { clickElement, openServedPage, readText, typeValue } from "../user-actions";
+import { chooseShapeKind, openServedPage, readText, typeValue } from "../user-actions";
 
 import { scheduleRedraw } from "./schedule-redraw";
 
@@ -33,7 +33,7 @@ function readBlockHeight(): number {
 describe("A redraw per animation frame (US-048, REF-MDN-RAF)", () => {
   beforeEach(() => {
     openServedPage("");
-    clickElement("tool-text");
+    chooseShapeKind("text");
 
     // Two lines typed, as the page opens with them in a browser, which drops the line break
     // right after `<textarea>`; happy-dom keeps it.

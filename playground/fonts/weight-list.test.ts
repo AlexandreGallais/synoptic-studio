@@ -6,6 +6,7 @@ import { testFaceFile } from "../../tests";
 import {
   chooseFiles,
   chooseOption,
+  chooseShapeKind,
   clickElement,
   openServedPage,
   readPressedState,
@@ -52,7 +53,7 @@ function readWeights(): readonly string[] {
 describe("The weight list of the family chosen (US-036)", () => {
   beforeEach(() => {
     openServedPage("");
-    clickElement("tool-text");
+    chooseShapeKind("text");
     chooseOption("text-weight", "400");
   });
 

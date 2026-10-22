@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   chooseOption,
+  chooseShapeKind,
   clickElement,
   commitField,
   openOnStep,
@@ -634,7 +635,7 @@ describe("the guided test of F16 (VAL-016): its decisions, each with its example
 
   it("[F16.AC4] back to the rectangle, drawn as before", () => {
     openStep("Back to the rectangle");
-    clickElement("tool-rectangle");
+    chooseShapeKind("rectangle");
     expect([readDisplay("text-options"), isPickerOpen()]).toEqual(["none", false]);
     expect(readText("#path-data")).toBe("M0 0 L120 0 L120 80 L0 80 Z");
   });

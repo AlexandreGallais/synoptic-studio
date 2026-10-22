@@ -7,6 +7,7 @@ import { testFaceFile } from "../../tests";
 import {
   chooseFiles,
   chooseOption,
+  chooseShapeKind,
   clickElement,
   commitField,
   openServedPage,
@@ -134,7 +135,7 @@ function readTransforms(): readonly (string | null | undefined)[] {
 describe("Text tool: a turned text grows in place (US-038)", () => {
   beforeEach(() => {
     openServedPage("");
-    clickElement("tool-text");
+    chooseShapeKind("text");
     typeValue("text-size", "16");
     chooseOption("text-weight", "400");
     typeContent("Pump P-101");

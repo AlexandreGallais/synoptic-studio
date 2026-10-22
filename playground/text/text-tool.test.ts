@@ -5,6 +5,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { TEXT_OPTIONS } from "../../src";
 import {
   chooseOption,
+  chooseShapeKind,
   clickElement,
   clickWithKeys,
   openServedPage,
@@ -59,7 +60,7 @@ function readLines(): readonly (readonly (string | null)[])[] {
 describe("Text tool", () => {
   beforeEach(() => {
     openServedPage("");
-    clickElement("tool-text");
+    chooseShapeKind("text");
     // "H" over "HH" in Inter Regular 16: H advances 1522 of 2048 units, 11.890625; HH 23.78125.
     typeValue("text-size", "16");
     // happy-dom does not select the option marked `selected` once the page is moved into its
@@ -69,8 +70,6 @@ describe("Text tool", () => {
   });
 
   it("[F05.AC2] opens its fields, the shapes' size and corners hidden", () => {
-    expect(readPressedState("tool-text")).toBe("true");
-    expect(readPressedState("tool-rectangle")).toBe("false");
     expect(readText("#shape-title")).toBe("Text");
     expect(readDisplay("text-options") === "none").toBe(false);
     expect(readDisplay("size-section") === "none").toBe(true);
@@ -119,7 +118,7 @@ describe("Text tool", () => {
       expect([id, readDisplay(id)]).toEqual([id, "none"]);
     }
 
-    clickElement("tool-rectangle");
+    chooseShapeKind("rectangle");
 
     for (const id of ["size-section", "corners-section", "turn", "tools"]) {
       expect(readDisplay(id) === "none").toBe(false);
@@ -128,7 +127,7 @@ describe("Text tool", () => {
     // A vertex picked in Points mode: its panels go with the Text tool.
     clickWithKeys("#mode-points", {});
     clickWithKeys('#points [data-vertex="1"]', {});
-    clickElement("tool-text");
+    chooseShapeKind("text");
 
     for (const id of ["points", "point-fields", "handle-fields"]) {
       expect([id, readDisplay(id)]).toEqual([id, "none"]);
@@ -324,10 +323,10 @@ describe("Text tool", () => {
   });
 
   it("[F05.AC6] goes back to the shapes, the text's fields hidden", () => {
-    clickElement("tool-rectangle");
+    chooseShapeKind("rectangle");
     expect(readDisplay("text-options") === "none").toBe(true);
     expect(readDisplay("size-section") === "none").toBe(false);
-    expect(readPressedState("tool-rectangle")).toBe("true");
+    expect(readText("#shape-title")).toBe("Rectangle");
     expect(document.querySelectorAll("#canvas text")).toHaveLength(0);
     // The rectangle the page opens with, its corners rounded by 10.
     expect(readText("#path-data")).toMatch(/^M10 0 L/u);

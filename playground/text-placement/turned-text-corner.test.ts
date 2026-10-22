@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 
 import {
   chooseOption,
+  chooseShapeKind,
   clickElement,
   openServedPage,
   readText,
@@ -41,7 +42,7 @@ function readFields(): readonly string[] {
 describe("Text tool: X and Y of a turned text show its turned top-left corner (US-054)", () => {
   beforeEach(() => {
     openServedPage("");
-    clickElement("tool-text");
+    chooseShapeKind("text");
     chooseOption("text-fit", "box");
     typeValue("text-box-width", "100");
     typeValue("text-box-height", "20");

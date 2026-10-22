@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 import { writeTextStepValues } from "../../guided-test";
 import {
   chooseOption,
+  chooseShapeKind,
   clickElement,
   openOnStep,
   readDisplay,
@@ -135,7 +136,7 @@ describe("the guided test of F05 (VAL-014): the Text tool's options", () => {
     clickElement("guide-previous");
     clickElement("guide-next");
 
-    expect(readPressedState("tool-text")).toBe("true");
+    expect(readText("#shape-title")).toBe("Text");
 
     expect(readLines()).toEqual([
       ["Pump P-101", "0", "31"],
@@ -503,7 +504,7 @@ describe("the guided test of F05 (VAL-014): the browser checks and the end", () 
 
   it("[F05.AC6] back to the rectangle, drawn as before", () => {
     openStep("Back to the rectangle");
-    clickElement("tool-rectangle");
+    chooseShapeKind("rectangle");
     expect(readDisplay("text-options")).toBe("none");
     expect(document.querySelectorAll("#canvas text")).toHaveLength(0);
     expect(readText("#path-data")).toBe("M0 0 L120 0 L120 80 L0 80 Z");

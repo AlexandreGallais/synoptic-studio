@@ -73,7 +73,7 @@
 | [REV-001](./E01-REV-001-review-e01.md) | E01 | Review E01 with the Product Owner | done |
 | [RET-001](./E01-RET-001-retrospective-e01.md) | E01 | Retrospective of E01 | done |
 | [SP-026](./E02-F35-SP-026-what-a-new-shape-starts-with.md) | F35 | What a new shape starts with | done |
-| [EN-142](./E02-F35-EN-142-playground-tests-without-tool-buttons.md) | F35 | The playground's tests set their shape without the tool buttons | ready |
+| [EN-142](./E02-F35-EN-142-playground-tests-without-tool-buttons.md) | F35 | The playground's tests set their shape without the tool buttons | done |
 | [US-063](./E02-F35-US-063-a-click-adds-a-shape.md) | F35 | A click with a tool adds a shape where it is clicked | ready |
 | [AUD-037](./E02-F35-AUD-037-audit-f35.md) | F35 | Audit F35 | ready |
 | [VAL-036](./E02-F35-VAL-036-validate-f35.md) | F35 | Validate F35 | ready |

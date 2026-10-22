@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   chooseOption,
+  chooseShapeKind,
   clickElement,
   openOnStep,
   readDisplay,
@@ -433,7 +434,7 @@ describe("the guided test of F14 (VAL-015): the decisions to confirm", () => {
 
   it("[F14.AC6] back to the rectangle, drawn as before", () => {
     openStep("Back to the rectangle");
-    clickElement("tool-rectangle");
+    chooseShapeKind("rectangle");
     expect(readDisplay("text-options")).toBe("none");
     expect(document.querySelectorAll("#canvas text")).toHaveLength(0);
     expect(readText("#path-data")).toBe("M0 0 L120 0 L120 80 L0 80 Z");
