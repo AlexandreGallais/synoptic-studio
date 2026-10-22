@@ -3,7 +3,7 @@ id: SP-026
 epic: E02
 feature: F35
 title: What a new shape starts with
-status: ready
+status: done
 points: 2
 ---
 
