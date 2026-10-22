@@ -1,4 +1,5 @@
 export * from "./contour";
+export * from "./contour-band";
 export * from "./corner-radius";
 export * from "./curve";
 export * from "./curve-contour";

@@ -5,4 +5,5 @@ export * from "./drawing-margin";
 export * from "./kept-text-metrics";
 export * from "./read-drawn-texts";
 export * from "./read-stored-drawing";
+export * from "./view-scale";
 export * from "./write-stored-drawing";

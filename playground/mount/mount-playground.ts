@@ -1,13 +1,13 @@
 import { readGuidedStep, readStepFromAddress, showGuidedStep } from "../guided-test";
-import { readShapeKind, selectElement } from "../page";
+import { listenToHover } from "../hover";
+import { selectElement } from "../page";
 import { listenToColorPicker } from "../picker-controls";
 import { scheduleRedraw } from "../redraw";
 import { listenToDrawing } from "../shape-drawing";
-import { hidePointPanels, listenToTextFields, updateTextTool, writeTextSections } from "../text";
-import { writeShapeKind } from "../toolbar";
+import { listenToTextFields } from "../text";
 
 import { listenToInputs } from "./listen-to-inputs";
-import { updatePlayground } from "./update-playground";
+import { updatePage } from "./update-page";
 
 import type { GuidedStep } from "../guided-steps";
 
@@ -33,29 +33,6 @@ function listenToGuide(document: Document, steps: readonly GuidedStep[], update:
 }
 
 /**
- * Redraws the page from its inputs: the Text tool, or the shapes.
- *
- * @kind procedure
- * @param document - the playground's document, its fields read
- * @see docs/backlog/stories/E01-F01-US-002-sharp-rectangle-in-playground.md
- */
-function updatePage(document: Document): void {
-  const isText = readShapeKind(document) === "text";
-
-  writeTextSections(document, isText);
-
-  if (isText) {
-    writeShapeKind(document);
-    hidePointPanels(document);
-    updateTextTool(document);
-
-    return;
-  }
-
-  updatePlayground(document);
-}
-
-/**
  * Mounts the playground: redraws on every input and window resize, at most once per animation
  * frame, the inputs before it gathered (`scheduleRedraw`, US-048), wires the toolbar and the guided
  * test, then shows the step asked by the page address, or the first one.
@@ -77,6 +54,7 @@ export function mountPlayground(document: Document, steps: readonly GuidedStep[]
   listenToTextFields(document, update);
   listenToColorPicker(document, update);
   listenToDrawing(document, update);
+  listenToHover(document);
 
   listenToGuide(document, steps, update);
 

@@ -27,7 +27,7 @@ The Product Owner asked for two layers (2026-10-22): the drawing's SVG holds onl
 
 ## Tasks
 
-- [ ] T1 — The layer above the drawing and the hover: interface and failing tests (1 h)
+- [x] T1 — The layer above the drawing and the hover: interface and failing tests (1 h)
 - [ ] T2 — The layer and the outline of the shape under the pointer, the tests of T1 passing; the Product Owner test card (2 h)
 
 One task = one commit, referenced as `US-065.Tn` in the commit footer.
