@@ -125,6 +125,7 @@ The French term is kept: it is the working vocabulary of the target users.
 | Q40 | Where the library is published | on GitHub only, in this repository; never published on npm (Product Owner, 2026-10-17, SP-021) | `editions.md` §1 |
 | Q41 | Accessibility (`title`, `desc`) and other languages in V1 | neither: V1 is in English only and draws no `title` nor `desc`, since synoptics are read on factory screens, not by screen readers; both may come in the pro edition (Product Owner, 2026-10-17, SP-021) | `editions.md` §1, §2 |
 | Q7 | Undo / redo: what one step is | one finished action: a drag at its release, a value typed when Enter is pressed or the field left, a text when its editing is left, an addition, a deletion; selecting alone is never a step; the history is bounded by a memory size the user sets, never by a count of steps (Product Owner, 2026-10-22); how it is built, commands or states, chosen at the feature's spike from read sources | `interaction.md` §7 |
+| Q44 | What a new shape starts with (F35) | its box and place from the click, straight; every other setting from the last shape of its kind the panel showed, one memory per kind, the page's starting values before any, as Inkscape's shape tools and as Figma and Inkscape for a text; a new text's content `Text`, selected; Figma's fixed defaults set aside, E02 having no duplicating, components nor styles (agent, SP-026, 2026-10-22, the choice left to research by the Product Owner; to confirm at VAL-036) | `interaction.md` §1 |
 
 ## Open questions
 
