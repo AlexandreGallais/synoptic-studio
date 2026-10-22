@@ -77,7 +77,7 @@
 | [US-063](./E02-F35-US-063-a-click-adds-a-shape.md) | F35 | A click with a tool adds a shape where it is clicked | done |
 | [AUD-037](./E02-F35-AUD-037-audit-f35.md) | F35 | Audit F35 | done |
 | [VAL-036](./E02-F35-VAL-036-validate-f35.md) | F35 | Validate F35 | ready |
-| [US-064](./E02-F36-US-064-a-drag-draws-the-box.md) | F36 | A drag with a tool draws the shape's box | ready |
+| [US-064](./E02-F36-US-064-a-drag-draws-the-box.md) | F36 | A drag with a tool draws the shape's box | done |
 | [US-065](./E02-F36-US-065-a-click-selects-a-shape.md) | F36 | The shape under the pointer shown, a click selects it | ready |
 | [US-066](./E02-F36-US-066-delete-removes-the-shape.md) | F36 | Delete removes the selected shape | ready |
 | [AUD-038](./E02-F36-AUD-038-audit-f36.md) | F36 | Audit F36 | ready |

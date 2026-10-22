@@ -50,6 +50,7 @@ Written at the end of each feature (`VAL`, demo page) and of each epic (`REV`, e
 | [F33 — The checks RET-004 listed](./f33-the-checks-ret-004-listed.md) | the coverage floor at 95 %, `typeCheck` in oxlint's configuration, the cargo tools' versions, one anchor per heading, the notes `move-rows` leaves, a `bench` binary judged by the guard |
 | [F34 — The use of each workflow](./f34-the-use-of-each-workflow.md) | the auto-merge split by base, the outside pull requests' workflow removed, CodeQL on the workflows, the link check kept |
 | [F35 — Several shapes on one drawing](./f35-several-shapes-on-one-drawing.md) | a click with a tool adds a shape where it is clicked, a new shape with the settings of the last shape of its kind |
+| [F36 — Draw, pick and remove shapes](./f36-draw-pick-and-remove-shapes.md) | a drag with a tool draws the new shape at the size dragged, square with Shift |
 | [E01 — Drawing symbol shapes from numbers](./e01-draw-shapes.md) | the eight features of E01, the words, a user test crossing them, the decisions |
 | [E14 — Drawing curves with handles, ellipses and round shapes](./e14-draw-curves.md) | the four features of E14, the words, the walk-through of the review, the decisions |
 | [E15 — Placing text in symbols](./e15-place-text.md) | the five features of E15, the words, the tour of the review, the decisions, the direction to remove |

@@ -1,6 +1,10 @@
 export * from "./add-placed-shape";
+export * from "./focus-new-text";
 export * from "./listen-to-placing";
 export * from "./read-drawing-point";
 export type * from "./shape-placement";
+export * from "./start-new-shape";
+export * from "./write-clicked-shape";
+export * from "./write-new-text-fields";
 export * from "./write-placed-box";
 export * from "./write-placed-text";
