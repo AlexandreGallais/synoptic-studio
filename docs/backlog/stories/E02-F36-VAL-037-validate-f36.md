@@ -32,3 +32,8 @@ One task = one commit, referenced as `VAL-037.T1`.
 - US-067: a click picks a shape only when its press was made with the Selector armed, so that the click ending a drag with a tool or placing a shape never picks one too; a click on the shape selected loads it again (`interaction.md` §2, Q49). Chosen by the agent on 2026-10-22.
 - US-067: the shape selected is outlined by the hover's band, 2 screen pixels wide about its contour as drawn, in the same color, whichever tool is armed, as Figma keeps a selection shown; the other ways were its box with handles, which come with moving and resizing, and a band of another color (`interaction.md` §2, Q49). Chosen by the agent on 2026-10-22.
 - US-067: with none selected, every shape stays drawn, the panel hides its fields, its title says no shape is selected and its status how to select or add one (`interaction.md` §2, Q49). Chosen by the agent on 2026-10-22.
+- US-067: with none selected, Export SVG cannot be reached, since it sits in the Text panel's options, shown for a text only before F36 too; to settle with the Product Owner at the validation, or with the editors' interface (E20). Noticed by the agent on 2026-10-22.
+
+## Question for the Product Owner at the validation
+
+From US-067, 2026-10-22: a picked text whose family is no longer in the font session — its files, read ahead, could not be read again (US-061) — cannot have its family chosen in the font list, so loading it measures it with the family the list falls back to, which changes a kept text (AUD-037). Three ways: (1) load it anyway, its family changed; (2) select it without loading its family until a field is typed; (3) show it selected with a message, its fields read-only. Rare: only after a font file is removed during the session.

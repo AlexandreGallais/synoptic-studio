@@ -3,7 +3,7 @@ id: US-067
 epic: E02
 feature: F36
 title: A click selects a shape, the panel loads it
-status: ready
+status: done
 points: 3
 ---
 
