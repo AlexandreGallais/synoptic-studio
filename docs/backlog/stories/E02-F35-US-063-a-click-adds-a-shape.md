@@ -3,7 +3,7 @@ id: US-063
 epic: E02
 feature: F35
 title: A click with a tool adds a shape where it is clicked
-status: ready
+status: done
 points: 3
 ---
 
