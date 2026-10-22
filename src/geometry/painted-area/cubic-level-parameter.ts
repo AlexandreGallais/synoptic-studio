@@ -1,3 +1,6 @@
+import { bisection } from "../../math";
+import { cubicPoint } from "../placement";
+
 import type { Cubic } from "../contour";
 
 /**
@@ -18,5 +21,8 @@ export function cubicLevelParameter(
   span: readonly [number, number],
   level: number,
 ): number {
-  return cubic.start.y === level ? span[0] : 0;
+  const [from, to] = span;
+  const rise = cubicPoint(cubic, to).y - cubicPoint(cubic, from).y;
+
+  return bisection((t) => (cubicPoint(cubic, t).y - level) * rise < 0, from, to);
 }

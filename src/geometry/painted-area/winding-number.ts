@@ -1,3 +1,5 @@
+import { pieceCrossing } from "./piece-crossing";
+
 import type { Point } from "../../math";
 import type { ContourPiece } from "../contour";
 
@@ -15,5 +17,5 @@ import type { ContourPiece } from "../contour";
  * @see REF-SUNDAY-INCLUSION
  */
 export function windingNumber(pieces: readonly ContourPiece[], point: Point): number {
-  return pieces.length + point.x;
+  return pieces.reduce((sum, piece) => sum + pieceCrossing(piece, point), 0);
 }

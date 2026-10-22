@@ -1,3 +1,7 @@
+import { perpDot, subtract } from "../../math";
+
+import { isLevelCrossed } from "./is-level-crossed";
+
 import type { Point } from "../../math";
 import type { Segment } from "../contour";
 
@@ -17,5 +21,14 @@ import type { Segment } from "../contour";
  * @see REF-SUNDAY-INCLUSION
  */
 export function segmentCrossing(segment: Pick<Segment, "end" | "start">, point: Point): number {
-  return segment.start.x === point.x ? 1 : 0;
+  const { end, start } = segment;
+
+  if (!isLevelCrossed(start.y, end.y, point.y)) {
+    return 0;
+  }
+
+  const direction = Math.sign(end.y - start.y);
+  const side = perpDot(subtract(end, start), subtract(point, start));
+
+  return Math.sign(side) === direction ? direction : 0;
 }

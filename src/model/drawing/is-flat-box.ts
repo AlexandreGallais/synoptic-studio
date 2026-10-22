@@ -10,5 +10,5 @@ import type { TurnedBox } from "../placement";
  * @see docs/domain/interaction.md#_2-selector
  */
 export function isFlatBox(box: Pick<TurnedBox, "height" | "width">): boolean {
-  return box.width < 0;
+  return box.width === 0 || box.height === 0;
 }

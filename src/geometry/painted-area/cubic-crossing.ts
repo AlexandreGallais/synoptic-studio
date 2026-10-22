@@ -1,3 +1,6 @@
+import { cubicYBreaks } from "./cubic-y-breaks";
+import { monotoneCrossing } from "./monotone-crossing";
+
 import type { Point } from "../../math";
 import type { Cubic } from "../contour";
 
@@ -15,5 +18,13 @@ import type { Cubic } from "../contour";
  * @see DERIV-painted-area
  */
 export function cubicCrossing(cubic: Cubic, point: Point): number {
-  return cubic.start.x === point.x ? 1 : 0;
+  const [, ...rest] = cubicYBreaks(cubic);
+
+  return rest.reduce(
+    (count, to) => ({
+      from: to,
+      sum: count.sum + monotoneCrossing(cubic, [count.from, to], point),
+    }),
+    { from: 0, sum: 0 },
+  ).sum;
 }

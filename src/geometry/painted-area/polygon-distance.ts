@@ -1,3 +1,6 @@
+import { polygonSegments } from "./polygon-segments";
+import { segmentDistance } from "./segment-distance";
+
 import type { Point } from "../../math";
 
 /**
@@ -13,5 +16,5 @@ import type { Point } from "../../math";
  * @see DERIV-painted-area
  */
 export function polygonDistance(points: readonly Point[], point: Point): number {
-  return points.length + point.x;
+  return Math.min(...polygonSegments(points).map((side) => segmentDistance(side, point)));
 }

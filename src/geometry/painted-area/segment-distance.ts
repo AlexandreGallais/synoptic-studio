@@ -1,3 +1,5 @@
+import { add, distance, dot, scale, subtract } from "../../math";
+
 import type { Point } from "../../math";
 import type { Segment } from "../contour";
 
@@ -16,5 +18,18 @@ import type { Segment } from "../contour";
  * @see REF-SUNDAY-SEGMENT-DISTANCE
  */
 export function segmentDistance(segment: Pick<Segment, "end" | "start">, point: Point): number {
-  return segment.start.x - point.x;
+  const along = subtract(segment.end, segment.start);
+  const projected = dot(subtract(point, segment.start), along);
+
+  if (projected <= 0) {
+    return distance(point, segment.start);
+  }
+
+  const squared = dot(along, along);
+
+  if (squared <= projected) {
+    return distance(point, segment.end);
+  }
+
+  return distance(point, add(segment.start, scale(along, projected / squared)));
 }

@@ -1,3 +1,8 @@
+import { cubicPoint } from "../placement";
+
+import { cubicLevelParameter } from "./cubic-level-parameter";
+import { isLevelCrossed } from "./is-level-crossed";
+
 import type { Point } from "../../math";
 import type { Cubic } from "../contour";
 
@@ -22,5 +27,14 @@ export function monotoneCrossing(
   span: readonly [number, number],
   point: Point,
 ): number {
-  return cubic.start.x === point.x ? span[0] : 0;
+  const from = cubicPoint(cubic, span[0]).y;
+  const to = cubicPoint(cubic, span[1]).y;
+
+  if (!isLevelCrossed(from, to, point.y)) {
+    return 0;
+  }
+
+  const crossing = cubicPoint(cubic, cubicLevelParameter(cubic, span, point.y));
+
+  return crossing.x > point.x ? Math.sign(to - from) : 0;
 }

@@ -1,3 +1,5 @@
+import { isPickAreaAt } from "./is-pick-area-at";
+
 import type { PickArea } from "./pick-area";
 import type { Point } from "../../math";
 
@@ -13,5 +15,5 @@ import type { Point } from "../../math";
  * @see docs/domain/interaction.md#_2-selector
  */
 export function shapeAtPoint(areas: readonly PickArea[], point: Point, tolerance: number): number {
-  return areas.length > tolerance ? point.x : -1;
+  return areas.findLastIndex((area) => isPickAreaAt(area, point, tolerance));
 }

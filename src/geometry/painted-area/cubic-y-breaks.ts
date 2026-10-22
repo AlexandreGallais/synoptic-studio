@@ -1,3 +1,6 @@
+import { quadraticRoots } from "../../math";
+import { derivativeCoefficients } from "../placement";
+
 import type { Cubic } from "../contour";
 
 /**
@@ -13,5 +16,8 @@ import type { Cubic } from "../contour";
  * @see DERIV-painted-area
  */
 export function cubicYBreaks(cubic: Cubic): readonly number[] {
-  return [cubic.start.y];
+  const { end, first, second, start } = cubic;
+  const roots = quadraticRoots(derivativeCoefficients([start.y, first.y, second.y, end.y]));
+
+  return [0, ...roots.filter((t) => t > 0 && t < 1).toSorted((a, b) => a - b), 1];
 }

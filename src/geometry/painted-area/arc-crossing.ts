@@ -1,3 +1,6 @@
+import { isInCircularSegment } from "./is-in-circular-segment";
+import { segmentCrossing } from "./segment-crossing";
+
 import type { Point } from "../../math";
 import type { Arc } from "../contour";
 
@@ -16,5 +19,11 @@ import type { Arc } from "../contour";
  * @see DERIV-painted-area
  */
 export function arcCrossing(arc: Arc, point: Point): number {
-  return arc.start.x === point.x ? 1 : 0;
+  const chord = segmentCrossing(arc, point);
+
+  if (!isInCircularSegment(arc, point)) {
+    return chord;
+  }
+
+  return arc.positive ? chord + 1 : chord - 1;
 }

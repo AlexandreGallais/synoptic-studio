@@ -1,3 +1,8 @@
+import { polygonSegments } from "../../geometry";
+import { textFrame, textFrameCorners } from "../text-layout";
+
+import { isFlatBox } from "./is-flat-box";
+
 import type { PickArea } from "./pick-area";
 import type { Size } from "../../geometry";
 import type { Text } from "../text";
@@ -14,5 +19,11 @@ import type { Text } from "../text";
  * @see docs/domain/interaction.md#_2-selector
  */
 export function textPickArea(text: Text, block: Size): PickArea {
-  return { corners: [], isFlat: text.isInBox && block.width < 0, pieces: [] };
+  const corners = textFrameCorners(text, block);
+
+  return {
+    corners,
+    isFlat: isFlatBox(textFrame(text, block)),
+    pieces: polygonSegments(corners),
+  };
 }

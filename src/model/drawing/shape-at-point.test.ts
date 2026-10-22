@@ -36,24 +36,28 @@ const SHAPE_B = rectangle({ angle: 0, height: 100, width: 100, x: 50, y: 50 }, 0
 /** The tolerance at scale 1: the screen's pixels are user units. */
 const TOLERANCE = PICK_TOLERANCE;
 
+/** The pull of the arch's handles, 40 up. */
+const PULL = { x: 0, y: -40 };
+
 /**
- * A box 100 × 100 at (0, 0) whose top side is an arch: its first point's handle after and its
+ * A square 100 × 100 at (0, 0) whose top side is an arch: its first point's handle after and its
  * second point's handle before both (0, −40), so that the side runs from (0, 0) up to y = −30 and
- * down to (100, 0): y = −120 t (1 − t), x = 300 t² − 200 t³.
+ * down to (100, 0): y = −120 t (1 − t), x = 300 t² − 200 t³. Its box takes the arch in, 100 × 130
+ * at (0, −30), the points stored in its frame so that they are drawn where they are written plus
+ * (0, −30) (`DERIV-free-shape-stretch`).
  */
 const ARCHED = {
-  ...SHAPE_A,
-  corners: SHAPE_A.corners.map((corner, index) => {
-    const pull = { x: 0, y: -40 };
-
-    if (index === 0) {
-      return { ...corner, handles: { ...NO_HANDLES, after: pull, isOn: true } };
-    }
-
-    return index === 1
-      ? { ...corner, handles: { ...NO_HANDLES, before: pull, isOn: true } }
-      : corner;
-  }),
+  angle: 0,
+  corners: [
+    { handles: { ...NO_HANDLES, after: PULL, isOn: true }, point: { x: 0, y: 30 }, radius: 0 },
+    { handles: { ...NO_HANDLES, before: PULL, isOn: true }, point: { x: 100, y: 30 }, radius: 0 },
+    { handles: NO_HANDLES, point: { x: 100, y: 130 }, radius: 0 },
+    { handles: NO_HANDLES, point: { x: 0, y: 130 }, radius: 0 },
+  ],
+  height: 130,
+  width: 100,
+  x: 0,
+  y: -30,
 };
 
 /** A round shape in a box 100 × 100 at (0, 0): a circle of radius 50 about (50, 50). */

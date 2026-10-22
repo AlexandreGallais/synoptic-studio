@@ -1,3 +1,7 @@
+import { arcCrossing } from "./arc-crossing";
+import { cubicCrossing } from "./cubic-crossing";
+import { segmentCrossing } from "./segment-crossing";
+
 import type { Point } from "../../math";
 import type { ContourPiece } from "../contour";
 
@@ -13,5 +17,17 @@ import type { ContourPiece } from "../contour";
  * @see DERIV-painted-area
  */
 export function pieceCrossing(piece: ContourPiece, point: Point): number {
-  return piece.start.x === point.x ? 1 : 0;
+  switch (piece.kind) {
+    case "arc": {
+      return arcCrossing(piece, point);
+    }
+
+    case "cubic": {
+      return cubicCrossing(piece, point);
+    }
+
+    case "segment": {
+      return segmentCrossing(piece, point);
+    }
+  }
 }

@@ -14,5 +14,5 @@
  * @see REF-SUNDAY-INCLUSION
  */
 export function isLevelCrossed(from: number, to: number, level: number): boolean {
-  return from === to && level === from;
+  return Math.min(from, to) <= level && level < Math.max(from, to);
 }

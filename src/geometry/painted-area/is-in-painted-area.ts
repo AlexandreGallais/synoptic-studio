@@ -1,3 +1,5 @@
+import { windingNumber } from "./winding-number";
+
 import type { Point } from "../../math";
 import type { ContourPiece } from "../contour";
 
@@ -14,5 +16,5 @@ import type { ContourPiece } from "../contour";
  * @see REF-SVG2-FILL-RULE
  */
 export function isInPaintedArea(pieces: readonly ContourPiece[], point: Point): boolean {
-  return pieces.length === point.x;
+  return windingNumber(pieces, point) !== 0;
 }

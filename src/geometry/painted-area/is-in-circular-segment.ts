@@ -1,3 +1,5 @@
+import { distance, perpDot, subtract } from "../../math";
+
 import type { Point } from "../../math";
 import type { Arc } from "../contour";
 
@@ -15,5 +17,7 @@ import type { Arc } from "../contour";
  * @see DERIV-painted-area
  */
 export function isInCircularSegment(arc: Arc, point: Point): boolean {
-  return arc.center.x === point.x;
+  const side = perpDot(subtract(arc.end, arc.start), subtract(point, arc.start));
+
+  return distance(arc.center, point) < arc.radius && (arc.positive ? side < 0 : side > 0);
 }

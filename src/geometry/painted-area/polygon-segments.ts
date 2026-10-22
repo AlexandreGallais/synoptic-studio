@@ -1,3 +1,5 @@
+import { cyclicItem } from "../contour";
+
 import type { Point } from "../../math";
 import type { Segment } from "../contour";
 
@@ -11,5 +13,9 @@ import type { Segment } from "../contour";
  * @see DERIV-painted-area
  */
 export function polygonSegments(points: readonly Point[]): readonly Segment[] {
-  return points.length > 0 ? [] : [];
+  return points.map((start, index) => ({
+    end: cyclicItem(points, index + 1, start),
+    kind: "segment",
+    start,
+  }));
 }

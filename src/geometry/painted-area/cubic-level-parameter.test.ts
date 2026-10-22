@@ -29,15 +29,15 @@ describe("cubicLevelParameter (DERIV-painted-area step 4)", () => {
 });
 
 describe("cubicLevelParameter (properties)", () => {
-  test.prop({ height: fc.integer({ max: 1000, min: 1 }), level: fc.double({ max: 1, min: 0 }) })(
-    "reaches the level asked on either side of an arch",
-    ({ height, level }) => {
-      // An arch of height ¾ h: its y runs over [−¾ h, 0] on each half.
-      const arch = { ...ARCH, first: { x: 0, y: -height }, second: { x: 100, y: -height } };
-      const y = -0.75 * height * level;
+  test.prop({
+    height: fc.integer({ max: 1000, min: 1 }),
+    level: fc.double({ max: 1, min: 0, noNaN: true }),
+  })("reaches the level asked on either side of an arch", ({ height, level }) => {
+    // An arch of height ¾ h: its y runs over [−¾ h, 0] on each half.
+    const arch = { ...ARCH, first: { x: 0, y: -height }, second: { x: 100, y: -height } };
+    const y = -0.75 * height * level;
 
-      expect(cubicPoint(arch, cubicLevelParameter(arch, [0, 0.5], y)).y).toBeCloseTo(y, 6);
-      expect(cubicPoint(arch, cubicLevelParameter(arch, [0.5, 1], y)).y).toBeCloseTo(y, 6);
-    },
-  );
+    expect(cubicPoint(arch, cubicLevelParameter(arch, [0, 0.5], y)).y).toBeCloseTo(y, 6);
+    expect(cubicPoint(arch, cubicLevelParameter(arch, [0.5, 1], y)).y).toBeCloseTo(y, 6);
+  });
 });

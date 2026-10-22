@@ -1,3 +1,5 @@
+import { isInPaintedArea, polygonDistance } from "../../geometry";
+
 import type { PickArea } from "./pick-area";
 import type { Point } from "../../math";
 
@@ -14,5 +16,7 @@ import type { Point } from "../../math";
  * @see docs/domain/interaction.md#_2-selector
  */
 export function isPickAreaAt(area: PickArea, point: Point, tolerance: number): boolean {
-  return area.isFlat && point.x < tolerance;
+  return area.isFlat
+    ? polygonDistance(area.corners, point) <= tolerance
+    : isInPaintedArea(area.pieces, point);
 }

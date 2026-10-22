@@ -54,6 +54,20 @@ describe("cubicYBreaks (DERIV-painted-area step 4)", () => {
     expect(cubicYBreaks(straight)).toEqual([0, 1]);
   });
 
+  it("leaves out turns at its ends, t = 0 and t = 1", () => {
+    // y: 0, 0, 30, 30: a = 3(0 + 0 − 90 + 30) = −180, b = 6(0 − 0 + 30) = 180, c = 0, so
+    // y′ = 180 t (1 − t): q = −180, t₁ = q / a = 1, t₂ = c / q = −0, neither strictly inside.
+    const flatEnds: Cubic = {
+      end: { x: 30, y: 30 },
+      first: { x: 10, y: 0 },
+      kind: "cubic",
+      second: { x: 20, y: 30 },
+      start: { x: 0, y: 0 },
+    };
+
+    expect(cubicYBreaks(flatEnds)).toEqual([0, 1]);
+  });
+
   it("keeps only its ends for four equal points", () => {
     // y′ = 0 everywhere: q = 0, the roots NaN, left out.
     const point = { x: 5, y: 5 };
