@@ -20,8 +20,8 @@ type TextMeasures = {
 const JSON_INDENT = 2;
 
 /**
- * Draws a text at a fixed scale (1 user unit = 1 CSS pixel), above the shapes placed before it,
- * kept as the shape edited (F35), turned by its angle, with its
+ * Draws a text at a fixed scale (1 user unit = 1 CSS pixel), between the shapes below and above
+ * it, kept as the shape edited (F35, F36), turned by its angle, with its
  * measured block, or its box when it sits in one, behind it as a dashed frame turned with it — a
  * turned text also with its straight box, upright, and its x, y, width and height (US-039) — and
  * shows each stage in the pipeline column: the model, the block, the positioned lines and the SVG
@@ -37,14 +37,16 @@ const JSON_INDENT = 2;
  * @see docs/backlog/stories/E15-F05-US-032-turn-a-text.md
  */
 export function showText(document: Document, text: Text, measures: TextMeasures): void {
-  const svg = createDrawingSvg(document);
   const drawn = measuredTextDrawing(measures.metrics, text, measures.measured);
   const written = createTextDocument(document, { drawn, text });
   const serializer = new XMLSerializer();
+  const svg = createDrawingSvg(document, [
+    ...createTextFrame(document, text, drawn),
+    written.element,
+  ]);
 
-  svg.append(...createTextFrame(document, text, drawn), written.element);
   selectElement(document, "canvas").replaceChildren(svg);
-  writeStoredDrawing(document, DRAWING_KEYS.edited, [text]);
+  writeStoredDrawing(document, DRAWING_KEYS.edited, [{ kind: "text", shape: text }]);
   writeLeftOutFaces(document, written.leftOut);
   writeTextStraightBox(document, text, drawn.block);
   writeText(document, "model", JSON.stringify(text, undefined, JSON_INDENT));

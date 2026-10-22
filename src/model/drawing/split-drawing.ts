@@ -13,5 +13,12 @@ import type { DrawingSplit } from "./drawing-split";
  * @see docs/domain/interaction.md#_2-selector
  */
 export function splitDrawing<T>(drawing: readonly T[], index: number): DrawingSplit<T> {
-  return { above: [], below: drawing.slice(0, index), edited: [] };
+  // A negative index reads no item, as one past the last.
+  const picked = drawing[index];
+
+  if (picked === undefined) {
+    return { above: [], below: drawing, edited: [] };
+  }
+
+  return { above: drawing.slice(index + 1), below: drawing.slice(0, index), edited: [picked] };
 }

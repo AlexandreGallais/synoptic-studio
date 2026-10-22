@@ -156,7 +156,7 @@ describe("the panel loads the shape picked, per kind (US-067)", () => {
     expect(readModel()).toEqual(rectangle);
   });
 
-  it("[F36.AC3] shows a polygon picked with its corners, radius and anchor", () => {
+  it("[F36.AC3] shows a polygon picked with its corners, radius, anchor and stretched option", () => {
     // A pentagon in the box 100 × 100 at (250, 150), anchored at its top-left: 100 wide, about
     // 95 high, so that (300, 200), 50 from its left and its top, is inside.
     placeShape("polygon", { x: 300, y: 200 });
@@ -167,6 +167,7 @@ describe("the panel loads the shape picked, per kind (US-067)", () => {
     const pentagon = readModel();
 
     placeShape("polygon", { x: 550, y: 200 });
+    clickElement("stretched");
     typeValue("corners", "8");
     typeValue("radius", "0");
     chooseRadio("anchor", "mid mid");
@@ -181,6 +182,24 @@ describe("the panel loads the shape picked, per kind (US-067)", () => {
     ]);
 
     expect(readModel()).toEqual(pentagon);
+  });
+
+  it("[F36.AC3] keeps the settings of the shape the panel leaves for the next of its kind", () => {
+    placeShape("polygon", { x: 300, y: 200 });
+    typeValue("corners", "3");
+    // A, the rectangle the page opens with, 120 × 80 at (0, 0), holds (60, 40).
+    pick({ x: 60, y: 40 });
+    placeShape("polygon", { x: 550, y: 200 });
+
+    // The triangle left by the click, the last polygon the panel showed (SP-026).
+    expect(readValue("corners")).toBe("3");
+
+    // A polygon of 50 corners is refused: left by a click, it leaves nothing for the next.
+    typeValue("corners", "50");
+    pick({ x: 60, y: 40 });
+    placeShape("polygon", { x: 550, y: 450 });
+
+    expect(readValue("corners")).toBe("3");
   });
 
   it("[F36.AC3] shows a free shape picked as a free shape", () => {

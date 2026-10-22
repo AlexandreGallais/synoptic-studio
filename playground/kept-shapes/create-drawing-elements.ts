@@ -9,7 +9,6 @@ import {
 } from "../../src";
 import { readTextMeasure, readTextMetrics } from "../text-measure";
 
-import { DRAWING_KEYS } from "./drawing-keys";
 import { KEPT_TEXT_METRICS } from "./kept-text-metrics";
 import { readStoredDrawing } from "./read-stored-drawing";
 
@@ -58,16 +57,17 @@ function createKeptShapeElement(document: Document, shape: Shape): SVGPathElemen
 }
 
 /**
- * Creates the elements of the shapes placed below the one the panel edits, in the order drawn, so
- * that each is drawn above those before it and below the one edited (F35).
+ * Creates the elements of the shapes kept below or above the one the panel edits, in the order
+ * drawn, so that each is drawn above those before it (F35, F36).
  *
  * @kind procedure
  * @param document - page document
+ * @param key - `DRAWING_KEYS.below` or `DRAWING_KEYS.above`
  * @returns their elements, the first drawn first
- * @see docs/backlog/stories/E02-F35-US-063-a-click-adds-a-shape.md
+ * @see docs/domain/interaction.md#_2-selector
  */
-export function createDrawingElements(document: Document): readonly SVGElement[] {
-  return readStoredDrawing(document, DRAWING_KEYS.below).flatMap((shape) =>
+export function createDrawingElements(document: Document, key: string): readonly SVGElement[] {
+  return readStoredDrawing(document, key).flatMap(({ shape }) =>
     isDrawnText(shape)
       ? createKeptTextElements(document, shape)
       : [createKeptShapeElement(document, shape)],

@@ -7,7 +7,7 @@ import { readDrawingPoint } from "./read-drawing-point";
 /**
  * Listens to clicks on the drawing: with a tool armed, a click places its shape there
  * (`addPlacedShape`, F35), as does a drag released on the press's integer point (F36); with the
- * selector, it does nothing yet.
+ * selector, it places nothing, the shape under it picked instead (`listenToPicking`, F36).
  *
  * @kind procedure
  * @param document - page document

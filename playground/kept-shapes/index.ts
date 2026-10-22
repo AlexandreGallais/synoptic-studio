@@ -6,6 +6,7 @@ export * from "./drawing-margin";
 export type * from "./kept-shape";
 export * from "./kept-text-metrics";
 export * from "./read-drawn-texts";
+export * from "./read-kept-drawing";
 export * from "./read-stored-drawing";
 export * from "./view-scale";
 export * from "./write-stored-drawing";
