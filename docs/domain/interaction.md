@@ -16,10 +16,12 @@ How the user acts on shapes in the editors: tools, selection, node editing, snap
 
 No pen tool and no freehand drawing (see `shapes.md` §3).
 
+**Keys editable** (Product Owner, 2026-10-22): every shortcut and modifier key (Shift, Ctrl, Delete, the arrows…) can be changed by the user, simply, in a standard place for settings; the defaults follow Figma's. For E20.
+
 **Adding a shape** (Product Owner, 2026-10-22, F35), as Figma does:
 
 - a tool chosen, a click on the drawing adds a shape 100 × 100 centred on the point clicked, on integers; a text fits its content instead;
-- a press, a drag and a release draw the shape's box instead, the shape following the pointer until the release; a text dragged sits in a box of that size;
+- a press, a drag and a release draw the shape's box instead, the shape following the pointer until the release; a text dragged sits in a box of that size; with Shift held the box stays square, its side the larger of the two distances dragged, so that a round shape is a circle (Product Owner, 2026-10-22; Shift as Figma does, Inkscape uses Ctrl);
 - the new shape is drawn above the others, the drawing an ordered list of shapes, the last drawn on top, flat until E13.
 - **For later**: duplicating a shape, the offset of its first move remembered for the next copies, as Figma does, so that copies never pile up (Product Owner, 2026-10-22; not in E02).
 

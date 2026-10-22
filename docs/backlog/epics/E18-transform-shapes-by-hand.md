@@ -29,7 +29,7 @@ Ordered by the agent at SP-025 (2026-10-19). A feature gets its id when it start
 
 | Feature | Expected stories | Status |
 | --- | --- | --- |
-| Resize by the box's handles | the eight handles, the opposite side fixed as in Inkscape (`shapes.md`, Rectangle); the reference point of x and y among the box's nine anchors, shown and typed; a polygon and a round shape stretched as their own rules say (3) | to refine |
+| Resize by the box's handles | the eight handles, the opposite side fixed as in Inkscape (`shapes.md`, Rectangle); the reference point of x and y among the box's nine anchors, shown and typed; a polygon and a round shape stretched as their own rules say; Shift held on a corner keeps the shape's proportions (Product Owner, 2026-10-22) (3) | to refine |
 | Turn about a chosen center | a rotation mode entered by a button, its center shown, by default the box's center; the center free at an x and y, or on one of the box's nine anchors; one angle only, a new center moving nothing (3) | to refine |
 | Turn by handles, centers on points | handles on the turned box's corners, as Figma, and on the straight box's; the center on a point of the shape, following it, or on a point or the center of another shape, placed only; the straight box hidden or dashed (3) | to refine |
 | Drag points and handles | in Points mode, a point dragged on integers, several selected points moved together, a curve's handles dragged (E14, out of scope there) (2 to 3) | to refine |

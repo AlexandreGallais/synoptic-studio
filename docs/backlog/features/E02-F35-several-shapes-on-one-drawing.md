@@ -14,7 +14,7 @@ Refined with the Product Owner on 2026-10-22 (first round, no question left): a 
 ## Acceptance criteria
 
 1. Given the rectangle, polygon, round shape or text tool chosen, when the drawing is clicked, then a shape 100 × 100 is added centred on the point clicked, on integers, a text fitting its content instead; it is drawn above the shapes already there, which do not change, and the SVG exported holds every shape in the order drawn.
-2. Given a tool chosen, when the pointer is pressed on the drawing, dragged and released, then the shape's box follows the pointer from the press to the release, in any direction, its corners on integers, and the shape is kept at the release; a text dragged sits in a box of that size.
+2. Given a tool chosen, when the pointer is pressed on the drawing, dragged and released, then the shape's box follows the pointer from the press to the release, in any direction, its corners on integers, and the shape is kept at the release; a text dragged sits in a box of that size; with Shift held, the box stays square, a round shape a circle.
 3. Given several shapes, when the pointer passes over one, then that shape is outlined in a layer above the drawing which the pointer passes through, the drawing's SVG unchanged; when one is clicked, it alone is selected and the panel shows and edits its values; a click on the empty drawing selects none.
 4. Given a shape selected, when Delete or Backspace is pressed outside a field, then that shape is removed, the others unchanged, and none is selected.
 
