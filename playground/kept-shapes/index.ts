@@ -3,6 +3,7 @@ export * from "./create-drawing-svg";
 export * from "./create-view-svg";
 export * from "./drawing-keys";
 export * from "./drawing-margin";
+export type * from "./kept-shape";
 export * from "./kept-text-metrics";
 export * from "./read-drawn-texts";
 export * from "./read-stored-drawing";

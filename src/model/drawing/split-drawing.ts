@@ -1,0 +1,17 @@
+import type { DrawingSplit } from "./drawing-split";
+
+/**
+ * The drawing split around a shape picked (F36): the shapes before it below, the shape edited, the
+ * shapes after it above, so that it keeps its place in the order drawn; no shape picked, an index
+ * outside the drawing, leaves every shape below and none edited.
+ *
+ * @kind domain
+ * @template T - type of the shapes, or of what is kept of each
+ * @param drawing - the shapes in the order drawn, the last on top
+ * @param index - the index of the shape picked (`shapeAtPoint`), −1 for none
+ * @returns the three parts, which joined give the drawing back
+ * @see docs/domain/interaction.md#_2-selector
+ */
+export function splitDrawing<T>(drawing: readonly T[], index: number): DrawingSplit<T> {
+  return { above: [], below: drawing.slice(0, index), edited: [] };
+}

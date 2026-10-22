@@ -28,7 +28,7 @@ Cut from US-065 on 2026-10-22. A shape picked from the middle of the drawing kee
 
 ## Tasks
 
-- [ ] T1 — The drawing split around the edited shape, the selection: interface and failing tests (1 h)
+- [x] T1 — The drawing split around the edited shape, the selection: interface and failing tests (1 h)
 - [ ] T2 — The click, the selection outline, none selected, the tests of T1 passing (2 h)
 - [ ] T3 — The panel loaded per kind, a rectangle as a Rectangle, a text with its whole style; the Product Owner test card (2 h)
 

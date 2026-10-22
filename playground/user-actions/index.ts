@@ -12,6 +12,7 @@ export * from "./load-page";
 export * from "./open-on-step";
 export * from "./open-page";
 export * from "./open-served-page";
+export * from "./press-and-click";
 export * from "./press-key";
 export * from "./press-pointer";
 export * from "./read-checked-radio";
