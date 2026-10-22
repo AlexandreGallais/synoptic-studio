@@ -3,7 +3,7 @@ id: US-063
 epic: E02
 feature: F35
 title: A click with a tool adds a shape where it is clicked
-status: ready
+status: parked
 points: 3
 ---
 
@@ -34,3 +34,11 @@ The drawing becomes an ordered list of shapes, the last drawn on top, flat until
 - [ ] T3 — The playground's tools place shapes on a click; the Product Owner test card (2 h)
 
 One task = one commit, referenced as `US-063.Tn` in the commit footer.
+
+## Question for the Product Owner
+
+Asked on 2026-10-22, after T2 (the drawing as a list of shapes, the box centred on a click, in the library, pushed on `feat/us-063-a-click-adds-a-shape`). T3, the playground's tools placing shapes as Figma does, makes 234 of the playground's tests fail in 31 files: since E01 a tool button turns the edited shape into another kind and keeps its values (120 × 80 at (0, 0)), and the E15 checklist lines say "choose the Text tool" with no click on the drawing; US-032's memory of X, Y and angle per tool becomes dead code. The work no longer fits US-063's three tasks.
+
+- **A**: Figma's way in the one playground page: the tests and checklists of E01 to E15 migrated (choose the tool, click the drawing, type the values), the tool memory removed; F35 split into two features, the first the migration and the click, the second the drag, the hover and click selection, and Delete.
+- **B**: a tool button still turns the edited shape into its kind, and also arms the placing: few tests change, but choosing Polygon with a rectangle selected turns it into a polygon, against Figma's way.
+- **D**: a new playground page for the drawing of several shapes (`?drawing`), Figma's way, the current page kept as it is for the checklists of E01 to E15; the new page reuses the panel, no old test migrated.

@@ -24,7 +24,7 @@ In delivery order.
 
 | ID | Type | Title | Status |
 | --- | --- | --- | --- |
-| [US-063](../stories/E02-F35-US-063-a-click-adds-a-shape.md) | US | A click with a tool adds a shape where it is clicked | ready |
+| [US-063](../stories/E02-F35-US-063-a-click-adds-a-shape.md) | US | A click with a tool adds a shape where it is clicked | parked |
 | [US-064](../stories/E02-F35-US-064-a-drag-draws-the-box.md) | US | A drag with a tool draws the shape's box | ready |
 | [US-065](../stories/E02-F35-US-065-a-click-selects-a-shape.md) | US | The shape under the pointer shown, a click selects it | ready |
 | [US-066](../stories/E02-F35-US-066-delete-removes-the-shape.md) | US | Delete removes the selected shape | ready |

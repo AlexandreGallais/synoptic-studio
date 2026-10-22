@@ -72,7 +72,7 @@
 | [VAL-009](./E01-F06-VAL-009-validate-stretched-polygon.md) | F06 | Validate F06 on the reference cases | done |
 | [REV-001](./E01-REV-001-review-e01.md) | E01 | Review E01 with the Product Owner | done |
 | [RET-001](./E01-RET-001-retrospective-e01.md) | E01 | Retrospective of E01 | done |
-| [US-063](./E02-F35-US-063-a-click-adds-a-shape.md) | F35 | A click with a tool adds a shape where it is clicked | ready |
+| [US-063](./E02-F35-US-063-a-click-adds-a-shape.md) | F35 | A click with a tool adds a shape where it is clicked | parked |
 | [US-064](./E02-F35-US-064-a-drag-draws-the-box.md) | F35 | A drag with a tool draws the shape's box | ready |
 | [US-065](./E02-F35-US-065-a-click-selects-a-shape.md) | F35 | The shape under the pointer shown, a click selects it | ready |
 | [US-066](./E02-F35-US-066-delete-removes-the-shape.md) | F35 | Delete removes the selected shape | ready |
