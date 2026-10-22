@@ -1,6 +1,7 @@
 import { isDrawnText } from "../../src";
 
 import { loadPickedGeometry } from "./load-picked-geometry";
+import { loadPickedText } from "./load-picked-text";
 
 import type { KeptShape } from "../kept-shapes";
 
@@ -9,7 +10,7 @@ import type { KeptShape } from "../kept-shapes";
  * values written into its fields — a rectangle as a Rectangle, its box and its radius, though
  * stored as a free shape (ADR-0032); a polygon its corners, stretched option and anchor; a free
  * shape kept as one (`loadPickedGeometry`); a text its whole style, the font session taking its
- * family.
+ * family (`loadPickedText`).
  *
  * @kind procedure
  * @param document - page document
@@ -19,7 +20,9 @@ import type { KeptShape } from "../kept-shapes";
 export function loadPickedShape(document: Document, kept: KeptShape): void {
   const { kind, shape } = kept;
 
-  if (!isDrawnText(shape)) {
+  if (isDrawnText(shape)) {
+    loadPickedText(document, shape);
+  } else {
     loadPickedGeometry(document, kind, shape);
   }
 }

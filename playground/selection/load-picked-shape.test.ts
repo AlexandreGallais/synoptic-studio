@@ -215,6 +215,20 @@ describe("the panel loads the shape picked, per kind (US-067)", () => {
     expect(readModel()).toEqual(free);
   });
 
+  it("[F36.AC3] gives a turned text picked back its place, its fractions kept", () => {
+    // The text `Text` centred on (200, 300), then turned about its middle, which stays there.
+    placeShape("text", { x: 200, y: 300 });
+    typeValue("angle", "30");
+
+    const turned = readModel();
+
+    placeShape("rectangle", { x: 550, y: 200 });
+    pick({ x: 200, y: 300 });
+
+    expect(readValue("angle")).toBe("30");
+    expect(readModel()).toEqual(turned);
+  });
+
   it("[F36.AC3] loads a text picked with its whole style, the font session taking its family", () => {
     writeFontSession(document, { ...readFontSession(document), kept: [DEFAULT_FONT, ROBOTO] });
     placeShape("text", { x: 200, y: 300 });
