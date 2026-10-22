@@ -13,7 +13,9 @@ import type { Segment } from "../contour";
  *
  * @kind geometry
  * @param segment - its start A and its end B
- * @param halfWidth - the half width h of the band, in user units, > 0
+ * @param halfWidth - the half width h of the band, in user units, > 0: half a stroke's width, the
+ * radius of its round join, a sector "of diameter stroke-width" (`REF-SVG2-PAINT`, whose
+ * sentence on a dash says stroke-width where half is meant)
  * @returns the rectangle's four sides, from A − n; none for a segment of length 0
  * @see REF-SVG2-PAINT
  */

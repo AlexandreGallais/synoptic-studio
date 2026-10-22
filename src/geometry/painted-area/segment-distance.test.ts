@@ -31,6 +31,14 @@ describe("segmentDistance (DERIV-painted-area step 6)", () => {
     expect(segmentDistance({ end: { x: 5, y: 5 }, start: { x: 5, y: 5 } }, { x: 8, y: 9 })).toBe(5);
   });
 
+  it("measures to the foot when it falls just past the start", () => {
+    // (0, 0) to (2, 1), P = (1, −1): w · v = 2 − 1 = 1 > 0, v · v = 5; the foot (⅖, ⅕), the
+    // distance to the line x − 2y = 0: |1 + 2| / √5 = 3 / √5 ≈ 1.341641, less than |P − S| = √2.
+    expect(
+      segmentDistance({ end: { x: 2, y: 1 }, start: { x: 0, y: 0 } }, { x: 1, y: -1 }),
+    ).toBeCloseTo(3 / Math.sqrt(5), 12);
+  });
+
   it("is 0 on the segment", () => {
     expect(segmentDistance(SEGMENT, { x: 20, y: 0 })).toBe(0);
   });

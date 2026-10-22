@@ -1,6 +1,6 @@
 # DERIV-painted-area — Whether a point is in a contour's painted area
 
-Used by: EN-143 (F36), the shape under the pointer (`interaction.md` §2). Sources: `REF-SVG2-FILL-RULE` (the nonzero rule), `REF-SUNDAY-INCLUSION` and `REF-BOURKE-POINT-IN-POLYGON` (a horizontal ray, the half-open test of an edge's ends, the winding number of any closed curve), `REF-MATHWORLD-PERP-DOT`, `REF-POMAX-BEZIER` (a curve's crossings with a line as the roots of its y), `REF-WIKI-QUADRATIC`, `REF-MATHWORLD-BISECTION`, `REF-SUNDAY-SEGMENT-DISTANCE` and `REF-BOURKE-POINT-LINE` (a point's distance to a segment); `DERIV-fillet-arc`, `DERIV-cubic-sides`.
+Used by: EN-143 (F36), the shape under the pointer (`interaction.md` §2). Sources: `REF-SVG2-FILL-RULE` (the nonzero rule), `REF-SUNDAY-INCLUSION` and `REF-BOURKE-POINT-IN-POLYGON` (a horizontal ray, the half-open test of an edge's ends, the winding number of any closed curve), `REF-MATHWORLD-PERP-DOT`, `REF-POMAX-BEZIER` (a curve's crossings with a line as the roots of its y), `REF-WIKI-QUADRATIC`, `REF-MATHWORLD-BISECTION`, `REF-SUNDAY-SEGMENT-DISTANCE` and `REF-BOURKE-POINT-LINE` (a point's distance to a segment); `DERIV-fillet-arc`, `DERIV-fillet-beside-curve`, `DERIV-cubic-sides`.
 
 No single source counts a ray's crossings with a contour of segments, fillet arcs and cubic sides: the sources count them on a polygon's edges, and find a curve's crossings with a line as roots. This page joins them.
 
@@ -37,7 +37,7 @@ The rule is the same read backwards: `count(E, S) = −count(S, E)`, the range o
 
 ## Step 3 — A fillet arc, by its chord
 
-A fillet sweeps less than half a turn (`DERIV-fillet-arc`, step 4). Going along the arc from `S` to `E`, then back along its chord from `E` to `S`, is a closed curve, so by step 1 and step 2's symmetry
+A fillet sweeps less than half a turn (`DERIV-fillet-arc`, step 4), and so does one beside a curved side (`DERIV-fillet-beside-curve`, step 8: it turns "by less than π while (i) holds"). Going along the arc from `S` to `E`, then back along its chord from `E` to `S`, is a closed curve, so by step 1 and step 2's symmetry
 
 `count(arc) = count(S, E) + count(loop)`.
 

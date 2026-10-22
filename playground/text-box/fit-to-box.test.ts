@@ -7,7 +7,7 @@ import {
   chooseShapeKind,
   clickElement,
   openServedPage,
-  readText,
+  readModel,
   readValue,
   selectPageElement,
   typeValue,
@@ -16,15 +16,6 @@ import {
 // Inter 4.1 Regular 16, kerning included: "Pump P-101" 87.953125 wide, a line 19.359375 tall
 // (turned-text-in-place.test.ts); two lines 38.71875 tall. Its box: ⌈87.953125⌉ × ⌈19.359375⌉
 // = 88 × 20, then 88 × 39 (DERIV-text-box, step 11).
-
-/** The model the pipeline column shows, the fields this story reads. */
-type ShownText = {
-  readonly boxHeight: number;
-  readonly boxWidth: number;
-  readonly isInBox: boolean;
-  readonly x: number;
-  readonly y: number;
-};
 
 /**
  * Types a content in the Text tool's text area, as the designer would.
@@ -39,16 +30,6 @@ function typeContent(content: string): void {
   }
 
   area.dispatchEvent(new Event("input", { bubbles: true }));
-}
-
-/**
- * Reads the text model the pipeline column shows.
- *
- * @returns its box, its kind and its position
- */
-function readModel(): ShownText {
-  // oxlint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-type-assertion -- written by JSON.stringify of a Text
-  return JSON.parse(readText("#model")) as ShownText;
 }
 
 /**

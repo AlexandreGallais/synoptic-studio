@@ -1,6 +1,8 @@
 import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
+import { distance } from "../../math";
+
 import { pieceSamples } from "./piece-samples";
 
 import type { Point } from "../../math";
@@ -19,6 +21,21 @@ function expectPointsClose(points: readonly Point[], expected: readonly Point[])
     expect(points[index]?.x).toBeCloseTo(point.x, 9);
     expect(points[index]?.y).toBeCloseTo(point.y, 9);
   }
+}
+
+/**
+ * The longest chord between consecutive points.
+ *
+ * @param points - what `pieceSamples` gave
+ * @returns its length; 0 for fewer than two points
+ */
+function longestChord(points: readonly Point[]): number {
+  const [first = { x: 0, y: 0 }] = points;
+
+  return Math.max(
+    0,
+    ...points.slice(1).map((point, index) => distance(points[index] ?? first, point)),
+  );
 }
 
 /** The quarter of the circle of radius 10 about the origin, from (10, 0) down to (0, 10). */
@@ -70,8 +87,8 @@ describe("pieceSamples", () => {
     ]);
   });
 
-  it("cuts a cubic by its control polygon: 24 long, a step of 12, its point at t = ½", () => {
-    // |P0P1| + |P1P2| + |P2P3| = 8 + 8 + 8 = 24, 2 steps; B(½) = (P0 + 3P1 + 3P2 + P3) / 8 =
+  it("cuts a cubic by its longest side: 8, three times over a step of 12, its point at t = ½", () => {
+    // max(|P0P1|, |P1P2|, |P2P3|) = 8, ⌈3 · 8 / 12⌉ = 2 steps; B(½) = (P0 + 3P1 + 3P2 + P3) / 8 =
     // ((0 + 0 + 24 + 8) / 8, (0 + 24 + 24 + 0) / 8) = (4, 6).
     const cubic: Cubic = {
       end: { x: 8, y: 0 },
@@ -86,6 +103,25 @@ describe("pieceSamples", () => {
       { x: 4, y: 6 },
       { x: 8, y: 0 },
     ]);
+  });
+
+  it("cuts a cubic whose speed is far from even into chords of at most the step", () => {
+    // Its sides 200, 100√2 ≈ 141.42 and 0: the polygon's length 341.42 gave 171 steps, a chord of
+    // 3.478 near t = 0, where |B′(0)| = 3 · 200 = 600. ⌈3 · 200 / 2⌉ = 300 steps: every chord at
+    // most the bound of |B′|, 600, over 300 = 2.
+    const points = pieceSamples(
+      {
+        end: { x: 100, y: 100 },
+        first: { x: 200, y: 0 },
+        kind: "cubic",
+        second: { x: 100, y: 100 },
+        start: { x: 0, y: 0 },
+      },
+      2,
+    );
+
+    expect(points).toHaveLength(301);
+    expect(longestChord(points)).toBeLessThanOrEqual(2);
   });
 
   it("gives a cubic of length 0 its two ends, one step", () => {
@@ -144,5 +180,15 @@ describe("pieceSamples (properties)", () => {
     expect(samples[0]).toEqual(start);
     expect(samples.at(-1)).toEqual(end);
     expect(samples.length).toBeGreaterThanOrEqual(2);
+  });
+
+  test.prop({
+    points: fc.tuple(point, point, point, point),
+    step: fc.integer({ max: 20, min: 1 }),
+  })("cuts a cubic into chords of at most `step`", ({ points, step }) => {
+    const [start, first, second, end] = points;
+    const samples = pieceSamples({ end, first, kind: "cubic", second, start }, step);
+
+    expect(longestChord(samples)).toBeLessThanOrEqual(step + 1e-9);
   });
 });

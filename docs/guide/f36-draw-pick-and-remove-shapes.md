@@ -1,4 +1,4 @@
-# F36 — Draw, pick and remove shapes
+# F36 — Draw and pick shapes
 
 ## What you can do now
 

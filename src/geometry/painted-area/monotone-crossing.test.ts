@@ -44,6 +44,21 @@ describe("monotoneCrossing (DERIV-painted-area step 4)", () => {
     expect(monotoneCrossing(ARCH, [0.5, 1], { x: -10, y: 0 })).toBe(0);
   });
 
+  it("counts 0 for a crossing at the point itself, not strictly right of it", () => {
+    // A straight side down x = 0, from (0, 0) to (0, 30), its control points on it: every
+    // B(t) has x = 0, so the crossing of y = 15 is at x = 0, not > 0.
+    const side: Cubic = {
+      end: { x: 0, y: 30 },
+      first: { x: 0, y: 10 },
+      kind: "cubic",
+      second: { x: 0, y: 20 },
+      start: { x: 0, y: 0 },
+    };
+
+    expect(monotoneCrossing(side, [0, 1], { x: 0, y: 15 })).toBe(0);
+    expect(monotoneCrossing(side, [0, 1], { x: -1, y: 15 })).toBe(1);
+  });
+
   it("counts 0 above the arch", () => {
     expect(monotoneCrossing(ARCH, [0.5, 1], { x: 50, y: -35 })).toBe(0);
   });

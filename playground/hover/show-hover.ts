@@ -1,4 +1,4 @@
-import { PICK_TOLERANCE, shapeAtPoint } from "../../src";
+import { PICK_TOLERANCE, screenToUser, shapeAtPoint } from "../../src";
 import { VIEW_SCALE, createViewSvg } from "../kept-shapes";
 import { selectElement } from "../page";
 import { readArmedTool } from "../toolbar";
@@ -12,7 +12,7 @@ import type { Point } from "../../src";
 
 /**
  * Creates the outline of the shape under a point (`shapeAtPoint`, the reach of a shape without
- * area `PICK_TOLERANCE` over the view's scale): the band about its contour as drawn
+ * area `PICK_TOLERANCE` in user units, `screenToUser`): the band about its contour as drawn
  * (`createOutlineElement`), of class `hover`.
  *
  * @kind procedure
@@ -23,7 +23,7 @@ import type { Point } from "../../src";
  */
 function createHoverElements(document: Document, point: Point): readonly SVGPathElement[] {
   const areas = readPickAreas(document);
-  const area = areas[shapeAtPoint(areas, point, PICK_TOLERANCE / VIEW_SCALE)];
+  const area = areas[shapeAtPoint(areas, point, screenToUser(PICK_TOLERANCE, VIEW_SCALE))];
 
   return area === undefined ? [] : [createOutlineElement(document, area, "hover")];
 }

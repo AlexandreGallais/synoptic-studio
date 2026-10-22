@@ -1,13 +1,14 @@
 import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
+import { subtract } from "../../math";
 import { polygonSegments } from "../painted-area";
 
 import { circleArcs } from "./circle-arcs";
 import { contourBand } from "./contour-band";
 
 import type { Point } from "../../math";
-import type { Arc, Segment } from "../contour";
+import type { Arc, ContourPiece, Segment } from "../contour";
 
 /**
  * The closed sides of a polygon.
@@ -17,6 +18,18 @@ import type { Arc, Segment } from "../contour";
  */
 function sides(points: readonly Point[]): readonly Segment[] {
   return polygonSegments(points);
+}
+
+/**
+ * The vector of a subpath's first side, from its start to its end.
+ *
+ * @param subpath - a band's sides
+ * @returns its first side's end less its start; (0, 0) for none
+ */
+function sideVector(subpath: readonly ContourPiece[]): Point {
+  const [side = { end: { x: 0, y: 0 }, kind: "segment", start: { x: 0, y: 0 } }] = subpath;
+
+  return subtract(side.end, side.start);
 }
 
 describe("contourBand", () => {
@@ -64,6 +77,23 @@ describe("contourBand", () => {
 
     expect(band.map((subpath) => subpath.length)).toEqual([4, 4, 4, 4, 4]);
     expect(band[0]).toEqual(circleArcs({ x: 10, y: 0 }, 1));
+
+    // Each band runs along its chord, from one point to the next: (10, 0), (9.2388, 3.8268),
+    // (7.0711, 7.0711), (3.8268, 9.2388), (0, 10), at π/8 apart; its first side is the chord moved.
+    const points = [
+      { x: 10, y: 0 },
+      { x: 9.238795325, y: 3.826834324 },
+      { x: 7.071067812, y: 7.071067812 },
+      { x: 3.826834324, y: 9.238795325 },
+      { x: 0, y: 10 },
+    ];
+    const chords = points.slice(1).map((to, index) => subtract(to, points[index] ?? to));
+    const firstSides = band.slice(1).map((subpath) => sideVector(subpath));
+
+    for (const [index, chord] of chords.entries()) {
+      expect(firstSides[index]?.x).toBeCloseTo(chord.x, 8);
+      expect(firstSides[index]?.y).toBeCloseTo(chord.y, 8);
+    }
   });
 
   it("gives a point, a side of length 0, its disc alone", () => {

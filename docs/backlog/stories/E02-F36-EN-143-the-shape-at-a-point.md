@@ -20,7 +20,7 @@ Which shape of the drawing a point falls in, computed in the model on the evalua
 
 ## Tasks
 
-- [ ] T1 — The derivation and the interface, its failing tests from hand-computed examples (2 h)
-- [ ] T2 — The crossings of segments, arcs and cubic sides and the shape at a point, the tests of T1 passing, properties (3 h)
+- [x] T1 — The derivation and the interface, its failing tests from hand-computed examples (2 h)
+- [x] T2 — The crossings of segments, arcs and cubic sides and the shape at a point, the tests of T1 passing, properties (3 h)
 
 One task = one commit, referenced as `EN-143.Tn` in the commit footer.

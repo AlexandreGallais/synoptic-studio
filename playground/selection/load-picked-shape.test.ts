@@ -12,6 +12,7 @@ import {
   openServedPage,
   pressAndClick,
   readCheckedRadio,
+  readModel,
   readPressedState,
   readText,
   readValue,
@@ -20,7 +21,7 @@ import {
   typeValue,
 } from "../user-actions";
 
-import type { FontFamily, Point, Shape, Text } from "../../src";
+import type { FontFamily, Point } from "../../src";
 
 // The canvas sits at (100, 50) in the window, and the drawing's origin 40 right of and below its
 // corner (`DRAWING_MARGIN`): the drawing's point (x, y) is the window's (x + 140, y + 90).
@@ -73,16 +74,6 @@ function placeShape(tool: string, point: Point): void {
  */
 function pick(point: Point): void {
   pressAndClick("#canvas", toWindow(point));
-}
-
-/**
- * Reads the model of the shape the panel edits.
- *
- * @returns the shape or the text
- */
-function readModel(): Shape | Text {
-  // oxlint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-type-assertion -- the model shown, a shape of the drawing
-  return JSON.parse(readText("#model")) as Shape | Text;
 }
 
 /**

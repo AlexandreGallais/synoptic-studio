@@ -45,6 +45,12 @@ describe("isInCircularSegment (DERIV-painted-area step 3)", () => {
     expect(isInCircularSegment(FILLET, { x: 10, y: 10 })).toBe(false);
   });
 
+  it("fails on the arc itself: (8, 4), 20 from the centre exactly", () => {
+    // P − C = (−12, −16), |P − C| = 20, not < 20; (20, −20) × (8, −16) = −320 + 160 = −160 < 0,
+    // the side away from the centre: only the distance leaves it out.
+    expect(isInCircularSegment(FILLET, { x: 8, y: 4 })).toBe(false);
+  });
+
   it("holds for (8, 8) with the arc travelled the other way", () => {
     // From (20, 0) to (0, 20): (−20, 20) × (−12, 8) = −160 + 240 = 80, σ = −1: −80 < 0.
     expect(isInCircularSegment(REVERSED, { x: 8, y: 8 })).toBe(true);

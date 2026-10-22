@@ -8,7 +8,7 @@ import {
   signedAngle,
   subtract,
 } from "../../math";
-import { cubicPoint } from "../placement";
+import { CUBIC_DEGREE, cubicPoint } from "../placement";
 
 import type { Point } from "../../math";
 import type { Arc, ContourPiece, Cubic } from "../contour";
@@ -52,24 +52,27 @@ function arcInnerSamples(arc: Arc, step: number): readonly Point[] {
 }
 
 /**
- * The points of a cubic between its ends, at equal steps of t (`cubicPoint`), as many steps as the
- * length of its control polygon holds `step`.
+ * The points of a cubic between its ends, at equal steps of t (`cubicPoint`), so that no chord is
+ * longer than `step`: B′ is the quadratic Bézier of the weights 3(Pᵢ₊₁ − Pᵢ) (`REF-POMAX-BEZIER`,
+ * the derivative's weights), never outside their hull, so |B′| is at most three times the longest
+ * side of the control polygon, and a chord over 1/n of t at most that bound over n.
  *
- * Formula: B(i / n), i = 1 … n − 1, n = max(⌈(|P₀P₁| + |P₁P₂| + |P₂P₃|) / s⌉, 1).
+ * Formula: B(i / n), i = 1 … n − 1, n = max(⌈3 · max(|P₀P₁|, |P₁P₂|, |P₂P₃|) / s⌉, 1).
  *
  * @kind geometry
  * @param cubic - its start, control points and end
- * @param step - the longest step wanted along it
+ * @param step - the longest chord wanted along it
  * @returns the points between its ends
- * @see REF-SVG2-PAINT
+ * @see REF-POMAX-BEZIER
  */
 function cubicInnerSamples(cubic: Cubic, step: number): readonly Point[] {
-  const length =
-    distance(cubic.start, cubic.first) +
-    distance(cubic.first, cubic.second) +
-    distance(cubic.second, cubic.end);
+  const longestSide = Math.max(
+    distance(cubic.start, cubic.first),
+    distance(cubic.first, cubic.second),
+    distance(cubic.second, cubic.end),
+  );
 
-  return regularPartition(1, stepCount(length, step))
+  return regularPartition(1, stepCount(CUBIC_DEGREE * longestSide, step))
     .slice(1, -1)
     .map((t) => cubicPoint(cubic, t));
 }
@@ -79,7 +82,8 @@ function cubicInnerSamples(cubic: Cubic, step: number): readonly Point[] {
  * chords (`contourBand`): a segment its two ends; an arc, of less than a half turn as every fillet,
  * its points at equal angles, as many steps as its length holds `step`, each its start turned
  * about the center (`rotate`); a cubic its points at equal steps of t (`cubicPoint`), as many as
- * the length of its control polygon holds `step`, that length being at least the curve's.
+ * three times the longest side of its control polygon holds `step`, that bound being at least the
+ * curve's speed, so that no chord is longer than `step`.
  *
  * @kind geometry
  * @param piece - a segment, an arc or a cubic of a contour
