@@ -24,7 +24,7 @@ In delivery order.
 | ID | Type | Title | Status |
 | --- | --- | --- | --- |
 | [US-064](../stories/E02-F36-US-064-a-drag-draws-the-box.md) | US | A drag with a tool draws the shape's box | done |
-| [US-065](../stories/E02-F36-US-065-a-click-selects-a-shape.md) | US | The shape under the pointer shown, a click selects it | ready |
+| [US-065](../stories/E02-F36-US-065-a-click-selects-a-shape.md) | US | The shape under the pointer shown, a click selects it | parked |
 | [US-066](../stories/E02-F36-US-066-delete-removes-the-shape.md) | US | Delete removes the selected shape | ready |
 | [AUD-038](../stories/E02-F36-AUD-038-audit-f36.md) | AUD | Audit F36 | ready |
 | [VAL-037](../stories/E02-F36-VAL-037-validate-f36.md) | VAL | Validate F36 | ready |

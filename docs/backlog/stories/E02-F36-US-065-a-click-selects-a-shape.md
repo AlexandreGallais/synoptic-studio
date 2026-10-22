@@ -3,7 +3,7 @@ id: US-065
 epic: E02
 feature: F36
 title: The shape under the pointer shown, a click selects it
-status: ready
+status: parked
 points: 3
 ---
 
@@ -32,3 +32,11 @@ The Product Owner asked for two layers (2026-10-22): the drawing's SVG holds onl
 - [ ] T3 — The panel follows the selection; the Product Owner test card (2 h)
 
 One task = one commit, referenced as `US-065.Tn` in the commit footer.
+
+## Question for the Product Owner
+
+Asked on 2026-10-22, before T1: the story holds four pieces of work for three tasks — the shape under a point computed in the model (ADR-0005), its contours made of segments, arcs and cubic sides; the drawing split around the edited shape so that a shape picked from the middle keeps its place; every field of the panel written back from a picked shape; the layer above the drawing. Proposed split, F36 then holding four stories: US-065 the shape under the pointer shown (the model's `shapeAtPoint`, the layer, the hover outline), a new story a click selects it (the drawing split around the edited shape, the panel loaded per kind). Three rules are missing:
+
+- **Q-a, under the pointer**: (1) the painted area, as Figma does — a click in the cut corner of a rounded rectangle or outside a circle but inside its box picks nothing, a derivation needed for arcs and cubic sides; (2) the shape's box, turned with it. And a text by its block or its frame; a shape of width or height 0 picked within a tolerance in screen pixels, or not.
+- **Q-b, a picked rectangle**: the model stores it as a free shape (ADR-0032), so (1) the panel shows it as a free shape, or (2) the tool's kind is kept beside it, the panel showing Rectangle with its radius.
+- **Q-c, a picked text in another family**: (1) the font session switches to its family, or (2) only the text's own fields are written.
