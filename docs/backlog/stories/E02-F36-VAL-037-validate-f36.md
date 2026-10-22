@@ -37,3 +37,11 @@ One task = one commit, referenced as `VAL-037.T1`.
 ## Question for the Product Owner at the validation
 
 From US-067, 2026-10-22: a picked text whose family is no longer in the font session — its files, read ahead, could not be read again (US-061) — cannot have its family chosen in the font list, so loading it measures it with the family the list falls back to, which changes a kept text (AUD-037). Three ways: (1) load it anyway, its family changed; (2) select it without loading its family until a field is typed; (3) show it selected with a message, its fields read-only. Rare: only after a font file is removed during the session.
+
+## For the main thread
+
+`playground/checklists` reached 16 modules with F36's lines, past the folder signal of 15; it is listed in `docs/conventions/files.md` and `FOLDERS_PAST_SIGNAL` (`tools/lint/src/settings.rs`) with its reason, since `val-prepare` writes every feature's lines into that folder: to confirm, or to replace by a folder per epic once the tool writes there.
+
+### Improvements
+
+| 2026-10-22 | VAL-037 | `val-prepare` writes each feature's lines flat in `playground/checklists`, past 15 modules since F36: write them in a folder per epic (`playground/checklists/epic-2/`), then drop the folder from `FOLDERS_PAST_SIGNAL` | tool |

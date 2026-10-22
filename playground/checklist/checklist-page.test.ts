@@ -425,16 +425,20 @@ describe("[F35.AC1] E02's checklist, F35's lines (VAL-036)", () => {
     .map((line) => `${line.todo} ${line.see}`)
     .join("\n");
 
-  it("lists F35's 11 lines on the page, one check box each, each with its own thing to try", () => {
+  it("lists F35's 11 lines, then F36's 12, one check box each, each with its own thing to try", () => {
     openServedPage("?checklist=E02");
 
     expect(readText("#checklist-name")).toBe("E02");
-    expect(readBoxes()).toHaveLength(11);
+    expect(readBoxes()).toHaveLength(23);
 
     const todos = new Set(EPIC_2_CHECKLIST.map((line) => line.todo));
 
-    expect(todos.size).toBe(11);
-    expect(EPIC_2_CHECKLIST.every((line) => line.feature === "F35")).toBe(true);
+    expect(todos.size).toBe(23);
+
+    expect(EPIC_2_CHECKLIST.map((line) => line.feature)).toEqual([
+      ...Array.from({ length: 11 }, () => "F35"),
+      ...Array.from({ length: 12 }, () => "F36"),
+    ]);
   });
 
   it.each([
@@ -444,6 +448,8 @@ describe("[F35.AC1] E02's checklist, F35's lines (VAL-036)", () => {
     "Round",
     "Text",
     "Selector pressed again",
+    "click the new rectangle again",
+    "the new rectangle still edited",
     "100 × 100 centred on the click",
     "above the first, which does not change",
     "Radius 10",
@@ -467,7 +473,7 @@ describe("[F35.AC1] E02's checklist, F35's lines (VAL-036)", () => {
     "Decision to confirm (SP-026): a new shape takes the settings of the last of its kind",
     "Decision to confirm (SP-026): a new text's content Text, selected",
     "Decision to confirm (US-063): a tool's button only arms the tool",
-    "Decision to confirm (US-063): the Selector places nothing",
+    "Decision to confirm (US-063): the Selector places nothing, a click with it picking a shape since F36",
     "Decision to confirm (US-063): the corner rounded to the nearest integer, a half up",
     "Decision to confirm (US-063): a shape refused is not kept",
     "Decision to confirm (US-063): a rectangle or a polygon made a free shape keeps its settings",
@@ -478,8 +484,75 @@ describe("[F35.AC1] E02's checklist, F35's lines (VAL-036)", () => {
     expect(text).toContain(line);
   });
 
-  it.each(["What to see", "to write", "turns the shape into", "drag", "Delete"])(
+  it.each(["What to see", "to write", "turns the shape into", "drag", "Delete", "until F36"])(
     "holds no draft line nor what F35 removed or left to F36: %s",
+    (word) => {
+      expect(text).not.toContain(word);
+    },
+  );
+});
+
+describe("[F36.AC1] [F36.AC2] [F36.AC3] E02's checklist, F36's lines (VAL-037)", () => {
+  const text = EPIC_2_CHECKLIST.filter((line) => line.feature === "F36")
+    .map((line) => `${line.todo} ${line.see}`)
+    .join("\n");
+
+  it.each([
+    "drag down and to the right",
+    "a drag up and to the left",
+    "whole numbers",
+    "Selector pressed again",
+    "Shift held",
+    "Shift pressed then released",
+    "a circle",
+    "Fit Box",
+    "press and release on one point",
+    "100 × 100 centred on the point pressed",
+    "a drag straight down",
+    "Width 0",
+    "a band 2 pixels wide along the edge",
+    "the circle where both overlap",
+    "nothing in the rounded corner nor outside the circle",
+    "nothing with Rectangle pressed",
+    "between the two words",
+    "outlined as selected",
+    "Radius 30",
+    "stays on top",
+    "the new polygon above all",
+    "Weight 700 Bold, Size 40",
+    "its font chosen in the list",
+    "not the rectangle under the pointer",
+    "No shape selected",
+    "its fields hidden",
+    "Export SVG not shown",
+  ])("names the tool, the option or what to see: %s", (option) => {
+    expect(text).toContain(option);
+  });
+
+  it.each([
+    "Decision to confirm (US-064): the press and the pointer each rounded to the nearest integer",
+    "the box from the smaller to the larger of each coordinate",
+    "Decision to confirm (US-064): with Shift the side is the larger distance",
+    "Decision to confirm (US-064): a text is never squared",
+    "Decision to confirm (US-064): a release on the press's point is a click",
+    "Decision to confirm (US-064): a side of 0 kept as drawn",
+    "Decision to confirm (EN-143): a shape of width 0 under the pointer within 4 pixels",
+    "Decision to confirm (EN-143): a text is under the pointer anywhere in its block",
+    "Decision to confirm (US-065): the band along the contour as drawn, only with the Selector",
+    "Decision to confirm (US-067): the selection shown whatever tool is armed",
+    "a click picks only when pressed with the Selector, again on the shape selected",
+    "Decision to confirm (US-067): none selected hides the fields",
+    "To settle (US-067): Export SVG cannot be reached with none selected",
+    "Question (US-067)",
+    "(1) load it anyway",
+    "(2) select it without loading its family",
+    "(3) show it selected with a message",
+  ])("names the decision to confirm or the question: %s", (line) => {
+    expect(text).toContain(line);
+  });
+
+  it.each(["What to see", "to write", "F36.AC", "Delete", "handle"])(
+    "holds no draft line nor what F36 left to F37: %s",
     (word) => {
       expect(text).not.toContain(word);
     },

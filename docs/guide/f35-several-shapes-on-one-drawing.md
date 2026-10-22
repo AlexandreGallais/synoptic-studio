@@ -33,7 +33,7 @@ Graphic editors do this in three ways (research note 0027): Figma gives every ne
 | Try | You should see |
 | --- | --- |
 | Reset, then Rectangle | the page's rectangle alone; Rectangle pressed, nothing else changed |
-| a click on the drawing, then another | a rectangle 100 × 100 centred on the first click, above the page's; the Selector pressed again; the second click adds nothing |
+| a click on the drawing, then another on the new rectangle | a rectangle 100 × 100 centred on the first click, above the page's; the Selector pressed again; the second click adds nothing, the new rectangle still edited |
 | Polygon, a click; Round, a click | a hexagon of radius 10, then a circle, each 100 × 100 centred on its click |
 | Polygon, a click, Corners 3, Radius 4, Anchor Bottom center; Rectangle, a click, Radius 0; Polygon and Rectangle again | a triangle of radius 4 on its box's bottom, then a rectangle of radius 0: each kind's last settings |
 | Text, a click, then type Pump | `Text` centred on the click, selected in Content; Pump replaces it |

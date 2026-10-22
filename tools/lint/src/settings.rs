@@ -233,7 +233,7 @@ pub const REFERENCE_SOURCES: ReferenceSources = ReferenceSources {
 pub const FOLDER_SIGNAL: usize = 15;
 
 /// Folders past the signal, each listed with its reason in `docs/conventions/files.md`.
-pub const FOLDERS_PAST_SIGNAL: [&str; 1] = ["playground/user-actions"];
+pub const FOLDERS_PAST_SIGNAL: [&str; 2] = ["playground/user-actions", "playground/checklists"];
 
 /// Folders exempt from a barrel: the root, the site's theme, the repository's tests.
 pub const FOLDERS_WITHOUT_INDEX: [&str; 3] = [".", "docs/.vitepress", "tests"];

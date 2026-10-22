@@ -16,8 +16,8 @@ export const EPIC_2_F35_LINES: readonly ChecklistLine[] = [
   },
   {
     feature: "F35",
-    todo: "Click the drawing right of the rectangle, then click the drawing again",
-    see: "a rectangle 100 × 100 centred on the click, above the first, which does not change; the panel Rectangle, Width 100, Height 100, Radius 10; Selector pressed again; the second click adds nothing; Decision to confirm (US-063): the Selector places nothing until F36",
+    todo: "Click the drawing right of the rectangle, then click the new rectangle again",
+    see: "a rectangle 100 × 100 centred on the click, above the first, which does not change; the panel Rectangle, Width 100, Height 100, Radius 10; Selector pressed again; the second click adds nothing, the new rectangle still edited; Decision to confirm (US-063): the Selector places nothing, a click with it picking a shape since F36",
   },
   {
     feature: "F35",
