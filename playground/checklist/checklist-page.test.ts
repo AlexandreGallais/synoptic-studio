@@ -1,7 +1,7 @@
 // @vitest-environment happy-dom
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { EPIC_15_CHECKLIST, EPIC_17_CHECKLIST } from "../checklists";
+import { EPIC_15_CHECKLIST, EPIC_17_CHECKLIST, EPIC_2_CHECKLIST } from "../checklists";
 import { openServedPage, readDisplay, readText, selectPageElement } from "../user-actions";
 
 /**
@@ -414,6 +414,72 @@ describe("E17's checklist, F22's lines (VAL-023)", () => {
 
   it.each(["release:prepare", "release/0.3.0", "CHANGELOG.md:", "chore: release", "epic's end"])(
     "names nothing of the flow F22 replaced: %s",
+    (word) => {
+      expect(text).not.toContain(word);
+    },
+  );
+});
+
+describe("[F35.AC1] E02's checklist, F35's lines (VAL-036)", () => {
+  const text = EPIC_2_CHECKLIST.filter((line) => line.feature === "F35")
+    .map((line) => `${line.todo} ${line.see}`)
+    .join("\n");
+
+  it("lists F35's 11 lines on the page, one check box each, each with its own thing to try", () => {
+    openServedPage("?checklist=E02");
+
+    expect(readText("#checklist-name")).toBe("E02");
+    expect(readBoxes()).toHaveLength(11);
+
+    const todos = new Set(EPIC_2_CHECKLIST.map((line) => line.todo));
+
+    expect(todos.size).toBe(11);
+    expect(EPIC_2_CHECKLIST.every((line) => line.feature === "F35")).toBe(true);
+  });
+
+  it.each([
+    "Reset",
+    "Rectangle",
+    "Polygon",
+    "Round",
+    "Text",
+    "Selector pressed again",
+    "100 × 100 centred on the click",
+    "above the first, which does not change",
+    "Radius 10",
+    "6 corners",
+    "Corners 3",
+    "Anchor Bottom center",
+    "Text selected in Content",
+    "Zoom the browser to 110 %",
+    "whole numbers",
+    "Empty Width",
+    "Convert to free shape",
+    "Inter 32 Regular",
+    "Export SVG",
+    "in the order drawn",
+    "place-shape.test.ts",
+  ])("names the tool, the option or what to see: %s", (option) => {
+    expect(text).toContain(option);
+  });
+
+  it.each([
+    "Decision to confirm (SP-026): a new shape takes the settings of the last of its kind",
+    "Decision to confirm (SP-026): a new text's content Text, selected",
+    "Decision to confirm (US-063): a tool's button only arms the tool",
+    "Decision to confirm (US-063): the Selector places nothing",
+    "Decision to confirm (US-063): the corner rounded to the nearest integer, a half up",
+    "Decision to confirm (US-063): a shape refused is not kept",
+    "Decision to confirm (US-063): a rectangle or a polygon made a free shape keeps its settings",
+    "Decision to confirm (US-063, AUD-037): Reset and each guided step forget",
+    "Decision to confirm (US-063): a text placed while no font measures it",
+    "Decision to confirm (AUD-037): a kept text whose font is no longer read",
+  ])("names the decision to confirm: %s", (line) => {
+    expect(text).toContain(line);
+  });
+
+  it.each(["What to see", "to write", "turns the shape into", "drag", "Delete"])(
+    "holds no draft line nor what F35 removed or left to F36: %s",
     (word) => {
       expect(text).not.toContain(word);
     },

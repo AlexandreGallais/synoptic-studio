@@ -1,3 +1,4 @@
+import { EPIC_2_CHECKLIST } from "./epic-2-checklist";
 import { EPIC_15_CHECKLIST } from "./epic-15-checklist";
 import { EPIC_17_CHECKLIST } from "./epic-17-checklist";
 
@@ -7,4 +8,5 @@ import type { ChecklistLine } from "./checklist-line";
 export const CHECKLISTS: ReadonlyMap<string, readonly ChecklistLine[]> = new Map([
   ["E15", EPIC_15_CHECKLIST],
   ["E17", EPIC_17_CHECKLIST],
+  ["E02", EPIC_2_CHECKLIST],
 ]);
