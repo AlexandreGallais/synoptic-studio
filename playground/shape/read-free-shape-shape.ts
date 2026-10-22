@@ -2,10 +2,9 @@ import {
   NO_HANDLES,
   cornersWithRadii,
   formatSvgNumber,
-  freeShapeCorners,
   isModelSize,
   isValidFreeShape,
-  turnedCorners,
+  shapeCorners,
 } from "../../src";
 import { readNumber, selectElement } from "../page";
 import { readAngle } from "../position";
@@ -85,7 +84,7 @@ export function readFreeShapeShape(document: Document, kept: FreeShape): ShapeRe
   const isValid = [width.isValid, height.isValid, isValidFreeShape(model)].every(Boolean);
 
   return {
-    corners: isValid ? turnedCorners(freeShapeCorners(model), model) : [],
+    corners: isValid ? shapeCorners(model) : [],
     isValid,
     message: INVALID_FREE_SHAPE,
     model,

@@ -1,3 +1,4 @@
+import { DRAWING_KEYS, writeStoredDrawing } from "../kept-shapes";
 import { selectElement, writeText } from "../page";
 
 import { clearDrawnBox } from "./clear-drawn-box";
@@ -24,6 +25,8 @@ export function showRefusedShape(document: Document): void {
   }
 
   clearDrawnBox(document);
+  // A refused shape is not kept when another is placed (F35).
+  writeStoredDrawing(document, DRAWING_KEYS.edited, []);
 
   // Nothing to convert nor to move on a refused shape.
   selectElement(document, "point-fields").hidden = true;

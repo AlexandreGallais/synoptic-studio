@@ -1,3 +1,4 @@
+export * from "./clear-text-drawing";
 export * from "./create-text-frame";
 export * from "./hide-point-panels";
 export * from "./listen-to-text-fields";
@@ -5,10 +6,7 @@ export * from "./press-bold";
 export * from "./read-field-value";
 export * from "./read-text-box-options";
 export * from "./read-text-model";
-export * from "./save-tool-placement";
 export * from "./show-text";
-export * from "./tool-placement";
 export * from "./update-text-tool";
 export * from "./write-text-sections";
 export * from "./write-text-straight-box";
-export * from "./write-tool-placement";

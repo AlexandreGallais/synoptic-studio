@@ -1,4 +1,6 @@
 import { NO_VERTEX_SELECTION } from "../../src";
+import { DRAWING_KEYS, writeStoredDrawing } from "../kept-shapes";
+import { clearKindSettings } from "../kind-settings";
 import { selectElement, writeInputValue, writeSelection } from "../page";
 
 import { writeAnchorValue } from "./write-anchor-value";
@@ -34,6 +36,10 @@ function writeShapeValue(document: Document, shape: string): void {
 function writeKeptShapeCleared(document: Document): void {
   // A step types one radius for every vertex (F03.AC2), and selects no vertex.
   delete selectElement(document, "radius").dataset["radii"];
+  // A step draws one shape alone, as the page opens: the shapes placed before it go, and the
+  // settings kept for each kind (F35, SP-026).
+  writeStoredDrawing(document, DRAWING_KEYS.below, []);
+  clearKindSettings(document);
   // A step draws a rectangle or a polygon: the free shape kept goes (F08).
   delete selectElement(document, "shape").dataset["freeShape"];
 

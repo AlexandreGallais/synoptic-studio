@@ -40,4 +40,4 @@ Fifteen modules in a folder, tests and barrel not counted, is a signal that a do
 
 | Folder | Modules | Why it stays whole |
 | --- | --- | --- |
-| `playground/user-actions` | 29 | one theme, what a user does to the page; splitting it into reading, typing and clicking would split by kind of code, which ADR-0043 refuses |
+| `playground/user-actions` | 30 | one theme, what a user does to the page; splitting it into reading, typing and clicking would split by kind of code, which ADR-0043 refuses |

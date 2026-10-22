@@ -251,14 +251,15 @@ describe("Text tool: a turned text grows in place (US-038)", () => {
     ]);
   });
 
-  it("[F05.AC5] keeps the exact position behind the 5 decimals shown, across a tool change", () => {
+  it("[F05.AC5] keeps the exact position behind the 5 decimals shown, a tool armed then left", () => {
     typeValue("text-letter-spacing", "10");
 
     const corner = readCorner();
     const { x } = readDrawn();
 
+    // Arming a tool leaves the text edited as it is, until the drawing is clicked (F35).
     clickElement("tool-rectangle");
-    clickElement("tool-text");
+    clickElement("tool-selector");
 
     expect(readFields()).toEqual(CORNER_SHOWN);
     expect(readDrawn().x).toBe(x);
