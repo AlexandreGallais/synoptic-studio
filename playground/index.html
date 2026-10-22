@@ -50,6 +50,22 @@
         width: 100%;
         height: 100%;
       }
+      /* The layer above the drawing (F36): the outline of the shape under the pointer, which the
+         pointer passes through to the drawing; never exported. */
+      #overlay {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+      }
+      #overlay svg {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+      /* The outline: a band about the shape's contour, a fill, never a native stroke. */
+      #overlay path.hover {
+        fill: var(--accent);
+      }
       /* A path without its own fill; a text's strokes carry their own color (US-031, US-041). */
       #canvas path:not([fill]) {
         fill: var(--accent);
@@ -489,6 +505,7 @@
   <body>
     <div id="stage">
       <main id="canvas"></main>
+      <div id="overlay" aria-hidden="true"></div>
       <nav id="toolbar" aria-label="Tools">
         <p role="group" aria-label="Tool">
           <button id="tool-selector" type="button" aria-pressed="true" title="Selector">

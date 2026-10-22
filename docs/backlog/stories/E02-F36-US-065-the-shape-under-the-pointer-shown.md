@@ -3,7 +3,7 @@ id: US-065
 epic: E02
 feature: F36
 title: The shape under the pointer shown
-status: ready
+status: done
 points: 3
 ---
 
@@ -22,13 +22,26 @@ The Product Owner asked for two layers (2026-10-22): the drawing's SVG holds onl
 
 ## Product Owner test
 
+`npm run dev`, `http://localhost:5173/`.
+
 | Step | Do | You should see |
 | --- | --- | --- |
+| 1 | Open the page, then Reset | the rectangle 120 × 80 the page opens with, alone; the Selector button pressed |
+| 2 | Pass the pointer over the rectangle, then off it | a blue line 2 pixels wide along its edge, its rounded corners included, while the pointer is over it; nothing once it is off |
+| 3 | Click Rectangle and click the drawing so that the new rectangle overlaps the first, then Round shape and click elsewhere | three shapes; the Selector pressed again |
+| 4 | Pass the pointer over each shape, then over the part where the two rectangles overlap | each shape outlined in turn, the round shape along its circle; where they overlap, the rectangle placed last |
+| 5 | Put the pointer in a rounded corner of the first rectangle, just outside the curve, then inside it | no outline outside the curve, the outline inside it |
+| 6 | Put the pointer inside the round shape's box but outside its circle | no outline |
+| 7 | Click Text, click the drawing, then pass the pointer over the text, between its letters too | the text outlined along its block, wherever the pointer is in it |
+| 8 | Click Rectangle and drag straight down, then pass the pointer slowly across the line it leaves | the rectangle of width 0 outlined when the pointer is within about 4 pixels of it |
+| 9 | Click Rectangle, then pass the pointer over a shape | no outline while a tool is armed |
+| 10 | Click an empty place of the drawing, Rectangle still armed; click in Width, put the pointer back over the new rectangle and press the Up arrow key a few times | the outline widens with the rectangle at each key, the pointer still |
+| 11 | With a shape outlined, click Export SVG and open the file | every shape, and no outline |
 
 ## Tasks
 
-- [ ] T1 — The layer above the drawing and the hover: interface and failing tests (1 h)
-- [ ] T2 — The layer and the outline of the shape under the pointer, the tests of T1 passing; the Product Owner test card (2 h)
+- [x] T1 — The layer above the drawing and the hover: interface and failing tests (1 h)
+- [x] T2 — The layer and the outline of the shape under the pointer, the tests of T1 passing; the Product Owner test card (2 h)
 
 One task = one commit, referenced as `US-065.Tn` in the commit footer.
 
