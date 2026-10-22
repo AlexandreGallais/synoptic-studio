@@ -18,6 +18,7 @@ The drawing becomes an ordered list of shapes, the last drawn on top, flat until
 - Given the rectangle tool chosen, when the drawing is clicked at (250, 140), then a rectangle 100 × 100 is added at x 200, y 90, drawn above the shapes already there, and selected; the tool returns to the selector.
 - Given the polygon or round shape tool, when the drawing is clicked, then that shape is added the same way, in a box 100 × 100; given the text tool, a text fitting its content, centred on the point.
 - Given a point clicked between two integers once the view's scale is applied, when the shape is placed, then its x and y are integers, rounded as the agent decides and writes in `interaction.md` §1.
+- Given a polygon set to 3 corners, a radius of 4 and its anchor at the bottom center, then a rectangle set to a radius of 0, when the polygon tool is clicked at (250, 140), then a triangle of radius 4 anchored at the bottom center is added, its box 100 × 100 at (200, 90), straight, and a rectangle placed next has a radius of 0; before any polygon, a new one has the page's 6 corners and radius 10; a new text has the last text's options and the content `Text`, selected in the Content field (`interaction.md` §1, SP-026).
 - Given three shapes drawn, when the SVG is exported, then it holds the three, in the order drawn, each unchanged by the others.
 
 ## Product Owner test
@@ -31,7 +32,7 @@ The drawing becomes an ordered list of shapes, the last drawn on top, flat until
 
 - [x] T1 — The drawing as a list of shapes and the placing of one by a click: interface and failing tests (1 h)
 - [x] T2 — The drawing, the placing and the export, the tests of T1 passing (2 h)
-- [ ] T3 — The playground's tools arm and place shapes on a click, with SP-026's starting values; US-032's tool memory removed, the tool tests EN-142 listed rewritten; the Product Owner test card (3 h)
+- [ ] T3 — The playground's tools arm and place shapes on a click, each new shape with the settings of the last shape of its kind (`interaction.md` §1, What a new shape starts with; `@see` `REF-INKSCAPE-TUTORIAL-SHAPES`); US-032's tool memory removed, the tool tests EN-142 listed rewritten; the Product Owner test card (3 h)
 
 One task = one commit, referenced as `US-063.Tn` in the commit footer.
 

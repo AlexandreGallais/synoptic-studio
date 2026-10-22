@@ -25,6 +25,15 @@ No pen tool and no freehand drawing (see `shapes.md` §3).
 - the new shape is drawn above the others, the drawing an ordered list of shapes, the last drawn on top, flat until E13.
 - **For later**: duplicating a shape, the offset of its first move remembered for the next copies, as Figma does, so that copies never pile up (Product Owner, 2026-10-22; not in E02).
 
+**What a new shape starts with** (agent's choice, SP-026, 2026-10-22, the choice left to research by the Product Owner; to confirm at VAL-036; sources and reasons in [note 0027](../research/notes/0027-f35-what-a-new-shape-starts-with.md)):
+
+- its box and place come from the click or the drag, as above, and it starts straight, its angle 0;
+- every other setting is the one of the **last shape of its kind** the panel showed, so that a triangle placed again is the same triangle, as Inkscape's shape tools do (`REF-INKSCAPE-TUTORIAL-SHAPES`): a rectangle its corner radii, a polygon its corners, radii, stretched option and anchor, a text every option but its content and box — font, size, weight, color, spacing, decorations, case, line height, trim, background, ellipsis —, as Figma and Inkscape give a new text the last style used (`REF-INKSCAPE-1-2-TOOL-STYLE`, `REF-FIGMA-FORUM-TEXT-DEFAULT`);
+- one memory per kind: a rectangle's values never reach a polygon, nor the other way round; before any shape of a kind, the values the page opens with (a radius of 10, 6 corners, the anchor at the center, Inter 32 Regular);
+- a new text's content is `Text`, selected in the Content field so that typing replaces it: Figma and Inkscape start an empty text typed on the drawing, which the playground cannot do;
+- example: a polygon set to 3 corners, a radius of 4 and its anchor at the bottom center, then a rectangle set to a radius of 0; the polygon tool clicked at (250, 140) adds a triangle of radius 4 anchored at the bottom center, its box 100 × 100 at (200, 90), straight; the rectangle tool clicked next adds a rectangle of radius 0;
+- why not Figma's fixed defaults (a rectangle 100 × 100, a polygon a triangle, `REF-FIGMA-SHAPE-TOOLS`): Figma gets alike shapes by duplicating, components and styles, none of them in E02; the panel already shows the values, so what is shown is what is placed. A default set by a command (Sketch, Affinity Designer) and a reset to the page's values (Inkscape's button) are left out.
+
 ## 2. Selector
 
 - Click: select an object; Shift + click or Ctrl + click (Cmd on macOS): add / remove (Product Owner, 2026-10-11). No range on the drawing.

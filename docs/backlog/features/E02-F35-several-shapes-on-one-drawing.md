@@ -21,7 +21,7 @@ In delivery order.
 
 | ID | Type | Title | Status |
 | --- | --- | --- | --- |
-| [SP-026](../stories/E02-F35-SP-026-what-a-new-shape-starts-with.md) | SP | What a new shape starts with | ready |
+| [SP-026](../stories/E02-F35-SP-026-what-a-new-shape-starts-with.md) | SP | What a new shape starts with | done |
 | [EN-142](../stories/E02-F35-EN-142-playground-tests-without-tool-buttons.md) | EN | The playground's tests set their shape without the tool buttons | ready |
 | [US-063](../stories/E02-F35-US-063-a-click-adds-a-shape.md) | US | A click with a tool adds a shape where it is clicked | ready |
 | [AUD-037](../stories/E02-F35-AUD-037-audit-f35.md) | AUD | Audit F35 | ready |

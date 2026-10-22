@@ -3,7 +3,7 @@ id: SP-026
 epic: E02
 feature: F35
 title: What a new shape starts with
-status: ready
+status: done
 points: 2
 ---
 
@@ -25,5 +25,5 @@ A short spike, the first story of F35 after its split (2026-10-22). When a tool 
 
 One task = one commit, referenced as `SP-026.Tn`.
 
-- [ ] T1 — The sources found, read and recorded, the research note (2 h)
-- [ ] T2 — The rule in `interaction.md` §1 and US-063 updated (1 h)
+- [x] T1 — The sources found, read and recorded, the research note (2 h)
+- [x] T2 — The rule in `interaction.md` §1 and US-063 updated (1 h)
