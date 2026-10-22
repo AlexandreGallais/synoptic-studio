@@ -1,13 +1,13 @@
 ---
 id: US-065
 epic: E02
-feature: F35
+feature: F36
 title: The shape under the pointer shown, a click selects it
 status: ready
 points: 3
 ---
 
-# E02 · F35 · US-065 — The shape under the pointer shown, a click selects it
+# E02 · F36 · US-065 — The shape under the pointer shown, a click selects it
 
 As a symbol designer, I want to see which shape is under the pointer and to pick it by a click, so that I edit the shape I mean.
 

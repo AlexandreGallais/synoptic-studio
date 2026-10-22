@@ -72,12 +72,16 @@
 | [VAL-009](./E01-F06-VAL-009-validate-stretched-polygon.md) | F06 | Validate F06 on the reference cases | done |
 | [REV-001](./E01-REV-001-review-e01.md) | E01 | Review E01 with the Product Owner | done |
 | [RET-001](./E01-RET-001-retrospective-e01.md) | E01 | Retrospective of E01 | done |
-| [US-063](./E02-F35-US-063-a-click-adds-a-shape.md) | F35 | A click with a tool adds a shape where it is clicked | parked |
-| [US-064](./E02-F35-US-064-a-drag-draws-the-box.md) | F35 | A drag with a tool draws the shape's box | ready |
-| [US-065](./E02-F35-US-065-a-click-selects-a-shape.md) | F35 | The shape under the pointer shown, a click selects it | ready |
-| [US-066](./E02-F35-US-066-delete-removes-the-shape.md) | F35 | Delete removes the selected shape | ready |
+| [SP-026](./E02-F35-SP-026-what-a-new-shape-starts-with.md) | F35 | What a new shape starts with | ready |
+| [EN-142](./E02-F35-EN-142-playground-tests-without-tool-buttons.md) | F35 | The playground's tests set their shape without the tool buttons | ready |
+| [US-063](./E02-F35-US-063-a-click-adds-a-shape.md) | F35 | A click with a tool adds a shape where it is clicked | ready |
 | [AUD-037](./E02-F35-AUD-037-audit-f35.md) | F35 | Audit F35 | ready |
 | [VAL-036](./E02-F35-VAL-036-validate-f35.md) | F35 | Validate F35 | ready |
+| [US-064](./E02-F36-US-064-a-drag-draws-the-box.md) | F36 | A drag with a tool draws the shape's box | ready |
+| [US-065](./E02-F36-US-065-a-click-selects-a-shape.md) | F36 | The shape under the pointer shown, a click selects it | ready |
+| [US-066](./E02-F36-US-066-delete-removes-the-shape.md) | F36 | Delete removes the selected shape | ready |
+| [AUD-038](./E02-F36-AUD-038-audit-f36.md) | F36 | Audit F36 | ready |
+| [VAL-037](./E02-F36-VAL-037-validate-f36.md) | F36 | Validate F36 | ready |
 | [SP-025](./E02-SP-025-cut-the-editing-work-into-small-features.md) | E02 | Cut the editing work into small features | done |
 | [SP-010](./E14-F11-SP-010-research-f11.md) | F11 | Research for F11: folder layouts and test placement | done |
 | [EN-020](./E14-F11-EN-020-property-tests.md) | F11 | Property tests for the nine functions without one | done |

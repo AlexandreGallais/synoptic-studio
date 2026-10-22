@@ -8,6 +8,7 @@ What each working session dealt with, in the agent's words: the Product Owner's 
 - `#decision` Recorded in `interaction.md` §1, §2, §7 and the domain's questions: a tool places a shape 100 × 100 centred on a click, or draws its box by a drag; two SVG layers, the shapes below, the helps above; a move lands the shape's anchor on integers, its own fractions kept; Q7 settled, one step per finished action, the history bounded by a memory size; Q43 opened, free positions; duplicating with a remembered offset left for later. The history's building is chosen at its feature's spike, an epic of its own if it outgrows 4 stories.
 - `#tooling` The pushes were refused by `deps:outdated`: 15 dev packages and crates brought up on F35's branch (the oxc crates' `Comment` no longer `Copy`, our linter adapted); the pin of `links.yml`'s actions by commit, which GitHub's code scanning asks for, is left for the review, since no workflow pins by commit and `tools/deps` reads only `@vN`.
 - `#backlog` E17 set `done`, its features all done since REV-007.
+- `#decision` US-063 parked after its library tasks: Figma's way in the playground broke 234 tests in 31 files, built since E01 on a tool button turning the edited shape into its kind. The Product Owner chose to migrate the one page (option A); F35 split: SP-026 (what a new shape starts with, left by the Product Owner to a research on graphic editors, the agent deciding with reasons), EN-142 (the tests freed from the tool buttons), US-063's T3; the drag, the selection and Delete moved to F36.
 
 ## 2026-10-19 — Run continued
 

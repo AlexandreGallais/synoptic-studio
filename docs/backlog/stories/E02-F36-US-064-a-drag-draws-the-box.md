@@ -1,13 +1,13 @@
 ---
 id: US-064
 epic: E02
-feature: F35
+feature: F36
 title: A drag with a tool draws the shape's box
 status: ready
 points: 3
 ---
 
-# E02 · F35 · US-064 — A drag with a tool draws the shape's box
+# E02 · F36 · US-064 — A drag with a tool draws the shape's box
 
 As a symbol designer, I want to drag with a tool to draw the new shape at the size I want, so that it needs no resizing afterwards.
 
