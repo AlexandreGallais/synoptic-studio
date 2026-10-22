@@ -141,7 +141,7 @@ pub fn all<'c>(source: &Source<'_, 'c>) -> Vec<Doc<'c>> {
         .comments
         .iter()
         .filter(|comment| is_jsdoc_block(source, comment))
-        .map(|comment| doc(source, *comment))
+        .map(|comment| doc(source, comment.clone()))
         .collect()
 }
 
@@ -166,7 +166,7 @@ pub fn before(source: &Source, offset: u32) -> Before {
         .and_then(|index| comments.get(index))
         .filter(|comment| comment.span.end == end)
     {
-        return Before::Comment(*comment);
+        return Before::Comment(comment.clone());
     }
     kept.chars().next_back().map_or(Before::Start, |character| {
         Before::Code(
@@ -198,7 +198,8 @@ pub fn comment_before(source: &Source, offset: u32) -> Option<Comment> {
         match found {
             Before::Comment(comment) if !comment.is_block() => current = comment.span.start,
             Before::Comment(comment) => {
-                break (comment, paren.map_or(comment.span.end, |at| at + 1));
+                let measured_from = paren.map_or(comment.span.end, |at| at + 1);
+                break (comment, measured_from);
             }
             _ => return None,
         }
@@ -261,7 +262,7 @@ pub fn comment_after(source: &Source, end: u32) -> Option<Comment> {
         .get(index)
         .filter(|comment| comment.span.start == start)
         .filter(|comment| source.line(end.saturating_sub(1)) == source.line(comment.span.start))
-        .copied()
+        .cloned()
 }
 
 /// Whether a node is an export declaration (`looksLikeExport`).
