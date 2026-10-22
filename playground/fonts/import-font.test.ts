@@ -7,7 +7,7 @@ import { TRUE_TYPE_VERSION, fontCollection, secondFamilyFile, testFaceFile } fro
 import {
   chooseFiles,
   chooseOption,
-  clickElement,
+  chooseShapeKind,
   openServedPage,
   readText,
   readValue,
@@ -126,7 +126,7 @@ describe("Import a font (US-036)", () => {
 
   beforeEach(() => {
     openServedPage("");
-    clickElement("tool-text");
+    chooseShapeKind("text");
     chooseOption("text-weight", "400");
     typeValue("text-size", "100");
     typeContent("AB");

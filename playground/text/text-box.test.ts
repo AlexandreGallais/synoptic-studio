@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 
 import {
   chooseOption,
+  chooseShapeKind,
   clickElement,
   openServedPage,
   readText,
@@ -78,7 +79,7 @@ function readFrame(): string | null {
 describe("Text tool: a text in a box (US-033)", () => {
   beforeEach(() => {
     openServedPage("");
-    clickElement("tool-text");
+    chooseShapeKind("text");
     typeValue("text-size", "16");
     // happy-dom loses the option marked `selected` once the page is moved into its document: the
     // choices the page opens with are chosen again.

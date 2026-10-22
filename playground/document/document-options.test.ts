@@ -7,6 +7,7 @@ import { readTextModel } from "../text";
 import {
   chooseFiles,
   chooseOption,
+  chooseShapeKind,
   clickElement,
   openServedPage,
   readDisplay,
@@ -89,7 +90,7 @@ function readLeftOut(): readonly (string | null)[] {
 describe("The drawing's options: Embed fonts (US-036), no HTML layer (US-044)", () => {
   beforeEach(() => {
     openServedPage("");
-    clickElement("tool-text");
+    chooseShapeKind("text");
     chooseOption("text-weight", "400");
     typeValue("text-size", "16");
   });

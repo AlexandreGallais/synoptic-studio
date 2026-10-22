@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 
 import {
   chooseOption,
+  chooseShapeKind,
   clickElement,
   openServedPage,
   readText,
@@ -91,7 +92,7 @@ function chooseKind(kind: string): void {
 describe("Text tool: a text put in a box keeps its fitted size (US-055)", () => {
   beforeEach(() => {
     openServedPage("");
-    clickElement("tool-text");
+    chooseShapeKind("text");
     typeValue("text-size", "16");
     chooseOption("text-weight", "400");
     chooseOption("text-fit", "content");
@@ -177,7 +178,7 @@ describe("Text tool: a text put in a box keeps its fitted size (US-055)", () => 
 describe("Text tool: the box typed is kept when the text comes back to Box (US-057)", () => {
   beforeEach(() => {
     openServedPage("");
-    clickElement("tool-text");
+    chooseShapeKind("text");
     typeValue("text-size", "16");
     chooseOption("text-weight", "400");
     chooseOption("text-fit", "content");
@@ -240,8 +241,8 @@ describe("Text tool: the box typed is kept when the text comes back to Box (US-0
 
   it("[F17.AC15] keeps the box typed through another tool and back", () => {
     typeValue("text-box-height", "15");
-    clickElement("tool-rectangle");
-    clickElement("tool-text");
+    chooseShapeKind("rectangle");
+    chooseShapeKind("text");
     chooseOption("text-fit", "content");
     chooseOption("text-fit", "box");
 

@@ -3,7 +3,13 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { measuredTextDrawing, textDrawing, textFontMetrics, textMeasure } from "../../src";
-import { chooseOption, clickElement, openServedPage, typeValue } from "../user-actions";
+import {
+  chooseOption,
+  chooseShapeKind,
+  clickElement,
+  openServedPage,
+  typeValue,
+} from "../user-actions";
 
 /** The library, its measuring functions typed: the others are spread as they are. */
 type MeasuringFunctions = Readonly<Record<string, unknown>> & {
@@ -59,7 +65,7 @@ function readCounts(): Record<string, number> {
 describe("What a redraw computes again (US-048)", () => {
   beforeEach(() => {
     openServedPage("");
-    clickElement("tool-text");
+    chooseShapeKind("text");
     typeValue("text-size", "16");
 
     // From here, the frames wait for the test to run them, as in a browser.

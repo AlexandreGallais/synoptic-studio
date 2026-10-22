@@ -5,6 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { testFaceFile } from "../../tests";
 import {
   chooseFiles,
+  chooseShapeKind,
   clickElement,
   openServedPage,
   selectChoice,
@@ -57,7 +58,7 @@ describe("The font list written only when the session's fonts change (US-048)", 
     });
 
     openServedPage("");
-    clickElement("tool-text");
+    chooseShapeKind("text");
     clickElement("installed-fonts");
     await waitForPageTasks();
   });

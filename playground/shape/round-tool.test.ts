@@ -9,7 +9,6 @@ import {
   pressKey,
   readDisabledState,
   readPointRows,
-  readPressedState,
   readText,
   readValue,
   selectInput,
@@ -35,7 +34,6 @@ describe("the Round tool (US-029)", () => {
     typeValue("height", "100");
     chooseShapeKind("round");
 
-    expect(readPressedState("tool-round")).toBe("true");
     expect(readText("#shape-title")).toBe("Round shape");
 
     expect(readText("#path-data")).toBe(
