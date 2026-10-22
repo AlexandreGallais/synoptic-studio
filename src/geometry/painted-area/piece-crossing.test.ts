@@ -1,4 +1,7 @@
+import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
+
+import { straightCubic } from "../curve";
 
 import { pieceCrossing } from "./piece-crossing";
 
@@ -57,4 +60,27 @@ describe("pieceCrossing (DERIV-painted-area steps 2 to 4)", () => {
   ])("counts $expected for a $piece.kind", ({ expected, piece }) => {
     expect(pieceCrossing(piece, { x: 50, y: 50 })).toBe(expected);
   });
+});
+
+describe("pieceCrossing (properties)", () => {
+  /** A point on integers. */
+  const integerPoint = fc.record({
+    x: fc.integer({ max: 100, min: -100 }),
+    y: fc.integer({ max: 100, min: -100 }),
+  });
+
+  test.prop({ end: integerPoint, point: integerPoint, start: integerPoint })(
+    "counts a straight cubic side as the segment it draws",
+    ({ end, point, start }) => {
+      // Away from the line, where the crossing's rounding could matter.
+      const side =
+        (end.x - start.x) * (point.y - start.y) - (end.y - start.y) * (point.x - start.x);
+
+      fc.pre(Math.abs(side) > 1);
+
+      expect(pieceCrossing(straightCubic(start, end), point)).toBe(
+        pieceCrossing({ end, kind: "segment", start }, point),
+      );
+    },
+  );
 });

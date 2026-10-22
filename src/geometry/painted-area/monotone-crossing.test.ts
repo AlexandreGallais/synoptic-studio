@@ -1,3 +1,4 @@
+import { fc, test } from "@fast-check/vitest";
 import { describe, expect, it } from "vitest";
 
 import { monotoneCrossing } from "./monotone-crossing";
@@ -46,4 +47,17 @@ describe("monotoneCrossing (DERIV-painted-area step 4)", () => {
   it("counts 0 above the arch", () => {
     expect(monotoneCrossing(ARCH, [0.5, 1], { x: 50, y: -35 })).toBe(0);
   });
+});
+
+describe("monotoneCrossing (properties)", () => {
+  test.prop({ y: fc.integer({ max: -1, min: -30 }) })(
+    "counts each part's direction far left of the arch, nothing far right of it",
+    ({ y }) => {
+      // On −30 ≤ y < 0 both parts span the level: the first falls, −1; the second grows, +1.
+      expect(monotoneCrossing(ARCH, [0, 0.5], { x: -1000, y })).toBe(-1);
+      expect(monotoneCrossing(ARCH, [0.5, 1], { x: -1000, y })).toBe(1);
+      expect(monotoneCrossing(ARCH, [0, 0.5], { x: 1000, y })).toBe(0);
+      expect(monotoneCrossing(ARCH, [0.5, 1], { x: 1000, y })).toBe(0);
+    },
+  );
 });
