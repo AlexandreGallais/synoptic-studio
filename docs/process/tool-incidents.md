@@ -92,3 +92,15 @@ The cards of E17 were decided at RET-004 ([record](./retrospectives/E17-retrospe
 - Used: a loop over the story's cases written as `$'…\'EOF\'…'` texts, after the brief's `cd`, to probe the release binary.
 - Failed: the separator reader closed the quote at `\'`, read the rest as commands and refused a chained Git command where none was.
 - Instead: the cases written to a JSON file and read with `jq`; the reader fixed in EN-119.T2, a backslash escaping inside `$'…'`.
+
+## 2026-10-22 — epic-check, to read its usage
+
+- Used: `target/release/epic-check --help`, by the auditor of AUD-037, to read its options.
+- Failed: it ignores `--help` and runs the whole epic check, `check:all` included, in the worktree it was called from.
+- Instead: the check was left to end; it left no file in the worktree, as `git status --ignored` showed at the fixes' start.
+
+## 2026-10-22 — mutate, for the mutation spot-checks of F35
+
+- Used: `npm run mutate -- <files>`, the audit's new modules not yet committed.
+- Failed: the copy takes tracked files only, so every test importing a new module failed in it, and each file was skipped as "its related tests fail, or none was found", the cause unsaid.
+- Instead: the new modules staged with `git add` before the run, which the copy then took.

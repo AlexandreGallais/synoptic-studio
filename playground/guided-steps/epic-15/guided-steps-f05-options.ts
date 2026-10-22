@@ -4,7 +4,7 @@ import type { GuidedStep } from "../guided-step";
 
 /**
  * The F05 options to try (VAL-014), one per step: every field of the Text tool, turning, values
- * refused, and each tool's own placement.
+ * refused, and a new shape leaving the text as it was (US-063).
  */
 export const GUIDED_STEPS_F05_OPTIONS: readonly GuidedStep[] = [
   {

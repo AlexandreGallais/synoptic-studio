@@ -11,7 +11,7 @@ const DEFAULT_SHAPE = {
 /**
  * Puts back the shape the page opens with, alone: a rectangle 120 × 80, radius 10, straight, at
  * (0, 0), no free shape kept, no point selected, the shapes placed and the settings each kind kept
- * forgotten (F35).
+ * forgotten, the Text tool's fields the page's (F35).
  *
  * @kind procedure
  * @param document - page document

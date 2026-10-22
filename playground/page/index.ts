@@ -1,6 +1,7 @@
 export * from "./pending-tasks";
 export * from "./read-mode";
 export * from "./read-number";
+export * from "./read-pointer-offset";
 export * from "./read-selection";
 export * from "./read-shape-kind";
 export * from "./run-task";

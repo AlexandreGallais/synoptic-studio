@@ -10,25 +10,32 @@ import {
 import { readTextMeasure, readTextMetrics } from "../text-measure";
 
 import { DRAWING_KEYS } from "./drawing-keys";
+import { KEPT_TEXT_METRICS } from "./kept-text-metrics";
 import { readStoredDrawing } from "./read-stored-drawing";
 
 import type { Shape, Text } from "../../src";
 
 /**
- * Creates the elements of a text kept in the drawing, measured with its font as when it was drawn.
+ * Creates the elements of a text kept in the drawing, measured with its font's metrics; when they
+ * are no longer read, a family read ahead whose files could not be read again leaving the session
+ * (US-061) while Inter is not drawn (US-056), with the metrics it was last drawn with
+ * (`KEPT_TEXT_METRICS`), so that it stays in the drawing and the export as it was (F35).
  *
  * @kind procedure
  * @param document - page document
  * @param text - a text kept, valid when it was drawn
- * @returns its group, or nothing when its font's metrics are no longer read
- * @see docs/backlog/stories/E02-F35-US-063-a-click-adds-a-shape.md
+ * @returns its group; nothing for a text never drawn with metrics
+ * @see docs/domain/interaction.md#_1-tools
  */
 function createKeptTextElements(document: Document, text: Text): readonly SVGGElement[] {
-  const metrics = readTextMetrics(document, text);
+  const key = JSON.stringify(text);
+  const metrics = readTextMetrics(document, text) ?? KEPT_TEXT_METRICS.get(key);
 
   if (metrics === undefined) {
     return [];
   }
+
+  KEPT_TEXT_METRICS.set(key, metrics);
 
   const drawn = measuredTextDrawing(metrics, text, readTextMeasure(metrics, text));
 

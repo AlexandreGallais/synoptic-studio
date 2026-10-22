@@ -1,8 +1,10 @@
 // @vitest-environment happy-dom
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import { HELLO_TEXT } from "../../tests";
 import { readExportedSvg } from "../document";
-import { readDrawnTexts } from "../kept-shapes";
+import { readFontSession, writeFontSession } from "../fonts";
+import { DRAWING_KEYS, readDrawnTexts, writeStoredDrawing } from "../kept-shapes";
 import {
   chooseOption,
   chooseRadio,
@@ -212,6 +214,45 @@ describe("a click with a tool adds a shape where it is clicked (US-063)", () => 
     expect(readDrawnTexts(document).map((text) => text.content)).toEqual(["Text"]);
   });
 
+  it("[F35.AC1] places a text whose font has no metrics with its top-left on the point", () => {
+    // No font available yet (US-056): the text's size is unknown, its box taken as 0 × 0.
+    writeFontSession(document, { ...readFontSession(document), kept: [] });
+    placeShape("text", { x: 250.5, y: 140.6 });
+
+    // (250.5 − 0 / 2, 140.6 − 0 / 2), rounded to (251, 141): a tie rounded up.
+    expect([readValue("shape-x"), readValue("shape-y")]).toEqual(["251", "141"]);
+  });
+
+  it("[F35.AC1] keeps a text whose font's metrics are no longer read, drawn and exported as it was", () => {
+    chooseOption("text-weight", "400");
+    placeShape("text", { x: 250, y: 140 });
+    placeShape("rectangle", { x: 400, y: 300 });
+
+    const drawn = document.querySelector("#canvas text")?.outerHTML;
+
+    // A family read ahead whose files could not be read again leaves the session (US-061), Inter
+    // not drawn on this computer (US-056): no family measures the kept text any more.
+    writeFontSession(document, { ...readFontSession(document), kept: [] });
+    placeShape("round", { x: 500, y: 300 });
+
+    expect(document.querySelector("#canvas text")?.outerHTML).toBe(drawn);
+    expect(readExportedSvg(document, readDrawnTexts(document))).toContain("<text");
+  });
+
+  it("[F35.AC1] draws no kept text that no metrics ever measured, the other shapes drawn", () => {
+    const first = readText("#path-data");
+
+    // A text kept by hand, never drawn: no family measures it, and none did before.
+    writeFontSession(document, { ...readFontSession(document), kept: [] });
+    writeStoredDrawing(document, DRAWING_KEYS.below, [{ ...HELLO_TEXT, content: "Never drawn" }]);
+    placeShape("round", { x: 500, y: 300 });
+
+    expect(document.querySelectorAll("#canvas text")).toHaveLength(0);
+    expect(readShapePaths()).toEqual([first, readText("#path-data")]);
+    // Nothing in its place either, not even a stray word.
+    expect(document.querySelector("#canvas svg")?.textContent).not.toContain("undefined");
+  });
+
   it("[F35.AC1] keeps no refused shape: a rectangle without width is not drawn below", () => {
     typeValue("width", "");
     placeShape("rectangle", { x: 250, y: 140 });
@@ -382,5 +423,26 @@ describe("what a new shape starts with (SP-026)", () => {
     placeShape("polygon", { x: 250, y: 140 });
 
     expect(readValue("corners")).toBe("6");
+  });
+
+  it("[F35.AC1] forgets the last text's options on Reset: the next text is Inter 32 Regular", () => {
+    placeShape("text", { x: 250, y: 140 });
+    typeValue("text-size", "20");
+    chooseOption("text-weight", "700");
+    clickElement("tool-reset");
+    placeShape("text", { x: 250, y: 140 });
+
+    expect([readValue("text-font"), readValue("text-size"), readValue("text-weight")]).toEqual([
+      "Inter",
+      "32",
+      "400",
+    ]);
+
+    // The epic's step 2 holds no text: the next text is the page's too.
+    typeValue("text-size", "20");
+    clickElement("guide-next");
+    placeShape("text", { x: 250, y: 140 });
+
+    expect(readValue("text-size")).toBe("32");
   });
 });

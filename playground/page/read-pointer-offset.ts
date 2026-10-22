@@ -11,16 +11,16 @@ export type PointerOffset = {
 };
 
 /**
- * Reads where a pointer is on a slider or the plane: its place in the window less the element's
- * top-left corner (`subtract`), and the element's size.
+ * Reads where a pointer is on an element of the page, a slider, the color plane or the canvas: its
+ * place in the window less the element's top-left corner (`subtract`), and the element's size.
  *
  * @kind procedure
- * @param element - the slider or the plane
- * @param event - the press or the move of the pointer
+ * @param element - the element under the pointer
+ * @param event - the press, the move or the click of the pointer
  * @returns the pointer from the element's corner, and the element's size
  * @see docs/backlog/stories/E15-F16-US-035-pick-a-color.md
  */
-export function readPointerOffset(element: HTMLElement, event: PointerEvent): PointerOffset {
+export function readPointerOffset(element: HTMLElement, event: MouseEvent): PointerOffset {
   const box = element.getBoundingClientRect();
 
   return {
