@@ -1,3 +1,6 @@
+import { halfSize } from "../../geometry";
+import { nearestInteger, subtract } from "../../math";
+
 import type { Size } from "../../geometry";
 import type { Point } from "../../math";
 
@@ -15,5 +18,7 @@ import type { Point } from "../../math";
  * @see docs/domain/interaction.md#_1-tools
  */
 export function centredPosition(point: Point, size: Size): Point {
-  return { x: point.x + size.width, y: point.y + size.height };
+  const corner = subtract(point, halfSize(size));
+
+  return { x: nearestInteger(corner.x), y: nearestInteger(corner.y) };
 }

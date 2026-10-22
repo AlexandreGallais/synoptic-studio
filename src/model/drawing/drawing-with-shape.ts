@@ -11,5 +11,5 @@ import type { DrawingShape } from "./drawing-shape";
  * @see docs/domain/interaction.md#_1-tools
  */
 export function drawingWithShape(drawing: Drawing, shape: DrawingShape): Drawing {
-  return drawing.filter((drawn) => drawn !== shape);
+  return [...drawing, shape];
 }

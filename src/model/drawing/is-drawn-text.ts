@@ -10,5 +10,5 @@ import type { Text } from "../text";
  * @see docs/domain/interaction.md#_1-tools
  */
 export function isDrawnText(shape: DrawingShape): shape is Text {
-  return !("x" in shape);
+  return "content" in shape;
 }
