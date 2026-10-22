@@ -2,6 +2,13 @@
 
 What each working session dealt with, in the agent's words: the Product Owner's requests in neutral words, decisions, where they were recorded. Newest first. Written by the agent at the end of each session or before a long pause (ADR-0024); searched with `grep` (tags written `#tag`).
 
+## 2026-10-22 — The run of E02
+
+- `#run` The Product Owner started a run on 2026-10-22 over the whole of E02, feature by feature, and asked to be told at the epic's end; F35 refined in one round, no question left. Since they are away until then, each feature goes up to its prepared validation, the next one started on the previous feature's branch, and the validations are held together at the epic's end (the scope they set, 2026-10-22).
+- `#decision` Recorded in `interaction.md` §1, §2, §7 and the domain's questions: a tool places a shape 100 × 100 centred on a click, or draws its box by a drag; two SVG layers, the shapes below, the helps above; a move lands the shape's anchor on integers, its own fractions kept; Q7 settled, one step per finished action, the history bounded by a memory size; Q43 opened, free positions; duplicating with a remembered offset left for later. The history's building is chosen at its feature's spike, an epic of its own if it outgrows 4 stories.
+- `#tooling` The pushes were refused by `deps:outdated`: 15 dev packages and crates brought up on F35's branch (the oxc crates' `Comment` no longer `Copy`, our linter adapted); the pin of `links.yml`'s actions by commit, which GitHub's code scanning asks for, is left for the review, since no workflow pins by commit and `tools/deps` reads only `@vN`.
+- `#backlog` E17 set `done`, its features all done since REV-007.
+
 ## 2026-10-19 — Run continued
 
 - `#run` EN-120: the status line drops the calls of ended subagents (removed on `SubagentStop` by `log-tool-call`, and by the status line once no running subagent can have made them); `metrics` names the command after `|| exit 9`; `session-report --all` reads each model's tokens from the session's `modelUsage`. The 174 files then in `running/` were all calls refused by `guard-bash` in subagents, never logged; the Findings were already cut by `--since` since EN-107.

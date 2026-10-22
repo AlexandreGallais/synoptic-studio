@@ -16,11 +16,20 @@ How the user acts on shapes in the editors: tools, selection, node editing, snap
 
 No pen tool and no freehand drawing (see `shapes.md` §3).
 
+**Adding a shape** (Product Owner, 2026-10-22, F35), as Figma does:
+
+- a tool chosen, a click on the drawing adds a shape 100 × 100 centred on the point clicked, on integers; a text fits its content instead;
+- a press, a drag and a release draw the shape's box instead, the shape following the pointer until the release; a text dragged sits in a box of that size;
+- the new shape is drawn above the others, the drawing an ordered list of shapes, the last drawn on top, flat until E13.
+- **For later**: duplicating a shape, the offset of its first move remembered for the next copies, as Figma does, so that copies never pile up (Product Owner, 2026-10-22; not in E02).
+
 ## 2. Selector
 
 - Click: select an object; Shift + click or Ctrl + click (Cmd on macOS): add / remove (Product Owner, 2026-10-11). No range on the drawing.
+- **Two layers** (Product Owner, 2026-10-22, F35): the drawing's SVG holds only the shapes and receives the clicks; a transparent SVG above it, which the pointer passes through, draws the outline of the shape under the pointer, the selection and every other help, so that the drawing is never polluted by them.
 - Selection rectangle (marquee).
 - Moving and resizing: **integer** values.
+- **A move lands its anchor on integers** (Product Owner, 2026-10-22): while dragged the shape follows the pointer freely; at the release its anchor is placed on integers, the top-left of its box by default, the anchor chosen once anchors exist; the shape itself is never changed by a move: a side 10.5 long stays 10.5, its points keep their fractions until edited by hand (ADR-0033, ADR-0035). An option of free positions, off the integers, is an open question (Q43).
 - Properties panel: x, y, width, height typed on the keyboard.
 
 ## 3. Node editing
@@ -131,4 +140,4 @@ F16; decided at F05's refinement, round 2, 2026-10-14; the rules marked "confirm
 ## 7. Navigation and history
 
 - Zoom and pan.
-- Undo / redo: command-based history (**Q7**, to be confirmed).
+- Undo / redo (**Q7**, settled by the Product Owner on 2026-10-22): one step per finished action — a drag at its release, whatever its path; a value typed when Enter is pressed or the field left; a text when its editing is left; an addition, a deletion. Selecting alone is never a step. The history is bounded by a memory size the user sets, never by a count of steps. How it is built, a history of commands or of states, is chosen at the feature's spike from read sources.
