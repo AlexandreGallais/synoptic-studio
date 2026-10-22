@@ -38,4 +38,4 @@
 | [F34](./E17-F34-the-use-of-each-workflow.md) | E17 | The use of each workflow | done |
 | [F35](./E02-F35-several-shapes-on-one-drawing.md) | E02 | Several shapes on one drawing | in-progress |
 | [F36](./E02-F36-draw-pick-and-remove-shapes.md) | E02 | Draw and pick shapes | in-progress |
-| [F37](./E02-F37-select-shapes.md) | E02 | Select shapes | draft |
+| [F37](./E02-F37-select-shapes.md) | E02 | Select shapes | in-progress |

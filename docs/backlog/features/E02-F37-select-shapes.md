@@ -2,7 +2,7 @@
 id: F37
 epic: E02
 title: Select shapes
-status: draft
+status: in-progress
 ---
 
 # E02 · F37 — Select shapes
@@ -21,6 +21,7 @@ In delivery order.
 
 | ID | Type | Title | Status |
 | --- | --- | --- | --- |
+| [SP-027](../stories/E02-F37-SP-027-refine-the-selection-of-shapes.md) | SP | Refine the selection of several shapes | ready |
 | [US-066](../stories/E02-F37-US-066-delete-removes-the-shape.md) | US | Delete removes the selected shape | ready |
 | [AUD-039](../stories/E02-F37-AUD-039-audit-f37.md) | AUD | Audit F37 | draft |
 | [VAL-038](../stories/E02-F37-VAL-038-validate-f37.md) | VAL | Validate F37 | draft |
