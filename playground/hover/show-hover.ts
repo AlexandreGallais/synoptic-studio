@@ -1,6 +1,7 @@
 import { PICK_TOLERANCE, screenToUser, shapeAtPoint } from "../../src";
-import { VIEW_SCALE, createViewSvg } from "../kept-shapes";
+import { createViewSvg } from "../kept-shapes";
 import { selectElement } from "../page";
+import { readView } from "../view";
 
 import { createOutlineElement } from "./create-outline-element";
 import { createSelectionElements } from "./create-selection-elements";
@@ -31,7 +32,8 @@ function createHoverElements(
   }
 
   const areas = readPickAreas(document);
-  const area = areas[shapeAtPoint(areas, point, screenToUser(PICK_TOLERANCE, VIEW_SCALE))];
+  const reach = screenToUser(PICK_TOLERANCE, readView(document).scale);
+  const area = areas[shapeAtPoint(areas, point, reach)];
 
   return area === undefined ? [] : [createOutlineElement(document, area, "hover")];
 }

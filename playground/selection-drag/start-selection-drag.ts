@@ -1,9 +1,9 @@
 import { PICK_TOLERANCE, screenToUser, shapeAtPoint } from "../../src";
 import { SELECTION_DRAGS, readPickAreas } from "../hover";
-import { VIEW_SCALE } from "../kept-shapes";
 import { readMode, selectElement } from "../page";
 import { readDrawingPoint } from "../placing";
 import { readArmedTool } from "../toolbar";
+import { readView } from "../view";
 
 import { readShapesMove } from "./read-shapes-move";
 
@@ -40,7 +40,7 @@ function readSelectorPress(document: Document, event: PointerEvent): Point | und
  */
 function readPressedDrag(document: Document, press: Point, event: PointerEvent): SelectionDrag {
   const isShape = readMode(document) === "shape";
-  const reach = screenToUser(PICK_TOLERANCE, VIEW_SCALE);
+  const reach = screenToUser(PICK_TOLERANCE, readView(document).scale);
   const index = isShape ? shapeAtPoint(readPickAreas(document), press, reach) : -1;
   const drag = { isMoved: false, isShift: event.shiftKey, pointer: press, press };
 

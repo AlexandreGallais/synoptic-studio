@@ -5,7 +5,7 @@ import {
   formatSvgNumber,
   screenToUser,
 } from "../../src";
-import { VIEW_SCALE } from "../kept-shapes";
+import { readView } from "../view";
 
 import { readSelectionBox } from "./read-selection-box";
 import { SELECTION_DRAGS } from "./selection-drags";
@@ -75,11 +75,9 @@ export function createSelectionRectangleElements(document: Document): readonly S
   }
 
   const box = readSelectionBox(drag);
+  const half = screenToUser(OUTLINE_WIDTH / 2, readView(document).scale);
   const area = createPathElement(document, readSidesPathData(box, 0));
-  const outline = createPathElement(
-    document,
-    readOutlinePathData(box, screenToUser(OUTLINE_WIDTH / 2, VIEW_SCALE)),
-  );
+  const outline = createPathElement(document, readOutlinePathData(box, half));
 
   area.classList.add("selection-area");
   outline.classList.add("selection-rectangle");

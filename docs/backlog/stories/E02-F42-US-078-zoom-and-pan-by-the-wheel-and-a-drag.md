@@ -30,16 +30,32 @@ The examples use a canvas of 1 200 × 800 CSS pixels, the opening view at 100 %,
 
 ## Product Owner test
 
-`npm run dev`, `http://localhost:5173/`. Written with T3, once SP-030's answers are given: zoom in and out with `Ctrl` and the wheel, and with a pinch, the point under the pointer staying; pan with the wheel, `Shift` and the wheel, `Space` and a drag; a shape placed at the zoom; the export at two zooms compared.
+`npm run dev`, `http://localhost:5173/`. The page opens with a rectangle 120 × 80 at (0, 0), selected. `Ctrl` stands for `Cmd` on macOS. A **pan** moves the view, never the shapes.
 
 | Step | Do | You should see |
 | --- | --- | --- |
+| 1 | Point at the rectangle's top-left corner and turn the wheel away from you with `Ctrl` held | the drawing grows about the pointer, the corner staying under it; the page's own text and panel keep their size; the outline of the rectangle selected stays on it, 2 pixels wide |
+| 2 | Turn the wheel toward you with `Ctrl` held, a few notches | the drawing shrinks about the pointer, the corner still under it |
+| 3 | On a trackpad, pinch two fingers apart, then together | the drawing zooms in, then out, about the fingers, slowly for a slow pinch |
+| 4 | Read the panel's X, Y, W and H | still 0, 0, 120 and 80 |
+| 5 | Turn the wheel alone, then with `Shift` held | the view moves up or down, then left or right; on a trackpad, two fingers move it every way |
+| 6 | Hold `Space`, drag on the empty drawing, release the button, then `Space` | the drawing follows the pointer; nothing is selected nor moved, no selection rectangle drawn; the page does not scroll |
+| 7 | Drag on the drawing with the middle button, the wheel pressed | the drawing follows the pointer, nothing selected |
+| 8 | Zoom in on the rectangle with `Ctrl` and the wheel, click it, then **Points** | its point handles, their halos and its outline the same size on screen as at 100 % |
+| 9 | Choose **Rectangle** and click the empty drawing; read X, Y, W and H | a rectangle 100 × 100 centred where you clicked, large on screen at that zoom |
+| 10 | Zoom far out with `Ctrl` and the wheel; choose **Rectangle**, press, move the mouse a pixel or two and release | a rectangle 100 × 100 placed, not a thin line |
+| 11 | With the Selector, press on a rectangle, move the mouse a pixel or two and release | the rectangle selected, not moved; moved further, it moves |
+| 12 | Press on a rectangle with the Selector, drag it, turn the wheel with `Ctrl` held while still pressing, keep dragging and release | the rectangle stays under the pointer through the zoom and lands where you release it |
+| 13 | Press `Ctrl` + `Z` | the last change of the drawing undone; the view stays as it is |
+| 14 | Click **Export SVG**; zoom in with `Ctrl` and the wheel; click **Export SVG** again; compare the two files | the two files are the same, each with `viewBox="-40 -40 …"`, the canvas's width and height |
+| 15 | Choose **Text**, click the drawing and type `Valve P1` in Content | the space typed in the text, the view not moved |
+| 16 | Click **Reset** | the rectangle 120 × 80 alone, the view back as the page opened, its corner 40 pixels from the canvas's top-left |
 
 ## Tasks
 
 - [x] T1 — The criteria in line with SP-030's answers; the page's view kept on the canvas, the wheel's and the drag's listeners (`playground/view/`), `createViewSvg` from the view, `readDrawingPoint` and `dispatchDrawingPointer` through it, the export's frame: interface and failing tests (1 h)
 - [x] T2 — Both SVGs from the view, the pointer through it, the export's fixed `viewBox`; the wheel with `Ctrl` and a pinch, the wheel alone and with `Shift`, `Space` and the middle button; one change of the view per frame (`scheduleRedraw`); the tests of T1 on them passing (2 h)
-- [ ] T3 — `VIEW_SCALE` replaced by the view's scale; the frames, dashed boxes and handles of the drawing's SVG divided by it; Reset; the rules in `interaction.md` §1 and §7, the Q table, the Product Owner test card and F42's guide page; every test of T1 passing (2 h)
+- [x] T3 — `VIEW_SCALE` replaced by the view's scale; the frames, dashed boxes and handles of the drawing's SVG divided by it; Reset; the rules in `interaction.md` §1 and §7, the Q table, the Product Owner test card and F42's guide page; every test of T1 passing (2 h)
 
 Files: `playground/view/` (new, the view of the page and its listeners), `playground/kept-shapes/` (`createViewSvg`, `VIEW_SCALE`), `playground/placing/read-drawing-point.ts`, `playground/user-actions/dispatch-drawing-pointer.ts`, `playground/document/read-exported-svg.ts`, `playground/points/create-handle-elements.ts`, `playground/handles/create-curve-handle-elements.ts`, `playground/drawing/`, `playground/hover/`, `playground/mount/`. `@see` ADR-0098, `docs/domain/interaction.md#_7-navigation-and-history`, `REF-MDN-WHEEL-EVENT`, `REF-MDN-WHEEL-DELTAMODE`, `REF-PENPOT-VIEWPORT-ACTIONS`, `REF-PENPOT-NORMALIZE-WHEEL`, `REF-FIGJAM-PAN-ZOOM`, `REF-SKETCH-SHORTCUTS`, `REF-INKSCAPE-KEYS`.
 

@@ -5,17 +5,19 @@ import {
   elementAddress,
   formatSvgNumber,
   halfSize,
+  screenToUser,
 } from "../../src";
+import { readView } from "../view";
 
 import type { BoundingBox } from "../../src";
 
-/** Length of a dash, in user units. */
+/** Length of a dash, in screen pixels. */
 const DASH = 4;
 
-/** Distance from one dash to the next, in user units. */
+/** Distance from one dash to the next, in screen pixels. */
 const PERIOD = 7;
 
-/** Thickness of the dashes, in user units. */
+/** Thickness of the dashes, in screen pixels. */
 const LINE = 1;
 
 /** One side of the box: along x at a given y, or along y at a given x. */
@@ -30,20 +32,32 @@ type Side = {
   readonly end: number;
 };
 
+/** The sizes of the dashes, in user units at the view's scale. */
+type DashSizes = {
+  /** Length of a dash. */
+  readonly length: number;
+  /** Distance from one dash to the next. */
+  readonly period: number;
+  /** Thickness of the dashes. */
+  readonly thickness: number;
+};
+
 /**
- * Path data of one dash, a thin filled rectangle from `from` to `to` along its side.
+ * Path data of one dash, a thin filled rectangle from `from` along its side, its length or up to
+ * the side's end.
  *
  * @kind procedure
  * @param side - the side it lies on
  * @param from - its first coordinate along the side
- * @param to - its last coordinate along the side
+ * @param sizes - the dashes' length and thickness, in user units
  * @returns the rectangle's path data
  * @see docs/backlog/stories/E01-F04-US-018-turn-a-shape.md
  */
-function readDash(side: Side, from: number, to: number): string {
+function readDash(side: Side, from: number, sizes: DashSizes): string {
+  const to = Math.min(from + sizes.length, side.end);
   const rectangle = side.isHorizontal
-    ? { bottom: side.at + LINE, left: from, right: to, top: side.at }
-    : { bottom: to, left: side.at, right: side.at + LINE, top: from };
+    ? { bottom: side.at + sizes.thickness, left: from, right: to, top: side.at }
+    : { bottom: to, left: side.at, right: side.at + sizes.thickness, top: from };
   const left = formatSvgNumber(rectangle.left);
 
   return `M${left} ${formatSvgNumber(rectangle.top)}H${formatSvgNumber(rectangle.right)}V${formatSvgNumber(rectangle.bottom)}H${left}Z`;
@@ -54,23 +68,26 @@ function readDash(side: Side, from: number, to: number): string {
  *
  * @kind procedure
  * @param side - one of the four sides of the box
+ * @param sizes - the dashes' length, period and thickness, in user units
  * @returns the dashes' path data
  * @see docs/backlog/stories/E01-F04-US-018-turn-a-shape.md
  */
-function readSideDashes(side: Side): string {
-  const count = Math.max(ceiling((side.end - side.start) / PERIOD), 0);
+function readSideDashes(side: Side, sizes: DashSizes): string {
+  const count = Math.max(ceiling((side.end - side.start) / sizes.period), 0);
 
   return Array.from({ length: count })
     .keys()
-    .map((index) => elementAddress(side.start, PERIOD, index))
-    .map((from) => readDash(side, from, Math.min(from + DASH, side.end)))
+    .map((index) => elementAddress(side.start, sizes.period, index))
+    .map((from) => readDash(side, from, sizes))
     .toArray()
     .join(" ");
 }
 
 /**
  * Draws the straight box of a turned shape, dashed (F04, as Inkscape's dashed bounding box): the
- * dashes are thin filled rectangles inside the box, never a native stroke.
+ * dashes are thin filled rectangles inside the box, never a native stroke, 4 screen pixels long
+ * every 7, 1 thick, divided by the view's scale so that they keep their size on screen at any zoom
+ * (`screenToUser`, ADR-0098, decision 5).
  *
  * @kind procedure
  * @param document - page document
@@ -79,17 +96,26 @@ function readSideDashes(side: Side): string {
  * @see docs/backlog/stories/E01-F04-US-018-turn-a-shape.md
  */
 export function createStraightBoxElement(document: Document, box: BoundingBox): SVGPathElement {
+  const { scale } = readView(document);
+  const sizes = {
+    length: screenToUser(DASH, scale),
+    period: screenToUser(PERIOD, scale),
+    thickness: screenToUser(LINE, scale),
+  };
   // In a box thinner than two lines, the far dashes stay inside it.
   const half = halfSize(boxSize(box));
-  const across = Math.min(LINE, half.y);
-  const along = Math.min(LINE, half.x);
+  const across = Math.min(sizes.thickness, half.y);
+  const along = Math.min(sizes.thickness, half.x);
   const sides: readonly Side[] = [
     { at: box.minY, end: box.maxX, isHorizontal: true, start: box.minX },
     { at: box.maxY - across, end: box.maxX, isHorizontal: true, start: box.minX },
     { at: box.minX, end: box.maxY, isHorizontal: false, start: box.minY },
     { at: box.maxX - along, end: box.maxY, isHorizontal: false, start: box.minY },
   ];
-  const element = createPathElement(document, sides.map((side) => readSideDashes(side)).join(" "));
+  const element = createPathElement(
+    document,
+    sides.map((side) => readSideDashes(side, sizes)).join(" "),
+  );
 
   element.classList.add("straight-box");
 
