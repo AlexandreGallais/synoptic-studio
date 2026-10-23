@@ -5,6 +5,7 @@ export * from "./measure-without-state";
 export * from "./measured-history";
 export * from "./sized-bounded-history";
 export type * from "./sized-history";
+export * from "./sized-history-at";
 export * from "./sized-history-with-step";
 export * from "./sized-redone-history";
 export * from "./sized-undone-history";

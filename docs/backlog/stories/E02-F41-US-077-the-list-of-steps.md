@@ -28,5 +28,6 @@ Asked by the Product Owner on 2026-10-23 (SP-029's answer 8), to see its use; cu
 
 - [ ] T1 — Each step named by its action: interface and failing tests (1 h)
 - [ ] T2 — The list in the playground, a click going back to a step, the tests of T1 passing; the Product Owner test card (2 h)
+- [ ] T3 — F41's guide page, left to this story by EN-147, and the list's timings with a long history (1 h)
 
 One task = one commit, referenced as `US-077.Tn` in the commit footer.
