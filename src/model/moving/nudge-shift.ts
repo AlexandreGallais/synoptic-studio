@@ -1,3 +1,5 @@
+import { scale } from "../../math";
+
 import type { Point } from "../../math";
 
 /** The step of an arrow key, in user units (`interaction.md` §1, nudge). */
@@ -17,7 +19,8 @@ const ARROW_DIRECTIONS: ReadonlyMap<string, Point> = new Map([
 /**
  * How far an arrow key moves the shapes selected (F39): 1 toward the arrow, or 10 with Shift, as
  * Figma nudges (`interaction.md` §1), never rounded, so that an anchor holding a fraction keeps it
- * until a drag lands it (SP-028, answer 3): Right adds 1 across, Shift + Up takes 10 down away.
+ * until a drag lands it (SP-028, answer 3): the arrow's direction scaled by the step (`scale`),
+ * Right adding 1 across, Shift + Up taking 10 down away.
  *
  * @kind domain
  * @param key - the key pressed, as `KeyboardEvent.key` names it
@@ -29,5 +32,5 @@ export function nudgeShift(key: string, isFurther: boolean): Point | undefined {
   const direction = ARROW_DIRECTIONS.get(key);
   const step = isFurther ? FURTHER_STEP : NUDGE_STEP;
 
-  return direction === undefined ? undefined : { x: direction.x * step, y: direction.y * step };
+  return direction === undefined ? undefined : scale(direction, step);
 }

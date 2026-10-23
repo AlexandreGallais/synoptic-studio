@@ -336,18 +336,23 @@ describe("playground", () => {
     expect(readText("#model")).toContain('"radius": 100000');
   });
 
-  it("[F02.AC5] keeps 100 000 and smaller values exactly", () => {
+  it(
+    "[F02.AC5] [F39.AC1] keeps 100 000 and smaller values exactly",
     // The test before leaves a radius of 100 000: the rectangle 99 999 × 100 000 would then
     // have corners of radius 49 999.5, its band following each by about 39 270 chords of at
     // most 2 screen pixels (Q48), 1 063 ms alone and over Vitest's 5 s under the pre-push's
-    // load. With the radius typed 0 first, 11 ms (EN-145, note 0029 §6).
-    typeValue("radius", "0");
-    typeValue("height", "100000");
-    typeValue("width", "99999");
+    // load. With the radius typed 0 first (EN-145, note 0029 §6), alone: 10 ms, the median of 5
+    // runs of its file (AUD-041); 1 s, 100 times it, fails the 1 063 ms of the band followed.
+    { timeout: 1000 },
+    () => {
+      typeValue("radius", "0");
+      typeValue("height", "100000");
+      typeValue("width", "99999");
 
-    expect([readValue("height"), readValue("width")]).toEqual(["100000", "99999"]);
-    expect(readText("#model")).toContain('"width": 99999');
-  });
+      expect([readValue("height"), readValue("width")]).toEqual(["100000", "99999"]);
+      expect(readText("#model")).toContain('"width": 99999');
+    },
+  );
 
   it("[F07.AC5] hides the anchor grid for the rectangle, shows it for the polygon on the center", () => {
     chooseOption("shape", "rectangle");

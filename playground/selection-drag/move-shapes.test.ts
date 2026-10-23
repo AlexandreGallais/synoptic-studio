@@ -1,5 +1,5 @@
 // @vitest-environment happy-dom
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { isDrawnText, shapePanelValues } from "../../src";
 import { HELLO_TEXT } from "../../tests";
@@ -235,15 +235,29 @@ describe("a drag moves the shapes selected (US-072)", () => {
     expectStraightBoxAt(readShape(1), { x: 225.19873, y: 18 });
   });
 
-  it("[F39.AC2] keeps A and B, A pressed with Shift among them, both moved", () => {
+  it("[F39.AC3] keeps A and B, A pressed with Shift at the press only, both moved", () => {
+    clickA(SHIFT);
+    dispatchDrawingPointer("pointerdown", IN_A, SHIFT);
+    dispatchDrawingPointer("pointermove", { x: 80.6, y: 59.4 }, NO_KEY);
+    release({ x: 80.6, y: 59.4 }, NO_KEY);
+
+    // A pressed with Shift is one of the shapes selected: both stay selected. (10, −1.65064) +
+    // (30.6, 19.4) = (40.6, 17.74936) rounds to (41, 18): a shift of (31, 19.65064).
+    expect(readSelectedShapes(document)).toEqual([0, 1]);
+    expectAt(readShape(0), { x: 41, y: 39.65064 });
+    expectAt(readShape(1), { x: 231, y: 39.65064 });
+  });
+
+  it("[F39.AC2] keeps A and B still down with Shift held throughout, only across landed", () => {
     clickA(SHIFT);
     dragBy(IN_A, { x: 30.6, y: 19.4 }, SHIFT);
 
-    // Shift held at the release keeps the larger axis, across: (10, −1.65064) + (30.6, 0) =
-    // (40.6, −1.65064) still lands on integers, on (41, −2), a shift of (31, −0.34936).
+    // Shift held at the release keeps the larger axis, across: 10 + 30.6 = 40.6 lands on 41, a
+    // shift of 31; down is kept still, the dashed box's y −1.65064 not landed (2026-10-23).
     expect(readSelectedShapes(document)).toEqual([0, 1]);
-    expectAt(readShape(0), { x: 41, y: 19.65064 });
-    expectAt(readShape(1), { x: 231, y: 19.65064 });
+    expectAt(readShape(0), { x: 41, y: 20 });
+    expectAt(readShape(1), { x: 231, y: 20 });
+    expectStraightBoxAt(readShape(1), { x: 225.19873, y: -1.65064 });
   });
 
   it("[F39.AC2] leaves a text never measured where it is, selected, out of the anchor", () => {
@@ -325,6 +339,38 @@ describe("a drag moves the shapes selected (US-072)", () => {
     expect(readSelectedShapes(document)).toEqual([1]);
     expectAt(readShape(0), { x: 10, y: 20 });
     expect(readShapeModel().angle).toBe(30);
+  });
+
+  it.each([
+    { init: {}, key: "Delete" },
+    { init: {}, key: "Backspace" },
+    { init: {}, key: "Escape" },
+    { init: { ctrlKey: true }, key: "a" },
+  ])("[F39.AC2] changes nothing on $key $init while A moves, A landed", ({ init, key }) => {
+    dispatchDrawingPointer("pointerdown", IN_A, NO_KEY);
+    dispatchDrawingPointer("pointermove", { x: 80.6, y: 59.4 }, NO_KEY);
+
+    selectPageElement("body").dispatchEvent(
+      new KeyboardEvent("keydown", { ...init, bubbles: true, cancelable: true, key }),
+    );
+
+    // A selected alone, still drawn where the pointer takes it, (40.6, 39.4); B kept.
+    expect(readSelectedShapes(document)).toEqual([0]);
+    expect(readKeptDrawing(document)).toHaveLength(2);
+    expectAt(readShape(0), { x: 40.6, y: 39.4 });
+
+    release({ x: 80.6, y: 59.4 }, NO_KEY);
+
+    expect(readSelectedShapes(document)).toEqual([0]);
+    expect(readShapeModel()).toMatchObject({ x: 41, y: 39 });
+  });
+
+  it("[F39.AC2] makes the canvas take the pointer pressed on A, so that the move goes on beyond it", () => {
+    const capture = vi.spyOn(selectPageElement("#canvas"), "setPointerCapture");
+
+    dispatchDrawingPointer("pointerdown", IN_A, NO_KEY);
+
+    expect(capture).toHaveBeenCalledWith(1);
   });
 
   it("[F39.AC2] moves nothing in Points mode", () => {

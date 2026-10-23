@@ -19,7 +19,7 @@ Ctrl stands for Cmd on macOS. "—" is what the pages read do not state.
 | Behavior | Figma | Inkscape | Sketch | Penpot | Affinity Designer |
 | --- | --- | --- | --- | --- | --- |
 | a press on a shape not selected, dragged | — | selects it, then moves the selection | moves it | it becomes the selection alone, then moves | — |
-| a press on one of several selected, dragged | — | moves the selection | moves them, from anywhere inside their box, the empty space between them included | moves the selection | — |
+| a press on one of several selected, dragged | — | moves the selection | moves them, from anywhere inside their box, the empty space between them included | the selection moved as it is from the rectangle drawn around it, the area it answers not read (AUD-041) | — |
 | Shift at the press, on a shape | — | a rubberband "even if you start from an object" | — | the shape toggled in the selection, then moved | — |
 | how far before a drag starts | — | — | — | 10 screen pixels (`10 / zoom`) | — |
 | one axis kept while dragging | — | `Ctrl` | `⇧` | Shift, the axis of the larger displacement | a modifier, unreadable |
@@ -27,20 +27,20 @@ Ctrl stands for Cmd on macOS. "—" is what the pages read do not state.
 | nudge | 1, `Shift` 10, "resolution-independent points" | 2 px in the drawing's units, `Shift` 10 times; `Alt` 1 screen pixel | 1, `⇧` 10, set in Settings | 1, `Shift` 10, set in the profile | a nudge and a "modified nudge", set in Settings |
 | whole units after a move | Snap to pixel grid, an option, always for frames; the point aligned not stated | — | a command, "Round layer to pixel" | Snap to pixel grid: each shape's upright box's top-left rounded, one shape at a time; a nudge never rounded | — |
 
-Sources: `REF-INKSCAPE-KEYS`, `REF-INKSCAPE-TUTORIAL-BASIC`, `REF-SKETCH-MOVING-LAYERS`, `REF-SKETCH-SHORTCUTS`, `REF-SKETCH-CANVAS-SETTINGS`, `REF-PENPOT-TRANSFORMS`, `REF-PENPOT-PIXEL-PRECISION`, `REF-PENPOT-VIEWPORT-ACTIONS` (Penpot's code, level 5, read only, never copied), `REF-FIGMA-ADJUST`, `REF-FIGMA-PIXEL-GRID`, `REF-AFFINITY-SHORTCUTS`, `REF-AFFINITY-MOVE-TOOL`.
+Sources: `REF-INKSCAPE-KEYS`, `REF-INKSCAPE-TUTORIAL-BASIC`, `REF-SKETCH-MOVING-LAYERS`, `REF-SKETCH-SHORTCUTS`, `REF-SKETCH-CANVAS-SETTINGS`, `REF-PENPOT-TRANSFORMS`, `REF-PENPOT-PIXEL-PRECISION`, `REF-PENPOT-VIEWPORT-ACTIONS`, `REF-PENPOT-VIEWPORT-SELECTION` (Penpot's code, level 5, read only, never copied), `REF-FIGMA-ADJUST`, `REF-FIGMA-PIXEL-GRID`, `REF-AFFINITY-SHORTCUTS`, `REF-AFFINITY-MOVE-TOOL`.
 
 Not read: Figma's moves by the mouse, which none of its help pages read describes (a press on a shape not selected, Shift while dragging), and its keyboard shortcuts panel, built in the application; Affinity Designer's page on moving objects, which a search did not find, and its modifier keys, images the library does not keep; Illustrator, Adobe's help answering 403 to the library, as at SP-026 and SP-027. None is cited.
 
 What the sources settle, two of them agreeing (`docs/research/README.md` §2):
 
 - **A press on a shape not selected, dragged, selects it alone and moves it**: Inkscape ("Dragging an object selects it if it was not selected, then moves selection") and Penpot's `start-move-selected` (the shape pressed becomes the selection alone, `d/toggle-selection` without Shift); Sketch's "click and drag it" says the same of one layer. Taken as a rule for US-072, the agent's reading.
-- **A press on one of several selected moves them all**: Inkscape ("then moves selection"), Sketch ("click and drag anywhere inside the outer selection box") and Penpot (`on-move-selected`, the selection as it is). Taken as a rule for US-072, the agent's reading.
+- **A press on one of several selected moves them all**: Inkscape ("then moves selection") and Sketch ("click and drag anywhere inside the outer selection box"). Taken as a rule for US-072, the agent's reading. Penpot is not cited (AUD-041): its `on-move-selected`, which moves the selection as it is, is attached to the rectangle drawn around the selection, not to the shapes (`REF-PENPOT-VIEWPORT-SELECTION`), while a press reaching a shape starts `start-move-selected`, which makes the shape pressed the selection alone, or with Shift toggles it; which one a press inside that rectangle reaches depends on the area the rectangle answers the pointer over, its fill `none`, which the code read does not settle.
 - **The nudge is 1 and 10 with Shift**, already settled (Q50); Sketch and Penpot agree with Figma, and the three make it a setting, as `interaction.md` §1 makes every key (Keys editable, E20).
 
 What they leave open, the questions of SP-028:
 
-- **Shift at the press on a shape** (question 5): Inkscape draws a rubberband from it, Penpot toggles the shape and moves; F37 draws nothing today.
-- **A press on an empty place inside the dashed box of several** (question 6): Sketch moves them; Inkscape and Penpot draw a rectangle from an empty place, as F37 does.
+- **Shift at the press on a shape** (question 5): Inkscape draws a rubberband from it, Penpot toggles the shape and moves; F37 draws nothing today. Penpot's toggle takes out a shape selected pressed with Shift, which F39 keeps (SP-028's answer 5 (a), whose second clause Penpot does not support, AUD-041).
+- **A press on an empty place inside the dashed box of several** (question 6): Sketch moves them; Inkscape draws a rectangle from an empty place, as F37 does. Penpot is not cited (AUD-041): it draws an area from a press on no shape, but a press inside the rectangle around its selection may reach `on-move-selected` and move the shapes, as Sketch, the area that rectangle answers not settled by the code read.
 - **One axis kept while dragging** (question 7): Sketch and Penpot by Shift, Inkscape by Ctrl, Affinity by a modifier; Figma's key not read. Shift already adds at a press (F37), and Ctrl turns snapping off for a while with E19 (Q50), as Figma's.
 
 ## 3. How far the pointer goes before a press is a drag
