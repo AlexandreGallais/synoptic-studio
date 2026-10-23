@@ -3,7 +3,7 @@ id: AUD-039
 epic: E02
 feature: F37
 title: Audit F37
-status: draft
+status: ready
 points: 1
 ---
 

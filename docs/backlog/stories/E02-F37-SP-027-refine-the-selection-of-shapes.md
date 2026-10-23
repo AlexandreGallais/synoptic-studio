@@ -65,3 +65,16 @@ One task = one commit, referenced as `SP-027.Tn`.
 
 - [x] T1 — The sources found, read and recorded, the research note, the table of shortcuts (2 h)
 - [x] T2 — The code read, F37's stories written, the questions for the Product Owner listed (2 h)
+
+## Answers of the Product Owner
+
+Given on 2026-10-22 and 2026-10-23:
+
+1. (a) A selection rectangle takes the shapes it touches, as Figma; Alt held takes only those it encloses. Groups, which can hold shapes, come with E13, where hovering shows the group and a modifier reaches inside it: nothing to decide before.
+2. (a) Touched by the painted area, as a click picks: C is not selected. An EN before US-069, with the `math-expert`.
+3. (b) Each shape by its band, and a dashed box around the whole selection.
+4. Mixed where the values differ; a relative value typed, `+50` in W, adds 50 to each shape's own width (100 gives 150, 50 gives 100).
+5. A value typed without a sign sets each shape to it, as Figma: 460 in W makes A and B 460 wide.
+6. (a) A text fitting its content keeps its size when W or H is typed for several shapes.
+7. (b) Shift + click alone adds or removes; Ctrl + click is kept for picking inside a group with E13, as Figma: C alone selected until then. This supersedes the rule of 2026-10-11 for the drawing (the list of points keeps its Ctrl + click).
+8. (b) F37 holds US-068, US-066, EN-144 (a shape touched by a rectangle, by its painted area) and US-069; F38, "The panel for several shapes", holds US-070 (the values shown, Mixed) and US-071 (a value typed, relative or fixed).

@@ -1,13 +1,13 @@
 ---
 id: US-070
 epic: E02
-feature: F37
+feature: F38
 title: The panel shows several shapes' position and size
 status: draft
 points: 3
 ---
 
-# E02 · F37 · US-070 — The panel shows several shapes' position and size
+# E02 · F38 · US-070 — The panel shows several shapes' position and size
 
 As a symbol designer, I want to read the position and size of the shapes selected, so that I see at once whether they line up and match.
 

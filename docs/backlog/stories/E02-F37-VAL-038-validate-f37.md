@@ -3,7 +3,7 @@ id: VAL-038
 epic: E02
 feature: F37
 title: Validate F37
-status: draft
+status: ready
 points: 1
 ---
 
