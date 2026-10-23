@@ -3,7 +3,7 @@ id: US-077
 epic: E02
 feature: F41
 title: The list of the history's steps
-status: ready
+status: done
 points: 3
 ---
 
