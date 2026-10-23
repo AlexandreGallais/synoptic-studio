@@ -572,6 +572,44 @@ describe("the Undo and Redo buttons and the history's size (US-074)", () => {
     expect(readDisabledState("history-redo")).toBe("true");
   });
 
+  it("[F41.AC2] keeps the size shown equal to the size counted again through steps, undos and redos", () => {
+    /**
+     * Three nudges, the rectangle at x 0, 1 and 2 past, 616 characters each: 3 × (1 232 + 16) =
+     * 3 744 bytes; undone twice, x 0 past and x 2, x 3 to come, the same; redone once, x 0 and 1
+     * past, x 3 to come; a nudge then drops x 3: x 0, 1 and 2 past, the same 3 744 bytes.
+     */
+    const sizes = [
+      (): void => {
+        holdRight(1);
+        holdRight(1);
+        holdRight(1);
+      },
+      (): void => {
+        clickElement("history-undo");
+        clickElement("history-undo");
+      },
+      (): void => {
+        clickElement("history-redo");
+      },
+      (): void => {
+        holdRight(1);
+      },
+    ].map((action) => {
+      action();
+
+      return [PAGE_HISTORIES.get(document)?.size, readHistorySize()];
+    });
+
+    expect(sizes).toEqual([
+      [3744, 3744],
+      [3744, 3744],
+      [3744, 3744],
+      [3744, 3744],
+    ]);
+
+    expect(readText("#history-size")).toBe("History 3.7 kB of 100 MB");
+  });
+
   it("[F40.AC1] empties the history at Reset, the page as it opens", () => {
     drawShapes();
     clickElement("tool-reset");
@@ -618,7 +656,7 @@ function readPresentDrawing(): readonly KeptShape[] {
 }
 
 /**
- * Reads the size of the page's history, as the toolbar counts it (`historySize`).
+ * Reads the size of the page's history, counted again (`historySize`).
  *
  * @returns its bytes; 0 without a history
  */

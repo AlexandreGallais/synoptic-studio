@@ -1,10 +1,10 @@
-import { redoneHistory, undoneHistory } from "../../src";
+import { sizedRedoneHistory, sizedUndoneHistory } from "../../src";
 import { readKeyField } from "../selection-keys";
 
 import { moveHistory } from "./move-history";
 import { TYPED_FIELDS } from "./typed-fields";
 
-import type { History } from "../../src";
+import type { SizedHistory } from "../../src";
 import type { KeptShape } from "../kept-shapes";
 
 /**
@@ -12,13 +12,15 @@ import type { KeptShape } from "../kept-shapes";
  * whether Shift is held, macOS sending Cmd + Shift + Z as a small z: Z undoes, Shift + Z redoes, Y
  * redoes, with Shift or not.
  */
-const HISTORY_KEYS: ReadonlyMap<string, (history: History<KeptShape>) => History<KeptShape>> =
-  new Map([
-    ["y false", redoneHistory],
-    ["y true", redoneHistory],
-    ["z false", undoneHistory],
-    ["z true", redoneHistory],
-  ]);
+const HISTORY_KEYS: ReadonlyMap<
+  string,
+  (history: SizedHistory<KeptShape>) => SizedHistory<KeptShape>
+> = new Map([
+  ["y false", sizedRedoneHistory],
+  ["y true", sizedRedoneHistory],
+  ["z false", sizedUndoneHistory],
+  ["z true", sizedRedoneHistory],
+]);
 
 /**
  * Reads the field of the panel a key is typed in, typed in since its value was applied, which
@@ -43,12 +45,12 @@ function readTypedField(event: KeyboardEvent): Element | undefined {
  *
  * @kind procedure
  * @param event - the key pressed
- * @returns `undoneHistory` or `redoneHistory`; undefined for a key the history does not take
+ * @returns `sizedUndoneHistory` or `sizedRedoneHistory`; undefined for a key the history does not take
  * @see docs/domain/interaction.md#_1-tools
  */
 function readHistoryMove(
   event: KeyboardEvent,
-): ((history: History<KeptShape>) => History<KeptShape>) | undefined {
+): ((history: SizedHistory<KeptShape>) => SizedHistory<KeptShape>) | undefined {
   const isLeft = [
     ![event.ctrlKey, event.metaKey].includes(true),
     event.altKey,

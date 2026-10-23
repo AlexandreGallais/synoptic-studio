@@ -7,7 +7,7 @@ import { readHeldAction } from "./read-held-action";
 import { readRefusedKind } from "./read-refused-kind";
 import { saveHistoryStep } from "./save-history-step";
 
-import type { History, HistoryState } from "../../src";
+import type { HistoryState, SizedHistory } from "../../src";
 import type { KeptShape } from "../kept-shapes";
 
 /**
@@ -36,14 +36,14 @@ function writeHistoryState(document: Document, state: HistoryState<KeptShape>): 
  *
  * @kind procedure
  * @param document - page document
- * @param move - `undoneHistory` or `redoneHistory`
+ * @param move - `sizedUndoneHistory` or `sizedRedoneHistory`
  * @returns the history whose present to write back; undefined with nothing to undo or redo
  * @see docs/domain/interaction.md#_7-navigation-and-history
  */
 function readMovedHistory(
   document: Document,
-  move: (history: History<KeptShape>) => History<KeptShape>,
-): History<KeptShape> | undefined {
+  move: (history: SizedHistory<KeptShape>) => SizedHistory<KeptShape>,
+): SizedHistory<KeptShape> | undefined {
   stopNewText(document);
 
   const isRefused = readRefusedKind(document) !== undefined;
@@ -61,7 +61,7 @@ function readMovedHistory(
 /**
  * Undoes or redoes a step of the page (F40): what the page shows recorded first
  * (`saveHistoryStep`), so that a change not yet recorded is the step undone, then the history
- * moved (`readMovedHistory`, `undoneHistory`, `redoneHistory`) and its present written back, the drawing and its
+ * moved (`readMovedHistory`, `sizedUndoneHistory`, `sizedRedoneHistory`) and its present written back, the drawing and its
  * selection (`writeHistoryState`), then the page redrawn; nothing while a press holds its action
  * (`readHeldAction`), nor when there is nothing to undo or redo. A shape refused
  * (`readRefusedKind`) is given back with its last valid values instead, the present written back,
@@ -69,13 +69,13 @@ function readMovedHistory(
  *
  * @kind procedure
  * @param document - page document
- * @param move - `undoneHistory` or `redoneHistory`
+ * @param move - `sizedUndoneHistory` or `sizedRedoneHistory`
  * @param update - redraws the page from the values typed
  * @see docs/domain/interaction.md#_7-navigation-and-history
  */
 export function moveHistory(
   document: Document,
-  move: (history: History<KeptShape>) => History<KeptShape>,
+  move: (history: SizedHistory<KeptShape>) => SizedHistory<KeptShape>,
   update: () => void,
 ): void {
   if (readHeldAction(document) !== undefined) {
