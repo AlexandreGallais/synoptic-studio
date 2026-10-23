@@ -82,6 +82,18 @@ describe("shapePanelValues (F38)", () => {
     });
   });
 
+  it("gives a shape 0 × 0 at (10, 20), turned or not, its point, its contour having no piece", () => {
+    // Its four corners lie on (10, 20), its middle, about which it turns.
+    for (const angle of [0, 30]) {
+      expect(shapePanelValues(rectangle({ angle, height: 0, width: 0, x: 10, y: 20 }))).toEqual({
+        height: 0,
+        width: 0,
+        x: 10,
+        y: 20,
+      });
+    }
+  });
+
   test.prop({
     angle: fc.integer({ max: 359, min: 0 }),
     height: fc.integer({ max: 500, min: 1 }),

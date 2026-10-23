@@ -31,7 +31,7 @@ The examples select A at (10, 20), 100 × 50, and B at (200, 20), 40 × 40.
 ## Tasks
 
 - [x] T1 — A value typed, relative or fixed, for several shapes: interface and failing tests (1 h)
-- [ ] T2 — The values applied to each shape, the tests of T1 passing (2 h)
+- [x] T2 — The values applied to each shape, the tests of T1 passing (2 h)
 - [ ] T3 — The panel's fields for several shapes; the rules in `interaction.md` §2; the Product Owner test card (2 h)
 
 Files: `src/io/panel-value/` (the value typed, relative or fixed), `src/model/panel-values/` (each shape set by it; the panel's values of US-070 moved beside it out of `src/model/drawing/`, which would have held 18 modules, past 15), `playground/selection/` (the fields of several shapes typed), `playground/index.html`. `@see` `docs/domain/interaction.md#_2-selector`, `REF-FIGMA-ADJUST`.

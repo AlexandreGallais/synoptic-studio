@@ -1,3 +1,5 @@
+import { isPanelSize } from "./is-panel-size";
+
 import type { PanelEdit } from "./panel-edit";
 
 /**
@@ -12,5 +14,12 @@ import type { PanelEdit } from "./panel-edit";
  * @see docs/domain/interaction.md#_2-selector
  */
 export function panelValueAfterEdit(own: number, edit: PanelEdit): number | undefined {
-  return own + edit.maxSize;
+  const { key, maxSize, typed } = edit;
+  const value = typed.isRelative ? own + typed.value : typed.value;
+
+  if (!isPanelSize(key)) {
+    return value;
+  }
+
+  return value < 0 ? undefined : Math.min(value, maxSize);
 }

@@ -146,6 +146,12 @@ describe("shapeAfterPanelEdit (F38)", () => {
     expect(moved === undefined ? undefined : shapePanelValues(moved).x).toBeCloseTo(50, 9);
   });
 
+  it("moves a shape 0 × 0 at (10, 20) by its point: 50 in X puts it at x 50", () => {
+    const point = rectangle({ angle: 30, height: 0, width: 0, x: 10, y: 20 });
+
+    expect(shapeAfterPanelEdit(point, edit("x", 50, false))).toEqual({ ...point, x: 50 });
+  });
+
   it("sets a round shape's height, 460 in H", () => {
     const round: Shape = { angle: 0, height: 80, kind: "round", width: 40, x: 0, y: 0 };
 
