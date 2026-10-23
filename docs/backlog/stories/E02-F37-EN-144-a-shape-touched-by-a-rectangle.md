@@ -3,7 +3,7 @@ id: EN-144
 epic: E02
 feature: F37
 title: A shape touched or enclosed by a rectangle, by its painted area
-status: ready
+status: done
 points: 3
 ---
 
@@ -20,7 +20,7 @@ Whether a selection rectangle touches a shape, or encloses it, by its painted ar
 
 ## Tasks
 
-- [ ] T1 — The derivation and the interface, its failing tests from hand-computed examples (2 h)
-- [ ] T2 — The code, the tests of T1 passing, properties (3 h)
+- [x] T1 — The derivation and the interface, its failing tests from hand-computed examples (2 h)
+- [x] T2 — The code, the tests of T1 passing, properties (3 h)
 
 One task = one commit, referenced as `EN-144.Tn` in the commit footer.

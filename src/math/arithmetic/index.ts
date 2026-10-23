@@ -4,6 +4,7 @@ export * from "./clamp";
 export * from "./fraction-from-percent";
 export * from "./integer-quotient";
 export * from "./integer-range";
+export * from "./is-between";
 export * from "./is-in-integer-range";
 export * from "./is-span-within";
 export * from "./maximum";
