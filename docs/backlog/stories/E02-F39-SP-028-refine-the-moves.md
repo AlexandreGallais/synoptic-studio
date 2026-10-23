@@ -66,3 +66,16 @@ One task = one commit, referenced as `SP-028.Tn`.
 
 - [x] T1 — The sources found, read and recorded, the research note (2 h)
 - [x] T2 — The code read, F39's stories written, the questions for the Product Owner listed (2 h)
+
+## Answers of the Product Owner
+
+Given on 2026-10-23:
+
+1. (a) The top-left of the straight box lands on integers, the X and Y the panel shows: B's box at (205, 2).
+2. (b) Several shapes land together, by the top-left of their dashed box, every shape moved by the same shift, their distances kept.
+3. (a) A nudge moves by exactly 1, or 10 with Shift; a fraction stays until a drag lands it.
+4. (a) A press becomes a move as soon as the pointer leaves the press's integer point, as a tool's drag and the selection rectangle.
+5. (a) Shift held at the press on a shape not selected adds it, and every shape selected moves.
+6. (a) A press on an empty place inside the dashed box starts a selection rectangle, as from any empty place.
+7. (a) Shift held during a move keeps the axis of the larger displacement, released frees the other again; a fourth story if it outgrows US-072.
+8. Neither option: the helps drawn in the layer above the drawing are drawn only within the area shown, its padding included, so that a band about a large rounded shape is computed only where it is seen. That needs the area shown, which E02's zoom and pan feature brings: placed there as an EN; in F39 only the test is made fast (EN-145's first task).
