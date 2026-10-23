@@ -101,6 +101,10 @@
 | [AUD-041](./E02-F39-AUD-041-audit-f39.md) | F39 | Audit F39 | done |
 | [VAL-040](./E02-F39-VAL-040-validate-f39.md) | F39 | Validate F39 | dropped |
 | [SP-029](./E02-F40-SP-029-refine-undo-and-redo.md) | F40 | Refine undo and redo | ready |
+| [EN-146](./E02-F40-EN-146-the-history-in-the-model.md) | F40 | The history of the drawing in the model | draft |
+| [US-074](./E02-F40-US-074-undo-and-redo-the-drawings-actions.md) | F40 | Undo and redo what is done on the drawing | draft |
+| [US-075](./E02-F40-US-075-undo-and-redo-the-panels-changes.md) | F40 | Undo and redo what is typed and chosen in the panel | draft |
+| [US-076](./E02-F40-US-076-the-historys-memory-size.md) | F40 | The history kept within a memory size the designer sets | draft |
 | [AUD-042](./E02-F40-AUD-042-audit-f40.md) | F40 | Audit F40 | ready |
 | [VAL-041](./E02-F40-VAL-041-validate-f40.md) | F40 | Validate F40 | dropped |
 | [SP-025](./E02-SP-025-cut-the-editing-work-into-small-features.md) | E02 | Cut the editing work into small features | done |
