@@ -1,0 +1,14 @@
+import { WHEEL_ZOOMS } from "./wheel-zooms";
+
+/**
+ * Zooms the view by the wheel's and the pinch's deltas gathered since the last frame, about the
+ * pointer's last offset (`zoomedView`, `wheelZoomFactor`, SP-030's answer 4), then forgets them;
+ * nothing when none were asked.
+ *
+ * @kind procedure
+ * @param document - page document
+ * @see docs/domain/interaction.md#_7-navigation-and-history
+ */
+export function applyWheelZoom(document: Document): void {
+  WHEEL_ZOOMS.get(document);
+}
