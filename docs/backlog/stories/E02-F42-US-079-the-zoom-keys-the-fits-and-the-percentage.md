@@ -3,7 +3,7 @@ id: US-079
 epic: E02
 feature: F42
 title: The zoom's keys, the fits and the percentage shown
-status: ready
+status: done
 points: 2
 ---
 
