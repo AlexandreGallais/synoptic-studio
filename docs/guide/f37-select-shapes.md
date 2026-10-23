@@ -6,7 +6,9 @@
 
 **The panel says how many.** With several shapes selected, the panel hides its fields and its title says how many are selected, "2 shapes selected": their position and size come with F38. A shape added with a tool goes on top of all and is selected alone, the others unchanged.
 
-**Points mode edits one shape.** While several shapes are selected, the Points button is disabled. In Points mode, Shift + click and a click on a point's handle act on the points only, never on which shapes are selected.
+**Select all, or none, by a key.** Press Ctrl + A (Cmd + A on a Mac) to select every shape, and Escape to select none. With the cursor in a field of the panel, both keys stay the field's: Ctrl + A selects its text. With a color picker open, Escape closes the picker and leaves the selection as it is.
+
+**Points mode edits one shape.** While several shapes are selected, the Points button is disabled. In Points mode, Shift + click and a click on a point's handle act on the points only, never on which shapes are selected, and Ctrl + A selects no shape.
 
 This page also says which keys the editor uses, chosen at the spike.
 
@@ -17,7 +19,8 @@ For the review's summary; each can be changed.
 - Shift + click on an empty place of the drawing keeps the selection, nothing being there to add or take out; a plain click there still selects none.
 - The dashed box around several shapes is the smallest upright box holding their outlines as drawn, dashed as the straight box of a turned shape: 4 long every 7, 1 thick, inside the box.
 - With several shapes selected, none is edited: the panel shows no field until F38. Back to one, the panel loads it as a click does, and the shape the panel left keeps its settings for the next shape of its kind.
-- Points mode edits one shape: its button is disabled while several are selected, and in Points mode a click with Shift or on a handle never changes the shapes selected. A plain click on a handle used to select none when the point lay in a rounded corner's cut; it now selects the point only.
+- Points mode edits one shape: its button is disabled while several are selected, and in Points mode a click with Shift or on a handle never changes the shapes selected, nor does Ctrl + A. A plain click on a handle used to select none when the point lay in a rounded corner's cut; it now selects the point only.
+- Escape selects none in Shape mode and in Points mode alike, as a click on an empty place does; in a field of the panel it changes nothing.
 
 ## The ideas behind it
 

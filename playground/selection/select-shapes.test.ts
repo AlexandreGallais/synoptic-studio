@@ -87,15 +87,18 @@ function shiftPick(point: Point): void {
 }
 
 /**
- * Presses a key with Ctrl, or Cmd, held on an element of the page, as the browser fires it.
+ * Presses A with Ctrl, or Cmd, held on an element of the page, as the browser fires it: its key
+ * `A` with Shift held too, `a` otherwise.
  *
  * @param selector - the element having the focus, `body` for none
- * @param keys - Ctrl or Cmd held
+ * @param keys - Ctrl or Cmd held, and Shift
  * @returns whether the page left the key to the browser, its default not prevented
  */
 function pressSelectAll(selector: string, keys: Keys): boolean {
+  const key = keys.shiftKey === true ? "A" : "a";
+
   return selectPageElement(selector).dispatchEvent(
-    new KeyboardEvent("keydown", { ...keys, bubbles: true, cancelable: true, key: "a" }),
+    new KeyboardEvent("keydown", { ...keys, bubbles: true, cancelable: true, key }),
   );
 }
 
@@ -321,6 +324,11 @@ describe("Ctrl + A selects every shape and Escape none (US-068)", () => {
 
     pressKey("body", "Escape");
     pressSelectAll("body", { metaKey: true });
+
+    expect(readText("#shape-title")).toBe("3 shapes selected");
+
+    pressKey("body", "Escape");
+    pressSelectAll("body", { ctrlKey: true, shiftKey: true });
 
     expect(readText("#shape-title")).toBe("3 shapes selected");
   });
