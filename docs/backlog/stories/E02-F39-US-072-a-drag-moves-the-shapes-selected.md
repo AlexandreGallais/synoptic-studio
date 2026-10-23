@@ -32,14 +32,28 @@ The examples draw, in that order, a rectangle A, 100 × 50 at (10, 20), straight
 
 ## Product Owner test
 
-`npm run dev`, `http://localhost:5173/`. Written at T3, from the answers.
+`npm run dev`, `http://localhost:5173/`.
+
+| Step | Do | You should see |
+| --- | --- | --- |
+| 1 | Open the page, then Reset; set the rectangle to Radius 0, X 10, Y 20, W 100, H 50 (A); add a rectangle with the Rectangle tool and set it to Radius 0, X 200, Y 20, W 100, H 50, then Angle 30 (B) | B turned, X 194.19873 and Y −1.65064 |
+| 2 | Click A, then press it and drag it slowly right and down, without releasing | A follows the pointer smoothly, its outline with it, B not outlined when the pointer passes over it; X and Y change with fractions |
+| 3 | Release | X and Y are whole numbers; W 100, H 50 and Radius 0 unchanged |
+| 4 | Press B, which is not selected, and drag it a little | B alone selected, moving; A stays where it is |
+| 5 | Release | X and Y of B whole numbers, Angle still 30 |
+| 6 | Shift + click A, so that both are selected, then drag A | both move together, keeping their distance, the dashed box around them following |
+| 7 | Release; click A alone, then B alone | A's X a whole number, B's Y a whole number: the top-left of the dashed box landed on whole numbers |
+| 8 | Click A, then drag it with Shift held, mostly to the right | A moves only across; release Shift while still dragging and A follows the pointer down too |
+| 9 | Click A without moving the mouse between the press and the release | A selected, not moved |
+| 10 | Select A and B with Shift + click, then press the empty place between them, inside the dashed box, and drag down to cover neither | a selection rectangle, nothing moved; at the release no shape selected |
+| 11 | Click A, choose Points, then drag A | nothing moves |
 
 ## Tasks
 
 - [x] T1 — The criteria in line with SP-028's answers; the shift landing an anchor on integers, the axis Shift keeps and a shape moved (`src/model/moving/`), the dashed box of several (`src/model/picking/`), the selection after a press on a shape (`src/model/selection/`), the drag of a move in `playground/selection-drag/`: interface and failing tests (1 h)
 - [x] T2 — The move at the release: each shape selected moved by the model, the selection written again so that one shape is loaded into the panel at its new place; a press on a shape not selected selecting it; the rules in `interaction.md` §2 and the Q table; the tests of T1 passing (2 h)
-- [ ] T3 — The shapes drawn where the pointer takes them while dragged, their bands and dashed box following, no hover meanwhile; a drag cancelled; the Product Owner test card and F39's guide page (2 h)
+- [x] T3 — The shapes drawn where the pointer takes them while dragged, their bands and dashed box following, no hover meanwhile; a drag cancelled; the Product Owner test card and F39's guide page (2 h)
 
-Files: `src/model/moving/` (a new folder: the shift landing the anchor, `landedShift`, reusing `nearestInteger` and `straightBoxShift`; the axis Shift keeps, `offsetOnLargerAxis`; a shape moved, `shapeMovedBy`, reusing `shapeMovedOnAxis`), `src/model/picking/` (the dashed box of several shapes, `pickAreasBox`, the anchor of a move and the box drawn), `src/model/selection/` (the selection after a press, `shapeSelectionAfterPress`), `playground/selection-drag/` (the press, the moves and the release of a move, beside the rectangle's), `playground/hover/` (the move in `SelectionDrag`, `ShapesMove`, no hover while moving), `playground/kept-shapes/` (a text's metrics kept when it moves, `writeKeptMetrics`, out of `applySeveralValue`), `playground/user-actions/` (a pointer event on the drawing, `dispatchDrawingPointer`, shared with the selection rectangle's tests). `@see` `docs/domain/interaction.md#_2-selector`, `REF-INKSCAPE-KEYS`, `REF-SKETCH-MOVING-LAYERS`, `REF-PENPOT-PIXEL-PRECISION`.
+Files: `src/model/moving/` (a new folder, with the shift landing the anchor, `landedShift`, reusing `nearestInteger` and `straightBoxShift`; the axis Shift keeps, `offsetOnLargerAxis`; a shape moved, `shapeMovedBy`, reusing `shapeMovedOnAxis`), `src/model/picking/` (the dashed box of several shapes, `pickAreasBox`, the anchor of a move and the box drawn), `src/model/selection/` (the selection after a press, `shapeSelectionAfterPress`), `playground/selection-drag/` (the press, the moves and the release of a move, beside the rectangle's), `playground/hover/` (the move in `SelectionDrag`, `ShapesMove`, no hover while moving, `readStartedMove`), `playground/kept-shapes/` (a text's metrics kept when it moves, `writeKeptMetrics`, out of `applySeveralValue`), `playground/user-actions/` (a pointer event on the drawing, `dispatchDrawingPointer`, shared with the selection rectangle's tests). `@see` `docs/domain/interaction.md#_2-selector`, `REF-INKSCAPE-KEYS`, `REF-SKETCH-MOVING-LAYERS`, `REF-PENPOT-PIXEL-PRECISION`.
 
 One task = one commit, referenced as `US-072.Tn` in the commit footer.

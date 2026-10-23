@@ -8,6 +8,7 @@ import { createSelectionElements } from "./create-selection-elements";
 import { createSelectionRectangleElements } from "./create-selection-rectangle-elements";
 import { HOVER_POINTS } from "./hover-points";
 import { readPickAreas } from "./read-pick-areas";
+import { readStartedMove } from "./read-started-move";
 
 import type { Point } from "../../src";
 
@@ -42,7 +43,8 @@ function createHoverElements(
  *
  * @kind procedure
  * @param document - page document
- * @param isShown - whether the outline may be drawn: false while a selection rectangle is
+ * @param isShown - whether the outline may be drawn: false while a selection rectangle is drawn or
+ * shapes are moved
  * @returns the point; undefined for none
  * @see docs/domain/interaction.md#_2-selector
  */
@@ -56,9 +58,9 @@ function readHoverPoint(document: Document, isShown: boolean): Point | undefined
  * (`createSelectionElements`), then, with the selector armed, the outline of the shape under the
  * pointer (`createHoverElements`): each a band 2 screen pixels wide about its contour as drawn, a
  * fill, never a native stroke; no hover with a tool armed, nor once the pointer has left the
- * drawing, nor while a selection rectangle is drawn, which comes last
- * (`createSelectionRectangleElements`, F37). The drawing's `<svg>` is never touched, so that the
- * export holds no outline.
+ * drawing, nor while shapes are moved (`readStartedMove`, F39), nor while a selection rectangle
+ * is drawn, which comes last (`createSelectionRectangleElements`, F37). The drawing's `<svg>` is
+ * never touched, so that the export holds no outline.
  *
  * @kind procedure
  * @param document - page document
@@ -67,10 +69,11 @@ function readHoverPoint(document: Document, isShown: boolean): Point | undefined
 export function showHover(document: Document): void {
   const svg = createViewSvg(document);
   const rectangle = createSelectionRectangleElements(document);
+  const isShown = rectangle.length === 0 && readStartedMove(document) === undefined;
 
   svg.append(
     ...createSelectionElements(document),
-    ...createHoverElements(document, readHoverPoint(document, rectangle.length === 0)),
+    ...createHoverElements(document, readHoverPoint(document, isShown)),
     ...rectangle,
   );
 

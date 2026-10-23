@@ -1,12 +1,12 @@
 import { draggedBox } from "../../src";
-import { SELECTION_DRAGS, showHover } from "../hover";
+import { SELECTION_DRAGS } from "../hover";
 import { readDrawingPoint } from "../placing";
 
 /**
  * Follows the pointer during a press with the Selector (F37): its point and whether Shift is held
  * kept (F39), the drag moved once the pointer has left the press's integer point (`draggedBox`),
- * even if it comes back, and the layer above the drawing drawn again (`showHover`), the selection
- * rectangle with it; nothing without a press on.
+ * even if it comes back; nothing without a press on. What it shows is drawn by
+ * `showSelectionDrag`.
  *
  * @kind procedure
  * @param document - page document
@@ -26,5 +26,4 @@ export function moveSelectionDrag(document: Document, event: PointerEvent): void
   const isMoved = drag.isMoved || width + height > 0;
 
   SELECTION_DRAGS.set(document, { ...drag, isMoved, isShift: event.shiftKey, pointer });
-  showHover(document);
 }

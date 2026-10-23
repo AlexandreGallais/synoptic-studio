@@ -5,6 +5,7 @@ export * from "./read-move-shift";
 export * from "./read-moved-drawing";
 export * from "./read-shapes-move";
 export * from "./select-shapes-in-box";
+export * from "./show-selection-drag";
 export * from "./start-selection-drag";
 export * from "./stop-selection-drag";
 export * from "./write-moved-drawing";
