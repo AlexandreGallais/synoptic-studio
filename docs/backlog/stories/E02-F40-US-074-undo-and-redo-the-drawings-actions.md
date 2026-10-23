@@ -3,7 +3,7 @@ id: US-074
 epic: E02
 feature: F40
 title: Undo and redo what is done on the drawing
-status: draft
+status: ready
 points: 3
 ---
 

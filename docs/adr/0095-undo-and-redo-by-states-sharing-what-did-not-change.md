@@ -1,6 +1,6 @@
 # ADR-0095 — Undo and redo by states of the drawing sharing what did not change
 
-**Status**: Proposed (SP-029, 2026-10-23), for the Product Owner's decision (SP-029's question 1); research note 0030.
+**Status**: Accepted (2026-10-23): the Product Owner left the choice to the agent, asking for the way that makes most sense for the project rather than the fastest (SP-029's answer 1); research note 0030.
 
 ## Context
 

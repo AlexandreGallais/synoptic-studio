@@ -70,3 +70,17 @@ One task = one commit, referenced as `SP-029.Tn`.
 
 - [x] T1 — The sources found, read and recorded, the research note, the ADR proposed (2 h)
 - [x] T2 — The code read, F40's stories written, the questions for the Product Owner listed (2 h)
+
+## Answers of the Product Owner
+
+Given on 2026-10-23:
+
+1. The way that makes most sense for the project, not the fastest: the agent takes (a), states sharing what did not change, ADR-0095 accepted on that delegation.
+2. The best for the designer, left to the agent: (a), the selection as it was when the step was taken, as Penpot, so that an undo shows what it changed.
+3. (b) A key held, from its press to its release, is one step.
+4. (a) Each change finished in the color picker is a step.
+5. One step: a text placed and what is typed in it until the editing is left; Ctrl + Z then removes the text, nothing being there before. And a click with the Text tool should not add a text with a content of its own: the designer clicks, then types (superseding SP-026's `Text`, applied in US-075).
+6. A synoptic view may hold up to about 1 000 symbols and must stay pleasant to use: 100 MB by default, the agent's reading of the answer; the size can be changed, shown with the number of steps it holds about, explained for the designer.
+7. As GIMP, a minimum number of steps kept whatever their size, that number set by the designer beside the memory size (5 by default, GIMP's, the agent's choice).
+8. All three, to see their use: the Undo and Redo buttons, the size used, and a list of the steps to go back to by a click; the list is a fifth story, so it is cut into a feature of its own after F40.
+9. The best for the designer, left to the agent: (b), a field with nothing typed since its value was applied passes Ctrl + Z, Ctrl + Shift + Z and Ctrl + Y to the drawing; a field being typed in keeps them.

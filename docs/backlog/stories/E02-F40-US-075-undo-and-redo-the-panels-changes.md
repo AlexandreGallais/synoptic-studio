@@ -3,7 +3,7 @@ id: US-075
 epic: E02
 feature: F40
 title: Undo and redo what is typed and chosen in the panel
-status: draft
+status: ready
 points: 2
 ---
 

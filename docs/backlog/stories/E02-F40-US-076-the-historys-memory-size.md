@@ -3,7 +3,7 @@ id: US-076
 epic: E02
 feature: F40
 title: The history kept within a memory size the designer sets
-status: draft
+status: ready
 points: 2
 ---
 

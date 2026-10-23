@@ -3,7 +3,7 @@ id: EN-146
 epic: E02
 feature: F40
 title: The history of the drawing in the model
-status: draft
+status: ready
 points: 2
 ---
 

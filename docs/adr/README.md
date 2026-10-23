@@ -99,4 +99,4 @@ All ADRs were translated from French to English on 2026-10-08 (project rule: Eng
 | [0092](./0092-a-barrel-re-exports-a-types-only-module-as-types.md) | A barrel re-exports a types-only module as types | Accepted (AUD-033), the barrels' existing form; supersedes ADR-0012's decision 1 for a types-only module |
 | [0093](./0093-the-editors-typescript-the-installed-typescript-7.md) | The editor's TypeScript, the installed TypeScript 7 | Accepted (AUD-035), the editor's existing setup since EN-121; supersedes a sentence of ADR-0075's Consequences |
 | [0094](./0094-outside-pull-requests-kept-out-by-the-setting-alone.md) | Outside pull requests kept out by the repository's setting alone | Accepted, implemented by EN-134; supersedes ADR-0026's second barrier, `external-prs.yml` |
-| [0095](./0095-undo-and-redo-by-states-sharing-what-did-not-change.md) | Undo and redo by states of the drawing sharing what did not change | Proposed (SP-029), for the Product Owner's decision |
+| [0095](./0095-undo-and-redo-by-states-sharing-what-did-not-change.md) | Undo and redo by states of the drawing sharing what did not change | Accepted (2026-10-23, SP-029) |

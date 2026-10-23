@@ -25,10 +25,10 @@ In delivery order.
 | ID | Type | Title | Status |
 | --- | --- | --- | --- |
 | [SP-029](../stories/E02-F40-SP-029-refine-undo-and-redo.md) | SP | Refine undo and redo | done |
-| [EN-146](../stories/E02-F40-EN-146-the-history-in-the-model.md) | EN | The history of the drawing in the model | draft |
-| [US-074](../stories/E02-F40-US-074-undo-and-redo-the-drawings-actions.md) | US | Undo and redo what is done on the drawing | draft |
-| [US-075](../stories/E02-F40-US-075-undo-and-redo-the-panels-changes.md) | US | Undo and redo what is typed and chosen in the panel | draft |
-| [US-076](../stories/E02-F40-US-076-the-historys-memory-size.md) | US | The history kept within a memory size the designer sets | draft |
+| [EN-146](../stories/E02-F40-EN-146-the-history-in-the-model.md) | EN | The history of the drawing in the model | ready |
+| [US-074](../stories/E02-F40-US-074-undo-and-redo-the-drawings-actions.md) | US | Undo and redo what is done on the drawing | ready |
+| [US-075](../stories/E02-F40-US-075-undo-and-redo-the-panels-changes.md) | US | Undo and redo what is typed and chosen in the panel | ready |
+| [US-076](../stories/E02-F40-US-076-the-historys-memory-size.md) | US | The history kept within a memory size the designer sets | ready |
 | [AUD-042](../stories/E02-F40-AUD-042-audit-f40.md) | AUD | Audit F40 | ready |
 | [VAL-041](../stories/E02-F40-VAL-041-validate-f40.md) | VAL | Validate F40 | dropped |
 
