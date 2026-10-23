@@ -64,3 +64,8 @@ Candidates grouped by the agent at SP-025 (2026-10-19), to be cut again at the e
 ## Ideas from the Product Owner (2026-10-16, review of E15)
 
 - **Remove the text direction**: right to left is of no use, the Latin script being the strict target, as for fonts. It stays until then; this epic drops the options that make no sense, the aim being the fewest options doing the most.
+
+## Ideas from the Product Owner (2026-10-23, first try of E02)
+
+- **A responsive playground with a toolbar as Figma's**: the page fits any window, the tools in a bar at the bottom, not floating; a first icon for the selector, then one for each shape, then the multiple selection, as Figma's.
+- **Settings to tune by hand, then an expert menu**: the pan's speed by the trackpad and the wheel, the zoom's step and the wheel's factor, so that the Product Owner finds good values, which become the fixed defaults; later an expert menu showing every option of the free editor, for people to tune it as they like, with the editable keys.

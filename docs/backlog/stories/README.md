@@ -118,6 +118,9 @@
 | [US-079](./E02-F42-US-079-the-zoom-keys-the-fits-and-the-percentage.md) | F42 | The zoom's keys, the fits and the percentage shown | done |
 | [AUD-044](./E02-F42-AUD-044-audit-f42.md) | F42 | Audit F42 | done |
 | [VAL-043](./E02-F42-VAL-043-validate-f42.md) | F42 | Validate F42 | dropped |
+| [SP-031](./E02-F43-SP-031-refine-the-corrections.md) | F43 | Refine the corrections from the first try | ready |
+| [AUD-045](./E02-F43-AUD-045-audit-f43.md) | F43 | Audit F43 | draft |
+| [VAL-044](./E02-F43-VAL-044-validate-f43.md) | F43 | Validate F43 | dropped |
 | [SP-025](./E02-SP-025-cut-the-editing-work-into-small-features.md) | E02 | Cut the editing work into small features | done |
 | [SP-010](./E14-F11-SP-010-research-f11.md) | F11 | Research for F11: folder layouts and test placement | done |
 | [EN-020](./E14-F11-EN-020-property-tests.md) | F11 | Property tests for the nine functions without one | done |

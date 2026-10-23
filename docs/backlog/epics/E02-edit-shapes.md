@@ -37,6 +37,7 @@ Ordered by the agent at SP-025 (2026-10-19), each needing the one before it. A f
 | [F40](../features/E02-F40-undo-and-redo.md) — Undo and redo | one step per finished action, the selection alone never a step, the history bounded by a memory size (Q7, settled on 2026-10-22), by the keyboard and by buttons; opened by SP-029 comparing a history of commands and one of states from read sources, made an epic of its own if it outgrows 4 stories (2 to 4) | done |
 | [F41](../features/E02-F41-the-list-of-steps.md) — The list of the history's steps and a history kept fast | the last steps named by their action, a click going back to one; the history's size kept from step to step; cut from F40 on 2026-10-23 (SP-029's answer 8, AUD-042) (2) | done |
 | [F42](../features/E02-F42-zoom-and-pan.md) — Zoom and pan | zoom about the pointer, pan, fit the drawing to the window; the shapes' numbers unchanged by the view, which changes only by the drawing's `viewBox` or a CSS transform of the whole SVG (Product Owner, 2026-10-23); the helps of the layer above the drawing drawn only within the area shown and its padding, so that a large rounded shape's band stays fast (Product Owner, 2026-10-23, SP-028's answer 8) (2 to 4) | done |
+| [F43](../features/E02-F43-corrections-from-the-first-try.md) — Corrections from the Product Owner's first try | the helps seen on every color, the selection rectangle's shapes shown in advance, Mixed fields stepped by the arrows, one step for an arrow held in a field, two arrows moving diagonally, a text never selected as page text, Shift keeping a text box square, the history's list scrolled, Shift with a trackpad's wheel; opened on 2026-10-23 from the Product Owner's try before the merge into `main` (2 to 4) | in-progress |
 
 ## Refinement
 
@@ -54,6 +55,8 @@ Ordered by the agent at SP-025 (2026-10-19), each needing the one before it. A f
 ## Remarks from the Product Owner's first try (2026-10-23)
 
 Given while trying the playground at the end of F42, each to fix at the end, not during E02's features, perhaps in another epic: the Product Owner decides where at the review, with the validation.
+
+Placed on 2026-10-23, after the Product Owner's walk through E02's whole list the same day: the corrections go to F43, in E02, before the merge into `main`, the Product Owner asking for them there; the responsive toolbar and the settings to E20. Added by that walk: Shift while drawing a text's box does not keep it square; with a trackpad, Shift and the wheel should not force the pan across, as Figma tells a trackpad from a mouse; Option held changes nothing in the view; the wheel's direction seen inverted came from the Mac's own natural scrolling, not from the playground.
 
 - **Seen to work well**: drawing by the mouse, with Shift too; undo and redo back to the start; the history's list; the memory size shown with its number of moves; Delete, Escape, Shift + click, Ctrl + A, a value typed `+50`, the arrows; the zoom by a pinch and Ctrl + wheel.
 - **The selection is hard to see**: its outline is blue on a blue shape; the hover is seen.
