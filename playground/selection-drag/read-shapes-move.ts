@@ -1,3 +1,7 @@
+import { pickAreasBox, shapeSelectionAfterPress } from "../../src";
+import { readPickAreas } from "../hover";
+import { readKeptDrawing, readSelectedShapes } from "../kept-shapes";
+
 import type { ShapesMove } from "../hover";
 
 /**
@@ -16,11 +20,18 @@ import type { ShapesMove } from "../hover";
  * @see docs/domain/interaction.md#_2-selector
  */
 export function readShapesMove(document: Document, index: number, isShift: boolean): ShapesMove {
+  const areas = readPickAreas(document);
+  const before = readSelectedShapes(document);
+  const selected = shapeSelectionAfterPress(before, index, isShift);
+  // A text never measured offers no corner: it is not drawn, so it neither moves nor anchors.
+  const moved = selected.filter((shown) => (areas[shown]?.corners.length ?? 0) > 0);
+  const box = pickAreasBox(moved.flatMap((shown) => areas[shown] ?? []));
+
   return {
-    anchor: { x: index, y: 0 },
-    before: [],
-    drawing: [],
-    moved: [],
-    selected: isShift ? [] : [document.childNodes.length],
+    anchor: { x: box.minX, y: box.minY },
+    before,
+    drawing: readKeptDrawing(document),
+    moved,
+    selected,
   };
 }

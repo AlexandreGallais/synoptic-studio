@@ -10,5 +10,5 @@ import type { Point } from "../../math";
  * @see docs/domain/interaction.md#_2-selector
  */
 export function offsetOnLargerAxis(offset: Point): Point {
-  return offset;
+  return Math.abs(offset.x) >= Math.abs(offset.y) ? { x: offset.x, y: 0 } : { x: 0, y: offset.y };
 }

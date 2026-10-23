@@ -1,11 +1,14 @@
 import { DRAWING_KEYS, writeStoredDrawing } from "../kept-shapes";
+import { writeShapeSelection } from "../selection";
 
 import type { KeptShape } from "../kept-shapes";
 
 /**
  * Writes the drawing back once its shapes moved (F39), then selects them by their indices as a
- * click does (`writeShapeSelection`): the shape the panel edited keeps its settings as the last of
- * its kind, one shape is loaded into the panel at its new place, several are kept with every shape.
+ * click does (`writeShapeSelection`): the panel first leaves the shape it edited, which keeps its
+ * settings as the last of its kind, every shape kept below; the drawing moved takes their place;
+ * then one shape is split around and loaded into the panel at its new place, or several are kept
+ * with every shape.
  *
  * @kind procedure
  * @param document - page document
@@ -18,5 +21,7 @@ export function writeMovedDrawing(
   drawing: readonly KeptShape[],
   selected: readonly number[],
 ): void {
-  writeStoredDrawing(document, DRAWING_KEYS.above, drawing.slice(selected.length));
+  writeShapeSelection(document, []);
+  writeStoredDrawing(document, DRAWING_KEYS.below, drawing);
+  writeShapeSelection(document, selected);
 }

@@ -1,14 +1,23 @@
 // @vitest-environment happy-dom
 import { beforeEach, describe, expect, it } from "vitest";
 
-import { isDrawnText } from "../../src";
-import { readKeptDrawing, readSelectedShapes } from "../kept-shapes";
+import { isDrawnText, shapePanelValues } from "../../src";
+import { HELLO_TEXT } from "../../tests";
+import { readFontSession, writeFontSession } from "../fonts";
+import {
+  DRAWING_KEYS,
+  readKeptDrawing,
+  readSelectedShapes,
+  readStoredDrawing,
+  writeStoredDrawing,
+} from "../kept-shapes";
 import {
   clickElement,
   dispatchDrawingPointer,
   openServedPage,
   readShapeModel,
   readValue,
+  selectPageElement,
   setElementBox,
   typeValue,
 } from "../user-actions";
@@ -123,6 +132,19 @@ function expectAt(shape: Shape, position: Point): void {
 }
 
 /**
+ * Asserts where a shape's straight box starts, to 5 decimals, as the panel shows it.
+ *
+ * @param shape - a shape of the drawing
+ * @param start - the top-left of its straight box, computed by hand
+ */
+function expectStraightBoxAt(shape: Shape, start: Point): void {
+  const { x, y } = shapePanelValues(shape);
+
+  expect(x).toBeCloseTo(start.x, 5);
+  expect(y).toBeCloseTo(start.y, 5);
+}
+
+/**
  * Reads a path of the layer above the drawing.
  *
  * @param name - its class
@@ -163,6 +185,7 @@ describe("a drag moves the shapes selected (US-072)", () => {
     expect(readValue("shape-x")).toBe("41");
     expect(readValue("shape-y")).toBe("39");
     expect(readSelectedShapes(document)).toEqual([0]);
+    expect(readKeptDrawing(document)).toHaveLength(2);
   });
 
   it("[F39.AC2] lands B's straight box at (205, 2), its position (210.80127, 23.65064), 30°", () => {
@@ -185,8 +208,7 @@ describe("a drag moves the shapes selected (US-072)", () => {
     expect(readSelectedShapes(document)).toEqual([0, 1]);
     expectAt(readShape(0), { x: 21, y: 23.65064 });
     expectAt(readShape(1), { x: 211, y: 23.65064 });
-    expect(readValue("several-x")).toBe("");
-    expect(readValue("several-y")).toBe("2");
+    expectStraightBoxAt(readShape(1), { x: 205.19873, y: 2 });
   });
 
   it("[F39.AC3] selects A alone, pressed while B is selected, and moves it alone", () => {
@@ -199,7 +221,10 @@ describe("a drag moves the shapes selected (US-072)", () => {
 
   it("[F39.AC3] adds B to A, pressed with Shift, both moved by (31, 19.65064)", () => {
     clickA(NO_KEY);
-    dragBy(IN_B, { x: 30.6, y: 19.4 }, SHIFT);
+    // Shift held at the press only, so that the move keeps both axes.
+    dispatchDrawingPointer("pointerdown", IN_B, SHIFT);
+    dispatchDrawingPointer("pointermove", { x: 280.6, y: 64.4 }, NO_KEY);
+    release({ x: 280.6, y: 64.4 }, NO_KEY);
 
     // (10, −1.65064) + (30.6, 19.4) = (40.6, 17.74936) rounds to (41, 18): a shift of
     // (31, 19.65064), A to (41, 39.65064), B to (231, 39.65064), its straight box at
@@ -207,6 +232,7 @@ describe("a drag moves the shapes selected (US-072)", () => {
     expect(readSelectedShapes(document)).toEqual([0, 1]);
     expectAt(readShape(0), { x: 41, y: 39.65064 });
     expectAt(readShape(1), { x: 231, y: 39.65064 });
+    expectStraightBoxAt(readShape(1), { x: 225.19873, y: 18 });
   });
 
   it("[F39.AC2] keeps A and B, A pressed with Shift among them, both moved", () => {
@@ -218,6 +244,31 @@ describe("a drag moves the shapes selected (US-072)", () => {
     expect(readSelectedShapes(document)).toEqual([0, 1]);
     expectAt(readShape(0), { x: 41, y: 19.65064 });
     expectAt(readShape(1), { x: 231, y: 19.65064 });
+  });
+
+  it("[F39.AC2] leaves a text never measured where it is, selected, out of the anchor", () => {
+    const never = { kind: "text", shape: { ...HELLO_TEXT, content: "Never drawn", x: 5, y: -50 } };
+
+    // A and B kept below, then a text kept by hand at (5, −50), never drawn: no family measures
+    // it, and none did before. Ctrl + A selects the three.
+    clickA(SHIFT);
+    writeFontSession(document, { ...readFontSession(document), kept: [] });
+
+    writeStoredDrawing(document, DRAWING_KEYS.below, [
+      ...readStoredDrawing(document, DRAWING_KEYS.below),
+      never,
+    ]);
+
+    selectPageElement("body").dispatchEvent(
+      new KeyboardEvent("keydown", { bubbles: true, cancelable: true, ctrlKey: true, key: "a" }),
+    );
+
+    dragBy(IN_A, { x: 30.6, y: 19.4 }, NO_KEY);
+
+    // The anchor is A and B's, (10, −1.65064), not the text's (5, −50): a shift of (31, 19.65064).
+    expect(readSelectedShapes(document)).toEqual([0, 1, 2]);
+    expectAt(readShape(0), { x: 41, y: 39.65064 });
+    expect(readKeptDrawing(document)[2]?.shape).toEqual(never.shape);
   });
 
   it("[F39.AC2] takes a release on the press's integer point for a click, A not moved", () => {

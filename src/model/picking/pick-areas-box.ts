@@ -1,3 +1,7 @@
+import { boundingBox } from "../../geometry";
+
+import { pickAreaBox } from "./pick-area-box";
+
 import type { PickArea } from "./pick-area";
 import type { BoundingBox } from "../../geometry";
 
@@ -12,5 +16,13 @@ import type { BoundingBox } from "../../geometry";
  * @see docs/domain/interaction.md#_2-selector
  */
 export function pickAreasBox(areas: readonly PickArea[]): BoundingBox {
-  return { maxX: areas.length, maxY: 0, minX: 0, minY: 0 };
+  const corners = areas
+    .filter(({ corners: points }) => points.length > 0)
+    .map((area) => pickAreaBox(area))
+    .flatMap((box) => [
+      { x: box.minX, y: box.minY },
+      { x: box.maxX, y: box.maxY },
+    ]);
+
+  return boundingBox(corners);
 }

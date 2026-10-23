@@ -1,3 +1,5 @@
+import { shapeSelectionAfterBox } from "./shape-selection-after-box";
+
 /**
  * The shapes selected once a press on a shape with the Selector becomes a move (F39): those
  * selected when the shape pressed is one of them, so that they all move; otherwise the shape
@@ -16,5 +18,9 @@ export function shapeSelectionAfterPress(
   index: number,
   isShift: boolean,
 ): readonly number[] {
-  return isShift && index > 0 ? selected : [];
+  if (index < 0 || selected.includes(index)) {
+    return selected;
+  }
+
+  return isShift ? shapeSelectionAfterBox(selected, [index], true) : [index];
 }

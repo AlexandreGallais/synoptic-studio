@@ -1,3 +1,6 @@
+import { shapeMovedBy } from "../../src";
+import { writeKeptMetrics } from "../kept-shapes";
+
 import type { Point } from "../../src";
 import type { ShapesMove } from "../hover";
 import type { KeptShape } from "../kept-shapes";
@@ -14,5 +17,15 @@ import type { KeptShape } from "../kept-shapes";
  * @see docs/domain/interaction.md#_2-selector
  */
 export function readMovedDrawing(move: ShapesMove, shift: Point): readonly KeptShape[] {
-  return shift.x === 0 ? move.drawing : [];
+  return move.drawing.map((kept, index) => {
+    if (!move.moved.includes(index)) {
+      return kept;
+    }
+
+    const shape = shapeMovedBy(kept.shape, shift);
+
+    writeKeptMetrics(kept.shape, shape);
+
+    return { kind: kept.kind, shape };
+  });
 }

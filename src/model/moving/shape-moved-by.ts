@@ -1,3 +1,5 @@
+import { shapeMovedOnAxis } from "../panel-values";
+
 import type { Point } from "../../math";
 import type { ShapePlacement } from "../placement";
 
@@ -14,5 +16,5 @@ import type { ShapePlacement } from "../placement";
  * @see docs/domain/interaction.md#_2-selector
  */
 export function shapeMovedBy<T extends ShapePlacement>(shape: T, shift: Point): T {
-  return shift.x === shift.y ? shape : shape;
+  return shapeMovedOnAxis(shapeMovedOnAxis(shape, "x", shift.x), "y", shift.y);
 }

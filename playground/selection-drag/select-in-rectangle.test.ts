@@ -263,9 +263,12 @@ describe("a selection rectangle selects shapes (US-069)", () => {
     dispatchDrawingPointer("pointermove", { x: 50, y: 50 }, NO_KEY);
     release({ x: 50, y: 50 }, NO_KEY);
 
-    // A moved and brought back, selected alone by its move (US-072), where it was.
+    // A moved and brought back, selected alone by its move (US-072), where it was: its straight
+    // box, its arcs of radius 10 reaching its sides, starts at x −1.8 × 10⁻¹⁵, a rounding error,
+    // landed on 0, so that its position goes by that much.
     expect(readSelectedShapes(document)).toEqual([0]);
-    expect(readShapeModel()).toMatchObject({ x: 0, y: 0 });
+    expect(readShapeModel().x).toBeCloseTo(0, 9);
+    expect(readShapeModel().y).toBeCloseTo(0, 9);
   });
 
   it("[F37.AC3] takes a release on the press's integer point for a click, which selects A", () => {

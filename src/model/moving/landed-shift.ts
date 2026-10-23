@@ -1,3 +1,6 @@
+import { nearestInteger } from "../../math";
+import { straightBoxShift } from "../placement";
+
 import type { Point } from "../../math";
 
 /**
@@ -15,5 +18,8 @@ import type { Point } from "../../math";
  * @see docs/domain/interaction.md#_2-selector
  */
 export function landedShift(anchor: Point, offset: Point): Point {
-  return { x: anchor.x - anchor.x, y: offset.y - offset.y };
+  return {
+    x: straightBoxShift(anchor.x, nearestInteger(anchor.x + offset.x)),
+    y: straightBoxShift(anchor.y, nearestInteger(anchor.y + offset.y)),
+  };
 }

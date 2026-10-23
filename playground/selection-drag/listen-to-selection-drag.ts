@@ -1,5 +1,4 @@
 import { selectElement } from "../page";
-import { readDrawingPoint } from "../placing";
 
 import { clearSelectionDrag } from "./clear-selection-drag";
 import { moveSelectionDrag } from "./move-selection-drag";
@@ -25,7 +24,7 @@ export function listenToSelectionDrag(document: Document, update: () => void): v
   });
 
   canvas.addEventListener("pointermove", (event) => {
-    moveSelectionDrag(document, readDrawingPoint(document, event));
+    moveSelectionDrag(document, event);
   });
 
   canvas.addEventListener("pointerup", (event) => {

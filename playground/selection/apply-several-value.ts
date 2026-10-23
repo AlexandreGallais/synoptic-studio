@@ -2,9 +2,9 @@ import { isDrawnText, parsePanelValue, shapeAfterPanelEdit, textAfterPanelEdit }
 import { readTextBlock } from "../hover";
 import {
   DRAWING_KEYS,
-  KEPT_TEXT_METRICS,
   readKeptDrawing,
   readSelectedShapes,
+  writeKeptMetrics,
   writeStoredDrawing,
 } from "../kept-shapes";
 import { MAX_SIZE } from "../shape";
@@ -37,24 +37,6 @@ function readEditedShape(
   const block = readTextBlock(document, shape);
 
   return block === undefined ? shape : textAfterPanelEdit(shape, block, edit);
-}
-
-/**
- * Keeps for a text changed the metrics it was last drawn with (`KEPT_TEXT_METRICS`), kept by the
- * JSON of the text, so that a text whose font is no longer read is still drawn where it was moved.
- * A shape a tool makes has none.
- *
- * @kind procedure
- * @param before - the shape as it was
- * @param after - the shape changed
- * @see docs/domain/interaction.md#_2-selector
- */
-function writeKeptMetrics(before: DrawingShape, after: DrawingShape): void {
-  const metrics = KEPT_TEXT_METRICS.get(JSON.stringify(before));
-
-  if (metrics !== undefined) {
-    KEPT_TEXT_METRICS.set(JSON.stringify(after), metrics);
-  }
 }
 
 /**
