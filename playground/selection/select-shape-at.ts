@@ -1,51 +1,33 @@
-import { PICK_TOLERANCE, screenToUser, shapeAtPoint, splitDrawing } from "../../src";
+import { PICK_TOLERANCE, screenToUser, shapeAtPoint, shapeSelectionAfterClick } from "../../src";
 import { readPickAreas } from "../hover";
-import {
-  DRAWING_KEYS,
-  VIEW_SCALE,
-  readKeptDrawing,
-  readStoredDrawing,
-  writeStoredDrawing,
-} from "../kept-shapes";
-import { saveKindSettings } from "../kind-settings";
-import { readShapeKind, writeEditedKind } from "../page";
+import { VIEW_SCALE, readSelectedShapes } from "../kept-shapes";
 
-import { loadPickedShape } from "./load-picked-shape";
+import { writeShapeSelection } from "./write-shape-selection";
 
 import type { Point } from "../../src";
 
 /**
- * Selects the shape under a point of the drawing (`shapeAtPoint`, F36): the drawing split around
- * it (`splitDrawing`), so that it keeps its place, the shapes before it below and those after it
- * above; the panel leaves the shape it edited, keeping its settings as the last of its kind
- * (`saveKindSettings`), and loads the one picked (`loadPickedShape`); on the empty drawing, every
- * shape below and none selected.
+ * Selects by a click the shape under a point of the drawing (`shapeAtPoint`, F36): alone, or with
+ * Shift added to the shapes selected, or taken out of them (`shapeSelectionAfterClick`, F37); on
+ * the empty drawing, none, or with Shift the selection kept. The shapes are then selected by their
+ * indices (`writeShapeSelection`): one keeps its place and is loaded into the panel, several are
+ * kept with every shape, none edited.
  *
  * @kind procedure
  * @param document - page document
  * @param point - the point clicked, in the coordinates of the drawing's SVG
+ * @param isShift - whether Shift is held, adding the shape under the point or taking it out
  * @see docs/domain/interaction.md#_2-selector
  */
-export function selectShapeAt(document: Document, point: Point): void {
+export function selectShapeAt(document: Document, point: Point, isShift: boolean): void {
   const index = shapeAtPoint(
     readPickAreas(document),
     point,
     screenToUser(PICK_TOLERANCE, VIEW_SCALE),
   );
-  const { above, below, edited } = splitDrawing(readKeptDrawing(document), index);
-  const [picked] = edited;
 
-  if (readStoredDrawing(document, DRAWING_KEYS.edited).length > 0) {
-    saveKindSettings(document, readShapeKind(document));
-  }
-
-  writeStoredDrawing(document, DRAWING_KEYS.below, below);
-  writeStoredDrawing(document, DRAWING_KEYS.edited, edited);
-  writeStoredDrawing(document, DRAWING_KEYS.above, above);
-
-  if (picked === undefined) {
-    writeEditedKind(document, "none");
-  } else {
-    loadPickedShape(document, picked);
-  }
+  writeShapeSelection(
+    document,
+    shapeSelectionAfterClick(readSelectedShapes(document), index, isShift),
+  );
 }

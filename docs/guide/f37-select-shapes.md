@@ -2,11 +2,29 @@
 
 ## What you can do now
 
-Nothing new yet: F37's stories come after its spike. This page says which keys the editor will use, chosen at the spike; the rest is written at F37's validation (VAL-038).
+**Select several shapes with Shift.** Click a shape, then click another with Shift held: both are selected, each outlined, and a dashed box surrounds the two. Shift + click on a shape already selected takes it out; with one left, the panel edits it again. A click without Shift, or with Ctrl, selects the shape clicked alone; Shift + click on an empty place changes nothing.
+
+**The panel says how many.** With several shapes selected, the panel hides its fields and its title says how many are selected, "2 shapes selected": their position and size come with F38. A shape added with a tool goes on top of all and is selected alone, the others unchanged.
+
+**Select all, or none, by a key.** Press Ctrl + A (Cmd + A on a Mac) to select every shape, and Escape to select none. With the cursor in a field of the panel, both keys stay the field's: Ctrl + A selects its text. With a color picker open, Escape closes the picker and leaves the selection as it is.
+
+**Points mode edits one shape.** While several shapes are selected, the Points button is disabled. In Points mode, Shift + click and a click on a point's handle act on the points only, never on which shapes are selected, and Ctrl + A selects no shape.
+
+This page also says which keys the editor uses, chosen at the spike.
+
+## The choices the agent made
+
+For the review's summary; each can be changed.
+
+- Shift + click on an empty place of the drawing keeps the selection, nothing being there to add or take out; a plain click there still selects none.
+- The dashed box around several shapes is the smallest upright box holding their outlines as drawn, dashed as the straight box of a turned shape: 4 long every 7, 1 thick, inside the box.
+- With several shapes selected, none is edited: the panel shows no field until F38. Back to one, the panel loads it as a click does, and the shape the panel left keeps its settings for the next shape of its kind.
+- Points mode edits one shape: its button is disabled while several are selected, and in Points mode a click with Shift or on a handle never changes the shapes selected, nor does Ctrl + A. A plain click on a handle used to select none when the point lay in a rounded corner's cut; it now selects the point only.
+- Escape selects none in Shape mode and in Points mode alike, as a click on an empty place does; in a field of the panel it changes nothing.
 
 ## The ideas behind it
 
-**The keys are Figma's.** Each key the editor offers is, by default, the one Figma uses, so that someone who knows Figma finds them at once; every key can be changed later, in the settings (E20). Shift + click adds a shape to the selection, or takes it out; Ctrl + A (Cmd + A on a Mac) selects every shape; Escape selects none; the arrow keys will move the selection by 1, and by 10 with Shift; Ctrl + Z will undo. Ctrl + click adds or takes out a shape too, as asked on 2026-10-11, though Figma keeps it for picking a shape inside a group, which comes with E13.
+**The keys are Figma's.** Each key the editor offers is, by default, the one Figma uses, so that someone who knows Figma finds them at once; every key can be changed later, in the settings (E20). Shift + click adds a shape to the selection, or takes it out; Ctrl + A (Cmd + A on a Mac) selects every shape; Escape selects none; the arrow keys will move the selection by 1, and by 10 with Shift; Ctrl + Z will undo. Ctrl + click is kept for picking a shape inside a group, as Figma does, which comes with E13: until then it selects the shape clicked alone (decided on 2026-10-23, replacing the rule of 2026-10-11 for the drawing; the list of points keeps its Ctrl + click).
 
 **Where Figma's help says nothing, two other editors decide.** Figma's pages read do not name the keys for deleting and redoing: Delete or Backspace deletes, as in Inkscape and Penpot and as the points already do; Ctrl + Shift + Z redoes, as in Penpot and on a Mac, and Ctrl + Y too, as in Inkscape and on Windows. The agent chose these. To confirm at VAL-038.
 

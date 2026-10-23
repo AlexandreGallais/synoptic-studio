@@ -1,0 +1,420 @@
+// @vitest-environment happy-dom
+import { beforeEach, describe, expect, it } from "vitest";
+
+import { contourBand, contourPiecesToPathData, shapePickArea } from "../../src";
+import { readExportedSvg } from "../document";
+import { readDrawnTexts } from "../kept-shapes";
+import { readSelection } from "../page";
+import {
+  clickAt,
+  clickElement,
+  openServedPage,
+  pressAndClick,
+  pressKey,
+  pressPointer,
+  readDisabledState,
+  readDisplay,
+  readShapeModel,
+  readText,
+  readValue,
+  selectPageElement,
+  setElementBox,
+  typeValue,
+} from "../user-actions";
+
+import type { Point, Shape } from "../../src";
+import type { Keys } from "../user-actions";
+
+// The canvas sits at (100, 50) in the window, and the drawing's origin 40 right of and below its
+// corner (`DRAWING_MARGIN`): the drawing's point (x, y) is the window's (x + 140, y + 90).
+
+/** Left of the drawing's origin in the window: the canvas's 100 and the margin's 40. */
+const ORIGIN_LEFT = 140;
+
+/** Top of the drawing's origin in the window: the canvas's 50 and the margin's 40. */
+const ORIGIN_TOP = 90;
+
+/** A point of the empty drawing, under none of A, B and C. */
+const EMPTY = { x: 200, y: 300 };
+
+/**
+ * The window's point of a point of the drawing.
+ *
+ * @param point - the point of the drawing
+ * @returns its `clientX` and `clientY`
+ */
+function toWindow(point: Point): { readonly clientX: number; readonly clientY: number } {
+  return { clientX: point.x + ORIGIN_LEFT, clientY: point.y + ORIGIN_TOP };
+}
+
+/**
+ * Places a shape: its tool chosen, then a click on the drawing (F35).
+ *
+ * @param tool - `rectangle`, `polygon`, `round` or `text`
+ * @param point - the point of the drawing clicked
+ */
+function placeShape(tool: string, point: Point): void {
+  clickElement(`tool-${tool}`);
+  clickAt("#canvas", toWindow(point));
+}
+
+/**
+ * Clicks an element of the drawing with the selector armed and keys held, as a mouse does:
+ * pressed, released, then clicked at a point of the drawing.
+ *
+ * @param point - the point of the drawing clicked
+ * @param keys - the keys held
+ * @param selector - the element under the pointer, `#canvas` or one of its handles
+ */
+function pickWithKeys(point: Point, keys: Keys, selector: string): void {
+  const at = toWindow(point);
+
+  pressPointer(selector, "pointerdown", { ...at, buttons: 1 });
+  pressPointer(selector, "pointerup", { ...at, buttons: 0 });
+
+  selectPageElement(selector).dispatchEvent(
+    new MouseEvent("click", { ...at, ...keys, bubbles: true }),
+  );
+}
+
+/**
+ * Clicks the drawing with Shift held.
+ *
+ * @param point - the point of the drawing clicked
+ */
+function shiftPick(point: Point): void {
+  pickWithKeys(point, { shiftKey: true }, "#canvas");
+}
+
+/**
+ * Presses A with Ctrl, or Cmd, held on an element of the page, as the browser fires it: its key
+ * `A` with Shift held too, `a` otherwise.
+ *
+ * @param selector - the element having the focus, `body` for none
+ * @param keys - Ctrl or Cmd held, and Shift
+ * @returns whether the page left the key to the browser, its default not prevented
+ */
+function pressSelectAll(selector: string, keys: Keys): boolean {
+  const key = keys.shiftKey === true ? "A" : "a";
+
+  return selectPageElement(selector).dispatchEvent(
+    new KeyboardEvent("keydown", { ...keys, bubbles: true, cancelable: true, key }),
+  );
+}
+
+/**
+ * Reads the path data of the shapes drawn, the editor's frames, boxes and handles left out.
+ *
+ * @returns each shape's `d`, the first drawn first
+ */
+function readShapePaths(): readonly (string | null)[] {
+  return [...document.querySelectorAll("#canvas svg > path:not([class])")].map((path) =>
+    path.getAttribute("d"),
+  );
+}
+
+/**
+ * Reads the outlines of the shapes selected in the layer above the drawing.
+ *
+ * @returns their path data, the first drawn first
+ */
+function readSelectionOutlines(): readonly (string | null)[] {
+  return [...document.querySelectorAll("#overlay svg path.selection")].map((path) =>
+    path.getAttribute("d"),
+  );
+}
+
+/**
+ * Reads the dashed box around the shapes selected, in the layer above the drawing.
+ *
+ * @returns its path data; undefined for none
+ */
+function readSelectionBox(): string | undefined {
+  return document.querySelector("#overlay svg path.selection-box")?.getAttribute("d") ?? undefined;
+}
+
+/**
+ * The outline expected of a shape: the band about its contour as drawn, 2 pixels wide, a chord
+ * at most 2 pixels long, as the hover's (US-065).
+ *
+ * @param shape - the shape outlined
+ * @returns the path data of its band
+ */
+function outlineOf(shape: Shape): string {
+  return contourBand(shapePickArea(shape).pieces, 1, 2)
+    .map((subpath) => contourPiecesToPathData(subpath))
+    .join(" ");
+}
+
+/**
+ * Draws A, B and C, rectangles 100 × 100 of radius 10, in that order, C edited: A the rectangle
+ * the page opens with, typed 100 × 100 at (0, 0); B centred on (200, 50), at (150, 0); C centred
+ * on (350, 50), at (300, 0). (50, 50), (200, 50) and (350, 50) are inside A, B and C.
+ *
+ * @returns their models, and their paths in the order drawn
+ */
+function drawThreeRectangles(): {
+  readonly a: Shape;
+  readonly b: Shape;
+  readonly c: Shape;
+  readonly paths: readonly string[];
+} {
+  typeValue("width", "100");
+  typeValue("height", "100");
+
+  const a = { model: readShapeModel(), path: readText("#path-data") };
+
+  placeShape("rectangle", { x: 200, y: 50 });
+
+  const b = { model: readShapeModel(), path: readText("#path-data") };
+
+  placeShape("rectangle", { x: 350, y: 50 });
+
+  const c = { model: readShapeModel(), path: readText("#path-data") };
+
+  return { a: a.model, b: b.model, c: c.model, paths: [a.path, b.path, c.path] };
+}
+
+describe("Shift + click adds or removes a shape (US-068)", () => {
+  beforeEach(() => {
+    // The epic's step 1, a rectangle 120 × 80 at (0, 0), radius 10, whatever feature is validated.
+    openServedPage("?guide=epic");
+    setElementBox("#canvas", { height: 600, left: 100, top: 50, width: 800 });
+  });
+
+  it("[F37.AC2] selects A and B, each outlined, a dashed box around both, the panel saying 2", () => {
+    const { a, b, paths } = drawThreeRectangles();
+
+    pressAndClick("#canvas", toWindow({ x: 50, y: 50 }));
+    shiftPick({ x: 200, y: 50 });
+
+    expect(readSelectionOutlines()).toEqual([outlineOf(a), outlineOf(b)]);
+
+    // The box from (0, 0) to (250, 100), dashed as a turned shape's straight box: dashes 4 long
+    // every 7, 1 thick, inside it. The top side holds ceil(250 / 7) = 36 dashes, the first from 0
+    // to 4, the last from 35 · 7 = 245 to 249, 4 long; the right side's first lies at 250 − 1.
+    const box = readSelectionBox() ?? "";
+
+    expect(box.startsWith("M0 0H4V1H0Z")).toBe(true);
+    expect(box).toContain("M245 0H249V1H245Z");
+    expect(box).toContain("M249 0H250V4H249Z");
+    expect(box).not.toContain("M252 0");
+    expect(readText("#shape-title")).toBe("2 shapes selected");
+    expect(readDisplay("shape-panel")).toBe("none");
+    expect(readShapePaths()).toEqual(paths);
+  });
+
+  it("[F37.AC2] takes B out with Shift, A alone loaded into the panel, no dashed box", () => {
+    const { a } = drawThreeRectangles();
+
+    pressAndClick("#canvas", toWindow({ x: 50, y: 50 }));
+    shiftPick({ x: 200, y: 50 });
+    shiftPick({ x: 200, y: 50 });
+
+    expect(readShapeModel()).toEqual(a);
+    expect(readText("#shape-title")).toBe("Rectangle");
+    expect(readDisplay("shape-panel")).not.toBe("none");
+    expect(readSelectionOutlines()).toEqual([outlineOf(a)]);
+    expect(readSelectionBox()).toBeUndefined();
+  });
+
+  it("[F37.AC2] selects C alone on Ctrl + click or Cmd + click, kept for E13's groups", () => {
+    const { c } = drawThreeRectangles();
+
+    pressAndClick("#canvas", toWindow({ x: 50, y: 50 }));
+    pickWithKeys({ x: 350, y: 50 }, { ctrlKey: true }, "#canvas");
+
+    expect(readShapeModel()).toEqual(c);
+    expect(readSelectionOutlines()).toEqual([outlineOf(c)]);
+
+    pressAndClick("#canvas", toWindow({ x: 50, y: 50 }));
+    pickWithKeys({ x: 350, y: 50 }, { metaKey: true }, "#canvas");
+
+    expect(readSelectionOutlines()).toEqual([outlineOf(c)]);
+  });
+
+  it("[F37.AC2] keeps A and B on Shift + click on the empty drawing; a plain click selects none", () => {
+    const { a, b } = drawThreeRectangles();
+
+    pressAndClick("#canvas", toWindow({ x: 50, y: 50 }));
+    shiftPick({ x: 200, y: 50 });
+    shiftPick(EMPTY);
+
+    expect(readSelectionOutlines()).toEqual([outlineOf(a), outlineOf(b)]);
+    expect(readText("#shape-title")).toBe("2 shapes selected");
+
+    pressAndClick("#canvas", toWindow(EMPTY));
+
+    expect(readSelectionOutlines()).toEqual([]);
+    expect(readText("#shape-title")).toBe("No shape selected");
+  });
+
+  it("[F37.AC2] selects C alone on a plain click, from A and B", () => {
+    const { c, paths } = drawThreeRectangles();
+
+    pressAndClick("#canvas", toWindow({ x: 50, y: 50 }));
+    shiftPick({ x: 200, y: 50 });
+    pressAndClick("#canvas", toWindow({ x: 350, y: 50 }));
+
+    expect(readShapeModel()).toEqual(c);
+    expect(readSelectionOutlines()).toEqual([outlineOf(c)]);
+    expect(readSelectionBox()).toBeUndefined();
+    expect(readShapePaths()).toEqual(paths);
+  });
+
+  it("[F37.AC2] keeps A's radius typed 25 when B is added, for the next rectangle placed", () => {
+    drawThreeRectangles();
+    pressAndClick("#canvas", toWindow({ x: 50, y: 50 }));
+    typeValue("radius", "25");
+
+    const a = readShapeModel();
+
+    shiftPick({ x: 200, y: 50 });
+    shiftPick({ x: 200, y: 50 });
+
+    expect(readShapeModel()).toEqual(a);
+
+    shiftPick({ x: 200, y: 50 });
+    placeShape("rectangle", { x: 550, y: 250 });
+
+    expect(readValue("radius")).toBe("25");
+  });
+
+  it("[F37.AC2] places a rectangle on top of all, selected alone, A and B unchanged", () => {
+    const { paths } = drawThreeRectangles();
+
+    pressAndClick("#canvas", toWindow({ x: 50, y: 50 }));
+    shiftPick({ x: 200, y: 50 });
+    // Centred on (550, 100): 100 × 100 at (500, 50).
+    placeShape("rectangle", { x: 550, y: 100 });
+
+    expect(readShapeModel()).toMatchObject({ x: 500, y: 50 });
+    expect(readText("#shape-title")).toBe("Rectangle");
+    expect(readShapePaths()).toEqual([...paths, readText("#path-data")]);
+    expect(readSelectionOutlines()).toHaveLength(1);
+    expect(readSelectionBox()).toBeUndefined();
+  });
+
+  it("[F37.AC2] exports A, B and C, no outline nor dashed box, whichever are selected", () => {
+    drawThreeRectangles();
+
+    const exported = readExportedSvg(document, readDrawnTexts(document));
+
+    pressAndClick("#canvas", toWindow({ x: 50, y: 50 }));
+    shiftPick({ x: 200, y: 50 });
+
+    expect(readSelectionBox()).toBeDefined();
+    expect(selectPageElement("#canvas").querySelector(".selection, .selection-box")).toBeNull();
+    expect(readExportedSvg(document, readDrawnTexts(document))).toBe(exported);
+  });
+});
+
+describe("Ctrl + A selects every shape and Escape none (US-068)", () => {
+  beforeEach(() => {
+    openServedPage("?guide=epic");
+    setElementBox("#canvas", { height: 600, left: 100, top: 50, width: 800 });
+  });
+
+  it("[F37.AC2] selects A, B and C on Ctrl + A or Cmd + A outside the fields", () => {
+    const { a, b, c } = drawThreeRectangles();
+
+    expect(pressSelectAll("body", { ctrlKey: true })).toBe(false);
+    expect(readSelectionOutlines()).toEqual([outlineOf(a), outlineOf(b), outlineOf(c)]);
+    expect(readText("#shape-title")).toBe("3 shapes selected");
+
+    pressKey("body", "Escape");
+    pressSelectAll("body", { metaKey: true });
+
+    expect(readText("#shape-title")).toBe("3 shapes selected");
+
+    pressKey("body", "Escape");
+    pressSelectAll("body", { ctrlKey: true, shiftKey: true });
+
+    expect(readText("#shape-title")).toBe("3 shapes selected");
+  });
+
+  it("[F37.AC2] leaves Ctrl + A to a field having the focus, the shapes' selection unchanged", () => {
+    drawThreeRectangles();
+    pressAndClick("#canvas", toWindow({ x: 50, y: 50 }));
+
+    expect(pressSelectAll("#width", { ctrlKey: true })).toBe(true);
+    expect(pressSelectAll("#text-content", { ctrlKey: true })).toBe(true);
+    expect(readSelectionOutlines()).toHaveLength(1);
+    expect(readText("#shape-title")).toBe("Rectangle");
+  });
+
+  it("[F37.AC2] selects none on Escape, the panel saying so, and nothing in a field", () => {
+    drawThreeRectangles();
+    pressAndClick("#canvas", toWindow({ x: 50, y: 50 }));
+    pressKey("#width", "Escape");
+
+    expect(readText("#shape-title")).toBe("Rectangle");
+
+    shiftPick({ x: 200, y: 50 });
+    pressKey("body", "Escape");
+
+    expect(readSelectionOutlines()).toEqual([]);
+    expect(readSelectionBox()).toBeUndefined();
+    expect(readText("#shape-title")).toBe("No shape selected");
+  });
+
+  it("[F37.AC2] closes the color picker only on Escape, the text kept selected", () => {
+    placeShape("text", { x: 200, y: 300 });
+    clickElement("text-color-swatch");
+
+    expect(selectPageElement("#text-color-swatch").getAttribute("aria-expanded")).toBe("true");
+
+    pressKey("#text-color-swatch", "Escape");
+
+    expect(selectPageElement("#text-color-swatch").getAttribute("aria-expanded")).toBe("false");
+    expect(readText("#shape-title")).toBe("Text");
+    expect(readSelectionOutlines()).toHaveLength(1);
+  });
+});
+
+describe("the shapes' selection in Points mode (US-068)", () => {
+  beforeEach(() => {
+    openServedPage("?guide=epic");
+    setElementBox("#canvas", { height: 600, left: 100, top: 50, width: 800 });
+  });
+
+  it("[F37.AC2] keeps A selected on Shift + click on B or Ctrl + A in Points mode", () => {
+    const { a } = drawThreeRectangles();
+
+    pressAndClick("#canvas", toWindow({ x: 50, y: 50 }));
+    clickElement("mode-points");
+    shiftPick({ x: 200, y: 50 });
+    pressSelectAll("body", { ctrlKey: true });
+
+    expect(readShapeModel()).toEqual(a);
+    expect(readSelectionOutlines()).toEqual([outlineOf(a)]);
+  });
+
+  it("[F37.AC2] selects points by their handles, plain or with Shift, A kept selected", () => {
+    const { a } = drawThreeRectangles();
+
+    pressAndClick("#canvas", toWindow({ x: 50, y: 50 }));
+    clickElement("mode-points");
+    // Each vertex of A is a corner of its box, cut by its radius of 10: outside its painted area.
+    pickWithKeys({ x: 0, y: 0 }, {}, '#canvas path.handle[data-vertex="1"]');
+    pickWithKeys({ x: 100, y: 100 }, { shiftKey: true }, '#canvas path.handle[data-vertex="3"]');
+
+    expect(readSelection(document).selected).toEqual([0, 2]);
+    expect(readShapeModel()).toEqual(a);
+  });
+
+  it("[F37.AC2] disables the Points button while several shapes are selected", () => {
+    drawThreeRectangles();
+    pressAndClick("#canvas", toWindow({ x: 50, y: 50 }));
+
+    expect(readDisabledState("mode-points")).toBe("false");
+
+    shiftPick({ x: 200, y: 50 });
+
+    expect(readDisabledState("mode-points")).toBe("true");
+
+    shiftPick({ x: 200, y: 50 });
+
+    expect(readDisabledState("mode-points")).toBe("false");
+  });
+});

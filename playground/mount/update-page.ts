@@ -1,6 +1,6 @@
 import { showHover } from "../hover";
 import { readShapeKind, selectElement } from "../page";
-import { showNoSelection } from "../selection";
+import { showNoSelection, showSeveralSelection } from "../selection";
 import { hidePointPanels, updateTextTool, writeTextSections } from "../text";
 import { writeShapeKind } from "../toolbar";
 
@@ -28,9 +28,27 @@ function updateEditedShape(document: Document, isText: boolean): void {
 }
 
 /**
- * Redraws the page from its inputs: the Text tool, the shapes, or the drawing alone while no shape
- * is selected (`showNoSelection`, F36); then the layer above the drawing, so that the outlines
- * follow a shape changed under a pointer standing still (F36).
+ * Redraws the drawing alone, no shape edited: none selected (`showNoSelection`, F36), or several
+ * (`showSeveralSelection`, F37).
+ *
+ * @kind procedure
+ * @param document - the playground's document
+ * @param kind - `none` or `several`
+ * @see docs/domain/interaction.md#_2-selector
+ */
+function showNoShapeEdited(document: Document, kind: string): void {
+  if (kind === "none") {
+    showNoSelection(document);
+  } else {
+    showSeveralSelection(document);
+  }
+}
+
+/**
+ * Redraws the page from its inputs: the Text tool, the shapes, or the drawing alone while none or
+ * several shapes are selected (`showNoShapeEdited`, F36, F37), the Points button disabled while
+ * several are, Points mode editing one shape; then the layer above the drawing, so that the
+ * outlines follow a shape changed under a pointer standing still (F36).
  *
  * @kind procedure
  * @param document - the playground's document, its fields read
@@ -39,8 +57,10 @@ function updateEditedShape(document: Document, isText: boolean): void {
 export function updatePage(document: Document): void {
   const kind = readShapeKind(document);
 
-  if (kind === "none") {
-    showNoSelection(document);
+  selectElement(document, "mode-points").toggleAttribute("disabled", kind === "several");
+
+  if (kind === "none" || kind === "several") {
+    showNoShapeEdited(document, kind);
   } else {
     updateEditedShape(document, kind === "text");
   }
