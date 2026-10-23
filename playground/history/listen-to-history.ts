@@ -1,4 +1,5 @@
 import { redoneHistory, undoneHistory } from "../../src";
+import { listenToHistoryBound } from "../history-bound";
 import { selectElement } from "../page";
 import { readKeyField } from "../selection-keys";
 
@@ -37,8 +38,10 @@ function listenToActionEnds(document: Document, update: () => void): void {
 }
 
 /**
- * Listens to what records, undoes and redoes the steps of the page (F40), its history emptied
- * first, the page being mounted: the ends of the drawing's actions (`listenToActionEnds`) and of
+ * Listens to what records, undoes, redoes and bounds the steps of the page (F40), its history
+ * emptied first, the page being mounted: the fields of its bound, read from the browser, a bound
+ * applied asking a step that the drawing unchanged does not take, but that bounds the history by
+ * it at once (`listenToHistoryBound`, `scheduleHistoryStep`); the ends of the drawing's actions (`listenToActionEnds`) and of
  * the panel's changes (`listenToPanelSteps`); the Undo and Redo buttons (`moveHistory`); Reset
  * and the guided test's Previous and Next, which empty the history (`clearPageHistory`), then
  * redraw; the keys of the history (`listenToHistoryKeys`). Wired after the drawing's listeners and
@@ -51,6 +54,11 @@ function listenToActionEnds(document: Document, update: () => void): void {
  */
 export function listenToHistory(document: Document, update: () => void): void {
   clearPageHistory(document);
+
+  listenToHistoryBound(document, () => {
+    scheduleHistoryStep(document, update);
+  });
+
   listenToActionEnds(document, update);
 
   for (const [id, move] of [

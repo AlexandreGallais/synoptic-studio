@@ -6,6 +6,7 @@ export type * from "./history-bound";
 export * from "./history-size";
 export type * from "./history-state";
 export * from "./history-with-step";
+export * from "./moves-within-size";
 export * from "./redone-history";
 export * from "./shared-drawing";
 export * from "./undone-history";
