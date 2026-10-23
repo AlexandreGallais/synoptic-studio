@@ -16,7 +16,7 @@ The rules given by the Product Owner on 2026-10-22 (Q7, `interaction.md` §7): o
 1. Given a shape placed, drawn, moved, nudged or deleted, when Ctrl + Z is pressed outside the panel's fields, or the Undo button clicked, then it is undone, and Ctrl + Shift + Z, Ctrl + Y or the Redo button does it again: A, 100 × 50 at (10, 20), dragged to (41, 39), is back at (10, 20), then at (41, 39).
 2. Given a value typed in the panel, a choice or a button, when Ctrl + Z is pressed, then it is undone in one step: 150 typed in A's W over 100 and Enter pressed, one Ctrl + Z gives it 100, though A was drawn at each character.
 3. Given shapes selected only — a click, Shift + click, a selection rectangle, Ctrl + A, Escape —, then no step is taken: A moved, then B clicked, Ctrl + Z undoes the move.
-4. Given the memory size the designer sets, when the history grows beyond it, then its oldest steps are dropped, its size counted from its data: a move of A alone adds 1 236 bytes, so that 10 MB keeps about 8 090 of them.
+4. Given the memory size and the minimum of steps the designer sets (100 MB and 5 by default), when the history grows beyond the size, then its oldest steps are dropped, never below the minimum, its size counted from its data: a move of A alone adds 1 244 bytes, so that 100 MB keeps about 80 380 of them.
 
 ## Stories
 
@@ -25,7 +25,7 @@ In delivery order.
 | ID | Type | Title | Status |
 | --- | --- | --- | --- |
 | [SP-029](../stories/E02-F40-SP-029-refine-undo-and-redo.md) | SP | Refine undo and redo | done |
-| [EN-146](../stories/E02-F40-EN-146-the-history-in-the-model.md) | EN | The history of the drawing in the model | ready |
+| [EN-146](../stories/E02-F40-EN-146-the-history-in-the-model.md) | EN | The history of the drawing in the model | done |
 | [US-074](../stories/E02-F40-US-074-undo-and-redo-the-drawings-actions.md) | US | Undo and redo what is done on the drawing | ready |
 | [US-075](../stories/E02-F40-US-075-undo-and-redo-the-panels-changes.md) | US | Undo and redo what is typed and chosen in the panel | ready |
 | [US-076](../stories/E02-F40-US-076-the-historys-memory-size.md) | US | The history kept within a memory size the designer sets | ready |
