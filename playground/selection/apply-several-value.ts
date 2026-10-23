@@ -1,4 +1,4 @@
-import { isDrawnText, parsePanelValue, shapeAfterPanelEdit, textAfterPanelEdit } from "../../src";
+import { isDrawnText, shapeAfterPanelEdit, textAfterPanelEdit } from "../../src";
 import {
   DRAWING_KEYS,
   readKeptDrawing,
@@ -8,9 +8,8 @@ import {
 } from "../kept-shapes";
 import { readTextBlock } from "../picking";
 import { MAX_SIZE } from "../shape";
-import { readFieldValue } from "../text";
 
-import type { DrawingShape, PanelEdit, PanelValues } from "../../src";
+import type { DrawingShape, PanelEdit, PanelValues, TypedPanelValue } from "../../src";
 import type { KeptShape } from "../kept-shapes";
 
 /**
@@ -87,19 +86,22 @@ function readEditedDrawing(document: Document, edit: PanelEdit): readonly KeptSh
 }
 
 /**
- * Sets the shapes selected by the value typed in a field of several shapes (F38): read as an
- * integer, relative with a sign (`parsePanelValue`), and given to each shape
- * (`readEditedDrawing`), a size capped at 100 000 as one shape's (Q20); a value refused, or
+ * Sets the shapes selected by a value of a field of several shapes (F38): typed, an integer
+ * relative with a sign (`parsePanelValue`), or an arrow's step, relative (US-081), given to each
+ * shape (`readEditedDrawing`), a size capped at 100 000 as one shape's (Q20); a value refused, or
  * refused by one shape, changes none. Every shape is kept below while several are selected (F37).
  *
  * @kind procedure
  * @param document - page document
- * @param key - the field typed in: `x`, `y`, `width` or `height`
- * @param id - its id
+ * @param key - the field: `x`, `y`, `width` or `height`
+ * @param typed - the value, relative or fixed; `undefined` when the text typed is no integer
  * @see docs/domain/interaction.md#_2-selector
  */
-export function applySeveralValue(document: Document, key: keyof PanelValues, id: string): void {
-  const typed = parsePanelValue(readFieldValue(document, id));
+export function applySeveralValue(
+  document: Document,
+  key: keyof PanelValues,
+  typed: TypedPanelValue | undefined,
+): void {
   const drawing =
     typed === undefined
       ? undefined

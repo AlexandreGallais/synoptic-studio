@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { isDrawnText } from "../../src";
 import { HELLO_TEXT } from "../../tests";
 import { readFontSession, writeFontSession } from "../fonts";
+import { PAGE_HISTORIES } from "../history";
 import { DRAWING_KEYS, readStoredDrawing, writeStoredDrawing } from "../kept-shapes";
 import { selectElement, writeEditedKind } from "../page";
 import { readTextBlock } from "../picking";
@@ -27,6 +28,7 @@ import {
 import { writeSeveralValues } from "./write-several-values";
 
 import type { DrawingShape, Point } from "../../src";
+import type { KeptShape } from "../kept-shapes";
 
 // The canvas sits at (100, 50) in the window, and the drawing's origin 40 right of and below its
 // corner at the opening view (`OPENING_VIEW`): the drawing's point (x, y) is the window's (x + 140, y + 90).
@@ -513,5 +515,176 @@ describe("a value typed for several shapes, relative or fixed (US-071)", () => {
     ).toBeDefined();
 
     expect(readSeveralFields()[1]).not.toBe("[]");
+  });
+});
+
+/**
+ * Presses a key in a field of several shapes, then releases it, as the browser sends them:
+ * bubbling, cancelable.
+ *
+ * @param id - the field, without `#`
+ * @param init - the key, as `KeyboardEvent.key` names it, and the modifiers held
+ * @returns the key pressed, telling whether its default was prevented
+ */
+function pressIn(id: string, init: KeyboardEventInit): KeyboardEvent {
+  const field = selectPageElement(`#${id}`);
+  const down = new KeyboardEvent("keydown", { ...init, bubbles: true, cancelable: true });
+
+  field.dispatchEvent(down);
+  field.dispatchEvent(new KeyboardEvent("keyup", { ...init, bubbles: true, cancelable: true }));
+
+  return down;
+}
+
+/** Presses Ctrl + Z outside the fields, which undoes a step (US-074). */
+function undo(): void {
+  pressIn("canvas", { ctrlKey: true, key: "z" });
+}
+
+/**
+ * Reads the drawing of the history's present, what the last step recorded.
+ *
+ * @returns the shapes the present holds; none without a history
+ */
+function readPresent(): readonly KeptShape[] {
+  return PAGE_HISTORIES.get(document)?.present.drawing ?? [];
+}
+
+describe("the arrows in a field of several shapes (US-081)", () => {
+  beforeEach(() => {
+    openServedPage("?guide=epic");
+    setElementBox("#canvas", { height: 600, left: 100, top: 50, width: 800 });
+    selectAAndB();
+  });
+
+  it("[F43.AC3] makes A 101 wide and B 41 for Up in W, W still Mixed, in one step", () => {
+    const up = pressIn("several-width", { key: "ArrowUp" });
+
+    // 100 + 1 and 40 + 1: each shape's own width stepped, as +1 typed.
+    expectBoxes([
+      [10, 20, 101, 50],
+      [200, 20, 41, 40],
+    ]);
+
+    expect(up.defaultPrevented).toBe(true);
+    expect(readSeveralFields()).toEqual(["[Mixed]", "20", "[Mixed]", "[Mixed]"]);
+    expect(readPresent()).toEqual(readStoredDrawing(document, DRAWING_KEYS.below));
+
+    undo();
+
+    expectBoxes([
+      [10, 20, 100, 50],
+      [200, 20, 40, 40],
+    ]);
+  });
+
+  it("[F43.AC3] makes them 110 and 50 for Shift + Up, then 99 and 39 for Down from 100 and 40", () => {
+    pressIn("several-width", { key: "ArrowUp", shiftKey: true });
+
+    // 100 + 10 and 40 + 10.
+    expectBoxes([
+      [10, 20, 110, 50],
+      [200, 20, 50, 40],
+    ]);
+
+    undo();
+    pressIn("several-width", { key: "ArrowDown" });
+
+    // 100 − 1 and 40 − 1.
+    expectBoxes([
+      [10, 20, 99, 50],
+      [200, 20, 39, 40],
+    ]);
+
+    pressIn("several-width", { key: "ArrowDown", shiftKey: true });
+
+    // 99 − 10 and 39 − 10.
+    expectBoxes([
+      [10, 20, 89, 50],
+      [200, 20, 29, 40],
+    ]);
+  });
+
+  it("[F43.AC3] moves both 1 down for Up in Y, which then shows 21, and 1 right for Up in X", () => {
+    pressIn("several-y", { key: "ArrowUp" });
+
+    // 20 + 1 for both, the y axis pointing down.
+    expectBoxes([
+      [10, 21, 100, 50],
+      [200, 21, 40, 40],
+    ]);
+
+    expect(readSeveralFields()).toEqual(["[Mixed]", "21", "[Mixed]", "[Mixed]"]);
+
+    pressIn("several-x", { key: "ArrowUp" });
+
+    // 10 + 1 and 200 + 1: X goes right as a number field's Up adds 1.
+    expectBoxes([
+      [11, 21, 100, 50],
+      [201, 21, 40, 40],
+    ]);
+  });
+
+  it.each([
+    { init: { ctrlKey: true, key: "ArrowUp" }, name: "Ctrl + Up" },
+    { init: { key: "ArrowUp", metaKey: true }, name: "Cmd + Up" },
+    { init: { altKey: true, key: "ArrowUp" }, name: "Alt + Up" },
+    { init: { key: "ArrowLeft" }, name: "Left" },
+    { init: { key: "ArrowRight" }, name: "Right" },
+    { init: { key: "5" }, name: "5" },
+  ])("[F43.AC3] leaves $name to the field, changing nothing", ({ init }) => {
+    const down = pressIn("several-width", init);
+
+    expectBoxes([
+      [10, 20, 100, 50],
+      [200, 20, 40, 40],
+    ]);
+
+    expect(down.defaultPrevented).toBe(false);
+  });
+
+  it("[F43.AC3] refuses Down in H for both when B is 0 high, no step taken", () => {
+    pick({ x: 220, y: 40 }, false);
+    typeValue("height", "0");
+    pick({ x: 50, y: 40 }, true);
+
+    const present = readPresent();
+
+    pressIn("several-height", { key: "ArrowDown" });
+
+    // B's 0 − 1 is below 0: the value is refused for A as well, as -1 typed is (US-071).
+    expectBoxes([
+      [10, 20, 100, 50],
+      [200, 20, 40, 0],
+    ]);
+
+    expect(readPresent()).toEqual(present);
+    expect(readSeveralFields()).toEqual(["[Mixed]", "20", "[Mixed]", "[Mixed]"]);
+
+    pressIn("several-height", { key: "ArrowUp" });
+
+    // Up is taken: 50 + 1 and 0 + 1.
+    expectBoxes([
+      [10, 20, 100, 51],
+      [200, 20, 40, 1],
+    ]);
+  });
+
+  it("[F43.AC3] leaves a width of 100 000 at 100 000 for Up, capped (Q20)", () => {
+    typeAndEnter("several-width", "100000");
+    pressIn("several-width", { key: "ArrowUp" });
+
+    expectBoxes([
+      [10, 20, 100_000, 50],
+      [200, 20, 100_000, 40],
+    ]);
+
+    pressIn("several-width", { key: "ArrowDown" });
+
+    // Down is taken: 100 000 − 1.
+    expectBoxes([
+      [10, 20, 99_999, 50],
+      [200, 20, 99_999, 40],
+    ]);
   });
 });
