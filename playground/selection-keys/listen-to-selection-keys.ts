@@ -2,15 +2,12 @@ import { readOpenSwatch } from "../color-picker";
 import { readKeptDrawing } from "../kept-shapes";
 import { readMode } from "../page";
 import { writeDeletedPoints } from "../points";
+import { removeSelectedShapes, writeShapeSelection } from "../selection";
 
-import { removeSelectedShapes } from "./remove-selected-shapes";
-import { writeShapeSelection } from "./write-shape-selection";
+import { readKeyField } from "./read-key-field";
 
 /** What a key of the selection does to the page. */
 type SelectionKey = (document: Document, event: KeyboardEvent) => void;
-
-/** The fields of the panel, which keep every key typed in them (`interaction.md` §1). */
-const FIELDS = "input, select, textarea";
 
 /**
  * Selects every shape, in the order drawn (F37), its default, the page's text selected, prevented;
@@ -89,18 +86,6 @@ function readSelectionKey(event: KeyboardEvent): SelectionKey | undefined {
   const isCommand = event.ctrlKey || event.metaKey;
 
   return isCommand ? COMMAND_KEYS.get(event.key) : PLAIN_KEYS.get(event.key);
-}
-
-/**
- * Reads the field of the panel a key is typed in.
- *
- * @kind procedure
- * @param event - the key pressed
- * @returns the field; undefined when the focus is outside the fields
- * @see docs/domain/interaction.md#_1-tools
- */
-function readKeyField(event: KeyboardEvent): Element | undefined {
-  return event.target instanceof Element ? (event.target.closest(FIELDS) ?? undefined) : undefined;
 }
 
 /**
