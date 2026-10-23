@@ -3,7 +3,7 @@ id: US-068
 epic: E02
 feature: F37
 title: Shift + click adds or removes a shape, Ctrl + A selects all, Escape none
-status: ready
+status: done
 points: 3
 ---
 

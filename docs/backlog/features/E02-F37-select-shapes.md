@@ -24,7 +24,7 @@ In delivery order.
 | ID | Type | Title | Status |
 | --- | --- | --- | --- |
 | [SP-027](../stories/E02-F37-SP-027-refine-the-selection-of-shapes.md) | SP | Refine the selection of several shapes | done |
-| [US-068](../stories/E02-F37-US-068-shift-click-adds-a-shape.md) | US | Shift + click adds or removes a shape, Ctrl + A selects all, Escape none | ready |
+| [US-068](../stories/E02-F37-US-068-shift-click-adds-a-shape.md) | US | Shift + click adds or removes a shape, Ctrl + A selects all, Escape none | done |
 | [US-066](../stories/E02-F37-US-066-delete-removes-the-shape.md) | US | Delete removes the selected shapes | ready |
 | [EN-144](../stories/E02-F37-EN-144-a-shape-touched-by-a-rectangle.md) | EN | A shape touched or enclosed by a rectangle, by its painted area | ready |
 | [US-069](../stories/E02-F37-US-069-a-rectangle-selects-shapes.md) | US | A selection rectangle selects shapes | ready |
