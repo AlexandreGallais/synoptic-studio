@@ -116,3 +116,9 @@ The cards of E17 were decided at RET-004 ([record](./retrospectives/E17-retrospe
 - Used: `npm run mutate -- <27 files> -- npx vitest run {test}` in the background, before the audit's new modules were committed.
 - Failed: the copy holds tracked files only (`git stash create`), so the two new modules, untracked, were missing and every file was skipped as "its related tests fail"; `{test}`, unquoted in the background call, reached the tool dropped, so each skip ran the whole suite; the run, stopped, left its temporary worktree registered; `git add -N` on the new files made `git stash create` fail ("not uptodate").
 - Instead: the run stopped and its worktree removed (`git worktree remove --force`), the new files staged by `git add`, then `npm run mutate` again with `'{test}'` quoted.
+
+## 2026-10-23 — `openServedPage`, mounting the playground once per test of a file
+
+- Used: each test of a playground file mounts the page again by `openServedPage`, in the one `document` happy-dom keeps for the file.
+- Failed: each mount adds its `keydown` listeners to `document` (`listenToSelectionKeys`, `listenToNudgeKeys`), never removed, so that a file's n-th test has n listeners for each key; with the arrows' `event.defaultPrevented` check removed, a key nudged up to 26 times in `nudge-shapes.test.ts` (AUD-041, finding 3).
+- Instead: the check kept, which stops every listener after the first; the listeners left piling up, a key of the selection applied once per mount with the same result.

@@ -2,7 +2,7 @@
 id: F39
 epic: E02
 title: Move shapes on integers
-status: in-progress
+status: done
 ---
 
 # E02 · F39 — Move shapes on integers
@@ -14,7 +14,7 @@ The rules given by the Product Owner on 2026-10-22 (`interaction.md` §2, A move
 ## Acceptance criteria
 
 1. Given the playground's test `[F02.AC5] keeps 100 000 and smaller values exactly`, when it runs alone, then it takes under 100 ms (1 063 ms on 2026-10-23, 6.5 s under the pre-push's load against 5 s).
-2. Given shapes selected, when one of them is pressed with the Selector and dragged, then they follow the pointer freely, and at the release each anchor lands on integers, the shapes otherwise unchanged: A, 100 × 50 at (10, 20), dragged by (30.6, 19.4), is at (41, 39).
+2. Given shapes selected, when one of them is pressed with the Selector and dragged, then they follow the pointer freely, and at the release each anchor lands on integers, the shapes otherwise unchanged: A, 100 × 50 at (10, 20), dragged by (30.6, 19.4), is at (41, 39); with Shift held, only the axis moved lands, the other kept as it was (Product Owner, 2026-10-23, AUD-041).
 3. Given a shape not selected, when it is pressed and dragged, then it alone is selected and moved.
 4. Given shapes selected and the focus outside the panel's fields, when an arrow is pressed, then they move by 1, by 10 with Shift, as SP-028's answer 3 lands an anchor holding a fraction: A at (10, 20) goes to (11, 20) by Right, to (20, 20) by Shift + Right.
 
@@ -28,7 +28,7 @@ In delivery order.
 | [EN-145](../stories/E02-F39-EN-145-fast-on-a-large-rounded-shape.md) | EN | The playground fast on a large rounded shape | done |
 | [US-072](../stories/E02-F39-US-072-a-drag-moves-the-shapes-selected.md) | US | A drag moves the shapes selected, landing on integers | done |
 | [US-073](../stories/E02-F39-US-073-the-arrows-nudge-the-shapes-selected.md) | US | The arrow keys nudge the shapes selected | done |
-| [AUD-041](../stories/E02-F39-AUD-041-audit-f39.md) | AUD | Audit F39 | ready |
+| [AUD-041](../stories/E02-F39-AUD-041-audit-f39.md) | AUD | Audit F39 | done |
 | [VAL-040](../stories/E02-F39-VAL-040-validate-f39.md) | VAL | Validate F39 | dropped |
 
 ## Feature plan

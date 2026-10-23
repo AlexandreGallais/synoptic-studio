@@ -3,7 +3,7 @@ id: AUD-041
 epic: E02
 feature: F39
 title: Audit F39
-status: ready
+status: done
 points: 1
 ---
 
@@ -62,11 +62,3 @@ Evolvability (H):
 
 - For the done commit's footer: the rule docs changed in this task, `interaction.md` §1 and §2, the Q rows Q51, Q52, Q58 and Q59 of `docs/domain/README.md`, and F39's guide page; F39 has no `VAL` (VAL-040 dropped, a feature ending with its audit).
 - The feature file F39 is the main thread's (ADR-0065): its criterion 2 may add "with Shift held, only the axis moved lands" (finding 7).
-
-### Incidents
-
-#### 2026-10-23 — `openServedPage`, mounting the playground once per test of a file
-
-- Used: each test of a playground file mounts the page again by `openServedPage`, in the one `document` happy-dom keeps for the file.
-- Failed: each mount adds its `keydown` listeners to `document` (`listenToSelectionKeys`, `listenToNudgeKeys`), never removed, so that a file's n-th test has n listeners for each key; with the arrows' `event.defaultPrevented` check removed, a key nudged up to 26 times in `nudge-shapes.test.ts` (AUD-041, finding 3).
-- Instead: the check kept, which stops every listener after the first; the listeners left piling up, a key of the selection applied once per mount with the same result.
