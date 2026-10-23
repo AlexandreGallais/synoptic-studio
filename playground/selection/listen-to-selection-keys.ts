@@ -1,7 +1,9 @@
 import { readOpenSwatch } from "../color-picker";
 import { readKeptDrawing } from "../kept-shapes";
 import { readMode } from "../page";
+import { writeDeletedPoints } from "../points";
 
+import { removeSelectedShapes } from "./remove-selected-shapes";
 import { writeShapeSelection } from "./write-shape-selection";
 
 /** What a key of the selection does to the page. */
@@ -41,18 +43,42 @@ function selectNoShape(document: Document): void {
   }
 }
 
+/**
+ * Removes what is selected (F37): in Points mode, which edits one shape, its points selected, as
+ * before (F08, `writeDeletedPoints`), never the shape; otherwise the shapes selected
+ * (`removeSelectedShapes`).
+ *
+ * @kind procedure
+ * @param document - page document
+ * @see docs/domain/interaction.md#_2-selector
+ */
+function removeSelection(document: Document): void {
+  if (readMode(document) === "points") {
+    writeDeletedPoints(document);
+  } else {
+    removeSelectedShapes(document);
+  }
+}
+
 /** The keys of the selection pressed with Ctrl, or Cmd: A selects every shape. */
 const COMMAND_KEYS: ReadonlyMap<string, SelectionKey> = new Map([
   ["A", selectEveryShape],
   ["a", selectEveryShape],
 ]);
 
-/** The keys of the selection pressed alone: Escape selects none. */
-const PLAIN_KEYS: ReadonlyMap<string, SelectionKey> = new Map([["Escape", selectNoShape]]);
+/**
+ * The keys of the selection pressed alone: Escape selects none; Delete, and Backspace, sent by
+ * the key labelled "delete" on a Mac, remove what is selected.
+ */
+const PLAIN_KEYS: ReadonlyMap<string, SelectionKey> = new Map([
+  ["Backspace", removeSelection],
+  ["Delete", removeSelection],
+  ["Escape", selectNoShape],
+]);
 
 /**
  * Reads what a key pressed does to the selection: Ctrl + A, or Cmd + A, selects every shape,
- * Escape none.
+ * Escape none, Delete or Backspace removes what is selected.
  *
  * @kind procedure
  * @param event - the key pressed
@@ -99,9 +125,10 @@ function applySelectionKey(document: Document, event: KeyboardEvent, update: () 
 
 /**
  * Listens to the keys of the selection (F37), outside the panel's fields, which keep every key
- * they are typed in: Ctrl + A, or Cmd + A, selects every shape, in Shape mode; Escape selects
- * none, unless a color picker is open, which Escape closes alone (F16); then redraws. Heard as the
- * key goes down to its target, before the picker closes on it.
+ * they are typed in, the text's Content included: Ctrl + A, or Cmd + A, selects every shape, in
+ * Shape mode; Escape selects none, unless a color picker is open, which Escape closes alone (F16);
+ * Delete or Backspace removes the shapes selected, or in Points mode the points selected (F08);
+ * then redraws. Heard as the key goes down to its target, before the picker closes on it.
  *
  * @kind procedure
  * @param document - page document

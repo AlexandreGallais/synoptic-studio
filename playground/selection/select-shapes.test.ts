@@ -14,6 +14,8 @@ import {
   pressPointer,
   readDisabledState,
   readDisplay,
+  readPointRows,
+  readPressedState,
   readShapeModel,
   readText,
   readValue,
@@ -416,5 +418,157 @@ describe("the shapes' selection in Points mode (US-068)", () => {
     shiftPick({ x: 200, y: 50 });
 
     expect(readDisabledState("mode-points")).toBe("false");
+  });
+});
+
+describe("Delete removes the selected shapes (US-066)", () => {
+  beforeEach(() => {
+    openServedPage("?guide=epic");
+    setElementBox("#canvas", { height: 600, left: 100, top: 50, width: 800 });
+  });
+
+  it.each(["Delete", "Backspace"])(
+    "[F37.AC1] removes B on %s, A and C unchanged and in order, none selected",
+    (key) => {
+      const { paths } = drawThreeRectangles();
+
+      pressAndClick("#canvas", toWindow({ x: 200, y: 50 }));
+      pressKey("body", key);
+
+      expect(readShapePaths()).toEqual([paths[0], paths[2]]);
+      expect(readSelectionOutlines()).toEqual([]);
+      expect(readText("#shape-title")).toBe("No shape selected");
+      expect(readDisplay("shape-panel")).toBe("none");
+    },
+  );
+
+  it("[F37.AC1] removes A and C selected together, B alone left, unchanged", () => {
+    const { b, paths } = drawThreeRectangles();
+
+    pressAndClick("#canvas", toWindow({ x: 50, y: 50 }));
+    shiftPick({ x: 350, y: 50 });
+    pressKey("body", "Delete");
+
+    expect(readShapePaths()).toEqual([paths[1]]);
+    expect(readText("#shape-title")).toBe("No shape selected");
+    expect(readSelectionBox()).toBeUndefined();
+
+    // B, now first, is picked as it was drawn.
+    pressAndClick("#canvas", toWindow({ x: 200, y: 50 }));
+
+    expect(readShapeModel()).toEqual(b);
+  });
+
+  it("[F37.AC1] removes every shape after Ctrl + A, none left", () => {
+    drawThreeRectangles();
+    pressSelectAll("body", { ctrlKey: true });
+    pressKey("body", "Backspace");
+
+    expect(readShapePaths()).toEqual([]);
+    expect(readText("#shape-title")).toBe("No shape selected");
+  });
+
+  it.each([
+    { field: "#width", key: "Delete" },
+    { field: "#width", key: "Backspace" },
+    { field: "#text-content", key: "Delete" },
+    { field: "#text-content", key: "Backspace" },
+  ])("[F37.AC1] leaves $key in $field to the field, no shape removed", ({ field, key }) => {
+    const { b, paths } = drawThreeRectangles();
+
+    pressAndClick("#canvas", toWindow({ x: 200, y: 50 }));
+
+    expect(
+      selectPageElement(field).dispatchEvent(
+        new KeyboardEvent("keydown", { bubbles: true, cancelable: true, key }),
+      ),
+    ).toBe(true);
+
+    expect(readShapePaths()).toEqual(paths);
+    expect(readShapeModel()).toEqual(b);
+  });
+
+  it("[F37.AC1] changes nothing on Delete with none selected", () => {
+    const { paths } = drawThreeRectangles();
+
+    pressKey("body", "Escape");
+    pressKey("body", "Delete");
+
+    expect(readShapePaths()).toEqual(paths);
+    expect(readText("#shape-title")).toBe("No shape selected");
+  });
+
+  it("[F37.AC1] removes B while the Rectangle tool is armed, the tool kept armed", () => {
+    const { paths } = drawThreeRectangles();
+
+    pressAndClick("#canvas", toWindow({ x: 200, y: 50 }));
+    clickElement("tool-rectangle");
+    pressKey("body", "Delete");
+
+    expect(readShapePaths()).toEqual([paths[0], paths[2]]);
+    expect(readPressedState("tool-rectangle")).toBe("true");
+    expect(readSelectionOutlines()).toEqual([]);
+  });
+
+  it("[F37.AC1] deletes B's vertices in Points mode, never B; none selected, nothing changes", () => {
+    const { b, paths } = drawThreeRectangles();
+
+    pressAndClick("#canvas", toWindow({ x: 200, y: 50 }));
+    clickElement("mode-points");
+    pressKey("body", "Delete");
+
+    expect(readShapePaths()).toEqual(paths);
+    expect(readShapeModel()).toEqual(b);
+
+    // B's vertex 2, its top-right corner (250, 0), cut by its radius of 10.
+    pickWithKeys({ x: 250, y: 0 }, {}, '#canvas path.handle[data-vertex="2"]');
+    pressKey("#text-content", "Delete");
+
+    expect(readPointRows()).toHaveLength(4);
+
+    pressKey("body", "Delete");
+
+    expect(readPointRows()).toHaveLength(3);
+    expect(readShapePaths()).toHaveLength(3);
+    expect(readText("#shape-title")).not.toBe("No shape selected");
+  });
+
+  it("[F37.AC1] keeps B's radius typed 25 for the next rectangle placed once B is removed", () => {
+    drawThreeRectangles();
+    pressAndClick("#canvas", toWindow({ x: 200, y: 50 }));
+    typeValue("radius", "25");
+    pressKey("body", "Delete");
+    placeShape("rectangle", { x: 550, y: 250 });
+
+    expect(readValue("radius")).toBe("25");
+  });
+
+  it("[F37.AC1] drops a shape refused in the panel, as a click on the empty drawing does", () => {
+    const { paths } = drawThreeRectangles();
+
+    pressAndClick("#canvas", toWindow({ x: 200, y: 50 }));
+    typeValue("width", "-1");
+
+    // Refused, B is not outlined.
+    expect(readSelectionOutlines()).toEqual([]);
+
+    pressKey("body", "Delete");
+
+    expect(readShapePaths()).toEqual([paths[0], paths[2]]);
+    expect(readText("#shape-title")).toBe("No shape selected");
+  });
+
+  it("[F37.AC1] exports A and C only once B is removed", () => {
+    const [pathA, pathB, pathC] = drawThreeRectangles().paths.map((path) => `d="${path}"`);
+
+    pressAndClick("#canvas", toWindow({ x: 200, y: 50 }));
+    pressKey("body", "Delete");
+
+    const exported = readExportedSvg(document, readDrawnTexts(document));
+
+    expect(exported).toContain(pathA);
+    expect(exported).toContain(pathC);
+    expect(exported).not.toContain(pathB);
+    expect(exported).not.toContain("selection");
   });
 });
