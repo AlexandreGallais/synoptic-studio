@@ -3,7 +3,7 @@ id: US-073
 epic: E02
 feature: F39
 title: The arrow keys nudge the shapes selected
-status: ready
+status: done
 points: 2
 ---
 
