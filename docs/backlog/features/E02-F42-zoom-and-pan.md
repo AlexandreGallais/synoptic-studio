@@ -27,7 +27,7 @@ In delivery order.
 | --- | --- | --- | --- |
 | [SP-030](../stories/E02-F42-SP-030-refine-zoom-and-pan.md) | SP | Refine zoom and pan | done |
 | [EN-148](../stories/E02-F42-EN-148-the-view-in-the-model.md) | EN | The view of the drawing in the model | done |
-| [US-078](../stories/E02-F42-US-078-zoom-and-pan-by-the-wheel-and-a-drag.md) | US | Zoom and pan by the wheel, a pinch and a drag | ready |
+| [US-078](../stories/E02-F42-US-078-zoom-and-pan-by-the-wheel-and-a-drag.md) | US | Zoom and pan by the wheel, a pinch and a drag | done |
 | [EN-149](../stories/E02-F42-EN-149-the-helps-within-the-area-shown.md) | EN | The helps drawn within the area shown and its padding | ready |
 | [US-079](../stories/E02-F42-US-079-the-zoom-keys-the-fits-and-the-percentage.md) | US | The zoom's keys, the fits and the percentage shown | ready |
 | [AUD-044](../stories/E02-F42-AUD-044-audit-f42.md) | AUD | Audit F42 | ready |

@@ -3,7 +3,7 @@ id: US-078
 epic: E02
 feature: F42
 title: Zoom and pan by the wheel, a pinch and a drag
-status: ready
+status: done
 points: 3
 ---
 
