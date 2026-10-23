@@ -7,6 +7,7 @@ export * from "./click-element";
 export * from "./click-point";
 export * from "./click-with-keys";
 export * from "./commit-field";
+export * from "./dispatch-drawing-pointer";
 export type * from "./keys";
 export * from "./load-page";
 export * from "./open-on-step";

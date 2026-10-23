@@ -10,4 +10,5 @@ export * from "./read-kept-drawing";
 export * from "./read-selected-shapes";
 export * from "./read-stored-drawing";
 export * from "./view-scale";
+export * from "./write-kept-metrics";
 export * from "./write-stored-drawing";

@@ -5,6 +5,7 @@ import { readExportedSvg } from "../document";
 import { readDrawnTexts, readSelectedShapes } from "../kept-shapes";
 import {
   clickElement,
+  dispatchDrawingPointer,
   openServedPage,
   readShapeModel,
   readText,
@@ -14,47 +15,10 @@ import {
 } from "../user-actions";
 
 import type { Point, Shape } from "../../src";
-
-// The canvas sits at (100, 50) in the window, and the drawing's origin 40 right of and below its
-// corner (`DRAWING_MARGIN`): the drawing's point (x, y) is the window's (x + 140, y + 90).
-
-/** Left of the drawing's origin in the window: the canvas's 100 and the margin's 40. */
-const ORIGIN_LEFT = 140;
-
-/** Top of the drawing's origin in the window: the canvas's 50 and the margin's 40. */
-const ORIGIN_TOP = 90;
-
-/** The keys held at the release of a drag. */
-type DragKeys = {
-  /** Whether Alt, Option on a Mac, is held. */
-  readonly altKey: boolean;
-  /** Whether Shift is held. */
-  readonly shiftKey: boolean;
-};
+import type { PointerKeys } from "../user-actions";
 
 /** No key held. */
-const NO_KEY: DragKeys = { altKey: false, shiftKey: false };
-
-/**
- * Fires a pointer event on the canvas at a point of the drawing, as the browser does.
- *
- * @param type - `pointerdown`, `pointermove`, `pointerup`, `pointercancel` or `click`
- * @param point - the point of the drawing, possibly fractional
- * @param keys - the keys held
- */
-function firePointer(type: string, point: Point, keys: DragKeys): void {
-  const init = {
-    ...keys,
-    bubbles: true,
-    buttons: type === "pointerdown" || type === "pointermove" ? 1 : 0,
-    clientX: point.x + ORIGIN_LEFT,
-    clientY: point.y + ORIGIN_TOP,
-    pointerId: 1,
-  };
-  const event = type === "click" ? new MouseEvent(type, init) : new PointerEvent(type, init);
-
-  selectPageElement("#canvas").dispatchEvent(event);
-}
+const NO_KEY: PointerKeys = { altKey: false, shiftKey: false };
 
 /**
  * Presses the drawing and moves the pointer, not released.
@@ -63,8 +27,8 @@ function firePointer(type: string, point: Point, keys: DragKeys): void {
  * @param to - the point the pointer is moved to
  */
 function pressAndMove(from: Point, to: Point): void {
-  firePointer("pointerdown", from, NO_KEY);
-  firePointer("pointermove", to, NO_KEY);
+  dispatchDrawingPointer("pointerdown", from, NO_KEY);
+  dispatchDrawingPointer("pointermove", to, NO_KEY);
 }
 
 /**
@@ -73,9 +37,9 @@ function pressAndMove(from: Point, to: Point): void {
  * @param at - the point released
  * @param keys - the keys held at the release
  */
-function release(at: Point, keys: DragKeys): void {
-  firePointer("pointerup", at, keys);
-  firePointer("click", at, keys);
+function release(at: Point, keys: PointerKeys): void {
+  dispatchDrawingPointer("pointerup", at, keys);
+  dispatchDrawingPointer("click", at, keys);
 }
 
 /**
@@ -86,7 +50,7 @@ function release(at: Point, keys: DragKeys): void {
  * @param to - the point released
  * @param keys - the keys held at the release
  */
-function dragFrom(from: Point, to: Point, keys: DragKeys): void {
+function dragFrom(from: Point, to: Point, keys: PointerKeys): void {
   pressAndMove(from, to);
   release(to, keys);
 }
@@ -207,7 +171,7 @@ describe("a selection rectangle selects shapes (US-069)", () => {
     expect(readOverlayPath("selection-rectangle")).toBeUndefined();
 
     pressAndMove({ x: 110, y: 10 }, { x: 140, y: 90 });
-    firePointer("pointercancel", { x: 140, y: 90 }, NO_KEY);
+    dispatchDrawingPointer("pointercancel", { x: 140, y: 90 }, NO_KEY);
 
     // Cancelled: nothing selected anew, A and B kept.
     expect(readOverlayPath("selection-area")).toBeUndefined();
@@ -279,7 +243,7 @@ describe("a selection rectangle selects shapes (US-069)", () => {
     expect(readSelectedShapes(document)).toEqual([]);
   });
 
-  it("[F37.AC3] draws no rectangle from a press on A, the release over B picking nothing", () => {
+  it("[F37.AC3] draws no rectangle from a press on A, which moves A over B (US-072)", () => {
     drawThreeShapes();
     pressAndMove({ x: 50, y: 50 }, { x: 200, y: 50 });
 
@@ -287,18 +251,24 @@ describe("a selection rectangle selects shapes (US-069)", () => {
 
     release({ x: 200, y: 50 }, NO_KEY);
 
-    // C, drawn last, stays selected.
-    expect(readSelectedShapes(document)).toEqual([2]);
+    // A selected alone and moved by (150, 0), its box from (0, 0) to (150, 0); the click the
+    // release brings picks nothing, or it would pick A, drawn under B, no more than B.
+    expect(readSelectedShapes(document)).toEqual([0]);
+    expect(readShapeModel()).toMatchObject({ x: 150, y: 0 });
   });
 
   it("[F37.AC3] takes no drag for a click once moved, back on the press's integer point", () => {
     drawThreeShapes();
     pressAndMove({ x: 50, y: 50 }, { x: 200, y: 50 });
-    firePointer("pointermove", { x: 50, y: 50 }, NO_KEY);
+    dispatchDrawingPointer("pointermove", { x: 50, y: 50 }, NO_KEY);
     release({ x: 50, y: 50 }, NO_KEY);
 
-    // C stays selected: the press on A was dragged, never a click.
-    expect(readSelectedShapes(document)).toEqual([2]);
+    // A moved and brought back, selected alone by its move (US-072), where it was: its straight
+    // box, its arcs of radius 10 reaching its sides, starts at x −1.8 × 10⁻¹⁵, a rounding error,
+    // landed on 0, so that its position goes by that much.
+    expect(readSelectedShapes(document)).toEqual([0]);
+    expect(readShapeModel().x).toBeCloseTo(0, 9);
+    expect(readShapeModel().y).toBeCloseTo(0, 9);
   });
 
   it("[F37.AC3] takes a release on the press's integer point for a click, which selects A", () => {

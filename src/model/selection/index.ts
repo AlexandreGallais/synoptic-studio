@@ -9,4 +9,5 @@ export * from "./selection-after-row-click";
 export * from "./selection-after-toggle";
 export * from "./shape-selection-after-box";
 export * from "./shape-selection-after-click";
+export * from "./shape-selection-after-press";
 export type * from "./vertex-selection";

@@ -53,6 +53,7 @@ Written at the end of each feature (`VAL`, demo page) and of each epic (`REV`, e
 | [F36 — Draw and pick shapes](./f36-draw-pick-and-remove-shapes.md) | a drag with a tool draws the new shape at the size dragged, square with Shift; the shape under the pointer outlined; a click with the Selector picks a shape for the panel |
 | [F37 — Select shapes](./f37-select-shapes.md) | the default keys of selecting, deleting, nudging and undoing, Figma's where its help names them |
 | [F38 — The panel for several shapes](./f38-the-panel-for-several-shapes.md) | the position and size of several shapes, each shape's values, Mixed where they differ, a turned shape by its straight box, a text by its frame |
+| [F39 — Move shapes on integers](./f39-move-shapes-on-integers.md) | a drag moves the shapes selected, freely, landing the top-left of their box on whole numbers at the release; several by one shift; a shape not selected pressed and moved, Shift adding it; Shift keeping one direction |
 | [E01 — Drawing symbol shapes from numbers](./e01-draw-shapes.md) | the eight features of E01, the words, a user test crossing them, the decisions |
 | [E14 — Drawing curves with handles, ellipses and round shapes](./e14-draw-curves.md) | the four features of E14, the words, the walk-through of the review, the decisions |
 | [E15 — Placing text in symbols](./e15-place-text.md) | the five features of E15, the words, the tour of the review, the decisions, the direction to remove |

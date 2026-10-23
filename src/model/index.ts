@@ -11,6 +11,7 @@ export * from "./handles";
 export * from "./kerning";
 export * from "./layout-box";
 export * from "./line-characters";
+export * from "./moving";
 export * from "./panel-values";
 export * from "./picking";
 export * from "./placement";

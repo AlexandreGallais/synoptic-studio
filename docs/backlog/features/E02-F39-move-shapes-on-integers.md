@@ -26,7 +26,7 @@ In delivery order.
 | --- | --- | --- | --- |
 | [SP-028](../stories/E02-F39-SP-028-refine-the-moves.md) | SP | Refine the moves of shapes | done |
 | [EN-145](../stories/E02-F39-EN-145-fast-on-a-large-rounded-shape.md) | EN | The playground fast on a large rounded shape | done |
-| [US-072](../stories/E02-F39-US-072-a-drag-moves-the-shapes-selected.md) | US | A drag moves the shapes selected, landing on integers | ready |
+| [US-072](../stories/E02-F39-US-072-a-drag-moves-the-shapes-selected.md) | US | A drag moves the shapes selected, landing on integers | done |
 | [US-073](../stories/E02-F39-US-073-the-arrows-nudge-the-shapes-selected.md) | US | The arrow keys nudge the shapes selected | ready |
 | [AUD-041](../stories/E02-F39-AUD-041-audit-f39.md) | AUD | Audit F39 | ready |
 | [VAL-040](../stories/E02-F39-VAL-040-validate-f39.md) | VAL | Validate F39 | dropped |

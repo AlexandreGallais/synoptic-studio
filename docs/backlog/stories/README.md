@@ -96,7 +96,7 @@
 | [VAL-039](./E02-F38-VAL-039-validate-f38.md) | F38 | Validate F38 | dropped |
 | [SP-028](./E02-F39-SP-028-refine-the-moves.md) | F39 | Refine the moves of shapes | done |
 | [EN-145](./E02-F39-EN-145-fast-on-a-large-rounded-shape.md) | F39 | The playground fast on a large rounded shape | done |
-| [US-072](./E02-F39-US-072-a-drag-moves-the-shapes-selected.md) | F39 | A drag moves the shapes selected, landing on integers | ready |
+| [US-072](./E02-F39-US-072-a-drag-moves-the-shapes-selected.md) | F39 | A drag moves the shapes selected, landing on integers | done |
 | [US-073](./E02-F39-US-073-the-arrows-nudge-the-shapes-selected.md) | F39 | The arrow keys nudge the shapes selected | ready |
 | [AUD-041](./E02-F39-AUD-041-audit-f39.md) | F39 | Audit F39 | ready |
 | [VAL-040](./E02-F39-VAL-040-validate-f39.md) | F39 | Validate F39 | dropped |
