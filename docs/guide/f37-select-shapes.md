@@ -25,6 +25,8 @@ For the review's summary; each can be changed.
 - Escape selects none in Shape mode and in Points mode alike, as a click on an empty place does; in a field of the panel it changes nothing.
 - Delete removes the selected shapes whichever tool is chosen, and the tool stays chosen; with no shape selected it does nothing. The shape the panel showed keeps its settings for the next shape of its kind: a rectangle of radius 25 removed, the next rectangle starts with radius 25. A shape with a refused value in the panel is removed too, as a click on an empty place drops it.
 - In Points mode, Delete deletes the points selected and never the shape, even with no point selected. Every field of the panel keeps the key, a text's Content too, which used to let Delete reach the points.
+- A selection rectangle that only meets a shape along its outline, a side or a corner, touches it, and a rectangle drawn exactly along a shape's sides encloses it.
+- A shape with a width or a height of 0 is a line: a selection rectangle touches it only by crossing that line, with no margin, though a click 2 pixels beside it picks it.
 
 ## The ideas behind it
 

@@ -8,4 +8,6 @@ export * from "./cubic-derivative-weights";
 export * from "./cubic-extremes";
 export * from "./cubic-point";
 export * from "./derivative-coefficients";
+export * from "./is-box-within";
+export * from "./is-point-in-box";
 export * from "./turn-about";
