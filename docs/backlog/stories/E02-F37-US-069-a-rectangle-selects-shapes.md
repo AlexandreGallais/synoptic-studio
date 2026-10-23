@@ -3,7 +3,7 @@ id: US-069
 epic: E02
 feature: F37
 title: A selection rectangle selects shapes
-status: ready
+status: done
 points: 3
 ---
 
