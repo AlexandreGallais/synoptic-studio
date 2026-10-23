@@ -21,5 +21,8 @@ export function selectShapesInBox(document: Document, box: BoundingBox, event: M
   const areas = readPickAreas(document);
   const taken = event.altKey ? shapesEnclosedByBox(areas, box) : shapesTouchedByBox(areas, box);
 
-  writeShapeSelection(document, shapeSelectionAfterBox(readSelectedShapes(document), taken, false));
+  writeShapeSelection(
+    document,
+    shapeSelectionAfterBox(readSelectedShapes(document), taken, event.shiftKey),
+  );
 }

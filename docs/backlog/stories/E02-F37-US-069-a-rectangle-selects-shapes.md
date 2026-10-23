@@ -45,7 +45,7 @@ The examples draw, in that order, a rectangle A from (0, 0) to (100, 100), a rec
 
 - [x] T1 — The criteria in line with SP-027's answers; the shapes selected after a rectangle (`src/model/selection/`), the drag with the Selector and the rectangle in the layer above: interface and failing tests (1 h)
 - [x] T2 — The drag from an empty place with the Selector, the rectangle in the layer above, the shapes touched, or enclosed with Alt, selected at the release, a drag never a click; the rules in `interaction.md` §2; the tests of T1 passing but Shift's (2 h)
-- [ ] T3 — Shift + drag adds; its rule in `interaction.md` §2, the Q table, F37's guide page; the Product Owner test card (1 h)
+- [x] T3 — Shift + drag adds; its rule in `interaction.md` §2, the Q table, F37's guide page; the Product Owner test card (1 h)
 
 Files: `src/model/selection/` (the shapes selected after a rectangle, Shift adding them), `playground/selection-drag/` (the drag with the Selector, beside `listenToPicking`, `playground/selection/` holding 15 modules), `playground/hover/` (the drag kept, its rectangle drawn in the layer above by `showHover`), `playground/shape-drawing/listen-to-drawing.ts`. `@see` `docs/domain/interaction.md#_2-selector`, `REF-SKETCH-SELECTING`, `REF-INKSCAPE-SELECTOR`.
 
