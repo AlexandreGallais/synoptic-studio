@@ -3,7 +3,7 @@ id: AUD-044
 epic: E02
 feature: F42
 title: Audit F42
-status: ready
+status: done
 points: 1
 ---
 
@@ -67,11 +67,3 @@ Evolvability (H):
 - AC5 of F42's feature file says "redraws in under 16 ms", checked as 60 redraws within 960 ms: "on average" to add to it (finding 4), the feature file being the main thread's.
 - Penpot multiplies a frame's zoom factors where F42 sums the deltas before one factor (finding 7): two turns of −50 zoom by 1.57 here, 1.65122 in Penpot. Written as the agent's choice; following Penpot instead would change `WHEEL_ZOOMS` to keep a factor, and the test of two −50 to 165 %.
 - Penpot's workspace zooms with `⌘` `⇧` `0`, `1` and `2` on macOS (`REF-PENPOT-SHORTCUTS`, §12), where F42 leaves every key with `Cmd` to the browser (SP-030's answer 3): for the review, as the other points left.
-
-### Incidents
-
-#### 2026-10-23 — mutate, for AUD-044's spot-checks
-
-- Used: `npm run mutate -- <20 modules of src/>`, the story's work not yet staged.
-- Failed: every module skipped, "its related tests fail, or none was found, before any mutation", and the new `meet-scale.ts` "not a tracked text file": the copy holds the tracked files only, and the barrels exported modules it did not hold.
-- Instead: `git add` of the work before the run; every module then ran.

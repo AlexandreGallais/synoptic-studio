@@ -122,3 +122,9 @@ The cards of E17 were decided at RET-004 ([record](./retrospectives/E17-retrospe
 - Used: each test of a playground file mounts the page again by `openServedPage`, in the one `document` happy-dom keeps for the file.
 - Failed: each mount adds its `keydown` listeners to `document` (`listenToSelectionKeys`, `listenToNudgeKeys`), never removed, so that a file's n-th test has n listeners for each key; with the arrows' `event.defaultPrevented` check removed, a key nudged up to 26 times in `nudge-shapes.test.ts` (AUD-041, finding 3).
 - Instead: the check kept, which stops every listener after the first; the listeners left piling up, a key of the selection applied once per mount with the same result.
+
+## 2026-10-23 — mutate, for AUD-044's spot-checks
+
+- Used: `npm run mutate -- <20 modules of src/>`, the story's work not yet staged.
+- Failed: every module skipped, "its related tests fail, or none was found, before any mutation", and the new `meet-scale.ts` "not a tracked text file": the copy holds the tracked files only, and the barrels exported modules it did not hold.
+- Instead: `git add` of the work before the run; every module then ran.
