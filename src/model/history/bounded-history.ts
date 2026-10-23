@@ -1,6 +1,7 @@
 import { integerQuotient } from "../../math";
 
 import { historySize } from "./history-size";
+import { mostDroppedStates } from "./most-dropped-states";
 
 import type { History } from "./history";
 import type { HistoryBound } from "./history-bound";
@@ -102,7 +103,7 @@ function fewestDropped<T extends WeakKey>(
 /**
  * The history within its bound (F40): the fewest oldest past states dropped for its size
  * (`historySize`) to be at most the size set, never leaving fewer past states than the steps
- * kept; the states to come counted, never dropped (ADR-0095, decision 5;
+ * kept (`mostDroppedStates`); the states to come counted, never dropped (ADR-0095, decision 5;
  * `REF-GIMP-PREFS-RESOURCES`). A history within its size, as after most steps, is measured once,
  * one over it by one state, as a step adds, twice (`doubledRange`), each measure reading every
  * shape the past and the states to come hold alone; more states to drop, a size just set
@@ -119,7 +120,7 @@ export function boundedHistory<T extends WeakKey>(
   history: History<T>,
   bound: HistoryBound,
 ): History<T> {
-  const most = Math.max(history.past.length - bound.steps, 0);
+  const most = mostDroppedStates(history, bound);
 
   if (most === 0 || isWithinSize(history, bound.size, 0)) {
     return history;

@@ -1,13 +1,13 @@
 import { EMPTY_HELD_COUNTS } from "../held-shapes";
 
-import { measureWithState } from "./measure-with-state";
+import { measureByState } from "./measure-by-state";
 
 import type { SizedHistory } from "./sized-history";
 import type { History } from "../history";
 
 /**
  * A history with its size counted once, from its states (EN-147): each past and future state
- * added to an empty measure (`measureWithState`), so that the size is `historySize`'s; the page's
+ * added to an empty measure (`measureByState`), so that the size is `historySize`'s; the page's
  * history starts from it, nothing past nor to come (ADR-0097).
  *
  * @kind domain
@@ -19,7 +19,7 @@ import type { History } from "../history";
 export function measuredHistory<T extends WeakKey>(history: History<T>): SizedHistory<T> {
   const present = new Set(history.present.drawing);
   const measure = [...history.past, ...history.future].reduce(
-    (before, state) => measureWithState(before, state, present),
+    (before, state) => measureByState(before, { by: 1, state }, present),
     { held: EMPTY_HELD_COUNTS, size: 0 },
   );
 

@@ -12,7 +12,7 @@ import type { HeldNode } from "./held-node";
  * @param height - the levels below it, 0 for a count
  * @param key - the shape's key (`shapeKey`)
  * @returns the count at the end of the key's path, 0 when it stops before
- * @see docs/domain/interaction.md#_7-navigation-and-history
+ * @see ADR-0097
  */
 function nodeCount(node: HeldNode | undefined, height: number, key: number): number {
   if (typeof node === "number") {
@@ -31,7 +31,7 @@ function nodeCount(node: HeldNode | undefined, height: number, key: number): num
  * @param counts - the held counts read
  * @param key - the shape's key (`shapeKey`)
  * @returns the count, 0 for a shape no state holds
- * @see docs/domain/interaction.md#_7-navigation-and-history
+ * @see ADR-0097
  */
 export function heldCount(counts: HeldCounts, key: number): number {
   return keyDepth(key) > counts.depth ? 0 : nodeCount(counts.nodes, counts.depth, key);

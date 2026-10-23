@@ -43,3 +43,7 @@ Measured on Node 24 with AUD-042's bench, its history of n past states each a ne
 | 80 000 | first step 463 ms, then 63 ms | first step 2.8 ms, then 1.9 ms; a click 0.01 ms, an undo 0.09 ms, a redo 0.18 ms; a step dropping the oldest 1.9 ms |
 
 The size kept equals `historySize` after each measure, and at 80 000 both drop the same 118 oldest states at the first step, the default 100 MB then full. A step at 80 000 costs about 2 ms, the copies of the past's list of 80 000 states it makes; measuring a whole history built at once (`measuredHistory`) writes every shape's text once, 441 ms at 80 000, which the page never does, its history starting empty.
+
+AUD-043 measured a wide drawing on Node 24, 1 000 rectangles, each step moving one, the median of the last 100 of 2 000 steps: a step 8.6 ms, an undo 9.5 ms, going back 14 steps 138 ms. A step costs every shape of the present, not what it moves: it adds the whole present to the past, an undo or a redo moves a whole state each way, and the present changed is compared shape by shape (ADR-0097's note). With 10 shapes a step takes 0.07 ms, with 100 0.8 ms.
+
+The measures are kept in `tests/history-timings.test.ts`, opt-in, run by `npx vitest run tests/history-timings.test.ts --mode history-timings`, each bounded by Vitest's timeout, the median of 5 runs of the file alone: 10 steps on 80 000 moves 24 ms, 2.4 ms a step, within 160 ms, 16 ms a step, F41's criterion 2; 10 steps on 1 000 rectangles 109 ms; 10 steps back on them 134 ms.

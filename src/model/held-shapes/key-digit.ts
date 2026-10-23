@@ -10,7 +10,7 @@ import { HELD_BRANCHES } from "./held-branches";
  * @param key - a shape's key (`shapeKey`), an integer ≥ 0
  * @param level - the level read, 0 for the last, the counts' own
  * @returns the digit, from 0 to 31
- * @see docs/domain/interaction.md#_7-navigation-and-history
+ * @see ADR-0097
  */
 export function keyDigit(key: number, level: number): number {
   return nonNegativeRemainder(integerQuotient(key, HELD_BRANCHES ** level), HELD_BRANCHES);

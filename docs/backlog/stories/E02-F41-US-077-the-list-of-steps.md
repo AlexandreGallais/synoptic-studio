@@ -51,3 +51,5 @@ Measured on Node 24, the median of 7 runs, a history built as the page records i
 | 80 000 | 0.06 ms, the first 0.13 ms | 1.07 ms | 0.06 ms |
 
 A drawing of 1 000 rectangles, 200 steps each moving one: the list 0.22 ms, the first 0.39 ms, each row comparing 1 000 shapes by reference and the shape moved by its fields. The list costs its 15 rows whatever the history holds; going back costs its undos, each copying the past's list. The page writes the list again only when the history changes.
+
+AUD-043 measured going back by the list in a drawing of 1 000 rectangles, each step moving one: 14 steps back 138 ms, each undo about 9.5 ms, a step 8.6 ms, each costing every shape of the present (ADR-0097's note; EN-147's story file, `tests/history-timings.test.ts`).

@@ -2,6 +2,8 @@
 
 **Status**: Accepted (AUD-042, 2026-10-23), the audit's speed finding; an exception to ADR-0014's "no mutation" for one memo, registered as ADR-0066 asks.
 
+**Note (2026-10-23, AUD-043)**: the memo is kept with ADR-0097's key of each shape in one `WeakMap`, `memorizedShape` in `src/model/shape-memo/`, written once for each shape with its key and its text's length, one exception registered for both; `shapeTextLength` reads its length. Decision 2's condition holds for that function: nothing outside `memorizedShape` reads the memo.
+
 ## Context
 
 - The history's size (`historySize`, ADR-0095, decision 4) counts, for each shape a past or future state holds and the present does not, the length of its JSON text. It is measured once or twice by `boundedHistory` at each step and once more by the toolbar, so that each measure writes again the text of every shape the history holds.

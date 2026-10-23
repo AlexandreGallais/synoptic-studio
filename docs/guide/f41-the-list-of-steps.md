@@ -8,9 +8,9 @@
 
 **A change after going back drops the steps waiting.** Click `Move`, then nudge the rectangle again: `Delete` and `Width` are gone from the list, and Redo is greyed out, as after any Undo followed by a change.
 
-**A long history stays a short list.** The list shows at most 15 steps: the one marked, up to 7 after it, and the steps before it. Those left out are counted on a line, `9 earlier steps` above the list, `6 later steps` below it. Nudge the rectangle 20 times after the steps above, and the list shows the last 15, under `9 earlier steps`.
+**A long history stays a short list.** The list shows at most 15 steps: the one marked and the 14 beside it, at most half of them, 7, after it and the rest before it; a side holding fewer steps gives its rows to the other, so that back at the 7th step of 21 the list shows the 6 before it and 8 after it. Those left out are counted on a line, `9 earlier steps` above the list, `6 later steps` below it. Nudge the rectangle 20 times after the steps above, and the list shows the last 15, under `9 earlier steps`.
 
-**A step stays instant with a full history.** The history keeps its memory size up to date at each step instead of adding it all up again: with 80 000 moves held, about what 100 MB holds, a step takes about 2 ms, where it took 63 ms before. Showing the list and going back 14 steps take about 0.06 ms and 1 ms with that history.
+**A step stays instant with a full history.** The history keeps its memory size up to date at each step instead of adding it all up again: with 80 000 moves held, about what 100 MB holds, a step takes about 2 ms, where it took 63 ms before. Showing the list and going back 14 steps take about 0.06 ms and 1 ms with that history. A step still costs every shape of the drawing, whatever it changed: with 1 000 shapes drawn, a step takes about 9 ms, an Undo about 10 ms, and a click going back 14 steps about 140 ms.
 
 ## How each step is named
 
@@ -22,27 +22,28 @@ The history keeps the drawing as it was after each step, not the actions themsel
 | fewer shapes, every other one unchanged and in the same order | `Delete` |
 | as many shapes, only their place changed | `Move` |
 | as many shapes, the kind shown in the panel changed, a polygon made a free shape | `Convert` |
-| as many shapes, one setting changed besides the place | that setting in words: `Width`, `Height`, `Angle`, `Content`, `Box width` |
+| as many shapes, one setting changed besides the place | that setting's label in the panel: `Width`, `Angle`, `Content`, `Italic`, `Radius` |
+| the same shapes in another order, one sent to the top or to the bottom | `Change` |
 | anything else, two settings changed at once among them | `Change` |
 
-So a width typed that also moves the shape, its place following its anchor, is still `Width`; a text box's width and height reset together are `Change`. The words are those of the editor's settings, `Corners` for a polygon's number of corners as for the points of a free shape.
+So a width typed that also moves the shape, its place following its anchor, is still `Width`; a text box's width and height reset together are `Change`. The names are the panel's labels, a unit or a hint in brackets left out: `Italic` and `Strike-through` as their button and box, `Radius` for a rectangle's or a polygon's radius, `Stretched to its box`, `Corners` for a polygon's number of corners, `Points` for a free shape's points moved, `Width` and `Height` for a text box's, `Angle` for `Angle (°)`.
 
 ## The choices the agent made
 
 For the review's summary; each can be changed.
 
-- The names are read from the drawings before and after each step rather than written by each of the twenty places that change the drawing, so that none can be forgotten; a setting's name is its name in the editor's data, split into words.
+- The names are read from the drawings before and after each step rather than written by each of the twenty places that change the drawing, so that none can be forgotten; a setting's name is its label in the panel, as the designer reads it, the name in the editor's data split into words where the two are the same.
 - The oldest step kept is `Start`, even after the memory dropped older ones.
-- At most 15 steps are shown, at most 7 of them after the one marked, so that the list costs the same with 80 000 steps as with 10; the steps left out are counted rather than scrolled to.
+- At most 15 steps are shown, at most 7 of the 14 beside the one marked after it unless fewer are before it, so that the list costs the same with 80 000 steps as with 10; the steps left out are counted rather than scrolled to.
 - A click on a step is as many Undo or Redo at once: what the page shows is recorded first, as for Undo, and the steps after it are kept for Redo.
 - The list opens from **Steps** in the toolbar and stays open until it is clicked again; the step marked is the drawing shown, the steps for Redo greyed and in italics.
-- The memory used is kept up to date at each step: each shape the history holds counts the steps that hold it, kept so that each step copies only what it changes (ADR-0097).
+- The memory used is kept up to date at each step: each shape the history holds counts the steps that hold it, kept so that each history keeps its own counts and a step costs the shapes of the drawing, not the whole history (ADR-0097).
 
 ## The ideas behind it
 
 **A list of states.** GIMP's Undo History lists the actions most recently performed and goes back to any of them by a click, back and forth without losing anything. The editor's history keeps states, each sharing the shapes it did not change, so going to a step is only moving the marker: Undo as many times as needed, or Redo.
 
-**Counting as you go.** Adding up the history's memory at each step costs more as the history grows. Keeping the count with the history, and changing it only by the shapes a step adds or drops, makes a step cost what it changes, whatever the history holds.
+**Counting as you go.** Adding up the history's memory at each step costs more as the history grows. Keeping the count with the history, and changing it only by the drawings a step adds or drops, makes a step cost the drawing it records, whatever the history holds.
 
 | Term | In plain words |
 | --- | --- |

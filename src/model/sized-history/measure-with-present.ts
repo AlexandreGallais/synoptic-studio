@@ -1,5 +1,5 @@
-import { CODE_UNIT_BYTES, heldCount, shapeKey } from "../held-shapes";
-import { shapeTextLength } from "../history";
+import { heldCount, shapeKey } from "../held-shapes";
+import { shapeBytes } from "../shape-memo";
 
 import type { HistoryMeasure } from "./history-measure";
 
@@ -10,14 +10,14 @@ import type { HistoryMeasure } from "./history-measure";
  * @template T - type of the shapes, or of what is kept of each, objects never changed once made
  * @param measure - the measure whose counts are read
  * @param shapes - the shapes looked at
- * @returns their text's length times 2, summed over those held
+ * @returns their bytes (`shapeBytes`), summed over those held
  * @see docs/domain/interaction.md#_7-navigation-and-history
  */
 function heldBytes<T extends WeakKey>(measure: HistoryMeasure, shapes: ReadonlySet<T>): number {
   return shapes
     .values()
     .filter((shape) => heldCount(measure.held, shapeKey(shape)) > 0)
-    .reduce((sum, shape) => sum + shapeTextLength(shape) * CODE_UNIT_BYTES, 0);
+    .reduce((sum, shape) => sum + shapeBytes(shape), 0);
 }
 
 /**
