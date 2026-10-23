@@ -107,7 +107,7 @@
 | [US-076](./E02-F40-US-076-the-historys-memory-size.md) | F40 | The history kept within a memory size the designer sets | done |
 | [AUD-042](./E02-F40-AUD-042-audit-f40.md) | F40 | Audit F40 | done |
 | [VAL-041](./E02-F40-VAL-041-validate-f40.md) | F40 | Validate F40 | dropped |
-| [EN-147](./E02-F41-EN-147-the-history-size-kept-step-to-step.md) | F41 | The history's size kept from step to step | ready |
+| [EN-147](./E02-F41-EN-147-the-history-size-kept-step-to-step.md) | F41 | The history's size kept from step to step | done |
 | [US-077](./E02-F41-US-077-the-list-of-steps.md) | F41 | The list of the history's steps | ready |
 | [AUD-043](./E02-F41-AUD-043-audit-f41.md) | F41 | Audit F41 | ready |
 | [VAL-042](./E02-F41-VAL-042-validate-f41.md) | F41 | Validate F41 | dropped |

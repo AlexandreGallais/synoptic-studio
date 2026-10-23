@@ -3,7 +3,7 @@ id: EN-147
 epic: E02
 feature: F41
 title: The history's size kept from step to step
-status: ready
+status: done
 points: 3
 ---
 
