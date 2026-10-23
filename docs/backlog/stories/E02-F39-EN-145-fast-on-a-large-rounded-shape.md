@@ -3,7 +3,7 @@ id: EN-145
 epic: E02
 feature: F39
 title: The playground fast on a large rounded shape
-status: ready
+status: done
 points: 1
 ---
 
@@ -19,7 +19,7 @@ The band itself made fast went to E02's zoom and pan feature (Product Owner, 202
 
 ## Tasks
 
-- [ ] T1 — The test of F02's fifth criterion made fast: the radius typed 0 before the sizes, the reason and the timings in a comment; timed alone before and after (1 h)
+- [x] T1 — The test of F02's fifth criterion made fast: the radius typed 0 before the sizes, the reason and the timings in a comment; timed alone before and after (1 h)
 
 Files: `playground/mount/mount-playground.test.ts`.
 
