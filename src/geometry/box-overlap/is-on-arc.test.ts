@@ -20,6 +20,14 @@ describe("isOnArc (DERIV-box-overlap step 7)", () => {
     expect(isOnArc(QUARTER, { x: 93.30127, y: 25 })).toBe(false);
   });
 
+  it("fails for a point of the circle just past an end, close to the chord's line", () => {
+    // The fillet of radius 1 from (0, 1) up to (1, 0) about (1, 1); (0.2, 1.6) = C + (−⅘, ⅗) is
+    // on its circle, below its start: (1, −1) × (0.2, 0.6) = 0.6 + 0.2 = 0.8 > 0, off the arc.
+    const fillet = { end: { x: 1, y: 0 }, positive: true, start: { x: 0, y: 1 } };
+
+    expect(isOnArc(fillet, { x: 0.2, y: 1.6 })).toBe(false);
+  });
+
   it("holds at the arc's ends", () => {
     // Q = S and Q = E: the perp dot product is 0.
     expect(isOnArc(QUARTER, QUARTER.start)).toBe(true);
@@ -30,6 +38,12 @@ describe("isOnArc (DERIV-box-overlap step 7)", () => {
     // Both the chord and σ change sign.
     expect(isOnArc(BACK, { x: 6.69873, y: 25 })).toBe(true);
     expect(isOnArc(BACK, { x: 93.30127, y: 25 })).toBe(false);
+  });
+
+  it("holds at the ends of the arc travelled back", () => {
+    // Q = S and Q = E: the perp dot product is 0, σ = −1 asking ≥ 0.
+    expect(isOnArc(BACK, BACK.start)).toBe(true);
+    expect(isOnArc(BACK, BACK.end)).toBe(true);
   });
 });
 

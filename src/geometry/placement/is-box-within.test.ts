@@ -45,6 +45,11 @@ describe("isBoxWithin (ADR-0003, EPSILON)", () => {
     const outer = { maxX: 100, maxY: 100, minX: 0, minY: 0 };
 
     expect(isBoxWithin({ ...outer, minX: -3.6e-15 }, outer)).toBe(true);
+    // The other three sides, each past by 10⁻¹² < 10⁻⁹: 100 + 10⁻¹² ≤ 100 + 10⁻⁹,
+    // −10⁻¹² ≥ 0 − 10⁻⁹.
+    expect(isBoxWithin({ ...outer, maxX: 100 + 1e-12 }, outer)).toBe(true);
+    expect(isBoxWithin({ ...outer, minY: -1e-12 }, outer)).toBe(true);
+    expect(isBoxWithin({ ...outer, maxY: 100 + 1e-12 }, outer)).toBe(true);
     expect(isBoxWithin({ ...outer, minX: -1e-6 }, outer)).toBe(false);
     expect(isBoxWithin({ ...outer, maxY: 100 + 1e-6 }, outer)).toBe(false);
   });

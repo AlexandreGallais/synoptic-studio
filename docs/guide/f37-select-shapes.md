@@ -27,7 +27,8 @@ For the review's summary; each can be changed.
 - Escape selects none in Shape mode and in Points mode alike, as a click on an empty place does; in a field of the panel it changes nothing.
 - Delete removes the selected shapes whichever tool is chosen, and the tool stays chosen; with no shape selected it does nothing. The shape the panel showed keeps its settings for the next shape of its kind: a rectangle of radius 25 removed, the next rectangle starts with radius 25. A shape with a refused value in the panel is removed too, as a click on an empty place drops it.
 - In Points mode, Delete deletes the points selected and never the shape, even with no point selected. Every field of the panel keeps the key, a text's Content too, which used to let Delete reach the points.
-- A selection rectangle that only meets a shape along its outline, a side or a corner, touches it, and a rectangle drawn exactly along a shape's sides encloses it.
+- A selection rectangle that only meets a shape along its outline, a side or a corner, touches it, and a rectangle drawn exactly along a shape's sides encloses it. A side the editor computes a hair off a whole unit, as a polygon's often is, counts as on it, for touching as for enclosing.
+- Alt and Shift count as they are held when you release the rectangle, not when you press: you may press them during the drag.
 - The selection rectangle snaps to whole units, as a drag with a tool does, and shows once the pointer has moved by one; it is a light tint with a thin outline of 1 pixel, and the outline of the shape under the pointer is hidden while you drag it.
 - A drag with the Selector is never a click: pressing on a shape, dragging away and coming back, then releasing, selects nothing. Only a release before the pointer has moved away is a click.
 - In Points mode a drag draws no rectangle and selects nothing, the mode editing one shape.
@@ -38,7 +39,7 @@ For the review's summary; each can be changed.
 
 **The keys are Figma's.** Each key the editor offers is, by default, the one Figma uses, so that someone who knows Figma finds them at once; every key can be changed later, in the settings (E20). Shift + click adds a shape to the selection, or takes it out; Ctrl + A (Cmd + A on a Mac) selects every shape; Escape selects none; the arrow keys will move the selection by 1, and by 10 with Shift; Ctrl + Z will undo. Ctrl + click is kept for picking a shape inside a group, as Figma does, which comes with E13: until then it selects the shape clicked alone (decided on 2026-10-23, replacing the rule of 2026-10-11 for the drawing; the list of points keeps its Ctrl + click).
 
-**Where Figma's help says nothing, two other editors decide.** Figma's pages read do not name the keys for deleting and redoing: Delete or Backspace deletes, as in Inkscape and Penpot and as the points already do; Ctrl + Shift + Z redoes, as in Penpot and on a Mac, and Ctrl + Y too, as in Inkscape and on Windows. The agent chose these. To confirm at VAL-038.
+**Where Figma's help says nothing, two other editors decide.** Figma's pages read do not name the keys for deleting and redoing: Delete or Backspace deletes, as in Inkscape and Penpot and as the points already do; Ctrl + Shift + Z redoes, as in Penpot and on a Mac, and Ctrl + Y too, as in Inkscape and on Windows. The agent chose these, for the review's summary.
 
 **A key never reaches the drawing while you type.** With the cursor in a field of the panel, Delete, Backspace and Ctrl + A edit the field's text, never the shapes.
 

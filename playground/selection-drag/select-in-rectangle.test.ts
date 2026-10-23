@@ -183,6 +183,14 @@ describe("a selection rectangle selects shapes (US-069)", () => {
     expect(readOverlayPath("selection-area")).toBeUndefined();
   });
 
+  it("[F37.AC3] draws the rectangle once the pointer has left the press's point by one unit", () => {
+    drawThreeShapes();
+    // (−9, −10) is one unit right of the press: 1 wide and 0 high, a sum of 1 > 0.
+    pressAndMove({ x: -10, y: -10 }, { x: -9, y: -10 });
+
+    expect(readOverlayPath("selection-area")).toBe("M-10 -10H-9V-10H-10Z");
+  });
+
   it("[F37.AC3] hides the outline of the shape under the pointer while the rectangle is drawn", () => {
     drawThreeShapes();
     pressAndMove({ x: -10, y: -10 }, { x: 50, y: 50 });

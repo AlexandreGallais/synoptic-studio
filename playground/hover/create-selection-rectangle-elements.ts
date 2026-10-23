@@ -1,4 +1,10 @@
-import { createPathElement, formatPathData, formatSvgNumber, screenToUser } from "../../src";
+import {
+  boxSize,
+  createPathElement,
+  formatPathData,
+  formatSvgNumber,
+  screenToUser,
+} from "../../src";
 import { VIEW_SCALE } from "../kept-shapes";
 
 import { readSelectionBox } from "./read-selection-box";
@@ -43,7 +49,8 @@ function readSidesPathData(box: BoundingBox, inset: number): string {
  */
 function readOutlinePathData(box: BoundingBox, half: number): string {
   const outer = readSidesPathData(box, -half);
-  const isHollow = Math.min(box.maxX - box.minX, box.maxY - box.minY) > 2 * half;
+  const size = boxSize(box);
+  const isHollow = Math.min(size.width, size.height) > 2 * half;
 
   return isHollow ? formatPathData([outer, readSidesPathData(box, half)]) : outer;
 }

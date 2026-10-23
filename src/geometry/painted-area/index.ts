@@ -1,3 +1,4 @@
+export * from "./arc-chord-side";
 export * from "./arc-crossing";
 export * from "./cubic-crossing";
 export * from "./cubic-level-parameter";
