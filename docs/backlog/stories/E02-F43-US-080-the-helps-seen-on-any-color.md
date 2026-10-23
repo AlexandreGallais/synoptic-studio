@@ -3,7 +3,7 @@ id: US-080
 epic: E02
 feature: F43
 title: The helps seen on any color, and what a selection rectangle takes
-status: ready
+status: done
 points: 3
 ---
 
