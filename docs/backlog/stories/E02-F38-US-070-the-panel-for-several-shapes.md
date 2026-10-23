@@ -3,7 +3,7 @@ id: US-070
 epic: E02
 feature: F38
 title: The panel shows several shapes' position and size
-status: draft
+status: ready
 points: 3
 ---
 
