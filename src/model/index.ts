@@ -35,3 +35,4 @@ export * from "./text-font";
 export * from "./text-layout";
 export * from "./text-stroke";
 export * from "./text-wrap";
+export * from "./view";
