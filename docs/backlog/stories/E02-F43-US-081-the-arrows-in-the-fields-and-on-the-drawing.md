@@ -46,8 +46,16 @@ The examples use A, a rectangle 100 × 50 at (10, 20), and B, 40 × 40 at (200, 
 
 - [ ] T1 — Up and Down in the fields of several shapes, Shift × 10, each shape's own value stepped (`panelValueAfterEdit` with a relative value, reused), the default prevented, a step at the arrow's release; `interaction.md` §2 (The panel for several shapes) and its Q row; tests of the criteria first, failing (2 h)
 - [ ] T2 — A burst of arrows in a field one step: a `change` during a burst takes none, the step taken 500 ms after the arrow's `keyup` unless an arrow follows, at once when the window loses the focus (`listenToPanelSteps`); `interaction.md` §7 (The panel's changes), `REF-QUILL-HISTORY`; tests first, the time faked (2 h)
-- [ ] T3 — The arrows held kept (a `keydown` adds, a `keyup` takes out, the window's `blur` empties), each arrow's `keydown` nudging by their sum (`nudgeShift` reused per axis), one step from the first press to the last release; `interaction.md` §2 (The arrows, how), §7 (A key held); tests first; to check by hand in a browser that only the last key repeats, the Product Owner test (2 h)
+- [ ] T3 — The arrows held kept (a `keydown` adds, a `keyup` takes out, the window's `blur` empties), each arrow's `keydown` nudging by their sum (`heldNudgeShift`, `nudgeShift` reused per arrow), one step from the first press to the last release; `interaction.md` §2 (The arrows, how), §7 (A key held); tests first; to check by hand in a browser that only the last key repeats, the Product Owner test (2 h)
 
-Files: `playground/selection/listen-to-several-fields.ts`, `playground/selection/apply-several-value.ts`, `playground/history/listen-to-panel-steps.ts`, `playground/selection-keys/listen-to-nudge-keys.ts`, `docs/domain/interaction.md` §2 and §7. `@see` `REF-FIGMA-ADJUST`, `REF-PENPOT-NUMERIC-INPUT`, `REF-MDN-CHANGE-EVENT`, `REF-PROSEMIRROR-HISTORY`, `REF-QUILL-HISTORY`, `docs/domain/interaction.md#_2-selector`.
+Files: `playground/selection/listen-to-several-fields.ts`, `playground/selection/apply-several-value.ts`, `playground/history/listen-to-panel-steps.ts`, `playground/arrow-bursts/`, `playground/selection-keys/listen-to-nudge-keys.ts`, `listen-to-held-arrows.ts`, `playground/history/update-history.ts`, `src/model/moving/held-nudge-shift.ts`, `docs/domain/interaction.md` §2 and §7. `@see` `REF-FIGMA-ADJUST`, `REF-PENPOT-NUMERIC-INPUT`, `REF-MDN-CHANGE-EVENT`, `REF-PROSEMIRROR-HISTORY`, `REF-QUILL-HISTORY`, `docs/domain/interaction.md#_2-selector`.
 
 One task = one commit, referenced as `US-081.T1` in the commit footer.
+
+## For the main thread
+
+**Not checked in a browser**: that a system repeats only the last key pressed (T3's check by hand) is the Product Owner's observation of the first try (note 0032 §7), not read in a source; no browser was driven, a synthetic key never showing the system's repeat. The Product Owner test's steps 7 to 9 check it.
+
+**The criteria aligned with SP-031's answers** in `US-081.T1`: criterion 2 now reads B 0 high, since B 1 high stepped down gives 0, which a size takes (`panelValueAfterEdit` refuses below 0 only); criteria 3 to 5 follow answer 5, the step 500 ms after the release, with the cases of a burst undone within its pause and of the window losing the focus.
+
+**Rule docs**: the Q rows Q7, Q56 and Q59, and the guide pages of the features whose behavior changed, F38, F39 and F40; F43 has no guide page of its own and VAL-044 is dropped, as for US-080's `done` commit.

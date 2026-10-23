@@ -1,17 +1,20 @@
-import { nudgeShift } from "../../src";
+import { heldNudgeShift, nudgeShift } from "../../src";
 import { readSelectedShapes } from "../kept-shapes";
 import { readListenerSignal } from "../listeners";
 import { readMode } from "../page";
 import { readMovedDrawing, readSelectionMove, writeMovedDrawing } from "../selection-drag";
 
+import { listenToHeldArrows } from "./listen-to-held-arrows";
+import { readHeldArrows } from "./read-held-arrows";
 import { readKeyField } from "./read-key-field";
 import { readPressedMove } from "./read-pressed-move";
 
 import type { Point } from "../../src";
 
 /**
- * Reads how far a key pressed nudges the shapes selected: an arrow, or Shift + an arrow
- * (`nudgeShift`), in Shape mode, none when the key is not the drawing's: Ctrl, Cmd or Alt held,
+ * Reads how far a key pressed nudges the shapes selected: an arrow, or Shift + an arrow, by the
+ * sum of the arrows held (`heldNudgeShift`, `readHeldArrows`, US-081), in Shape mode; none for a
+ * key other than an arrow (`nudgeShift`), nor when the key is not the drawing's: Ctrl, Cmd or Alt held,
  * so that the browser keeps the arrows it gives them, the key already taken by a listener before
  * this one, its default prevented, or the focus in a field of the panel, the color picker's
  * sliders included, which keeps every key (`readKeyField`).
@@ -30,9 +33,10 @@ function readNudge(document: Document, event: KeyboardEvent): Point | undefined 
     event.defaultPrevented,
     readKeyField(event) !== undefined,
     readMode(document) === "points",
+    nudgeShift(event.key, false) === undefined,
   ].includes(true);
 
-  return isTaken ? undefined : nudgeShift(event.key, event.shiftKey);
+  return isTaken ? undefined : heldNudgeShift(readHeldArrows(document), event.shiftKey);
 }
 
 /**
@@ -84,8 +88,9 @@ function moveNudgedShapes(document: Document, event: KeyboardEvent, update: () =
 /**
  * Listens to the arrow keys (F39): outside the panel's fields, the color picker's sliders
  * included, which keep them, an arrow nudges the shapes selected in Shape mode by 1, or 10 with
- * Shift (`nudgeShift`), at each key the browser sends, its repeats included, then redraws; the
- * page then does not scroll. With no shape selected, in Points mode, or with Ctrl, Cmd or Alt
+ * Shift (`nudgeShift`), at each key the browser sends, its repeats included, by the sum of the
+ * arrows held (`listenToHeldArrows`, US-081), so that Up and Right held move diagonally, then
+ * redraws; the page then does not scroll. With no shape selected, in Points mode, or with Ctrl, Cmd or Alt
  * held, the key is left to the browser; while a press with the Selector moves shapes, it moves
  * nothing.
  *
@@ -95,6 +100,8 @@ function moveNudgedShapes(document: Document, event: KeyboardEvent, update: () =
  * @see docs/domain/interaction.md#_1-tools
  */
 export function listenToNudgeKeys(document: Document, update: () => void): void {
+  listenToHeldArrows(document);
+
   document.addEventListener(
     "keydown",
     (event) => {
