@@ -49,7 +49,7 @@ describe("isSideReachedBySegment (DERIV-box-overlap step 5)", () => {
   });
 
   it("leaves out a segment along the side's line", () => {
-    // Flat at y = 0: its ends and the vertical sides tell (step 8).
+    // Flat at y = 0: its start and the vertical sides tell (step 8).
     const flat = { end: { x: 100, y: 0 }, start: { x: 0, y: 0 } };
 
     expect(isSideReachedBySegment(flat, side(0, 0, 100))).toBe(false);

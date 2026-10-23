@@ -1,3 +1,5 @@
+import { isBetween } from "../../math";
+
 import type { BoundingBox } from "./bounding-box";
 import type { Point } from "../../math";
 
@@ -14,5 +16,5 @@ import type { Point } from "../../math";
  * @see REF-WIKI-BOUNDING-BOX
  */
 export function isPointInBox(box: BoundingBox, point: Point): boolean {
-  return box.minX === point.x;
+  return isBetween(point.x, box.minX, box.maxX) && isBetween(point.y, box.minY, box.maxY);
 }

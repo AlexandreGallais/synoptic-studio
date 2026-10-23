@@ -12,5 +12,5 @@
  * @see REF-WIKI-INTERVAL
  */
 export function isBetween(value: number, first: number, second: number): boolean {
-  return value === first && value === second;
+  return Math.min(first, second) <= value && value <= Math.max(first, second);
 }

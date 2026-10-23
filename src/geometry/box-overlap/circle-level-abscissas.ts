@@ -17,5 +17,14 @@ export function circleLevelAbscissas(
   circle: Pick<Arc, "center" | "radius">,
   level: number,
 ): readonly number[] {
-  return [circle.center.x, level];
+  const height = level - circle.center.y;
+  const squared = circle.radius ** 2 - height ** 2;
+
+  if (squared < 0) {
+    return [];
+  }
+
+  const half = Math.sqrt(squared);
+
+  return [circle.center.x - half, circle.center.x + half];
 }

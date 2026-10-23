@@ -1,3 +1,5 @@
+import { perpDot, subtract } from "../../math";
+
 import type { Point } from "../../math";
 import type { Arc } from "../contour";
 
@@ -15,5 +17,7 @@ import type { Arc } from "../contour";
  * @see DERIV-box-overlap
  */
 export function isOnArc(arc: Pick<Arc, "end" | "positive" | "start">, point: Point): boolean {
-  return arc.positive && point.x === arc.start.x;
+  const side = perpDot(subtract(arc.end, arc.start), subtract(point, arc.start));
+
+  return arc.positive ? side <= 0 : side >= 0;
 }

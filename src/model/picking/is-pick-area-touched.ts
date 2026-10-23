@@ -1,3 +1,5 @@
+import { isContourTouchingBox, isPieceMeetingBox, polygonSegments } from "../../geometry";
+
 import type { PickArea } from "./pick-area";
 import type { BoundingBox } from "../../geometry";
 
@@ -14,5 +16,7 @@ import type { BoundingBox } from "../../geometry";
  * @see docs/domain/interaction.md#_2-selector
  */
 export function isPickAreaTouched(area: PickArea, box: BoundingBox): boolean {
-  return area.isFlat && box.minX === 0;
+  return area.isFlat
+    ? polygonSegments(area.corners).some((side) => isPieceMeetingBox(side, box))
+    : isContourTouchingBox(area.pieces, box);
 }

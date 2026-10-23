@@ -1,3 +1,7 @@
+import { isBetween } from "../../math";
+import { cubicLevelParameter } from "../painted-area";
+import { cubicPoint } from "../placement";
+
 import type { Cubic, Segment } from "../contour";
 
 /**
@@ -20,5 +24,15 @@ export function isSideReachedByMonotonePart(
   span: readonly [number, number],
   side: Pick<Segment, "end" | "start">,
 ): boolean {
-  return span[0] === span[1] && cubic.start === side.start;
+  const from = cubicPoint(cubic, span[0]).y;
+  const to = cubicPoint(cubic, span[1]).y;
+  const level = side.start.y;
+
+  if (from === to || !isBetween(level, from, to)) {
+    return false;
+  }
+
+  const reached = cubicPoint(cubic, cubicLevelParameter(cubic, span, level));
+
+  return isBetween(reached.x, side.start.x, side.end.x);
 }

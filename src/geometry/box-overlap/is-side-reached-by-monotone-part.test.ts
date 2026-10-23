@@ -50,7 +50,7 @@ describe("isSideReachedByMonotonePart (DERIV-box-overlap step 6)", () => {
   });
 
   it("leaves out a part of constant y", () => {
-    // Every point at y = 0: its ends and the vertical sides tell (step 8).
+    // Every point at y = 0: its start and the vertical sides tell (step 8).
     const flat: Cubic = {
       end: { x: 100, y: 0 },
       first: { x: 30, y: 0 },

@@ -1,3 +1,5 @@
+import { transposedPoint } from "./transposed-point";
+
 import type { ContourPiece } from "../contour";
 
 /**
@@ -14,5 +16,23 @@ import type { ContourPiece } from "../contour";
  * @see DERIV-box-overlap
  */
 export function transposedPiece(piece: ContourPiece): ContourPiece {
-  return piece;
+  const ends = { end: transposedPoint(piece.end), start: transposedPoint(piece.start) };
+
+  switch (piece.kind) {
+    case "arc": {
+      const { center, positive } = piece;
+
+      return { ...piece, ...ends, center: transposedPoint(center), positive: !positive };
+    }
+
+    case "cubic": {
+      const { first, second } = piece;
+
+      return { ...piece, ...ends, first: transposedPoint(first), second: transposedPoint(second) };
+    }
+
+    case "segment": {
+      return { ...piece, ...ends };
+    }
+  }
 }

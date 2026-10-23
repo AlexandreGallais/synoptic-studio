@@ -1,3 +1,7 @@
+import { isSideReachedByArc } from "./is-side-reached-by-arc";
+import { isSideReachedByCubic } from "./is-side-reached-by-cubic";
+import { isSideReachedBySegment } from "./is-side-reached-by-segment";
+
 import type { ContourPiece, Segment } from "../contour";
 
 /**
@@ -15,5 +19,17 @@ export function isSideReachedByPiece(
   piece: ContourPiece,
   side: Pick<Segment, "end" | "start">,
 ): boolean {
-  return piece.start.y === side.start.y;
+  switch (piece.kind) {
+    case "arc": {
+      return isSideReachedByArc(piece, side);
+    }
+
+    case "cubic": {
+      return isSideReachedByCubic(piece, side);
+    }
+
+    case "segment": {
+      return isSideReachedBySegment(piece, side);
+    }
+  }
 }

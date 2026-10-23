@@ -1,3 +1,8 @@
+import { cyclicItem } from "../contour";
+import { cubicYBreaks } from "../painted-area";
+
+import { isSideReachedByMonotonePart } from "./is-side-reached-by-monotone-part";
+
 import type { Cubic, Segment } from "../contour";
 
 /**
@@ -13,5 +18,10 @@ import type { Cubic, Segment } from "../contour";
  * @see DERIV-box-overlap
  */
 export function isSideReachedByCubic(cubic: Cubic, side: Pick<Segment, "end" | "start">): boolean {
-  return cubic.start.y === side.start.y;
+  const breaks = cubicYBreaks(cubic);
+  const [, ...ends] = breaks;
+
+  return ends.some((to, index) =>
+    isSideReachedByMonotonePart(cubic, [cyclicItem(breaks, index, to), to], side),
+  );
 }

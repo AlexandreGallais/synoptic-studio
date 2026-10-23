@@ -1,3 +1,5 @@
+import { boundingBox, contourBoundingBox, isBoxWithin } from "../../geometry";
+
 import type { PickArea } from "./pick-area";
 import type { BoundingBox } from "../../geometry";
 
@@ -13,5 +15,8 @@ import type { BoundingBox } from "../../geometry";
  * @see docs/domain/interaction.md#_2-selector
  */
 export function isPickAreaEnclosed(area: PickArea, box: BoundingBox): boolean {
-  return area.isFlat || box.minX < 0;
+  return isBoxWithin(
+    area.isFlat ? boundingBox(area.corners) : contourBoundingBox(area.pieces),
+    box,
+  );
 }

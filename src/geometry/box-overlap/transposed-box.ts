@@ -12,5 +12,5 @@ import type { BoundingBox } from "../placement";
  * @see DERIV-box-overlap
  */
 export function transposedBox(box: BoundingBox): BoundingBox {
-  return box;
+  return { maxX: box.maxY, maxY: box.maxX, minX: box.minY, minY: box.minX };
 }

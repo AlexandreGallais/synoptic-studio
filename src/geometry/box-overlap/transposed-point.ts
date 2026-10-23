@@ -12,5 +12,5 @@ import type { Point } from "../../math";
  * @see DERIV-box-overlap
  */
 export function transposedPoint(point: Point): Point {
-  return point;
+  return { x: point.y, y: point.x };
 }

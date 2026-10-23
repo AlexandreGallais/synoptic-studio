@@ -40,15 +40,17 @@ The painted area lies within the same box: from a point right of it, the ray tow
 
 If a piece meets `R`, they share a point of the outline. If `wn(K) ≠ 0`, `K` is painted. Conversely, let `Q` in `R` be painted, and no piece meet `R`. For `P` and `P′` on one horizontal line in `R`, `P` left of `P′`, the ray from `P` toward growing x is the segment `P P′` followed by the ray from `P′`; no piece crosses `P P′`, which lies in `R`, so both rays count the same crossings and `wn(P) = wn(P′)`. A vertical ray counts the same winding number (`REF-SUNDAY-INCLUSION`, step 2), so along a vertical line in `R` it does not change either. Going from `Q` to `(x₀, q_y)`, then to `K`, inside `R`, gives `wn(K) = wn(Q) ≠ 0`.
 
-## Step 4 — A piece meets the box when an end is in it, or it reaches a side
+## Step 4 — A piece meets the box when its start is in it, or it reaches a side
 
 Let a piece run from `S` outside `R` to a point `Q` in `R`, its points `γ(t)`, `t` from 0 to 1, continuous. The function `g(t) = max(x₀ − x(t), x(t) − x₁, y₀ − y(t), y(t) − y₁)` is continuous, positive outside `R`, at most 0 in it, and 0 exactly on its sides (step 1). `g` is positive at `S` and not at `Q`, so it takes the value 0 between them (`REF-WIKI-IVT`): the piece reaches a side. So
 
-a piece meets `R` ⇔ `S` or `E` is in `R`, or the piece reaches one of `R`'s four sides.
+a piece meets `R` ⇔ `S` is in `R`, or the piece reaches one of `R`'s four sides.
+
+The end `E` needs no test of its own: in `R` with `S` outside, the piece reaches a side on its way.
 
 ## Step 5 — A segment reaching a horizontal side
 
-The segment's points are `S + t (E − S)`, `t` from 0 to 1 (`REF-WIKI-DE-CASTELJAU`, `pointBetween`). When `S_y ≠ E_y` and `c` is between them, it meets the line `y = c` at `t = (c − S_y) / (E_y − S_y)`, and reaches the side when the x there is between `a` and `b`. A segment with `S_y = E_y` lies on a horizontal line; it is left out, and step 8 shows that its ends and the vertical sides tell.
+The segment's points are `S + t (E − S)`, `t` from 0 to 1 (`REF-WIKI-DE-CASTELJAU`, `pointBetween`). When `S_y ≠ E_y` and `c` is between them, it meets the line `y = c` at `t = (c − S_y) / (E_y − S_y)`, and reaches the side when the x there is between `a` and `b`. A segment with `S_y = E_y` lies on a horizontal line; it is left out, and step 8 shows that its start and the vertical sides tell.
 
 ## Step 6 — A cubic side reaching a horizontal side
 
@@ -70,7 +72,7 @@ the line of the chord meeting the circle at `S` and `E` only. The arc reaches th
 
 The map `(x, y) ↦ (y, x)` takes `R` to the box `[y₀, y₁] × [x₀, x₁]`, its vertical sides to horizontal ones, a segment to the segment of its swapped ends, a cubic to the cubic of its swapped control points (a linear map of the plane is applied to a Bézier curve by applying it to its control points, `REF-WIKI-BEZIER`), and a circle to the circle of the swapped centre, of the same radius. It reverses every turn: `(u_y, uₓ) × (v_y, vₓ) = u_y vₓ − uₓ v_y = −(u × v)`, so a swapped arc has `−σ`, which the side test of step 7 needs. A piece reaches a vertical side of `R` when the swapped piece reaches a horizontal side of the swapped box.
 
-A piece along a horizontal line `y = c` with `y₀ ≤ c ≤ y₁`, left out in steps 5 and 6, meets `R` when its x range meets `[x₀, x₁]`: an end is then in `R`, or the piece runs across `R` from `x < x₀` to `x > x₁` and reaches the side `x = x₀`, where, swapped, it is not flat. The same holds swapped for a piece along a vertical line. So steps 4 to 8 together find every piece meeting `R`.
+A piece along a horizontal line `y = c` with `y₀ ≤ c ≤ y₁`, left out in steps 5 and 6, meets `R` when its x range meets `[x₀, x₁]`: its start is then in `R`, or the piece goes from outside `[x₀, x₁]` into it and passes `x = x₀` or `x = x₁` at `y = c`, a point of a vertical side, where, swapped, it is not flat. The same holds swapped for a piece along a vertical line. So steps 4 to 8 together find every piece meeting `R`.
 
 ## Step 9 — A shape without area
 
@@ -91,7 +93,7 @@ The arch of `DERIV-painted-area`: `(0, 0)`, `(0, −40)`, `(100, −40)`, `(100,
 | box `[−3.6 × 10⁻¹⁵, 100]²` within `[0, 100]²`; `[−10⁻⁶, 100]²` | `0 − 10⁻⁹ ≤ −3.6 × 10⁻¹⁵`; `−10⁻⁶ < −10⁻⁹` | yes; no |
 | segment `(0, 0)` to `(100, 100)`, side `y = 50`, `[40, 60]`; `[60, 80]` | `t = 50 / 100 = ½`, x = 50 | reaches; not |
 | the same segment, side `y = 100`, `[90, 110]`; side `y = 150` | `t = 1`, x = 100; 150 beyond 100 | reaches; not |
-| segment `(0, 0)` to `(100, 0)`, side `y = 0`, `[0, 100]` | flat: left to its ends and the vertical sides | not |
+| segment `(0, 0)` to `(100, 0)`, side `y = 0`, `[0, 100]` | flat: left to its start and the vertical sides | not |
 | arch, side `y = −15`, `[0, 10]`, `[10, 90]`, `[90, 100]` | `t (1 − t) = ⅛`, `x ≈ 5.80583`, `94.19417` | reaches, not, reaches |
 | arch, side `y = −30`, `[40, 60]`; side `y = −35` | the double root `t = ½`: x = `75 − 25 = 50`; −35 above the top | reaches; not |
 | arch, part `[0, ½]` and `[½, 1]`, side `y = −15`, `[0, 10]` | x ≈ 5.80583 on the first part, 94.19417 on the second | reaches; not |

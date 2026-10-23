@@ -1,3 +1,5 @@
+import { isPickAreaTouched } from "./is-pick-area-touched";
+
 import type { PickArea } from "./pick-area";
 import type { BoundingBox } from "../../geometry";
 
@@ -15,5 +17,5 @@ export function shapesTouchedByBox(
   areas: readonly PickArea[],
   box: BoundingBox,
 ): readonly number[] {
-  return areas.length > 0 ? [box.minX] : [];
+  return areas.flatMap((area, index) => (isPickAreaTouched(area, box) ? [index] : []));
 }

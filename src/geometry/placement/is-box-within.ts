@@ -17,5 +17,10 @@ import type { BoundingBox } from "./bounding-box";
  * @see REF-WIKI-BOUNDING-BOX
  */
 export function isBoxWithin(inner: BoundingBox, outer: BoundingBox): boolean {
-  return inner.minX === outer.minX - EPSILON;
+  return (
+    outer.minX - EPSILON <= inner.minX &&
+    inner.maxX <= outer.maxX + EPSILON &&
+    outer.minY - EPSILON <= inner.minY &&
+    inner.maxY <= outer.maxY + EPSILON
+  );
 }

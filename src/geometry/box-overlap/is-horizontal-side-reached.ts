@@ -1,3 +1,6 @@
+import { boxHorizontalSides } from "./box-horizontal-sides";
+import { isSideReachedByPiece } from "./is-side-reached-by-piece";
+
 import type { ContourPiece } from "../contour";
 import type { BoundingBox } from "../placement";
 
@@ -12,5 +15,5 @@ import type { BoundingBox } from "../placement";
  * @see DERIV-box-overlap
  */
 export function isHorizontalSideReached(piece: ContourPiece, box: BoundingBox): boolean {
-  return piece.start.y === box.minY;
+  return boxHorizontalSides(box).some((side) => isSideReachedByPiece(piece, side));
 }

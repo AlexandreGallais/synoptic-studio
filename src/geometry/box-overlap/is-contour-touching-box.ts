@@ -1,3 +1,7 @@
+import { isInPaintedArea } from "../painted-area";
+
+import { isPieceMeetingBox } from "./is-piece-meeting-box";
+
 import type { ContourPiece } from "../contour";
 import type { BoundingBox } from "../placement";
 
@@ -16,5 +20,8 @@ import type { BoundingBox } from "../placement";
  * @see DERIV-box-overlap
  */
 export function isContourTouchingBox(pieces: readonly ContourPiece[], box: BoundingBox): boolean {
-  return pieces.length > 0 && box.minX === 0;
+  return (
+    pieces.some((piece) => isPieceMeetingBox(piece, box)) ||
+    isInPaintedArea(pieces, { x: box.minX, y: box.minY })
+  );
 }
