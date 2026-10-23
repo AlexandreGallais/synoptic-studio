@@ -86,7 +86,7 @@
 | [SP-027](./E02-F37-SP-027-refine-the-selection-of-shapes.md) | F37 | Refine the selection of several shapes | done |
 | [US-068](./E02-F37-US-068-shift-click-adds-a-shape.md) | F37 | Shift + click adds or removes a shape, Ctrl + A selects all, Escape none | done |
 | [US-066](./E02-F37-US-066-delete-removes-the-shape.md) | F37 | Delete removes the selected shapes | done |
-| [EN-144](./E02-F37-EN-144-a-shape-touched-by-a-rectangle.md) | F37 | A shape touched or enclosed by a rectangle, by its painted area | ready |
+| [EN-144](./E02-F37-EN-144-a-shape-touched-by-a-rectangle.md) | F37 | A shape touched or enclosed by a rectangle, by its painted area | done |
 | [US-069](./E02-F37-US-069-a-rectangle-selects-shapes.md) | F37 | A selection rectangle selects shapes | ready |
 | [AUD-039](./E02-F37-AUD-039-audit-f37.md) | F37 | Audit F37 | ready |
 | [VAL-038](./E02-F37-VAL-038-validate-f37.md) | F37 | Validate F37 | dropped |
