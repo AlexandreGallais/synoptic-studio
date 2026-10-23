@@ -41,9 +41,9 @@ The examples draw three rectangles 100 × 100: A at (0, 0), B at (150, 0), C at 
 
 ## Tasks
 
-- [ ] T1 — The drawing without the shapes selected (`drawingWithoutShapes`, `src/model/drawing/`): interface and failing tests (1 h)
+- [x] T1 — The drawing without the shapes selected (`drawingWithoutShapes`, `src/model/drawing/`): interface and failing tests (1 h)
 - [ ] T2 — The key in the playground outside the fields, the tests of T1 passing; the rules in `interaction.md` §2; the Product Owner test card (2 h)
 
-Files: `src/model/drawing/drawing-without-shapes.ts` and its test, `playground/selection/` (the key, the selection cleared, the settings kept), `playground/points/listen-to-delete-key.ts` (Shape mode left to the shapes). `@see` `docs/domain/interaction.md#_2-selector`, `REF-INKSCAPE-KEYS`, `REF-PENPOT-SHORTCUTS`.
+Files: `src/model/drawing/drawing-without-shapes.ts` and its test, `playground/selection/` (the key, the selection cleared, the settings kept), `playground/points/listen-to-delete-key.ts` (Shape mode left to the shapes). `@see` `docs/domain/interaction.md#_2-selector`, `REF-INKSCAPE-KEYS`, `REF-PENPOT-SHORTCUTS`. At T1 the modules picking a shape under the pointer (`shapeAtPoint`, the pick areas, `isFlatBox`, `PICK_TOLERANCE`) moved from `src/model/drawing/` to `src/model/picking/`, the drawing folder otherwise holding 16 modules, past the 15 of `docs/conventions/files.md`.
 
 One task = one commit, referenced as `US-066.Tn` in the commit footer.
