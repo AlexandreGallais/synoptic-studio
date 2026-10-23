@@ -1,4 +1,4 @@
-import { positionAfterResize } from "../placement";
+import { positionAfterResize, straightBoxShift } from "../placement";
 
 import { isPanelSize } from "./is-panel-size";
 import { panelValueAfterEdit } from "./panel-value-after-edit";
@@ -30,7 +30,7 @@ function shapeWithSide(shape: Shape, side: "height" | "width", value: number): S
 /**
  * A shape a tool makes once a value is typed for several shapes (F38), its new value given by
  * `panelValueAfterEdit` from its own (`shapePanelValues`): X or Y moves it so that its straight box
- * starts there, its position going by the difference (`shapeMovedOnAxis`), as for one shape
+ * starts there, its position going by the difference (`straightBoxShift`, `shapeMovedOnAxis`), as for one shape
  * (ADR-0035); W or H sets its width or height (`shapeWithSide`).
  *
  * @kind domain
@@ -50,5 +50,5 @@ export function shapeAfterPanelEdit(shape: Shape, edit: PanelEdit): Shape | unde
 
   return isPanelSize(key)
     ? shapeWithSide(shape, key, value)
-    : shapeMovedOnAxis(shape, key, value - own);
+    : shapeMovedOnAxis(shape, key, straightBoxShift(own, value));
 }

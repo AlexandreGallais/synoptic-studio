@@ -6,7 +6,7 @@
 
 **A turned shape counts by its straight box.** X and Y are the top-left corner of the upright box around the shape as it is drawn, as the panel shows them for one shape; Width and Height are the shape's own, before it turns. The rectangle 100 × 50 at (10, 20), turned by 30°, has X 4.19873 and Y −1.65064, Width 100 and Height 50.
 
-**A text counts by its frame.** Its frame is its block, the rectangle its lines fill, or its box when it sits in one, as when the pointer picks it: X and Y are the top-left corner of the upright box around that frame, Width and Height the frame's own.
+**A text counts by its frame.** Its frame is its block, the rectangle its lines fill, or its box when it sits in one, as when the pointer picks it: X and Y are the top-left corner of the upright box around that frame, Width and Height the frame's own. A text selected alone shows the same X and Y: a box 100 × 20 at (47, 61), turned by 23°, shows X 47.06745 and Y 42.2584, alone or among several, and 60 typed in X moves its upright box to start at x 60. A shape 0 × 0, alone or among several, shows the point it sits on.
 
 **Type a value for all of them.** Type a whole number in one of the four fields and press Enter, or leave the field: with a sign, `+50` or `-20`, it is added to each shape's own value; without one, each shape takes it. The two rectangles above: `+50` in Width makes the first 150 wide and the second 90; `-20` in X moves them to x −10 and 180; 460 in Width makes both 460 wide, and 50 in X puts both at x 50. A negative number has a sign, so it always moves or shrinks the shapes from where they are. Click one shape alone and the panel shows and edits it as before, the four fields gone.
 
@@ -28,6 +28,8 @@ For the review's summary; each can be changed.
 ## The ideas behind it
 
 **Each shape's values, as Figma shows them.** Figma and Penpot show the values of several shapes field by field, a value common to them as it is and Mixed where they differ; Inkscape and Affinity Designer show the box around the whole selection instead. The first way was chosen on 2026-10-23, at the refinement of this feature, so that you see at once whether the shapes line up and match.
+
+**A text placed as a shape is.** Until this feature, a turned text alone showed the top-left corner of its turned frame in X and Y; on 2026-10-23, at this feature's audit, X and Y of a text became the top-left of its upright box, as a shape's, alone or among several, so that one text and several read the same. Figma's help, read the same day, bases a rotated layer's X and Y "on the original top-left corner of the layer's bounds", the turned corner a text showed before.
 
 **A sign for relative, none for fixed.** Figma applies a value typed to every layer selected, and adds to each layer's own with an equation such as `Mixed+100`; here a sign alone is enough, `+100`, chosen on 2026-10-23 with the rest of this feature, while a text fitting its content keeps its size, as it has no width to set.
 

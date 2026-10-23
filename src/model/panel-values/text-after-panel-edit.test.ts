@@ -90,4 +90,26 @@ describe("textAfterPanelEdit (F38)", () => {
       100_000,
     );
   });
+
+  it("caps a box's height at a box's own largest side, 100 000, whatever the interface's cap", () => {
+    // An interface capping at 200 000: the box still stops at TEXT_RANGES.boxSide.last, 100 000.
+    const larger: PanelEdit = {
+      key: "height",
+      maxSize: 200_000,
+      typed: { isRelative: false, value: 150_000 },
+    };
+
+    expect(textAfterPanelEdit(IN_BOX, BLOCK, larger)?.boxHeight).toBe(100_000);
+  });
+
+  it("caps a box's height at the interface's cap when smaller than a box's own", () => {
+    // An interface capping at 500: 600 typed gives 500.
+    const smaller: PanelEdit = {
+      key: "height",
+      maxSize: 500,
+      typed: { isRelative: false, value: 600 },
+    };
+
+    expect(textAfterPanelEdit(IN_BOX, BLOCK, smaller)?.boxHeight).toBe(500);
+  });
 });

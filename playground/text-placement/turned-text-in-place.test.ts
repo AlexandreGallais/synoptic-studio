@@ -28,13 +28,15 @@ const TEST_SANS: TestFace = { family: "Test Sans", fsType: 0, isItalic: false, w
 // cos 23° = 0.92050485, sin 23° = 0.39073113. At (47, 61), turned by 23, its middle is
 // (47 + 43.9765625, 61 + 9.6796875) = (90.9765625, 70.6796875), and its turned top-left corner
 // P = middle − R(43.9765625, 9.6796875) = (90.97656 − 36.69848, 70.67969 − 26.09321)
-// = (54.27808, 44.58648).
+// = (54.27808, 44.58648). Its straight box starts at the corner's y, the corner being its highest
+// point, and h sin 23° to the left of it, X and Y showing it (AUD-040):
+// (54.27808 − 19.359375 · 0.39073113, 44.58648) = (54.27808 − 7.56432, 44.58648) = (46.71377, 44.58648).
 
 /** Precision of the corner kept: within 1e-9. */
 const DIGITS = 9;
 
-/** X and Y once turned by 23: its turned top-left corner P, at 5 decimals (US-054). */
-const CORNER_SHOWN = ["54.27808", "44.58648"];
+/** X and Y once turned by 23: the top-left of its straight box, at 5 decimals (AUD-040). */
+const START_SHOWN = ["46.71377", "44.58648"];
 
 /**
  * Types a content in the Text tool's text area, as the designer would.
@@ -154,9 +156,9 @@ describe("Text tool: a turned text grows in place (US-038)", () => {
 
     // k' = (88.9765625, 9.6796875), R(k') = (78.12120, 43.67611):
     // b' = P − k' + R(k') = (54.27808 − 88.97656 + 78.12120, 44.58648 − 9.67969 + 43.67611);
-    // X and Y keep showing the corner (US-054).
+    // its height kept, X and Y keep showing its straight box, P.x − h sin 23° and P.y.
     expectPosition({ x: 43.42272, y: 78.5829 });
-    expect(readFields()).toEqual(CORNER_SHOWN);
+    expect(readFields()).toEqual(START_SHOWN);
     expectCorner(corner);
   });
 
@@ -176,9 +178,11 @@ describe("Text tool: a turned text grows in place (US-038)", () => {
     typeContent("Pump P-101\nTank");
 
     // k' = (88.9765625, 19.359375), R(k') = (74.33905, 52.58631):
-    // b' = (54.27808 − 88.97656 + 74.33905, 44.58648 − 19.35938 + 52.58631).
+    // b' = (54.27808 − 88.97656 + 74.33905, 44.58648 − 19.35938 + 52.58631). Twice as tall, its
+    // straight box starts at (54.278079 − 38.71875 · 0.39073113, 44.58648) = (54.278079 −
+    // 15.128621, 44.58648) = (39.149458, 44.58648), shown 39.14946.
     expectPosition({ x: 39.64056, y: 77.81341 });
-    expect(readFields()).toEqual(CORNER_SHOWN);
+    expect(readFields()).toEqual(["39.14946", "44.58648"]);
     expectCorner(corner);
   });
 
@@ -219,7 +223,7 @@ describe("Text tool: a turned text grows in place (US-038)", () => {
   });
 
   it("[F05.AC5] keeps the corner of a box 120 × 40 at (47, 61) set to 160 wide", () => {
-    // Placed straight, then turned: X and Y of a turned text place its corner (US-054).
+    // Placed straight, then turned about its middle.
     typeValue("angle", "0");
     chooseOption("text-fit", "box");
     typeValue("text-box-width", "120");
@@ -230,13 +234,14 @@ describe("Text tool: a turned text grows in place (US-038)", () => {
 
     // Middle (107, 81); P = middle − R(60, 20) = (107 − 47.41567, 81 − 41.85396) = (59.58433, 39.14604);
     // k' = (80, 20), R(k') = (65.82577, 49.66859): b' = (59.58433 − 80 + 65.82577, 39.14604 − 20 + 49.66859).
+    // Its height kept, X and Y show (59.58433 − 40 · 0.39073113, 39.14604) = (43.95509, 39.14604).
     const corner = readCorner();
 
     expect(corner.x).toBeCloseTo(59.58433, 5);
 
     typeValue("text-box-width", "160");
     expectPosition({ x: 45.4101, y: 68.81462 });
-    expect(readFields()).toEqual(["59.58433", "39.14604"]);
+    expect(readFields()).toEqual(["43.95509", "39.14604"]);
     expectCorner(corner);
   });
 
@@ -244,7 +249,7 @@ describe("Text tool: a turned text grows in place (US-038)", () => {
     typeValue("text-letter-spacing", "10");
 
     // (43.42272 + 88.97656, 78.58290 + 9.67969) = (132.39928, 88.26259); the position, behind
-    // the corner X and Y show (US-054).
+    // the straight box X and Y show (AUD-040).
     expect(readTransforms()).toEqual([
       "rotate(23 132.39928 88.26259)",
       "rotate(23 132.39928 88.26259)",
@@ -261,7 +266,7 @@ describe("Text tool: a turned text grows in place (US-038)", () => {
     clickElement("tool-rectangle");
     clickElement("tool-selector");
 
-    expect(readFields()).toEqual(CORNER_SHOWN);
+    expect(readFields()).toEqual(START_SHOWN);
     expect(readDrawn().x).toBe(x);
 
     typeValue("text-letter-spacing", "4");
@@ -281,7 +286,7 @@ describe("Text tool: a turned text grows in place (US-038)", () => {
 
     const { x } = readDrawn();
 
-    typeValue("shape-x", "54.27808");
+    typeValue("shape-x", "46.71377");
 
     expect(readText("#status")).toBe("");
     expect(readDrawn().x).toBe(x);
@@ -301,7 +306,7 @@ describe("Text tool: a turned text grows in place (US-038)", () => {
     // "Pump P-101" in Test Sans 16: 80 wide; P = (54.27808, 44.58648) kept.
     expect(readDrawn().width).toBe(80);
     expectPosition({ x: 47.6911, y: 59.52252 });
-    expect(readFields()).toEqual(CORNER_SHOWN);
+    expect(readFields()[1]).toBe("44.58648");
     expectCorner(corner);
   });
 
@@ -314,9 +319,10 @@ describe("Text tool: a turned text grows in place (US-038)", () => {
 
     // cos 40° = 0.76604444, sin 40° = 0.64278761; k = (88.97656, 9.67969), middle
     // (43.42272 + 88.97656, 78.58290 + 9.67969) = (132.39928, 88.26259);
-    // R(−k) = (−68.16000 + 6.22198, −57.19303 − 7.41507) = (−61.93802, −64.60810):
-    // the corner shown (70.46126, 23.65449) (US-054).
-    expect(readFields()).toEqual(["70.46126", "23.65449"]);
+    // R(−k) = (−68.16000 + 6.22198, −57.19303 − 7.41507) = (−61.93802, −64.60810): the corner
+    // (70.46126, 23.65449), the straight box's top; its left half of w cos 40° + h sin 40° =
+    // (136.32000 + 12.44397) / 2 = 74.38198 from the middle's x 132.39928: 58.01730 (AUD-040).
+    expect(readFields()).toEqual(["58.0173", "23.65449"]);
     expect(readDrawn().x).toBe(x);
   });
 
@@ -327,8 +333,9 @@ describe("Text tool: a turned text grows in place (US-038)", () => {
     typeValue("angle", "40");
 
     // Middle (47 + 88.97656, 61 + 9.67969) = (135.97656, 70.67969), R(−k) as at 40 above:
-    // the corner shown (74.03854, 6.07158) (US-054).
-    expect(readFields()).toEqual(["74.03854", "6.07158"]);
+    // the corner (74.03854, 6.07158), X and Y showing (74.03854 − 12.44397, 6.07158) =
+    // (61.59457, 6.07158) (AUD-040).
+    expect(readFields()).toEqual(["61.59458", "6.07158"]);
     expect(readDrawn().x).toBe(47);
   });
 

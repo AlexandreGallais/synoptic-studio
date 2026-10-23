@@ -1,4 +1,4 @@
-import { contourBoundingBox, curveContour } from "../../src";
+import { shapeStraightBox, straightBoxShift } from "../../src";
 import { readNumber, selectElement } from "../page";
 import { readShape } from "../shape";
 
@@ -9,7 +9,8 @@ import { writeResizedPosition } from "./write-resized-position";
 type Axis = "x" | "y";
 
 /**
- * Reads where the shape's straight box starts on an axis.
+ * Reads where the shape's straight box starts on an axis (`shapeStraightBox`), a shape 0 × 0 at
+ * the point it lies on.
  *
  * @kind procedure
  * @param document - page document
@@ -19,17 +20,19 @@ type Axis = "x" | "y";
  */
 function readStraightStart(document: Document, axis: Axis): number | undefined {
   const reading = readShape(document);
-  const box = contourBoundingBox(curveContour(reading.corners));
 
   if (!reading.isValid) {
     return undefined;
   }
 
+  const box = shapeStraightBox(reading.corners);
+
   return axis === "x" ? box.minX : box.minY;
 }
 
 /**
- * Reads how far the shape must move for its straight box to start at the integer typed.
+ * Reads how far the shape must move for its straight box to start at the integer typed
+ * (`straightBoxShift`).
  *
  * @kind procedure
  * @param document - page document
@@ -41,7 +44,9 @@ function readTypedShift(document: Document, axis: Axis): number | undefined {
   const typed = readNumber(document, `shape-${axis}`);
   const start = readStraightStart(document, axis);
 
-  return start !== undefined && Number.isSafeInteger(typed) ? typed - start : undefined;
+  return start !== undefined && Number.isSafeInteger(typed)
+    ? straightBoxShift(start, typed)
+    : undefined;
 }
 
 /**

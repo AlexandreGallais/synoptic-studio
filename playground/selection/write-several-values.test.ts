@@ -8,6 +8,7 @@ import { readTextBlock } from "../hover";
 import { DRAWING_KEYS, readStoredDrawing, writeStoredDrawing } from "../kept-shapes";
 import { selectElement, writeEditedKind } from "../page";
 import {
+  chooseOption,
   clickAt,
   clickElement,
   openServedPage,
@@ -120,6 +121,21 @@ function turnA(): void {
   typeValue("radius", "0");
   typeBox(["10", "20", "100", "50"]);
   typeValue("angle", "30");
+}
+
+/**
+ * Places a text, then puts it in a box 100 × 20 at (47, 61) and turns it by 23° (ADR-0057).
+ *
+ * @param point - the point of the drawing clicked to place it
+ */
+function placeTurnedText(point: Point): void {
+  placeShape("text", point);
+  chooseOption("text-fit", "box");
+  typeValue("text-box-width", "100");
+  typeValue("text-box-height", "20");
+  typeValue("shape-x", "47");
+  typeValue("shape-y", "61");
+  typeValue("angle", "23");
 }
 
 /**
@@ -241,6 +257,31 @@ describe("the panel shows several shapes' position and size (US-070)", () => {
 
     expect(alone).toEqual(["4.19873", "-1.65064"]);
     expect(readSeveralFields()).toEqual(["4.19873", "-1.65064", "100", "50"]);
+  });
+
+  it("[F38.AC1] shows a text turned by 23° by its straight box, alone, picked and among several", () => {
+    // ADR-0057's box 100 × 20 at (47, 61), turned by 23° about its middle (97, 71): half spans
+    // (100 cos 23° + 20 sin 23°) / 2 = (92.05049 + 7.81462) / 2 = 49.93255 and
+    // (100 sin 23° + 20 cos 23°) / 2 = (39.07311 + 18.41010) / 2 = 28.74161, so its straight box
+    // starts at (97 − 49.93255, 71 − 28.74161) = (47.06745, 42.2584), as a shape's (AUD-040).
+    // The rectangle the page opens with, under the text, removed first.
+    pick({ x: 60, y: 40 }, false);
+    pressKey("body", "Delete");
+    placeTurnedText({ x: 250, y: 140 });
+
+    const alone = [readValue("shape-x"), readValue("shape-y")];
+
+    pressKey("body", "Escape");
+    pick({ x: 97, y: 71 }, false);
+
+    const picked = [readValue("shape-x"), readValue("shape-y")];
+
+    placeTurnedText({ x: 450, y: 300 });
+    selectAll();
+
+    expect(alone).toEqual(["47.06745", "42.2584"]);
+    expect(picked).toEqual(["47.06745", "42.2584"]);
+    expect(readSeveralFields()).toEqual(["47.06745", "42.2584", "100", "20"]);
   });
 });
 
@@ -399,6 +440,36 @@ describe("a value typed for several shapes, relative or fixed (US-071)", () => {
 
     // The rectangle the page opens with: 120 × 80 at (0, 0).
     expect(readDrawing()).toEqual([never.shape, expect.objectContaining({ width: 460 })]);
+  });
+
+  it("[F38.AC2] moves a text drawn by 50 in X, a text never measured left as it is", () => {
+    const never = {
+      kind: "text",
+      shape: { ...HELLO_TEXT, content: "Never drawn", x: 500, y: 500 },
+    };
+
+    // The rectangle the page opens with, 120 × 80 at (0, 0), a text placed beside it, then a
+    // text kept by hand, never drawn: no family measures it, and none did before.
+    placeShape("text", { x: 250, y: 140 });
+    writeFontSession(document, { ...readFontSession(document), kept: [] });
+    selectAll();
+
+    const [, text] = readDrawing();
+
+    writeStoredDrawing(document, DRAWING_KEYS.below, [
+      ...readStoredDrawing(document, DRAWING_KEYS.below),
+      never,
+    ]);
+
+    selectAll();
+    typeAndEnter("several-x", "50");
+
+    // At 0° a text's straight box is its frame, its x its position: both put at x 50.
+    expect(readDrawing()).toEqual([
+      expect.objectContaining({ width: 120, x: 50 }),
+      { ...text, x: 50 },
+      never.shape,
+    ]);
   });
 
   it("[F38.AC2] leaves a shape not selected as it is", () => {

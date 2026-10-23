@@ -92,7 +92,7 @@ export const GUIDED_STEPS_F05_DECISIONS: readonly GuidedStep[] = [
   },
   {
     explanation: "Letter spacing 1, 2, … up to 10; then a second line; then Size 32.",
-    look: "The P's turned corner stays put, the text grows along its line; X 47, Y 61 show that corner throughout (US-054).",
+    look: "The P's turned corner stays put, the text grows along its line; X and Y show its straight box, Y 61 throughout (AUD-040).",
     title: "F05 · A turned text grows in place (US-038)",
     values: createTextStepValues({ angle: 23, content: "Pump P-101", size: 16, x: 47, y: 61 }),
   },

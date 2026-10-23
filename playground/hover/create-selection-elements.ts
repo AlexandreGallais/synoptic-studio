@@ -1,4 +1,4 @@
-import { boundingBox, contourBoundingBox } from "../../src";
+import { boundingBox, pickAreaBox } from "../../src";
 import { createStraightBoxElement } from "../drawing";
 import { readKeptDrawing, readSelectedShapes } from "../kept-shapes";
 
@@ -9,9 +9,10 @@ import type { PickArea } from "../../src";
 
 /**
  * Creates the dashed box around several shapes selected (F37): the smallest upright box holding
- * each one's contour as drawn (`contourBoundingBox`, `boundingBox`), dashed as a turned shape's
- * straight box (`createStraightBoxElement`), of class `selection-box`; a text never measured, which
- * is not drawn, holds no contour and is left out.
+ * each one's contour as drawn, or its corners for a shape without area, a shape 0 × 0 its point
+ * (`pickAreaBox`, `boundingBox`), dashed as a turned shape's straight box
+ * (`createStraightBoxElement`), of class `selection-box`; a text never measured, which is not
+ * drawn, holds no corner and is left out.
  *
  * @kind procedure
  * @param document - page document
@@ -21,8 +22,8 @@ import type { PickArea } from "../../src";
  */
 function createSelectionBox(document: Document, areas: readonly PickArea[]): SVGPathElement {
   const corners = areas
-    .filter(({ pieces }) => pieces.length > 0)
-    .map(({ pieces }) => contourBoundingBox(pieces))
+    .filter(({ corners: points }) => points.length > 0)
+    .map((area) => pickAreaBox(area))
     .flatMap((box) => [
       { x: box.minX, y: box.minY },
       { x: box.maxX, y: box.maxY },

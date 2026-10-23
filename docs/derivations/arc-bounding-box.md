@@ -32,6 +32,8 @@ Both angles are then in `[0, π]` in the arc's direction, and their sum is the s
 
 The box of a contour is the box of: the ends of every piece, and the axis points `C + r d` of every arc that passes through them (step 3). It is tight: every point counted is on the drawn outline, and no point of the outline lies outside (step 2), which is the box `getBBox` returns (`REF-SVG2-COORDS` §8.10). Strokes are not in it.
 
+A contour of no piece, a shape 0 × 0 whose sides have no length, has no point to count: the box of no point would have its minima at `+∞` and its maxima at `−∞`. Its box is then the box of its corners, the one point they lie on (`shapeStraightBox`, AUD-040).
+
 ## Checks (test cases)
 
 | Case | Points counted | Expected box |
@@ -40,3 +42,4 @@ The box of a contour is the box of: the ends of every piece, and the axis points
 | Square 100 × 100, radius 50 (a circle), any angle | the axis points of the four arcs | x and y from 0 to 100 |
 | Square 100 × 100, radius 10, straight | arc ends only: each quarter arc ends on an axis | x and y from 0 to 100 |
 | Square 100 × 100, radius 10, turned 45° | the arcs crossing the axes | x and y from 50 − (40√2 + 10) = −16.56854 to 116.56854 |
+| Rectangle 0 × 0 at (10, 20) | no piece: its four corners, all at (10, 20) | x 10 to 10, y 20 to 20 |
