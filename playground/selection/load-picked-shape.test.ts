@@ -25,7 +25,7 @@ import {
 import type { FontFamily, Point } from "../../src";
 
 // The canvas sits at (100, 50) in the window, and the drawing's origin 40 right of and below its
-// corner (`DRAWING_MARGIN`): the drawing's point (x, y) is the window's (x + 140, y + 90).
+// corner at the opening view (`OPENING_VIEW`): the drawing's point (x, y) is the window's (x + 140, y + 90).
 
 /** Left of the drawing's origin in the window: the canvas's 100 and the margin's 40. */
 const ORIGIN_LEFT = 140;

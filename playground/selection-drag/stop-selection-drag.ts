@@ -16,8 +16,8 @@ import type { SelectionDrag } from "../hover";
  * @kind procedure
  * @param document - page document
  * @param event - the release
- * @returns the drag; undefined without one, or when the pointer never left the press's integer
- * point, the release then a click
+ * @returns the drag; undefined without one, or when the pointer stayed within 3 pixels of the
+ * press, the release then a click
  * @see docs/domain/interaction.md#_2-selector
  */
 function readReleasedDrag(document: Document, event: PointerEvent): SelectionDrag | undefined {
@@ -53,8 +53,8 @@ function moveDraggedShapes(document: Document, drag: SelectionDrag): void {
 }
 
 /**
- * Ends a press with the Selector (F37) at the release: a drag that left the press's integer point
- * is no click, so that the click following it picks nothing (`PRESSED_TOOLS`); its selection
+ * Ends a press with the Selector (F37) at the release: a drag that went further than 3 pixels from
+ * the press is no click, so that the click following it picks nothing (`PRESSED_TOOLS`); its selection
  * rectangle, if it draws one, selects the shapes it takes (`selectShapesInBox`), and a move lands
  * the shapes it moves on integers (`moveDraggedShapes`, F39); the page is then redrawn, the
  * rectangle taken away.

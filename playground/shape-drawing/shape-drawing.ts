@@ -10,6 +10,6 @@ export type ShapeDrawing = {
   readonly tool: string;
   /** Whether Shift is held. */
   readonly isShift: boolean;
-  /** Whether the new shape is drawn yet: once the pointer has left the press's integer point. */
+  /** Whether the new shape is drawn yet: once the pointer has gone further than 3 pixels from the press. */
   readonly isDrawn: boolean;
 };

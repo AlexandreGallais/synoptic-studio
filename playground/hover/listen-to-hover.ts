@@ -1,13 +1,12 @@
-import { selectElement } from "../page";
-import { readDrawingPoint } from "../placing";
+import { readPointerOffset, selectElement } from "../page";
 
-import { HOVER_POINTS } from "./hover-points";
+import { HOVER_OFFSETS } from "./hover-offsets";
 import { showHover } from "./show-hover";
 
 /**
- * Listens to the pointer passing over the drawing (F36): each move keeps its point
- * (`HOVER_POINTS`) and outlines the shape under it (`showHover`); leaving the drawing forgets it
- * and takes the outline away.
+ * Listens to the pointer passing over the drawing (F36): each move keeps its offset on the canvas
+ * (`HOVER_OFFSETS`) and outlines the shape under it (`showHover`), read through the view at each
+ * redraw (F42); leaving the drawing forgets it and takes the outline away.
  *
  * @kind procedure
  * @param document - page document
@@ -17,12 +16,12 @@ export function listenToHover(document: Document): void {
   const canvas = selectElement(document, "canvas");
 
   canvas.addEventListener("pointermove", (event) => {
-    HOVER_POINTS.set(document, readDrawingPoint(document, event));
+    HOVER_OFFSETS.set(document, readPointerOffset(canvas, event).point);
     showHover(document);
   });
 
   canvas.addEventListener("pointerleave", () => {
-    HOVER_POINTS.delete(document);
+    HOVER_OFFSETS.delete(document);
     showHover(document);
   });
 }

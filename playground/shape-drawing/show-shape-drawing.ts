@@ -1,5 +1,6 @@
-import { draggedBox } from "../../src";
+import { draggedBox, isDragged } from "../../src";
 import { startNewShape, writeClickedShape } from "../placing";
+import { readView } from "../view";
 
 import { writeDraggedShape } from "./write-dragged-shape";
 
@@ -45,9 +46,10 @@ function writeDrawingBox(document: Document, drawing: ShapeDrawing, box: Point &
 }
 
 /**
- * Writes the new shape as the drag stands (F36): nothing while the pointer has not left the
- * press's integer point, which leaves the release to the click (F35); once it has, the shape
- * started and its box written (`writeDrawingBox`), placed as a click if the pointer comes back.
+ * Writes the new shape as the drag stands (F36): nothing while the pointer stays within 3 pixels
+ * of the press at the view's scale (`isDragged`, SP-030's answer 8), which leaves the release to
+ * the click (F35); once it has gone further, the shape started and its box written
+ * (`writeDrawingBox`), placed as a click if the pointer comes back to the press's integer point.
  *
  * @kind procedure
  * @param document - page document
@@ -58,7 +60,7 @@ function writeDrawingBox(document: Document, drawing: ShapeDrawing, box: Point &
 export function showShapeDrawing(document: Document, drawing: ShapeDrawing): ShapeDrawing {
   const box = readDrawingBox(drawing);
 
-  if (!drawing.isDrawn && box.width + box.height === 0) {
+  if (!drawing.isDrawn && !isDragged(drawing.press, drawing.pointer, readView(document).scale)) {
     return drawing;
   }
 

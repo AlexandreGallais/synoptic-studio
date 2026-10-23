@@ -1,20 +1,16 @@
-import { createSvgElement } from "../../src";
-import { selectElement } from "../page";
-
-import { DRAWING_MARGIN } from "./drawing-margin";
+import { createSvgElement, shownViewBox } from "../../src";
+import { readCanvasSize, readView } from "../view";
 
 /**
- * Creates an empty `<svg>` of the drawing's view: at a fixed scale, 1 user unit to 1 CSS pixel
- * (US-004), as large as the canvas, its origin a margin from the top-left; the drawing and the
- * layer above it (F36) both, so that they match.
+ * Creates an empty `<svg>` of the drawing's view, as large as the canvas, its `viewBox` the
+ * view's (`shownViewBox`, ADR-0098): the drawing and the layer above it (F36) both, so that they
+ * match at any zoom; the shapes' paths never changed by it.
  *
  * @kind procedure
  * @param document - page document
  * @returns the `<svg>`, empty
- * @see docs/domain/interaction.md#_2-selector
+ * @see docs/domain/interaction.md#_7-navigation-and-history
  */
 export function createViewSvg(document: Document): SVGSVGElement {
-  const { height, width } = selectElement(document, "canvas").getBoundingClientRect();
-
-  return createSvgElement(document, { height, width, x: -DRAWING_MARGIN, y: -DRAWING_MARGIN });
+  return createSvgElement(document, shownViewBox(readView(document), readCanvasSize(document)));
 }

@@ -1,4 +1,5 @@
 export * from "./add-placed-shape";
+export * from "./clicked-presses";
 export * from "./focus-new-text";
 export * from "./listen-to-placing";
 export * from "./read-drawing-point";

@@ -1,5 +1,5 @@
 import { contourBand, contourPiecesToPathData, createPathElement, screenToUser } from "../../src";
-import { VIEW_SCALE } from "../kept-shapes";
+import { readView } from "../view";
 
 import type { PickArea } from "../../src";
 
@@ -12,7 +12,8 @@ const OUTLINE_STEP = 2;
 /**
  * Creates the outline of a shape in the layer above the drawing (F36): the band 2 screen pixels
  * wide about its contour as drawn (`contourBand`), a curve followed by chords of at most 2 screen
- * pixels, both in user units (`screenToUser`); a fill, never a native stroke.
+ * pixels, both in user units at the view's scale (`screenToUser`, `readView`), so that it keeps its
+ * size on screen at any zoom; a fill, never a native stroke.
  *
  * @kind procedure
  * @param document - page document
@@ -26,10 +27,11 @@ export function createOutlineElement(
   area: PickArea,
   name: string,
 ): SVGPathElement {
+  const { scale } = readView(document);
   const band = contourBand(
     area.pieces,
-    screenToUser(OUTLINE_WIDTH / 2, VIEW_SCALE),
-    screenToUser(OUTLINE_STEP, VIEW_SCALE),
+    screenToUser(OUTLINE_WIDTH / 2, scale),
+    screenToUser(OUTLINE_STEP, scale),
   );
   const outline = createPathElement(
     document,

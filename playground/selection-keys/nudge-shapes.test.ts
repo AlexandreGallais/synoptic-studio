@@ -308,14 +308,14 @@ describe("the arrows keep the fraction of a turned shape (US-073)", () => {
     expect(readValue("shape-y")).toBe("-1.65064");
   });
 
-  it("[F39.AC4] lands A′ moved by Right at the next drag, its X 5.19873 landing on 6", () => {
+  it("[F39.AC4] lands A′ moved by Right at the next drag, its X 5.19873 landing on 9", () => {
     pressArrow("ArrowRight", false);
     dispatchDrawingPointer("pointerdown", IN_A, NO_KEY);
-    dispatchDrawingPointer("pointermove", { x: 50.7, y: 40 }, NO_KEY);
-    dispatchDrawingPointer("pointerup", { x: 50.7, y: 40 }, NO_KEY);
+    dispatchDrawingPointer("pointermove", { x: 53.7, y: 40 }, NO_KEY);
+    dispatchDrawingPointer("pointerup", { x: 53.7, y: 40 }, NO_KEY);
 
-    // 5.19873 + 0.7 = 5.89873 rounds to 6; −1.65064 + 0 rounds to −2.
-    expect(readValue("shape-x")).toBe("6");
+    // 3.7 pixels, beyond 3: a drag. 5.19873 + 3.7 = 8.89873 rounds to 9; −1.65064 + 0 rounds to −2.
+    expect(readValue("shape-x")).toBe("9");
     expect(readValue("shape-y")).toBe("-2");
   });
 });

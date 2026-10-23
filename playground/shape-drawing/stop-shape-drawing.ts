@@ -1,12 +1,30 @@
-import { focusNewText } from "../placing";
+import { CLICKED_PRESSES, focusNewText } from "../placing";
 import { writeArmedTool } from "../toolbar";
 
 import { SHAPE_DRAWINGS } from "./shape-drawings";
 
 /**
+ * Leaves the shape a drag drew to the designer: a text's content selected so that typing replaces
+ * it (SP-026), and the selector armed again, as after a click.
+ *
+ * @kind procedure
+ * @param document - page document
+ * @param tool - the tool that drew it
+ * @see docs/domain/interaction.md#_1-tools
+ */
+function focusDrawnShape(document: Document, tool: string): void {
+  if (tool === "text") {
+    focusNewText(document);
+  }
+
+  writeArmedTool(document, "selector");
+}
+
+/**
  * Ends the drag (F36), its last place already drawn: the shape drawn is kept, a text's content
  * selected so that typing replaces it (SP-026), and the selector armed again, as after a click; a
- * drag that never left the press's integer point leaves the release to the click (F35).
+ * press whose pointer stayed within 3 pixels of it leaves the release to the click, which places
+ * the shape centred on the point pressed (`CLICKED_PRESSES`, SP-030's answer 8).
  *
  * @kind procedure
  * @param document - page document
@@ -17,13 +35,13 @@ export function stopShapeDrawing(document: Document): void {
 
   SHAPE_DRAWINGS.delete(document);
 
-  if (drawing?.isDrawn !== true) {
+  if (drawing === undefined) {
     return;
   }
 
-  if (drawing.tool === "text") {
-    focusNewText(document);
+  if (drawing.isDrawn) {
+    focusDrawnShape(document, drawing.tool);
+  } else {
+    CLICKED_PRESSES.set(document, drawing.press);
   }
-
-  writeArmedTool(document, "selector");
 }

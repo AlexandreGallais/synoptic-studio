@@ -1,6 +1,7 @@
 import { PICK_TOLERANCE, screenToUser, shapeAtPoint, shapeSelectionAfterClick } from "../../src";
 import { readPickAreas } from "../hover";
-import { VIEW_SCALE, readSelectedShapes } from "../kept-shapes";
+import { readSelectedShapes } from "../kept-shapes";
+import { readView } from "../view";
 
 import { writeShapeSelection } from "./write-shape-selection";
 
@@ -23,7 +24,7 @@ export function selectShapeAt(document: Document, point: Point, isShift: boolean
   const index = shapeAtPoint(
     readPickAreas(document),
     point,
-    screenToUser(PICK_TOLERANCE, VIEW_SCALE),
+    screenToUser(PICK_TOLERANCE, readView(document).scale),
   );
 
   writeShapeSelection(

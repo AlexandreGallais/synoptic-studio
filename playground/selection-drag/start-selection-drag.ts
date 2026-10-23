@@ -1,9 +1,9 @@
 import { PICK_TOLERANCE, screenToUser, shapeAtPoint } from "../../src";
 import { SELECTION_DRAGS, readPickAreas } from "../hover";
-import { VIEW_SCALE } from "../kept-shapes";
 import { readMode, selectElement } from "../page";
 import { readDrawingPoint } from "../placing";
 import { readArmedTool } from "../toolbar";
+import { readView } from "../view";
 
 import { readShapesMove } from "./read-shapes-move";
 
@@ -40,7 +40,7 @@ function readSelectorPress(document: Document, event: PointerEvent): Point | und
  */
 function readPressedDrag(document: Document, press: Point, event: PointerEvent): SelectionDrag {
   const isShape = readMode(document) === "shape";
-  const reach = screenToUser(PICK_TOLERANCE, VIEW_SCALE);
+  const reach = screenToUser(PICK_TOLERANCE, readView(document).scale);
   const index = isShape ? shapeAtPoint(readPickAreas(document), press, reach) : -1;
   const drag = { isMoved: false, isShift: event.shiftKey, pointer: press, press };
 
@@ -68,7 +68,7 @@ function startPointerCapture(document: Document, drag: SelectionDrag, pointerId:
 /**
  * Starts a press with the Selector on the drawing (F37) when the main button is pressed, a drag
  * left before dropped: kept from the press to the release (`SELECTION_DRAGS`), so that a release
- * off the press's integer point is no click; pressed on an empty place, in Shape mode, it draws a
+ * after the pointer went further than 3 pixels from the press is no click; pressed on an empty place, in Shape mode, it draws a
  * selection rectangle, and on a shape it moves the shapes selected (`readPressedDrag`, F39), the
  * canvas taking the pointer for either so that the drag goes on beyond its edges.
  *
