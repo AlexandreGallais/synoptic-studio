@@ -3,7 +3,7 @@ id: US-072
 epic: E02
 feature: F39
 title: A drag moves the shapes selected, landing on integers
-status: ready
+status: done
 points: 3
 ---
 
