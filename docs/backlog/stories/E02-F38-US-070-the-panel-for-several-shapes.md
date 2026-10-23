@@ -42,7 +42,7 @@ The examples select two straight rectangles, sharp: A at (10, 20), 100 × 50, an
 
 - [x] T1 — The criteria in line with SP-027's answers; the values of several shapes, common or Mixed (`src/model/drawing/`), and the panel's fields for several shapes: interface and failing tests (1 h)
 - [x] T2 — The panel shows them for several shapes, read-only; the rules in `interaction.md` §2; the tests of T1 passing (2 h)
-- [ ] T3 — The Q table, F38's guide page; the Product Owner test card (1 h)
+- [x] T3 — The Q table, F38's guide page; the Product Owner test card (1 h)
 
 Files: `src/model/drawing/` (each shape's values, from its straight box, `contourBoundingBox` and `textStraightBox`, and their common values within `EPSILON`), `playground/selection/` (the fields for several shapes), `playground/hover/` (a text's block, read once for its area and its values), `playground/index.html` (the four fields of several shapes, beside the panel's), `playground/mount/update-page.ts`. `@see` `docs/domain/interaction.md#_2-selector`, `REF-FIGMA-ADJUST`, `REF-PENPOT-MEASURES`.
 
