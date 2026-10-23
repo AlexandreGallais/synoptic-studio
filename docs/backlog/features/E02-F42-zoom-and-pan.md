@@ -9,7 +9,7 @@ status: in-progress
 
 **Benefit hypothesis**: the designer zooms in to place a shape exactly and out to see the whole symbol, and moves the view, without any shape's numbers changing.
 
-Started on 2026-10-23 on F41's branch, F41 done. The view changes only by the drawing's `viewBox` or a CSS transform of the whole SVG, never by the shapes' paths or coordinates (Product Owner, 2026-10-23); the helps of the layer above the drawing are drawn only within the area shown and its padding, so that a large rounded shape's band stays fast (Product Owner, 2026-10-23, SP-028's answer 8). Its stories are written by SP-030, the research done in full before them. The sources and the code read: [note 0031](../../research/notes/0031-f42-zoom-and-pan.md); the way proposed, the `viewBox` of both layers, the view kept outside the drawing: ADR-0098, for the Product Owner's decision. F42 holds four stories and its audit; they stay draft until SP-030's questions are answered.
+Started on 2026-10-23 on F41's branch, F41 done. The view changes only by the drawing's `viewBox` or a CSS transform of the whole SVG, never by the shapes' paths or coordinates (Product Owner, 2026-10-23); the helps of the layer above the drawing are drawn only within the area shown and its padding, so that a large rounded shape's band stays fast (Product Owner, 2026-10-23, SP-028's answer 8). Its stories are written by SP-030, the research done in full before them. The sources and the code read: [note 0031](../../research/notes/0031-f42-zoom-and-pan.md); the way proposed, the `viewBox` of both layers, the view kept outside the drawing: ADR-0098, accepted on 2026-10-23. F42 holds four stories and its audit, ready since SP-030's questions were answered on 2026-10-23, each the option proposed (SP-030, Answers of the Product Owner).
 
 ## Acceptance criteria
 
@@ -25,12 +25,12 @@ In delivery order.
 
 | ID | Type | Title | Status |
 | --- | --- | --- | --- |
-| [SP-030](../stories/E02-F42-SP-030-refine-zoom-and-pan.md) | SP | Refine zoom and pan | ready |
-| [EN-148](../stories/E02-F42-EN-148-the-view-in-the-model.md) | EN | The view of the drawing in the model | draft |
-| [US-078](../stories/E02-F42-US-078-zoom-and-pan-by-the-wheel-and-a-drag.md) | US | Zoom and pan by the wheel, a pinch and a drag | draft |
-| [EN-149](../stories/E02-F42-EN-149-the-helps-within-the-area-shown.md) | EN | The helps drawn within the area shown and its padding | draft |
-| [US-079](../stories/E02-F42-US-079-the-zoom-keys-the-fits-and-the-percentage.md) | US | The zoom's keys, the fits and the percentage shown | draft |
-| [AUD-044](../stories/E02-F42-AUD-044-audit-f42.md) | AUD | Audit F42 | draft |
+| [SP-030](../stories/E02-F42-SP-030-refine-zoom-and-pan.md) | SP | Refine zoom and pan | done |
+| [EN-148](../stories/E02-F42-EN-148-the-view-in-the-model.md) | EN | The view of the drawing in the model | ready |
+| [US-078](../stories/E02-F42-US-078-zoom-and-pan-by-the-wheel-and-a-drag.md) | US | Zoom and pan by the wheel, a pinch and a drag | ready |
+| [EN-149](../stories/E02-F42-EN-149-the-helps-within-the-area-shown.md) | EN | The helps drawn within the area shown and its padding | ready |
+| [US-079](../stories/E02-F42-US-079-the-zoom-keys-the-fits-and-the-percentage.md) | US | The zoom's keys, the fits and the percentage shown | ready |
+| [AUD-044](../stories/E02-F42-AUD-044-audit-f42.md) | AUD | Audit F42 | ready |
 | [VAL-043](../stories/E02-F42-VAL-043-validate-f42.md) | VAL | Validate F42 | dropped |
 
 ## Feature plan

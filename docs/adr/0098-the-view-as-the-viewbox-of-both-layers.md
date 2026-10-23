@@ -1,6 +1,6 @@
 # ADR-0098 — The view as the `viewBox` of both layers, kept outside the drawing
 
-**Status**: Proposed (SP-030, 2026-10-23), for the Product Owner's decision (SP-030's question 1); research note 0031.
+**Status**: Accepted (2026-10-23): the Product Owner chose the `viewBox` of both layers (SP-030's answer 1); research note 0031.
 
 ## Context
 

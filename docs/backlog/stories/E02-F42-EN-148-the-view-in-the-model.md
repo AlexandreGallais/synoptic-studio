@@ -3,13 +3,13 @@ id: EN-148
 epic: E02
 feature: F42
 title: The view of the drawing in the model
-status: draft
+status: ready
 points: 2
 ---
 
 # E02 · F42 · EN-148 — The view of the drawing in the model
 
-The view as ADR-0098 proposes it, once the Product Owner decides (SP-030's question 1): a scale, CSS pixels per user unit, and an origin, the point of the drawing at the canvas's top-left; never in the drawing, the history nor the export. Plain data and `domain` functions of `src/model/view/`: its `viewBox`, the point under the pointer, a zoom about a point within the bounds, a step, a pan, a fit to a box ([note 0031](../../research/notes/0031-f42-zoom-and-pan.md), §2, §4). Draft until SP-030's answers 1, 4, 5 and 6.
+The view as ADR-0098 sets it, accepted on 2026-10-23 (SP-030's answer 1): a scale, CSS pixels per user unit, and an origin, the point of the drawing at the canvas's top-left; never in the drawing, the history nor the export. Plain data and `domain` functions of `src/model/view/`: its `viewBox`, the point under the pointer, a zoom about a point within the bounds, a step, a pan, a fit to a box ([note 0031](../../research/notes/0031-f42-zoom-and-pan.md), §2, §4).
 
 ## Acceptance criteria
 

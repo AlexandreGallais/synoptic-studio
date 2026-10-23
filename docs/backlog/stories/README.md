@@ -111,12 +111,12 @@
 | [US-077](./E02-F41-US-077-the-list-of-steps.md) | F41 | The list of the history's steps | done |
 | [AUD-043](./E02-F41-AUD-043-audit-f41.md) | F41 | Audit F41 | done |
 | [VAL-042](./E02-F41-VAL-042-validate-f41.md) | F41 | Validate F41 | dropped |
-| [SP-030](./E02-F42-SP-030-refine-zoom-and-pan.md) | F42 | Refine zoom and pan | ready |
-| [EN-148](./E02-F42-EN-148-the-view-in-the-model.md) | F42 | The view of the drawing in the model | draft |
-| [US-078](./E02-F42-US-078-zoom-and-pan-by-the-wheel-and-a-drag.md) | F42 | Zoom and pan by the wheel, a pinch and a drag | draft |
-| [EN-149](./E02-F42-EN-149-the-helps-within-the-area-shown.md) | F42 | The helps drawn within the area shown and its padding | draft |
-| [US-079](./E02-F42-US-079-the-zoom-keys-the-fits-and-the-percentage.md) | F42 | The zoom's keys, the fits and the percentage shown | draft |
-| [AUD-044](./E02-F42-AUD-044-audit-f42.md) | F42 | Audit F42 | draft |
+| [SP-030](./E02-F42-SP-030-refine-zoom-and-pan.md) | F42 | Refine zoom and pan | done |
+| [EN-148](./E02-F42-EN-148-the-view-in-the-model.md) | F42 | The view of the drawing in the model | ready |
+| [US-078](./E02-F42-US-078-zoom-and-pan-by-the-wheel-and-a-drag.md) | F42 | Zoom and pan by the wheel, a pinch and a drag | ready |
+| [EN-149](./E02-F42-EN-149-the-helps-within-the-area-shown.md) | F42 | The helps drawn within the area shown and its padding | ready |
+| [US-079](./E02-F42-US-079-the-zoom-keys-the-fits-and-the-percentage.md) | F42 | The zoom's keys, the fits and the percentage shown | ready |
+| [AUD-044](./E02-F42-AUD-044-audit-f42.md) | F42 | Audit F42 | ready |
 | [VAL-043](./E02-F42-VAL-043-validate-f42.md) | F42 | Validate F42 | dropped |
 | [SP-025](./E02-SP-025-cut-the-editing-work-into-small-features.md) | E02 | Cut the editing work into small features | done |
 | [SP-010](./E14-F11-SP-010-research-f11.md) | F11 | Research for F11: folder layouts and test placement | done |

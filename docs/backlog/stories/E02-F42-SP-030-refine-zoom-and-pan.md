@@ -3,7 +3,7 @@ id: SP-030
 epic: E02
 feature: F42
 title: Refine zoom and pan
-status: ready
+status: done
 points: 3
 ---
 
@@ -77,3 +77,18 @@ One task = one commit, referenced as `SP-030.T1`.
 **F42's feature file and the stories' index** were written in `SP-030.T1`, as SP-029 wrote F40's: `tests/backlog.test.ts` refuses a story file missing from its feature's table and from the index, and the pre-push refuses shared files on `US` and `EN` branches only (`tools/shared-files`, `WORKER_TYPES`). F42's file now holds its five criteria, the four stories, draft, and its plan; to check against the rows written meanwhile before the `done` commit.
 
 **For the `math-expert`**, once the answers are given: `DERIV-view-zoom` (the origin kept under the pointer, `o′ = o + p / s − p / s′`, from `REF-SVG2-COORDS` §8.2), written in EN-148's T1; `DERIV-band-within-box` (an arc's angles within a box, a cubic cut by halves left out by their control points' box, and the coverage the cut band keeps), written in EN-149's T1.
+
+## Answers of the Product Owner
+
+Given on 2026-10-23, each the first option:
+
+1. (a) The `viewBox` of both SVGs; ADR-0098 accepted.
+2. (a) Figma's: Ctrl (Cmd on macOS) with the wheel, and a pinch, zoom about the pointer; the wheel alone pans, down, and right with Shift; Space held with a drag, or the middle button's drag, pans.
+3. (a) `+` and `-` zoom by a step about the pointer when it is over the drawing, else about the canvas's centre; Shift + 0 is 100 %, Shift + 1 fits the drawing, Shift + 2 the selection.
+4. A key's or a button's step × √2 (100, 141, 200, 283, 400 %); the wheel's and the pinch's by their deltas, × (1 + 0.0057 a pixel).
+5. (a) 1 % to 25 600 %.
+6. (a) The page opens at 100 % with (−40, −40) at the top-left, and Reset goes back to it; the fits leave 40 pixels on each side.
+7. (b) The helps computed within the area shown and half the canvas on each side.
+8. (b) A click while the pointer stays within 3 pixels of the press, at any zoom, the Selector's press likewise.
+9. (a) The percentage in the toolbar, its menu holding Zoom in, Zoom out, Zoom to 100 %, Fit the drawing, Fit the selection, each with its key, and a field where a percentage is typed.
+10. No remark.
