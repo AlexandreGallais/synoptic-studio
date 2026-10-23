@@ -13,5 +13,11 @@ export function drawingWithoutShapes<T>(
   drawing: readonly T[],
   removed: readonly number[],
 ): readonly T[] {
-  return removed.length > 0 ? drawing : [...drawing];
+  const isRemoved = new Set(removed);
+
+  return drawing
+    .entries()
+    .filter(([index]) => !isRemoved.has(index))
+    .map(([, shape]) => shape)
+    .toArray();
 }

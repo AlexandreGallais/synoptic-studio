@@ -32,9 +32,9 @@ The examples draw three rectangles 100 × 100: A at (0, 0), B at (150, 0), C at 
 
 | Step | Do | You should see |
 | --- | --- | --- |
-| 1 | Open the page, then Reset; click Rectangle and click the drawing twice, far apart | three rectangles |
+| 1 | Open the page, then Reset; click Rectangle and click the drawing, twice, far apart and away from the first rectangle | three rectangles |
 | 2 | Click the middle one, then press Delete (the key labelled delete on a Mac) | the middle rectangle gone, the two others where they were; the panel says no shape is selected |
-| 3 | Select the two left with Shift + click, then press Backspace | none left |
+| 3 | Click one of the two rectangles left, Shift + click the other, then press Backspace | none left |
 | 4 | Click Rectangle, click the drawing, then click in Width and press Backspace | Width's number shortened; the rectangle still there |
 | 5 | Click Points, select a point by its handle, press Delete | the point deleted, the shape still there |
 | 6 | Click Shape, then Export SVG and open the file | the shapes left, and no outline |
@@ -42,7 +42,7 @@ The examples draw three rectangles 100 × 100: A at (0, 0), B at (150, 0), C at 
 ## Tasks
 
 - [x] T1 — The drawing without the shapes selected (`drawingWithoutShapes`, `src/model/drawing/`): interface and failing tests (1 h)
-- [ ] T2 — The key in the playground outside the fields, the tests of T1 passing; the rules in `interaction.md` §2; the Product Owner test card (2 h)
+- [x] T2 — The key in the playground outside the fields, the tests of T1 passing; the rules in `interaction.md` §2; the Product Owner test card (2 h)
 
 Files: `src/model/drawing/drawing-without-shapes.ts` and its test, `playground/selection/` (the key, the selection cleared, the settings kept), `playground/points/listen-to-delete-key.ts` (Shape mode left to the shapes). `@see` `docs/domain/interaction.md#_2-selector`, `REF-INKSCAPE-KEYS`, `REF-PENPOT-SHORTCUTS`. At T1 the modules picking a shape under the pointer (`shapeAtPoint`, the pick areas, `isFlatBox`, `PICK_TOLERANCE`) moved from `src/model/drawing/` to `src/model/picking/`, the drawing folder otherwise holding 16 modules, past the 15 of `docs/conventions/files.md`.
 

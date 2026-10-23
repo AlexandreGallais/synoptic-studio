@@ -8,6 +8,8 @@
 
 **Select all, or none, by a key.** Press Ctrl + A (Cmd + A on a Mac) to select every shape, and Escape to select none. With the cursor in a field of the panel, both keys stay the field's: Ctrl + A selects its text. With a color picker open, Escape closes the picker and leaves the selection as it is.
 
+**Remove the selected shapes by a key.** Press Delete, or Backspace (the key labelled delete on a Mac): the shapes selected are removed, the others stay where they were, and none is selected. With the cursor in a field of the panel, Width or a text's Content, the key edits the field and no shape is removed. In Points mode the key deletes the points selected, as before, never the shape.
+
 **Points mode edits one shape.** While several shapes are selected, the Points button is disabled. In Points mode, Shift + click and a click on a point's handle act on the points only, never on which shapes are selected, and Ctrl + A selects no shape.
 
 This page also says which keys the editor uses, chosen at the spike.
@@ -21,6 +23,8 @@ For the review's summary; each can be changed.
 - With several shapes selected, none is edited: the panel shows no field until F38. Back to one, the panel loads it as a click does, and the shape the panel left keeps its settings for the next shape of its kind.
 - Points mode edits one shape: its button is disabled while several are selected, and in Points mode a click with Shift or on a handle never changes the shapes selected, nor does Ctrl + A. A plain click on a handle used to select none when the point lay in a rounded corner's cut; it now selects the point only.
 - Escape selects none in Shape mode and in Points mode alike, as a click on an empty place does; in a field of the panel it changes nothing.
+- Delete removes the selected shapes whichever tool is chosen, and the tool stays chosen; with no shape selected it does nothing. The shape the panel showed keeps its settings for the next shape of its kind: a rectangle of radius 25 removed, the next rectangle starts with radius 25. A shape with a refused value in the panel is removed too, as a click on an empty place drops it.
+- In Points mode, Delete deletes the points selected and never the shape, even with no point selected. Every field of the panel keeps the key, a text's Content too, which used to let Delete reach the points.
 
 ## The ideas behind it
 

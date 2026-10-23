@@ -548,6 +548,10 @@ describe("Delete removes the selected shapes (US-066)", () => {
 
     pressAndClick("#canvas", toWindow({ x: 200, y: 50 }));
     typeValue("width", "-1");
+
+    // Refused, B is not outlined.
+    expect(readSelectionOutlines()).toEqual([]);
+
     pressKey("body", "Delete");
 
     expect(readShapePaths()).toEqual([paths[0], paths[2]]);
