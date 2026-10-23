@@ -1,3 +1,5 @@
+import { screenToUser } from "../drawing";
+
 import type { View } from "./view";
 import type { BoundingBox, Size } from "../../geometry";
 
@@ -18,9 +20,9 @@ import type { BoundingBox, Size } from "../../geometry";
  */
 export function shownBox(view: View, canvas: Size, padding: Size): BoundingBox {
   return {
-    maxX: view.origin.x,
-    maxY: view.origin.y,
-    minX: canvas.width,
-    minY: padding.height,
+    maxX: view.origin.x + screenToUser(canvas.width + padding.width, view.scale),
+    maxY: view.origin.y + screenToUser(canvas.height + padding.height, view.scale),
+    minX: view.origin.x - screenToUser(padding.width, view.scale),
+    minY: view.origin.y - screenToUser(padding.height, view.scale),
   };
 }

@@ -157,6 +157,30 @@ describe("contourBandWithin (DERIV-band-within-box)", () => {
     ).toEqual([middle]);
   });
 
+  it("keeps a chord meeting the widened box at its end only, the samples' rounding errors aside", () => {
+    // The straight cubic from (0, 0) to (3, 0), its control points (1, 0) and (2, 0): 3 · 1 = 3
+    // over a step of 0.45, ⌈6.67⌉ = 7 chords of 3 / 7. The box from (4, 0) to (7, 0), widened by 1,
+    // from (3, −1) to (8, 1), meets the last chord at its end (3, 0) alone. The run from 5 to 7
+    // has its middle B(6 / 7) = 2.571428571428571, a reach of 3 / 7 = 0.42857142857142855,
+    // 2.9999999999999996 in all, which only `EPSILON` takes to 3.
+    const cubic: Cubic = {
+      end: { x: 3, y: 0 },
+      first: { x: 1, y: 0 },
+      kind: "cubic",
+      second: { x: 2, y: 0 },
+      start: { x: 0, y: 0 },
+    };
+    const last = contourBand([cubic], 1, 0.45)[7];
+
+    expect(
+      contourBandWithin(
+        [cubic],
+        { halfWidth: 1, step: 0.45 },
+        boxOf({ x: 4, y: 0 }, { x: 7, y: 0 }),
+      ),
+    ).toEqual([last]);
+  });
+
   it("gives a point its disc alone, and none for no piece", () => {
     const point = { x: 5, y: 5 };
 

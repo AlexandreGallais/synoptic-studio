@@ -1,5 +1,7 @@
-import { contourBand, contourPiecesToPathData, createPathElement, screenToUser } from "../../src";
+import { createPathElement, screenToUser } from "../../src";
 import { readView } from "../view";
+
+import { readBandPathData } from "./read-band-path-data";
 
 import type { PickArea } from "../../src";
 
@@ -11,9 +13,10 @@ const OUTLINE_STEP = 2;
 
 /**
  * Creates the outline of a shape in the layer above the drawing (F36): the band 2 screen pixels
- * wide about its contour as drawn (`contourBand`), a curve followed by chords of at most 2 screen
- * pixels, both in user units at the view's scale (`screenToUser`, `readView`), so that it keeps its
- * size on screen at any zoom; a fill, never a native stroke.
+ * wide about its contour as drawn, a curve followed by chords of at most 2 screen pixels, both in
+ * user units at the view's scale (`screenToUser`, `readView`), so that it keeps its size on screen
+ * at any zoom; computed only within the area shown widened by half the canvas on each side, and
+ * reused while a pan stays within it (`readBandPathData`, EN-149); a fill, never a native stroke.
  *
  * @kind procedure
  * @param document - page document
@@ -28,14 +31,12 @@ export function createOutlineElement(
   name: string,
 ): SVGPathElement {
   const { scale } = readView(document);
-  const band = contourBand(
-    area.pieces,
-    screenToUser(OUTLINE_WIDTH / 2, scale),
-    screenToUser(OUTLINE_STEP, scale),
-  );
   const outline = createPathElement(
     document,
-    band.map((subpath) => contourPiecesToPathData(subpath)).join(" "),
+    readBandPathData(document, area.pieces, {
+      halfWidth: screenToUser(OUTLINE_WIDTH / 2, scale),
+      step: screenToUser(OUTLINE_STEP, scale),
+    }),
   );
 
   outline.classList.add(name);

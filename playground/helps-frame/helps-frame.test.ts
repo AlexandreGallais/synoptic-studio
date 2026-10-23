@@ -2,6 +2,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
 
 import { contourBand, contourBandWithin, contourPiecesToPathData, shapePickArea } from "../../src";
+import { showHover } from "../hover";
 import {
   openServedPage,
   readShapeModel,
@@ -10,6 +11,10 @@ import {
   typeValue,
 } from "../user-actions";
 import { PAGE_VIEWS } from "../view";
+
+import { HELPS_FRAMES } from "./helps-frames";
+import { readBandPathData } from "./read-band-path-data";
+import { startHelpsFrame } from "./start-helps-frame";
 
 import type { BandSize, BoundingBox, ContourPiece, Point, View } from "../../src";
 
@@ -85,27 +90,28 @@ function boxOf(from: Point, to: Point): BoundingBox {
   return { maxX: to.x, maxY: to.y, minX: from.x, minY: from.y };
 }
 
-describe("the helps computed within the area shown and half the canvas (EN-149)", () => {
+describe("R's band within the area shown and half the canvas (EN-149)", () => {
   beforeEach(() => {
     openServedPage("");
     setElementBox("#canvas", { height: 800, left: 100, top: 50, width: 1200 });
+    typeRounded("99999", "100000", "100000");
   });
 
   it(
-    "[F42.AC5] draws R's band empty at 100 %, 60 redraws within a second",
-    // R's corners, about 39 270 chords of 2 pixels each, took 156 to 200 ms a band (note 0031, §5).
-    // alone: 0 ms, measured in T2; 960 ms, 60 frames of 16 ms.
+    "[F42.AC5] draws R's band empty at 100 %, 60 redraws of the layer above within a second",
+    // R's corners, about 39 270 chords of 2 pixels each, took 156 to 200 ms a band (note 0031, §5):
+    // each redraw computes it again, its frame dropped. alone: 88 ms, the median of 5 runs of its
+    // file (EN-149); 960 ms, 60 frames of 16 ms, is 10.9 times it.
     { timeout: 960 },
     () => {
-      typeRounded("99999", "100000", "100000");
-
       // Selected, its contour 18 647 units from the helps' box: no subpath.
       expect(readOutline("selection")).toBe("");
 
-      const frames = Array.from({ length: 60 }, () => new Event("resize"));
+      const redraws = Array.from({ length: 60 }, () => document);
 
-      for (const frame of frames) {
-        globalThis.dispatchEvent(frame);
+      for (const page of redraws) {
+        HELPS_FRAMES.delete(page);
+        showHover(page);
       }
 
       expect(readOutline("selection")).toBe("");
@@ -113,8 +119,6 @@ describe("the helps computed within the area shown and half the canvas (EN-149)"
   );
 
   it("follows R fitted at a scale of 0.0072 whole, its corners by 283 chords each", () => {
-    typeRounded("99999", "100000", "100000");
-
     // Fitted with 40 pixels on each side: min(1 120 / 99 999, 720 / 100 000) = 0.0072, its centre
     // (49 999.5, 50 000) at the canvas's (600, 400): o = (49 999.5 − 600 / 0.0072, 50 000 − 400 /
     // 0.0072) = (−33 333.83, −5 555.56); the helps' box holds R.
@@ -127,8 +131,37 @@ describe("the helps computed within the area shown and half the canvas (EN-149)"
       whole.map((subpath) => contourPiecesToPathData(subpath)).join(" "),
     );
 
-    // 8 discs, 4 × 283 chords, the two sides 1 long one chord each, those 0 long none.
-    expect(whole).toHaveLength(8 + 4 * 283 + 2);
+    // Its contour holds its 4 corners and its 2 sides 1 long, those 0 long left out: 6 discs,
+    // 4 × 283 chords and one a side.
+    expect(pieces.map((piece) => piece.kind)).toEqual([
+      "arc",
+      "segment",
+      "arc",
+      "arc",
+      "segment",
+      "arc",
+    ]);
+
+    expect(whole).toHaveLength(6 + 4 * 283 + 2);
+  });
+
+  it("[F42.AC5] still finds R under the pointer on its whole contour, its band empty there", () => {
+    showView({ origin: { x: 49_000, y: 49_000 }, scale: 1 });
+
+    // Over the offset (100, 100), R's point (49 100, 49 100), deep inside it: R is under the
+    // pointer, its contour 48 000 units and more away, its band empty.
+    selectPageElement("#canvas").dispatchEvent(
+      new PointerEvent("pointermove", { bubbles: true, clientX: 200, clientY: 150, pointerId: 1 }),
+    );
+
+    expect(readOutline("hover")).toBe("");
+  });
+});
+
+describe("the helps kept while a pan stays within their box (EN-149)", () => {
+  beforeEach(() => {
+    openServedPage("");
+    setElementBox("#canvas", { height: 800, left: 100, top: 50, width: 1200 });
   });
 
   it("keeps the helps of a circle while a pan stays within 600 pixels, computes them again beyond", () => {
@@ -191,16 +224,31 @@ describe("the helps computed within the area shown and half the canvas (EN-149)"
     );
   });
 
-  it("[F42.AC5] still finds R under the pointer on its whole contour, its band empty there", () => {
-    typeRounded("99999", "100000", "100000");
-    showView({ origin: { x: 49_000, y: 49_000 }, scale: 1 });
+  it("reuses a band drawn in the same box rather than computing it again", () => {
+    typeRounded("2000", "2000", "1000");
 
-    // Over the offset (100, 100), R's point (49 100, 49 100), deep inside it: R is under the
-    // pointer, its contour 48 000 units and more away, its band empty.
-    selectPageElement("#canvas").dispatchEvent(
-      new PointerEvent("pointermove", { bubbles: true, clientX: 200, clientY: 150, pointerId: 1 }),
+    const { pieces } = shapePickArea(readShapeModel());
+    const frame = HELPS_FRAMES.get(document);
+
+    // Each band kept by the redraw replaced by a mark no band has: a band read again gives the mark.
+    HELPS_FRAMES.set(document, {
+      ...(frame ?? startHelpsFrame(document)),
+      bands: new Map([...(frame?.bands.keys() ?? [])].map((key) => [key, "M0 0Z"])),
+    });
+
+    expect(readBandPathData(document, pieces, AT_100)).toBe("M0 0Z");
+
+    // The next redraw, 100 pixels right, keeps the box and the band drawn before it.
+    PAGE_VIEWS.set(document, { origin: { x: 60, y: -40 }, scale: 1 });
+    startHelpsFrame(document);
+    expect(readBandPathData(document, pieces, AT_100)).toBe("M0 0Z");
+
+    // 700 pixels right, a new box: computed again.
+    PAGE_VIEWS.set(document, { origin: { x: 660, y: -40 }, scale: 1 });
+    startHelpsFrame(document);
+
+    expect(readBandPathData(document, pieces, AT_100)).toBe(
+      bandWithin(pieces, AT_100, boxOf({ x: 60, y: -440 }, { x: 2460, y: 1160 })),
     );
-
-    expect(readOutline("hover")).toBe("");
   });
 });

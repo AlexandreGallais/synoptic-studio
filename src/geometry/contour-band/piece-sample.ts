@@ -1,5 +1,29 @@
+import { add, directionAt, rotate, signedAngle, subtract } from "../../math";
+import { cubicPoint } from "../placement";
+
 import type { Point } from "../../math";
-import type { ContourPiece } from "../contour";
+import type { Arc, ContourPiece } from "../contour";
+
+/**
+ * A point of an arc between its ends: its start turned about the center by an equal share of its
+ * sweep, the signed angle from its start to its end (`signedAngle`, `rotate`), as
+ * `regularPartition` places its points, the product first.
+ *
+ * Formula: C + R((i · θ) / n)(S − C).
+ *
+ * @kind geometry
+ * @param arc - its center, start and end
+ * @param count - its number of chords n, ≥ 1
+ * @param index - the point's index i, from 0 to n
+ * @returns the point
+ * @see REF-OPENSTAX-REGULAR-PARTITION
+ */
+function arcSample(arc: Arc, count: number, index: number): Point {
+  const fromCenter = subtract(arc.start, arc.center);
+  const sweep = signedAngle(fromCenter, subtract(arc.end, arc.center));
+
+  return add(arc.center, rotate(fromCenter, directionAt((index * sweep) / count)));
+}
 
 /**
  * One of the points a band follows a piece of a contour by (`pieceSamples`), computed alone so
@@ -19,5 +43,13 @@ import type { ContourPiece } from "../contour";
  * @see DERIV-band-within-box
  */
 export function pieceSample(piece: ContourPiece, count: number, index: number): Point {
-  return index === count ? piece.end : piece.start;
+  if (index === 0) {
+    return piece.start;
+  }
+
+  if (index === count || piece.kind === "segment") {
+    return piece.end;
+  }
+
+  return piece.kind === "cubic" ? cubicPoint(piece, index / count) : arcSample(piece, count, index);
 }

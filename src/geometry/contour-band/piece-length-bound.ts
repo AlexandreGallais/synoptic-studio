@@ -1,3 +1,6 @@
+import { distance, signedAngle, subtract } from "../../math";
+import { CUBIC_DEGREE } from "../placement";
+
 import type { ContourPiece } from "../contour";
 
 /**
@@ -16,5 +19,25 @@ import type { ContourPiece } from "../contour";
  * @see DERIV-band-within-box
  */
 export function pieceLengthBound(piece: ContourPiece): number {
-  return piece.kind === "segment" ? 0 : 0;
+  if (piece.kind === "segment") {
+    return distance(piece.start, piece.end);
+  }
+
+  if (piece.kind === "arc") {
+    const sweep = signedAngle(
+      subtract(piece.start, piece.center),
+      subtract(piece.end, piece.center),
+    );
+
+    return piece.radius * Math.abs(sweep);
+  }
+
+  return (
+    CUBIC_DEGREE *
+    Math.max(
+      distance(piece.start, piece.first),
+      distance(piece.first, piece.second),
+      distance(piece.second, piece.end),
+    )
+  );
 }

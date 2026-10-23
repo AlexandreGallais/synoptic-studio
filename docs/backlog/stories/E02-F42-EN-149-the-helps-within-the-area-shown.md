@@ -23,9 +23,15 @@ The examples use a canvas of 1 200 × 800 CSS pixels, the opening view at 100 %,
 
 ## Tasks
 
-- [ ] T1 — `DERIV-band-within-box` written for the `math-expert`'s check (the subpaths kept, the runs of chords left out by halves, the coverage the cut band keeps, the helps' box); the band within a box (`src/geometry/contour-band/`), `@kind geometry`, its TSDoc and the tests of the criteria, hand-computed bands, degenerate cases (a box inside a band's width, an arc tangent to the box), the property test; failing (1 h)
-- [ ] T2 — The band within the box, the hover's and the selection's outlines computed within the area shown and its padding; R measured; Q48 and `interaction.md` §2 updated; the tests of T1 passing (2 h)
+- [x] T1 — `DERIV-band-within-box` written for the `math-expert`'s check (the subpaths kept, the runs of chords left out by halves, the coverage the cut band keeps, the helps' box); the band within a box (`src/geometry/contour-band/`), `@kind geometry`, its TSDoc and the tests of the criteria, hand-computed bands, degenerate cases (a box inside a band's width, an arc tangent to the box), the property test; failing (1 h)
+- [x] T2 — The band within the box, the hover's and the selection's outlines computed within the area shown and its padding; R measured; Q48 and `interaction.md` §2 updated; the tests of T1 passing (2 h)
 
 Files: `src/geometry/contour-band/`, `src/model/view/` (`shownBox`), `playground/helps-frame/` (the box kept and the bands reused), `playground/hover/` (the outlines within the helps' box), `docs/derivations/` (`DERIV-band-within-box`). `@see` `DERIV-band-within-box`, `REF-SVG2-PAINT`, `REF-POMAX-BEZIER`, `REF-WIKI-TRIANGLE-INEQUALITY`, `docs/domain/interaction.md#_2-selector`.
 
 One task = one commit, referenced as `EN-149.T1` in the commit footer.
+
+## For the main thread
+
+**The cut differs from the plan of note 0031, §5** (agent's choice, EN-149): rather than an arc cut by the angles where it meets the box and a cubic by de Casteljau halves left out by their control points' box, the runs of each piece's chords are halved by their samples' indices, a run left out when its middle sample lies farther from the box than the run's length bound (`DERIV-band-within-box`, steps 4 and 5). Halves at `t = ½` end between two samples when the chords are odd in number, so the band would no longer be the whole band's chords; the indices keep them exactly for every kind of piece, with one bound. For the `math-expert`'s check of the derivation, with `REF-WIKI-TRIANGLE-INEQUALITY`, read and added.
+
+**Rule-docs**: `interaction.md` §2 (Computed where it is seen), Q48 and the guide page of F42 are changed; VAL-043 is dropped, so no decision to confirm is written there.

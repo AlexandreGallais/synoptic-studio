@@ -341,8 +341,9 @@ describe("playground", () => {
     // The test before leaves a radius of 100 000: the rectangle 99 999 × 100 000 would then
     // have corners of radius 49 999.5, its band following each by about 39 270 chords of at
     // most 2 screen pixels (Q48), 1 063 ms alone and over Vitest's 5 s under the pre-push's
-    // load. With the radius typed 0 first (EN-145, note 0029 §6), alone: 10 ms, the median of 5
-    // runs of its file (AUD-041); 1 s, 100 times it, fails the 1 063 ms of the band followed.
+    // load, until EN-149 computed the band only within the helps' box, where it is empty. With
+    // the radius typed 0 first (EN-145, note 0029 §6), alone: 10 ms, the median of 5 runs of its
+    // file (AUD-041); 1 s, 100 times it, fails the 1 063 ms of the band followed.
     { timeout: 1000 },
     () => {
       typeValue("radius", "0");

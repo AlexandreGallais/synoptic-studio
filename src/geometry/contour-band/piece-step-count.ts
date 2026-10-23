@@ -1,3 +1,7 @@
+import { ceiling } from "../../math";
+
+import { pieceLengthBound } from "./piece-length-bound";
+
 import type { ContourPiece } from "../contour";
 
 /**
@@ -14,5 +18,5 @@ import type { ContourPiece } from "../contour";
  * @see DERIV-band-within-box
  */
 export function pieceStepCount(piece: ContourPiece, step: number): number {
-  return piece.kind === "segment" ? 1 : step;
+  return piece.kind === "segment" ? 1 : Math.max(ceiling(pieceLengthBound(piece) / step), 1);
 }

@@ -1,4 +1,23 @@
+import { contourBandWithin, contourPiecesToPathData } from "../../src";
+
+import { HELPS_FRAMES } from "./helps-frames";
+import { startHelpsFrame } from "./start-helps-frame";
+
+import type { HelpsFrame } from "./helps-frame";
 import type { BandSize, ContourPiece } from "../../src";
+
+/**
+ * Reads the frame the helps of this redraw are computed in: the one started (`HELPS_FRAMES`), or
+ * one started now (`startHelpsFrame`).
+ *
+ * @kind procedure
+ * @param document - page document
+ * @returns its box, its scale and the bands drawn in it
+ * @see docs/domain/interaction.md#_2-selector
+ */
+function readHelpsFrame(document: Document): HelpsFrame {
+  return HELPS_FRAMES.get(document) ?? startHelpsFrame(document);
+}
 
 /**
  * Reads the path data of the band about a contour in the layer above the drawing, computed only
@@ -18,5 +37,16 @@ export function readBandPathData(
   pieces: readonly ContourPiece[],
   size: BandSize,
 ): string {
-  return document.title + String(pieces.length + size.step);
+  const frame = readHelpsFrame(document);
+  const key = JSON.stringify({ pieces, size });
+  const data =
+    frame.bands.get(key) ??
+    frame.previous.get(key) ??
+    contourBandWithin(pieces, size, frame.box)
+      .map((subpath) => contourPiecesToPathData(subpath))
+      .join(" ");
+
+  HELPS_FRAMES.set(document, { ...frame, bands: new Map([...frame.bands, [key, data]]) });
+
+  return data;
 }
