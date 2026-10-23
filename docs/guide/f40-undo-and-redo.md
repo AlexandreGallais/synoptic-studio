@@ -2,7 +2,15 @@
 
 ## What you can do now
 
-Nothing new on the page yet: the editor's library now keeps the history of the drawing, which the next stories of this feature connect to the keys, the buttons and the panel.
+**Undo and Redo on the drawing.** Place a shape, draw one, move shapes, delete them or nudge them with the arrows, then press Ctrl + Z, Cmd + Z on a Mac, or click Undo in the toolbar: the drawing goes back one change. Ctrl + Shift + Z or Ctrl + Y, or Redo, does it again. Each button is greyed out while there is nothing to undo or redo, and beside them the toolbar shows how much memory the history holds: `History 1.2 kB of 100 MB` once the rectangle the page opens with is nudged. What is typed in the panel follows with the next story (US-075).
+
+**A gesture is one step.** A drag is one step when the button is released, whatever its path; a drag the browser cancels takes none. An arrow held down is one step from the moment it is pressed to the moment it is released, however many times the browser repeats it: hold Right for a second, the shape goes 30 to the right, and one Ctrl + Z brings it all the way back.
+
+**In a field of the panel.** While you type in a field, Ctrl + Z is the field's own, as in any text box. Once the value is applied, by Enter or by leaving the field, Ctrl + Z goes to the drawing even if the field still has the focus: type 150 in W, press Enter, then Ctrl + Z, and the shape is 100 wide again.
+
+**Reset and the guided test start a new history**, with nothing to undo, as the page opens.
+
+The history itself, kept by the editor's library:
 
 **One step per finished change.** Each time a change of the drawing is finished, the drawing and the shapes selected are recorded. A drawing the same as before takes no step: selecting shapes, or typing a value back as it was, never fills the history. A drawing changed puts the one before it into the past, where Undo finds it, and forgets whatever had been undone, as every editor read does.
 
@@ -22,6 +30,11 @@ For the review's summary; each can be changed.
 - The size counts the data, not the browser's memory, which no browser measures for a part of a page: 2 bytes a character of a shape's text, 8 bytes a reference to a shape or an index selected. The shapes of the drawing on the page are not counted, since they are there with or without a history.
 - 100 MB by default, read from a view of up to about 1 000 symbols that must stay pleasant to use; 5 steps kept whatever their size, GIMP's default.
 - The steps undone, waiting for Redo, count in the size, but the bound never drops them: the next change does.
+- On the page, a step is taken at each click on the drawing, each release of the pointer and each key released outside the panel's fields, once the page is redrawn; while a shape is being moved or drawn, the keys of the history wait for the release, as Delete and the arrows do.
+- Undo first records the page as it is: a value typed in the panel and not yet recorded is what Ctrl + Z takes back, until the panel records its own steps (US-075).
+- A drag of a shape not selected gives back, undone, the selection before it, none, the press alone selecting nothing; a tool armed stays armed after an undo; Ctrl + Z is taken even with nothing to undo, so the browser never acts on it, and left to the browser with Alt held.
+- The size is written in B, kB, MB or GB of 1 000 each, to one decimal, `1.2 kB`.
+- Reset and each step of the guided test empty the history.
 
 ## The ideas behind it
 
@@ -32,5 +45,6 @@ For the review's summary; each can be changed.
 | Term | In plain words |
 | --- | --- |
 | step | one finished change of the drawing, that Undo takes back and Redo does again |
+| applied | a value taken by the page for good: Enter pressed, or the field left |
 | state | the drawing and its shapes selected, as they were after a step |
 | shared | the same shape kept once, by several states, instead of a copy in each |

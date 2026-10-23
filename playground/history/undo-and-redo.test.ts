@@ -85,7 +85,7 @@ function holdRight(count: number): void {
  * @param at - the point clicked
  * @param keys - the keys held
  */
-function clickAt(at: Point, keys: PointerKeys): void {
+function clickDrawing(at: Point, keys: PointerKeys): void {
   dispatchDrawingPointer("pointerdown", at, keys);
   dispatchDrawingPointer("pointerup", at, keys);
   dispatchDrawingPointer("click", at, keys);
@@ -210,7 +210,7 @@ describe("Undo and Redo, by the keys, what is done on the drawing (US-074)", () 
     },
   ])("[F40.AC1] undoes and redoes a shape placed by a click, by $name", (each) => {
     clickElement("tool-rectangle");
-    clickAt({ x: 250, y: 140 }, NO_KEY);
+    clickDrawing({ x: 250, y: 140 }, NO_KEY);
 
     // 100 × 100 centred on (250, 140): its top-left at (200, 90).
     expectPlaces([...DRAWN, { x: 200, y: 90 }]);
@@ -243,7 +243,7 @@ describe("Undo and Redo, by the keys, what is done on the drawing (US-074)", () 
   });
 
   it("[F40.AC1] gives back A dragged to (41, 39) as it was, selected, then lands it again", () => {
-    clickAt(IN_A, NO_KEY);
+    clickDrawing(IN_A, NO_KEY);
 
     const before = readKeptDrawing(document);
 
@@ -265,7 +265,7 @@ describe("Undo and Redo, by the keys, what is done on the drawing (US-074)", () 
   });
 
   it("[F40.AC1] takes no step for a drag the browser cancels", () => {
-    clickAt(IN_A, NO_KEY);
+    clickDrawing(IN_A, NO_KEY);
     dragBy(IN_A, { x: 30.6, y: 19.4 });
     pressAndMove(IN_B, { x: 40, y: 40 });
     dispatchDrawingPointer("pointercancel", IN_B, NO_KEY);
@@ -284,8 +284,8 @@ describe("Undo and Redo, by the keys, what is done on the drawing (US-074)", () 
   });
 
   it("[F40.AC1] gives back B and C deleted, selected, in the order drawn, and removes them again", () => {
-    clickAt(IN_B, NO_KEY);
-    clickAt(IN_C, SHIFT);
+    clickDrawing(IN_B, NO_KEY);
+    clickDrawing(IN_C, SHIFT);
     press("body", { key: "Delete" });
 
     expectPlaces([{ x: 10, y: 20 }]);
@@ -304,13 +304,13 @@ describe("Undo and Redo, by the keys, what is done on the drawing (US-074)", () 
   it.each([
     {
       action: (): void => {
-        clickAt(IN_B, NO_KEY);
+        clickDrawing(IN_B, NO_KEY);
       },
       name: "B clicked",
     },
     {
       action: (): void => {
-        clickAt(IN_C, SHIFT);
+        clickDrawing(IN_C, SHIFT);
       },
       name: "Shift + click on C",
     },
@@ -334,7 +334,7 @@ describe("Undo and Redo, by the keys, what is done on the drawing (US-074)", () 
       name: "Escape",
     },
   ])("[F40.AC3] undoes the move of A, then redoes it, after $name, no step", (each) => {
-    clickAt(IN_A, NO_KEY);
+    clickDrawing(IN_A, NO_KEY);
     dragBy(IN_A, { x: 30.6, y: 19.4 });
     each.action();
     press("body", UNDO);
@@ -347,7 +347,7 @@ describe("Undo and Redo, by the keys, what is done on the drawing (US-074)", () 
   });
 
   it("[F40.AC1] undoes Right held as one step, then a nudge alone as another", () => {
-    clickAt(IN_A, NO_KEY);
+    clickDrawing(IN_A, NO_KEY);
     holdRight(30);
 
     // 10 + 30 × 1.
@@ -367,7 +367,7 @@ describe("Undo and Redo, by the keys, what is done on the drawing (US-074)", () 
   });
 
   it("[F40.AC1] redoes nothing once a step follows an undo", () => {
-    clickAt(IN_A, NO_KEY);
+    clickDrawing(IN_A, NO_KEY);
     dragBy(IN_A, { x: 30.6, y: 19.4 });
     press("body", UNDO);
     dragBy(IN_B, { x: 10, y: 0 });
@@ -389,7 +389,7 @@ describe("Undo and Redo, by the keys, what is done on the drawing (US-074)", () 
   });
 
   it("[F40.AC1] changes nothing while the Selector's press moves A, until the release", () => {
-    clickAt(IN_A, NO_KEY);
+    clickDrawing(IN_A, NO_KEY);
 
     const to = pressAndMove(IN_A, { x: 30.6, y: 19.4 });
 
@@ -421,7 +421,7 @@ describe("Undo and Redo, by the keys, what is done on the drawing (US-074)", () 
   });
 
   it("[F40.AC1] keeps a tool armed after an undo", () => {
-    clickAt(IN_A, NO_KEY);
+    clickDrawing(IN_A, NO_KEY);
     dragBy(IN_A, { x: 30.6, y: 19.4 });
     clickElement("tool-polygon");
     press("body", UNDO);
@@ -431,7 +431,7 @@ describe("Undo and Redo, by the keys, what is done on the drawing (US-074)", () 
   });
 
   it("[F40.AC1] undoes the drawing from W once its value is applied, and leaves it to W typed in", () => {
-    clickAt(IN_A, NO_KEY);
+    clickDrawing(IN_A, NO_KEY);
     typeValue("width", "150");
     commitField("width");
 
@@ -450,7 +450,7 @@ describe("Undo and Redo, by the keys, what is done on the drawing (US-074)", () 
   });
 
   it("[F40.AC1] takes no step at a key released in a field: 150 typed in W undone at once", () => {
-    clickAt(IN_A, NO_KEY);
+    clickDrawing(IN_A, NO_KEY);
 
     for (const typed of ["1", "15", "150"]) {
       typeValue("width", typed);
@@ -464,7 +464,7 @@ describe("Undo and Redo, by the keys, what is done on the drawing (US-074)", () 
   });
 
   it("[F40.AC1] leaves Ctrl + Z to the drawing once a field typed in is left", () => {
-    clickAt(IN_A, NO_KEY);
+    clickDrawing(IN_A, NO_KEY);
     typeValue("width", "100");
     selectPageElement("#width").dispatchEvent(new FocusEvent("focusout", { bubbles: true }));
     dragBy(IN_A, { x: 30.6, y: 19.4 });
@@ -476,7 +476,7 @@ describe("Undo and Redo, by the keys, what is done on the drawing (US-074)", () 
   });
 
   it("[F40.AC1] leaves Ctrl + Z to a slider of the color picker, never typed in, to the drawing", () => {
-    clickAt(IN_A, NO_KEY);
+    clickDrawing(IN_A, NO_KEY);
     dragBy(IN_A, { x: 30.6, y: 19.4 });
     press("#color-hue", UNDO);
 
@@ -488,7 +488,7 @@ describe("Undo and Redo, by the keys, what is done on the drawing (US-074)", () 
     { init: { key: "z" }, name: "Z alone" },
     { init: { ctrlKey: true, key: "x" }, name: "Ctrl + X" },
   ])("[F40.AC1] leaves $name to the browser, nothing undone", ({ init }) => {
-    clickAt(IN_A, NO_KEY);
+    clickDrawing(IN_A, NO_KEY);
     dragBy(IN_A, { x: 30.6, y: 19.4 });
 
     const event = press("body", init);

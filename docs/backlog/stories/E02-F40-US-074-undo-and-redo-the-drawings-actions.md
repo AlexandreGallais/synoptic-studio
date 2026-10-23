@@ -30,16 +30,29 @@ The examples draw A, a rectangle 100 × 50 at (10, 20) of radius 0, B the same a
 
 ## Product Owner test
 
-`npm run dev`, `http://localhost:5173/`. Written with T3, once SP-029's answers are given: place, draw, move, delete and nudge, each undone and redone by the keys and the buttons.
+`npm run dev`, `http://localhost:5173/`. Ctrl stands for Cmd on a Mac. A **step** is one finished change of the drawing, which Undo takes back; **applied** means a value taken by Enter or by leaving its field.
 
 | Step | Do | You should see |
 | --- | --- | --- |
+| 1 | Open the page | the toolbar's Undo and Redo greyed out, and `History 0 B of 100 MB` beside them |
+| 2 | Click the rectangle, then press Right once | the rectangle 1 to the right, Undo enabled, `History 1.2 kB of 100 MB` |
+| 3 | Click Undo, then Redo | the rectangle back at its place, Redo enabled and Undo greyed out; then 1 to the right again |
+| 4 | Choose Rectangle in the toolbar and click an empty place of the drawing, then press Ctrl + Z | the new rectangle placed, then gone; Ctrl + Shift + Z, or Ctrl + Y, brings it back |
+| 5 | Choose Polygon and drag a box on an empty place, then press Ctrl + Z and Ctrl + Y | the polygon drawn at the release, then gone, then back |
+| 6 | Click the rectangle, drag it somewhere else, release, then click the polygon and press Ctrl + Z | the rectangle back where it was, selected and shown in the panel: clicking the polygon took no step |
+| 7 | Hold Right for about a second, release, then press Ctrl + Z once | the shape selected goes right while the key is held, then all the way back in one Ctrl + Z |
+| 8 | Select two shapes with Shift + click, press Delete, then Ctrl + Z | both shapes gone, then back in their places, both selected |
+| 9 | Press Ctrl + Z, then move a shape, then press Ctrl + Shift + Z | nothing redone: a change after an undo forgets what was undone, and Redo is greyed out |
+| 10 | Start dragging a shape and, without releasing, press Ctrl + Z; then release | nothing undone while the button is held; the move lands at the release |
+| 11 | Click a rectangle, type 150 in W and press Enter, then, the focus still in W, press Ctrl + Z | the rectangle back to the width it had, W showing it |
+| 12 | Type a digit in W, then press Ctrl + Z | the field undoes its own text, the drawing not undone |
+| 13 | Click Reset | the page as it opens, Undo and Redo greyed out, `History 0 B of 100 MB` |
 
 ## Tasks
 
 - [ ] T1 — The criteria in line with SP-029's answers; the page's history, the step taken once the page is redrawn from an action, the keys beside the selection's (`playground/history/`): interface and failing tests (1 h)
-- [ ] T2 — A step at a click placing, a drag's release, a deletion; Ctrl + Z, Ctrl + Shift + Z and Ctrl + Y restore a state, the drawing written back and the selection loaded as `writeShapeSelection` does; the tests of T1 on them passing (2 h)
-- [ ] T3 — The arrows grouped as SP-029's answer 3; the Undo and Redo buttons; Reset; the rules in `interaction.md` §1 and §7, the Q table, the Product Owner test card and F40's guide page; every test of T1 passing (2 h)
+- [ ] T2 — A step at each click on the drawing, release of the pointer and key released outside the fields, so the arrows grouped as SP-029's answer 3; Ctrl + Z, Ctrl + Shift + Z and Ctrl + Y restore a state, the drawing written back and the selection loaded as `writeShapeSelection` does; the Undo and Redo buttons, the size shown; Reset; the tests of T1 passing (2 h)
+- [ ] T3 — The rules in `interaction.md` §1 and §7, the Q table, the Product Owner test card and F40's guide page (2 h)
 
 Files: `playground/history/` (new, the page's history, its steps, its keys and buttons, heard beside the selection's keys and wired after the drawing's listeners and the toolbar's), `src/io/byte-size/` (new, the size as the toolbar writes it, a `format` function, which the playground's layer does not take), `playground/index.html` (the buttons), `playground/mount/` (the listeners, the history brought up to the page at each redraw), `playground/guided-test/` (`listenToGuide`, moved out of `mount-playground.ts`, held to 10 imports). `@see` ADR-0095, `docs/domain/interaction.md#_7-navigation-and-history`, `REF-APPLE-SHORTCUTS`, `REF-WINDOWS-SHORTCUTS`, `REF-PENPOT-UNDO`, `REF-INKSCAPE-DOCUMENT-UNDO`.
 
