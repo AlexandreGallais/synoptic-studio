@@ -3,8 +3,8 @@ id: US-075
 epic: E02
 feature: F40
 title: Undo and redo what is typed and chosen in the panel
-status: ready
-points: 2
+status: done
+points: 3
 ---
 
 # E02 · F40 · US-075 — Undo and redo what is typed and chosen in the panel
