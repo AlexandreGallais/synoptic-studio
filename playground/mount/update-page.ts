@@ -4,6 +4,7 @@ import { showNoSelection, showSeveralSelection } from "../selection";
 import { hidePointPanels, updateTextTool, writeTextSections } from "../text";
 import { writeShapeKind } from "../toolbar";
 import { applyWheelZoom } from "../view";
+import { showZoom } from "../zoom";
 
 import { updatePlayground } from "./update-playground";
 
@@ -47,7 +48,7 @@ function showNoShapeEdited(document: Document, kind: string): void {
 
 /**
  * Redraws the page from its inputs, the view first zoomed by the wheel's deltas gathered since the
- * last frame (`applyWheelZoom`, F42): the Text tool, the shapes, or the drawing alone while none or
+ * last frame (`applyWheelZoom`, F42), its percentage shown in the toolbar (`showZoom`): the Text tool, the shapes, or the drawing alone while none or
  * several shapes are selected (`showNoShapeEdited`, F36, F37), the Points button disabled and the
  * fields of several shapes shown while several are (F38), Points mode editing one shape; then the
  * layer above the drawing, so that the
@@ -59,6 +60,7 @@ function showNoShapeEdited(document: Document, kind: string): void {
  */
 export function updatePage(document: Document): void {
   applyWheelZoom(document);
+  showZoom(document);
 
   const kind = readShapeKind(document);
 
