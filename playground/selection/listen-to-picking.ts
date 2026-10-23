@@ -32,7 +32,7 @@ export function listenToPicking(document: Document, update: () => void): void {
       return;
     }
 
-    selectShapeAt(document, readDrawingPoint(document, event));
+    selectShapeAt(document, readDrawingPoint(document, event), event.shiftKey);
     update();
   });
 }

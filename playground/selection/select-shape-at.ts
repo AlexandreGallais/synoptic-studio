@@ -8,7 +8,7 @@ import {
   writeStoredDrawing,
 } from "../kept-shapes";
 import { saveKindSettings } from "../kind-settings";
-import { readShapeKind, writeEditedKind } from "../page";
+import { readShapeKind, selectElement, writeEditedKind } from "../page";
 
 import { loadPickedShape } from "./load-picked-shape";
 
@@ -24,9 +24,13 @@ import type { Point } from "../../src";
  * @kind procedure
  * @param document - page document
  * @param point - the point clicked, in the coordinates of the drawing's SVG
+ * @param isShift - whether Shift is held, adding the shape under the point or taking it out
  * @see docs/domain/interaction.md#_2-selector
  */
-export function selectShapeAt(document: Document, point: Point): void {
+export function selectShapeAt(document: Document, point: Point, isShift: boolean): void {
+  // Placeholder until US-068.T2: Shift only written down, a click with it selecting alone.
+  selectElement(document, "canvas").dataset["shift"] = String(isShift);
+
   const index = shapeAtPoint(
     readPickAreas(document),
     point,

@@ -7,4 +7,5 @@ export * from "./selection-after-handle-click";
 export * from "./selection-after-range";
 export * from "./selection-after-row-click";
 export * from "./selection-after-toggle";
+export * from "./shape-selection-after-click";
 export type * from "./vertex-selection";
