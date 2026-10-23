@@ -3,7 +3,7 @@ id: EN-147
 epic: E02
 feature: F41
 title: The history's size kept from step to step
-status: ready
+status: done
 points: 3
 ---
 
@@ -26,6 +26,20 @@ AUD-042 measured a step at 63 ms with 80 000 moves after its cheap fixes (387 ms
 ## Tasks
 
 - [ ] T1 — The size kept, its interface and failing tests, the property (1 h)
-- [ ] T2 — Step, undo, redo and the bound keep it, the tests of T1 passing; the timings (2 h)
+- [ ] T2 — Step, undo, redo and the bound keep it, the tests of T1 passing (2 h)
+- [ ] T3 — The page keeps the size with its history; the timings (1 h)
 
 One task = one commit, referenced as `EN-147.Tn` in the commit footer.
+
+## The answer and the measures
+
+The counts of the states holding each shape are kept in a persistent trie of 32 branches by an integer key of the shape, a change copying only the nodes on its key's path, so that each history keeps its own counts and the core stays pure (ADR-0097); a `Map` copied at each step was measured at 4.5 to 6.5 ms for 80 000 shapes, and the designer may set ten times the default size. Each shape gets its key once, in a module's `WeakMap`, registered in `exceptions.md`.
+
+Measured on Node 24 with AUD-042's bench, its history of n past states each a new rectangle moved, the median of 6 steps after the first:
+
+| n | Counted again (`boundedHistory`, `historySize`) | Kept (`sizedBoundedHistory`, `sizedHistoryWithStep`) |
+| --- | --- | --- |
+| 20 000 | first step 35 ms, then 4.2 ms | first step 0.36 ms, then 0.08 ms; a click taking no step 0.01 ms, an undo 0.04 ms, a redo 0.07 ms |
+| 80 000 | first step 463 ms, then 63 ms | first step 2.8 ms, then 1.9 ms; a click 0.01 ms, an undo 0.09 ms, a redo 0.18 ms; a step dropping the oldest 1.9 ms |
+
+The size kept equals `historySize` after each measure, and at 80 000 both drop the same 118 oldest states at the first step, the default 100 MB then full. A step at 80 000 costs about 2 ms, the copies of the past's list of 80 000 states it makes; measuring a whole history built at once (`measuredHistory`) writes every shape's text once, 441 ms at 80 000, which the page never does, its history starting empty.

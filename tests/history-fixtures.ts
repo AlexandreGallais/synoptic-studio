@@ -3,9 +3,15 @@
 
 import { fc } from "@fast-check/vitest";
 
-import { rectangleAsFreeShape } from "../src";
+import {
+  rectangleAsFreeShape,
+  sizedBoundedHistory,
+  sizedHistoryWithStep,
+  sizedRedoneHistory,
+  sizedUndoneHistory,
+} from "../src";
 
-import type { FreeShape, History, HistoryState } from "../src";
+import type { FreeShape, History, HistoryBound, HistoryState, SizedHistory } from "../src";
 
 /** A rectangle as the playground keeps it (`KeptShape`): the kind the panel showed, the shape. */
 export type KeptRectangle = {
@@ -82,3 +88,89 @@ export const ANY_HISTORY: fc.Arbitrary<History<readonly string[]>> = fc.record({
   past: fc.array(ANY_HISTORY_STATE, { maxLength: MOST_STATES }),
   present: ANY_HISTORY_STATE,
 });
+
+/**
+ * How many past and future states of a history hold a shape, each counting it once, as the held
+ * counts count them (EN-147).
+ *
+ * @template T - type of the shapes
+ * @param history - the history read
+ * @param shape - the shape looked for, by `===`
+ * @returns the count of states holding it
+ */
+export function statesHolding<T>(history: History<T>, shape: T): number {
+  return [...history.past, ...history.future].filter((state) => state.drawing.includes(shape))
+    .length;
+}
+
+/**
+ * The same states, each recording the reads of its properties: its index pushed onto the list
+ * given at each read, so that a test sees which states a function read (EN-147).
+ *
+ * @template T - type of the shapes
+ * @param states - the states watched
+ * @param reads - the list each read pushes its state's index onto
+ * @returns a proxy of each state, in the same order
+ */
+export function statesRecordingReads<T>(
+  states: readonly HistoryState<T>[],
+  reads: number[],
+): readonly HistoryState<T>[] {
+  return states.map(
+    (state, index) =>
+      new Proxy(state, {
+        get: (target, key): unknown => {
+          reads.push(index);
+
+          return Reflect.get(target, key);
+        },
+      }),
+  );
+}
+
+/** An operation of the properties on a history. */
+export type HistoryOperation =
+  | { readonly bound: HistoryBound; readonly kind: "bound" }
+  | { readonly kind: "redo" }
+  | { readonly kind: "step"; readonly state: HistoryState<readonly string[]> }
+  | { readonly kind: "undo" };
+
+/** Any operation: a step to a state drawn, an undo, a redo, or a bound of up to 120 bytes. */
+export const ANY_HISTORY_OPERATION: fc.Arbitrary<HistoryOperation> = fc.oneof(
+  ANY_HISTORY_STATE.map((state) => ({ kind: "step" as const, state })),
+  fc.constant({ kind: "undo" as const }),
+  fc.constant({ kind: "redo" as const }),
+  fc
+    .record({ size: fc.nat({ max: 120 }), steps: fc.nat({ max: 4 }) })
+    .map((bound) => ({ bound, kind: "bound" as const })),
+);
+
+/**
+ * A history once an operation applied, its size kept.
+ *
+ * @param history - the history before
+ * @param operation - the operation applied
+ * @returns the history after
+ */
+export function operatedHistory(
+  history: SizedHistory<readonly string[]>,
+  operation: HistoryOperation,
+): SizedHistory<readonly string[]> {
+  switch (operation.kind) {
+    case "bound": {
+      return sizedBoundedHistory(history, operation.bound);
+    }
+
+    case "redo": {
+      return sizedRedoneHistory(history);
+    }
+
+    case "step": {
+      return sizedHistoryWithStep(history, operation.state);
+    }
+
+    case "undo": {
+      return sizedUndoneHistory(history);
+    }
+  }
+}

@@ -1,4 +1,4 @@
-import { redoneHistory, undoneHistory } from "../../src";
+import { sizedRedoneHistory, sizedUndoneHistory } from "../../src";
 import { listenToHistoryBound } from "../history-bound";
 import { selectElement } from "../page";
 import { readKeyField } from "../selection-keys";
@@ -62,8 +62,8 @@ export function listenToHistory(document: Document, update: () => void): void {
   listenToActionEnds(document, update);
 
   for (const [id, move] of [
-    ["history-undo", undoneHistory],
-    ["history-redo", redoneHistory],
+    ["history-undo", sizedUndoneHistory],
+    ["history-redo", sizedRedoneHistory],
   ] as const) {
     selectElement(document, id).addEventListener("click", () => {
       moveHistory(document, move, update);

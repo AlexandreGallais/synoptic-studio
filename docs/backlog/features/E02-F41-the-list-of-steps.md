@@ -22,7 +22,7 @@ In delivery order.
 
 | ID | Type | Title | Status |
 | --- | --- | --- | --- |
-| [EN-147](../stories/E02-F41-EN-147-the-history-size-kept-step-to-step.md) | EN | The history's size kept from step to step | ready |
+| [EN-147](../stories/E02-F41-EN-147-the-history-size-kept-step-to-step.md) | EN | The history's size kept from step to step | done |
 | [US-077](../stories/E02-F41-US-077-the-list-of-steps.md) | US | The list of the history's steps | ready |
 | [AUD-043](../stories/E02-F41-AUD-043-audit-f41.md) | AUD | Audit F41 | ready |
 | [VAL-042](../stories/E02-F41-VAL-042-validate-f41.md) | VAL | Validate F41 | dropped |

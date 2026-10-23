@@ -1,0 +1,27 @@
+import { EMPTY_HELD_COUNTS } from "../held-shapes";
+
+import { measureWithState } from "./measure-with-state";
+
+import type { SizedHistory } from "./sized-history";
+import type { History } from "../history";
+
+/**
+ * A history with its size counted once, from its states (EN-147): each past and future state
+ * added to an empty measure (`measureWithState`), so that the size is `historySize`'s; the page's
+ * history starts from it, nothing past nor to come (ADR-0097).
+ *
+ * @kind domain
+ * @template T - type of the shapes, or of what is kept of each, objects never changed once made
+ * @param history - the states, past, present and to come
+ * @returns a new history, its states those given
+ * @see docs/domain/interaction.md#_7-navigation-and-history
+ */
+export function measuredHistory<T extends WeakKey>(history: History<T>): SizedHistory<T> {
+  const present = new Set(history.present.drawing);
+  const measure = [...history.past, ...history.future].reduce(
+    (before, state) => measureWithState(before, state, present),
+    { held: EMPTY_HELD_COUNTS, size: 0 },
+  );
+
+  return { future: history.future, past: history.past, present: history.present, ...measure };
+}
