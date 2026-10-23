@@ -337,6 +337,11 @@ describe("playground", () => {
   });
 
   it("[F02.AC5] keeps 100 000 and smaller values exactly", () => {
+    // The test before leaves a radius of 100 000: the rectangle 99 999 × 100 000 would then
+    // have corners of radius 49 999.5, its band following each by about 39 270 chords of at
+    // most 2 screen pixels (Q48), 1 063 ms alone and over Vitest's 5 s under the pre-push's
+    // load. With the radius typed 0 first, 11 ms (EN-145, note 0029 §6).
+    typeValue("radius", "0");
     typeValue("height", "100000");
     typeValue("width", "99999");
 
