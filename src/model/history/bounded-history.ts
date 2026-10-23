@@ -25,14 +25,18 @@ type DroppedReach = {
  * Whether the history is within the size set once its oldest past states are dropped.
  *
  * @kind domain
- * @template T - type of the shapes, or of what is kept of each
+ * @template T - type of the shapes, or of what is kept of each, objects never changed once made
  * @param history - the history bounded
  * @param size - the most bytes it holds
  * @param dropped - how many of the oldest past states are dropped
  * @returns true when its size (`historySize`) is at most the size set
  * @see docs/domain/interaction.md#_7-navigation-and-history
  */
-function isWithinSize<T>(history: History<T>, size: number, dropped: number): boolean {
+function isWithinSize<T extends WeakKey>(
+  history: History<T>,
+  size: number,
+  dropped: number,
+): boolean {
   return historySize({ ...history, past: history.past.slice(dropped) }) <= size;
 }
 
@@ -42,14 +46,18 @@ function isWithinSize<T>(history: History<T>, size: number, dropped: number): bo
  * measure; the range then runs from past the count tried before to the one that fits.
  *
  * @kind domain
- * @template T - type of the shapes, or of what is kept of each
+ * @template T - type of the shapes, or of what is kept of each, objects never changed once made
  * @param history - the history bounded, over the size set as it is
  * @param size - the most bytes it holds
  * @param reach - the count tried, and the most
  * @returns the range to halve (`fewestDropped`)
  * @see docs/domain/interaction.md#_7-navigation-and-history
  */
-function doubledRange<T>(history: History<T>, size: number, reach: DroppedReach): DroppedRange {
+function doubledRange<T extends WeakKey>(
+  history: History<T>,
+  size: number,
+  reach: DroppedReach,
+): DroppedRange {
   const tried = Math.min(reach.reach, reach.most);
 
   if (tried === reach.most || isWithinSize(history, size, tried)) {
@@ -65,14 +73,18 @@ function doubledRange<T>(history: History<T>, size: number, reach: DroppedReach)
  * the size or keeps it (ADR-0095, decision 5).
  *
  * @kind domain
- * @template T - type of the shapes, or of what is kept of each
+ * @template T - type of the shapes, or of what is kept of each, objects never changed once made
  * @param history - the history bounded
  * @param size - the most bytes it holds
  * @param range - the counts still possible
  * @returns how many of the oldest past states to drop
  * @see docs/domain/interaction.md#_7-navigation-and-history
  */
-function fewestDropped<T>(history: History<T>, size: number, range: DroppedRange): number {
+function fewestDropped<T extends WeakKey>(
+  history: History<T>,
+  size: number,
+  range: DroppedRange,
+): number {
   if (range.fewest >= range.most) {
     return range.fewest;
   }
@@ -97,13 +109,16 @@ function fewestDropped<T>(history: History<T>, size: number, range: DroppedRange
  * smaller, are found by doubling, then halving (`fewestDropped`).
  *
  * @kind domain
- * @template T - type of the shapes, or of what is kept of each
+ * @template T - type of the shapes, or of what is kept of each, objects never changed once made
  * @param history - the history after a step, or when the bound changes
  * @param bound - the memory size and the steps kept the designer sets
  * @returns the history given when nothing is dropped, otherwise a new history
  * @see docs/domain/interaction.md#_7-navigation-and-history
  */
-export function boundedHistory<T>(history: History<T>, bound: HistoryBound): History<T> {
+export function boundedHistory<T extends WeakKey>(
+  history: History<T>,
+  bound: HistoryBound,
+): History<T> {
   const most = Math.max(history.past.length - bound.steps, 0);
 
   if (most === 0 || isWithinSize(history, bound.size, 0)) {

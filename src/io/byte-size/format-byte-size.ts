@@ -1,3 +1,5 @@
+import { integerQuotient, nearestInteger, nonNegativeRemainder } from "../../math";
+
 /** A unit of size above a byte. */
 type ByteUnit = {
   /** Its symbol, as the toolbar writes it. */
@@ -25,7 +27,8 @@ const GIGABYTE: ByteUnit = { bytes: UNIT_STEP * MEGABYTE.bytes, symbol: "GB" };
 const SMALLER_UNITS: readonly ByteUnit[] = [KILOBYTE, MEGABYTE];
 
 /**
- * Converts a size into tenths of a unit, rounded half up: 1 248 bytes is 12 tenths of a kB.
+ * Converts a size into tenths of a unit, rounded half up (`nearestInteger`): 1 248 bytes is 12
+ * tenths of a kB.
  *
  * @kind format
  * @param bytes - the size, a whole number of bytes
@@ -34,14 +37,15 @@ const SMALLER_UNITS: readonly ByteUnit[] = [KILOBYTE, MEGABYTE];
  * @see docs/domain/interaction.md#_7-navigation-and-history
  */
 function bytesToTenths(bytes: number, unit: ByteUnit): number {
-  return Math.round((bytes * TENTHS) / unit.bytes);
+  return nearestInteger((bytes * TENTHS) / unit.bytes);
 }
 
 /**
  * Writes a size in bytes as the toolbar shows it (F40): below 1 000, in bytes, `999 B`; above, in
  * the first of kB, MB and GB, each 1 000 times the one before, that keeps it below 1 000 once
- * rounded, GB the last, to one decimal rounded half up, a decimal of 0 left out: 1 248 bytes is
- * `1.2 kB`, 999 950 is `1 MB`, 100 000 000 is `100 MB`.
+ * rounded, GB the last, to one decimal rounded half up, a decimal of 0 left out, the units the
+ * tenths' quotient by 10 (`integerQuotient`) and the decimal their remainder
+ * (`nonNegativeRemainder`): 1 248 bytes is `1.2 kB`, 999 950 is `1 MB`, 100 000 000 is `100 MB`.
  *
  * @kind format
  * @param bytes - the size, a whole number of bytes, 0 or more
@@ -56,7 +60,7 @@ export function formatByteSize(bytes: number): string {
   const unit =
     SMALLER_UNITS.find((each) => bytesToTenths(bytes, each) < UNIT_STEP * TENTHS) ?? GIGABYTE;
   const tenths = bytesToTenths(bytes, unit);
-  const tenth = tenths % TENTHS;
+  const tenth = nonNegativeRemainder(tenths, TENTHS);
 
-  return `${(tenths - tenth) / TENTHS}${tenth === 0 ? "" : `.${tenth}`} ${unit.symbol}`;
+  return `${integerQuotient(tenths, TENTHS)}${tenth === 0 ? "" : `.${tenth}`} ${unit.symbol}`;
 }

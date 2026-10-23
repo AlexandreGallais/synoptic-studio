@@ -8,5 +8,6 @@ export type * from "./history-state";
 export * from "./history-with-step";
 export * from "./moves-within-size";
 export * from "./redone-history";
+export * from "./shape-text-length";
 export * from "./shared-drawing";
 export * from "./undone-history";

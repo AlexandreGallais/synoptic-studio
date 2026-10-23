@@ -3,7 +3,7 @@ import { integerQuotient } from "../../math";
 /**
  * The bytes a move of one shape adds to the history (F40): A, a rectangle 100 × 50 kept by the
  * page, 614 characters, 1 228 bytes as it was, its reference, 8, and the index of its selection,
- * 8 (`historySize`).
+ * 8 (`historySize`); the 120 × 80 the page opens with, 616 characters, adds 1 248.
  */
 const MOVE_BYTES = 1244;
 
