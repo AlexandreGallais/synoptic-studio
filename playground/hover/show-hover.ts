@@ -1,42 +1,12 @@
-import { PICK_TOLERANCE, screenToUser, shapeAtPoint } from "../../src";
+import { startHelpsFrame } from "../helps-frame";
 import { createViewSvg } from "../kept-shapes";
 import { selectElement } from "../page";
-import { readView } from "../view";
 
-import { createOutlineElement } from "./create-outline-element";
+import { createHoverElements } from "./create-hover-elements";
 import { createSelectionElements } from "./create-selection-elements";
 import { createSelectionRectangleElements } from "./create-selection-rectangle-elements";
 import { readHoverPoint } from "./read-hover-point";
-import { readPickAreas } from "./read-pick-areas";
 import { readStartedMove } from "./read-started-move";
-
-import type { Point } from "../../src";
-
-/**
- * Creates the outline of the shape under a point (`shapeAtPoint`, the reach of a shape without
- * area `PICK_TOLERANCE` in user units, `screenToUser`): the band about its contour as drawn
- * (`createOutlineElement`), of class `hover`.
- *
- * @kind procedure
- * @param document - page document
- * @param point - the point of the drawing the pointer is over; undefined for none
- * @returns its `<path>`; nothing when no shape is under the point
- * @see docs/domain/interaction.md#_2-selector
- */
-function createHoverElements(
-  document: Document,
-  point: Point | undefined,
-): readonly SVGPathElement[] {
-  if (point === undefined) {
-    return [];
-  }
-
-  const areas = readPickAreas(document);
-  const reach = screenToUser(PICK_TOLERANCE, readView(document).scale);
-  const area = areas[shapeAtPoint(areas, point, reach)];
-
-  return area === undefined ? [] : [createOutlineElement(document, area, "hover")];
-}
 
 /**
  * Draws the layer above the drawing (F36): an `<svg>` of the drawing's size and origin
@@ -45,14 +15,18 @@ function createHoverElements(
  * pointer (`createHoverElements`): each a band 2 screen pixels wide about its contour as drawn, a
  * fill, never a native stroke; no hover with a tool armed, nor once the pointer has left the
  * drawing, nor while shapes are moved (`readStartedMove`, F39), nor while a selection rectangle
- * is drawn, which comes last (`createSelectionRectangleElements`, F37). The drawing's `<svg>` is
- * never touched, so that the export holds no outline.
+ * is drawn, which comes last (`createSelectionRectangleElements`, F37). The outlines are computed
+ * within the box of the frame it starts (`startHelpsFrame`, EN-149), the area shown widened by half
+ * the canvas on each side, kept while a pan stays within it. The drawing's `<svg>` is never
+ * touched, so that the export holds no outline.
  *
  * @kind procedure
  * @param document - page document
  * @see docs/domain/interaction.md#_2-selector
  */
 export function showHover(document: Document): void {
+  startHelpsFrame(document);
+
   const svg = createViewSvg(document);
   const rectangle = createSelectionRectangleElements(document);
   const isShown = rectangle.length === 0 && readStartedMove(document) === undefined;

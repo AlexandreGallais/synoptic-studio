@@ -1,89 +1,21 @@
-import {
-  add,
-  ceiling,
-  directionAt,
-  distance,
-  regularPartition,
-  rotate,
-  signedAngle,
-  subtract,
-} from "../../math";
-import { CUBIC_DEGREE, cubicPoint } from "../placement";
+import { pieceSample } from "./piece-sample";
+import { pieceStepCount } from "./piece-step-count";
 
 import type { Point } from "../../math";
-import type { Arc, ContourPiece, Cubic } from "../contour";
-
-/**
- * How many equal steps a length is cut into so that none is longer than `step`: at least one.
- *
- * Formula: n = max(⌈L / s⌉, 1).
- *
- * @kind geometry
- * @param length - the length to cut, ≥ 0
- * @param step - the longest step, > 0
- * @returns the number of steps
- * @see REF-SVG2-PAINT
- */
-function stepCount(length: number, step: number): number {
-  return Math.max(ceiling(length / step), 1);
-}
-
-/**
- * The points of an arc between its ends: its start turned about the center by equal angles
- * (`regularPartition`, `rotate`), the arc's sweep the signed angle from its start to its end, of
- * less than a half turn (`signedAngle`).
- *
- * Formula: C + R(i · θ / n)(S − C), i = 1 … n − 1, n = max(⌈r |θ| / s⌉, 1).
- *
- * @kind geometry
- * @param arc - its center, radius, start and end
- * @param step - the longest step along it
- * @returns the points between its ends, in its direction
- * @see REF-SVG2-PAINT
- */
-function arcInnerSamples(arc: Arc, step: number): readonly Point[] {
-  const fromCenter = subtract(arc.start, arc.center);
-  const sweep = signedAngle(fromCenter, subtract(arc.end, arc.center));
-  const count = stepCount(arc.radius * Math.abs(sweep), step);
-
-  return regularPartition(sweep, count)
-    .slice(1, -1)
-    .map((angle) => add(arc.center, rotate(fromCenter, directionAt(angle))));
-}
-
-/**
- * The points of a cubic between its ends, at equal steps of t (`cubicPoint`), so that no chord is
- * longer than `step`: B′ is the quadratic Bézier of the weights 3(Pᵢ₊₁ − Pᵢ) (`REF-POMAX-BEZIER`,
- * the derivative's weights), never outside their hull, so |B′| is at most three times the longest
- * side of the control polygon, and a chord over 1/n of t at most that bound over n.
- *
- * Formula: B(i / n), i = 1 … n − 1, n = max(⌈3 · max(|P₀P₁|, |P₁P₂|, |P₂P₃|) / s⌉, 1).
- *
- * @kind geometry
- * @param cubic - its start, control points and end
- * @param step - the longest chord wanted along it
- * @returns the points between its ends
- * @see REF-POMAX-BEZIER
- */
-function cubicInnerSamples(cubic: Cubic, step: number): readonly Point[] {
-  const longestSide = Math.max(
-    distance(cubic.start, cubic.first),
-    distance(cubic.first, cubic.second),
-    distance(cubic.second, cubic.end),
-  );
-
-  return regularPartition(1, stepCount(CUBIC_DEGREE * longestSide, step))
-    .slice(1, -1)
-    .map((t) => cubicPoint(cubic, t));
-}
+import type { ContourPiece } from "../contour";
 
 /**
  * Points along a piece of a contour, from its start to its end, for a band drawn about it by
- * chords (`contourBand`): a segment its two ends; an arc, of less than a half turn as every fillet,
+ * chords (`contourBand`): as many chords as `pieceStepCount` gives, each point computed alone
+ * (`pieceSample`). A segment gives its two ends; an arc, of less than a half turn as every fillet,
  * its points at equal angles, as many steps as its length holds `step`, each its start turned
  * about the center (`rotate`); a cubic its points at equal steps of t (`cubicPoint`), as many as
  * three times the longest side of its control polygon holds `step`, that bound being at least the
- * curve's speed, so that no chord is longer than `step`.
+ * curve's speed: B′ is the quadratic Bézier of the weights 3(Pᵢ₊₁ − Pᵢ) (`REF-POMAX-BEZIER`, the
+ * derivative's weights), never outside their hull, so a chord over 1/n of t is at most that bound
+ * over n, and no chord is longer than `step`.
+ *
+ * Formula: Pᵢ, i = 0 … n, n = pieceStepCount(piece, s).
  *
  * @kind geometry
  * @param piece - a segment, an arc or a cubic of a contour
@@ -92,12 +24,7 @@ function cubicInnerSamples(cubic: Cubic, step: number): readonly Point[] {
  * @see REF-SVG2-PAINT
  */
 export function pieceSamples(piece: ContourPiece, step: number): readonly Point[] {
-  if (piece.kind === "segment") {
-    return [piece.start, piece.end];
-  }
+  const count = pieceStepCount(piece, step);
 
-  const between =
-    piece.kind === "arc" ? arcInnerSamples(piece, step) : cubicInnerSamples(piece, step);
-
-  return [piece.start, ...between, piece.end];
+  return Array.from({ length: count + 1 }, (unused, index) => pieceSample(piece, count, index));
 }

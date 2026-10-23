@@ -4,6 +4,7 @@ export * from "./fitted-view";
 export * from "./is-dragged";
 export * from "./panned-view";
 export * from "./point-under-pointer";
+export * from "./shown-box";
 export * from "./shown-view-box";
 export * from "./stepped-scale";
 export type * from "./view";

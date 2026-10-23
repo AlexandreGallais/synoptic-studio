@@ -1,8 +1,8 @@
 import { pickAreasBox } from "../../src";
 import { createStraightBoxElement } from "../drawing";
+import { createOutlineElement } from "../helps-frame";
 import { readKeptDrawing, readSelectedShapes } from "../kept-shapes";
 
-import { createOutlineElement } from "./create-outline-element";
 import { readShapePickArea } from "./read-shape-pick-area";
 
 import type { PickArea } from "../../src";

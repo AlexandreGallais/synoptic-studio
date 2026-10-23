@@ -1,4 +1,4 @@
-export * from "./create-outline-element";
+export * from "./create-hover-elements";
 export * from "./create-selection-elements";
 export * from "./create-selection-rectangle-elements";
 export * from "./hover-offsets";
