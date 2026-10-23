@@ -1,15 +1,8 @@
+import { CODE_UNIT_BYTES, SLOT_BYTES } from "../held-shapes";
+
 import { shapeTextLength } from "./shape-text-length";
 
 import type { History } from "./history";
-
-/** The bytes of a 16-bit code unit, a string's element (`REF-ECMA-262-STRING-TYPE`). */
-const CODE_UNIT_BYTES = 2;
-
-/**
- * The bytes of a reference to a shape or of an index, a tagged value's slot without pointer
- * compression, an upper bound: 64 bits, 32 with compression (`REF-V8-POINTER-COMPRESSION`).
- */
-const SLOT_BYTES = 8;
 
 /**
  * The bytes a history holds beyond its present (F40): each shape a past or future state holds and

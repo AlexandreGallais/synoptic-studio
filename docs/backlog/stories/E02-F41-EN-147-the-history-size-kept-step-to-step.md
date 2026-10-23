@@ -26,6 +26,7 @@ AUD-042 measured a step at 63 ms with 80 000 moves after its cheap fixes (387 ms
 ## Tasks
 
 - [ ] T1 — The size kept, its interface and failing tests, the property (1 h)
-- [ ] T2 — Step, undo, redo and the bound keep it, the tests of T1 passing; the timings (2 h)
+- [ ] T2 — Step, undo, redo and the bound keep it, the tests of T1 passing (2 h)
+- [ ] T3 — The page keeps the size with its history; the timings (1 h)
 
 One task = one commit, referenced as `EN-147.Tn` in the commit footer.
