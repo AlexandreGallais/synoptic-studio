@@ -1,13 +1,18 @@
-import { writeText } from "../page";
+import { nearestInteger, percentFromFraction } from "../../src";
+import { writeInputValue, writeText } from "../page";
+import { readView } from "../view";
 
 /**
  * Shows the zoom in the toolbar (SP-030's answer 9): its percentage, rounded to the nearest integer
- * (`nearestInteger`), on the menu's button and, unless it is being typed in, in the menu's field.
+ * (`percentFromFraction`, `nearestInteger`), on the menu's button and in its field; × √2 shows 141 %, ÷ √2 71 %.
  *
  * @kind procedure
  * @param document - page document
  * @see docs/domain/interaction.md#_7-navigation-and-history
  */
 export function showZoom(document: Document): void {
-  writeText(document, "zoom-percentage", "");
+  const percentage = nearestInteger(percentFromFraction(readView(document).scale));
+
+  writeText(document, "zoom-percentage", `${String(percentage)} %`);
+  writeInputValue(document, "zoom-field", percentage);
 }

@@ -1,4 +1,27 @@
-import type { View } from "../../src";
+import { fittedView, pickAreasBox } from "../../src";
+import { readPickAreas } from "../hover";
+import { readSelectedShapes } from "../kept-shapes";
+import { readCanvasSize, readView } from "../view";
+
+import { FIT_PADDING } from "./fit-padding";
+
+import type { PickArea, View } from "../../src";
+
+/**
+ * Reads what the shapes drawn, or the shapes selected, offer the pointer (`readPickAreas`): their
+ * contours as drawn.
+ *
+ * @kind procedure
+ * @param document - page document
+ * @param isSelection - whether the shapes selected are read, rather than every shape
+ * @returns their areas, in the order drawn
+ * @see docs/domain/interaction.md#_7-navigation-and-history
+ */
+function readFittedAreas(document: Document, isSelection: boolean): readonly PickArea[] {
+  const areas = readPickAreas(document);
+
+  return isSelection ? readSelectedShapes(document).flatMap((index) => areas[index] ?? []) : areas;
+}
 
 /**
  * Reads the view fitting the straight box of the shapes drawn, or of the shapes selected, 40
@@ -12,5 +35,15 @@ import type { View } from "../../src";
  * @see docs/domain/interaction.md#_7-navigation-and-history
  */
 export function readFittedView(document: Document, isSelection: boolean): View | undefined {
-  return isSelection ? undefined : { origin: { x: 0, y: 0 }, scale: document.title.length };
+  const box = pickAreasBox(readFittedAreas(document, isSelection));
+
+  // No shape with a corner: the box is empty, its minima +∞ and its maxima −∞.
+  if (box.minX > box.maxX) {
+    return undefined;
+  }
+
+  return fittedView(readView(document), box, {
+    canvas: readCanvasSize(document),
+    padding: FIT_PADDING,
+  });
 }

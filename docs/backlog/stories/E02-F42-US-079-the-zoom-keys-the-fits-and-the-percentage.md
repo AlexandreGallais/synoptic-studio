@@ -27,16 +27,32 @@ The examples use a canvas of 1 200 × 800 CSS pixels, the opening view at 100 %,
 
 ## Product Owner test
 
-`npm run dev`, `http://localhost:5173/`. Written with T2, once SP-030's answers are given: zoom by `+` and `-`, back to 100 %, fit the drawing and the selection, the percentage read at each.
+`npm run dev`, `http://localhost:5173/`. The page opens with a rectangle 120 × 80 at (0, 0), selected, the toolbar showing **100 %**. Click the empty drawing once so that the focus is on the page, not on a field.
 
 | Step | Do | You should see |
 | --- | --- | --- |
+| 1 | Point at the rectangle's bottom-right corner and press `+` | the drawing zooms in about the pointer, the corner staying under it; the toolbar shows **141 %** |
+| 2 | Press `+` twice more, then `-` once | 200 %, then 283 %, then 200 % again, the corner still under the pointer |
+| 3 | Move the pointer onto the panel and press `+` | the drawing zooms about the canvas's centre; **283 %** |
+| 4 | Press `Shift` + `0` | back to **100 %**, the point at the canvas's centre staying there |
+| 5 | Choose **Rectangle** and click the empty drawing far to the right and below; then press `Shift` + `1` | both rectangles fill the canvas, 40 pixels left on the side where they reach it; the toolbar shows the new percentage |
+| 6 | Press `Shift` + `2` | the new rectangle, selected, alone fills the canvas |
+| 7 | Press `Escape`, then `Shift` + `2` | nothing selected; the view does not change |
+| 8 | Click the width field of the panel and type `+` or `-` | the character goes to the field; the view does not change |
+| 9 | Press `Ctrl` + `+` (`Cmd` + `+` on macOS), then `Ctrl` + `0` | the browser zooms the whole page and back, as in any page; the drawing's percentage unchanged |
+| 10 | Click the percentage in the toolbar | a menu: Zoom in `+`, Zoom out `-`, Zoom to 100 % `Shift + 0`, Fit the drawing `Shift + 1`, Fit the selection `Shift + 2`, and a Zoom field |
+| 11 | Choose **Fit the drawing** | both rectangles fill the canvas; the menu closes |
+| 12 | Open the menu, type `200` in its field and press `Enter` | **200 %**, about the canvas's centre |
+| 13 | Type `abc`, then `0`, in the field and press `Enter` after each | nothing changes; the field shows 200 again |
+| 14 | Type `30000` and press `Enter` | **25600 %**, the bound; `+` then changes nothing |
+| 15 | Read the panel's X, Y, W and H of the selected rectangle | the same numbers as before any zoom |
+| 16 | Click **Reset** | the rectangle 120 × 80 alone, **100 %**, its corner 40 pixels from the canvas's top-left |
 
 ## Tasks
 
 - [ ] T1 — The criteria in line with SP-030's answers; the keys beside the selection's, the fits, the percentage shown (`playground/zoom/`, `playground/selection-keys/`): interface and failing tests (1 h)
 - [ ] T2 — The keys, the fits and what answer 9 shows; the rules in `interaction.md` §1 and §7, the Q table, the Product Owner test card and F42's guide page; the tests of T1 passing (2 h)
 
-Files: `playground/zoom/` (the zooms the keys and the menu ask, the menu and the percentage shown: a folder of its own, since it reads the drawing's pick areas of `playground/hover/`, which imports `playground/view/` and `playground/toolbar/`, so that neither could without a cycle), `playground/selection-keys/` (the keys heard beside Ctrl + A), `playground/index.html` (the percentage and its menu). `@see` ADR-0098, `docs/domain/interaction.md#_7-navigation-and-history`, `REF-FIGMA-PIXEL-GRID`, `REF-PENPOT-SHORTCUTS`, `REF-PENPOT-ZOOM`, `REF-SKETCH-SHORTCUTS`, `REF-INKSCAPE-KEYS`.
+Files: `playground/zoom/` (the zooms the keys and the menu ask, the menu and the percentage shown, a folder of its own since it reads the drawing's pick areas of `playground/hover/`, which imports `playground/view/` and `playground/toolbar/`, so that neither could without a cycle), `playground/selection-keys/` (the keys heard beside Ctrl + A), `playground/index.html` (the percentage and its menu). `@see` ADR-0098, `docs/domain/interaction.md#_7-navigation-and-history`, `REF-FIGMA-PIXEL-GRID`, `REF-PENPOT-SHORTCUTS`, `REF-PENPOT-ZOOM`, `REF-SKETCH-SHORTCUTS`, `REF-INKSCAPE-KEYS`.
 
 One task = one commit, referenced as `US-079.T1` in the commit footer.
