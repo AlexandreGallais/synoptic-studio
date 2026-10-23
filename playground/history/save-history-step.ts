@@ -1,5 +1,7 @@
+import { DEFAULT_HISTORY_BOUND, boundedHistory, historyWithStep } from "../../src";
 import { readKeptDrawing, readSelectedShapes } from "../kept-shapes";
 
+import { DUE_HISTORY_STEPS } from "./due-history-steps";
 import { PAGE_HISTORIES } from "./page-histories";
 
 import type { History } from "../../src";
@@ -18,6 +20,15 @@ import type { KeptShape } from "../kept-shapes";
  */
 export function saveHistoryStep(document: Document): History<KeptShape> {
   const present = { drawing: readKeptDrawing(document), selection: readSelectedShapes(document) };
+  const history = PAGE_HISTORIES.get(document);
 
-  return PAGE_HISTORIES.get(document) ?? { future: [], past: [], present };
+  const saved =
+    history === undefined
+      ? { future: [], past: [], present }
+      : boundedHistory(historyWithStep(history, present), DEFAULT_HISTORY_BOUND);
+
+  PAGE_HISTORIES.set(document, saved);
+  DUE_HISTORY_STEPS.delete(document);
+
+  return saved;
 }

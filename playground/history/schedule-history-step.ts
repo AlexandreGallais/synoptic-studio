@@ -12,6 +12,6 @@ import { DUE_HISTORY_STEPS } from "./due-history-steps";
  * @see docs/domain/interaction.md#_7-navigation-and-history
  */
 export function scheduleHistoryStep(document: Document, update: () => void): void {
-  DUE_HISTORY_STEPS.delete(document);
+  DUE_HISTORY_STEPS.add(document);
   update();
 }

@@ -373,11 +373,19 @@ describe("Undo and Redo, by the keys, what is done on the drawing (US-074)", () 
     dragBy(IN_B, { x: 10, y: 0 });
 
     // B from (200, 20) to (210, 20).
-    expectPlaces([{ x: 10, y: 20 }, { x: 210, y: 20 }, DRAWN[2] ?? IN_C]);
+    expectPlaces([
+      { x: 10, y: 20 },
+      { x: 210, y: 20 },
+      { x: 400, y: 20 },
+    ]);
 
     press("body", REDO);
 
-    expectPlaces([{ x: 10, y: 20 }, { x: 210, y: 20 }, DRAWN[2] ?? IN_C]);
+    expectPlaces([
+      { x: 10, y: 20 },
+      { x: 210, y: 20 },
+      { x: 400, y: 20 },
+    ]);
   });
 
   it("[F40.AC1] changes nothing while the Selector's press moves A, until the release", () => {
@@ -387,7 +395,9 @@ describe("Undo and Redo, by the keys, what is done on the drawing (US-074)", () 
 
     press("body", UNDO);
 
-    expect(readShape(0)).toMatchObject({ x: 41, y: 39 });
+    // (10, 20) + (30.6, 19.4) = (40.6, 39.4), not landed yet, nothing undone.
+    expect(readShape(0).x).toBeCloseTo(40.6, 9);
+    expect(readShape(0).y).toBeCloseTo(39.4, 9);
 
     dispatchDrawingPointer("pointerup", to, NO_KEY);
     press("body", UNDO);
@@ -438,6 +448,54 @@ describe("Undo and Redo, by the keys, what is done on the drawing (US-074)", () 
     expect(typed.defaultPrevented).toBe(false);
     expect(readShapeModel()).toMatchObject({ width: 1 });
   });
+
+  it("[F40.AC1] takes no step at a key released in a field: 150 typed in W undone at once", () => {
+    clickAt(IN_A, NO_KEY);
+
+    for (const typed of ["1", "15", "150"]) {
+      typeValue("width", typed);
+      selectPageElement("#width").dispatchEvent(new KeyboardEvent("keyup", { bubbles: true }));
+    }
+
+    commitField("width");
+    press("body", UNDO);
+
+    expect(readShape(0)).toMatchObject({ width: 100 });
+  });
+
+  it("[F40.AC1] leaves Ctrl + Z to the drawing once a field typed in is left", () => {
+    clickAt(IN_A, NO_KEY);
+    typeValue("width", "100");
+    selectPageElement("#width").dispatchEvent(new FocusEvent("focusout", { bubbles: true }));
+    dragBy(IN_A, { x: 30.6, y: 19.4 });
+
+    const event = press("#width", UNDO);
+
+    expect(event.defaultPrevented).toBe(true);
+    expectPlaces(DRAWN);
+  });
+
+  it("[F40.AC1] leaves Ctrl + Z to a slider of the color picker, never typed in, to the drawing", () => {
+    clickAt(IN_A, NO_KEY);
+    dragBy(IN_A, { x: 30.6, y: 19.4 });
+    press("#color-hue", UNDO);
+
+    expectPlaces(DRAWN);
+  });
+
+  it.each([
+    { init: { altKey: true, ctrlKey: true, key: "z" }, name: "Ctrl + Alt + Z" },
+    { init: { key: "z" }, name: "Z alone" },
+    { init: { ctrlKey: true, key: "x" }, name: "Ctrl + X" },
+  ])("[F40.AC1] leaves $name to the browser, nothing undone", ({ init }) => {
+    clickAt(IN_A, NO_KEY);
+    dragBy(IN_A, { x: 30.6, y: 19.4 });
+
+    const event = press("body", init);
+
+    expect(event.defaultPrevented).toBe(false);
+    expect(readShape(0)).toMatchObject({ x: 41, y: 39 });
+  });
 });
 
 describe("the Undo and Redo buttons and the history's size (US-074)", () => {
@@ -458,9 +516,25 @@ describe("the Undo and Redo buttons and the history's size (US-074)", () => {
   it("[F40.AC1] changes nothing on Ctrl + Z with nothing to undo", () => {
     const before = readKeptDrawing(document);
 
-    press("body", UNDO);
+    const event = press("body", UNDO);
 
     expect(readKeptDrawing(document)).toEqual(before);
+    expect(event.defaultPrevented).toBe(true);
+  });
+
+  it("[F40.AC1] empties the history at Reset during a press, started again at the release", () => {
+    holdRight(1);
+
+    const to = pressAndMove({ x: 60, y: 40 }, { x: 10, y: 0 });
+
+    clickElement("tool-reset");
+
+    expect(readDisabledState("history-undo")).toBe("true");
+    expect(readText("#history-size")).toBe("History 0 B of 100 MB");
+
+    dispatchDrawingPointer("pointerup", to, NO_KEY);
+
+    expect(readDisabledState("history-undo")).toBe("true");
   });
 
   it("[F40.AC1] shows the size of a nudge, and undoes and redoes it by the buttons", () => {

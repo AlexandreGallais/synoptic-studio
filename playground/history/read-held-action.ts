@@ -13,7 +13,9 @@ import { SHAPE_DRAWINGS } from "../shape-drawing";
  * @see docs/domain/interaction.md#_7-navigation-and-history
  */
 export function readHeldAction(document: Document): "drawing" | "move" | undefined {
-  return SHAPE_DRAWINGS.has(document) && readPressedMove(document) !== undefined
-    ? "move"
-    : undefined;
+  if (readPressedMove(document) !== undefined) {
+    return "move";
+  }
+
+  return SHAPE_DRAWINGS.get(document)?.isDrawn === true ? "drawing" : undefined;
 }
