@@ -1,3 +1,5 @@
+import { add, scale } from "../../math";
+
 import type { View } from "./view";
 import type { Vector } from "../../math";
 
@@ -14,5 +16,5 @@ import type { Vector } from "../../math";
  * @see DERIV-view-zoom
  */
 export function pannedView(view: View, delta: Vector): View {
-  return { origin: { x: view.origin.x + delta.x, y: view.origin.y + delta.y }, scale: view.scale };
+  return { origin: add(view.origin, scale(delta, 1 / view.scale)), scale: view.scale };
 }

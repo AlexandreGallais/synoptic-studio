@@ -13,5 +13,7 @@ const WHEEL_ZOOM_PER_PIXEL = 0.0057;
  * @see DERIV-view-zoom
  */
 export function wheelZoomFactor(delta: number): number {
-  return delta * WHEEL_ZOOM_PER_PIXEL;
+  const growth = 1 + WHEEL_ZOOM_PER_PIXEL * Math.abs(delta);
+
+  return delta > 0 ? 1 / growth : growth;
 }

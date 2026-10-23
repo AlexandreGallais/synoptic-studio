@@ -1,3 +1,9 @@
+import { boxSize, halfSize } from "../../geometry";
+import { midpoint } from "../../math";
+
+import { boundedScale } from "./bounded-scale";
+import { viewOrigin } from "./view-origin";
+
 import type { FitFrame } from "./fit-frame";
 import type { View } from "./view";
 import type { BoundingBox } from "../../geometry";
@@ -17,8 +23,15 @@ import type { BoundingBox } from "../../geometry";
  * @see DERIV-view-zoom
  */
 export function fittedView(view: View, box: BoundingBox, frame: FitFrame): View {
-  return {
-    origin: { x: box.minX, y: frame.canvas.height },
-    scale: view.scale + frame.padding,
-  };
+  const size = boxSize(box);
+  const fits = [
+    { length: size.width, room: frame.canvas.width - 2 * frame.padding },
+    { length: size.height, room: frame.canvas.height - 2 * frame.padding },
+  ]
+    .filter(({ length }) => length > 0)
+    .map(({ length, room }) => room / length);
+  const fitted = fits.length > 0 ? boundedScale(Math.min(...fits)) : view.scale;
+  const center = midpoint({ x: box.minX, y: box.minY }, { x: box.maxX, y: box.maxY });
+
+  return { origin: viewOrigin(center, halfSize(frame.canvas), fitted), scale: fitted };
 }

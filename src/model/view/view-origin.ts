@@ -1,3 +1,5 @@
+import { add, opposite, scale as scaled } from "../../math";
+
 import type { Point, Vector } from "../../math";
 
 /**
@@ -13,5 +15,5 @@ import type { Point, Vector } from "../../math";
  * @see DERIV-view-zoom
  */
 export function viewOrigin(point: Point, offset: Vector, scale: number): Point {
-  return { x: point.x - offset.x * scale, y: point.y - offset.y * scale };
+  return add(point, opposite(scaled(offset, 1 / scale)));
 }

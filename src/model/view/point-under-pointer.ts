@@ -1,3 +1,5 @@
+import { add, scale } from "../../math";
+
 import type { View } from "./view";
 import type { Point, Vector } from "../../math";
 
@@ -14,5 +16,5 @@ import type { Point, Vector } from "../../math";
  * @see DERIV-view-zoom
  */
 export function pointUnderPointer(view: View, offset: Vector): Point {
-  return { x: view.origin.x + offset.x, y: view.origin.y + offset.y };
+  return add(view.origin, scale(offset, 1 / view.scale));
 }

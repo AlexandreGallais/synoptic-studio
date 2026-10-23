@@ -26,7 +26,7 @@ The examples use a canvas of 1 200 × 800 CSS pixels and the opening view, scale
 ## Tasks
 
 - [x] T1 — The view's type and its functions (`src/model/view/`: the `viewBox`, the point under the pointer, a zoom about a point, a step, a pan, a fit) with their TSDoc, `@kind domain`, and the tests of the criteria, hand-computed views with their computation in a comment, then a property test (a zoom keeps the point under the pointer); `DERIV-view-zoom` written for the `math-expert`'s check; failing (1 h)
-- [ ] T2 — The view computed, the tests of T1 passing; ADR-0098 named in `interaction.md` §7, the zoom's rules there and their Q row (2 h)
+- [x] T2 — The view computed, the tests of T1 passing; ADR-0098 named in `interaction.md` §7, the zoom's rules there and their Q row (2 h)
 
 Files: `src/model/view/` (new), `src/render/view-box.ts` (the `ViewBox` type, reused, moved to `src/model/view/view-box.ts` since the model imports no module of `src/render/`, a layer above it), `docs/derivations/` (`DERIV-view-zoom`). `@see` ADR-0098, `REF-SVG2-COORDS`, `REF-PENPOT-ZOOM`, `REF-INKSCAPE-ZOOM-PREFS`, `DERIV-view-zoom`, `docs/domain/interaction.md#_7-navigation-and-history`.
 

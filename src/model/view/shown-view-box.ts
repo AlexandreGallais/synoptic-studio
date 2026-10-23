@@ -1,3 +1,5 @@
+import { screenToUser } from "../drawing";
+
 import type { View } from "./view";
 import type { ViewBox } from "./view-box";
 import type { Size } from "../../geometry";
@@ -15,5 +17,10 @@ import type { Size } from "../../geometry";
  * @see DERIV-view-zoom
  */
 export function shownViewBox(view: View, canvas: Size): ViewBox {
-  return { height: canvas.height, width: canvas.width, x: view.origin.x, y: view.origin.y };
+  return {
+    height: screenToUser(canvas.height, view.scale),
+    width: screenToUser(canvas.width, view.scale),
+    x: view.origin.x,
+    y: view.origin.y,
+  };
 }

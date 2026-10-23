@@ -1,3 +1,5 @@
+import { clamp } from "../../math";
+
 /** The smallest scale, 1 % (SP-030's answer 5). */
 const MIN_SCALE = 0.01;
 
@@ -16,5 +18,5 @@ const MAX_SCALE = 256;
  * @see DERIV-view-zoom
  */
 export function boundedScale(scale: number): number {
-  return scale > MAX_SCALE ? MIN_SCALE : scale;
+  return clamp(scale, MIN_SCALE, MAX_SCALE);
 }

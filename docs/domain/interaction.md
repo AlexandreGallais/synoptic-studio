@@ -225,8 +225,21 @@ F16; decided at F05's refinement, round 2, 2026-10-14; the rules marked "confirm
 
 ## 7. Navigation and history
 
-- Zoom and pan.
+- Zoom and pan (F42): the view of the drawing, a scale and an origin kept outside the drawing, both SVGs given its `viewBox` (ADR-0098; §7, The view).
 - Undo / redo (**Q7**, settled by the Product Owner on 2026-10-22): one step per finished action — a drag at its release, whatever its path; a value typed when Enter is pressed or the field left; a text when its editing is left; an addition, a deletion. Selecting alone is never a step. The history is bounded by a memory size and by a number of steps kept whatever their size, both set by the designer (SP-029's answers 6 and 7, 2026-10-23).
+
+### The view
+
+How the drawing is zoomed and panned (ADR-0098, accepted on 2026-10-23, SP-030's answer 1; `src/model/view/`, `DERIV-view-zoom`). The examples use a canvas of 1 200 × 800 CSS pixels:
+
+- **The view** is a scale, CSS pixels per user unit, and an origin, the point of the drawing at the canvas's top-left; it is not in the drawing, nor in the history, nor in the export, and no shape's path or coordinate changes with it. The page opens at scale 1, origin (−40, −40), as before F42, and Reset goes back to it (SP-030's answer 6).
+- **Its `viewBox`**, given to both SVGs, the drawing and the layer above it: `(o.x, o.y, W / s, H / s)`, the canvas's aspect, so one scale and nothing centred (`REF-SVG2-COORDS`, §8.2): at the opening view `-40 -40 1200 800`; at scale 2, origin (180, 130), `180 130 600 400` (`shownViewBox`).
+- **The point under the pointer** is the origin plus the pointer's offset on the canvas divided by the scale, `o + p / s`, computed, never read back from the page (ADR-0005): at scale 2, origin (180, 130), the offset (440, 340) is over (400, 300); at the opening view, (40, 40) over (0, 0) (`pointUnderPointer`).
+- **A zoom about a point** keeps the point under it: to the scale `s′` about the offset `p`, the origin becomes `o + p / s − p / s′`; from the opening view, the pointer at (440, 340) over (400, 300), zoomed to 2, the origin is (180, 130), (400, 300) still under the pointer (`zoomedView`).
+- **The bounds**: 1 % to 25 600 %, Inkscape's (SP-030's answer 5), a scale asked beyond them taken at the bound, the point still kept: 300 gives 256, 0.001 gives 0.01 (`boundedScale`).
+- **The steps** (SP-030's answer 4): a key's or a button's step multiplies the scale by √2 or divides it, within the bounds, 100, 141, 200, 283, 400 %, from 256 staying 256 (`steppedScale`); the wheel and the pinch zoom by their deltas' sum `δ` in pixels, as Penpot, × (1 + 0.0057 · |δ|) for a `δ` toward the screen, negative, its inverse for a positive one: −100 gives × 1.57, 100 gives × 0.63694, so that a slow pinch zooms slowly and a turn back gives the scale back (`wheelZoomFactor`).
+- **A pan** keeps the scale: the wheel's deltas `δ`, in screen pixels, move the origin by `δ / s`, a drag of `d` by `−d / s`, the drawing following the pointer: at scale 2, origin (180, 130), a drag of (100, 50) gives (130, 105), the wheel's (0, 100) gives (180, 180) (`pannedView`).
+- **A fit** shows a straight box whole and centred in the canvas less 40 pixels on each side (SP-030's answer 6), at the largest scale that fits, within the bounds: `s = min((W − 80) / w, (H − 80) / h)`, its centre at the canvas's: the box from (10, 20) to (410, 220) at `min(1 120 / 400, 720 / 200) = 2.8`, origin (−4.28571, −22.85714). A box 0 wide is fitted by its height alone, one 0 high by its width; a box of 0 × 0 is centred at the view's scale (agent's choice, EN-148) (`fittedView`).
 
 ### The history of states
 

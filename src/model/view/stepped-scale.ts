@@ -1,3 +1,5 @@
+import { boundedScale } from "./bounded-scale";
+
 /** A key's step of the zoom, √2: 100, 141, 200, 283, 400 % (SP-030's answer 4). */
 const ZOOM_STEP = Math.SQRT2;
 
@@ -14,5 +16,5 @@ const ZOOM_STEP = Math.SQRT2;
  * @see DERIV-view-zoom
  */
 export function steppedScale(scale: number, direction: -1 | 1): number {
-  return scale + ZOOM_STEP * direction;
+  return boundedScale(direction > 0 ? scale * ZOOM_STEP : scale / ZOOM_STEP);
 }

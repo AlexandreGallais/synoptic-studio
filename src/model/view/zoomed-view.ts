@@ -1,3 +1,7 @@
+import { boundedScale } from "./bounded-scale";
+import { pointUnderPointer } from "./point-under-pointer";
+import { viewOrigin } from "./view-origin";
+
 import type { View } from "./view";
 import type { Vector } from "../../math";
 
@@ -15,5 +19,7 @@ import type { Vector } from "../../math";
  * @see DERIV-view-zoom
  */
 export function zoomedView(view: View, offset: Vector, scale: number): View {
-  return { origin: { x: view.origin.x + offset.x, y: view.origin.y }, scale };
+  const kept = boundedScale(scale);
+
+  return { origin: viewOrigin(pointUnderPointer(view, offset), offset, kept), scale: kept };
 }
