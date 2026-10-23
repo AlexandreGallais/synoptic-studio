@@ -3,7 +3,7 @@ id: EN-149
 epic: E02
 feature: F42
 title: The helps drawn within the area shown and its padding
-status: ready
+status: done
 points: 2
 ---
 
