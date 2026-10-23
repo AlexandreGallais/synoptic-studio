@@ -5,6 +5,7 @@ import { ANY_HISTORY, historyState, keptRectangleAt } from "../../../tests";
 
 import { boundedHistory } from "./bounded-history";
 import { historySize } from "./history-size";
+import { historyWithStep } from "./history-with-step";
 import { undoneHistory } from "./undone-history";
 
 import type { History } from "./history";
@@ -99,4 +100,65 @@ describe("boundedHistory (F40)", () => {
       expect(JSON.stringify(history)).toBe(before);
     },
   );
+});
+
+/**
+ * Moves A again and again, from x 10 to x 10 + count, each move a step bounded as the page bounds
+ * it, A selected and drawn first, the other shapes shared by every state.
+ *
+ * @param others - the shapes drawn after A, never moved
+ * @param count - how many moves
+ * @param size - the memory size, 0 steps kept
+ * @returns the history after the last move
+ */
+function movedHistory(
+  others: readonly KeptRectangle[],
+  count: number,
+  size: number,
+): History<KeptRectangle> {
+  const start: History<KeptRectangle> = {
+    future: [],
+    past: [],
+    present: historyState([keptRectangleAt(10), ...others], [0]),
+  };
+  const moves = Array.from({ length: count })
+    .keys()
+    .map((index) => 11 + index);
+
+  return moves.reduce((history, x) => {
+    const moved = historyState([keptRectangleAt(x), ...others], [0]);
+
+    return boundedHistory(historyWithStep(history, moved), { size, steps: 0 });
+  }, start);
+}
+
+describe("boundedHistory, A moved again and again (US-076)", () => {
+  it("[F40.AC4] keeps 10 moves of A alone in 12 440 bytes, 1 244 bytes each", () => {
+    // A as it was, 614 characters, 1 228 bytes, its reference 8 and its index 8: 1 244 a move;
+    // 10 × 1 244 = 12 440, within the size.
+    const history = movedHistory([], 10, 12_440);
+
+    expect(history.past).toHaveLength(10);
+    expect(historySize(history)).toBe(12_440);
+  });
+
+  it("[F40.AC4] drops the first move at the eleventh, the oldest first", () => {
+    // 11 × 1 244 = 13 684 > 12 440: A at x 10, the first state, dropped; A at x 11 the oldest.
+    const history = movedHistory([], 11, 12_440);
+
+    expect(history.past).toHaveLength(10);
+    expect(history.past[0]?.drawing[0]).toEqual(keptRectangleAt(11));
+    expect(historySize(history)).toBe(12_440);
+  });
+
+  it("[F40.AC4] keeps 2 moves of A in a drawing of 100 rectangles in 4 072 bytes, 2 036 each", () => {
+    // A as it was, 1 228, the 100 references of its state, 800, its index, 8: 2 036 a move;
+    // 3 × 2 036 = 6 108 > 4 072 = 2 × 2 036; the 99 others shared with the present, not counted.
+    const indices = Array.from({ length: 99 }).keys();
+    const others = indices.map((index) => keptRectangleAt(200 + index)).toArray();
+    const history = movedHistory(others, 3, 4072);
+
+    expect(history.past).toHaveLength(2);
+    expect(historySize(history)).toBe(4072);
+  });
 });

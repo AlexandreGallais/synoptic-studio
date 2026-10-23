@@ -157,11 +157,27 @@
         opacity: 0.4;
         background: none;
       }
-      #history-size {
+      #history-size,
+      #history-moves {
         align-self: center;
         font-size: 0.85em;
         color: var(--muted);
         white-space: nowrap;
+      }
+      /* The history's memory size and steps kept, beside Undo and Redo (US-076). */
+      #toolbar label {
+        display: flex;
+        gap: 0.3rem;
+        align-items: center;
+        margin: 0;
+        font-size: 0.85em;
+        white-space: nowrap;
+      }
+      #toolbar input[type="number"] {
+        display: inline-block;
+        width: 4.2rem;
+        height: 1.9rem;
+        margin: 0;
       }
       #toolbar svg {
         width: 1.1rem;
@@ -591,7 +607,22 @@
           >
             Redo
           </button>
+          <label
+            title="The memory the history keeps for Undo and Redo, from 0 to 1,000 MB: beyond it, the oldest steps are dropped first, never fewer than the steps kept. A move of one shape adds about 1,244 bytes."
+            >Memory
+            <input id="history-memory" type="number" min="0" max="1000" step="1" value="100" />
+            MB</label
+          >
+          <label
+            title="The last steps kept whatever their memory, from 0 to 100: a change of many shapes may take more than the whole memory and stays undoable."
+            >Steps kept
+            <input id="history-steps" type="number" min="0" max="100" step="1" value="5"
+          /></label>
           <span id="history-size"></span>
+          <span
+            id="history-moves"
+            title="About how many moves of one shape the memory holds, each adding about 1,244 bytes; a change of more shapes takes more."
+          ></span>
         </p>
         <p role="group" aria-label="Page">
           <button id="tool-reset" type="button" title="Back to the shape the page opens with">
