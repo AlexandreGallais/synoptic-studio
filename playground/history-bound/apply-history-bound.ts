@@ -1,4 +1,6 @@
 import { PAGE_HISTORY_BOUNDS } from "./page-history-bounds";
+import { writeBoundFields } from "./write-bound-fields";
+import { writeStoredHistoryBound } from "./write-stored-history-bound";
 
 import type { HistoryBound } from "../../src";
 
@@ -14,4 +16,6 @@ import type { HistoryBound } from "../../src";
  */
 export function applyHistoryBound(document: Document, bound: HistoryBound): void {
   PAGE_HISTORY_BOUNDS.set(document, bound);
+  writeStoredHistoryBound(document, bound);
+  writeBoundFields(document, bound);
 }

@@ -11,8 +11,8 @@ import type { ShapeReading } from "../shape";
  * @see docs/backlog/stories/E01-F01-US-002-sharp-rectangle-in-playground.md
  */
 export function writeValidity(document: Document, reading: ShapeReading): void {
-  // Every number input of the page is a value of the shape.
-  for (const input of document.querySelectorAll('input[type="number"]')) {
+  // Every number input of the panel is a value of the shape; the toolbar's bound the history's.
+  for (const input of document.querySelectorAll('#panel input[type="number"]')) {
     input.setAttribute("aria-invalid", String(!reading.isValid));
   }
 

@@ -1,5 +1,7 @@
 import { writeInputValue } from "../page";
 
+import { HISTORY_BOUND_FIELDS } from "./history-bound-fields";
+
 import type { HistoryBound } from "../../src";
 
 /**
@@ -12,5 +14,8 @@ import type { HistoryBound } from "../../src";
  * @see docs/domain/interaction.md#_7-navigation-and-history
  */
 export function writeBoundFields(document: Document, bound: HistoryBound): void {
-  writeInputValue(document, "history-memory", bound.steps);
+  const { size, steps } = HISTORY_BOUND_FIELDS;
+
+  writeInputValue(document, size.id, bound.size / size.unit);
+  writeInputValue(document, steps.id, bound.steps / steps.unit);
 }

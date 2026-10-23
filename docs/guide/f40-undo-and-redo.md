@@ -14,7 +14,9 @@
 
 **In a field of the panel.** While you type in a field, Ctrl + Z is the field's own, as in any text box. Once the value is applied, by Enter or by leaving the field, Ctrl + Z goes to the drawing even if the field still has the focus: type 150 in W, press Enter, then Ctrl + Z, and the shape is 100 wide again.
 
-**Reset and the guided test start a new history**, with nothing to undo, as the page opens.
+**How much the history keeps is yours to set.** Beside Undo and Redo, Memory is the most the history holds, in MB, 100 when the page first opens, and Steps kept the number of last steps kept whatever their size, 5; hover over either for what it does. The toolbar shows how many moves of one shape the memory holds about, `about 80,380 moves` for 100 MB, a move adding about 1 244 bytes. Type a value and press Enter, or leave the field: the history fits it at once, its oldest steps going first, never the steps waiting for Redo, and the browser remembers both values for the next time the page is opened. Set Memory to 0 and Steps kept to 2, nudge the rectangle four times, and only the last two nudges can be undone. Memory takes a whole number from 0 to 1 000 and Steps kept from 0 to 100; anything else is put back as it was.
+
+**Reset and the guided test start a new history**, with nothing to undo, as the page opens; the memory and the steps kept stay as set.
 
 The history itself, kept by the editor's library:
 
@@ -24,7 +26,7 @@ The history itself, kept by the editor's library:
 
 **The selection comes back with the step.** Undo gives back the shapes selected before the change, Redo those after it, so that an undo shows what it changed: with A and B drawn and B selected, delete B, then undo: B is back, selected; redo, and B is gone again, nothing selected.
 
-**A memory size, and a few steps kept whatever their size.** The history keeps at most 100 MB, 100 000 000 bytes, by default, and always its last 5 steps, however large; the designer will set both (US-076). Past the size, the oldest steps go first, only as many as needed: a history of two nudges, 2 504 bytes, bounded at 2 000 bytes with 1 step kept, drops the first nudge and keeps the second, 1 252 bytes; with 5 steps kept, it keeps both.
+**A memory size, and a few steps kept whatever their size.** The history keeps at most 100 MB, 100 000 000 bytes, by default, and always its last 5 steps, however large; the designer sets both beside Undo and Redo. Past the size, the oldest steps go first, only as many as needed: a history of two nudges, 2 504 bytes, bounded at 2 000 bytes with 1 step kept, drops the first nudge and keeps the second, 1 252 bytes; with 5 steps kept, it keeps both.
 
 ## The choices the agent made
 
@@ -45,6 +47,11 @@ For the review's summary; each can be changed.
 - Ctrl + Z while a new text is still empty removes it without undoing anything else.
 - A drag of a shape not selected gives back, undone, the selection before it, none, the press alone selecting nothing; a tool armed stays armed after an undo; Ctrl + Z is taken even with nothing to undo, so the browser never acts on it, and left to the browser with Alt held.
 - The size is written in B, kB, MB or GB of 1 000 each, to one decimal, `1.2 kB`.
+- Memory is set in whole MB from 0 to 1 000 and Steps kept from 0 to 100, so that 100 steps of 1 000 rectangles changed at once, about 124 MB, stay near the default size; a value outside them, a fraction or an empty field is put back as it was, without a message.
+- The moves held are those of one rectangle 100 × 50 moved alone, 1 244 bytes each, rounded down to tens, `about 80,380 moves`, its digits grouped by commas as English writes them; a change of more shapes holds fewer.
+- A memory or a number of steps applied bounds the history at once, as a step does; while a shape is being moved, a new text typed or a value refused, it waits for the next step.
+- The browser keeps both values for the next session, as the checklists keep their ticks; a value it kept that the fields would refuse is put back to its default.
+- The fewest old steps to drop are found by trying 1, 2, 4… then halving, so that a history within its memory is measured once and one a step over it twice; each measure still reads every shape the past and the steps to redo hold alone.
 - Reset and each step of the guided test empty the history.
 
 ## The ideas behind it

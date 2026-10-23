@@ -15,5 +15,17 @@ import type { HistoryBound } from "../../src";
  * @see docs/domain/interaction.md#_7-navigation-and-history
  */
 export function writeStoredHistoryBound(document: Document, bound: HistoryBound): void {
-  readBrowserStorage(document)?.setItem(HISTORY_BOUND_KEY, String(bound.size));
+  const storage = readBrowserStorage(document);
+
+  if (storage === undefined) {
+    return;
+  }
+
+  const written = JSON.stringify({ size: bound.size, steps: bound.steps });
+
+  try {
+    storage.setItem(HISTORY_BOUND_KEY, written);
+  } catch {
+    // The storage is a convenience: the bound holds for the session without it.
+  }
 }

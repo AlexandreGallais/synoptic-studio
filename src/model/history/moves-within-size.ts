@@ -1,3 +1,5 @@
+import { integerQuotient } from "../../math";
+
 /**
  * The bytes a move of one shape adds to the history (F40): A, a rectangle 100 × 50 kept by the
  * page, 614 characters, 1 228 bytes as it was, its reference, 8, and the index of its selection,
@@ -19,5 +21,5 @@ const ROUNDING = 10;
  * @see docs/domain/interaction.md#_7-navigation-and-history
  */
 export function movesWithinSize(size: number): number {
-  return Math.min(size, 0) * MOVE_BYTES * ROUNDING;
+  return integerQuotient(size, MOVE_BYTES * ROUNDING) * ROUNDING;
 }

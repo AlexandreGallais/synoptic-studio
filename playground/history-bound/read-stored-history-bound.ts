@@ -1,6 +1,43 @@
 import { DEFAULT_HISTORY_BOUND } from "../../src";
+import { readBrowserStorage } from "../checklist";
+
+import { HISTORY_BOUND_FIELDS } from "./history-bound-fields";
+import { HISTORY_BOUND_KEY } from "./history-bound-key";
+import { readBoundPart } from "./read-bound-part";
 
 import type { HistoryBound } from "../../src";
+
+/**
+ * Reads the value a text kept in the browser holds; a broken text gives none.
+ *
+ * @kind procedure
+ * @param written - the text kept in the storage
+ * @returns the value it holds, or none
+ * @see docs/domain/interaction.md#_7-navigation-and-history
+ */
+function readWrittenValue(written: string): unknown {
+  try {
+    return JSON.parse(written);
+  } catch {
+    return undefined;
+  }
+}
+
+/**
+ * Reads a part of the bound kept in the browser, if its field accepts it (`readBoundPart`),
+ * otherwise its default.
+ *
+ * @kind procedure
+ * @param written - the object kept in the browser
+ * @param part - `size` or `steps`
+ * @returns the part, in bytes or in steps
+ * @see docs/domain/interaction.md#_7-navigation-and-history
+ */
+function readStoredPart(written: object, part: keyof HistoryBound): number {
+  const value: unknown = Reflect.get(written, part);
+
+  return readBoundPart(value, HISTORY_BOUND_FIELDS[part]) ?? DEFAULT_HISTORY_BOUND[part];
+}
 
 /**
  * Reads the history's bound kept in this browser (F40, `HISTORY_BOUND_KEY`), each part its
@@ -13,5 +50,9 @@ import type { HistoryBound } from "../../src";
  * @see docs/domain/interaction.md#_7-navigation-and-history
  */
 export function readStoredHistoryBound(document: Document): HistoryBound {
-  return document.defaultView === null ? DEFAULT_HISTORY_BOUND : DEFAULT_HISTORY_BOUND;
+  const text = readBrowserStorage(document)?.getItem(HISTORY_BOUND_KEY) ?? "{}";
+  const value = readWrittenValue(text);
+  const written = value instanceof Object ? value : {};
+
+  return { size: readStoredPart(written, "size"), steps: readStoredPart(written, "steps") };
 }

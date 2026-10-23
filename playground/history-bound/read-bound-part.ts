@@ -12,5 +12,8 @@ import type { HistoryBoundField } from "./history-bound-field";
  * @see docs/domain/interaction.md#_7-navigation-and-history
  */
 export function readBoundPart(value: unknown, field: HistoryBoundField): number | undefined {
-  return typeof value === "number" && field.most < 0 ? value : undefined;
+  const count = typeof value === "number" ? value / field.unit : NaN;
+  const isAccepted = [Number.isSafeInteger(count), count >= 0, count <= field.most].every(Boolean);
+
+  return isAccepted ? count * field.unit : undefined;
 }

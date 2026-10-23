@@ -162,3 +162,31 @@ describe("boundedHistory, A moved again and again (US-076)", () => {
     expect(historySize(history)).toBe(4072);
   });
 });
+
+describe("boundedHistory, a size just set smaller (US-076)", () => {
+  it("[F40.AC4] drops 7 of 10 moves of A at once for 3 732 bytes, 3 moves", () => {
+    // 10 × 1 244 = 12 440 > 3 732 = 3 × 1 244: the 7 oldest dropped, A at x 17 the oldest left.
+    const history = boundedHistory(movedHistory([], 10, 12_440), { size: 3732, steps: 0 });
+
+    expect(history.past).toHaveLength(3);
+    expect(history.past[0]?.drawing[0]).toEqual(keptRectangleAt(17));
+    expect(historySize(history)).toBe(3732);
+  });
+
+  it.each([
+    { size: 3731, want: 2, why: "one byte under 3 moves" },
+    { size: 12_439, want: 9, why: "one byte under 10 moves" },
+    { size: 1243, want: 0, why: "one byte under 1 move" },
+  ])("[F40.AC4] keeps $want of 10 moves for $size bytes, $why", ({ size, want }) => {
+    const history = boundedHistory(movedHistory([], 10, 12_440), { size, steps: 0 });
+
+    expect(history.past).toHaveLength(want);
+    expect(historySize(history)).toBe(want * 1244);
+  });
+
+  it("[F40.AC4] keeps 4 of 10 moves for 0 bytes and 4 steps kept", () => {
+    const history = boundedHistory(movedHistory([], 10, 12_440), { size: 0, steps: 4 });
+
+    expect(history.past).toHaveLength(4);
+  });
+});

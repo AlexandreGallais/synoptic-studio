@@ -15,6 +15,7 @@ import {
 } from "../user-actions";
 
 import { HISTORY_BOUND_KEY } from "./history-bound-key";
+import { readPageHistoryBound } from "./read-page-history-bound";
 
 /**
  * Nudges the selection by Right with the focus outside the fields: one key pressed and released,
@@ -73,8 +74,9 @@ describe("the history's memory size and steps kept, set by the designer (US-076)
     expect(readValue("history-steps")).toBe("5");
     expect(readText("#history-size")).toBe("History 0 B of 100 MB");
     expect(readText("#history-moves")).toBe("about 80,380 moves");
-    expect(selectPageElement("#history-memory").title).toContain("1,244 bytes");
-    expect(selectPageElement("#history-steps").title).toContain("whatever");
+    expect(selectPageElement("#history-memory").closest("label")?.title).toContain("1,244 bytes");
+    expect(selectPageElement("#history-steps").closest("label")?.title).toContain("whatever");
+    expect(selectPageElement("#history-moves").title).toContain("1,244 bytes");
   });
 
   it("[F40.AC4] keeps 20 MB and 3 steps in the browser for the next session", () => {
@@ -237,6 +239,21 @@ describe("the history's memory size and steps kept, set by the designer (US-076)
 
     expect(readValue("history-memory")).toBe("7");
     expect(readText("#history-size")).toBe("History 0 B of 7 MB");
+  });
+
+  it("[F40.AC4] reads the default bound for a page not mounted", () => {
+    const other = document.implementation.createHTMLDocument();
+
+    expect(readPageHistoryBound(other)).toEqual({ size: 100_000_000, steps: 5 });
+  });
+
+  it("[F40.AC4] leaves the bound's fields unmarked while the shape is refused", () => {
+    openPage();
+    typeAndEnter("width", "-5");
+
+    expect(selectPageElement("#width").getAttribute("aria-invalid")).toBe("true");
+    expect(selectPageElement("#history-memory").getAttribute("aria-invalid")).toBeNull();
+    expect(selectPageElement("#history-steps").getAttribute("aria-invalid")).toBeNull();
   });
 
   it("[F40.AC4] leaves Ctrl + Z to a bound's field typed in, and Delete never deletes a shape", () => {

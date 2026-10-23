@@ -4,8 +4,6 @@ export type HistoryBoundField = {
   readonly id: string;
   /** The most it accepts, in its unit; the fewest is 0. */
   readonly most: number;
-  /** The part of the bound it sets. */
-  readonly part: "size" | "steps";
   /** What one of its unit counts: 1 000 000 bytes a MB, 1 step. */
   readonly unit: number;
 };

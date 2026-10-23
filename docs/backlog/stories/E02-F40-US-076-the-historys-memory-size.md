@@ -30,6 +30,14 @@ The examples draw A, a rectangle 100 × 50 at (10, 20) of radius 0, 614 characte
 
 | Step | Do | You should see |
 | --- | --- | --- |
+| 1 | Open the page in a private window | beside Undo and Redo, Memory 100 MB and Steps kept 5, then `History 0 B of 100 MB` and `about 80,380 moves` |
+| 2 | Hover over Memory, Steps kept and the moves | a title for each: what it bounds, and a move of one shape adding about 1,244 bytes |
+| 3 | Click the rectangle, press Right four times, releasing it each time, then click Undo twice | `History 5 kB of 100 MB` after the four nudges, 4 × 1 248 bytes; still 5 kB after the two Undo, the steps to redo counted |
+| 4 | Type 0 in Memory and press Enter | `History 5 kB of 0 B` and `about 0 moves`: nothing dropped, the 4 steps within the 5 kept |
+| 5 | Type 1 in Steps kept and press Enter, then click Undo twice | `History 3.7 kB of 0 B` at once; the first Undo goes back one nudge, then Undo is greyed out, and Redo brings back three |
+| 6 | Reload the page, click the rectangle, press Right three times, then Ctrl + Z twice outside the fields | Memory 0 and Steps kept 1 as set; one nudge undone, the second Ctrl + Z doing nothing |
+| 7 | Type 2.5 in Memory and press Tab, then 1001 and Tab, then 101 in Steps kept and Tab | each field back to 0 and 1, nothing else changed |
+| 8 | Type 100 in Memory and 5 in Steps kept, each with Enter, then reload the page | 100 and 5 again, `about 80,380 moves` |
 
 ## Tasks
 
@@ -39,3 +47,9 @@ The examples draw A, a rectangle 100 × 50 at (10, 20) of radius 0, 614 characte
 Files: `playground/history/` (US-074's), `playground/index.html` (the fields), `src/model/history/` (the steps held). `@see` ADR-0095, `docs/domain/interaction.md#_7-navigation-and-history`, `REF-GIMP-PREFS-RESOURCES`, `REF-GIMP-UNDO-CODE`.
 
 One task = one commit, referenced as `US-076.T1` in the commit footer.
+
+## For the main thread
+
+### Improvements
+
+| 2026-10-23 | agent | `historySize` serializes every shape held only by the past and the states to come at each call: measured by US-076 under Vitest, a rectangle moved in a drawing of 100, 4 ms at 1 000 steps, 19 ms at 5 000, 79 ms at 20 000, so that at the 80 000 moves 100 MB holds a step costs about 1 s (two measures in `boundedHistory` once full, one shown). US-076 cut the measures per step from about 17 to 1 or 2 (`boundedHistory` doubling then halving) and the toolbar's to one per history (`showHistory`); left: each shape's text length kept once, by the shape itself (a `WeakMap` in the core, a structural choice for an ADR), or the size carried by the history from step to step. For AUD-042 or the review held when E02 goes into `main` | code |

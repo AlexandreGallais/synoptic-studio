@@ -14,7 +14,5 @@ import type { HistoryBound } from "../../src";
  * @see docs/domain/interaction.md#_7-navigation-and-history
  */
 export function readPageHistoryBound(document: Document): HistoryBound {
-  return PAGE_HISTORY_BOUNDS.get(document) === undefined
-    ? DEFAULT_HISTORY_BOUND
-    : DEFAULT_HISTORY_BOUND;
+  return PAGE_HISTORY_BOUNDS.get(document) ?? DEFAULT_HISTORY_BOUND;
 }
