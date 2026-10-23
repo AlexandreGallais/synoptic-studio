@@ -59,6 +59,7 @@ Two sources are **independent** when neither cites nor copies the other and they
 | Snapping, alignment | `interaction.md` | `REF-INKSCAPE-SNAP` |
 | Shape builder | ADR-0006 | `REF-INKSCAPE-SHAPEBUILDER` |
 | Undo / redo | `interaction.md`, ADR-0095, [note 0030](./notes/0030-f40-undo-and-redo.md) | `REF-REDUX-UNDO`, `REF-MYERS-KOSBIE-1996`, `REF-GIMP-UNDO` |
+| Zoom and pan | `interaction.md` §7, ADR-0098, [note 0031](./notes/0031-f42-zoom-and-pan.md) | `REF-SVG2-COORDS`, `REF-PENPOT-ZOOM`, `REF-INKSCAPE-ZOOM-PREFS`, `REF-MDN-WHEEL-EVENT` |
 | Tooling, code style | ADR-0009 to ADR-0016 | [note 0001](./notes/0001-tooling-practices.md) |
 
 ## 4. Licenses of reference implementations
