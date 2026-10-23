@@ -40,3 +40,14 @@ Asked by the Product Owner on 2026-10-23 (SP-029's answer 8), to see its use; cu
 - [ ] T3 — F41's guide page, left to this story by EN-147, and the list's timings with a long history (1 h)
 
 One task = one commit, referenced as `US-077.Tn` in the commit footer.
+
+## The measures
+
+Measured on Node 24, the median of 7 runs, a history built as the page records it from an empty one, a rectangle moved n times, each step a new rectangle, bounded by the default 100 MB, 5 steps kept:
+
+| n | The list (`historySteps`, 15 rows) | Going back 14 steps (`sizedHistoryAt`) | The list after going back |
+| --- | --- | --- | --- |
+| 20 000 | 0.08 ms, the first 0.46 ms | 0.46 ms | 0.06 ms |
+| 80 000 | 0.06 ms, the first 0.13 ms | 1.07 ms | 0.06 ms |
+
+A drawing of 1 000 rectangles, 200 steps each moving one: the list 0.22 ms, the first 0.39 ms, each row comparing 1 000 shapes by reference and the shape moved by its fields. The list costs its 15 rows whatever the history holds; going back costs its undos, each copying the past's list. The page writes the list again only when the history changes.
