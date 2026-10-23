@@ -52,7 +52,7 @@ function readStepCounts(): { readonly past: number; readonly future: number } {
 /**
  * Opens the page, the drawing given its box, so that the keys and the buttons reach it.
  */
-function openPage(): void {
+function openBoundedPage(): void {
   openServedPage("");
   setElementBox("#canvas", { height: 600, left: 100, top: 50, width: 800 });
 }
@@ -67,7 +67,7 @@ afterEach(() => {
 
 describe("the history's memory size and steps kept, set by the designer (US-076)", () => {
   it("[F40.AC4] opens on 100 MB and 5 steps kept, about 80,380 moves, the fields explained", () => {
-    openPage();
+    openBoundedPage();
 
     // 100 000 000 / 1 244 = 80 385.9, rounded down to tens.
     expect(readValue("history-memory")).toBe("100");
@@ -80,7 +80,7 @@ describe("the history's memory size and steps kept, set by the designer (US-076)
   });
 
   it("[F40.AC4] keeps 20 MB and 3 steps in the browser for the next session", () => {
-    openPage();
+    openBoundedPage();
     typeAndEnter("history-memory", "20");
     typeAndEnter("history-steps", "3");
 
@@ -89,7 +89,7 @@ describe("the history's memory size and steps kept, set by the designer (US-076)
       steps: 3,
     });
 
-    openPage();
+    openBoundedPage();
 
     // 20 000 000 / 1 244 = 16 077.2.
     expect(readValue("history-memory")).toBe("20");
@@ -100,7 +100,7 @@ describe("the history's memory size and steps kept, set by the designer (US-076)
 
   it("[F40.AC4] bounds each step by the bound kept: 0 MB and 2 steps keep 2 of 4 nudges", () => {
     localStorage.setItem(HISTORY_BOUND_KEY, JSON.stringify({ size: 0, steps: 2 }));
-    openPage();
+    openBoundedPage();
     nudge(4);
 
     // The page's rectangle, 616 characters, its reference and its index: 1 248 bytes a step;
@@ -118,7 +118,7 @@ describe("the history's memory size and steps kept, set by the designer (US-076)
   });
 
   it("[F40.AC4] drops the oldest steps at once when the bound is set, never the steps to redo", () => {
-    openPage();
+    openBoundedPage();
     nudge(4);
     clickElement("history-undo");
     clickElement("history-undo");
@@ -138,7 +138,7 @@ describe("the history's memory size and steps kept, set by the designer (US-076)
   });
 
   it("[F40.AC4] takes no step of the drawing when a bound is applied", () => {
-    openPage();
+    openBoundedPage();
     typeAndEnter("history-memory", "50");
 
     expect(readStepCounts()).toEqual({ future: 0, past: 0 });
@@ -155,7 +155,7 @@ describe("the history's memory size and steps kept, set by the designer (US-076)
     { id: "history-steps", typed: "1.5", want: "5" },
     { id: "history-steps", typed: "", want: "5" },
   ])("[F40.AC4] gives back $want in $id for $typed, the bound unchanged", ({ id, typed, want }) => {
-    openPage();
+    openBoundedPage();
     typeAndEnter(id, typed);
 
     expect(readValue(id)).toBe(want);
@@ -169,7 +169,7 @@ describe("the history's memory size and steps kept, set by the designer (US-076)
   ])("[F40.AC4] takes $title", ({ typed, want }) => {
     const [memory = "", steps = ""] = typed;
 
-    openPage();
+    openBoundedPage();
     typeAndEnter("history-memory", memory);
     typeAndEnter("history-steps", steps);
 
@@ -184,7 +184,7 @@ describe("the history's memory size and steps kept, set by the designer (US-076)
     { title: "texts", written: '{"size":"5","steps":"2"}' },
   ])("[F40.AC4] opens on 100 MB and 5 steps kept with $title in the browser", ({ written }) => {
     localStorage.setItem(HISTORY_BOUND_KEY, written);
-    openPage();
+    openBoundedPage();
 
     expect(readValue("history-memory")).toBe("100");
     expect(readValue("history-steps")).toBe("5");
@@ -193,7 +193,7 @@ describe("the history's memory size and steps kept, set by the designer (US-076)
 
   it("[F40.AC4] keeps one value the browser wrote, the other back to its default", () => {
     localStorage.setItem(HISTORY_BOUND_KEY, '{"size":30000000,"steps":"2"}');
-    openPage();
+    openBoundedPage();
 
     expect(readValue("history-memory")).toBe("30");
     expect(readValue("history-steps")).toBe("5");
@@ -204,7 +204,7 @@ describe("the history's memory size and steps kept, set by the designer (US-076)
       throw new Error("Storage blocked");
     });
 
-    openPage();
+    openBoundedPage();
     typeAndEnter("history-steps", "1");
     nudge(2);
 
@@ -223,7 +223,7 @@ describe("the history's memory size and steps kept, set by the designer (US-076)
     });
 
     vi.spyOn(globalThis, "localStorage", "get").mockReturnValue(full);
-    openPage();
+    openBoundedPage();
     typeAndEnter("history-memory", "0");
     typeAndEnter("history-steps", "1");
     nudge(3);
@@ -232,7 +232,7 @@ describe("the history's memory size and steps kept, set by the designer (US-076)
   });
 
   it("[F40.AC4] keeps the bound at Reset, the history emptied", () => {
-    openPage();
+    openBoundedPage();
     typeAndEnter("history-memory", "7");
     nudge(1);
     clickElement("tool-reset");
@@ -248,7 +248,7 @@ describe("the history's memory size and steps kept, set by the designer (US-076)
   });
 
   it("[F40.AC4] leaves the bound's fields unmarked while the shape is refused", () => {
-    openPage();
+    openBoundedPage();
     typeAndEnter("width", "-5");
 
     expect(selectPageElement("#width").getAttribute("aria-invalid")).toBe("true");
@@ -257,7 +257,7 @@ describe("the history's memory size and steps kept, set by the designer (US-076)
   });
 
   it("[F40.AC4] leaves Ctrl + Z to a bound's field typed in, and Delete never deletes a shape", () => {
-    openPage();
+    openBoundedPage();
     nudge(1);
 
     const field = selectPageElement("#history-memory");
