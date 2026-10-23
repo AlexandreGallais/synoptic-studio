@@ -1,5 +1,6 @@
 import { nudgeShift } from "../../src";
 import { readSelectedShapes } from "../kept-shapes";
+import { readListenerSignal } from "../listeners";
 import { readMode } from "../page";
 import { readMovedDrawing, readSelectionMove, writeMovedDrawing } from "../selection-drag";
 
@@ -94,7 +95,11 @@ function moveNudgedShapes(document: Document, event: KeyboardEvent, update: () =
  * @see docs/domain/interaction.md#_1-tools
  */
 export function listenToNudgeKeys(document: Document, update: () => void): void {
-  document.addEventListener("keydown", (event) => {
-    moveNudgedShapes(document, event, update);
-  });
+  document.addEventListener(
+    "keydown",
+    (event) => {
+      moveNudgedShapes(document, event, update);
+    },
+    { signal: readListenerSignal(document) },
+  );
 }

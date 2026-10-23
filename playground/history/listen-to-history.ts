@@ -2,7 +2,6 @@ import { sizedHistoryAt, sizedRedoneHistory, sizedUndoneHistory } from "../../sr
 import { listenToHistoryBound } from "../history-bound";
 import { readStepState } from "../history-list";
 import { selectElement } from "../page";
-import { readKeyField } from "../selection-keys";
 
 import { clearPageHistory } from "./clear-page-history";
 import { listenToHistoryKeys } from "./listen-to-history-keys";
@@ -15,9 +14,8 @@ const RESTARTS = ["tool-reset", "guide-previous", "guide-next"];
 
 /**
  * Listens to the ends of the drawing's actions (F40): a step asked at each click on the drawing,
- * each release of the pointer on it, a drag cancelled included, and each key released outside the
- * panel's fields (`scheduleHistoryStep`), so that a key held is one step from its press to its
- * release (SP-029's answer 3).
+ * each release of the pointer on it, a drag cancelled included (`scheduleHistoryStep`); a key
+ * released asks its own, with the keys of the history (`listenToHistoryKeys`).
  *
  * @kind procedure
  * @param document - page document
@@ -30,12 +28,6 @@ function listenToActionEnds(document: Document, update: () => void): void {
       scheduleHistoryStep(document, update);
     });
   }
-
-  document.addEventListener("keyup", (event) => {
-    if (readKeyField(event) === undefined) {
-      scheduleHistoryStep(document, update);
-    }
-  });
 }
 
 /**

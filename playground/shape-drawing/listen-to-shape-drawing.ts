@@ -1,3 +1,4 @@
+import { readListenerSignal } from "../listeners";
 import { selectElement } from "../page";
 import { readDrawingPoint } from "../placing";
 
@@ -14,17 +15,25 @@ import { updateShapeDrawing } from "./update-shape-drawing";
  * @see docs/domain/interaction.md#_1-tools
  */
 function listenToShift(document: Document, update: () => void): void {
-  document.addEventListener("keydown", (event) => {
-    if (event.key === "Shift") {
-      updateShapeDrawing(document, { isShift: true }, update);
-    }
-  });
+  document.addEventListener(
+    "keydown",
+    (event) => {
+      if (event.key === "Shift") {
+        updateShapeDrawing(document, { isShift: true }, update);
+      }
+    },
+    { signal: readListenerSignal(document) },
+  );
 
-  document.addEventListener("keyup", (event) => {
-    if (event.key === "Shift") {
-      updateShapeDrawing(document, { isShift: false }, update);
-    }
-  });
+  document.addEventListener(
+    "keyup",
+    (event) => {
+      if (event.key === "Shift") {
+        updateShapeDrawing(document, { isShift: false }, update);
+      }
+    },
+    { signal: readListenerSignal(document) },
+  );
 }
 
 /**

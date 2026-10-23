@@ -79,6 +79,7 @@ What is slow to prepare is prepared once; what a test proves is never prepared f
 
 - Two Vitest projects (`vite.config.ts`, ADR-0070): `shared`, where the files of a worker share the modules they load (`isolate: false`), holds `src/`, `tests/`, `scripts/`, the hooks and the docs; `isolated` holds the playground, whose page keeps state in its modules and whose tests mock the library. A test of `shared` restores what it changes (`process.env`, a global stub) and declares no module mock; a test that needs either moves to `isolated`.
 - Vitest's limit of 5 s per test guards against a hang; it does not measure speed. A test known to be long gets a longer limit, with its reason and its duration alone in a comment (`alone: 753 ms`, then `{ timeout: 20_000 }`), the limit at least four times that duration (`.claude/rules/tooling.md`, EN-129). A test that is merely slow is made faster instead.
+- A playground file mounts the page again in each test's `beforeEach`, in the same document. A listener the page puts on the document or its window takes the mount's signal (`readListenerSignal`), so that the next mount removes it (`removeListeners`, EN-150). A listener without it is heard once per test before, and the tests at the end of a file get slower.
 
 ## Tests that prove a requirement (ADR-0027)
 

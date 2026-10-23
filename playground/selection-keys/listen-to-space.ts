@@ -1,3 +1,4 @@
+import { readListenerSignal } from "../listeners";
 import { HELD_SPACES } from "../view";
 
 import { readKeyField } from "./read-key-field";
@@ -53,15 +54,27 @@ function removeHeldSpace(document: Document, event: KeyboardEvent): void {
  * @see docs/domain/interaction.md#_1-tools
  */
 export function listenToSpace(document: Document): void {
-  document.addEventListener("keydown", (event) => {
-    pressSpace(document, event);
-  });
+  document.addEventListener(
+    "keydown",
+    (event) => {
+      pressSpace(document, event);
+    },
+    { signal: readListenerSignal(document) },
+  );
 
-  document.addEventListener("keyup", (event) => {
-    removeHeldSpace(document, event);
-  });
+  document.addEventListener(
+    "keyup",
+    (event) => {
+      removeHeldSpace(document, event);
+    },
+    { signal: readListenerSignal(document) },
+  );
 
-  document.defaultView?.addEventListener("blur", () => {
-    HELD_SPACES.delete(document);
-  });
+  document.defaultView?.addEventListener(
+    "blur",
+    () => {
+      HELD_SPACES.delete(document);
+    },
+    { signal: readListenerSignal(document) },
+  );
 }

@@ -1,4 +1,5 @@
 import { closeColorPicker, readOpenSwatch, toggleColorPicker } from "../color-picker";
+import { readListenerSignal } from "../listeners";
 
 import { readPickerAreas } from "./read-picker-areas";
 
@@ -51,11 +52,19 @@ export function listenToPickerClosing(document: Document): void {
     });
   }
 
-  document.addEventListener("keydown", (event) => {
-    closePickerOnEscape(document, event.key);
-  });
+  document.addEventListener(
+    "keydown",
+    (event) => {
+      closePickerOnEscape(document, event.key);
+    },
+    { signal: readListenerSignal(document) },
+  );
 
-  document.addEventListener("pointerdown", (event) => {
-    closePickerOutside(document, event.composedPath());
-  });
+  document.addEventListener(
+    "pointerdown",
+    (event) => {
+      closePickerOutside(document, event.composedPath());
+    },
+    { signal: readListenerSignal(document) },
+  );
 }

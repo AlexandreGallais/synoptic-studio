@@ -1,5 +1,6 @@
 import { readOpenSwatch } from "../color-picker";
 import { readKeptDrawing } from "../kept-shapes";
+import { readListenerSignal } from "../listeners";
 import { readMode } from "../page";
 import { writeDeletedPoints } from "../points";
 import { removeSelectedShapes, writeShapeSelection } from "../selection";
@@ -135,6 +136,6 @@ export function listenToSelectionKeys(document: Document, update: () => void): v
     (event) => {
       applySelectionKey(document, event, update);
     },
-    { capture: true },
+    { capture: true, signal: readListenerSignal(document) },
   );
 }
