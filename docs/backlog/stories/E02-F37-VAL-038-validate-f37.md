@@ -3,7 +3,7 @@ id: VAL-038
 epic: E02
 feature: F37
 title: Validate F37
-status: ready
+status: dropped
 points: 1
 ---
 
@@ -24,3 +24,7 @@ The Product Owner validates F37 on the checklist page `?checklist=E02` and its d
 - [ ] T1 — The tests per criterion, the checklist lines and the demo page (2 h)
 
 One task = one commit, referenced as `VAL-038.T1`.
+
+## Dropped
+
+Dropped on 2026-10-23: the Product Owner holds no validation per feature any more; a feature ends with its audit, and the validation is held when the Product Owner comes back and asks for one, before the merge into `main`, from the review's summary.

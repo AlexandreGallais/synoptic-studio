@@ -25,7 +25,7 @@ In delivery order.
 | [US-070](../stories/E02-F38-US-070-the-panel-for-several-shapes.md) | US | The panel shows several shapes' position and size | draft |
 | [US-071](../stories/E02-F38-US-071-a-value-typed-for-several-shapes.md) | US | A value typed for several shapes, relative or fixed | draft |
 | [AUD-040](../stories/E02-F38-AUD-040-audit-f38.md) | AUD | Audit F38 | draft |
-| [VAL-039](../stories/E02-F38-VAL-039-validate-f38.md) | VAL | Validate F38 | draft |
+| [VAL-039](../stories/E02-F38-VAL-039-validate-f38.md) | VAL | Validate F38 | dropped |
 
 ## Feature plan
 

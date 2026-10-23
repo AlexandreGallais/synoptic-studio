@@ -9,6 +9,7 @@ What each working session dealt with, in the agent's words: the Product Owner's 
 - `#tooling` The pushes were refused by `deps:outdated`: 15 dev packages and crates brought up on F35's branch (the oxc crates' `Comment` no longer `Copy`, our linter adapted); the pin of `links.yml`'s actions by commit, which GitHub's code scanning asks for, is left for the review, since no workflow pins by commit and `tools/deps` reads only `@vN`.
 - `#backlog` E17 set `done`, its features all done since REV-007.
 - `#decision` US-063 parked after its library tasks: Figma's way in the playground broke 234 tests in 31 files, built since E01 on a tool button turning the edited shape into its kind. The Product Owner chose to migrate the one page (option A); F35 split: SP-026 (what a new shape starts with, left by the Product Owner to a research on graphic editors, the agent deciding with reasons), EN-142 (the tests freed from the tool buttons), US-063's T3; the drag, the selection and Delete moved to F36.
+- `#decision` 2026-10-23: no validation story per feature; a feature ends with its audit, and the Product Owner holds a validation when they come back and ask for one, before the merge into `main`, from the review's summary. VAL-038 and VAL-039 dropped; F35's and F36's prepared checklists kept for that summary; the ADR superseding the feature frame written at that review.
 
 ## 2026-10-19 — Run continued
 

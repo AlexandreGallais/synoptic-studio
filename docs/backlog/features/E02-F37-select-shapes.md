@@ -29,7 +29,7 @@ In delivery order.
 | [EN-144](../stories/E02-F37-EN-144-a-shape-touched-by-a-rectangle.md) | EN | A shape touched or enclosed by a rectangle, by its painted area | ready |
 | [US-069](../stories/E02-F37-US-069-a-rectangle-selects-shapes.md) | US | A selection rectangle selects shapes | ready |
 | [AUD-039](../stories/E02-F37-AUD-039-audit-f37.md) | AUD | Audit F37 | ready |
-| [VAL-038](../stories/E02-F37-VAL-038-validate-f37.md) | VAL | Validate F37 | ready |
+| [VAL-038](../stories/E02-F37-VAL-038-validate-f37.md) | VAL | Validate F37 | dropped |
 
 ## Feature plan
 
