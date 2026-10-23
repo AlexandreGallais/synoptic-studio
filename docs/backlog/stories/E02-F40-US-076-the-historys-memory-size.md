@@ -3,7 +3,7 @@ id: US-076
 epic: E02
 feature: F40
 title: The history kept within a memory size the designer sets
-status: ready
+status: done
 points: 2
 ---
 
@@ -47,9 +47,3 @@ The examples draw A, a rectangle 100 × 50 at (10, 20) of radius 0, 614 characte
 Files: `playground/history/` (US-074's), `playground/index.html` (the fields), `src/model/history/` (the steps held). `@see` ADR-0095, `docs/domain/interaction.md#_7-navigation-and-history`, `REF-GIMP-PREFS-RESOURCES`, `REF-GIMP-UNDO-CODE`.
 
 One task = one commit, referenced as `US-076.T1` in the commit footer.
-
-## For the main thread
-
-### Improvements
-
-| 2026-10-23 | agent | `historySize` serializes every shape held only by the past and the states to come at each call: measured by US-076 under Vitest, a rectangle moved in a drawing of 100, 4 ms at 1 000 steps, 19 ms at 5 000, 79 ms at 20 000, so that at the 80 000 moves 100 MB holds a step costs about 1 s (two measures in `boundedHistory` once full, one shown). US-076 cut the measures per step from about 17 to 1 or 2 (`boundedHistory` doubling then halving) and the toolbar's to one per history (`showHistory`); left: each shape's text length kept once, by the shape itself (a `WeakMap` in the core, a structural choice for an ADR), or the size carried by the history from step to step. For AUD-042 or the review held when E02 goes into `main` | code |

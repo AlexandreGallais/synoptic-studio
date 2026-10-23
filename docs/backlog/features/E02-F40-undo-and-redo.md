@@ -28,7 +28,7 @@ In delivery order.
 | [EN-146](../stories/E02-F40-EN-146-the-history-in-the-model.md) | EN | The history of the drawing in the model | done |
 | [US-074](../stories/E02-F40-US-074-undo-and-redo-the-drawings-actions.md) | US | Undo and redo what is done on the drawing | done |
 | [US-075](../stories/E02-F40-US-075-undo-and-redo-the-panels-changes.md) | US | Undo and redo what is typed and chosen in the panel | done |
-| [US-076](../stories/E02-F40-US-076-the-historys-memory-size.md) | US | The history kept within a memory size the designer sets | ready |
+| [US-076](../stories/E02-F40-US-076-the-historys-memory-size.md) | US | The history kept within a memory size the designer sets | done |
 | [AUD-042](../stories/E02-F40-AUD-042-audit-f40.md) | AUD | Audit F40 | ready |
 | [VAL-041](../stories/E02-F40-VAL-041-validate-f40.md) | VAL | Validate F40 | dropped |
 
