@@ -3,8 +3,8 @@ import { SHAPE_DRAWINGS } from "../shape-drawing";
 
 /**
  * Reads the action a press holds on the drawing (F40), from the press to the release: shapes
- * moved by the Selector (`readPressedMove`, F39), or a shape drawn by a tool's drag once it left
- * the press's integer point (F36). Meanwhile no step is taken and the keys of the history change
+ * moved by the Selector (`readPressedMove`, F39), or a shape drawn by a tool's drag once it went
+ * further than 3 pixels from the press (F36, F42). Meanwhile no step is taken and the keys of the history change
  * nothing, the release finishing the action.
  *
  * @kind procedure

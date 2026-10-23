@@ -1,4 +1,5 @@
-import { DRAWING_MARGIN } from "../kept-shapes";
+import { add, scale, subtract } from "../../src";
+import { readView } from "../view";
 
 import { selectPageElement } from "./select-page-element";
 
@@ -50,8 +51,8 @@ function createDrawingEvent(type: string, client: Point, keys: PointerKeys): Mou
 
 /**
  * Dispatches a pointer event on the canvas at a point of the drawing, as the browser does
- * (`createDrawingEvent`): the point placed in the window from the canvas's box and the margin of
- * the drawing's origin (`DRAWING_MARGIN`).
+ * (`createDrawingEvent`): the point placed in the window from the canvas's box and the view, its
+ * offset from the view's origin times its scale (`readView`, ADR-0098).
  *
  * @kind procedure
  * @param type - `pointerdown`, `pointermove`, `pointerup`, `pointercancel` or `click`
@@ -62,7 +63,8 @@ function createDrawingEvent(type: string, client: Point, keys: PointerKeys): Mou
 export function dispatchDrawingPointer(type: string, point: Point, keys: PointerKeys): void {
   const canvas = selectPageElement("#canvas");
   const box = canvas.getBoundingClientRect();
-  const client = { x: box.left + DRAWING_MARGIN + point.x, y: box.top + DRAWING_MARGIN + point.y };
+  const view = readView(document);
+  const client = add({ x: box.left, y: box.top }, scale(subtract(point, view.origin), view.scale));
 
   canvas.dispatchEvent(createDrawingEvent(type, client, keys));
 }

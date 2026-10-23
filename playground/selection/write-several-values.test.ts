@@ -29,7 +29,7 @@ import { writeSeveralValues } from "./write-several-values";
 import type { DrawingShape, Point } from "../../src";
 
 // The canvas sits at (100, 50) in the window, and the drawing's origin 40 right of and below its
-// corner (`DRAWING_MARGIN`): the drawing's point (x, y) is the window's (x + 140, y + 90).
+// corner at the opening view (`OPENING_VIEW`): the drawing's point (x, y) is the window's (x + 140, y + 90).
 
 /** The four fields of several shapes, X, Y, W and H. */
 const FIELDS = ["several-x", "several-y", "several-width", "several-height"];

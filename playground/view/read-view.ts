@@ -13,5 +13,5 @@ import type { View } from "../../src";
  * @see docs/domain/interaction.md#_7-navigation-and-history
  */
 export function readView(document: Document): View {
-  return PAGE_VIEWS.has(document) ? OPENING_VIEW : OPENING_VIEW;
+  return PAGE_VIEWS.get(document) ?? OPENING_VIEW;
 }

@@ -1,12 +1,11 @@
 import { PICK_TOLERANCE, screenToUser, shapeAtPoint } from "../../src";
 import { VIEW_SCALE, createViewSvg } from "../kept-shapes";
 import { selectElement } from "../page";
-import { readArmedTool } from "../toolbar";
 
 import { createOutlineElement } from "./create-outline-element";
 import { createSelectionElements } from "./create-selection-elements";
 import { createSelectionRectangleElements } from "./create-selection-rectangle-elements";
-import { HOVER_POINTS } from "./hover-points";
+import { readHoverPoint } from "./read-hover-point";
 import { readPickAreas } from "./read-pick-areas";
 import { readStartedMove } from "./read-started-move";
 
@@ -35,21 +34,6 @@ function createHoverElements(
   const area = areas[shapeAtPoint(areas, point, screenToUser(PICK_TOLERANCE, VIEW_SCALE))];
 
   return area === undefined ? [] : [createOutlineElement(document, area, "hover")];
-}
-
-/**
- * Reads the point whose shape is outlined as under the pointer (`HOVER_POINTS`): with the selector
- * armed only, a click then picking a shape, and none while a selection rectangle is drawn.
- *
- * @kind procedure
- * @param document - page document
- * @param isShown - whether the outline may be drawn: false while a selection rectangle is drawn or
- * shapes are moved
- * @returns the point; undefined for none
- * @see docs/domain/interaction.md#_2-selector
- */
-function readHoverPoint(document: Document, isShown: boolean): Point | undefined {
-  return isShown && readArmedTool(document) === "selector" ? HOVER_POINTS.get(document) : undefined;
 }
 
 /**

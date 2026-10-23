@@ -1,22 +1,22 @@
-import { subtract } from "../../src";
-import { DRAWING_MARGIN } from "../kept-shapes";
+import { pointUnderPointer } from "../../src";
 import { readPointerOffset, selectElement } from "../page";
+import { readView } from "../view";
 
 import type { Point } from "../../src";
 
 /**
- * Reads the point of the drawing under a click, in the coordinates of its SVG: one user unit to one
- * CSS pixel (US-004), the pointer on the canvas (`readPointerOffset`) less the margin of the
- * drawing's origin from its top-left (`createDrawingSvg`).
+ * Reads the point of the drawing under the pointer, in the coordinates of its SVG: the pointer's
+ * offset on the canvas (`readPointerOffset`) through the view, its origin plus the offset over its
+ * scale (`pointUnderPointer`, ADR-0098), computed, never read back from the page.
  *
  * @kind procedure
  * @param document - page document
- * @param event - the click on the canvas
+ * @param event - the press, the move or the click on the canvas
  * @returns the point, possibly fractional
- * @see docs/backlog/stories/E02-F35-US-063-a-click-adds-a-shape.md
+ * @see docs/domain/interaction.md#_7-navigation-and-history
  */
 export function readDrawingPoint(document: Document, event: MouseEvent): Point {
   const { point } = readPointerOffset(selectElement(document, "canvas"), event);
 
-  return subtract(point, { x: DRAWING_MARGIN, y: DRAWING_MARGIN });
+  return pointUnderPointer(readView(document), point);
 }

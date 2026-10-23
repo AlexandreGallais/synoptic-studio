@@ -294,12 +294,13 @@ describe("a drag moves the shapes selected (US-072)", () => {
     expect(readShapeModel()).toMatchObject({ x: 10, y: 20 });
   });
 
-  it("[F39.AC2] takes a release off the press's integer point for a move, A landing a unit away", () => {
+  it("[F39.AC2] takes a release further than 3 pixels from the press for a move, A landing at (14, 20)", () => {
     clickA(NO_KEY);
-    // (50.7, 40.2) rounds to (51, 40): a move, A's (10.7, 20.2) landing on (11, 20).
-    dragBy(IN_A, { x: 0.7, y: 0.2 }, NO_KEY);
+    // (3.7, 0.2) away is √(13.69 + 0.04) = 3.705 pixels at 100 %, beyond 3 (SP-030's answer 8): a
+    // move, A's (13.7, 20.2) landing on (14, 20).
+    dragBy(IN_A, { x: 3.7, y: 0.2 }, NO_KEY);
 
-    expect(readShapeModel()).toMatchObject({ x: 11, y: 20 });
+    expect(readShapeModel()).toMatchObject({ x: 14, y: 20 });
   });
 
   it("[F39.AC2] keeps the axis of the larger displacement with Shift held, A landing at (41, 20)", () => {

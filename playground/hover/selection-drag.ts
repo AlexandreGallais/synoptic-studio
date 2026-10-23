@@ -13,6 +13,6 @@ export type SelectionDrag = {
   readonly isRectangle: boolean;
   /** The shapes it moves, pressed on a shape in Shape mode (F39); undefined for another press. */
   readonly move: ShapesMove | undefined;
-  /** Whether the pointer has left the press's integer point: its release is then no click. */
+  /** Whether the pointer has gone further than 3 pixels from the press: its release is then no click. */
   readonly isMoved: boolean;
 };

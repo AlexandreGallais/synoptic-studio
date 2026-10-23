@@ -68,13 +68,20 @@ const ZOOM_IN: Wheel = { ...DOWN, ctrlKey: true, deltaY: -100 };
  * @returns the event, telling whether its default was prevented
  */
 function turnWheel(wheel: Wheel, client: Point): WheelEvent {
-  const event = new WheelEvent("wheel", {
-    ...wheel,
-    bubbles: true,
-    cancelable: true,
+  const event = new WheelEvent("wheel", { ...wheel, bubbles: true, cancelable: true });
+
+  // happy-dom's WheelEvent leaves out a mouse event's keys and place: set as a browser sets them.
+  const mouse = {
     clientX: client.x,
     clientY: client.y,
-  });
+    ctrlKey: wheel.ctrlKey,
+    metaKey: wheel.metaKey,
+    shiftKey: wheel.shiftKey,
+  };
+
+  for (const [key, value] of Object.entries(mouse)) {
+    Object.defineProperty(event, key, { value });
+  }
 
   selectPageElement("#canvas").dispatchEvent(event);
 
@@ -365,7 +372,9 @@ describe("zoom and pan by the wheel, a pinch and a drag (US-078)", () => {
     const viewBox = readViewBox("#canvas svg");
 
     for (const type of ["keydown", "keyup"]) {
-      document.body.dispatchEvent(new KeyboardEvent(type, { bubbles: true, key: "ArrowRight" }));
+      document.body.dispatchEvent(
+        new KeyboardEvent(type, { bubbles: true, cancelable: true, key: "ArrowRight" }),
+      );
     }
 
     expect(readShapeModel().x).toBe(11);

@@ -1,3 +1,5 @@
+import { EPSILON, distance } from "../../math";
+
 import type { Point } from "../../math";
 
 /** How far the pointer may go from its press and its release stay a click, in screen pixels (SP-030's answer 8). */
@@ -18,5 +20,5 @@ const CLICK_TOLERANCE = 3;
  * @see docs/domain/interaction.md#_1-tools
  */
 export function isDragged(press: Point, pointer: Point, scale: number): boolean {
-  return press.x !== pointer.x && scale > CLICK_TOLERANCE;
+  return distance(press, pointer) * scale > CLICK_TOLERANCE + EPSILON;
 }

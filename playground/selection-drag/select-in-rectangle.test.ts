@@ -147,12 +147,13 @@ describe("a selection rectangle selects shapes (US-069)", () => {
     expect(readOverlayPath("selection-area")).toBeUndefined();
   });
 
-  it("[F37.AC3] draws the rectangle once the pointer has left the press's point by one unit", () => {
+  it("[F37.AC3] draws the rectangle once the pointer has gone further than 3 pixels from the press", () => {
     drawThreeShapes();
-    // (−9, −10) is one unit right of the press: 1 wide and 0 high, a sum of 1 > 0.
-    pressAndMove({ x: -10, y: -10 }, { x: -9, y: -10 });
+    // (−6, −10) is 4 pixels right of the press at 100 %, beyond 3 (SP-030's answer 8): 4 wide and
+    // 0 high.
+    pressAndMove({ x: -10, y: -10 }, { x: -6, y: -10 });
 
-    expect(readOverlayPath("selection-area")).toBe("M-10 -10H-9V-10H-10Z");
+    expect(readOverlayPath("selection-area")).toBe("M-10 -10H-6V-10H-10Z");
   });
 
   it("[F37.AC3] hides the outline of the shape under the pointer while the rectangle is drawn", () => {

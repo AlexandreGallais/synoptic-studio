@@ -1,11 +1,12 @@
-import { draggedBox } from "../../src";
+import { isDragged } from "../../src";
 import { SELECTION_DRAGS } from "../hover";
 import { readDrawingPoint } from "../placing";
+import { readView } from "../view";
 
 /**
  * Follows the pointer during a press with the Selector (F37): its point and whether Shift is held
- * kept (F39), the drag moved once the pointer has left the press's integer point (`draggedBox`),
- * even if it comes back; nothing without a press on. What it shows is drawn by
+ * kept (F39), the drag moved once the pointer has gone further than 3 pixels from the press at the
+ * view's scale (`isDragged`, SP-030's answer 8), even if it comes back; nothing without a press on. What it shows is drawn by
  * `showSelectionDrag`.
  *
  * @kind procedure
@@ -21,9 +22,7 @@ export function moveSelectionDrag(document: Document, event: PointerEvent): void
   }
 
   const pointer = readDrawingPoint(document, event);
-  const { height, width } = draggedBox({ isSquare: false, press: drag.press, release: pointer });
-  // Width and height are integers ≥ 0: their sum is 0 for the press's integer point alone.
-  const isMoved = drag.isMoved || width + height > 0;
+  const isMoved = drag.isMoved || isDragged(drag.press, pointer, readView(document).scale);
 
   SELECTION_DRAGS.set(document, { ...drag, isMoved, isShift: event.shiftKey, pointer });
 }

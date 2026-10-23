@@ -57,7 +57,7 @@ function readOutlinePathData(box: BoundingBox, half: number): string {
 
 /**
  * Creates the selection rectangle in the layer above the drawing (F37), while a drag with the
- * Selector from an empty place has left the press's integer point (`SELECTION_DRAGS`): its area,
+ * Selector from an empty place has gone further than 3 pixels from the press (`SELECTION_DRAGS`): its area,
  * a light tint of the outline's color, of class `selection-area`, then its outline, a band 1
  * screen pixel wide centred on its sides, of class `selection-rectangle`, a fill with a hole,
  * never a native stroke; a rectangle thinner than the band gets no hole.

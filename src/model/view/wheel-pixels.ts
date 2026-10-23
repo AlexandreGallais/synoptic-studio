@@ -17,5 +17,9 @@ const PAGE_PIXELS = 800;
  * @see REF-PENPOT-NORMALIZE-WHEEL
  */
 export function wheelPixels(delta: number, mode: number): number {
-  return mode < 0 ? LINE_PIXELS + PAGE_PIXELS : delta;
+  if (mode === 0) {
+    return delta;
+  }
+
+  return delta * (mode === 1 ? LINE_PIXELS : PAGE_PIXELS);
 }

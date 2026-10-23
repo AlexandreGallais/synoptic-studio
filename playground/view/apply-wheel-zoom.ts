@@ -1,3 +1,7 @@
+import { wheelZoomFactor, zoomedView } from "../../src";
+
+import { PAGE_VIEWS } from "./page-views";
+import { readView } from "./read-view";
 import { WHEEL_ZOOMS } from "./wheel-zooms";
 
 /**
@@ -10,5 +14,14 @@ import { WHEEL_ZOOMS } from "./wheel-zooms";
  * @see docs/domain/interaction.md#_7-navigation-and-history
  */
 export function applyWheelZoom(document: Document): void {
-  WHEEL_ZOOMS.get(document);
+  const zoom = WHEEL_ZOOMS.get(document);
+
+  if (zoom === undefined) {
+    return;
+  }
+
+  const view = readView(document);
+
+  WHEEL_ZOOMS.delete(document);
+  PAGE_VIEWS.set(document, zoomedView(view, zoom.offset, view.scale * wheelZoomFactor(zoom.delta)));
 }
