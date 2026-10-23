@@ -94,7 +94,7 @@
 | [US-071](./E02-F38-US-071-a-value-typed-for-several-shapes.md) | F38 | A value typed for several shapes, relative or fixed | done |
 | [AUD-040](./E02-F38-AUD-040-audit-f38.md) | F38 | Audit F38 | done |
 | [VAL-039](./E02-F38-VAL-039-validate-f38.md) | F38 | Validate F38 | dropped |
-| [SP-028](./E02-F39-SP-028-refine-the-moves.md) | F39 | Refine the moves of shapes | ready |
+| [SP-028](./E02-F39-SP-028-refine-the-moves.md) | F39 | Refine the moves of shapes | done |
 | [EN-145](./E02-F39-EN-145-fast-on-a-large-rounded-shape.md) | F39 | The playground fast on a large rounded shape | ready |
 | [US-072](./E02-F39-US-072-a-drag-moves-the-shapes-selected.md) | F39 | A drag moves the shapes selected, landing on integers | draft |
 | [US-073](./E02-F39-US-073-the-arrows-nudge-the-shapes-selected.md) | F39 | The arrow keys nudge the shapes selected | draft |

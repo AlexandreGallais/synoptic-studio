@@ -3,7 +3,7 @@ id: SP-028
 epic: E02
 feature: F39
 title: Refine the moves of shapes
-status: ready
+status: done
 points: 3
 ---
 

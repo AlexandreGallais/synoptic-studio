@@ -24,7 +24,7 @@ In delivery order.
 
 | ID | Type | Title | Status |
 | --- | --- | --- | --- |
-| [SP-028](../stories/E02-F39-SP-028-refine-the-moves.md) | SP | Refine the moves of shapes | ready |
+| [SP-028](../stories/E02-F39-SP-028-refine-the-moves.md) | SP | Refine the moves of shapes | done |
 | [EN-145](../stories/E02-F39-EN-145-fast-on-a-large-rounded-shape.md) | EN | The playground fast on a large rounded shape | ready |
 | [US-072](../stories/E02-F39-US-072-a-drag-moves-the-shapes-selected.md) | US | A drag moves the shapes selected, landing on integers | draft |
 | [US-073](../stories/E02-F39-US-073-the-arrows-nudge-the-shapes-selected.md) | US | The arrow keys nudge the shapes selected | draft |
