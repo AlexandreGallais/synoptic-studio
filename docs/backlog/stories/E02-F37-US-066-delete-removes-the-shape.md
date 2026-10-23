@@ -3,7 +3,7 @@ id: US-066
 epic: E02
 feature: F37
 title: Delete removes the selected shapes
-status: ready
+status: done
 points: 2
 ---
 
