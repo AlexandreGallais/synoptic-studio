@@ -150,6 +150,36 @@ describe("shapesTouchedByBox (EN-144, DERIV-box-overlap)", () => {
     expect(shapesTouchedByBox(areas, dragged({ x: 12, y: 0 }, { x: 20, y: 100 }))).toEqual([]);
   });
 
+  it("[F37.AC3] takes a polygon along a side its contour computes with a rounding error", () => {
+    // The Polygon tool's square, 4 corners of radius 10, 100 × 100 at (0, 0): its left side
+    // lands at x ≈ 1.1 × 10⁻¹⁵, the cosines of its corners' angles not exact; [−10, 0] × [40, 60]
+    // reaches x = 0, within EPSILON of it, as [0, 100]² encloses it. The stretched decagon's
+    // bottom side lands at y ≈ 100 − 1.4 × 10⁻¹⁴; [0, 100] × [100, 110] reaches it so. [−10, −1]
+    // × [40, 60] stays 1 away from the square.
+    const polygon = {
+      anchor: { horizontal: "mid", vertical: "mid" },
+      angle: 0,
+      height: 100,
+      stretched: true,
+      width: 100,
+      x: 0,
+      y: 0,
+    } as const;
+    const square = shapePickArea({ ...polygon, corners: 4, radii: [10, 10, 10, 10] });
+    const decagon = shapePickArea({
+      ...polygon,
+      corners: 10,
+      radii: Array.from({ length: 10 }, () => 0),
+    });
+
+    expect(shapesTouchedByBox([square], dragged({ x: -10, y: 40 }, { x: 0, y: 60 }))).toEqual([0]);
+    expect(shapesTouchedByBox([square], dragged({ x: -10, y: 40 }, { x: -1, y: 60 }))).toEqual([]);
+
+    expect(shapesTouchedByBox([decagon], dragged({ x: 0, y: 100 }, { x: 100, y: 110 }))).toEqual([
+      0,
+    ]);
+  });
+
   it("[F37.AC3] takes none from an empty drawing", () => {
     expect(shapesTouchedByBox([], dragged({ x: 0, y: 0 }, { x: 100, y: 100 }))).toEqual([]);
   });

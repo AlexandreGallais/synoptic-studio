@@ -1,6 +1,6 @@
 # DERIV-box-overlap — Whether a contour's painted area touches an upright box, or lies within it
 
-Used by: EN-144 (F37), the shapes a selection rectangle takes (`interaction.md` §2). Sources: `REF-WIKI-INTERVAL` (a closed interval), `REF-WIKI-BOUNDING-BOX` (a box as the product of two intervals), `REF-SUNDAY-INCLUSION` (the winding number counted along a ray of any direction), `REF-WIKI-IVT`, `REF-WIKI-BEZIER` (a cubic under a linear map of its control points), `REF-MATHWORLD-CIRCLE`, `REF-WIKI-DE-CASTELJAU` (the point at a fraction of a segment), `REF-MATHWORLD-PERP-DOT`; `DERIV-painted-area`, `DERIV-arc-bounding-box`, `DERIV-cubic-sides`.
+Used by: EN-144 (F37), step 10 since AUD-039, the shapes a selection rectangle takes (`interaction.md` §2). Sources: `REF-WIKI-INTERVAL` (a closed interval), `REF-WIKI-BOUNDING-BOX` (a box as the product of two intervals), `REF-SUNDAY-INCLUSION` (the winding number counted along a ray of any direction), `REF-WIKI-IVT`, `REF-WIKI-BEZIER` (a cubic under a linear map of its control points), `REF-MATHWORLD-CIRCLE`, `REF-WIKI-DE-CASTELJAU` (the point at a fraction of a segment), `REF-MATHWORLD-PERP-DOT`; `DERIV-painted-area`, `DERIV-arc-bounding-box`, `DERIV-cubic-sides`.
 
 No single source tells whether a contour of segments, fillet arcs and cubic sides meets a rectangle: the sources count a ray's crossings, give a curve's box from its extremes, and find a curve's crossings with a line. This page joins them, beside `DERIV-painted-area`.
 
@@ -78,6 +78,14 @@ A piece along a horizontal line `y = c` with `y₀ ≤ c ≤ y₁`, left out in 
 
 A box of width or height 0 paints nothing (`DERIV-painted-area` step 6): its outline, the closed polygon its corners join, is taken instead. `R` touches it when one of its sides, as segments, meets `R` (step 4); it is enclosed when its corners' box is within `R` (step 2, the polygon's box being its corners').
 
+## Step 10 — Touching within `EPSILON`
+
+The contour is computed: a side of a Polygon-tool square, 4 corners of radius 10, 100 × 100 at `(0, 0)`, lands at `x ≈ 1.1 × 10⁻¹⁵`, the cosines of its corners' angles not exact, and the bottom of a stretched decagon of that box at `y ≈ 100 − 1.4 × 10⁻¹⁴`. Step 2 takes such a side as on `R` within `EPSILON`; touching, exact, would then leave out a shape that `R` encloses, `[0, 100]²` enclosing the square while `[−10, 0] × [40, 60]` along its left side misses it. So steps 3 to 9 are asked of `R` widened by `EPSILON` on every side,
+
+`R_ε = [x₀ − ε, x₁ + ε] × [y₀ − ε, y₁ + ε]`, `ε = EPSILON` (ADR-0003),
+
+the product of its intervals each widened at both ends (`REF-WIKI-BOUNDING-BOX`, `widenedBox`): a side of the contour within `EPSILON` of a side of `R` touches it, as it is enclosed by it, and one beyond by more does not. A contour's rounding errors lie far below `EPSILON` (ADR-0003) and `R` is drawn on integers, so no shape a whole unit away is taken.
+
 ## Cross-check
 
 For an upright rectangle as the contour, `[p₀, p₁] × [q₀, q₁]`, the boxes share a point when their intervals overlap on both axes, `p₀ ≤ x₁`, `x₀ ≤ p₁`, `q₀ ≤ y₁` and `y₀ ≤ q₁`, the intersection of two products being the product of the intersections (`REF-WIKI-BOUNDING-BOX`, `REF-WIKI-INTERVAL`). Steps 3 to 8 give the same answer, which the tests' properties draw on integers.
@@ -106,3 +114,6 @@ The arch of `DERIV-painted-area`: `(0, 0)`, `(0, −40)`, `(100, −40)`, `(100,
 | the arch closed by `(100, 0)` to `(0, 0)`, box `[40, 60] × [−20, −10]` | no piece meets it (above it the arch, below it y = 0); `K = (40, −20)` under the arch, `wn = +1` | touches |
 | the same contour, box `[0, 10] × [−30, −20]` | no piece meets it; `K = (0, −30)` above the arch, `wn = 0` | does not touch |
 | square `[0, 100]²`, box `[100, 200] × [50, 60]` | the square's side from `(100, 0)` to `(100, 100)` reaches `y = 50` at `t = ½`, x = 100, between 100 and 200: the sides share a point | touches |
+| `[0, 100] × [−30, 0]` widened by 2 | `[0 − 2, 100 + 2] × [−30 − 2, 0 + 2]` | `[−2, 102] × [−32, 2]` |
+| the Polygon-tool square of radius 10, box `[−10, 0] × [40, 60]`; `[−10, −1] × [40, 60]` | its left side at `x ≈ 1.1 × 10⁻¹⁵ ≤ 0 + 10⁻⁹`; `−1 + 10⁻⁹ < 1.1 × 10⁻¹⁵` | touches; does not touch |
+| the stretched decagon of the box `[0, 100]²`, box `[0, 100] × [100, 110]` | its bottom side at `y ≈ 100 − 1.4 × 10⁻¹⁴ ≥ 100 − 10⁻⁹` | touches |

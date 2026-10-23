@@ -110,3 +110,9 @@ The cards of E17 were decided at RET-004 ([record](./retrospectives/E17-retrospe
 - Used: `target/release/worktree-new <ID>` for the stories of F36, a feature started on F35's branch (`feature/f36-draw-pick-and-remove-shapes` stacked on `feature/f35-several-shapes-on-one-drawing`).
 - Failed: it refuses a story whose file is on two feature branches, which every story file of F36 is while F35's branch is not merged.
 - Instead: each worktree was made by hand, `git worktree add` on the story's branch from F36's, then `npm ci`, about 2 min each.
+
+## 2026-10-23 — `mutate`, for the audit's mutation spot-checks
+
+- Used: `npm run mutate -- <27 files> -- npx vitest run {test}` in the background, before the audit's new modules were committed.
+- Failed: the copy holds tracked files only (`git stash create`), so the two new modules, untracked, were missing and every file was skipped as "its related tests fail"; `{test}`, unquoted in the background call, reached the tool dropped, so each skip ran the whole suite; the run, stopped, left its temporary worktree registered; `git add -N` on the new files made `git stash create` fail ("not uptodate").
+- Instead: the run stopped and its worktree removed (`git worktree remove --force`), the new files staged by `git add`, then `npm run mutate` again with `'{test}'` quoted.

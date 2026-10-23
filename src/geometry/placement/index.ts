@@ -11,3 +11,4 @@ export * from "./derivative-coefficients";
 export * from "./is-box-within";
 export * from "./is-point-in-box";
 export * from "./turn-about";
+export * from "./widened-box";

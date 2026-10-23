@@ -1,11 +1,14 @@
 import { EPSILON } from "../../math";
 
+import { widenedBox } from "./widened-box";
+
 import type { BoundingBox } from "./bounding-box";
 
 /**
  * Whether an upright box lies within another, sides included: its interval on each axis within
- * the other's, a side passing beyond by less than `EPSILON` taken as on it, a box computed from a
- * contour's arcs carrying such rounding errors (ADR-0003, `DERIV-box-overlap` step 2).
+ * the other's widened by `EPSILON` (`widenedBox`), a side passing beyond by less than `EPSILON`
+ * taken as on it, a box computed from a contour's arcs carrying such rounding errors (ADR-0003,
+ * `DERIV-box-overlap` step 2).
  *
  * Formula: outer.minX − ε ≤ inner.minX, inner.maxX ≤ outer.maxX + ε, outer.minY − ε ≤ inner.minY
  * and inner.maxY ≤ outer.maxY + ε.
@@ -17,10 +20,12 @@ import type { BoundingBox } from "./bounding-box";
  * @see REF-WIKI-BOUNDING-BOX
  */
 export function isBoxWithin(inner: BoundingBox, outer: BoundingBox): boolean {
+  const reach = widenedBox(outer, EPSILON);
+
   return (
-    outer.minX - EPSILON <= inner.minX &&
-    inner.maxX <= outer.maxX + EPSILON &&
-    outer.minY - EPSILON <= inner.minY &&
-    inner.maxY <= outer.maxY + EPSILON
+    reach.minX <= inner.minX &&
+    inner.maxX <= reach.maxX &&
+    reach.minY <= inner.minY &&
+    inner.maxY <= reach.maxY
   );
 }
