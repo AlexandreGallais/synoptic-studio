@@ -11,6 +11,10 @@ export type ShapesMove = {
   readonly selected: readonly number[];
   /** The shapes it moves, those selected less a text never measured, which is not drawn. */
   readonly moved: readonly number[];
-  /** The top-left of the straight box of the shapes moved, their dashed box, landed on integers. */
+
+  /**
+   * The top-left of the straight box of the shapes moved, their dashed box, at the press: the
+   * point a release lands on integers.
+   */
   readonly anchor: Point;
 };

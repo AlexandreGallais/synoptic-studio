@@ -1,19 +1,19 @@
 import { nudgeShift } from "../../src";
-import { SELECTION_DRAGS } from "../hover";
 import { readSelectedShapes } from "../kept-shapes";
 import { readMode } from "../page";
 import { readMovedDrawing, readSelectionMove, writeMovedDrawing } from "../selection-drag";
 
 import { readKeyField } from "./read-key-field";
+import { readPressedMove } from "./read-pressed-move";
 
 import type { Point } from "../../src";
 
 /**
  * Reads how far a key pressed nudges the shapes selected: an arrow, or Shift + an arrow
  * (`nudgeShift`), in Shape mode, none when the key is not the drawing's: Ctrl, Cmd or Alt held,
- * so that the browser keeps the arrows it gives them, a control of the page having taken it, as
- * the color picker's sliders take the arrows, or the focus in a field of the panel, which keeps
- * every key (`readKeyField`).
+ * so that the browser keeps the arrows it gives them, the key already taken by a listener before
+ * this one, its default prevented, or the focus in a field of the panel, the color picker's
+ * sliders included, which keeps every key (`readKeyField`).
  *
  * @kind procedure
  * @param document - page document
@@ -38,7 +38,7 @@ function readNudge(document: Document, event: KeyboardEvent): Point | undefined 
  * Moves the shapes selected by a nudge (F39): every shape selected goes by the same shift, a text
  * never measured left as it is (`readSelectionMove`, `readMovedDrawing`), written back selected
  * (`writeMovedDrawing`), then the page is redrawn; while a press with the Selector moves shapes,
- * none, the drag landing them at the release.
+ * none, the drag landing them at the release (`readPressedMove`).
  *
  * @kind procedure
  * @param document - page document
@@ -47,7 +47,7 @@ function readNudge(document: Document, event: KeyboardEvent): Point | undefined 
  * @see docs/domain/interaction.md#_2-selector
  */
 function moveSelectedShapes(document: Document, shift: Point, update: () => void): void {
-  if (SELECTION_DRAGS.get(document)?.move !== undefined) {
+  if (readPressedMove(document) !== undefined) {
     return;
   }
 
@@ -81,12 +81,12 @@ function moveNudgedShapes(document: Document, event: KeyboardEvent, update: () =
 }
 
 /**
- * Listens to the arrow keys (F39), once the page's controls had them: outside the panel's fields,
- * which keep them, and unless a control took them, as the color picker's sliders do, an arrow
- * nudges the shapes selected in Shape mode by 1, or 10 with Shift (`nudgeShift`), at each key the
- * browser sends, its repeats included, then redraws; the page then does not scroll. With no shape
- * selected, in Points mode, or with Ctrl, Cmd or Alt held, the key is left to the browser; while
- * a press with the Selector moves shapes, it moves nothing.
+ * Listens to the arrow keys (F39): outside the panel's fields, the color picker's sliders
+ * included, which keep them, an arrow nudges the shapes selected in Shape mode by 1, or 10 with
+ * Shift (`nudgeShift`), at each key the browser sends, its repeats included, then redraws; the
+ * page then does not scroll. With no shape selected, in Points mode, or with Ctrl, Cmd or Alt
+ * held, the key is left to the browser; while a press with the Selector moves shapes, it moves
+ * nothing.
  *
  * @kind procedure
  * @param document - page document

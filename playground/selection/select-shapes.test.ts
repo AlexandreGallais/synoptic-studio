@@ -359,6 +359,8 @@ describe("Ctrl + A selects every shape and Escape none (US-068)", () => {
 
     expect(pressSelectAll("#width", { ctrlKey: true })).toBe(true);
     expect(pressSelectAll("#text-content", { ctrlKey: true })).toBe(true);
+    // A slider of the color picker counts as a field (2026-10-23, AUD-041).
+    expect(pressSelectAll("#color-hue", { ctrlKey: true })).toBe(true);
     expect(readSelectionOutlines()).toHaveLength(1);
     expect(readText("#shape-title")).toBe("Rectangle");
   });
@@ -491,6 +493,9 @@ describe("Delete removes the selected shapes (US-066)", () => {
     { field: "#width", key: "Backspace" },
     { field: "#text-content", key: "Delete" },
     { field: "#text-content", key: "Backspace" },
+    // A slider of the color picker counts as a field (2026-10-23, AUD-041).
+    { field: "#color-hue", key: "Delete" },
+    { field: "#color-plane", key: "Backspace" },
   ])("[F37.AC1] leaves $key in $field to the field, no shape removed", ({ field, key }) => {
     const { b, paths } = drawThreeRectangles();
 

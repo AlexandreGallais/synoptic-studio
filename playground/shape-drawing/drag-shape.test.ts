@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   chooseOption,
   clickElement,
+  dispatchDrawingPointer,
   openServedPage,
   readModel,
   readPressedState,
@@ -15,36 +16,10 @@ import {
 } from "../user-actions";
 
 import type { Point } from "../../src";
+import type { PointerKeys } from "../user-actions";
 
-// The canvas sits at (100, 50) in the window, and the drawing's origin 40 right of and below its
-// corner (`DRAWING_MARGIN`): the drawing's point (x, y) is the window's (x + 140, y + 90).
-
-/** Left of the drawing's origin in the window: the canvas's 100 and the margin's 40. */
-const ORIGIN_LEFT = 140;
-
-/** Top of the drawing's origin in the window: the canvas's 50 and the margin's 40. */
-const ORIGIN_TOP = 90;
-
-/**
- * Fires a pointer event on the canvas at a point of the drawing, as the browser does.
- *
- * @param type - `pointerdown`, `pointermove`, `pointerup`, `pointercancel` or `click`
- * @param point - the point of the drawing, possibly fractional
- * @param isShift - whether Shift is held
- */
-function firePointer(type: string, point: Point, isShift: boolean): void {
-  const init = {
-    bubbles: true,
-    buttons: type === "pointerdown" || type === "pointermove" ? 1 : 0,
-    clientX: point.x + ORIGIN_LEFT,
-    clientY: point.y + ORIGIN_TOP,
-    pointerId: 1,
-    shiftKey: isShift,
-  };
-  const event = type === "click" ? new MouseEvent(type, init) : new PointerEvent(type, init);
-
-  selectPageElement("#canvas").dispatchEvent(event);
-}
+/** No key held. */
+const NO_KEY: PointerKeys = { altKey: false, shiftKey: false };
 
 /**
  * Presses or releases Shift on the page, as the browser fires it to the focused element.
@@ -69,11 +44,13 @@ function dragDrawing(
   tool: string,
   drag: { readonly from: Point; readonly isShift: boolean; readonly to: Point },
 ): void {
+  const keys = { altKey: false, shiftKey: drag.isShift };
+
   clickElement(`tool-${tool}`);
-  firePointer("pointerdown", drag.from, drag.isShift);
-  firePointer("pointermove", drag.to, drag.isShift);
-  firePointer("pointerup", drag.to, drag.isShift);
-  firePointer("click", drag.to, drag.isShift);
+  dispatchDrawingPointer("pointerdown", drag.from, keys);
+  dispatchDrawingPointer("pointermove", drag.to, keys);
+  dispatchDrawingPointer("pointerup", drag.to, keys);
+  dispatchDrawingPointer("click", drag.to, keys);
 }
 
 /**
@@ -123,26 +100,26 @@ describe("a drag with a tool draws the shape's box (US-064)", () => {
 
   it("[F36.AC1] draws the shape following the pointer while dragging", () => {
     clickElement("tool-rectangle");
-    firePointer("pointerdown", { x: 10, y: 10 }, false);
+    dispatchDrawingPointer("pointerdown", { x: 10, y: 10 }, NO_KEY);
 
     // Pressed only: nothing drawn yet.
     expect(countShapes()).toBe(1);
 
-    firePointer("pointermove", { x: 70, y: 50 }, false);
+    dispatchDrawingPointer("pointermove", { x: 70, y: 50 }, NO_KEY);
 
     // 70 − 10 = 60, 50 − 10 = 40; the tool still armed until the release.
     expect([...readBox(), countShapes()]).toEqual([10, 10, 60, 40, 2]);
     expect(readPressedState("tool-rectangle")).toBe("true");
 
-    firePointer("pointermove", { x: 130, y: 90 }, false);
+    dispatchDrawingPointer("pointermove", { x: 130, y: 90 }, NO_KEY);
     expect(readBox()).toEqual([10, 10, 120, 80]);
   });
 
   it("[F36.AC1] draws the box to the release, past the last move", () => {
     clickElement("tool-rectangle");
-    firePointer("pointerdown", { x: 10, y: 10 }, false);
-    firePointer("pointermove", { x: 70, y: 50 }, false);
-    firePointer("pointerup", { x: 130, y: 90 }, false);
+    dispatchDrawingPointer("pointerdown", { x: 10, y: 10 }, NO_KEY);
+    dispatchDrawingPointer("pointermove", { x: 70, y: 50 }, NO_KEY);
+    dispatchDrawingPointer("pointerup", { x: 130, y: 90 }, NO_KEY);
 
     expect(readBox()).toEqual([10, 10, 120, 80]);
   });
@@ -179,11 +156,11 @@ describe("a drag with a tool draws the shape's box (US-064)", () => {
 
   it("[F36.AC1] counts as a click a pointer dragged away and released back on the press", () => {
     clickElement("tool-rectangle");
-    firePointer("pointerdown", { x: 10, y: 10 }, false);
-    firePointer("pointermove", { x: 100, y: 100 }, false);
-    firePointer("pointermove", { x: 10.3, y: 10 }, false);
-    firePointer("pointerup", { x: 10.3, y: 10 }, false);
-    firePointer("click", { x: 10.3, y: 10 }, false);
+    dispatchDrawingPointer("pointerdown", { x: 10, y: 10 }, NO_KEY);
+    dispatchDrawingPointer("pointermove", { x: 100, y: 100 }, NO_KEY);
+    dispatchDrawingPointer("pointermove", { x: 10.3, y: 10 }, NO_KEY);
+    dispatchDrawingPointer("pointerup", { x: 10.3, y: 10 }, NO_KEY);
+    dispatchDrawingPointer("click", { x: 10.3, y: 10 }, NO_KEY);
 
     // Centred on the point pressed: (10 − 50, 10 − 50) = (−40, −40); one shape added.
     expect(readBox()).toEqual([-40, -40, 100, 100]);
@@ -231,8 +208,8 @@ describe("a drag with a tool draws the shape's box (US-064)", () => {
 
   it("[F36.AC1] changes the shape at once when Shift is pressed or released during the drag", () => {
     clickElement("tool-polygon");
-    firePointer("pointerdown", { x: 10, y: 10 }, false);
-    firePointer("pointermove", { x: 130, y: 90 }, false);
+    dispatchDrawingPointer("pointerdown", { x: 10, y: 10 }, NO_KEY);
+    dispatchDrawingPointer("pointermove", { x: 130, y: 90 }, NO_KEY);
     expect(readBox()).toEqual([10, 10, 120, 80]);
 
     fireShift("keydown");
@@ -241,7 +218,7 @@ describe("a drag with a tool draws the shape's box (US-064)", () => {
     fireShift("keyup");
     expect(readBox()).toEqual([10, 10, 120, 80]);
 
-    firePointer("pointerup", { x: 130, y: 90 }, false);
+    dispatchDrawingPointer("pointerup", { x: 130, y: 90 }, NO_KEY);
     expect(readBox()).toEqual([10, 10, 120, 80]);
     expect(readText("#shape-title")).toBe("Polygon");
   });
@@ -255,10 +232,10 @@ describe("a drag with a tool draws the shape's box (US-064)", () => {
   });
 
   it("[F36.AC1] draws nothing with the selector armed, the drag moving the shape pressed", () => {
-    firePointer("pointerdown", { x: 10, y: 10 }, false);
-    firePointer("pointermove", { x: 130, y: 90 }, false);
+    dispatchDrawingPointer("pointerdown", { x: 10, y: 10 }, NO_KEY);
+    dispatchDrawingPointer("pointermove", { x: 130, y: 90 }, NO_KEY);
     fireShift("keydown");
-    firePointer("pointerup", { x: 130, y: 90 }, false);
+    dispatchDrawingPointer("pointerup", { x: 130, y: 90 }, NO_KEY);
 
     // No shape drawn: the press on the rectangle 120 × 80 at (0, 0) moves it by (120, 80) (US-072).
     expect([...readBox(), countShapes()]).toEqual([120, 80, 120, 80, 1]);
@@ -271,7 +248,7 @@ describe("a drag with a tool draws the shape's box (US-064)", () => {
       new PointerEvent("pointerdown", { bubbles: true, button: 2, clientX: 150, clientY: 100 }),
     );
 
-    firePointer("pointermove", { x: 130, y: 90 }, false);
+    dispatchDrawingPointer("pointermove", { x: 130, y: 90 }, NO_KEY);
 
     expect(countShapes()).toBe(1);
     expect(readPressedState("tool-rectangle")).toBe("true");
@@ -279,10 +256,10 @@ describe("a drag with a tool draws the shape's box (US-064)", () => {
 
   it("[F36.AC1] keeps the shape drawn when the drag is cancelled, the selector armed again", () => {
     clickElement("tool-rectangle");
-    firePointer("pointerdown", { x: 10, y: 10 }, false);
-    firePointer("pointermove", { x: 130, y: 90 }, false);
-    firePointer("pointercancel", { x: 130, y: 90 }, false);
-    firePointer("pointermove", { x: 300, y: 300 }, false);
+    dispatchDrawingPointer("pointerdown", { x: 10, y: 10 }, NO_KEY);
+    dispatchDrawingPointer("pointermove", { x: 130, y: 90 }, NO_KEY);
+    dispatchDrawingPointer("pointercancel", { x: 130, y: 90 }, NO_KEY);
+    dispatchDrawingPointer("pointermove", { x: 300, y: 300 }, NO_KEY);
 
     expect([...readBox(), countShapes()]).toEqual([10, 10, 120, 80, 2]);
     expect(readPressedState("tool-selector")).toBe("true");

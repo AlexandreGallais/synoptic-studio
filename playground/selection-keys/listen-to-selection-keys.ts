@@ -5,6 +5,7 @@ import { writeDeletedPoints } from "../points";
 import { removeSelectedShapes, writeShapeSelection } from "../selection";
 
 import { readKeyField } from "./read-key-field";
+import { readPressedMove } from "./read-pressed-move";
 
 /** What a key of the selection does to the page. */
 type SelectionKey = (document: Document, event: KeyboardEvent) => void;
@@ -89,7 +90,9 @@ function readSelectionKey(event: KeyboardEvent): SelectionKey | undefined {
 }
 
 /**
- * Applies a key of the selection pressed outside the panel's fields, then redraws.
+ * Applies a key of the selection pressed outside the panel's fields, then redraws; while a press
+ * with the Selector moves shapes, none (`readPressedMove`, F39), so that the drag, landing the
+ * drawing it kept at the press, never undoes a deletion or a selection made meanwhile.
  *
  * @kind procedure
  * @param document - page document
@@ -100,7 +103,12 @@ function readSelectionKey(event: KeyboardEvent): SelectionKey | undefined {
 function applySelectionKey(document: Document, event: KeyboardEvent, update: () => void): void {
   const select = readSelectionKey(event);
 
-  if (select === undefined || readKeyField(event) !== undefined) {
+  const isTaken = [
+    readKeyField(event) !== undefined,
+    readPressedMove(document) !== undefined,
+  ].includes(true);
+
+  if (select === undefined || isTaken) {
     return;
   }
 
@@ -110,7 +118,8 @@ function applySelectionKey(document: Document, event: KeyboardEvent, update: () 
 
 /**
  * Listens to the keys of the selection (F37), outside the panel's fields, which keep every key
- * they are typed in, the text's Content included: Ctrl + A, or Cmd + A, selects every shape, in
+ * they are typed in, the text's Content and the color picker's sliders included, and none while a
+ * press with the Selector moves shapes (F39): Ctrl + A, or Cmd + A, selects every shape, in
  * Shape mode; Escape selects none, unless a color picker is open, which Escape closes alone (F16);
  * Delete or Backspace removes the shapes selected, or in Points mode the points selected (F08);
  * then redraws. Heard as the key goes down to its target, before the picker closes on it.

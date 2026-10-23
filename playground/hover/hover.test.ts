@@ -9,6 +9,7 @@ import { DRAWING_KEYS, readDrawnTexts, writeStoredDrawing } from "../kept-shapes
 import {
   clickAt,
   clickElement,
+  dispatchDrawingPointer,
   openServedPage,
   readShapeModel,
   selectPageElement,
@@ -17,6 +18,7 @@ import {
 } from "../user-actions";
 
 import type { Point, Shape } from "../../src";
+import type { PointerKeys } from "../user-actions";
 
 // The canvas sits at (100, 50) in the window, and the drawing's origin 40 right of and below its
 // corner (`DRAWING_MARGIN`): the drawing's point (x, y) is the window's (x + 140, y + 90).
@@ -33,32 +35,16 @@ const HALF_WIDTH = 1;
 /** The longest chord along a curve of the outline: 2 screen pixels at the view's scale of 1. */
 const STEP = 2;
 
-/**
- * Fires a pointer event on the canvas at a point of the drawing, as the browser does.
- *
- * @param type - `pointerdown`, `pointermove`, `pointerup` or `click`
- * @param point - the point of the drawing, possibly fractional
- */
-function firePointer(type: string, point: Point): void {
-  const init = {
-    bubbles: true,
-    buttons: type === "pointerdown" ? 1 : 0,
-    clientX: point.x + ORIGIN_LEFT,
-    clientY: point.y + ORIGIN_TOP,
-    pointerId: 1,
-  };
-  const event = type === "click" ? new MouseEvent(type, init) : new PointerEvent(type, init);
-
-  selectPageElement("#canvas").dispatchEvent(event);
-}
+/** No key held. */
+const NO_KEY: PointerKeys = { altKey: false, shiftKey: false };
 
 /**
- * Moves the pointer over the drawing, no button held.
+ * Moves the pointer over the drawing, no press on: the page reads no button.
  *
  * @param point - the point of the drawing it passes over
  */
 function hover(point: Point): void {
-  firePointer("pointermove", point);
+  dispatchDrawingPointer("pointermove", point, NO_KEY);
 }
 
 /**
@@ -241,10 +227,10 @@ describe("the shape under the pointer outlined in the layer above (US-065)", () 
   it("[F36.AC2] outlines a shape of width 0 within 4 pixels of it", () => {
     // A drag straight down from (300, 100) to (300, 180) adds a rectangle 0 × 80 (US-064).
     clickElement("tool-rectangle");
-    firePointer("pointerdown", { x: 300, y: 100 });
-    firePointer("pointermove", { x: 300, y: 180 });
-    firePointer("pointerup", { x: 300, y: 180 });
-    firePointer("click", { x: 300, y: 180 });
+    dispatchDrawingPointer("pointerdown", { x: 300, y: 100 }, NO_KEY);
+    dispatchDrawingPointer("pointermove", { x: 300, y: 180 }, NO_KEY);
+    dispatchDrawingPointer("pointerup", { x: 300, y: 180 }, NO_KEY);
+    dispatchDrawingPointer("click", { x: 300, y: 180 }, NO_KEY);
 
     const flat = readShapeModel();
 
