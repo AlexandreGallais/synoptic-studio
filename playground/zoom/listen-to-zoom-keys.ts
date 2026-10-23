@@ -1,9 +1,9 @@
-import { HOVER_OFFSETS } from "../hover";
-import { applyZoom } from "../zoom";
+import { readKeyField } from "../selection-keys";
+import { POINTER_OFFSETS } from "../view";
 
-import { readKeyField } from "./read-key-field";
+import { applyZoom } from "./apply-zoom";
 
-import type { ZoomName } from "../zoom";
+import type { ZoomName } from "./zoom-name";
 
 /** The keys that zoom by a step, by the character they send: `+`, or `=`, Inkscape's, and `-`. */
 const STEP_KEYS: ReadonlyMap<string, ZoomName> = new Map([
@@ -58,7 +58,7 @@ function readZoomKey(event: KeyboardEvent): ZoomName | undefined {
 /**
  * Listens to the keys of the zoom outside the panel's fields (SP-030's answer 3, Figma's and
  * Penpot's): `+`, or `=`, Inkscape's, zooms in by a step and `-` out, about the pointer when it is
- * over the drawing (`HOVER_OFFSETS`), else about the canvas's centre; `Shift` + `0` gives 100 %
+ * over the drawing (`POINTER_OFFSETS`), a pan drag's included, else about the canvas's centre; `Shift` + `0` gives 100 %
  * about the canvas's centre, `Shift` + `1` fits the drawing and `Shift` + `2` the selection
  * (`applyZoom`), the digit read by its key's place, whatever the layout sends with `Shift`; their
  * default prevented, then a redraw asked. A key typed in a field is the field's (`readKeyField`,
@@ -79,7 +79,7 @@ export function listenToZoomKeys(document: Document, update: () => void): void {
     }
 
     event.preventDefault();
-    applyZoom(document, name, HOVER_OFFSETS.get(document));
+    applyZoom(document, name, POINTER_OFFSETS.get(document));
     update();
   });
 }

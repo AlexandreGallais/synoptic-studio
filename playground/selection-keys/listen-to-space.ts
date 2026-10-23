@@ -45,7 +45,8 @@ function removeHeldSpace(document: Document, event: KeyboardEvent): void {
  * Listens to `Space` outside the panel's fields (`readKeyField`): held, a drag with the main button
  * pans the view (`HELD_SPACES`, SP-030's answer 2), its press and its release prevented so that the
  * page does not scroll nor a button of the toolbar take it; typed in a field, it is the field's
- * (`interaction.md` §1). Its release ends it wherever the focus is.
+ * (`interaction.md` §1). Its release ends it wherever the focus is, and so does the window losing
+ * the focus, a release in another window never heard (AUD-044).
  *
  * @kind procedure
  * @param document - page document
@@ -58,5 +59,9 @@ export function listenToSpace(document: Document): void {
 
   document.addEventListener("keyup", (event) => {
     removeHeldSpace(document, event);
+  });
+
+  document.defaultView?.addEventListener("blur", () => {
+    HELD_SPACES.delete(document);
   });
 }

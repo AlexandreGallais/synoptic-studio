@@ -1,9 +1,12 @@
-import { add, opposite, scale as scaled } from "../../math";
+import { opposite } from "../../math";
+
+import { pointUnderPointer } from "./point-under-pointer";
 
 import type { Point, Vector } from "../../math";
 
 /**
- * The view's origin that shows a point of the drawing at an offset on the canvas, at a scale.
+ * The view's origin that shows a point of the drawing at an offset on the canvas, at a scale: the
+ * point under the opposite offset of a view whose origin is that point (`pointUnderPointer`).
  *
  * Formula: P − p / s.
  *
@@ -15,5 +18,5 @@ import type { Point, Vector } from "../../math";
  * @see DERIV-view-zoom
  */
 export function viewOrigin(point: Point, offset: Vector, scale: number): Point {
-  return add(point, opposite(scaled(offset, 1 / scale)));
+  return pointUnderPointer({ origin: point, scale }, opposite(offset));
 }

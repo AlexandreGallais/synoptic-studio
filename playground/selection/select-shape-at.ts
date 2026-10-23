@@ -1,14 +1,13 @@
-import { PICK_TOLERANCE, screenToUser, shapeAtPoint, shapeSelectionAfterClick } from "../../src";
-import { readPickAreas } from "../hover";
+import { shapeSelectionAfterClick } from "../../src";
+import { readPickAreas, readShapeAt } from "../hover";
 import { readSelectedShapes } from "../kept-shapes";
-import { readView } from "../view";
 
 import { writeShapeSelection } from "./write-shape-selection";
 
 import type { Point } from "../../src";
 
 /**
- * Selects by a click the shape under a point of the drawing (`shapeAtPoint`, F36): alone, or with
+ * Selects by a click the shape under a point of the drawing (`readShapeAt`, F36): alone, or with
  * Shift added to the shapes selected, or taken out of them (`shapeSelectionAfterClick`, F37); on
  * the empty drawing, none, or with Shift the selection kept. The shapes are then selected by their
  * indices (`writeShapeSelection`): one keeps its place and is loaded into the panel, several are
@@ -21,11 +20,7 @@ import type { Point } from "../../src";
  * @see docs/domain/interaction.md#_2-selector
  */
 export function selectShapeAt(document: Document, point: Point, isShift: boolean): void {
-  const index = shapeAtPoint(
-    readPickAreas(document),
-    point,
-    screenToUser(PICK_TOLERANCE, readView(document).scale),
-  );
+  const index = readShapeAt(document, readPickAreas(document), point);
 
   writeShapeSelection(
     document,

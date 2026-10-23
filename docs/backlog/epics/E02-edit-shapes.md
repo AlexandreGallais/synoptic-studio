@@ -36,7 +36,7 @@ Ordered by the agent at SP-025 (2026-10-19), each needing the one before it. A f
 | [F39](../features/E02-F39-move-shapes-on-integers.md) — Move shapes on integers | dragged by the mouse, nudged by the arrow keys (x and y typed for several shapes came with F38); a drag moves freely and at the release the shape's anchor lands on integers, its top-left by default, its own fractions kept (`interaction.md` §2) (2 to 3) | done |
 | [F40](../features/E02-F40-undo-and-redo.md) — Undo and redo | one step per finished action, the selection alone never a step, the history bounded by a memory size (Q7, settled on 2026-10-22), by the keyboard and by buttons; opened by SP-029 comparing a history of commands and one of states from read sources, made an epic of its own if it outgrows 4 stories (2 to 4) | done |
 | [F41](../features/E02-F41-the-list-of-steps.md) — The list of the history's steps and a history kept fast | the last steps named by their action, a click going back to one; the history's size kept from step to step; cut from F40 on 2026-10-23 (SP-029's answer 8, AUD-042) (2) | done |
-| [F42](../features/E02-F42-zoom-and-pan.md) — Zoom and pan | zoom about the pointer, pan, fit the drawing to the window; the shapes' numbers unchanged by the view, which changes only by the drawing's `viewBox` or a CSS transform of the whole SVG (Product Owner, 2026-10-23); the helps of the layer above the drawing drawn only within the area shown and its padding, so that a large rounded shape's band stays fast (Product Owner, 2026-10-23, SP-028's answer 8) (2 to 4) | in-progress |
+| [F42](../features/E02-F42-zoom-and-pan.md) — Zoom and pan | zoom about the pointer, pan, fit the drawing to the window; the shapes' numbers unchanged by the view, which changes only by the drawing's `viewBox` or a CSS transform of the whole SVG (Product Owner, 2026-10-23); the helps of the layer above the drawing drawn only within the area shown and its padding, so that a large rounded shape's band stays fast (Product Owner, 2026-10-23, SP-028's answer 8) (2 to 4) | done |
 
 ## Refinement
 
@@ -50,3 +50,22 @@ Ordered by the agent at SP-025 (2026-10-19), each needing the one before it. A f
 - **The model chosen per task** (Product Owner, 2026-10-16, at RET-003): a lighter model for logs, backlog edits, merges and step texts; the strongest for mathematics, audits and research. Measured during E02: tokens per story against E15's 24 M.
 - **Checks by level** (ADR-0064): no independent review per story, a thorough audit per feature, a full audit beside the naming pass.
 - **A trial of sessions** (Product Owner, 2026-10-16, at RET-003): the playground's specification written during the session from the requests, its code updated once before the validation; the heavy checks at the end of a session. Which checks move, and how a session stops in the middle, are specified before the trial starts.
+
+## Remarks from the Product Owner's first try (2026-10-23)
+
+Given while trying the playground at the end of F42, each to fix at the end, not during E02's features, perhaps in another epic: the Product Owner decides where at the review, with the validation.
+
+- **Seen to work well**: drawing by the mouse, with Shift too; undo and redo back to the start; the history's list; the memory size shown with its number of moves; Delete, Escape, Shift + click, Ctrl + A, a value typed `+50`, the arrows; the zoom by a pinch and Ctrl + wheel.
+- **The selection is hard to see**: its outline is blue on a blue shape; the hover is seen.
+- **A text on the drawing can be selected as page text** by the mouse: the drawing lacks `user-select: none`.
+- **An arrow key held in a number field makes one step per key repeat**: it should make one step once the value stops changing, as an arrow held on the drawing is one step (SP-029's answer 3).
+- **A field showing Mixed is a text field**: an arrow no longer steps it, so a quick change by the arrows is lost for several shapes.
+- **The selection rectangle takes a shape it touches by one pixel**, as Figma: the Product Owner is unsure they like it, though it helps with a huge shape; to discuss.
+- **While the selection rectangle is dragged**, the shapes it would take show no outline in advance.
+- **Width and height typed for several shapes** do not always seem to compute right: to check.
+- **Two arrow keys held at once** (Up and Left) do not move a shape diagonally.
+- **The history's list has no scroll** (perhaps the History group split by the HTML parser, fixed by AUD-044).
+- **Ctrl + wheel zooms in the direction that feels inverted**: an option for its direction, as for scrolling.
+- **Panning up and down** was not found, Shift + wheel panning across: to check that the wheel alone pans down.
+- **Settings to tune by hand**: the pan's speed by the trackpad and the wheel, the zoom's step and the wheel's factor, so that the Product Owner finds good values, which become the fixed defaults. Later, an expert menu showing every option of the free editor (vision; with the editable keys of E20).
+- **Escape** works, but the Product Owner's dictation tool also takes it: the keys being editable (E20) covers it.

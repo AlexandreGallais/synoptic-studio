@@ -1,11 +1,12 @@
-import { add, scale } from "../../math";
+import { pointUnderPointer } from "./point-under-pointer";
 
 import type { View } from "./view";
 import type { Vector } from "../../math";
 
 /**
  * The view panned by the wheel's deltas, in screen pixels, its origin moved by them divided by the
- * scale; a drag of the pointer pans by its opposite, the drawing following the pointer.
+ * scale, to the point under them (`pointUnderPointer`); a drag of the pointer pans by its opposite,
+ * the drawing following the pointer.
  *
  * Formula: o′ = o + δ / s.
  *
@@ -16,5 +17,5 @@ import type { Vector } from "../../math";
  * @see DERIV-view-zoom
  */
 export function pannedView(view: View, delta: Vector): View {
-  return { origin: add(view.origin, scale(delta, 1 / view.scale)), scale: view.scale };
+  return { origin: pointUnderPointer(view, delta), scale: view.scale };
 }

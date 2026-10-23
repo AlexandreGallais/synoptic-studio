@@ -3,6 +3,7 @@ import { boundingBox } from "../placement";
 
 import { alignedOffset } from "./aligned-offset";
 import { boxSize } from "./box-size";
+import { meetScale } from "./meet-scale";
 
 import type { Anchor } from "./anchor";
 import type { Size } from "./size";
@@ -12,7 +13,7 @@ import type { Point } from "../../math";
  * Scales a set of points uniformly to the largest size fitting a `width × height` box, and
  * places it in the room left by its anchor (`DERIV-regular-polygon-fit` steps 3–5).
  *
- * The scale is `s = min(width / spanX, height / spanY)`: the shape keeps its proportions and
+ * The scale is `s = min(width / spanX, height / spanY)` (`meetScale`): the shape keeps its proportions and
  * reaches the width, the height or both, within a rounding error relative to the box: about 1e-16 ×
  * its size (written 0 by the output for boxes up to millions of units). The room left on each axis
  * goes before the shape for 0 (`min`), half (`mid`) or all of it (`max`, `alignedOffset`), as SVG's
@@ -29,8 +30,9 @@ import type { Point } from "../../math";
  */
 export function fitInBox(points: readonly Point[], size: Size, anchor: Anchor): readonly Point[] {
   const box = boundingBox(points);
-  const { height: spanY, width: spanX } = boxSize(box);
-  const factor = Math.min(size.width / spanX, size.height / spanY);
+  const span = boxSize(box);
+  const { height: spanY, width: spanX } = span;
+  const factor = meetScale(size, span);
   const left = alignedOffset(size.width - factor * spanX, anchor.horizontal);
   const top = alignedOffset(size.height - factor * spanY, anchor.vertical);
 

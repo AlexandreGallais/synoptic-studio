@@ -1,9 +1,10 @@
 import { pannedView, subtract } from "../../src";
-import { selectElement } from "../page";
+import { readPointerOffset, selectElement } from "../page";
 
 import { HELD_SPACES } from "./held-spaces";
 import { PAGE_VIEWS } from "./page-views";
 import { PAN_DRAGS } from "./pan-drags";
+import { POINTER_OFFSETS } from "./pointer-offsets";
 import { readView } from "./read-view";
 
 /**
@@ -35,7 +36,8 @@ function startPanDrag(document: Document, event: PointerEvent): void {
 
 /**
  * Pans the view by a move of the pointer during a drag that pans: by its opposite, the drawing
- * following the pointer (`pannedView`), the move kept from the other listeners; nothing without one.
+ * following the pointer (`pannedView`), the move kept from the other listeners, so that it keeps the
+ * pointer's offset itself (`POINTER_OFFSETS`), a key then zooming about it; nothing without one.
  *
  * @kind procedure
  * @param document - page document
@@ -53,6 +55,7 @@ function movePanDrag(document: Document, event: PointerEvent, update: () => void
   const client = { x: event.clientX, y: event.clientY };
 
   event.stopImmediatePropagation();
+  POINTER_OFFSETS.set(document, readPointerOffset(selectElement(document, "canvas"), event).point);
   PAGE_VIEWS.set(document, pannedView(readView(document), subtract(drag.client, client)));
   PAN_DRAGS.set(document, { client, isReleased: false });
   update();

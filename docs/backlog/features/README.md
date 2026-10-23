@@ -43,4 +43,4 @@
 | [F39](./E02-F39-move-shapes-on-integers.md) | E02 | Move shapes on integers | done |
 | [F40](./E02-F40-undo-and-redo.md) | E02 | Undo and redo | done |
 | [F41](./E02-F41-the-list-of-steps.md) | E02 | The list of the history's steps and a history kept fast | done |
-| [F42](./E02-F42-zoom-and-pan.md) | E02 | Zoom and pan | in-progress |
+| [F42](./E02-F42-zoom-and-pan.md) | E02 | Zoom and pan | done |

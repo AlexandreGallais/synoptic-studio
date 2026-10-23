@@ -2,7 +2,7 @@
 id: F42
 epic: E02
 title: Zoom and pan
-status: in-progress
+status: done
 ---
 
 # E02 · F42 — Zoom and pan
@@ -17,7 +17,7 @@ Started on 2026-10-23 on F41's branch, F41 done. The view changes only by the dr
 2. Given the view, when the wheel turns alone, or the pointer is dragged with `Space` held or the middle button, then the view moves: a drag of (100, 50) pixels at 200 % moves it by (−50, −25) units.
 3. Given the keys outside the panel's fields, then `+` and `-` zoom by a step, `Shift` + `0` gives 100 %, `Shift` + `1` fits the drawing and `Shift` + `2` the selection: A, B and C, from (10, 20) to (410, 220), fitted at 280 % in a canvas of 1 200 × 800.
 4. Given any zoom, then no shape's number changes and the export is the same file: A, 100 × 50 at (10, 20), reads X 10, Y 20 at 200 %, the file's `viewBox` `-40 -40 1200 800` at 100 % and at 200 %.
-5. Given a large rounded shape, then its band is computed only within the area shown and its padding: the rectangle 99 999 × 100 000 of radius 100 000 at (0, 0), selected at 100 %, redraws in under 16 ms, its band empty there.
+5. Given a large rounded shape, then its band is computed only within the area shown and its padding: the rectangle 99 999 × 100 000 of radius 100 000 at (0, 0), selected at 100 %, redraws in under 16 ms on average, its band empty there.
 
 ## Stories
 
@@ -30,7 +30,7 @@ In delivery order.
 | [US-078](../stories/E02-F42-US-078-zoom-and-pan-by-the-wheel-and-a-drag.md) | US | Zoom and pan by the wheel, a pinch and a drag | done |
 | [EN-149](../stories/E02-F42-EN-149-the-helps-within-the-area-shown.md) | EN | The helps drawn within the area shown and its padding | done |
 | [US-079](../stories/E02-F42-US-079-the-zoom-keys-the-fits-and-the-percentage.md) | US | The zoom's keys, the fits and the percentage shown | done |
-| [AUD-044](../stories/E02-F42-AUD-044-audit-f42.md) | AUD | Audit F42 | ready |
+| [AUD-044](../stories/E02-F42-AUD-044-audit-f42.md) | AUD | Audit F42 | done |
 | [VAL-043](../stories/E02-F42-VAL-043-validate-f42.md) | VAL | Validate F42 | dropped |
 
 ## Feature plan

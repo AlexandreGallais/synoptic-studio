@@ -156,6 +156,15 @@ describe("The list of the history's steps (US-077)", () => {
     expect(readBoxes()).toEqual([{ width: 150, x: 1 }]);
   });
 
+  it("keeps the steps, the memory and the size in the toolbar's History group (AUD-044)", () => {
+    // A `<p>` group was closed by the parser at the `<details>`, the rest left outside it.
+    for (const selector of ["#history-steps-box", "#history-memory", "#history-size"]) {
+      const group = selectPageElement(selector).closest('[role="group"]');
+
+      expect(group?.getAttribute("aria-label")).toBe("History");
+    }
+  });
+
   it("[F41.AC1] goes back to the state after Move by a click, Delete and Width kept to redo", () => {
     clickStep(2);
 

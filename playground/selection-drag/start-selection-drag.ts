@@ -1,9 +1,7 @@
-import { PICK_TOLERANCE, screenToUser, shapeAtPoint } from "../../src";
-import { SELECTION_DRAGS, readPickAreas } from "../hover";
+import { SELECTION_DRAGS, readPickAreas, readShapeAt } from "../hover";
 import { readMode, selectElement } from "../page";
 import { readDrawingPoint } from "../placing";
 import { readArmedTool } from "../toolbar";
-import { readView } from "../view";
 
 import { readShapesMove } from "./read-shapes-move";
 
@@ -27,7 +25,7 @@ function readSelectorPress(document: Document, event: PointerEvent): Point | und
 
 /**
  * Reads the drag a press with the Selector starts in Shape mode, by what is under it as a click
- * reaches it (`shapeAtPoint`, `PICK_TOLERANCE` in user units): from an empty place, a selection
+ * reaches it (`readShapeAt`): from an empty place, a selection
  * rectangle (F37), inside the dashed box of several shapes too; from a shape, a move of the shapes
  * selected (`readShapesMove`, F39). In Points mode, which edits one shape's points, neither.
  *
@@ -40,8 +38,7 @@ function readSelectorPress(document: Document, event: PointerEvent): Point | und
  */
 function readPressedDrag(document: Document, press: Point, event: PointerEvent): SelectionDrag {
   const isShape = readMode(document) === "shape";
-  const reach = screenToUser(PICK_TOLERANCE, readView(document).scale);
-  const index = isShape ? shapeAtPoint(readPickAreas(document), press, reach) : -1;
+  const index = isShape ? readShapeAt(document, readPickAreas(document), press) : -1;
   const drag = { isMoved: false, isShift: event.shiftKey, pointer: press, press };
 
   return index < 0

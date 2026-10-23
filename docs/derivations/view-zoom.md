@@ -54,7 +54,7 @@ The scale asked, `s′`, is first limited to `[s₋, s₊] = [0.01, 256]`, 1 % t
 
 A key's step multiplies the scale by √2 to zoom in and divides it by √2 to zoom out, Inkscape's `zoomincrement` 1.414213562 (`REF-INKSCAPE-ZOOM-PREFS`; SP-030's answer 4), then limits it (step 4): 1, 1.41421, 2, 2.82843, 4.
 
-The wheel and the pinch zoom by their deltas, as Penpot: with `δ` the deltas' sum in pixels, a zoom "by 1 + 0.0057 per pixel", "its inverse for a positive sum" (`REF-PENPOT-VIEWPORT-ACTIONS`; SP-030's answer 4):
+The wheel and the pinch zoom by their vertical deltas, by Penpot's factor: with `δ` the sum in pixels of the vertical deltas sent before a frame, a zoom "by 1 + 0.0057 per pixel", "its inverse for a positive sum" (`REF-PENPOT-VIEWPORT-ACTIONS`; SP-030's answer 4). Penpot computes the factor of each event from its vertical and horizontal deltas added, and multiplies the factors of a frame; the vertical deltas alone, summed over a frame before one factor, are the agent's choice (US-078, `interaction.md` §7): two of −50 give `k(−100) = 1.57`, where Penpot's product gives `1.285² = 1.65122`.
 
 `k(δ) = 1 + 0.0057 · |δ|` for `δ ≤ 0`, `k(δ) = 1 / (1 + 0.0057 · δ)` for `δ > 0`.
 

@@ -4,7 +4,7 @@
 
 **Zoom about the pointer.** Hold `Ctrl` (`Cmd` on a Mac) and turn the wheel over the drawing, or pinch on a trackpad: the drawing grows or shrinks about the pointer, the point under it staying under it. A turn of 100 pixels away from you zooms to 157 %; the same turn back gives 100 % again. The page itself never zooms: only the drawing does, from 1 % to 25 600 %.
 
-**Move the view.** Turn the wheel alone and the view moves up or down; with `Shift`, left or right; two fingers on a trackpad move it every way. Hold `Space` and drag, or drag with the middle button, and the drawing follows the pointer: nothing is selected, moved nor placed by it. A space typed in a field of the panel stays the field's.
+**Move the view.** Turn the wheel alone and the view moves up or down; with `Shift`, left or right; two fingers on a trackpad move it every way. Hold `Space` and drag, or drag with the middle button, and the drawing follows the pointer: nothing is selected, moved nor placed by it. A space typed in a field of the panel stays the field's. Leaving the window lets `Space` go, even held, so that a drag back in the page does not pan by itself.
 
 **No shape changes.** Zooming and moving the view change no number: a rectangle 100 × 50 at (10, 20) reads X 10, Y 20, W 100, H 50 at 200 % as at 100 %. The view is not a step of the history, so `Ctrl` + `Z` undoes the last change of the drawing and leaves the view as it is. **Export SVG** writes the same file at any zoom, in the frame the page opens with. **Reset** and each step of the guided test bring back that view.
 
@@ -23,7 +23,7 @@
 For the review's summary; each can be changed.
 
 - With `Shift`, the wheel moves the view across by its vertical turn and by the horizontal one macOS sends instead, added, so that the same gesture works on every system.
-- The wheel's turns sent within one frame of the screen zoom once by their sum, as Penpot does, so that a slow pinch zooms slowly and a turn back gives the same zoom back.
+- The wheel's vertical turns sent within one frame of the screen zoom once by their sum, so that a slow pinch zooms slowly and a turn back gives the same zoom back. Penpot zooms by the same amount a pixel, but adds each turn's horizontal part to its vertical one and multiplies the zooms of a frame: two turns of 50 pixels zoom here by 1.57, in Penpot by 1.65.
 - Shapes dragged while the wheel zooms stay under the pointer: their place is read through the new view at each move of the pointer.
 - `=` zooms in as `+` does, as in Inkscape, so that `+` needs no `Shift` on a US keyboard.
 - `Shift` with `0`, `1` or `2` is read by the key's place on the keyboard, so that it works whatever character the layout gives it: `)` on a US keyboard, `0` on a French one.

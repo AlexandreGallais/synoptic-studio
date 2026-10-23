@@ -1,11 +1,12 @@
-import { add, scale } from "../../math";
+import { add } from "../../math";
+import { screenToUser } from "../drawing";
 
 import type { View } from "./view";
 import type { Point, Vector } from "../../math";
 
 /**
  * The point of the drawing under an offset on the canvas (ADR-0098, decision 3): the view's
- * origin plus the offset divided by its scale, the inverse of the `viewBox`'s map.
+ * origin plus the offset divided by its scale (`screenToUser`), the inverse of the `viewBox`'s map.
  *
  * Formula: o + p / s.
  *
@@ -16,5 +17,8 @@ import type { Point, Vector } from "../../math";
  * @see DERIV-view-zoom
  */
 export function pointUnderPointer(view: View, offset: Vector): Point {
-  return add(view.origin, scale(offset, 1 / view.scale));
+  return add(view.origin, {
+    x: screenToUser(offset.x, view.scale),
+    y: screenToUser(offset.y, view.scale),
+  });
 }

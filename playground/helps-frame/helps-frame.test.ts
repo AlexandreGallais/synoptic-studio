@@ -118,21 +118,22 @@ describe("R's band within the area shown and half the canvas (EN-149)", () => {
     },
   );
 
-  it("follows R fitted at a scale of 0.0072 whole, its corners by 283 chords each", () => {
-    // Fitted with 40 pixels on each side: min(1 120 / 99 999, 720 / 100 000) = 0.0072, its centre
-    // (49 999.5, 50 000) at the canvas's (600, 400): o = (49 999.5 − 600 / 0.0072, 50 000 − 400 /
-    // 0.0072) = (−33 333.83, −5 555.56); the helps' box holds R.
-    showView({ origin: { x: 49_999.5 - 600 / 0.0072, y: 50_000 - 400 / 0.0072 }, scale: 0.0072 });
+  it("follows R fitted at 1 % whole, its corners by 393 chords each", () => {
+    // Fitted with 40 pixels on each side: min(1 120 / 99 999, 720 / 100 000) = 0.0072, under the
+    // bound, so 0.01; its centre (49 999.5, 50 000) at the canvas's (600, 400): o = (49 999.5 − 600
+    // / 0.01, 50 000 − 400 / 0.01) = (−10 000.5, 10 000); the helps' box, from (−70 000.5,
+    // −30 000) to (169 999.5, 130 000), holds R.
+    showView({ origin: { x: -10_000.5, y: 10_000 }, scale: 0.01 });
 
     const { pieces } = shapePickArea(readShapeModel());
-    const whole = contourBand(pieces, 1 / 0.0072, 2 / 0.0072);
+    const whole = contourBand(pieces, 1 / 0.01, 2 / 0.01);
 
     expect(readOutline("selection")).toBe(
       whole.map((subpath) => contourPiecesToPathData(subpath)).join(" "),
     );
 
     // Its contour holds its 4 corners and its 2 sides 1 long, those 0 long left out: 6 discs,
-    // 4 × 283 chords and one a side.
+    // 4 × 393 chords and one a side.
     expect(pieces.map((piece) => piece.kind)).toEqual([
       "arc",
       "segment",
@@ -142,7 +143,7 @@ describe("R's band within the area shown and half the canvas (EN-149)", () => {
       "arc",
     ]);
 
-    expect(whole).toHaveLength(6 + 4 * 283 + 2);
+    expect(whole).toHaveLength(6 + 4 * 393 + 2);
   });
 
   it("[F42.AC5] still finds R under the pointer on its whole contour, its band empty there", () => {
@@ -190,6 +191,30 @@ describe("the helps kept while a pan stays within their box (EN-149)", () => {
 
     expect(readOutline("selection")).toBe(
       bandWithin(pieces, AT_100, boxOf({ x: 60, y: -440 }, { x: 2460, y: 1160 })),
+    );
+  });
+
+  it("keeps the helps at a pan of 600 pixels, computes them again at 601 (AUD-044)", () => {
+    typeRounded("2000", "2000", "1000");
+
+    const { pieces } = shapePickArea(readShapeModel());
+    const opening = bandWithin(pieces, AT_100, boxOf({ x: -640, y: -440 }, { x: 1760, y: 1160 }));
+
+    // 600 pixels right, |d_x| ≤ 600: (560, −40) to (1 760, 760) shown, on the box's edge, kept;
+    // a new frame would cut within (−40, −440) to (2 360, 1 160).
+    showView({ origin: { x: 560, y: -40 }, scale: 1 });
+    expect(readOutline("selection")).toBe(opening);
+
+    expect(opening).not.toBe(
+      bandWithin(pieces, AT_100, boxOf({ x: -40, y: -440 }, { x: 2360, y: 1160 })),
+    );
+
+    // 601 pixels right: (561, −40) to (1 761, 760), past 1 760: computed again within (−39, −440)
+    // to (2 361, 1 160).
+    showView({ origin: { x: 561, y: -40 }, scale: 1 });
+
+    expect(readOutline("selection")).toBe(
+      bandWithin(pieces, AT_100, boxOf({ x: -39, y: -440 }, { x: 2361, y: 1160 })),
     );
   });
 

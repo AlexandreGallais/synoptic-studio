@@ -7,6 +7,7 @@ export * from "./opening-view";
 export * from "./page-views";
 export type * from "./pan-drag";
 export * from "./pan-drags";
+export * from "./pointer-offsets";
 export * from "./read-canvas-size";
 export * from "./read-view";
 export type * from "./wheel-zoom";

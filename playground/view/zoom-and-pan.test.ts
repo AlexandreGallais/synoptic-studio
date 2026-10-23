@@ -118,18 +118,19 @@ function expectViewBox(expected: string): void {
 }
 
 /**
- * Presses a pointer button on the canvas at the pointer of the examples, drags it by (100, 50) and
- * releases it, as the browser sends them: a click after the main button's release.
+ * Presses a pointer button on the canvas, drags it by (100, 50) and releases it, as the browser
+ * sends them: a click after the main button's release.
  *
  * @param button - 0 the main button, 1 the middle one
+ * @param from - where it is pressed, in the window
  */
-function dragByPanExample(button: number): void {
+function dragByPan(button: number, from: Point): void {
   const canvas = selectPageElement("#canvas");
   const buttons = button === 0 ? 1 : 4;
-  const to = { x: POINTER.x + 100, y: POINTER.y + 50 };
+  const to = { x: from.x + 100, y: from.y + 50 };
 
   for (const [type, place, held] of [
-    ["pointerdown", POINTER, buttons],
+    ["pointerdown", from, buttons],
     ["pointermove", to, buttons],
     ["pointerup", to, 0],
   ] as const) {
@@ -148,6 +149,15 @@ function dragByPanExample(button: number): void {
   if (button === 0) {
     canvas.dispatchEvent(new MouseEvent("click", { bubbles: true, clientX: to.x, clientY: to.y }));
   }
+}
+
+/**
+ * Drags a pointer button by (100, 50) from the pointer of the examples (`dragByPan`).
+ *
+ * @param button - 0 the main button, 1 the middle one
+ */
+function dragByPanExample(button: number): void {
+  dragByPan(button, POINTER);
 }
 
 /**
@@ -333,6 +343,29 @@ describe("zoom and pan by the wheel, a pinch and a drag (US-078)", () => {
     expect(readSelectionOutline()).toBeDefined();
   });
 
+  it("[F42.AC2] pans by a drag with Space held from A, A neither selected nor moved", () => {
+    document.body.dispatchEvent(
+      new KeyboardEvent("keydown", { bubbles: true, cancelable: true, key: "Escape" }),
+    );
+
+    expect(readSelectionOutline()).toBeUndefined();
+
+    // Pressed over A's (50, 40), the window's (190, 130) at the opening view.
+    pressSpace("keydown", "body");
+    dragByPan(0, { x: 190, y: 130 });
+    pressSpace("keyup", "body");
+
+    // The pointer moved on, no button held: nothing the press could have started follows it.
+    selectPageElement("#canvas").dispatchEvent(
+      new PointerEvent("pointermove", { bubbles: true, buttons: 0, clientX: 400, clientY: 300 }),
+    );
+
+    // o′ = (−40 − 100, −40 − 50) = (−140, −90); A still unselected, where it was.
+    expectViewBox("-140 -90 1200 800");
+    expect(readSelectionOutline()).toBeUndefined();
+    expect(readShapePath()).toBe("M10 20 L110 20 L110 70 L10 70 Z");
+  });
+
   it("[F42.AC2] leaves Space typed in a field to the field, a drag then no pan", () => {
     showZoomed();
 
@@ -421,6 +454,45 @@ describe("zoom and pan by the wheel, a pinch and a drag (US-078)", () => {
     // Back up: A under it again.
     turnWheel({ ...DOWN, deltaY: -100 }, { x: 190, y: 130 });
     expect(readHoverOutline()).toBeDefined();
+  });
+
+  it("[F42.AC3] zooms by + about where a pan drag left the pointer (AUD-044)", () => {
+    showZoomed();
+
+    // The pointer over the offset (440, 340), then dragged with Space held to (540, 390).
+    selectPageElement("#canvas").dispatchEvent(
+      new PointerEvent("pointermove", { bubbles: true, clientX: POINTER.x, clientY: POINTER.y }),
+    );
+
+    pressSpace("keydown", "body");
+    dragByPanExample(0);
+    pressSpace("keyup", "body");
+
+    document.body.dispatchEvent(
+      new KeyboardEvent("keydown", {
+        bubbles: true,
+        cancelable: true,
+        code: "Equal",
+        key: "+",
+        shiftKey: true,
+      }),
+    );
+
+    // Panned to (130, 105) at 200 %: under (540, 390), (130 + 540 / 2, 105 + 390 / 2) = (400, 300).
+    // × √2, s′ = 2√2 = 2.8284271; o′ = (400 − 540 / s′, 300 − 390 / s′)
+    // = (400 − 190.9188309, 300 − 137.8858223) = (209.0811691, 162.1141777);
+    // 1 200 / s′ = 424.2640687, 800 / s′ = 282.8427125.
+    expectViewBox("209.08117 162.11418 424.26407 282.84271");
+  });
+
+  it("[F42.AC2] drops Space held as the window loses the focus, a drag then no pan", () => {
+    showZoomed();
+    pressSpace("keydown", "body");
+    // Space released while another window has the focus: this page hears no keyup.
+    globalThis.dispatchEvent(new Event("blur"));
+    dragByPanExample(0);
+
+    expectViewBox("180 130 600 400");
   });
 
   it.each(["tool-reset", "guide-next"])("brings back the opening view by #%s", (id) => {
