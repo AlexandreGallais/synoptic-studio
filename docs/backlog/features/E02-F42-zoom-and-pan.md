@@ -29,7 +29,7 @@ In delivery order.
 | [EN-148](../stories/E02-F42-EN-148-the-view-in-the-model.md) | EN | The view of the drawing in the model | done |
 | [US-078](../stories/E02-F42-US-078-zoom-and-pan-by-the-wheel-and-a-drag.md) | US | Zoom and pan by the wheel, a pinch and a drag | done |
 | [EN-149](../stories/E02-F42-EN-149-the-helps-within-the-area-shown.md) | EN | The helps drawn within the area shown and its padding | done |
-| [US-079](../stories/E02-F42-US-079-the-zoom-keys-the-fits-and-the-percentage.md) | US | The zoom's keys, the fits and the percentage shown | ready |
+| [US-079](../stories/E02-F42-US-079-the-zoom-keys-the-fits-and-the-percentage.md) | US | The zoom's keys, the fits and the percentage shown | done |
 | [AUD-044](../stories/E02-F42-AUD-044-audit-f42.md) | AUD | Audit F42 | ready |
 | [VAL-043](../stories/E02-F42-VAL-043-validate-f42.md) | VAL | Validate F42 | dropped |
 

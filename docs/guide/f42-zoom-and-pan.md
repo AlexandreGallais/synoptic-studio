@@ -12,7 +12,11 @@
 
 **Large shapes stay fast.** The outlines of the shape under the pointer and of the selection are computed only where they can be seen: the part of the drawing the canvas shows and half the canvas more on each side. A rectangle 99 999 × 100 000 rounded to the full, selected at 100 %, used to take a fifth of a second to outline at each redraw, its corners far out of sight; its outline is now empty there and the page stays smooth. Move the view by less than half the canvas and the outlines are not computed again; further, or when the drawing changes or the zoom does, they are.
 
-Still to come in F42: the keys `+`, `-`, `Shift` + `0`, `1` and `2`, the fits to the drawing and to the selection, and the percentage in the toolbar (US-079).
+**Zoom by keys.** Press `+` to zoom in and `-` to zoom out, one step at a time: 100, 141, 200, 283, 400 %, each step × √2. With the pointer over the drawing, the point under it stays under it; elsewhere, the zoom keeps the canvas's centre. `Shift` + `0` goes back to 100 % about the centre. A key typed in a field of the panel stays the field's; with `Ctrl` held, `+` and `-` zoom the page itself, as in any web page.
+
+**See the whole drawing, or the selection.** `Shift` + `1` fits every shape in the canvas, 40 pixels left on each side; `Shift` + `2` fits the shapes selected. Three rectangles 100 × 50 spread from (10, 20) to (410, 220) fill a canvas of 1 200 × 800 at 280 %; one of them alone at 1 120 %. With no shape, or none selected, nothing changes.
+
+**Read the zoom.** The toolbar shows the zoom, rounded to a whole percent: 141 % after one step in. Click it for its menu: Zoom in, Zoom out, Zoom to 100 %, Fit the drawing and Fit the selection, each with its key, and a field where a percentage is typed, applied by `Enter`: 200 gives 200 %, about the canvas's centre. A percentage beyond 1 % to 25 600 % is taken at the bound; a text, 0 or a number below 0 changes nothing.
 
 ## The choices the agent made
 
@@ -21,6 +25,9 @@ For the review's summary; each can be changed.
 - With `Shift`, the wheel moves the view across by its vertical turn and by the horizontal one macOS sends instead, added, so that the same gesture works on every system.
 - The wheel's turns sent within one frame of the screen zoom once by their sum, as Penpot does, so that a slow pinch zooms slowly and a turn back gives the same zoom back.
 - Shapes dragged while the wheel zooms stay under the pointer: their place is read through the new view at each move of the pointer.
+- `=` zooms in as `+` does, as in Inkscape, so that `+` needs no `Shift` on a US keyboard.
+- `Shift` with `0`, `1` or `2` is read by the key's place on the keyboard, so that it works whatever character the layout gives it: `)` on a US keyboard, `0` on a French one.
+- The menu's zooms keep the canvas's centre, the pointer being on the menu; a percentage typed beyond the bounds is taken at the bound, and a text, 0 or a number below 0 is refused, the field showing the zoom again.
 - An outline is cut to the region it is computed for by its pieces' chords, each drawn whole or left out, rather than by an arc's angles and a curve's halves, so that the outline seen is exactly the one drawn before, every chord the same.
 
 ## The ideas behind it
@@ -28,6 +35,8 @@ For the review's summary; each can be changed.
 **A window on the drawing.** The drawing's coordinates never change; what changes is the part of it the canvas shows, the SVG's `viewBox`: its top-left corner, the **origin**, and its size, the canvas's size divided by the **scale**. At 200 % with (180, 130) at the canvas's top-left, a canvas of 1 200 × 800 pixels shows the region from (180, 130), 600 × 400 units. Both layers, the drawing and the outlines above it, take the same `viewBox`, so that they stay aligned.
 
 **Zoom about a point.** The point under the pointer is the origin plus the pointer's place on the canvas divided by the scale. To keep it under the pointer at a new scale, the origin moves by the difference: from 100 % to 200 % with the pointer at (440, 340) over (400, 300), the origin becomes (400 − 440 / 2, 300 − 340 / 2) = (180, 130).
+
+**A fit.** To show a box whole with 40 pixels on each side, the scale is the smaller of the room across and down divided by the box's width and height, and the box's centre goes to the canvas's centre: the box from (10, 20) to (410, 220) in a canvas of 1 200 × 800 gets min(1 120 / 400, 720 / 200) = 2.8, its centre (210, 120) at the offset (600, 400), so the origin is (210 − 600 / 2.8, 120 − 400 / 2.8) = (−4.29, −22.86).
 
 **Sizes in screen pixels.** A help drawn in the drawing's units would grow with the zoom: a handle of radius 8 would be 2 048 pixels across at 25 600 %. Each help is given in screen pixels and divided by the scale, so that it keeps its size on screen.
 
@@ -40,7 +49,8 @@ For the review's summary; each can be changed.
 | origin | the point of the drawing at the canvas's top-left corner |
 | `viewBox` | the region of the drawing an SVG shows, in the drawing's units |
 | pan | moving the view, the shapes staying where they are |
+| fit | the zoom and the view that show a box whole, centred, 40 pixels from the canvas's sides |
 
 ## Limits
 
-The keys and the fits come with US-079; the view is not kept once the page is closed; there is no Hand tool in the toolbar, `Space` and the middle button doing its work.
+The keys are not editable yet (E20); the view is not kept once the page is closed; there is no Hand tool in the toolbar, `Space` and the middle button doing its work.

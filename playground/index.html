@@ -203,6 +203,42 @@
         padding: 0.2rem 0.7rem;
         color: var(--muted);
       }
+      /* The zoom's percentage, its menu opened under it (US-079). */
+      #zoom-box {
+        position: relative;
+        align-self: center;
+        font-size: 0.85em;
+      }
+      #zoom-box summary {
+        min-width: 4.2rem;
+        cursor: pointer;
+        white-space: nowrap;
+      }
+      #zoom-menu {
+        position: absolute;
+        top: calc(100% + 0.6rem);
+        right: 0;
+        z-index: 1;
+        display: grid;
+        gap: 0.1rem;
+        min-width: 14rem;
+        padding: 0.35rem;
+        background: var(--panel);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+      }
+      #zoom-menu button {
+        justify-content: space-between;
+        width: 100%;
+        min-height: 1.8rem;
+      }
+      #zoom-menu kbd {
+        font: inherit;
+        color: var(--muted);
+      }
+      #zoom-menu label {
+        padding: 0.2rem 0.7rem;
+      }
       /* The history's memory size and steps kept, beside Undo and Redo (US-076). */
       #toolbar label {
         display: flex;
@@ -670,6 +706,35 @@
             title="About how many moves of a rectangle 100 × 50 alone the memory holds, each adding about 1,244 bytes; a larger shape, or a change of more shapes, takes more."
           ></span>
         </p>
+        <div role="group" aria-label="View">
+          <details
+            id="zoom-box"
+            title="The zoom of the drawing: zoom in and out, back to 100 %, fit the drawing or the selection, or type a percentage."
+          >
+            <summary id="zoom-percentage">100 %</summary>
+            <div id="zoom-menu">
+              <button id="zoom-in" type="button" aria-keyshortcuts="+">Zoom in <kbd>+</kbd></button>
+              <button id="zoom-out" type="button" aria-keyshortcuts="-">
+                Zoom out <kbd>-</kbd>
+              </button>
+              <button id="zoom-actual" type="button" aria-keyshortcuts="Shift+0">
+                Zoom to 100 % <kbd>Shift + 0</kbd>
+              </button>
+              <button id="zoom-fit-drawing" type="button" aria-keyshortcuts="Shift+1">
+                Fit the drawing <kbd>Shift + 1</kbd>
+              </button>
+              <button id="zoom-fit-selection" type="button" aria-keyshortcuts="Shift+2">
+                Fit the selection <kbd>Shift + 2</kbd>
+              </button>
+              <label
+                title="A percentage from 1 to 25,600, applied by Enter or by leaving the field, about the canvas's centre"
+                >Zoom
+                <input id="zoom-field" type="number" min="1" max="25600" step="any" value="100" />
+                %</label
+              >
+            </div>
+          </details>
+        </div>
         <p role="group" aria-label="Page">
           <button id="tool-reset" type="button" title="Back to the shape the page opens with">
             Reset

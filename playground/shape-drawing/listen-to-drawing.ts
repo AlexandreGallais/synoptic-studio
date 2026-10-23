@@ -1,8 +1,14 @@
 import { listenToPlacing } from "../placing";
 import { listenToPicking } from "../selection";
 import { listenToSelectionDrag } from "../selection-drag";
-import { listenToNudgeKeys, listenToSelectionKeys, listenToSpace } from "../selection-keys";
+import {
+  listenToNudgeKeys,
+  listenToSelectionKeys,
+  listenToSpace,
+  listenToZoomKeys,
+} from "../selection-keys";
 import { listenToView } from "../view";
+import { listenToZoomMenu } from "../zoom";
 
 import { listenToShapeDrawing } from "./listen-to-shape-drawing";
 
@@ -14,8 +20,9 @@ import { listenToShapeDrawing } from "./listen-to-shape-drawing";
  * (`listenToPicking`, F36), Shift adding it or taking it out (F37), and a drag from an empty place
  * selects the shapes its rectangle takes (`listenToSelectionDrag`, F37); and to the keys of the
  * selection, Ctrl + A, Escape and Delete (`listenToSelectionKeys`), the arrows, which nudge the
- * shapes selected (`listenToNudgeKeys`, F39), and `Space` held, which makes a drag pan
- * (`listenToSpace`, F42).
+ * shapes selected (`listenToNudgeKeys`, F39), `Space` held, which makes a drag pan
+ * (`listenToSpace`, F42), and the zoom's keys and the percentage's menu (`listenToZoomKeys`,
+ * `listenToZoomMenu`, F42).
  *
  * @kind procedure
  * @param document - page document
@@ -31,4 +38,6 @@ export function listenToDrawing(document: Document, update: () => void): void {
   listenToSelectionKeys(document, update);
   listenToNudgeKeys(document, update);
   listenToSpace(document);
+  listenToZoomKeys(document, update);
+  listenToZoomMenu(document, update);
 }
