@@ -112,7 +112,7 @@
 | [AUD-043](./E02-F41-AUD-043-audit-f41.md) | F41 | Audit F41 | done |
 | [VAL-042](./E02-F41-VAL-042-validate-f41.md) | F41 | Validate F41 | dropped |
 | [SP-030](./E02-F42-SP-030-refine-zoom-and-pan.md) | F42 | Refine zoom and pan | done |
-| [EN-148](./E02-F42-EN-148-the-view-in-the-model.md) | F42 | The view of the drawing in the model | ready |
+| [EN-148](./E02-F42-EN-148-the-view-in-the-model.md) | F42 | The view of the drawing in the model | done |
 | [US-078](./E02-F42-US-078-zoom-and-pan-by-the-wheel-and-a-drag.md) | F42 | Zoom and pan by the wheel, a pinch and a drag | ready |
 | [EN-149](./E02-F42-EN-149-the-helps-within-the-area-shown.md) | F42 | The helps drawn within the area shown and its padding | ready |
 | [US-079](./E02-F42-US-079-the-zoom-keys-the-fits-and-the-percentage.md) | F42 | The zoom's keys, the fits and the percentage shown | ready |

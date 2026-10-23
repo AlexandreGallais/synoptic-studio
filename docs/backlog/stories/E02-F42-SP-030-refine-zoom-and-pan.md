@@ -80,7 +80,7 @@ One task = one commit, referenced as `SP-030.T1`.
 
 ## Answers of the Product Owner
 
-Given on 2026-10-23, each the first option:
+Given on 2026-10-23, each the option the agent proposed first:
 
 1. (a) The `viewBox` of both SVGs; ADR-0098 accepted.
 2. (a) Figma's: Ctrl (Cmd on macOS) with the wheel, and a pinch, zoom about the pointer; the wheel alone pans, down, and right with Shift; Space held with a drag, or the middle button's drag, pans.

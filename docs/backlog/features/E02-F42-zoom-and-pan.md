@@ -26,7 +26,7 @@ In delivery order.
 | ID | Type | Title | Status |
 | --- | --- | --- | --- |
 | [SP-030](../stories/E02-F42-SP-030-refine-zoom-and-pan.md) | SP | Refine zoom and pan | done |
-| [EN-148](../stories/E02-F42-EN-148-the-view-in-the-model.md) | EN | The view of the drawing in the model | ready |
+| [EN-148](../stories/E02-F42-EN-148-the-view-in-the-model.md) | EN | The view of the drawing in the model | done |
 | [US-078](../stories/E02-F42-US-078-zoom-and-pan-by-the-wheel-and-a-drag.md) | US | Zoom and pan by the wheel, a pinch and a drag | ready |
 | [EN-149](../stories/E02-F42-EN-149-the-helps-within-the-area-shown.md) | EN | The helps drawn within the area shown and its padding | ready |
 | [US-079](../stories/E02-F42-US-079-the-zoom-keys-the-fits-and-the-percentage.md) | US | The zoom's keys, the fits and the percentage shown | ready |

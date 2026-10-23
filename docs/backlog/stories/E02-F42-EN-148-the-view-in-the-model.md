@@ -3,7 +3,7 @@ id: EN-148
 epic: E02
 feature: F42
 title: The view of the drawing in the model
-status: ready
+status: done
 points: 2
 ---
 
