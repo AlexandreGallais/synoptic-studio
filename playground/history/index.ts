@@ -9,6 +9,7 @@ export * from "./read-held-action";
 export * from "./read-refused-kind";
 export * from "./save-history-step";
 export * from "./schedule-history-step";
+export * from "./schedule-panel-step";
 export * from "./show-history";
 export * from "./typed-fields";
 export * from "./update-history";

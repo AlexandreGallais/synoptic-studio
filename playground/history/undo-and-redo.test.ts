@@ -824,17 +824,19 @@ describe("Undo and Redo what is typed and chosen in the panel (US-075)", () => {
       },
       name: "its box fitted",
     },
-    {
-      action: (): void => {
-        chooseOption("text-fit", "box");
-        typeAndLeave("text-box-width", "200");
-        clickElement("text-box-reset");
-      },
-      name: "its box reset",
-    },
   ])("[F40.AC2] undoes and redoes a text's style changed in one step: $name", ({ action }) => {
     placePump({ x: 400, y: 300 });
     expectOneStep(action);
+  });
+
+  it("[F40.AC2] undoes and redoes a text's box reset to the size it fits in one step", () => {
+    placePump({ x: 400, y: 300 });
+    chooseOption("text-fit", "box");
+    typeAndLeave("text-box-width", "200");
+
+    expectOneStep(() => {
+      clickElement("text-box-reset");
+    });
   });
 
   it("[F40.AC2] takes a step at each key on the hue slider, the plane's drag and the color typed", () => {
@@ -915,8 +917,9 @@ describe("Undo and Redo the buttons of the panel (US-075)", () => {
       },
       name: "Convert to free shape",
       prepare: (): void => {
-        // Edit the shape, as the page opens.
-        clickElement("mode-shape");
+        // A rectangle is kept as a free shape already: a hexagon converted.
+        typeValue("corners", "6");
+        chooseOption("shape", "polygon");
       },
     },
     {

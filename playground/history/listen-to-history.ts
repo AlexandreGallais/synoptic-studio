@@ -69,6 +69,6 @@ export function listenToHistory(document: Document, update: () => void): void {
     });
   }
 
-  listenToPanelSteps(document, update);
+  listenToPanelSteps(document);
   listenToHistoryKeys(document, update);
 }
