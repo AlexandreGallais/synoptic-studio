@@ -8,6 +8,7 @@ export * from "./font-embedding";
 export * from "./font-import";
 export * from "./free-shape";
 export * from "./handles";
+export * from "./history";
 export * from "./kerning";
 export * from "./layout-box";
 export * from "./line-characters";
