@@ -9,4 +9,5 @@ export * from "./read-shape-pick-area";
 export * from "./read-text-block";
 export type * from "./selection-drag";
 export * from "./selection-drags";
+export type * from "./shapes-move";
 export * from "./show-hover";

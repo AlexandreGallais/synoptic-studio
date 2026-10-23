@@ -39,7 +39,7 @@ function readPressedDrag(document: Document, press: Point): SelectionDrag {
   const isRectangle =
     readMode(document) === "shape" && shapeAtPoint(readPickAreas(document), press, reach) < 0;
 
-  return { isMoved: false, isRectangle, pointer: press, press };
+  return { isMoved: false, isRectangle, isShift: false, move: undefined, pointer: press, press };
 }
 
 /**
