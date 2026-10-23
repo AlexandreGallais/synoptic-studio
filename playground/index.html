@@ -33,6 +33,14 @@
         min-width: 0;
         overflow: hidden;
       }
+      /* No selection of page text starts on the drawing nor on the layer above it (F43), so that a
+         text pressed, dragged across or double-clicked is picked as a shape, its letters never
+         highlighted; the prefixed property for Safari (REF-MDN-USER-SELECT). */
+      #canvas,
+      #overlay {
+        -webkit-user-select: none;
+        user-select: none;
+      }
       #canvas {
         height: 100%;
         background: repeating-conic-gradient(#8881 0 25%, transparent 0 50%) 0 0 / 20px 20px;

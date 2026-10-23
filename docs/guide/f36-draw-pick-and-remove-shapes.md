@@ -18,7 +18,7 @@ Choose the Rectangle, Polygon, Round shape or Text tool, press the drawing and d
 
 **A click picks only when it started with the Selector.** The click that ends a drag with a tool, or that places a shape, arms the Selector again, but never also picks the shape under the pointer: the agent chose to look at the tool chosen when the button was pressed. To confirm at VAL-037.
 
-**The shape selected is outlined as the hover is.** The same blue line, 2 pixels wide along its edge, shows the shape the panel edits, even while a tool is chosen, as in Figma; the agent chose this, its box with handles coming with moving and resizing. To confirm at VAL-037.
+**The shape selected is outlined as the hover is.** The same blue line, 2 pixels wide along its edge, shows the shape the panel edits, even while a tool is chosen, as in Figma; the agent chose this, its box with handles coming with moving and resizing. To confirm at VAL-037. Since F43 a text of the drawing pressed, dragged across or double-clicked is picked as a shape, its letters never highlighted as the page's text.
 
 **None selected hides the panel's fields.** After a click on the empty drawing, every shape stays drawn and the panel only says how to select or add one; the agent chose this. To confirm at VAL-037.
 

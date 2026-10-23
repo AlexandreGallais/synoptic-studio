@@ -33,9 +33,13 @@ The examples use the opening view, 100 %, and A, B and C, rectangles 100 × 100 
 | --- | --- | --- |
 | 1 | Look at the rectangle the page opens with | its outline shows on its own blue: a blue line with a thin white edge on each side |
 | 2 | Click the empty drawing, then point at the rectangle | the same outline, the shape under the pointer |
-| 3 | Add two rectangles with the Rectangle tool, then drag a selection rectangle from an empty place across two of them, without releasing | the two shapes it touches are outlined before the release; the rectangle's own line shows over the blue |
-| 4 | Release | the two are selected, a dashed box around them, its dashes blue and white |
-| 5 | Add a text, type `Pump`, then double-click on it and drag across it with the Selector | the text is selected as a shape, its letters never highlighted as page text |
+| 3 | Choose the Rectangle tool and click an empty place right of the first rectangle; again, further right | two new blue rectangles, the last one selected and outlined |
+| 4 | Press an empty place above and left of the first rectangle and drag down and right across the first two, the third left out, without releasing | the two shapes it touches are outlined while you drag, the third keeps its selection's outline; the rectangle's own blue line shows a white edge where it crosses the blue |
+| 5 | Still pressed, hold Alt (Option on a Mac) and move the pointer a little | only the rectangles wholly inside it stay outlined; release Alt and move again: the two are outlined again |
+| 6 | Bring the pointer back over the first rectangle alone, then release | the second is no longer outlined before the release; released, the first alone is selected |
+| 7 | Drag a selection rectangle across the first two and release | the two are selected, a dashed box around them, its dashes blue and the gaps between them white |
+| 8 | Choose the Text tool, click an empty place and type `Pump`, then double-click on the text and drag across it with the Selector | the text is picked as a shape and moved by the drag, its letters never highlighted as page text |
+| 9 | Double-click the value of Width in the panel | its number is highlighted, the panel's fields selecting their text as before |
 
 ## Tasks
 
