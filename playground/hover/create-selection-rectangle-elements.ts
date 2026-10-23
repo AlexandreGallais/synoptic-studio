@@ -1,10 +1,5 @@
-import {
-  boxSize,
-  createPathElement,
-  formatPathData,
-  formatSvgNumber,
-  screenToUser,
-} from "../../src";
+import { createPathElement, screenToUser } from "../../src";
+import { readBoxBandPathData, readSidesPathData } from "../helps-frame";
 import { readView } from "../view";
 
 import { readSelectionBox } from "./read-selection-box";
@@ -15,56 +10,38 @@ import type { BoundingBox } from "../../src";
 /** Width of the rectangle's outline, in screen pixels: a band of half of it on each side. */
 const OUTLINE_WIDTH = 1;
 
-/**
- * Path data of a box's sides moved inward by a distance, outward when it is negative: clockwise
- * on the screen outward, the other way inward, so that the nonzero rule leaves the inner one empty.
- *
- * @kind procedure
- * @param box - the rectangle, in user units
- * @param inset - how far each side moves inward, in user units
- * @returns the closed sub-path
- * @see docs/domain/interaction.md#_2-selector
- */
-function readSidesPathData(box: BoundingBox, inset: number): string {
-  const left = formatSvgNumber(box.minX + inset);
-  const top = formatSvgNumber(box.minY + inset);
-  const right = formatSvgNumber(box.maxX - inset);
-  const bottom = formatSvgNumber(box.maxY - inset);
-
-  return inset > 0
-    ? `M${left} ${top}V${bottom}H${right}V${top}Z`
-    : `M${left} ${top}H${right}V${bottom}H${left}Z`;
-}
+/** Width of the light band under the outline, in screen pixels: 1 pixel of it on each side. */
+const LIGHT_WIDTH = 3;
 
 /**
- * Path data of the rectangle's outline, a band centred on its sides: its sides moved outward by
- * half the band, then inward by half the band, a hole unless the rectangle is no wider or no
- * higher than the band.
- *
- * @kind procedure
- * @param box - the rectangle
- * @param half - half the band's width, in user units
- * @returns the band's path data
- * @see docs/domain/interaction.md#_2-selector
- */
-function readOutlinePathData(box: BoundingBox, half: number): string {
-  const outer = readSidesPathData(box, -half);
-  const size = boxSize(box);
-  const isHollow = Math.min(size.width, size.height) > 2 * half;
-
-  return isHollow ? formatPathData([outer, readSidesPathData(box, half)]) : outer;
-}
-
-/**
- * Creates the selection rectangle in the layer above the drawing (F37), while a drag with the
- * Selector from an empty place has gone further than 3 pixels from the press (`SELECTION_DRAGS`): its area,
- * a light tint of the outline's color, of class `selection-area`, then its outline, a band 1
- * screen pixel wide centred on its sides, of class `selection-rectangle`, a fill with a hole,
- * never a native stroke; a rectangle thinner than the band gets no hole.
+ * Creates a band of a width centred on the rectangle's sides (`readBoxBandPathData`), divided by
+ * the view's scale (`screenToUser`), of a class.
  *
  * @kind procedure
  * @param document - page document
- * @returns its area and its outline; nothing without such a drag
+ * @param box - the rectangle, in user units
+ * @param width - the band's width, in screen pixels
+ * @returns its `<path>`
+ * @see docs/domain/interaction.md#_2-selector
+ */
+function createSidesBand(document: Document, box: BoundingBox, width: number): SVGPathElement {
+  const half = screenToUser(width / 2, readView(document).scale);
+
+  return createPathElement(document, readBoxBandPathData(box, { inward: half, outward: half }));
+}
+
+/**
+ * Creates the selection rectangle in the layer above the drawing (F37, F43), while a drag with the
+ * Selector from an empty place has gone further than 3 pixels from the press (`SELECTION_DRAGS`):
+ * its area, a light tint of the outline's color, of class `selection-area`; a light band 3 screen
+ * pixels wide centred on its sides, of class `selection-rectangle-light`; then its outline over
+ * it, a band 1 screen pixel wide, of class `selection-rectangle` (`createSidesBand`), as Inkscape
+ * draws its rubberband over a light outline (`REF-INKSCAPE-NODE-HANDLES`); each a fill with a hole,
+ * never a native stroke; a rectangle thinner than a band gets no hole in it.
+ *
+ * @kind procedure
+ * @param document - page document
+ * @returns its area, its light band and its outline; nothing without such a drag
  * @see docs/domain/interaction.md#_2-selector
  */
 export function createSelectionRectangleElements(document: Document): readonly SVGPathElement[] {
@@ -75,12 +52,13 @@ export function createSelectionRectangleElements(document: Document): readonly S
   }
 
   const box = readSelectionBox(drag);
-  const half = screenToUser(OUTLINE_WIDTH / 2, readView(document).scale);
   const area = createPathElement(document, readSidesPathData(box, 0));
-  const outline = createPathElement(document, readOutlinePathData(box, half));
+  const light = createSidesBand(document, box, LIGHT_WIDTH);
+  const outline = createSidesBand(document, box, OUTLINE_WIDTH);
 
   area.classList.add("selection-area");
+  light.classList.add("selection-rectangle-light");
   outline.classList.add("selection-rectangle");
 
-  return [area, outline];
+  return [area, light, outline];
 }
