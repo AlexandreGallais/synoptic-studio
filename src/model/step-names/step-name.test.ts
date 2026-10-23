@@ -1,26 +1,10 @@
 import { describe, expect, it } from "vitest";
 
-import { keptRectangleAt } from "../../../tests";
+import { keptRectangleAt, keptShapeFields } from "../../../tests";
 
 import { stepName } from "./step-name";
 
 import type { KeptRectangle } from "../../../tests";
-
-/** A rectangle as the page keeps it, its kind any the panel shows. */
-type KeptShapeLike = Omit<KeptRectangle, "kind"> & {
-  /** The kind the panel shows it as. */
-  readonly kind: string;
-};
-
-/**
- * The fields of a kept rectangle, its kind among them.
- *
- * @param kept - a rectangle as the page keeps it, its kind possibly changed
- * @returns its shape's fields and its kind
- */
-function keptFields(kept: KeptShapeLike): Readonly<Record<string, unknown>> {
-  return { ...kept.shape, kind: kept.kind };
-}
 
 /** A at (10, 20). */
 const SHAPE_A = keptRectangleAt(10);
@@ -112,8 +96,30 @@ describe("stepName (US-077)", () => {
     { after: [A_NUDGED], before: [SHAPE_A, SHAPE_B], name: "Change", title: "B deleted, A nudged" },
     // Another object of A's text: no field changed.
     { after: [keptRectangleAt(10)], before: [SHAPE_A], name: "Change", title: "A read again" },
+    // The same objects in another order: compared index by index, A against B would differ by x,
+    // a Move.
+    {
+      after: [SHAPE_B, SHAPE_A],
+      before: [SHAPE_A, SHAPE_B],
+      name: "Change",
+      title: "A and B swapped",
+    },
+    // B sent to the top, from 1 to 2, every shape the same object.
+    {
+      after: [SHAPE_A, SHAPE_C, SHAPE_B],
+      before: [SHAPE_A, SHAPE_B, SHAPE_C],
+      name: "Change",
+      title: "B sent to the top",
+    },
+    // B moved to 0, A nudged at 1.
+    {
+      after: [SHAPE_B, A_NUDGED],
+      before: [SHAPE_A, SHAPE_B],
+      name: "Change",
+      title: "B moved, A nudged",
+    },
   ])("[F41.AC1] names $title '$name'", ({ after, before, name }) => {
-    expect(stepName(before, after, keptFields)).toBe(name);
+    expect(stepName(before, after, keptShapeFields)).toBe(name);
   });
 
   it("[F41.AC1] names a text's content changed 'Content'", () => {

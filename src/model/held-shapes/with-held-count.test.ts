@@ -16,7 +16,10 @@ const TWO_LEVELS: HeldCounts = {
   ],
 };
 
-/** Any key up to 40 000, three levels, and a count from 0 to 3. */
+/**
+ * Any key up to 40 000, four levels: 40 000 = 1 × 32³ + 7 × 32² + 2 × 32 + 0, past
+ * 32³ = 32 768; and a count from 0 to 3.
+ */
 const ANY_KEY_COUNT = fc.tuple(fc.nat({ max: 40_000 }), fc.nat({ max: 3 }));
 
 describe("withHeldCount (EN-147)", () => {
@@ -53,11 +56,20 @@ describe("withHeldCount (EN-147)", () => {
   });
 
   it("[F41.AC2] drops a node left without any count, then the root's", () => {
-    // 33 to 0: its node [undefined, undefined], dropped; then 2 to 0: the root holds none.
+    // 33 to 0: its node [undefined, undefined], dropped, and the root's slot 1 with it, the root
+    // ending at its last node; then 2 to 0: the root holds none.
     const without = withHeldCount(TWO_LEVELS, 33, 0);
 
-    expect(without).toEqual({ depth: 2, nodes: [[undefined, undefined, 1], undefined] });
+    expect(without).toEqual({ depth: 2, nodes: [[undefined, undefined, 1]] });
+    expect(without.nodes).toHaveLength(1);
     expect(withHeldCount(without, 2, 0)).toEqual({ depth: 2, nodes: [] });
+  });
+
+  it("[F41.AC2] ends a node at its last child: the key 2 set to 0 beside 1", () => {
+    // The keys 1 and 2 in one level: [undefined, 1, 1]; 2 to 0 leaves [undefined, 1].
+    const both = withHeldCount(withHeldCount(EMPTY_HELD_COUNTS, 1, 1), 2, 1);
+
+    expect(withHeldCount(both, 2, 0).nodes).toHaveLength(2);
   });
 
   it("[F41.AC2] keeps an empty root empty when the trie grows", () => {

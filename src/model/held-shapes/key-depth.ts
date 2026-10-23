@@ -9,7 +9,7 @@ import { HELD_BRANCHES } from "./held-branches";
  * @kind domain
  * @param key - a shape's key (`shapeKey`), an integer ≥ 0
  * @returns the count of its digits in base 32, 1 or more
- * @see docs/domain/interaction.md#_7-navigation-and-history
+ * @see ADR-0097
  */
 export function keyDepth(key: number): number {
   const higher = integerQuotient(key, HELD_BRANCHES);

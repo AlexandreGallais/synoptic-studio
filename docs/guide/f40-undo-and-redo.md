@@ -51,7 +51,7 @@ For the review's summary; each can be changed.
 - The moves held are those of one rectangle 100 × 50 moved alone, 1 244 bytes each, rounded down to tens, `about 80,380 moves`, its digits grouped by commas as English writes them; a change of more shapes holds fewer.
 - A memory or a number of steps applied bounds the history at once, as a step does; while a shape is being moved, a new text typed or a value refused, it waits for the next step.
 - The browser keeps both values for the next session, as the checklists keep their ticks; a value it kept that the fields would refuse is put back to its default.
-- The history keeps its size from step to step, each shape counted by the steps that hold it, so that a step costs what it changes whatever the memory holds: about 2 ms with 80 000 moves held, where counting the whole history again took 63 ms; the oldest steps are then dropped one by one while the memory is over its size (F41, EN-147).
+- The history keeps its size from step to step, each shape counted by the steps that hold it, so that a step no longer costs what the memory holds: about 2 ms with 80 000 moves held, where counting the whole history again took 63 ms; the oldest steps are then dropped one by one while the memory is over its size (F41, EN-147). A step still costs every shape of the drawing, whatever it changed: about 9 ms a step or an Undo with 1 000 shapes drawn (AUD-043).
 - Reset and each step of the guided test empty the history.
 
 ## The ideas behind it

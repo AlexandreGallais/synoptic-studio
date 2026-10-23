@@ -43,6 +43,22 @@ export function keptRectangleAt(x: number): KeptRectangle {
 }
 
 /**
+ * The fields a step's name is read from for a shape kept as the playground keeps it, the shape's
+ * own and its kind (`ShapeFields`, US-077).
+ *
+ * @param kept - a shape as the page keeps it, its kind possibly changed
+ * @param kept.kind - the kind the panel shows it as
+ * @param kept.shape - the shape as the model holds it
+ * @returns its shape's fields and its kind
+ */
+export function keptShapeFields(kept: {
+  readonly kind: string;
+  readonly shape: object;
+}): Readonly<Record<string, unknown>> {
+  return { ...kept.shape, kind: kept.kind };
+}
+
+/**
  * A state of the drawing, for the examples.
  *
  * @template T - type of the shapes

@@ -3,8 +3,8 @@ import { describe, expect, it } from "vitest";
 import { historyState, keptRectangleAt } from "../../../tests";
 import { EMPTY_HELD_COUNTS } from "../held-shapes";
 
+import { measureByState } from "./measure-by-state";
 import { measureWithPresent } from "./measure-with-present";
-import { measureWithState } from "./measure-with-state";
 
 /** A at (10, 20), 614 characters, 1 228 bytes. */
 const SHAPE_A = keptRectangleAt(10);
@@ -19,9 +19,9 @@ const SHAPE_A_TWICE = keptRectangleAt(12);
 const SHAPE_B = keptRectangleAt(200);
 
 /** A and B past, A′ and B present: 1 252 bytes. */
-const NUDGED = measureWithState(
+const NUDGED = measureByState(
   { held: EMPTY_HELD_COUNTS, size: 0 },
-  historyState([SHAPE_A, SHAPE_B], [0]),
+  { by: 1, state: historyState([SHAPE_A, SHAPE_B], [0]) },
   new Set([SHAPE_A_NUDGED, SHAPE_B]),
 );
 

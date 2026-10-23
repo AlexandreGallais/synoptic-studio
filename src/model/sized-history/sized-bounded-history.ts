@@ -1,4 +1,6 @@
-import { measureWithoutState } from "./measure-without-state";
+import { mostDroppedStates } from "../history";
+
+import { measureByState } from "./measure-by-state";
 
 import type { HistoryMeasure } from "./history-measure";
 import type { SizedHistory } from "./sized-history";
@@ -42,15 +44,15 @@ function droppedMeasure<T extends WeakKey>(
       (before, state) =>
         before.size <= bound.size
           ? before
-          : { ...measureWithoutState(before, state, shown), dropped: before.dropped + 1 },
+          : { ...measureByState(before, { by: -1, state }, shown), dropped: before.dropped + 1 },
       { dropped: 0, held: history.held, size: history.size },
     );
 }
 
 /**
  * The history within its bound, its size kept (EN-147): while its size is over the size set and
- * more past states than the steps kept are left, the oldest past state removed
- * (`droppedMeasure`), one by one, each read once; the states to come never dropped. The
+ * more past states than the steps kept are left (`mostDroppedStates`), the oldest past state
+ * removed (`droppedMeasure`), one by one, each read once; the states to come never dropped. The
  * history is `boundedHistory`'s, found without measuring the history again (ADR-0097).
  *
  * @kind domain
@@ -64,7 +66,7 @@ export function sizedBoundedHistory<T extends WeakKey>(
   history: SizedHistory<T>,
   bound: HistoryBound,
 ): SizedHistory<T> {
-  const most = Math.max(history.past.length - bound.steps, 0);
+  const most = mostDroppedStates(history, bound);
 
   if (most === 0 || history.size <= bound.size) {
     return history;

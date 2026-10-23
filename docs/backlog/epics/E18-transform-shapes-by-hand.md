@@ -34,6 +34,7 @@ Ordered by the agent at SP-025 (2026-10-19). A feature gets its id when it start
 | Turn by handles, centers on points | handles on the turned box's corners, as Figma, and on the straight box's; the center on a point of the shape, following it, or on a point or the center of another shape, placed only; the straight box hidden or dashed (3) | to refine |
 | Drag points and handles | in Points mode, a point dragged on integers, several selected points moved together, a curve's handles dragged (E14, out of scope there) (2 to 3) | to refine |
 | Number fields that compute | `+`, `−`, `×`, `÷` and parentheses in every number field, as in a spreadsheet; `+10` typed in x or y moves several points or shapes by 10 (`interaction.md` §3, For later) (2) | to refine |
+| A history step kept cheap with many shapes | a step, an undo and a redo changing only the counts of the shapes they change, each shape living in one run of consecutive states, so that a step on 1 000 shapes costs what one on a single shape does (9 ms today, about 2 ms aimed); proposed by AUD-043 on 2026-10-23 and placed here, before the drawings grow, rather than added to E02's F41 (1) | to refine |
 
 ## Ideas from the Product Owner (2026-10-11, refinement of F04)
 

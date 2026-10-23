@@ -1,10 +1,11 @@
+import { stepName } from "../step-names";
+
 import { shownHistoryWindow } from "./shown-history-window";
-import { stepName } from "./step-name";
 
 import type { HistoryList } from "./history-list";
-import type { ShapeFields } from "./shape-fields";
 import type { StepPlace } from "./step-place";
 import type { History, HistoryState } from "../history";
+import type { ShapeFields } from "../step-names";
 
 /**
  * Where the row at an index stands against the present's row.

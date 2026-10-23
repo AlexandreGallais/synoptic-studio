@@ -1,14 +1,7 @@
-export * from "./changed-fields";
-export * from "./drawing-changed-fields";
-export * from "./field-words";
-export * from "./fields-step-name";
 export type * from "./history-list";
 export * from "./history-list-rows";
 export type * from "./history-row";
 export * from "./history-steps";
 export type * from "./history-window";
-export * from "./is-kept-in-order";
-export type * from "./shape-fields";
 export * from "./shown-history-window";
-export * from "./step-name";
 export type * from "./step-place";

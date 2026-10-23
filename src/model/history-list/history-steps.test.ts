@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { historyState, keptRectangleAt } from "../../../tests";
+import { historyState, keptRectangleAt, keptShapeFields } from "../../../tests";
 import { undoneHistory } from "../history";
 
 import { HISTORY_LIST_ROWS } from "./history-list-rows";
@@ -9,16 +9,6 @@ import { historySteps } from "./history-steps";
 import type { HistoryList } from "./history-list";
 import type { KeptRectangle } from "../../../tests";
 import type { History } from "../history";
-
-/**
- * The fields of a kept rectangle, its kind among them.
- *
- * @param kept - a rectangle as the page keeps it
- * @returns its shape's fields and its kind
- */
-function keptFields(kept: KeptRectangle): Readonly<Record<string, unknown>> {
-  return { ...kept.shape, kind: kept.kind };
-}
 
 /** A at (10, 20). */
 const SHAPE_A = keptRectangleAt(10);
@@ -63,7 +53,7 @@ function summary(list: HistoryList<KeptRectangle>): object {
 
 describe("historySteps (US-077)", () => {
   it("[F41.AC1] names A nudged, B deleted and 150 typed: Move, Delete, Width, the last present", () => {
-    const list = historySteps(TAKEN, HISTORY_LIST_ROWS, keptFields);
+    const list = historySteps(TAKEN, HISTORY_LIST_ROWS, keptShapeFields);
 
     expect(summary(list)).toEqual({
       earlier: 0,
@@ -78,7 +68,7 @@ describe("historySteps (US-077)", () => {
   it("[F41.AC1] lists Width to come once undone, Delete present", () => {
     const undone = undoneHistory(TAKEN);
 
-    expect(summary(historySteps(undone, HISTORY_LIST_ROWS, keptFields))).toEqual({
+    expect(summary(historySteps(undone, HISTORY_LIST_ROWS, keptShapeFields))).toEqual({
       earlier: 0,
       later: 0,
       rows: ["Start past", "Move past", "Delete present", "Width future"],
@@ -87,7 +77,7 @@ describe("historySteps (US-077)", () => {
 
   it("[F41.AC1] names the first row shown from the state before it: 2 rows, Delete and Width", () => {
     // One row beside the present, none to come: the past state before it, Delete, from A′ and SHAPE_B.
-    expect(summary(historySteps(TAKEN, 2, keptFields))).toEqual({
+    expect(summary(historySteps(TAKEN, 2, keptShapeFields))).toEqual({
       earlier: 2,
       later: 0,
       rows: ["Delete past", "Width present"],
@@ -98,7 +88,7 @@ describe("historySteps (US-077)", () => {
     const back = undoneHistory(undoneHistory(TAKEN));
 
     // Two rows beside the present, at most one after it: Start before, Delete after.
-    expect(summary(historySteps(back, 3, keptFields))).toEqual({
+    expect(summary(historySteps(back, 3, keptShapeFields))).toEqual({
       earlier: 0,
       later: 1,
       rows: ["Start past", "Move present", "Delete future"],
@@ -108,7 +98,7 @@ describe("historySteps (US-077)", () => {
   it("[F41.AC1] lists a history with nothing past nor to come as Start, present", () => {
     const alone = { future: [], past: [], present: STATES[0] };
 
-    expect(summary(historySteps(alone, HISTORY_LIST_ROWS, keptFields))).toEqual({
+    expect(summary(historySteps(alone, HISTORY_LIST_ROWS, keptShapeFields))).toEqual({
       earlier: 0,
       later: 0,
       rows: ["Start present"],

@@ -20,7 +20,7 @@ type HeldEntry = {
  * @param counts - the held counts before
  * @param depth - the levels they need
  * @returns the counts given when deep enough, otherwise new counts
- * @see docs/domain/interaction.md#_7-navigation-and-history
+ * @see ADR-0097
  */
 function grownCounts(counts: HeldCounts, depth: number): HeldCounts {
   if (counts.depth >= depth) {
@@ -33,14 +33,15 @@ function grownCounts(counts: HeldCounts, depth: number): HeldCounts {
 }
 
 /**
- * A node once one of its children is replaced, the others kept; none when it is left without any.
+ * A node once one of its children is replaced, the others kept, ending at its last child: none
+ * past it, so that a node holds no empty slot at its end; none when it is left without any.
  *
  * @kind domain
  * @param children - the nodes below it, none past the last one holding a count
  * @param digit - the place of the child replaced, from 0 to 31
  * @param child - the new child, or none
  * @returns a new node, or none
- * @see docs/domain/interaction.md#_7-navigation-and-history
+ * @see ADR-0097
  */
 function nodeWithChild(
   children: readonly (HeldNode | undefined)[],
@@ -52,8 +53,9 @@ function nodeWithChild(
     .keys()
     .map((index) => (index === digit ? child : children[index]))
     .toArray();
+  const last = next.findLastIndex((item) => item !== undefined);
 
-  return next.every((item) => item === undefined) ? undefined : next;
+  return last === -1 ? undefined : next.slice(0, last + 1);
 }
 
 /**
@@ -65,7 +67,7 @@ function nodeWithChild(
  * @param height - the levels below it, 0 for a count
  * @param entry - the key and its count
  * @returns the new node, or none
- * @see docs/domain/interaction.md#_7-navigation-and-history
+ * @see ADR-0097
  */
 function nodeWithCount(
   node: HeldNode | undefined,
@@ -94,7 +96,7 @@ function nodeWithCount(
  * @param key - the shape's key (`shapeKey`)
  * @param count - how many states hold it, 0 or more
  * @returns new held counts, those given unchanged
- * @see docs/domain/interaction.md#_7-navigation-and-history
+ * @see ADR-0097
  */
 export function withHeldCount(counts: HeldCounts, key: number, count: number): HeldCounts {
   const grown = grownCounts(counts, keyDepth(key));
