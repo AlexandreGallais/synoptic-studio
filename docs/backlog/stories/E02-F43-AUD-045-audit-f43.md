@@ -3,7 +3,7 @@ id: AUD-045
 epic: E02
 feature: F43
 title: Audit F43
-status: draft
+status: ready
 points: 1
 ---
 
