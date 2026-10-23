@@ -15,5 +15,9 @@ export function shapeSelectionAfterBox(
   taken: readonly number[],
   isShift: boolean,
 ): readonly number[] {
-  return isShift ? selected : taken;
+  if (!isShift) {
+    return taken;
+  }
+
+  return [...new Set([...selected, ...taken])].toSorted((left, right) => left - right);
 }

@@ -1,4 +1,6 @@
-import { shapesTouchedByBox } from "../../src";
+import { shapeSelectionAfterBox, shapesEnclosedByBox, shapesTouchedByBox } from "../../src";
+import { readPickAreas } from "../hover";
+import { readSelectedShapes } from "../kept-shapes";
 import { writeShapeSelection } from "../selection";
 
 import type { BoundingBox } from "../../src";
@@ -16,6 +18,8 @@ import type { BoundingBox } from "../../src";
  * @see docs/domain/interaction.md#_2-selector
  */
 export function selectShapesInBox(document: Document, box: BoundingBox, event: MouseEvent): void {
-  // Placeholder until US-069.T2.
-  writeShapeSelection(document, event.altKey ? [] : shapesTouchedByBox([], box));
+  const areas = readPickAreas(document);
+  const taken = event.altKey ? shapesEnclosedByBox(areas, box) : shapesTouchedByBox(areas, box);
+
+  writeShapeSelection(document, shapeSelectionAfterBox(readSelectedShapes(document), taken, false));
 }

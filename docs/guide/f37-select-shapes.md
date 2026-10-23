@@ -10,6 +10,8 @@
 
 **Remove the selected shapes by a key.** Press Delete, or Backspace (the key labelled delete on a Mac): the shapes selected are removed, the others stay where they were, and none is selected. With the cursor in a field of the panel, Width or a text's Content, the key edits the field and no shape is removed. In Points mode the key deletes the points selected, as before, never the shape.
 
+**Select by a rectangle.** With the Selector, press an empty place of the drawing and drag: a tinted rectangle follows the pointer. At the release, every shape it touches is selected, even by a corner of its outline; hold Alt (Option on a Mac) as you release to select only the shapes it holds whole. A round shape is touched by its outline, not by its box: a rectangle over the corner of its box, outside the circle, selects nothing. Pressing on a shape and dragging draws no rectangle and leaves the selection as it is: that gesture will move shapes, in a later feature.
+
 **Points mode edits one shape.** While several shapes are selected, the Points button is disabled. In Points mode, Shift + click and a click on a point's handle act on the points only, never on which shapes are selected, and Ctrl + A selects no shape.
 
 This page also says which keys the editor uses, chosen at the spike.
@@ -26,6 +28,9 @@ For the review's summary; each can be changed.
 - Delete removes the selected shapes whichever tool is chosen, and the tool stays chosen; with no shape selected it does nothing. The shape the panel showed keeps its settings for the next shape of its kind: a rectangle of radius 25 removed, the next rectangle starts with radius 25. A shape with a refused value in the panel is removed too, as a click on an empty place drops it.
 - In Points mode, Delete deletes the points selected and never the shape, even with no point selected. Every field of the panel keeps the key, a text's Content too, which used to let Delete reach the points.
 - A selection rectangle that only meets a shape along its outline, a side or a corner, touches it, and a rectangle drawn exactly along a shape's sides encloses it.
+- The selection rectangle snaps to whole units, as a drag with a tool does, and shows once the pointer has moved by one; it is a light tint with a thin outline of 1 pixel, and the outline of the shape under the pointer is hidden while you drag it.
+- A drag with the Selector is never a click: pressing on a shape, dragging away and coming back, then releasing, selects nothing. Only a release before the pointer has moved away is a click.
+- In Points mode a drag draws no rectangle and selects nothing, the mode editing one shape.
 - A shape with a width or a height of 0 is a line: a selection rectangle touches it only by crossing that line, with no margin, though a click 2 pixels beside it picks it.
 
 ## The ideas behind it

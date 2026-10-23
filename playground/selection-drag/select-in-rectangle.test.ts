@@ -283,6 +283,16 @@ describe("a selection rectangle selects shapes (US-069)", () => {
     expect(readSelectedShapes(document)).toEqual([2]);
   });
 
+  it("[F37.AC3] takes no drag for a click once moved, back on the press's integer point", () => {
+    drawThreeShapes();
+    pressAndMove({ x: 50, y: 50 }, { x: 200, y: 50 });
+    firePointer("pointermove", { x: 50, y: 50 }, NO_KEY);
+    release({ x: 50, y: 50 }, NO_KEY);
+
+    // C stays selected: the press on A was dragged, never a click.
+    expect(readSelectedShapes(document)).toEqual([2]);
+  });
+
   it("[F37.AC3] takes a release on the press's integer point for a click, which selects A", () => {
     const { a } = drawThreeShapes();
 

@@ -1,3 +1,4 @@
+export * from "./clear-selection-drag";
 export * from "./listen-to-selection-drag";
 export * from "./move-selection-drag";
 export * from "./select-shapes-in-box";

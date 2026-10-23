@@ -1,3 +1,5 @@
+import { draggedBox } from "../../src";
+
 import type { SelectionDrag } from "./selection-drag";
 import type { BoundingBox } from "../../src";
 
@@ -12,5 +14,7 @@ import type { BoundingBox } from "../../src";
  * @see docs/domain/interaction.md#_2-selector
  */
 export function readSelectionBox(drag: SelectionDrag): BoundingBox {
-  return { maxX: drag.pointer.x, maxY: drag.pointer.y, minX: drag.press.x, minY: drag.press.y };
+  const box = draggedBox({ isSquare: false, press: drag.press, release: drag.pointer });
+
+  return { maxX: box.x + box.width, maxY: box.y + box.height, minX: box.x, minY: box.y };
 }
