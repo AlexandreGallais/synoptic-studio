@@ -3,7 +3,7 @@ id: EN-150
 epic: E02
 feature: F43
 title: The playground's tests fast again
-status: draft
+status: ready
 points: 2
 ---
 

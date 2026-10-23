@@ -3,7 +3,7 @@ id: US-081
 epic: E02
 feature: F43
 title: The arrows in the panel's fields and on the drawing
-status: draft
+status: ready
 points: 3
 ---
 

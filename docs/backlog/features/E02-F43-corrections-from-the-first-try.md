@@ -9,7 +9,7 @@ status: in-progress
 
 **Benefit hypothesis**: the designer sees what is hovered, selected and about to be selected on any color, edits several shapes' values by the arrows as one shape's, and the keys, the text and the history's list behave as in a graphic editor.
 
-Opened on 2026-10-23 from the Product Owner's try of E02's playground before the merge into `main` (E02's file, Remarks from the Product Owner's first try): the corrections they asked for in E02, as a feature of their own rather than added to the features done. Its stories are written by SP-031, the research done in full before them: the sources, the code each correction touches and the measures in [note 0032](../../research/notes/0032-f43-corrections-from-the-first-try.md). First in its order, EN-150 makes the playground's tests fast again, `playground/history/undo-and-redo.test.ts` failing pushes over Vitest's 5 s. The corrections hold five stories, one over the four a feature holds: F43 holds four, and the fifth, US-083, the list of steps scrolled whole (correction 8), is drafted in SP-031 and filed once its question 1 places it; every story stays draft until SP-031's questions are answered.
+Opened on 2026-10-23 from the Product Owner's try of E02's playground before the merge into `main` (E02's file, Remarks from the Product Owner's first try): the corrections they asked for in E02, as a feature of their own rather than added to the features done. Its stories are written by SP-031, the research done in full before them: the sources, the code each correction touches and the measures in [note 0032](../../research/notes/0032-f43-corrections-from-the-first-try.md). First in its order, EN-150 makes the playground's tests fast again, `playground/history/undo-and-redo.test.ts` failing pushes over Vitest's 5 s. The corrections hold five stories, one over the four a feature holds: F43 holds four, and the fifth, US-083, the list of steps scrolled whole (correction 8), drafted in SP-031, went to E20 (SP-031's answer 1); the stories ready since SP-031's answers of 2026-10-23.
 
 ## Acceptance criteria
 
@@ -24,12 +24,12 @@ In delivery order.
 
 | ID | Type | Title | Status |
 | --- | --- | --- | --- |
-| [SP-031](../stories/E02-F43-SP-031-refine-the-corrections.md) | SP | Refine the corrections from the first try | ready |
-| [EN-150](../stories/E02-F43-EN-150-the-playground-tests-fast-again.md) | EN | The playground's tests fast again | draft |
-| [US-080](../stories/E02-F43-US-080-the-helps-seen-on-any-color.md) | US | The helps seen on any color, and what a selection rectangle takes | draft |
-| [US-081](../stories/E02-F43-US-081-the-arrows-in-the-fields-and-on-the-drawing.md) | US | The arrows in the panel's fields and on the drawing | draft |
-| [US-082](../stories/E02-F43-US-082-a-text-box-square-the-wheel-with-shift.md) | US | A text's box kept square, the wheel with Shift, several shapes' sizes | draft |
-| [AUD-045](../stories/E02-F43-AUD-045-audit-f43.md) | AUD | Audit F43 | draft |
+| [SP-031](../stories/E02-F43-SP-031-refine-the-corrections.md) | SP | Refine the corrections from the first try | done |
+| [EN-150](../stories/E02-F43-EN-150-the-playground-tests-fast-again.md) | EN | The playground's tests fast again | ready |
+| [US-080](../stories/E02-F43-US-080-the-helps-seen-on-any-color.md) | US | The helps seen on any color, and what a selection rectangle takes | ready |
+| [US-081](../stories/E02-F43-US-081-the-arrows-in-the-fields-and-on-the-drawing.md) | US | The arrows in the panel's fields and on the drawing | ready |
+| [US-082](../stories/E02-F43-US-082-a-text-box-square-the-wheel-with-shift.md) | US | A text's box kept square, the wheel with Shift, several shapes' sizes | ready |
+| [AUD-045](../stories/E02-F43-AUD-045-audit-f43.md) | AUD | Audit F43 | ready |
 | [VAL-044](../stories/E02-F43-VAL-044-validate-f43.md) | VAL | Validate F43 | dropped |
 
 ## Feature plan

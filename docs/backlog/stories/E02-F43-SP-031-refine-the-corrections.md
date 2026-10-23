@@ -3,7 +3,7 @@ id: SP-031
 epic: E02
 feature: F43
 title: Refine the corrections from the first try
-status: ready
+status: done
 points: 2
 ---
 
@@ -153,3 +153,17 @@ Files: `src/model/history-list/` (`shown-history-window.ts`, `history-steps.ts`)
 
 One task = one commit, referenced as `US-083.T1` in the commit footer.
 ```
+
+## Answers of the Product Owner
+
+Given on 2026-10-23:
+
+1. (c) The list scrolled whole goes to E20, with the interface designed last (its row there, US-083's draft above); the list keeps its window of 15 rows until then. F43 holds EN-150, US-080, US-081 and US-082.
+2. (a) Inkscape's: the accent's band, 2 pixels, over a white band 4 pixels wide, 1 pixel of white showing on each side; the dashed box's dashes in the accent, white between them; the selection rectangle's band, 1 pixel, over a white one of 3. Chosen so that the Product Owner sees it; to judge once seen.
+3. (a) As Figma: the shapes a selection rectangle would take outlined as under the pointer while it is dragged, selected at the release only.
+4. (a) Up adds 1 to each shape's own value in a Mixed field, Shift + Up 10, Down and Shift + Down take them away, as `+1` typed.
+5. One step for a burst of arrows in a number field, held or pressed quickly one after the other: the step is taken once the arrow is released and no arrow follows within a short pause, so that Up held for a second is one step, Up pressed ten times quickly is one step, and two bursts two seconds apart are two steps; the pause's length, about 500 ms, chosen by the agent from a short research (the Product Owner's reading, confirmed at question 9).
+6. (a) Each arrow's key moves the selection by the sum of the arrows held: Up then Right held, (+1, −1) at each key; Left and Right cancel out; Shift × 10 on both axes.
+7. (a) Penpot's rule: on macOS the wheel's deltas taken as sent, Shift or not; elsewhere Shift turns the vertical delta across, as today.
+8. (a) The cases tried become tests, and the value lost when the drawing is clicked within the same frame is fixed; nothing else.
+9. Confirmed the reading of answer 5; no other remark; the selection rectangle keeps taking a shape it touches by one pixel, Alt taking only those it encloses.

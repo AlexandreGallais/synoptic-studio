@@ -35,6 +35,7 @@ Candidates grouped by the agent at SP-025 (2026-10-19), to be cut again at the e
 | A turned text as a shape | a turned text handled as rectangles, polygons and round shapes are, with E18's tools (2 to 3) | to refine |
 | Messages that explain | a polygon converted to a free shape says what happens, with a **do not show again** box (1 to 2) | to refine |
 | Keys of one's own | every shortcut and modifier key changed by the user in a standard place for settings, the defaults Figma's (`interaction.md` §1, Product Owner, 2026-10-22) (2) | to refine |
+| The history's list scrolled whole | every step reached by a scroll that feels whole, only the rows in sight drawn, so that a history of a million steps never slows the page; drafted by SP-031 as US-083 (its draft in SP-031, For the main thread), placed here by the Product Owner on 2026-10-23 (SP-031's answer 1), the list keeping its window of 15 rows until then (1) | to refine |
 
 ## Ideas from the Product Owner (2026-10-11, refinement of F08)
 

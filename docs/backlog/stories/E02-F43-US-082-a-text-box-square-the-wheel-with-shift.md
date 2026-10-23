@@ -3,7 +3,7 @@ id: US-082
 epic: E02
 feature: F43
 title: A text's box kept square, the wheel with Shift, several shapes' sizes
-status: draft
+status: ready
 points: 2
 ---
 
