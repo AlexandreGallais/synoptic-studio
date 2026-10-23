@@ -254,13 +254,14 @@ describe("a drag with a tool draws the shape's box (US-064)", () => {
     expect(countShapes()).toBe(2);
   });
 
-  it("[F36.AC1] draws nothing with the selector armed", () => {
+  it("[F36.AC1] draws nothing with the selector armed, the drag moving the shape pressed", () => {
     firePointer("pointerdown", { x: 10, y: 10 }, false);
     firePointer("pointermove", { x: 130, y: 90 }, false);
     fireShift("keydown");
     firePointer("pointerup", { x: 130, y: 90 }, false);
 
-    expect([...readBox(), countShapes()]).toEqual([0, 0, 120, 80, 1]);
+    // No shape drawn: the press on the rectangle 120 × 80 at (0, 0) moves it by (120, 80) (US-072).
+    expect([...readBox(), countShapes()]).toEqual([120, 80, 120, 80, 1]);
   });
 
   it("[F36.AC1] ignores a press of another button than the main one", () => {
