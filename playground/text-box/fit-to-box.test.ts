@@ -131,18 +131,20 @@ describe("Text tool: a text put in a box keeps its fitted size (US-055)", () => 
     expect(readBoxFields()).toEqual(["150", "20"]);
   });
 
-  it("[F17.AC13] keeps a turned text's corner, X and Y unchanged", () => {
+  it("[F17.AC13] keeps a turned text's corner, X and Y showing its straight box", () => {
     typeValue("angle", "23");
 
-    // Its turned top-left corner P = (54.27808, 44.58648) (US-054). In a box 88 × 20,
+    // Its turned top-left corner P = (54.27808, 44.58648) (ADR-0057). In a box 88 × 20,
     // k' = (44, 10), R(k') = (44 cos 23° − 10 sin 23°, 44 sin 23° + 10 cos 23°)
-    // = (36.59490, 26.39722); b' = P − k' + R(k') = (46.87298, 60.98369).
-    expect([readValue("shape-x"), readValue("shape-y")]).toEqual(["54.27808", "44.58648"]);
+    // = (36.59490, 26.39722); b' = P − k' + R(k') = (46.87298, 60.98369). X and Y show its
+    // straight box, P.y and P.x − h sin 23° (AUD-040): 19.359375 tall, 54.27808 − 7.56432 =
+    // 46.71377; 20 tall, 54.27808 − 7.81462 = 46.46346.
+    expect([readValue("shape-x"), readValue("shape-y")]).toEqual(["46.71377", "44.58648"]);
     chooseOption("text-fit", "box");
 
     const model = readModel();
 
-    expect([readValue("shape-x"), readValue("shape-y")]).toEqual(["54.27808", "44.58648"]);
+    expect([readValue("shape-x"), readValue("shape-y")]).toEqual(["46.46346", "44.58648"]);
     expect(readBoxFields()).toEqual(["88", "20"]);
     expect(model.x).toBeCloseTo(46.87298, 5);
     expect(model.y).toBeCloseTo(60.98369, 5);

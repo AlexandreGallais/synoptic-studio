@@ -3,6 +3,7 @@ export * from "./is-pick-area-at";
 export * from "./is-pick-area-enclosed";
 export * from "./is-pick-area-touched";
 export type * from "./pick-area";
+export * from "./pick-area-box";
 export * from "./pick-tolerance";
 export * from "./shape-at-point";
 export * from "./shape-pick-area";

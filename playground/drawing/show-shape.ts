@@ -1,6 +1,5 @@
 import {
   commonRadius,
-  contourBoundingBox,
   contourPiecesToPathData,
   createPathElement,
   curveContour,
@@ -8,6 +7,7 @@ import {
   effectiveCornerRadius,
   formatSvgNumber,
   isReducedRadius,
+  shapeStraightBox,
 } from "../../src";
 import { DRAWING_KEYS, createDrawingSvg, writeStoredDrawing } from "../kept-shapes";
 import { readShapeKind, selectElement, writeText } from "../page";
@@ -78,7 +78,7 @@ export function showShape(document: Document, reading: ShapeReading): void {
   const contour = reading.corners.map((corner) => corner.point);
   const pieces = curveContour(reading.corners);
   const pathData = contourPiecesToPathData(pieces);
-  const box = contourBoundingBox(pieces);
+  const box = shapeStraightBox(reading.corners);
   const handles = showPoints(document, reading);
   const svg = createDrawingSvg(document, [
     ...createBoxElements(document, reading.model, box),

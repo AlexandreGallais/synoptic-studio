@@ -92,7 +92,7 @@
 | [VAL-038](./E02-F37-VAL-038-validate-f37.md) | F37 | Validate F37 | dropped |
 | [US-070](./E02-F38-US-070-the-panel-for-several-shapes.md) | F38 | The panel shows several shapes' position and size | done |
 | [US-071](./E02-F38-US-071-a-value-typed-for-several-shapes.md) | F38 | A value typed for several shapes, relative or fixed | done |
-| [AUD-040](./E02-F38-AUD-040-audit-f38.md) | F38 | Audit F38 | ready |
+| [AUD-040](./E02-F38-AUD-040-audit-f38.md) | F38 | Audit F38 | done |
 | [VAL-039](./E02-F38-VAL-039-validate-f38.md) | F38 | Validate F38 | dropped |
 | [SP-025](./E02-SP-025-cut-the-editing-work-into-small-features.md) | E02 | Cut the editing work into small features | done |
 | [SP-010](./E14-F11-SP-010-research-f11.md) | F11 | Research for F11: folder layouts and test placement | done |

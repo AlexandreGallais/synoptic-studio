@@ -418,7 +418,8 @@ describe("the guided test of F14 (VAL-015): the decisions to confirm", () => {
     typeValue("text-letter-spacing", "10");
     expect([readValue("shape-x"), readValue("shape-y")]).toEqual(["47", "61"]);
 
-    // X and Y show the turned top-left corner (US-054), which a width typed keeps (ADR-0057).
+    // X and Y show its straight box (AUD-040); a width typed keeps its turned top-left corner
+    // (ADR-0057), the highest point at 23°, so that, its height kept, X and Y stay.
     typeValue("text-box-width", "160");
     expect([readValue("shape-x"), readValue("shape-y")]).toEqual(["47", "61"]);
   });

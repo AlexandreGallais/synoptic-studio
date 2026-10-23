@@ -1,4 +1,5 @@
-import { positionAfterResize } from "../placement";
+import { positionAfterResize, straightBoxShift } from "../placement";
+import { TEXT_RANGES } from "../text";
 
 import { isPanelSize } from "./is-panel-size";
 import { panelValueAfterEdit } from "./panel-value-after-edit";
@@ -43,8 +44,9 @@ function textWithBoxSide(text: Text, side: "height" | "width", value: number): T
 /**
  * A text once a value is typed for several shapes (F38), its new value given by
  * `panelValueAfterEdit` from its own (`textPanelValues`): X or Y moves it so that its straight box
- * starts there (`textStraightBox`, `shapeMovedOnAxis`); W or H sets the width or height of its box
- * when it sits in one (`textWithBoxSide`), while a text fitting its content keeps its size.
+ * starts there (`textStraightBox`, `straightBoxShift`, `shapeMovedOnAxis`); W or H sets the width or height of its box
+ * when it sits in one (`textWithBoxSide`), capped at the interface's largest and at a box's own
+ * (`TEXT_RANGES`), while a text fitting its content keeps its size.
  *
  * @kind domain
  * @param text - a valid text of the model
@@ -62,7 +64,11 @@ export function textAfterPanelEdit(text: Text, block: Size, edit: PanelEdit): Te
   }
 
   const own = textPanelValues(text, block)[key];
-  const value = panelValueAfterEdit(own, edit);
+  // A box's side is capped at a box's own largest too, so that the text stays valid.
+  const value = panelValueAfterEdit(own, {
+    ...edit,
+    maxSize: Math.min(edit.maxSize, TEXT_RANGES.boxSide.last),
+  });
 
   if (value === undefined) {
     return undefined;
@@ -70,5 +76,5 @@ export function textAfterPanelEdit(text: Text, block: Size, edit: PanelEdit): Te
 
   return isPanelSize(key)
     ? textWithBoxSide(text, key, value)
-    : shapeMovedOnAxis(text, key, value - own);
+    : shapeMovedOnAxis(text, key, straightBoxShift(own, value));
 }

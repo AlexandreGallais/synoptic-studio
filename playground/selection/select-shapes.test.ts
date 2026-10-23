@@ -335,6 +335,24 @@ describe("Ctrl + A selects every shape and Escape none (US-068)", () => {
     expect(readText("#shape-title")).toBe("3 shapes selected");
   });
 
+  it("[F37.AC2] holds a shape 0 × 0 in the dashed box, at the point it lies on", () => {
+    drawThreeRectangles();
+
+    // C, edited, made 0 × 0 at (400, 200): its contour has no piece, its corners lie on that point.
+    typeValue("radius", "0");
+    typeValue("width", "0");
+    typeValue("height", "0");
+    typeValue("shape-x", "400");
+    typeValue("shape-y", "200");
+    pressSelectAll("body", { ctrlKey: true });
+
+    // The box from (0, 0) to (400, 200): its right side's first dash lies at 400 − 1.
+    const box = readSelectionBox() ?? "";
+
+    expect(box.startsWith("M0 0H4V1H0Z")).toBe(true);
+    expect(box).toContain("M399 0H400V4H399Z");
+  });
+
   it("[F37.AC2] leaves Ctrl + A to a field having the focus, the shapes' selection unchanged", () => {
     drawThreeRectangles();
     pressAndClick("#canvas", toWindow({ x: 50, y: 50 }));
