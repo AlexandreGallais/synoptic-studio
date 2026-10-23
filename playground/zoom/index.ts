@@ -1,5 +1,6 @@
 export * from "./apply-zoom";
 export * from "./fit-padding";
+export * from "./listen-to-zoom-keys";
 export * from "./listen-to-zoom-menu";
 export * from "./read-asked-view";
 export * from "./read-fitted-view";

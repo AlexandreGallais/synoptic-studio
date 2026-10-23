@@ -1,11 +1,12 @@
 export * from "./create-hover-elements";
 export * from "./create-selection-elements";
 export * from "./create-selection-rectangle-elements";
-export * from "./hover-offsets";
+
 export * from "./listen-to-hover";
 export * from "./read-hover-point";
 export * from "./read-pick-areas";
 export * from "./read-selection-box";
+export * from "./read-shape-at";
 export * from "./read-shape-pick-area";
 export * from "./read-started-move";
 export * from "./read-text-block";

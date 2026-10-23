@@ -83,17 +83,18 @@ describe("contourBandWithin (DERIV-band-within-box)", () => {
     expect(contourBandWithin(R_CONTOUR, { halfWidth: 1, step: 2 }, OPENING_HELPS)).toEqual([]);
   });
 
-  it("follows R fitted at 0.0072 whole, each corner by 283 chords", () => {
-    // Half width 1 / 0.0072, chords 2 / 0.0072 = 277.78: ⌈78 539.03 / 277.78⌉ = 283 a corner.
-    // The helps' box of the fitted view, o = (−33 333.83, −5 555.56): from (o.x − 600 / 0.0072,
-    // o.y − 400 / 0.0072) to (o.x + 1 800 / 0.0072, o.y + 1 200 / 0.0072), holding R.
-    const size = { halfWidth: 1 / 0.0072, step: 2 / 0.0072 };
-    const helps = boxOf({ x: -116_667.17, y: -61_111.12 }, { x: 216_666.17, y: 161_111.12 });
+  it("follows R fitted at 1 % whole, each corner by 393 chords", () => {
+    // Fitted at min(1 120 / 99 999, 720 / 100 000) = 0.0072, under the bound: 0.01. Half width
+    // 1 / 0.01 = 100, chords 2 / 0.01 = 200: ⌈78 539.03 / 200⌉ = ⌈392.70⌉ = 393 a corner. The
+    // helps' box of the fitted view, o = (−10 000.5, 10 000): from (o.x − 600 / 0.01, o.y − 400 /
+    // 0.01) to (o.x + 1 800 / 0.01, o.y + 1 200 / 0.01), holding R.
+    const size = { halfWidth: 100, step: 200 };
+    const helps = boxOf({ x: -70_000.5, y: -30_000 }, { x: 169_999.5, y: 130_000 });
     const band = contourBandWithin(R_CONTOUR, size, helps);
 
     expect(band).toEqual(contourBand(R_CONTOUR, size.halfWidth, size.step));
-    // 8 discs, 4 × 283 chords, the two sides 1 long one chord each, those 0 long none.
-    expect(band).toHaveLength(8 + 4 * 283 + 2);
+    // 8 discs, 4 × 393 chords, the two sides 1 long one chord each, those 0 long none.
+    expect(band).toHaveLength(8 + 4 * 393 + 2);
   });
 
   it("keeps a segment's disc and band whole for a box thinner than the band beside it", () => {

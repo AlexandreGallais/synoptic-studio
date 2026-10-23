@@ -1,14 +1,9 @@
 import { listenToPlacing } from "../placing";
 import { listenToPicking } from "../selection";
 import { listenToSelectionDrag } from "../selection-drag";
-import {
-  listenToNudgeKeys,
-  listenToSelectionKeys,
-  listenToSpace,
-  listenToZoomKeys,
-} from "../selection-keys";
+import { listenToNudgeKeys, listenToSelectionKeys, listenToSpace } from "../selection-keys";
 import { listenToView } from "../view";
-import { listenToZoomMenu } from "../zoom";
+import { listenToZoomKeys, listenToZoomMenu } from "../zoom";
 
 import { listenToShapeDrawing } from "./listen-to-shape-drawing";
 

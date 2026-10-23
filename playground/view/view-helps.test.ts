@@ -193,7 +193,7 @@ describe("a shape placed and moved at any zoom (US-078)", () => {
     );
   });
 
-  it("exports the same file at 100 % and at 200 %, its viewBox the opening view's", () => {
+  it("[F42.AC4] exports the same file at 100 % and at 200 %, its viewBox the opening view's", () => {
     const opening = readExportedSvg(document, readDrawnTexts(document));
 
     showView(ZOOMED);

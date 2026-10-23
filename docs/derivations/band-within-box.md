@@ -1,6 +1,6 @@
 # DERIV-band-within-box — The band about a contour computed only within a box, and the box the helps are computed within
 
-Used by: EN-149 (F42), `contourBandWithin` in `src/geometry/contour-band/`, `shownBox` in `src/model/view/`; the outlines of the layer above the drawing (`interaction.md` §2), SP-030's answer 7. Sources: `REF-SVG2-PAINT` (the stroke a band stands for), `REF-WIKI-BOUNDING-BOX` and `REF-WIKI-INTERVAL` (a box as the product of two closed intervals), `REF-MATHWORLD-VECTOR-NORM` (the length of a vector), `REF-WIKI-TRIANGLE-INEQUALITY` (a path no shorter than the straight line between its ends), `REF-POMAX-BEZIER` (the bound on a cubic's chords, as `pieceSamples` takes it); `DERIV-view-zoom` (the area shown), `DERIV-box-overlap` (a piece meeting a box, a box widened); research note 0031, §5.
+Used by: EN-149 (F42), `contourBandWithin` in `src/geometry/contour-band/`, `shownBox` in `src/model/view/`; the outlines of the layer above the drawing (`interaction.md` §2), SP-030's answer 7. Sources: `REF-SVG2-PAINT` (the stroke a band stands for), `REF-SVG2-FILL-RULE` (the band painting the union of its subpaths, step 3), `REF-WIKI-BOUNDING-BOX` and `REF-WIKI-INTERVAL` (a box as the product of two closed intervals), `REF-MATHWORLD-VECTOR-NORM` (the length of a vector), `REF-WIKI-TRIANGLE-INEQUALITY` (a path no shorter than the straight line between its ends), `REF-POMAX-BEZIER` (the bound on a cubic's chords, as `pieceSamples` takes it); `DERIV-view-zoom` (the area shown), `DERIV-box-overlap` (a piece meeting a box, a box widened); research note 0031, §5.
 
 No source cuts a band of chords to a box: the sources give the band's points, a box as two intervals, and the length of a path. This page draws from them which subpaths of the band about a contour (`contourBand`) can paint a point of a box, and how to find them without computing the others.
 
@@ -36,6 +36,8 @@ The band about a contour is, for each piece, a disc of radius `h` about its star
 If `|Q − F| ≤ h`, each coordinate differs by at most `h`: `|q_x − f_x| ≤ √((q_x − f_x)² + (q_y − f_y)²)`, the length of a vector (`REF-MATHWORLD-VECTOR-NORM`). So if `Q` is in `B`, `F` is in `B_h`, each of its coordinates in its interval widened by `h` (`REF-WIKI-INTERVAL`, `REF-WIKI-BOUNDING-BOX`; `DERIV-box-overlap`, step 10).
 
 ## Step 3 — The subpaths kept
+
+**Premise**: every subpath of the band turns in the positive direction of angles, clockwise on screen: a disc's four quarter arcs (`circleArcs`) and a chord's rectangle (`segmentBand`). Under the nonzero rule, the initial `fill-rule`, a point is inside when the crossings of a ray from it, each adding one or subtracting one by its direction, do not sum to zero (`REF-SVG2-FILL-RULE`): with every subpath turning the same way, a point within any of them counts at least one and none cancels another, so the band paints the union of its subpaths, and leaving one out removes only the points it alone paints.
 
 The band within `B` keeps, in the whole band's order:
 
@@ -89,7 +91,7 @@ The canvas is 1 200 × 800. R is the rounded rectangle 99 999 × 100 000 at (0, 
 | a pan of `(600, 0)`, then of `(601, 0)`, from the opening view | `\|d_x\| ≤ 600` | kept; computed again |
 | R's top-left corner at 100 %, `h = 1`, `s = 2` | `n = ⌈78 539.03 / 2⌉ = 39 270`, `λ = 1.99998`; `m = 19 635`, `ρ = 39 269.5`, `P_m = (14 644.5, 14 644.5)` within `B_h` widened, cut; `m = 9 817`, `ρ = 19 635.8`, `P_m = (3 805.6, 30 866.4)`, `30 866.4 > 1 161 + 19 635.8`; `m = 29 452`, `P_m = (30 864.6, 3 806.4)`, `30 864.6 > 1 761 + 19 635.8`; start (0, 49 999.5) outside `B_h` | no subpath; 3 samples of 39 271 |
 | R's nearest point to the helps' box | `√(48 239.5² + 48 839.5²) − 49 999.5` from its corner (1 760, 1 160) | 18 647.0 units |
-| R fitted, `s = 0.0072`, its corner | step `2 / 0.0072 = 277.78`; `⌈78 539.03 / 277.78⌉`; a chord `2 · 49 999.5 · sin(π / 1 132)` | 283 chords of 277.52 units, 1.998 pixels |
+| R fitted, `min(1 120 / 99 999, 720 / 100 000) = 0.0072` under the bound, so `s = 0.01`, `o = (−10 000.5, 10 000)`, its corner | step `2 / 0.01 = 200`; `⌈78 539.03 / 200⌉`; a chord `2 · 49 999.5 · sin(π / 1 572)`; the helps' box from (−70 000.5, −30 000) to (169 999.5, 130 000) holds R | 393 chords of 199.84 units, 1.998 pixels; the whole band |
 | the segment (0, 0) to (10, 0), `h = 1`, `s = 2`, `B` from (0, 0.2) to (0.5, 0.4) | `B_h` from (−1, −0.8) to (1.5, 1.4) holds (0, 0) | the disc and the rectangle, the whole band |
 | the same, `B` from (20, 0) to (30, 1) | `B_h` from (19, −1) to (31, 2) | no subpath |
 | the quarter arc about (0, 0) of radius 10 from (10, 0) to (0, 10), `h = 1`, `s = 4`, `B` from (11, −5) to (20, 5) | `n = ⌈15.708 / 4⌉ = 4`; `B_h` from (10, −6) to (21, 6) holds the start on its side; the chord from (10, 0) to (9.23880, 3.82683) meets it at (10, 0); the others lie left of x = 9.24 | the disc and the first chord's band |

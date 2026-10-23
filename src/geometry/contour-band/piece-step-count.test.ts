@@ -37,10 +37,10 @@ describe("pieceStepCount (DERIV-band-within-box)", () => {
     expect(pieceStepCount(quarter, 4)).toBe(4);
   });
 
-  it("cuts R's corner into 39 270 chords of 2 at 100 %, 283 at a scale of 0.0072", () => {
-    // ⌈78 539.03 / 2⌉ = ⌈39 269.5⌉ = 39 270; ⌈78 539.03 / (2 / 0.0072)⌉ = ⌈282.74⌉ = 283.
+  it("cuts R's corner into 39 270 chords of 2 at 100 %, 393 at 1 %", () => {
+    // ⌈78 539.03 / 2⌉ = ⌈39 269.5⌉ = 39 270; ⌈78 539.03 / (2 / 0.01)⌉ = ⌈392.70⌉ = 393.
     expect(pieceStepCount(CORNER, 2)).toBe(39_270);
-    expect(pieceStepCount(CORNER, 2 / 0.0072)).toBe(283);
+    expect(pieceStepCount(CORNER, 2 / 0.01)).toBe(393);
   });
 
   it("cuts a cubic by three times its longest side: 11 chords of at most 2", () => {

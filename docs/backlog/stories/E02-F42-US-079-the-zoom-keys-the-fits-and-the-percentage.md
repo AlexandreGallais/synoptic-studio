@@ -50,8 +50,8 @@ The examples use a canvas of 1 200 × 800 CSS pixels, the opening view at 100 %,
 
 ## Tasks
 
-- [ ] T1 — The criteria in line with SP-030's answers; the keys beside the selection's, the fits, the percentage shown (`playground/zoom/`, `playground/selection-keys/`): interface and failing tests (1 h)
-- [ ] T2 — The keys, the fits and what answer 9 shows; the rules in `interaction.md` §1 and §7, the Q table, the Product Owner test card and F42's guide page; the tests of T1 passing (2 h)
+- [x] T1 — The criteria in line with SP-030's answers; the keys beside the selection's, the fits, the percentage shown (`playground/zoom/`, `playground/selection-keys/`): interface and failing tests (1 h)
+- [x] T2 — The keys, the fits and what answer 9 shows; the rules in `interaction.md` §1 and §7, the Q table, the Product Owner test card and F42's guide page; the tests of T1 passing (2 h)
 
 Files: `playground/zoom/` (the zooms the keys and the menu ask, the menu and the percentage shown, a folder of its own since it reads the drawing's pick areas of `playground/hover/`, which imports `playground/view/` and `playground/toolbar/`, so that neither could without a cycle), `playground/selection-keys/` (the keys heard beside Ctrl + A), `playground/index.html` (the percentage and its menu). `@see` ADR-0098, `docs/domain/interaction.md#_7-navigation-and-history`, `REF-FIGMA-PIXEL-GRID`, `REF-PENPOT-SHORTCUTS`, `REF-PENPOT-ZOOM`, `REF-SKETCH-SHORTCUTS`, `REF-INKSCAPE-KEYS`.
 

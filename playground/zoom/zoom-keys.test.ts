@@ -339,6 +339,12 @@ describe("the zoom's keys, the fits and the percentage shown (US-079)", () => {
     typeAndEnter("zoom-field", "30000");
     expectViewBox("557.65625 358.4375 4.6875 3.125");
     expectZoomShown(25_600);
+
+    // 0.5 %, above 0, taken at the lower bound, 1 % (AUD-044): o′ = (560 − 600 / 0.01, 360 − 400 /
+    // 0.01) = (−59 440, −39 640); 1 200 / 0.01 = 120 000, 800 / 0.01 = 80 000.
+    typeAndEnter("zoom-field", "0.5");
+    expectViewBox("-59440 -39640 120000 80000");
+    expectZoomShown(1);
   });
 
   it.each([
