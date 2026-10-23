@@ -1,5 +1,11 @@
 import type { History } from "./history";
 
+/** The bytes of a 16-bit code unit, a string's element (`REF-ECMA-262-STRING-TYPE`). */
+const CODE_UNIT_BYTES = 2;
+
+/** The bytes of a reference to a shape or of an index, a 64-bit slot (`REF-V8-POINTER-COMPRESSION`). */
+const SLOT_BYTES = 8;
+
 /**
  * The bytes a history holds beyond its present (F40): each shape a past or future state holds and
  * the present does not, counted once, its JSON text's length times 2, a string being a sequence
@@ -14,5 +20,11 @@ import type { History } from "./history";
  * @see docs/domain/interaction.md#_7-navigation-and-history
  */
 export function historySize<T>(history: History<T>): number {
-  return history.past.length;
+  const kept = [...history.past, ...history.future];
+  const held = new Set(kept.flatMap((state) => state.drawing));
+  const shapes = held.difference(new Set(history.present.drawing));
+  const codeUnits = shapes.values().reduce((sum, shape) => sum + JSON.stringify(shape).length, 0);
+  const slots = kept.reduce((sum, state) => sum + state.drawing.length + state.selection.length, 0);
+
+  return codeUnits * CODE_UNIT_BYTES + slots * SLOT_BYTES;
 }

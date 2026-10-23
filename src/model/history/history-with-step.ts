@@ -1,3 +1,6 @@
+import { areSameItems } from "./are-same-items";
+import { sharedDrawing } from "./shared-drawing";
+
 import type { History } from "./history";
 import type { HistoryState } from "./history-state";
 
@@ -15,5 +18,14 @@ import type { HistoryState } from "./history-state";
  * @see docs/domain/interaction.md#_7-navigation-and-history
  */
 export function historyWithStep<T>(history: History<T>, state: HistoryState<T>): History<T> {
-  return { ...history, present: { ...history.present, selection: state.selection } };
+  const { drawing: present, selection: shown } = history.present;
+  const drawing = sharedDrawing(state.drawing, present);
+
+  if (!areSameItems(drawing, present)) {
+    return { future: [], past: [...history.past, history.present], present: { ...state, drawing } };
+  }
+
+  return areSameItems(state.selection, shown)
+    ? history
+    : { ...history, present: { drawing: present, selection: state.selection } };
 }

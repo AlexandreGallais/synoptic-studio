@@ -11,5 +11,7 @@
  * @see docs/domain/interaction.md#_7-navigation-and-history
  */
 export function sharedDrawing<T>(drawing: readonly T[], present: readonly T[]): readonly T[] {
-  return drawing.slice(0, present.length);
+  const byText = new Map(present.map((shape) => [JSON.stringify(shape), shape]));
+
+  return drawing.map((shape) => byText.get(JSON.stringify(shape)) ?? shape);
 }

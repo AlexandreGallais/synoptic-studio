@@ -11,5 +11,9 @@ import type { History } from "./history";
  * @see docs/domain/interaction.md#_7-navigation-and-history
  */
 export function redoneHistory<T>(history: History<T>): History<T> {
-  return history;
+  const [next, ...rest] = history.future;
+
+  return next === undefined
+    ? history
+    : { future: rest, past: [...history.past, history.present], present: next };
 }

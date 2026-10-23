@@ -11,5 +11,13 @@ import type { History } from "./history";
  * @see docs/domain/interaction.md#_7-navigation-and-history
  */
 export function undoneHistory<T>(history: History<T>): History<T> {
-  return history;
+  const last = history.past.at(-1);
+
+  return last === undefined
+    ? history
+    : {
+        future: [history.present, ...history.future],
+        past: history.past.slice(0, -1),
+        present: last,
+      };
 }

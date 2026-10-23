@@ -11,5 +11,5 @@
  * @see docs/domain/interaction.md#_7-navigation-and-history
  */
 export function areSameItems<T>(first: readonly T[], second: readonly T[]): boolean {
-  return first.length === second.length;
+  return first.length === second.length && first.every((item, index) => item === second[index]);
 }
