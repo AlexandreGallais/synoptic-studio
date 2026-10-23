@@ -3,7 +3,7 @@ id: AUD-042
 epic: E02
 feature: F40
 title: Audit F40
-status: ready
+status: done
 points: 1
 ---
 
