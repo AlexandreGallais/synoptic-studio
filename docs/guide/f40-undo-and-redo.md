@@ -8,6 +8,8 @@
 
 **What is typed and chosen in the panel.** A value is one step once applied, by Enter or by leaving its field, however many characters were typed: type 150 in W over 100, press Enter, and one Ctrl + Z brings the shape back to 100, though it was drawn 1, then 15, then 150 wide. Each choice and each button of the panel is a step too — the anchor, Stretched, a turn, Convert to free shape, the points added or deleted, the handles, a text's weight, Bold, Italic, its box —, for one shape or several. A value typed back as it was takes no step. In the color picker, each key on a slider is a step, a drag on the plane is one when released, and a color typed is one when applied: open the picker, press Right five times on the hue slider, drag the plane, then type a color, and seven Ctrl + Z walk back through them.
 
+**A text placed is one step with what you type in it.** Choose the Text tool and click the drawing: the text starts empty, a thin dashed bar one line tall showing where its first letter will go, and the Content field has the focus. Type `Valve` and leave the field: placing the text and typing it are one step, and one Ctrl + Z removes the text, since nothing was there before. Its size or its font may be set before typing it, in the same step. A text left empty is removed as soon as you click elsewhere, choose another tool or press Escape, and takes no step.
+
 **A value refused takes no step.** Type 13 in a polygon's Corners, refused since a polygon has 3 to 12, then 8: that is one step, from 6 to 8. Ctrl + Z while the value is refused gives back the shape as it was last drawn; a click on the empty drawing drops the shape refused, and Ctrl + Z brings it back.
 
 **In a field of the panel.** While you type in a field, Ctrl + Z is the field's own, as in any text box. Once the value is applied, by Enter or by leaving the field, Ctrl + Z goes to the drawing even if the field still has the focus: type 150 in W, press Enter, then Ctrl + Z, and the shape is 100 wide again.
@@ -38,6 +40,9 @@ For the review's summary; each can be changed.
 - Undo first records the page as it is, so that a change not yet recorded is what Ctrl + Z takes back.
 - A step of the panel is taken from the page as its field drew it, so that a value a field refuses stays in it as typed.
 - No step while the shape edited is refused; Ctrl + Z then gives back its last valid values without undoing anything else, and the shape dropped by a click elsewhere is a step Ctrl + Z undoes.
+- A new text starts empty, as the Product Owner asked: its frame, while empty, is 1 wide and one line tall, centred on the point clicked, so that the first line is centred there and the text grows to the right; an empty text not being typed still shows no frame.
+- A new text left empty is removed when the panel leaves it, rather than kept invisible; leaving its Content field empty keeps it, so that its size can be set first.
+- Ctrl + Z while a new text is still empty removes it without undoing anything else.
 - A drag of a shape not selected gives back, undone, the selection before it, none, the press alone selecting nothing; a tool armed stays armed after an undo; Ctrl + Z is taken even with nothing to undo, so the browser never acts on it, and left to the browser with Alt held.
 - The size is written in B, kB, MB or GB of 1 000 each, to one decimal, `1.2 kB`.
 - Reset and each step of the guided test empty the history.

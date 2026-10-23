@@ -5,6 +5,7 @@ import {
   writeStoredDrawing,
 } from "../kept-shapes";
 import { saveKindSettings, writeKindSettings } from "../kind-settings";
+import { stopNewText } from "../new-text";
 import { readShapeKind, writeEditedKind, writeInputValue } from "../page";
 
 /**
@@ -19,6 +20,8 @@ import { readShapeKind, writeEditedKind, writeInputValue } from "../page";
 function addDrawingBelow(document: Document): void {
   const isEdited = readStoredDrawing(document, DRAWING_KEYS.edited).length > 0;
 
+  // A new text left empty is not kept (`stopNewText`).
+  stopNewText(document);
   writeStoredDrawing(document, DRAWING_KEYS.below, readKeptDrawing(document));
   writeStoredDrawing(document, DRAWING_KEYS.edited, []);
   writeStoredDrawing(document, DRAWING_KEYS.above, []);

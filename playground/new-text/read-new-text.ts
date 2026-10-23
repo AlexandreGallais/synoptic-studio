@@ -1,3 +1,4 @@
+import { isDrawnText } from "../../src";
 import { DRAWING_KEYS, readStoredDrawing } from "../kept-shapes";
 
 import { NEW_TEXTS } from "./new-texts";
@@ -10,11 +11,15 @@ import type { Text } from "../../src";
  *
  * @kind procedure
  * @param document - page document
- * @returns the text, as the panel last drew it; undefined when no new text is being typed
+ * @returns the text, as the panel last drew it; undefined when no new text is being typed, or
+ * while it is refused
  * @see docs/domain/interaction.md#_1-tools
  */
 export function readNewText(document: Document): Text | undefined {
-  const [kept] = readStoredDrawing(document, DRAWING_KEYS.edited);
+  const texts = readStoredDrawing(document, DRAWING_KEYS.edited)
+    .map((kept) => kept.shape)
+    .filter((shape) => isDrawnText(shape));
+  const [text] = NEW_TEXTS.has(document) ? texts : [];
 
-  return NEW_TEXTS.has(document) && kept?.kind === "text" ? undefined : undefined;
+  return text;
 }

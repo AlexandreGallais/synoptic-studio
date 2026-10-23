@@ -398,7 +398,7 @@ F14, `DERIV-text-box`; decided at F05's refinement, rounds 1 and 2; the rules ma
   - a fraction typed is refused, the value shown accepted as it is (ADR-0003, ADR-0057). At 0° the straight box is the frame, X and Y its position, unchanged;
   - Figma's help, read on 2026-10-23 (`REF-FIGMA-ADJUST`), bases a rotated layer's X and Y "on the original top-left corner of the layer's bounds", its turned corner, as US-054's rule did.
 - **Turn written**: as `transform="rotate(α cx cy)"` (`REF-SVG11-TRANSFORM`, §7.6) on the `<g>` that holds the text's `<text>` and its underline and strike-through paths, so that the strokes turn with the letters; the criterion's "a `transform` on its `<text>`" is met through that group (agent, 2026-10-15, confirmed at VAL-014). A text at 0° carries no `transform`.
-- **Selection**: a selected text shows its measured block, or its box when it sits in one (US-033), as a shape's straight box is shown: dashed by thin filled rectangles at 0°, turned with the text about the same point (US-032); an empty text, whose block has no area, and a box 0 wide or 0 tall show none.
+- **Selection**: a selected text shows its measured block, or its box when it sits in one (US-033), as a shape's straight box is shown: dashed by thin filled rectangles at 0°, turned with the text about the same point (US-032); an empty text, whose block has no area, and a box 0 wide or 0 tall show none, but a new text being typed (`interaction.md` §1, US-075).
 - **A turned text's frames are drawn as a turned shape's** (Product Owner, 2026-10-15, at the validation of E15; US-050):
   - its turned block or box in blue, in the style of a shape's turned box — a frame 1 thick, a fill between its contour and the contour inset by 1, drawn only when wider and taller than 2 — and its straight box dashed, upright, behind it;
   - a text in a box 60 × 40 turned by 30 shows the same straight box as a rectangle 60 × 40 turned by 30 at the same position. A text at 0° keeps its dashed frame.
@@ -406,7 +406,7 @@ F14, `DERIV-text-box`; decided at F05's refinement, rounds 1 and 2; the rules ma
   - the smallest upright rectangle around its turned block or box, with its x, y, width and height, in the drawing's space as a turned shape's straight box (`getBBox` on the group itself gives the frame before the group's turn, AUD-018);
   - around the block or the box, not the letters' outlines, which the library does not read (agent's reading, confirmed at VAL-015): a block 40 × 20 at (0, 0) turned by 45 about its middle (20, 10) has a straight box at (−1.21320, −11.21320), 42.42641 × 42.42641;
   - its x, y, width and height are written under the position fields, which show its x and y (AUD-040); a text at 0° shows its frame only, its straight box being the frame itself, and an empty text or a box 0 wide or 0 tall shows none (agent's reading, confirmed at VAL-015).
-- **Empty text**: the library draws an empty text as nothing; a text created by a click and left empty disappears when the designer changes tool or clicks elsewhere (an editor behavior, E02).
+- **Empty text**: the library draws an empty text as nothing; a text created by a click and left empty disappears when the designer changes tool or clicks elsewhere (an editor behavior, E02): in the playground, a new text has no content of its own and is removed when the panel leaves it still empty (`interaction.md` §1, US-075).
 
 #### Fonts from files
 

@@ -1,3 +1,4 @@
+import { listenToNewText } from "../new-text";
 import { selectElement } from "../page";
 
 import { schedulePanelStep } from "./schedule-panel-step";
@@ -34,7 +35,8 @@ function scheduleStepAt(document: Document, event: Event, selector: string): voi
  * applied or choice made in the panel, `change` fired by Enter, by leaving a field typed in or by
  * a choice (`REF-MDN-CHANGE-EVENT`), at each click on one of its buttons, at each key released on
  * a slider of the color picker and at each release of the pointer on one, or on the plane
- * (SP-029's answer 4). A value typed back as it was, or a button that changes no shape, takes
+ * (SP-029's answer 4); and at the Content field of a new text left with a content typed, its
+ * placing and its typing one step (`listenToNewText`, SP-029's answer 5). A value typed back as it was, or a button that changes no shape, takes
  * none, the drawing the same (`historyWithStep`). Heard as the event bubbles up to the panel,
  * after the field's or the button's own listeners, which redraw the page (`schedulePanelStep`).
  *
@@ -50,4 +52,8 @@ export function listenToPanelSteps(document: Document): void {
       scheduleStepAt(document, event, selector);
     });
   }
+
+  listenToNewText(document, () => {
+    schedulePanelStep(document);
+  });
 }

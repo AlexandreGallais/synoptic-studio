@@ -1,4 +1,9 @@
+import { textLineHeight } from "../../src";
+
 import type { FontMetrics, Size, Text } from "../../src";
+
+/** The width an empty text is shown with, a caret's, in user units. */
+const EMPTY_TEXT_WIDTH = 1;
 
 /**
  * Reads the block a text is shown and placed with in the playground (F40): its measured block; for an
@@ -17,5 +22,7 @@ import type { FontMetrics, Size, Text } from "../../src";
  * @see docs/domain/interaction.md#_1-tools
  */
 export function readShownTextBlock(metrics: FontMetrics, text: Text, block: Size): Size {
-  return block;
+  const isEmpty = text.content === "" && !text.isInBox;
+
+  return isEmpty ? { height: textLineHeight(metrics, text), width: EMPTY_TEXT_WIDTH } : block;
 }

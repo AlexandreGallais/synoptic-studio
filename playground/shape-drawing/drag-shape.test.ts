@@ -168,17 +168,17 @@ describe("a drag with a tool draws the shape's box (US-064)", () => {
     expect(readPressedState("tool-selector")).toBe("true");
   });
 
-  it("[F36.AC1] adds a text in a box 200 × 60 dragged from (10, 10) to (210, 70), its content selected", () => {
+  it("[F36.AC1] adds a text in a box 200 × 60 dragged from (10, 10) to (210, 70), its content focused", () => {
     chooseOption("text-weight", "400");
 
-    const select = vi.spyOn(HTMLTextAreaElement.prototype, "select");
+    const focus = vi.spyOn(HTMLTextAreaElement.prototype, "focus");
 
     dragDrawing("text", { from: { x: 10, y: 10 }, isShift: false, to: { x: 210, y: 70 } });
 
     expect(readModel()).toMatchObject({
       boxHeight: 60,
       boxWidth: 200,
-      content: "Text",
+      content: "",
       isInBox: true,
       x: 10,
       y: 10,
@@ -186,10 +186,10 @@ describe("a drag with a tool draws the shape's box (US-064)", () => {
 
     expect(readValue("text-fit")).toBe("box");
 
-    expect(select.mock.contexts).toEqual([selectPageElement("#text-content")]);
+    expect(focus.mock.contexts).toEqual([selectPageElement("#text-content")]);
     expect(readPressedState("tool-selector")).toBe("true");
 
-    select.mockRestore();
+    focus.mockRestore();
   });
 
   it("[F36.AC1] never squares a text with Shift", () => {

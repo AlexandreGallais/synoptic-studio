@@ -20,6 +20,7 @@ import {
   selectPageElement,
   setElementBox,
   typeAndEnter,
+  typeTextContent,
   typeValue,
 } from "../user-actions";
 
@@ -52,6 +53,16 @@ function toWindow(point: Point): { readonly clientX: number; readonly clientY: n
 function placeShape(tool: string, point: Point): void {
   clickElement(`tool-${tool}`);
   clickAt("#canvas", toWindow(point));
+}
+
+/**
+ * Places a text by a click, then types `Text` in it and leaves its Content field (US-075).
+ *
+ * @param point - the point of the drawing clicked
+ */
+function placeText(point: Point): void {
+  placeShape("text", point);
+  typeTextContent("Text");
 }
 
 /**
@@ -129,7 +140,7 @@ function turnA(): void {
  * @param point - the point of the drawing clicked to place it
  */
 function placeTurnedText(point: Point): void {
-  placeShape("text", point);
+  placeText(point);
   chooseOption("text-fit", "box");
   typeValue("text-box-width", "100");
   typeValue("text-box-height", "20");
@@ -200,11 +211,11 @@ describe("the panel shows several shapes' position and size (US-070)", () => {
   });
 
   it("[F38.AC1] shows a text by its frame, two texts alike at one height giving its Y, W and H", () => {
-    placeShape("text", { x: 250, y: 140 });
+    placeText({ x: 250, y: 140 });
 
     const y = readValue("shape-y");
 
-    placeShape("text", { x: 450, y: 140 });
+    placeText({ x: 450, y: 140 });
     pick({ x: 250, y: 140 }, true);
 
     const [x, shownY, width, height] = readSeveralFields();
@@ -400,7 +411,7 @@ describe("a value typed for several shapes, relative or fixed (US-071)", () => {
 
   it("[F38.AC2] keeps the size of a text fitting its content, the rectangle made 460 wide", () => {
     // The rectangle the page opens with, 120 × 80 at (0, 0), then a text placed beside it.
-    placeShape("text", { x: 250, y: 140 });
+    placeText({ x: 250, y: 140 });
     selectAll();
 
     const [, text] = readDrawing();
@@ -450,7 +461,7 @@ describe("a value typed for several shapes, relative or fixed (US-071)", () => {
 
     // The rectangle the page opens with, 120 × 80 at (0, 0), a text placed beside it, then a
     // text kept by hand, never drawn: no family measures it, and none did before.
-    placeShape("text", { x: 250, y: 140 });
+    placeText({ x: 250, y: 140 });
     writeFontSession(document, { ...readFontSession(document), kept: [] });
     selectAll();
 
@@ -489,7 +500,7 @@ describe("a value typed for several shapes, relative or fixed (US-071)", () => {
   });
 
   it("[F38.AC2] still draws a text moved whose font is no longer read, by its kept metrics", () => {
-    placeShape("text", { x: 250, y: 140 });
+    placeText({ x: 250, y: 140 });
     selectAll();
     // No family measures it any more: it is drawn by the metrics it was last drawn with.
     writeFontSession(document, { ...readFontSession(document), kept: [] });

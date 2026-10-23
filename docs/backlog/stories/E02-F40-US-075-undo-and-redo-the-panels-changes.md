@@ -29,10 +29,23 @@ The examples draw A, a rectangle 100 × 50 at (10, 20) of radius 0, selected, an
 
 ## Product Owner test
 
-`npm run dev`, `http://localhost:5173/`. Written with T3: a width typed, a corner count refused then corrected, a choice, a button, several shapes, a text placed and typed, its content and color, each undone and redone.
+`npm run dev`, `http://localhost:5173/`. Ctrl stands for Cmd on a Mac. A **step** is one finished change of the drawing, which Undo takes back; **applied** means a value taken by Enter or by leaving its field; **the panel** is the column of fields on the right.
 
 | Step | Do | You should see |
 | --- | --- | --- |
+| 1 | Open the page, click the rectangle, type 150 in W digit by digit, press Enter, then click an empty place of the drawing and press Ctrl + Z | the rectangle drawn wider at each digit, then back to its width in one Ctrl + Z, selected again |
+| 2 | Type 100 in H and press Tab, then 60 in W and press Tab, then press Ctrl + Z twice outside the fields | W undone first, then H: each value applied is a step of its own |
+| 3 | Choose Polygon in the toolbar and click the drawing; type 13 in Corners and press Tab | the polygon refused, the field outlined, and no step recorded for 13 |
+| 4 | Type 8 in Corners, press Tab, then Ctrl + Z | an octagon, then the hexagon back in one Ctrl + Z |
+| 5 | Type 13 in Corners again, press Tab, then Ctrl + Z | the hexagon back with its 6 corners, Redo greyed out: nothing else undone |
+| 6 | Choose an anchor of the grid, tick Stretched, click +90°, then press Ctrl + Z three times | the turn, Stretched and the anchor undone one at a time |
+| 7 | Select two rectangles with Shift + click, type +50 in W and press Enter, then Ctrl + Z | both 50 wider, then both back in one Ctrl + Z |
+| 8 | Choose the Text tool and click the drawing | an empty text, a thin dashed bar one line tall at the point clicked, the Content field ready to type in |
+| 9 | Type Valve, press Tab, then press Ctrl + Z outside the fields | Valve written from the bar to the right, then the whole text gone in one Ctrl + Z; Ctrl + Shift + Z brings it back |
+| 10 | Choose the Text tool, click the drawing, then click an empty place of the drawing without typing, and press Ctrl + Z | the empty text gone at the second click, and Ctrl + Z undoing the step before it, not the text |
+| 11 | Click Valve, type Pump over it in Content and press Tab, then Ctrl + Z | Valve back in one Ctrl + Z |
+| 12 | Click the text's color swatch, press Right three times on the hue slider, drag in the square and release, close the picker, then press Ctrl + Z four times | the drag undone first, then each of the three keys, the color back as it was |
+| 13 | Click the text, click Bold, then Italic, then press Ctrl + Z twice | Italic undone, then Bold |
 
 ## Tasks
 

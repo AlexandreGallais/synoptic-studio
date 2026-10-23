@@ -23,6 +23,7 @@ import {
   selectPageElement,
   setElementBox,
   typeAndEnter,
+  typeTextContent,
   typeValue,
 } from "../user-actions";
 
@@ -650,7 +651,7 @@ function placePump(at: Point): void {
   chooseOption("text-weight", "400");
   clickElement("tool-text");
   clickDrawing(at, NO_KEY);
-  typeAndLeave("text-content", "Pump");
+  typeTextContent("Pump");
 }
 
 /**
@@ -783,7 +784,7 @@ describe("Undo and Redo what is typed and chosen in the panel (US-075)", () => {
 
   it("[F40.AC2] gives back Pump once Valve is typed over it and the field left", () => {
     placePump({ x: 400, y: 300 });
-    typeAndLeave("text-content", "Valve");
+    typeTextContent("Valve");
     press("body", UNDO);
 
     expect(readEditedText().content).toBe("Pump");
@@ -994,9 +995,11 @@ describe("Undo and Redo a text placed and typed (US-075)", () => {
   it("[F40.AC2] undoes a text placed, its size and Valve typed, in one step", () => {
     clickDrawing({ x: 250, y: 140 }, NO_KEY);
     typeAndLeave("text-size", "40");
-    typeAndLeave("text-content", "Valve");
+    typeTextContent("Valve");
 
+    // The step taken as the Content field is left.
     expect(readKeptDrawing(document)).toHaveLength(2);
+    expect(readPresentDrawing()).toEqual(readKeptDrawing(document));
 
     press("body", UNDO);
 
@@ -1059,5 +1062,7 @@ describe("Undo and Redo a text placed and typed (US-075)", () => {
     expect(event.defaultPrevented).toBe(true);
     expect(readKeptDrawing(document)).toHaveLength(1);
     expect(readShape(0)).toMatchObject({ x: 1, y: 0 });
+    // Nothing to redo: the text was never a step.
+    expect(readDisabledState("history-redo")).toBe("true");
   });
 });

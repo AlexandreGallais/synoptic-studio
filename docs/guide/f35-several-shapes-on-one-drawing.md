@@ -8,7 +8,7 @@ Choosing a tool changes nothing yet: its button stays pressed until you click th
 
 ## The ideas behind it
 
-**A new shape starts with the settings of the last shape of its kind.** A polygon set to 3 corners and a radius of 4, then a rectangle set to a radius of 0: the next polygon placed is again a triangle of radius 4, and the next rectangle has a radius of 0. Only its box, its place and its angle are new: 100 × 100 centred on the click, straight. Before any shape of a kind, the new one has the values the page opens with: a radius of 10, 6 corners, the anchor at the center, Inter 32 Regular. A new text has the content `Text`, selected, so that typing replaces it.
+**A new shape starts with the settings of the last shape of its kind.** A polygon set to 3 corners and a radius of 4, then a rectangle set to a radius of 0: the next polygon placed is again a triangle of radius 4, and the next rectangle has a radius of 0. Only its box, its place and its angle are new: 100 × 100 centred on the click, straight. Before any shape of a kind, the new one has the values the page opens with: a radius of 10, 6 corners, the anchor at the center, Inter 32 Regular. A new text has no content of its own: click, then type, the Content field taking the focus at once (F40, US-075).
 
 Graphic editors do this in three ways (research note 0027): Figma gives every new shape the same fixed values and leaves alike shapes to duplicating, components and styles; Inkscape gives each tool the values last used; Sketch and Affinity Designer let you make a shape's settings the default, by a command. E02 has no duplicating yet, so the agent chose Inkscape's way, which is also Figma's and Inkscape's for a text: what the panel shows is what the next shape gets. To confirm at VAL-036.
 

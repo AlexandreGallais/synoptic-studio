@@ -6,6 +6,7 @@ import {
   writeStoredDrawing,
 } from "../kept-shapes";
 import { saveKindSettings } from "../kind-settings";
+import { stopNewText } from "../new-text";
 import { readShapeKind, selectElement, writeEditedKind } from "../page";
 
 import { loadPickedShape } from "./load-picked-shape";
@@ -48,7 +49,8 @@ function writeSelectedKind(document: Document, edited: readonly KeptShape[], cou
 
 /**
  * Selects shapes by their indices in the drawing (F37): the panel leaves the shape it edited,
- * keeping its settings as the last of its kind (`saveEditedSettings`); one shape is split around
+ * keeping its settings as the last of its kind (`saveEditedSettings`), a new text still empty
+ * dropped (`stopNewText`, F40); one shape is split around
  * and loaded into the panel, as a click loads it (`splitDrawing`, `writeSelectedKind`); several
  * are kept with every shape below, none edited, their indices beside them
  * (`DRAWING_KEYS.selected`), the kind `several`; none leaves every shape below, the kind `none`.
@@ -60,6 +62,8 @@ function writeSelectedKind(document: Document, edited: readonly KeptShape[], cou
  */
 export function writeShapeSelection(document: Document, selected: readonly number[]): void {
   saveEditedSettings(document);
+  // A new text left empty is not kept (`stopNewText`).
+  stopNewText(document);
 
   // Only one shape is split around; several, or none, leave every shape below.
   const [only] = selected.length === 1 ? selected : [];

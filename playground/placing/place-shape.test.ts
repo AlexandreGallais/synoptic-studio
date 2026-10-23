@@ -19,6 +19,7 @@ import {
   readValue,
   selectPageElement,
   setElementBox,
+  typeTextContent,
   typeValue,
 } from "../user-actions";
 
@@ -51,6 +52,17 @@ function clickDrawing(point: Point): void {
 function placeShape(tool: string, point: Point): void {
   clickElement(`tool-${tool}`);
   clickDrawing(point);
+}
+
+/**
+ * Places a text by a click, types its content and leaves its Content field (US-075).
+ *
+ * @param point - the point of the drawing clicked
+ * @param content - what is typed in it
+ */
+function placeText(point: Point, content: string): void {
+  placeShape("text", point);
+  typeTextContent(content);
 }
 
 /**
@@ -163,13 +175,12 @@ describe("a click with a tool adds a shape where it is clicked (US-063)", () => 
     expect(readBox()).toEqual([50, 11, 100, 100]);
   });
 
-  it("[F35.AC1] adds a text fitting its content `Text`, centred on the point, its content selected", () => {
+  it("[F35.AC1] adds a text with no content of its own, centred on the point, its content focused", () => {
     // happy-dom does not select the option marked `selected`: the page's weight, 400, chosen again.
     chooseOption("text-weight", "400");
 
-    // happy-dom selects a text area's whole value by itself, and focuses one hidden, which a
-    // browser does not: the selection asked is spied on, and whether the fields show at the focus.
-    const select = vi.spyOn(HTMLTextAreaElement.prototype, "select");
+    // happy-dom focuses a text area hidden, which a browser does not: whether the fields show at
+    // the focus is read.
     const displays: string[] = [];
     const focus = vi.spyOn(HTMLTextAreaElement.prototype, "focus").mockImplementation(() => {
       displays.push(readDisplay("text-options"));
@@ -177,11 +188,10 @@ describe("a click with a tool adds a shape where it is clicked (US-063)", () => 
 
     placeShape("text", { x: 250, y: 140 });
 
-    // "Text" in Inter Regular 32: advances T 1322, e 1194, x 1118, t 670, 4304 units, kerning
-    // T-e −160, e-x −46, x-t +40, −166: 4138 × 32 / 2048 = 64.65625 wide; a line of
-    // (1984 + 494) × 32 / 2048 = 38.71875. Its top-left (250 − 32.328125, 140 − 19.359375)
-    // = (217.671875, 120.640625), rounded to (218, 121).
-    expect([readValue("shape-x"), readValue("shape-y")]).toEqual(["218", "121"]);
+    // Empty, shown 1 wide and one line of Inter Regular 32 tall, (1984 + 494) × 32 / 2048 =
+    // 38.71875 (US-075): its top-left (250 − 0.5, 140 − 19.359375) = (249.5, 120.640625),
+    // rounded to (250, 121), a tie rounded up.
+    expect([readValue("shape-x"), readValue("shape-y")]).toEqual(["250", "121"]);
     expect(readText("#shape-title")).toBe("Text");
 
     const content = selectPageElement("#text-content");
@@ -189,24 +199,29 @@ describe("a click with a tool adds a shape where it is clicked (US-063)", () => 
     expect(content).toBeInstanceOf(HTMLTextAreaElement);
     expect(focus.mock.contexts).toEqual([content]);
     expect(displays).not.toContain("none");
-    expect(readContent()).toBe("Text");
-    expect(select.mock.contexts).toEqual([content]);
+    expect(readContent()).toBe("");
+    expect(document.querySelectorAll("#canvas .text-frame")).toHaveLength(1);
 
-    expect(
-      content instanceof HTMLTextAreaElement && [content.selectionStart, content.selectionEnd],
-    ).toEqual([0, 4]);
-
-    select.mockRestore();
     focus.mockRestore();
 
     // The rectangle kept below the text.
     expect(readShapePaths()).toHaveLength(1);
+  });
+
+  it("[F35.AC1] keeps a text typed once placed, growing from its frame's left", () => {
+    chooseOption("text-weight", "400");
+    placeText({ x: 250, y: 140 }, "Text");
+
+    // "Text" in Inter Regular 32: advances T 1322, e 1194, x 1118, t 670, 4304 units, kerning
+    // T-e −160, e-x −46, x-t +40, −166: 4138 × 32 / 2048 = 64.65625 wide, from (250, 121).
+    expect([readValue("shape-x"), readValue("shape-y")]).toEqual(["250", "121"]);
+    expect(readContent()).toBe("Text");
     expect(document.querySelectorAll("#canvas text")).toHaveLength(1);
   });
 
   it("[F35.AC1] keeps a text below the shape placed after it", () => {
     chooseOption("text-weight", "400");
-    placeShape("text", { x: 250, y: 140 });
+    placeText({ x: 250, y: 140 }, "Text");
     placeShape("rectangle", { x: 400, y: 300 });
 
     expect(document.querySelectorAll("#canvas text")).toHaveLength(1);
@@ -225,7 +240,7 @@ describe("a click with a tool adds a shape where it is clicked (US-063)", () => 
 
   it("[F35.AC1] keeps a text whose font's metrics are no longer read, drawn and exported as it was", () => {
     chooseOption("text-weight", "400");
-    placeShape("text", { x: 250, y: 140 });
+    placeText({ x: 250, y: 140 }, "Text");
     placeShape("rectangle", { x: 400, y: 300 });
 
     const drawn = document.querySelector("#canvas text")?.outerHTML;
@@ -391,28 +406,24 @@ describe("what a new shape starts with (SP-026)", () => {
     expect(readText("#shape-title")).toBe("Rectangle");
   });
 
-  it("[F35.AC1] gives a new text the last text's options and the content `Text`", () => {
+  it("[F35.AC1] gives a new text the last text's options and no content of its own", () => {
     chooseOption("text-weight", "400");
-    placeShape("text", { x: 250, y: 140 });
+    placeText({ x: 250, y: 140 }, "Pump");
     typeValue("text-size", "20");
     typeValue("angle", "45");
     placeShape("rectangle", { x: 400, y: 300 });
     placeShape("text", { x: 250, y: 300 });
 
-    expect([readValue("text-size"), readContent(), readValue("angle")]).toEqual([
-      "20",
-      "Text",
-      "0",
-    ]);
+    expect([readValue("text-size"), readContent(), readValue("angle")]).toEqual(["20", "", "0"]);
   });
 
   it("[F35.AC1] measures a new text's box again when Box is chosen, not the last text's typed", () => {
     chooseOption("text-weight", "400");
-    placeShape("text", { x: 250, y: 140 });
+    placeText({ x: 250, y: 140 }, "Pump");
     chooseOption("text-fit", "box");
     typeValue("text-box-width", "300");
     placeShape("rectangle", { x: 400, y: 300 });
-    placeShape("text", { x: 250, y: 300 });
+    placeText({ x: 250, y: 300 }, "Text");
     chooseOption("text-fit", "box");
 
     // "Text" 64.65625 wide, its box the block rounded up (US-055): 65.
