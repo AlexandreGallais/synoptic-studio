@@ -102,3 +102,4 @@ All ADRs were translated from French to English on 2026-10-08 (project rule: Eng
 | [0095](./0095-undo-and-redo-by-states-sharing-what-did-not-change.md) | Undo and redo by states of the drawing sharing what did not change | Accepted (2026-10-23, SP-029); a note of AUD-042 on decision 4's 8-byte slot, an upper bound |
 | [0096](./0096-a-shapes-text-length-kept-once-measured.md) | A shape's text length kept once measured, in the core | Accepted (AUD-042, 2026-10-23), one memo excepted from ADR-0014's no mutation |
 | [0097](./0097-the-historys-size-kept-with-it-its-shapes-counted-in-a-persistent-trie.md) | The history's size kept with it, the states holding each shape counted in a persistent trie | Accepted (EN-147, 2026-10-23), one memo of keys excepted from ADR-0014's no mutation |
+| [0098](./0098-the-view-as-the-viewbox-of-both-layers.md) | The view as the `viewBox` of both layers, kept outside the drawing | Accepted (SP-030) |
