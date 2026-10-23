@@ -1,9 +1,13 @@
+export * from "./common-panel-values";
 export type * from "./drawing";
 export type * from "./drawing-shape";
 export type * from "./drawing-split";
 export * from "./drawing-with-shape";
 export * from "./drawing-without-shapes";
 export * from "./is-drawn-text";
+export type * from "./panel-values";
 export * from "./placed-shape-size";
 export * from "./screen-to-user";
+export * from "./shape-panel-values";
 export * from "./split-drawing";
+export * from "./text-panel-values";
