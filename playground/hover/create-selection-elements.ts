@@ -2,9 +2,8 @@ import { createPathElement, pickAreasBox, screenToUser } from "../../src";
 import { createStraightBoxElement } from "../drawing";
 import { createOutlineElements, readBoxBandPathData } from "../helps-frame";
 import { readKeptDrawing, readSelectedShapes } from "../kept-shapes";
+import { readShapePickArea } from "../picking";
 import { readView } from "../view";
-
-import { readShapePickArea } from "./read-shape-pick-area";
 
 import type { PickArea } from "../../src";
 

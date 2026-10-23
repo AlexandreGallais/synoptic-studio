@@ -2,8 +2,8 @@ import { createPathElement, screenToUser } from "../../src";
 import { readBoxBandPathData, readSidesPathData } from "../helps-frame";
 import { readView } from "../view";
 
+import { readRectangleDrag } from "./read-rectangle-drag";
 import { readSelectionBox } from "./read-selection-box";
-import { SELECTION_DRAGS } from "./selection-drags";
 
 import type { BoundingBox } from "../../src";
 
@@ -32,7 +32,7 @@ function createSidesBand(document: Document, box: BoundingBox, width: number): S
 
 /**
  * Creates the selection rectangle in the layer above the drawing (F37, F43), while a drag with the
- * Selector from an empty place has gone further than 3 pixels from the press (`SELECTION_DRAGS`):
+ * Selector from an empty place has gone further than 3 pixels from the press (`readRectangleDrag`):
  * its area, a light tint of the outline's color, of class `selection-area`; a light band 3 screen
  * pixels wide centred on its sides, of class `selection-rectangle-light`; then its outline over
  * it, a band 1 screen pixel wide, of class `selection-rectangle` (`createSidesBand`), as Inkscape
@@ -45,9 +45,9 @@ function createSidesBand(document: Document, box: BoundingBox, width: number): S
  * @see docs/domain/interaction.md#_2-selector
  */
 export function createSelectionRectangleElements(document: Document): readonly SVGPathElement[] {
-  const drag = SELECTION_DRAGS.get(document);
+  const drag = readRectangleDrag(document);
 
-  if (drag?.isRectangle !== true || !drag.isMoved) {
+  if (drag === undefined) {
     return [];
   }
 

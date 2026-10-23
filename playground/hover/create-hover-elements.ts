@@ -1,7 +1,5 @@
 import { createOutlineElements } from "../helps-frame";
-
-import { readPickAreas } from "./read-pick-areas";
-import { readShapeAt } from "./read-shape-at";
+import { readPickAreas, readShapeAt } from "../picking";
 
 import type { Point } from "../../src";
 

@@ -1,5 +1,4 @@
 import { isDrawnText, parsePanelValue, shapeAfterPanelEdit, textAfterPanelEdit } from "../../src";
-import { readTextBlock } from "../hover";
 import {
   DRAWING_KEYS,
   readKeptDrawing,
@@ -7,6 +6,7 @@ import {
   writeKeptMetrics,
   writeStoredDrawing,
 } from "../kept-shapes";
+import { readTextBlock } from "../picking";
 import { MAX_SIZE } from "../shape";
 import { readFieldValue } from "../text";
 

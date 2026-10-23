@@ -1,5 +1,6 @@
-import { SELECTION_DRAGS, readPickAreas, readShapeAt } from "../hover";
+import { SELECTION_DRAGS } from "../hover";
 import { readMode, selectElement } from "../page";
+import { readPickAreas, readShapeAt } from "../picking";
 import { readDrawingPoint } from "../placing";
 import { readArmedTool } from "../toolbar";
 
@@ -32,14 +33,20 @@ function readSelectorPress(document: Document, event: PointerEvent): Point | und
  * @kind procedure
  * @param document - page document
  * @param press - the point pressed, in the coordinates of the drawing's SVG
- * @param event - the press, telling whether Shift is held
+ * @param event - the press, telling whether Shift and Alt are held
  * @returns the drag, the pointer on the press, not moved yet
  * @see docs/domain/interaction.md#_2-selector
  */
 function readPressedDrag(document: Document, press: Point, event: PointerEvent): SelectionDrag {
   const isShape = readMode(document) === "shape";
   const index = isShape ? readShapeAt(document, readPickAreas(document), press) : -1;
-  const drag = { isMoved: false, isShift: event.shiftKey, pointer: press, press };
+  const drag = {
+    isAlt: event.altKey,
+    isMoved: false,
+    isShift: event.shiftKey,
+    pointer: press,
+    press,
+  };
 
   return index < 0
     ? { ...drag, isRectangle: isShape, move: undefined }

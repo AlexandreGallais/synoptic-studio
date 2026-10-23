@@ -1,6 +1,6 @@
 import { fittedView, pickAreasBox } from "../../src";
-import { readPickAreas } from "../hover";
 import { readSelectedShapes } from "../kept-shapes";
+import { readPickAreas } from "../picking";
 import { readCanvasSize, readView } from "../view";
 
 import { FIT_PADDING } from "./fit-padding";
