@@ -14,6 +14,8 @@
 
 **Shift keeps one direction.** Hold Shift while dragging and the shapes move only across or only down, whichever way the pointer went farther; release Shift during the drag and they follow the pointer freely again. A tie goes across.
 
+**Nudge with the arrow keys.** With shapes selected and the focus outside the panel's fields, an arrow key moves them by exactly one unit, Shift + an arrow by ten: the rectangle at (10, 20) goes to (11, 20) with Right, to (20, 20) with Shift + Right, to (10, 19) with Up. A nudge never rounds: the turned rectangle whose X is 194.19873 goes to 195.19873 with Right, keeping its fraction until a drag lands it on a whole number. Several shapes move together, by the same amount, and stay selected. Held down, an arrow moves them on at each repeat.
+
 **Empty places still draw a rectangle.** A press on an empty place of the drawing, even inside the dashed box around several shapes, draws a selection rectangle, as before; it never moves the shapes.
 
 ## The choices the agent made
@@ -26,6 +28,9 @@ For the review's summary; each can be changed.
 - A drag the browser cancels, taking the pointer for a gesture of its own, puts the shapes back where they were, the selection as it was at the press.
 - In Points mode, which edits the points of one shape, a drag moves nothing.
 - A text never measured, which is not drawn, stays selected but does not move, as when a value is typed for several shapes.
+- The arrows move the shapes whichever tool is armed, as Delete removes them, and one step at each key the browser sends, so that an arrow held moves on; with shapes selected, the page does not scroll.
+- The arrows are left to the browser, which may scroll the page, with no shape selected, in Points mode, and with Ctrl, Cmd or Alt held, which browsers use for some commands of their own. A field of the panel keeps them, the anchor grid's buttons included, and so do the color picker's sliders.
+- While a drag moves shapes, an arrow moves nothing; the drag lands them at the release.
 - A box that starts on a whole number up to a rounding error, as a rounded rectangle at x 0 whose box starts at −0.0000000000000018, lands exactly on that number, its position taking the tiny error, as when X is typed.
 
 ## The ideas behind it
@@ -35,6 +40,8 @@ For the review's summary; each can be changed.
 **One shift for several shapes.** Penpot rounds each shape on its own, which can change the distances between them by a fraction. Here the shapes move together, by the shift that lands their dashed box, chosen on 2026-10-23 so that a group of shapes drawn with care keeps its spacing exactly.
 
 **What a press does, as other editors.** Inkscape and Penpot select a shape not selected when it is pressed and dragged, and move it; Inkscape, Sketch and Penpot move every shape selected when one of them is dragged. Shift at the press adds a shape, as Penpot; Shift during a move keeps one direction, as Sketch and Penpot.
+
+**Nudges as other editors.** The arrows move by 1 and by 10 with Shift, as Figma; Penpot never rounds a nudge, which was chosen on 2026-10-23 so that a shape keeps its fraction, a drag being the move that lands on whole numbers.
 
 | Term | In plain words |
 | --- | --- |

@@ -28,12 +28,25 @@ The examples draw A, 100 × 50 at (10, 20), straight, A′, the same rectangle t
 
 ## Product Owner test
 
-`npm run dev`, `http://localhost:5173/`. Written at T2, from the answer.
+`npm run dev`, `http://localhost:5173/`.
+
+| Step | Do | You should see |
+| --- | --- | --- |
+| 1 | Open the page, then Reset; set the rectangle to Radius 0, X 10, Y 20, W 100, H 50 (A); add a rectangle with the Rectangle tool and set it to Radius 0, X 200, Y 20, W 100, H 50, then Angle 30 (B) | B turned, X 194.19873 and Y −1.65064 |
+| 2 | Click A, then press Right | A one unit to the right: X 11, Y 20; the page does not scroll |
+| 3 | Press Shift + Right, then Up, then Shift + Left | X 21, then Y 19, then X 11; W 100, H 50 and Radius 0 unchanged |
+| 4 | Hold Right for a moment | A moves on while the key is held, one unit at each repeat |
+| 5 | Click B, press Right, then Shift + Left | X 195.19873, then 185.19873; Y −1.65064 and Angle 30 unchanged |
+| 6 | Shift + click A, so that both are selected, then press Down | both move down together, the dashed box following; both stay selected |
+| 7 | Click A alone, click in the X field, then press Left and Right | the cursor moves in the field; A does not move |
+| 8 | Click an empty place of the drawing, then press Down | no shape selected; nothing moves, the page scrolls if it can |
+| 9 | Click A, choose Points, then press Right | nothing moves |
+| 10 | Choose Shape, then press Ctrl + Right, or Cmd + Right on a Mac | A does not move |
 
 ## Tasks
 
 - [x] T1 — The criteria in line with SP-028's answer 3; the shift of a nudge (`src/model/moving/`) and the arrows heard beside the selection's keys: interface and failing tests (1 h)
-- [ ] T2 — The arrows and Shift + the arrows nudge the shapes selected outside the fields, Points mode and no selection leaving the key to the browser; the rules in `interaction.md` §1 and §2 and the Q table; the Product Owner test card and F39's guide page; the tests of T1 passing (2 h)
+- [x] T2 — The arrows and Shift + the arrows nudge the shapes selected outside the fields, Points mode and no selection leaving the key to the browser; the rules in `interaction.md` §1 and §2 and the Q table; the Product Owner test card and F39's guide page; the tests of T1 passing (2 h)
 
 Files: `src/model/moving/` (the shift of a nudge, the drawing after it, US-072's), `playground/selection-drag/` (the drawing moved, US-072's), `playground/selection-keys/` (the arrows, beside the selection's keys and the field's check, moved there at T1 since `playground/selection/` holds 15 modules, its limit). `@see` `docs/domain/interaction.md#_1-tools`, `REF-FIGMA-ADJUST`, `REF-SKETCH-SHORTCUTS`, `REF-PENPOT-TRANSFORMS`.
 

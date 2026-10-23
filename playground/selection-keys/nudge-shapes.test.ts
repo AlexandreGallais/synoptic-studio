@@ -274,6 +274,11 @@ describe("the arrows nudge the shapes selected (US-073)", () => {
     dispatchDrawingPointer("pointerdown", IN_A, NO_KEY);
     dispatchDrawingPointer("pointermove", { x: 80.6, y: 59.4 }, NO_KEY);
     pressArrow("ArrowRight", false);
+
+    // Still where the pointer takes it, (10, 20) + (30.6, 19.4), not back at the press plus 1.
+    expect(readShapeModel().x).toBeCloseTo(40.6, 9);
+    expect(readShapeModel().y).toBeCloseTo(39.4, 9);
+
     dispatchDrawingPointer("pointerup", { x: 80.6, y: 59.4 }, NO_KEY);
 
     // Landed as dragged by (30.6, 19.4) alone: (41, 39).
