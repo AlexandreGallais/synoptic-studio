@@ -4,6 +4,7 @@ import { readKeyField } from "../selection-keys";
 
 import { clearPageHistory } from "./clear-page-history";
 import { listenToHistoryKeys } from "./listen-to-history-keys";
+import { listenToPanelSteps } from "./listen-to-panel-steps";
 import { moveHistory } from "./move-history";
 import { scheduleHistoryStep } from "./schedule-history-step";
 
@@ -37,11 +38,11 @@ function listenToActionEnds(document: Document, update: () => void): void {
 
 /**
  * Listens to what records, undoes and redoes the steps of the page (F40), its history emptied
- * first, the page being mounted: the ends of the drawing's actions (`listenToActionEnds`); the
- * Undo and Redo buttons (`moveHistory`); Reset and the guided test's Previous and Next, which
- * empty the history (`clearPageHistory`), then redraw; the keys of the history
- * (`listenToHistoryKeys`). Wired after the drawing's listeners and the toolbar's, so that a step
- * follows the action.
+ * first, the page being mounted: the ends of the drawing's actions (`listenToActionEnds`) and of
+ * the panel's changes (`listenToPanelSteps`); the Undo and Redo buttons (`moveHistory`); Reset
+ * and the guided test's Previous and Next, which empty the history (`clearPageHistory`), then
+ * redraw; the keys of the history (`listenToHistoryKeys`). Wired after the drawing's listeners and
+ * the toolbar's, so that a step follows the action.
  *
  * @kind procedure
  * @param document - page document
@@ -68,5 +69,6 @@ export function listenToHistory(document: Document, update: () => void): void {
     });
   }
 
+  listenToPanelSteps(document, update);
   listenToHistoryKeys(document, update);
 }

@@ -2,23 +2,34 @@
 import { beforeEach, describe, expect, it } from "vitest";
 
 import { isDrawnText } from "../../src";
-import { readKeptDrawing, readSelectedShapes } from "../kept-shapes";
+import { readDrawnTexts, readKeptDrawing, readSelectedShapes } from "../kept-shapes";
 import {
+  chooseOption,
+  chooseRadio,
+  chooseShapeKind,
   clickElement,
+  clickPoint,
   commitField,
   dispatchDrawingPointer,
+  openOnStep,
   openServedPage,
+  pressPointer,
   readDisabledState,
+  readModel,
   readPressedState,
   readShapeModel,
   readText,
   readValue,
   selectPageElement,
   setElementBox,
+  typeAndEnter,
   typeValue,
 } from "../user-actions";
 
-import type { Point, Shape } from "../../src";
+import { PAGE_HISTORIES } from "./page-histories";
+
+import type { Point, Shape, Text } from "../../src";
+import type { KeptShape } from "../kept-shapes";
 import type { PointerKeys } from "../user-actions";
 
 /** No key held. */
@@ -574,5 +585,476 @@ describe("the Undo and Redo buttons and the history's size (US-074)", () => {
 
     expect(readDisabledState("history-undo")).toBe("true");
     expect(readDisabledState("history-redo")).toBe("true");
+  });
+});
+
+/**
+ * Types a value in a field, then leaves it, as Tab does: its `input`, its `change`, then its
+ * `focusout`.
+ *
+ * @param id - the field
+ * @param value - what is typed
+ */
+function typeAndLeave(id: string, value: string): void {
+  const field = selectPageElement(`#${id}`);
+
+  // An input or the Content text area alike.
+  Object.assign(field, { value });
+  field.dispatchEvent(new Event("input", { bubbles: true }));
+  field.dispatchEvent(new Event("change", { bubbles: true }));
+  field.dispatchEvent(new FocusEvent("focusout", { bubbles: true }));
+}
+
+/**
+ * Reads the drawing of the history's present, what the last step recorded.
+ *
+ * @returns the shapes the present holds; none without a history
+ */
+function readPresentDrawing(): readonly KeptShape[] {
+  return PAGE_HISTORIES.get(document)?.present.drawing ?? [];
+}
+
+/**
+ * Asserts that an action is one step, taken at the action itself: the history's present the
+ * drawing it leaves, Ctrl + Z giving back the drawing before it and Ctrl + Shift + Z the one after.
+ *
+ * @param action - the action, the drawing changed by it
+ */
+function expectOneStep(action: () => void): void {
+  const before = readKeptDrawing(document);
+
+  action();
+
+  const after = readKeptDrawing(document);
+
+  expect(after).not.toEqual(before);
+  expect(readPresentDrawing()).toEqual(after);
+
+  press("body", UNDO);
+
+  expect(readKeptDrawing(document)).toEqual(before);
+
+  press("body", REDO);
+
+  expect(readKeptDrawing(document)).toEqual(after);
+}
+
+/**
+ * Places a text by a click of the Text tool, its weight the page's, then types `Pump` in it and
+ * leaves the Content field.
+ *
+ * @param at - the point clicked
+ */
+function placePump(at: Point): void {
+  // happy-dom does not select the option marked `selected`: the page's weight, 400, chosen again.
+  chooseOption("text-weight", "400");
+  clickElement("tool-text");
+  clickDrawing(at, NO_KEY);
+  typeAndLeave("text-content", "Pump");
+}
+
+/**
+ * Reads the text the panel edits.
+ *
+ * @returns its model, as the page shows it
+ * @throws {TypeError} when the panel edits no text
+ */
+function readEditedText(): Text {
+  const model = readModel();
+
+  if (!isDrawnText(model)) {
+    throw new TypeError("The panel edits no text.");
+  }
+
+  return model;
+}
+
+describe("Undo and Redo what is typed and chosen in the panel (US-075)", () => {
+  beforeEach(() => {
+    openServedPage("");
+    setElementBox("#canvas", { height: 600, left: 100, top: 50, width: 800 });
+    drawShapes();
+    clickDrawing(IN_A, NO_KEY);
+  });
+
+  it("[F40.AC2] undoes 150 typed in W and applied by Enter in one step, then 70 left in H", () => {
+    for (const [typed, width] of [
+      ["1", 1],
+      ["15", 15],
+      ["150", 150],
+    ] as const) {
+      typeValue("width", typed);
+
+      expect(readShapeModel()).toMatchObject({ width });
+    }
+
+    commitField("width");
+    typeAndLeave("height", "70");
+    press("body", UNDO);
+
+    // H undone alone: two values applied are two steps.
+    expect(readShape(0)).toMatchObject({ height: 50, width: 150 });
+
+    press("body", UNDO);
+
+    expect(readShape(0)).toMatchObject({ height: 50, width: 100 });
+  });
+
+  it("[F40.AC2] takes no step for 100 typed back in W: Ctrl + Z undoes the move before it", () => {
+    dragBy(IN_A, { x: 30.6, y: 19.4 });
+    typeAndLeave("width", "100");
+
+    expect(readPresentDrawing()).toEqual(readKeptDrawing(document));
+
+    press("body", UNDO);
+
+    expectPlaces(DRAWN);
+    expect(readShape(0)).toMatchObject({ width: 100 });
+  });
+
+  it("[F40.AC2] takes one step from 6 to 8 corners, none while 13 is refused", () => {
+    chooseShapeKind("polygon");
+    typeAndLeave("corners", "13");
+
+    // Refused (3 to 12): the drawing kept without A, no step.
+    expect(readKeptDrawing(document)).toHaveLength(2);
+    expect(readPresentDrawing()).toHaveLength(3);
+
+    typeAndLeave("corners", "8");
+
+    expect(readPresentDrawing()).toEqual(readKeptDrawing(document));
+
+    press("body", UNDO);
+
+    expect(readValue("corners")).toBe("6");
+    expect(readKeptDrawing(document)).toHaveLength(3);
+  });
+
+  it("[F40.AC2] gives back a polygon refused, then dropped by a click on the empty drawing", () => {
+    chooseShapeKind("polygon");
+    typeAndLeave("corners", "13");
+    clickDrawing({ x: 600, y: 450 }, NO_KEY);
+
+    expect(readKeptDrawing(document)).toHaveLength(2);
+
+    press("body", UNDO);
+
+    expect(readKeptDrawing(document)).toHaveLength(3);
+    expect(readSelectedShapes(document)).toEqual([0]);
+    expect(readValue("corners")).toBe("6");
+  });
+
+  it("[F40.AC2] gives back the last valid values of a polygon refused, the history unmoved", () => {
+    chooseShapeKind("polygon");
+    typeAndLeave("corners", "13");
+    press("body", UNDO);
+
+    expect(readValue("corners")).toBe("6");
+    expect(readKeptDrawing(document)).toHaveLength(3);
+    expect(readDisabledState("history-redo")).toBe("true");
+
+    press("body", UNDO);
+
+    // The step before: A a rectangle again.
+    expect(readValue("shape")).toBe("rectangle");
+  });
+
+  it("[F40.AC2] undoes +50 typed in W for A and B in one step", () => {
+    clickDrawing(IN_B, SHIFT);
+    typeAndEnter("several-width", "+50");
+
+    expect([readShape(0).width, readShape(1).width]).toEqual([150, 150]);
+    expect(readPresentDrawing()).toEqual(readKeptDrawing(document));
+
+    press("body", UNDO);
+
+    expect([readShape(0).width, readShape(1).width]).toEqual([100, 100]);
+  });
+
+  it("[F40.AC2] takes no step at a swatch opening the color picker", () => {
+    placePump({ x: 400, y: 300 });
+
+    const present = readPresentDrawing();
+
+    clickElement("text-color-swatch");
+
+    expect(readPresentDrawing()).toBe(present);
+  });
+
+  it("[F40.AC2] gives back Pump once Valve is typed over it and the field left", () => {
+    placePump({ x: 400, y: 300 });
+    typeAndLeave("text-content", "Valve");
+    press("body", UNDO);
+
+    expect(readEditedText().content).toBe("Pump");
+
+    press("body", REDO);
+
+    expect(readEditedText().content).toBe("Valve");
+  });
+
+  it.each([
+    {
+      action: (): void => {
+        typeAndLeave("text-size", "40");
+      },
+      name: "its size typed",
+    },
+    {
+      action: (): void => {
+        clickElement("text-bold");
+      },
+      name: "Bold",
+    },
+    {
+      action: (): void => {
+        clickElement("text-italic");
+      },
+      name: "Italic",
+    },
+    {
+      action: (): void => {
+        chooseOption("text-weight", "700");
+      },
+      name: "its weight",
+    },
+    {
+      action: (): void => {
+        chooseOption("text-fit", "box");
+      },
+      name: "its box fitted",
+    },
+    {
+      action: (): void => {
+        chooseOption("text-fit", "box");
+        typeAndLeave("text-box-width", "200");
+        clickElement("text-box-reset");
+      },
+      name: "its box reset",
+    },
+  ])("[F40.AC2] undoes and redoes a text's style changed in one step: $name", ({ action }) => {
+    placePump({ x: 400, y: 300 });
+    expectOneStep(action);
+  });
+
+  it("[F40.AC2] takes a step at each key on the hue slider, the plane's drag and the color typed", () => {
+    placePump({ x: 400, y: 300 });
+    chooseOption("color-model", "hsb");
+    typeAndLeave("text-color", "#ff8000");
+    clickElement("text-color-swatch");
+    setElementBox("#color-plane", { height: 100, left: 10, top: 20, width: 200 });
+
+    const colors = [readValue("text-color")];
+
+    const keys = Array.from({ length: 5 }, () => "ArrowRight");
+
+    for (const key of keys) {
+      press("#color-hue", { key });
+      colors.push(readValue("text-color"));
+    }
+
+    // From (110, 70), the middle of the plane, to (150, 40): S 70, B 80.
+    pressPointer("#color-plane", "pointerdown", { buttons: 1, clientX: 110, clientY: 70 });
+    pressPointer("#color-plane", "pointermove", { buttons: 1, clientX: 150, clientY: 40 });
+    pressPointer("#color-plane", "pointerup", { buttons: 0, clientX: 150, clientY: 40 });
+    colors.push(readValue("text-color"));
+    typeAndLeave("text-color", "#336699");
+
+    // 5 keys, a drag and a color typed: 7 steps, each undone in turn.
+    const distinct = new Set(colors);
+
+    expect(distinct.size).toBe(7);
+
+    for (const color of colors.toReversed()) {
+      press("body", UNDO);
+
+      expect(readEditedText().color).toBe(color);
+    }
+  });
+
+  it.each([
+    {
+      action: (): void => {
+        chooseRadio("anchor", "min min");
+      },
+      name: "the anchor",
+    },
+    {
+      action: (): void => {
+        clickElement("stretched");
+      },
+      name: "Stretched",
+    },
+  ])("[F40.AC2] undoes and redoes $name chosen for a polygon in one step", ({ action }) => {
+    chooseShapeKind("polygon");
+    typeAndLeave("height", "80");
+    expectOneStep(action);
+  });
+});
+
+describe("Undo and Redo the buttons of the panel (US-075)", () => {
+  beforeEach(() => {
+    // A rectangle 120 × 80 of radius 10.
+    openOnStep(1);
+  });
+
+  it.each([
+    {
+      action: (): void => {
+        clickElement("turn-right");
+      },
+      name: "a turn",
+      prepare: (): void => {
+        // Edit the shape, as the page opens.
+        clickElement("mode-shape");
+      },
+    },
+    {
+      action: (): void => {
+        clickElement("convert");
+      },
+      name: "Convert to free shape",
+      prepare: (): void => {
+        // Edit the shape, as the page opens.
+        clickElement("mode-shape");
+      },
+    },
+    {
+      action: (): void => {
+        clickElement("add-midpoint");
+      },
+      name: "Add a point in the middle",
+      prepare: (): void => {
+        clickElement("mode-points");
+        clickPoint(1, false);
+        clickPoint(2, true);
+      },
+    },
+    {
+      action: (): void => {
+        clickElement("delete-points");
+      },
+      name: "Delete points",
+      prepare: (): void => {
+        clickElement("mode-points");
+        clickPoint(2, false);
+      },
+    },
+    {
+      action: (): void => {
+        clickElement("handles-switch");
+      },
+      name: "the handles switched on",
+      prepare: (): void => {
+        clickElement("mode-points");
+        clickPoint(1, false);
+      },
+    },
+    {
+      action: (): void => {
+        chooseOption("handle-mode", "none");
+      },
+      name: "a handle's mode",
+      prepare: (): void => {
+        clickElement("mode-points");
+        clickPoint(1, false);
+        clickElement("handles-switch");
+      },
+    },
+  ])("[F40.AC2] undoes and redoes $name in one step", ({ action, prepare }) => {
+    prepare();
+    expectOneStep(action);
+  });
+});
+
+describe("Undo and Redo a text placed and typed (US-075)", () => {
+  beforeEach(() => {
+    openServedPage("");
+    setElementBox("#canvas", { height: 600, left: 100, top: 50, width: 800 });
+    // A step before the text: the page's rectangle nudged from (0, 0) to (1, 0).
+    holdRight(1);
+    chooseOption("text-weight", "400");
+    clickElement("tool-text");
+  });
+
+  it("[F40.AC2] places a text with an empty content, its frame 1 wide and one line tall", () => {
+    clickDrawing({ x: 250, y: 140 }, NO_KEY);
+
+    expect(readEditedText().content).toBe("");
+    expect(selectPageElement("#text-content")).toBe(document.activeElement);
+    // Inter Regular 32, a line (1984 + 494) × 32 / 2048 = 38.71875 tall: the frame 1 × 38.71875
+    // centred on (250, 140), its top-left (249.5, 120.640625), rounded to (250, 121).
+    expect([readValue("shape-x"), readValue("shape-y")]).toEqual(["250", "121"]);
+    expect(document.querySelectorAll("#canvas .text-frame path")).toHaveLength(1);
+  });
+
+  it("[F40.AC2] undoes a text placed, its size and Valve typed, in one step", () => {
+    clickDrawing({ x: 250, y: 140 }, NO_KEY);
+    typeAndLeave("text-size", "40");
+    typeAndLeave("text-content", "Valve");
+
+    expect(readKeptDrawing(document)).toHaveLength(2);
+
+    press("body", UNDO);
+
+    // The text gone, the rectangle still nudged.
+    expect(readKeptDrawing(document)).toHaveLength(1);
+    expect(readShape(0)).toMatchObject({ x: 1, y: 0 });
+
+    press("body", REDO);
+
+    expect(readEditedText()).toMatchObject({ content: "Valve", size: 40 });
+  });
+
+  it.each([
+    {
+      action: (): void => {
+        clickDrawing({ x: 600, y: 450 }, NO_KEY);
+      },
+      length: 1,
+      name: "a click on the empty drawing",
+    },
+    {
+      action: (): void => {
+        press("body", { key: "Escape" });
+      },
+      length: 1,
+      name: "Escape",
+    },
+    {
+      action: (): void => {
+        clickElement("tool-rectangle");
+        clickDrawing({ x: 600, y: 450 }, NO_KEY);
+      },
+      length: 2,
+      name: "another shape placed",
+    },
+  ])("[F40.AC2] removes a text left empty by $name, no step taken", ({ action, length }) => {
+    clickDrawing({ x: 250, y: 140 }, NO_KEY);
+    selectPageElement("#text-content").dispatchEvent(new FocusEvent("focusout", { bubbles: true }));
+    action();
+
+    expect(readKeptDrawing(document)).toHaveLength(length);
+    expect(readDrawnTexts(document)).toEqual([]);
+
+    // Undone: the shape placed after it, if any, then the nudge.
+    press("body", UNDO);
+
+    if (length === 2) {
+      press("body", UNDO);
+    }
+
+    expect(readKeptDrawing(document)).toHaveLength(1);
+    expect(readShape(0)).toMatchObject({ x: 0, y: 0 });
+  });
+
+  it("[F40.AC2] removes a text still empty at Ctrl + Z, the history unmoved", () => {
+    clickDrawing({ x: 250, y: 140 }, NO_KEY);
+
+    const event = press("#text-content", UNDO);
+
+    expect(event.defaultPrevented).toBe(true);
+    expect(readKeptDrawing(document)).toHaveLength(1);
+    expect(readShape(0)).toMatchObject({ x: 1, y: 0 });
   });
 });
