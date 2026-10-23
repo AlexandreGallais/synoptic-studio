@@ -120,6 +120,7 @@ Read for SP-011 (F12).
 | `REF-EUCLID-IV4` | Euclid, _Elements_, Book IV, Proposition 4 (inscribed circle: center on the angle bisectors, equal perpendiculars to the sides), ed. D. E. Joyce. <https://mathcs.clarku.edu/~djoyce/elements/bookIV/propIV4.html> | fillet center on the bisector | [verified] 2026-10-08 |
 | `REF-MATHWORLD-TANGENT` | E. W. Weisstein, "Tangent", MathWorld: tan θ = opposite / adjacent in a right triangle. <https://mathworld.wolfram.com/Tangent.html> | setback from the right triangle | [verified] 2026-10-08 |
 | `REF-WIKIBOOKS-HORIZONTAL-CURVES` | Wikibooks, _Fundamentals of Transportation_ — Horizontal Curves: `T = R tan(Δ/2)`, `Δ` supplement of the interior angle between the tangents. <https://en.wikibooks.org/wiki/Fundamentals_of_Transportation/Horizontal_Curves> | cross-check of the setback formula (level 6, never alone) | [verified] 2026-10-08 |
+| `REF-WIKI-TRIANGLE-INEQUALITY` | Wikipedia, "Triangle inequality", Generalization to any polygon: "the generalized polygon inequality, which asserts that the total length of such a path is no less than the length of the straight line between its endpoints"; Normed vector space: `‖u + v‖ ≤ ‖u‖ + ‖v‖`. <https://en.wikipedia.org/wiki/Triangle_inequality> | the chords of a piece within a reach of one of its samples (`DERIV-band-within-box`, EN-149) | [verified] 2026-10-23 |
 
 ## Computational geometry
 
