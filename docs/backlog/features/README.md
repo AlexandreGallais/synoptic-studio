@@ -42,4 +42,4 @@
 | [F38](./E02-F38-the-panel-for-several-shapes.md) | E02 | The panel for several shapes | done |
 | [F39](./E02-F39-move-shapes-on-integers.md) | E02 | Move shapes on integers | done |
 | [F40](./E02-F40-undo-and-redo.md) | E02 | Undo and redo | done |
-| [F41](./E02-F41-the-list-of-steps.md) | E02 | The list of the history's steps and a history kept fast | in-progress |
+| [F41](./E02-F41-the-list-of-steps.md) | E02 | The list of the history's steps and a history kept fast | done |

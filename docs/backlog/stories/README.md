@@ -109,7 +109,7 @@
 | [VAL-041](./E02-F40-VAL-041-validate-f40.md) | F40 | Validate F40 | dropped |
 | [EN-147](./E02-F41-EN-147-the-history-size-kept-step-to-step.md) | F41 | The history's size kept from step to step | done |
 | [US-077](./E02-F41-US-077-the-list-of-steps.md) | F41 | The list of the history's steps | done |
-| [AUD-043](./E02-F41-AUD-043-audit-f41.md) | F41 | Audit F41 | ready |
+| [AUD-043](./E02-F41-AUD-043-audit-f41.md) | F41 | Audit F41 | done |
 | [VAL-042](./E02-F41-VAL-042-validate-f41.md) | F41 | Validate F41 | dropped |
 | [SP-025](./E02-SP-025-cut-the-editing-work-into-small-features.md) | E02 | Cut the editing work into small features | done |
 | [SP-010](./E14-F11-SP-010-research-f11.md) | F11 | Research for F11: folder layouts and test placement | done |
