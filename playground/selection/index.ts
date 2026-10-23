@@ -1,3 +1,4 @@
+export * from "./apply-several-value";
 export * from "./listen-to-picking";
 export * from "./listen-to-selection-keys";
 export * from "./listen-to-several-fields";
@@ -7,6 +8,7 @@ export * from "./load-picked-text";
 export * from "./pressed-tools";
 export * from "./remove-selected-shapes";
 export * from "./select-shape-at";
+export * from "./several-fields";
 export * from "./show-no-selection";
 export * from "./show-several-selection";
 export * from "./write-several-values";

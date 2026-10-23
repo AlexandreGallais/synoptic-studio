@@ -430,7 +430,8 @@
         color: #fff;
         background: var(--accent);
       }
-      input[type="number"] {
+      input[type="number"],
+      #several-fields input {
         box-sizing: border-box;
         display: block;
         width: 100%;
@@ -1017,16 +1018,17 @@ Running</textarea>
           <button id="convert" type="button">Convert to free shape</button>
         </fieldset>
       </div>
-      <!-- The values of several shapes selected, read-only until US-071 brings the typing (F38). -->
+      <!-- The values of several shapes selected, and a value typed for all of them, relative with a
+           sign (F38): text fields, which keep the + of a relative value a number field drops. -->
       <fieldset id="several-fields" hidden>
         <legend>Position and size</legend>
         <div class="pair">
-          <label>X <input id="several-x" type="number" readonly /></label>
-          <label>Y <input id="several-y" type="number" readonly /></label>
+          <label>X <input id="several-x" type="text" autocomplete="off" /></label>
+          <label>Y <input id="several-y" type="text" autocomplete="off" /></label>
         </div>
         <div class="pair">
-          <label>Width <input id="several-width" type="number" readonly /></label>
-          <label>Height <input id="several-height" type="number" readonly /></label>
+          <label>Width <input id="several-width" type="text" autocomplete="off" /></label>
+          <label>Height <input id="several-height" type="text" autocomplete="off" /></label>
         </div>
       </fieldset>
       <p id="status" role="status"></p>

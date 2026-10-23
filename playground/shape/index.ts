@@ -1,5 +1,6 @@
 export * from "./listen-to-anchor";
 export * from "./listen-to-radius";
+export * from "./max-size";
 export * from "./read-anchor";
 export * from "./read-edited-free-shape";
 export * from "./read-free-shape-shape";

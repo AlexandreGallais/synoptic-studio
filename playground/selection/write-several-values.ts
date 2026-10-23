@@ -9,15 +9,9 @@ import { readTextBlock } from "../hover";
 import { readKeptDrawing, readSelectedShapes } from "../kept-shapes";
 import { selectElement } from "../page";
 
-import type { DrawingShape, PanelValues } from "../../src";
+import { SEVERAL_FIELDS } from "./several-fields";
 
-/** Each value of several shapes, and the id of the field that shows it. */
-const SEVERAL_FIELDS: readonly (readonly [keyof PanelValues, string])[] = [
-  ["x", "several-x"],
-  ["y", "several-y"],
-  ["width", "several-width"],
-  ["height", "several-height"],
-];
+import type { DrawingShape, PanelValues } from "../../src";
 
 /** A value of several shapes as its field shows it. */
 type ShownValue = {
@@ -105,8 +99,8 @@ function writeSeveralField(document: Document, id: string, shown: ShownValue): v
  * Shows the position and size of several shapes selected in the panel's four fields of several
  * shapes (F38): each shape's values (`readSelectedValues`), a text never measured, which is not
  * drawn, left out; a value common to them as one shape's shows it, an empty field reading Mixed
- * where they differ (`commonPanelValues`, `createShownValue`), nor any placeholder with no value left;
- * read-only until US-071 brings the typing.
+ * where they differ (`commonPanelValues`, `createShownValue`), nor any placeholder with no value left; typed in,
+ * they set the shapes (`listenToSeveralFields`, US-071).
  *
  * @kind procedure
  * @param document - page document

@@ -2,6 +2,7 @@ import { NO_VERTEX_SELECTION } from "../../src";
 import { selectElement, writeSelection } from "../page";
 import { listenToPoints } from "../points";
 import { listenToPosition, listenToTurn } from "../position";
+import { listenToSeveralFields } from "../selection";
 import { listenToAnchor, listenToRadius, writeChosenFreeShape } from "../shape";
 import { listenToModes } from "../toolbar";
 
@@ -26,9 +27,28 @@ function listenToShapeChoice(document: Document, update: () => void): void {
 }
 
 /**
+ * Calls back when a control of the panel other than a number of the shape changes: a mode, the
+ * anchor, the points, the angle, or a value typed for several shapes, which sets each of them
+ * (`listenToSeveralFields`, F38).
+ *
+ * @kind procedure
+ * @param document - page document
+ * @param update - redraws the playground
+ * @see docs/domain/interaction.md#_2-selector
+ */
+function listenToPanelControls(document: Document, update: () => void): void {
+  listenToModes(document, update);
+  listenToAnchor(document, update);
+  listenToPoints(document, update);
+  listenToTurn(document, update);
+  listenToSeveralFields(document, update);
+}
+
+/**
  * Calls back when a value of the shape changes: a number typed, another shape, anchor or mode
  * chosen, the window resized. A radius typed goes to every vertex: the different radii kept on the
- * radius input are dropped first (F03.AC2).
+ * radius input are dropped first (F03.AC2). A value typed for several shapes sets each of them
+ * (`listenToSeveralFields`, F38).
  *
  * @kind procedure
  * @param document - page document
@@ -54,9 +74,6 @@ export function listenToInputs(document: Document, update: () => void): void {
 
   listenToShapeChoice(document, update);
 
-  listenToModes(document, update);
-  listenToAnchor(document, update);
-  listenToPoints(document, update);
-  listenToTurn(document, update);
+  listenToPanelControls(document, update);
   document.defaultView?.addEventListener("resize", update);
 }

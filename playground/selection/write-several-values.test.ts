@@ -1,8 +1,10 @@
 // @vitest-environment happy-dom
 import { beforeEach, describe, expect, it } from "vitest";
 
+import { isDrawnText } from "../../src";
 import { HELLO_TEXT } from "../../tests";
 import { readFontSession, writeFontSession } from "../fonts";
+import { readTextBlock } from "../hover";
 import { DRAWING_KEYS, readStoredDrawing, writeStoredDrawing } from "../kept-shapes";
 import { selectElement, writeEditedKind } from "../page";
 import {
@@ -136,13 +138,12 @@ describe("the panel shows several shapes' position and size (US-070)", () => {
     setElementBox("#canvas", { height: 600, left: 100, top: 50, width: 800 });
   });
 
-  it("[F38.AC1] shows A and B as X Mixed, Y 20, W Mixed, H Mixed, read-only", () => {
+  it("[F38.AC1] shows A and B as X Mixed, Y 20, W Mixed, H Mixed", () => {
     drawAAndB();
     pick({ x: 50, y: 40 }, false);
     pick({ x: 220, y: 40 }, true);
 
     expect(readSeveralFields()).toEqual(["[Mixed]", "20", "[Mixed]", "[Mixed]"]);
-    expect(FIELDS.map((id) => selectInput(id).readOnly)).toEqual([true, true, true, true]);
     expect(readDisplay("several-fields")).not.toBe("none");
     expect(readDisplay("shape-panel")).toBe("none");
   });
@@ -398,5 +399,37 @@ describe("a value typed for several shapes, relative or fixed (US-071)", () => {
 
     // The rectangle the page opens with: 120 × 80 at (0, 0).
     expect(readDrawing()).toEqual([never.shape, expect.objectContaining({ width: 460 })]);
+  });
+
+  it("[F38.AC2] leaves a shape not selected as it is", () => {
+    // C, 30 × 30 at (400, 300), drawn last and left out of the selection.
+    drawAAndB();
+    placeShape("rectangle", { x: 400, y: 300 });
+    typeBox(["400", "300", "30", "30"]);
+    pick({ x: 50, y: 40 }, false);
+    pick({ x: 220, y: 40 }, true);
+    typeAndEnter("several-width", "460");
+
+    expectBoxes([
+      [10, 20, 460, 50],
+      [200, 20, 460, 40],
+      [400, 300, 30, 30],
+    ]);
+  });
+
+  it("[F38.AC2] still draws a text moved whose font is no longer read, by its kept metrics", () => {
+    placeShape("text", { x: 250, y: 140 });
+    selectAll();
+    // No family measures it any more: it is drawn by the metrics it was last drawn with.
+    writeFontSession(document, { ...readFontSession(document), kept: [] });
+    typeAndEnter("several-x", "+10");
+
+    const [, text] = readDrawing();
+
+    expect(
+      text !== undefined && isDrawnText(text) ? readTextBlock(document, text) : undefined,
+    ).toBeDefined();
+
+    expect(readSeveralFields()[1]).not.toBe("[]");
   });
 });
