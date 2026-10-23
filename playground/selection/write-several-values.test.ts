@@ -1,5 +1,5 @@
 // @vitest-environment happy-dom
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { isDrawnText } from "../../src";
 import { HELLO_TEXT } from "../../tests";
@@ -558,7 +558,13 @@ describe("the arrows in a field of several shapes (US-081)", () => {
   });
 
   it("[F43.AC3] makes A 101 wide and B 41 for Up in W, W still Mixed, in one step", () => {
+    vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout"] });
+
     const up = pressIn("several-width", { key: "ArrowUp" });
+
+    // The step taken once no arrow follows within 500 ms (US-081, T2).
+    vi.advanceTimersByTime(500);
+    vi.useRealTimers();
 
     // 100 + 1 and 40 + 1: each shape's own width stepped, as +1 typed.
     expectBoxes([
