@@ -58,7 +58,7 @@ Two sources are **independent** when neither cites nor copies the other and they
 | P&ID / synoptic conventions | `symbols-and-views.md` | `REF-ISO-10628`, `REF-ISA-5-1`, `REF-ISA-101`, `REF-TOGHRAEI` |
 | Snapping, alignment | `interaction.md` | `REF-INKSCAPE-SNAP` |
 | Shape builder | ADR-0006 | `REF-INKSCAPE-SHAPEBUILDER` |
-| Undo / redo | `interaction.md` | `REF-GOF` (Command pattern) |
+| Undo / redo | `interaction.md`, ADR-0095, [note 0030](./notes/0030-f40-undo-and-redo.md) | `REF-REDUX-UNDO`, `REF-MYERS-KOSBIE-1996`, `REF-GIMP-UNDO` |
 | Tooling, code style | ADR-0009 to ADR-0016 | [note 0001](./notes/0001-tooling-practices.md) |
 
 ## 4. Licenses of reference implementations
