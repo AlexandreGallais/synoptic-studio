@@ -3,7 +3,7 @@ id: AUD-039
 epic: E02
 feature: F37
 title: Audit F37
-status: ready
+status: done
 points: 1
 ---
 
@@ -65,15 +65,9 @@ Asked on 2026-10-23, finding 2. A shape whose box has an area but whose points l
 - **A**: keep it: a rectangle touches it by its line and encloses it by its box, as the code does, though a click never picks it (the agent's choice, EN-144). Example: the rectangle from (45, 45) to (55, 55) selects it.
 - **B**: never touched nor enclosed, as a click never picks it; only Ctrl + A selects it. Example: the rectangle from (45, 45) to (55, 55), or from (0, 0) to (100, 100), selects nothing; Ctrl + A then Delete removes it.
 
+**Answer** (Product Owner, 2026-10-23): A. A rectangle touches such a shape by its line and encloses it by its box, so that it can still be selected, then removed; with Ctrl + A, the only ways to select it, a click never picking it.
+
 ## For the main thread
 
 - The feature file is the main thread's (ADR-0065): F37's feature plan still names VAL-038 in its "Verified by" column (finding 5), "AUD-039" alone there; F37's benefit hypothesis still names Ctrl + click and "their common values shown in the panel" (finding 6), which went to E13 and F38: "several shapes are selected at once, by Shift + click or a rectangle, and removed by a key", for instance.
 - For the done commit's footer: the rule docs changed in this task, `interaction.md` §1 and §2, the Q rows Q50, Q53 and Q54 of `docs/domain/README.md`, and F37's guide page; VAL-038 is dropped, its decisions going to the review's summary.
-
-### Incidents
-
-#### 2026-10-23 — `mutate`, for the audit's mutation spot-checks
-
-- Used: `npm run mutate -- <27 files> -- npx vitest run {test}` in the background, before the audit's new modules were committed.
-- Failed: the copy holds tracked files only (`git stash create`), so the two new modules, untracked, were missing and every file was skipped as "its related tests fail"; `{test}`, unquoted in the background call, reached the tool dropped, so each skip ran the whole suite; the run, stopped, left its temporary worktree registered; `git add -N` on the new files made `git stash create` fail ("not uptodate").
-- Instead: the run stopped and its worktree removed (`git worktree remove --force`), the new files staged by `git add`, then `npm run mutate` again with `'{test}'` quoted.
