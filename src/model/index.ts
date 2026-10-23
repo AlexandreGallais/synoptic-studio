@@ -10,6 +10,7 @@ export * from "./free-shape";
 export * from "./handles";
 export * from "./held-shapes";
 export * from "./history";
+export * from "./history-list";
 export * from "./kerning";
 export * from "./layout-box";
 export * from "./line-characters";

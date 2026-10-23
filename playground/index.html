@@ -164,6 +164,45 @@
         color: var(--muted);
         white-space: nowrap;
       }
+      /* The list of the history's steps, opened under the toolbar (US-077). */
+      #history-steps-box {
+        position: relative;
+        align-self: center;
+        font-size: 0.85em;
+      }
+      #history-steps-box summary {
+        cursor: pointer;
+        white-space: nowrap;
+      }
+      #history-list {
+        position: absolute;
+        top: calc(100% + 0.6rem);
+        left: 0;
+        z-index: 1;
+        min-width: 11rem;
+        margin: 0;
+        padding: 0.35rem;
+        list-style: none;
+        background: var(--panel);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+      }
+      #history-list button {
+        width: 100%;
+        min-height: 1.8rem;
+      }
+      #history-list button[aria-current="step"] {
+        color: #fff;
+        background: var(--accent);
+      }
+      #history-list button[data-place="future"] {
+        color: var(--muted);
+        font-style: italic;
+      }
+      #history-list .history-left-out {
+        padding: 0.2rem 0.7rem;
+        color: var(--muted);
+      }
       /* The history's memory size and steps kept, beside Undo and Redo (US-076). */
       #toolbar label {
         display: flex;
@@ -607,6 +646,13 @@
           >
             Redo
           </button>
+          <details
+            id="history-steps-box"
+            title="The last steps, the oldest first: click one to go back to the drawing after it; the steps after it stay to redo until the next change."
+          >
+            <summary>Steps</summary>
+            <ol id="history-list" aria-label="The history's steps"></ol>
+          </details>
           <label
             title="The memory the history keeps for Undo and Redo, from 0 to 1,000 MB: beyond it, the oldest steps are dropped first, never fewer than the steps kept. A move of a rectangle 100 × 50 alone adds about 1,244 bytes, of the 120 × 80 the page opens with 1,248."
             >Memory

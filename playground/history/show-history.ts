@@ -1,5 +1,6 @@
 import { formatByteSize, movesWithinSize } from "../../src";
 import { readPageHistoryBound } from "../history-bound";
+import { showHistoryList } from "../history-list";
 import { selectElement, writeText } from "../page";
 
 import { PAGE_HISTORIES } from "./page-histories";
@@ -9,18 +10,20 @@ import { PAGE_HISTORIES } from "./page-histories";
  * the Redo button while nothing is to come, the size the history holds, kept with it (ADR-0097),
  * beside the size set, `History 1.2 kB of 100 MB` (`formatByteSize`, SP-029's answer 8), and about
  * how many moves of one shape the size set holds, `about 80,380 moves` (`movesWithinSize`,
- * SP-029's answer 6); none yet, as an empty history.
+ * SP-029's answer 6); none yet, as an empty history; then the list of its steps
+ * (`showHistoryList`, US-077).
  *
  * @kind procedure
  * @param document - page document
  * @see docs/domain/interaction.md#_7-navigation-and-history
  */
 export function showHistory(document: Document): void {
+  const history = PAGE_HISTORIES.get(document);
   const {
     future,
     past,
     size: held,
-  } = PAGE_HISTORIES.get(document) ?? {
+  } = history ?? {
     future: [],
     past: [],
     size: 0,
@@ -32,4 +35,5 @@ export function showHistory(document: Document): void {
   selectElement(document, "history-redo").toggleAttribute("disabled", future.length === 0);
   writeText(document, "history-size", `History ${formatByteSize(held)} of ${formatByteSize(size)}`);
   writeText(document, "history-moves", `about ${moves} moves`);
+  showHistoryList(document, history);
 }
