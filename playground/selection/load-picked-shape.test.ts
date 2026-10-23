@@ -18,6 +18,7 @@ import {
   readValue,
   selectPageElement,
   setElementBox,
+  typeTextContent,
   typeValue,
 } from "../user-actions";
 
@@ -207,14 +208,16 @@ describe("the panel loads the shape picked, per kind (US-067)", () => {
   });
 
   it("[F36.AC3] gives a turned text picked back its place, its fractions kept", () => {
-    // The text `Text` centred on (200, 300), then turned about its middle, which stays there.
+    // The text `Text` typed from (200, 281), 64.65625 × 38.71875 in Inter 32 (US-075), then turned
+    // about its middle, (232.328125, 300.359375), which stays there.
     placeShape("text", { x: 200, y: 300 });
+    typeTextContent("Text");
     typeValue("angle", "30");
 
     const turned = readModel();
 
     placeShape("rectangle", { x: 550, y: 200 });
-    pick({ x: 200, y: 300 });
+    pick({ x: 232, y: 300 });
 
     expect(readValue("angle")).toBe("30");
     expect(readModel()).toEqual(turned);

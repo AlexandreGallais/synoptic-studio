@@ -4,6 +4,7 @@ export * from "./hide-point-panels";
 export * from "./listen-to-text-fields";
 export * from "./press-bold";
 export * from "./read-field-value";
+export * from "./read-shown-text-block";
 export * from "./read-text-box-options";
 export * from "./read-text-model";
 export * from "./show-text";

@@ -14,6 +14,7 @@ import {
   readShapeModel,
   selectPageElement,
   setElementBox,
+  typeTextContent,
   typeValue,
 } from "../user-actions";
 
@@ -183,8 +184,10 @@ describe("the shape under the pointer outlined in the layer above (US-065)", () 
 
   it("[F36.AC2] outlines a text anywhere in its block, between its letters too", () => {
     placeShape("text", { x: 400, y: 300 });
-    // The text `Text` centred on (400, 300): its middle is in its block, whatever its letters.
-    hover({ x: 400, y: 300 });
+    typeTextContent("Text");
+    // The text `Text` from (400, 281), 64.65625 wide in Inter 32 (US-075): (430, 300) is in its
+    // block, whatever its letters.
+    hover({ x: 430, y: 300 });
 
     expect(readOutline()).toMatch(/^M/u);
 
@@ -194,6 +197,7 @@ describe("the shape under the pointer outlined in the layer above (US-065)", () 
 
   it("[F36.AC2] outlines a kept text whose font's metrics are no longer read, as it is drawn", () => {
     placeShape("text", { x: 400, y: 300 });
+    typeTextContent("Text");
     placeShape("rectangle", { x: 600, y: 300 });
     hover({ x: 400, y: 300 });
 

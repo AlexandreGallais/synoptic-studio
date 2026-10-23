@@ -103,7 +103,7 @@
 | [SP-029](./E02-F40-SP-029-refine-undo-and-redo.md) | F40 | Refine undo and redo | done |
 | [EN-146](./E02-F40-EN-146-the-history-in-the-model.md) | F40 | The history of the drawing in the model | done |
 | [US-074](./E02-F40-US-074-undo-and-redo-the-drawings-actions.md) | F40 | Undo and redo what is done on the drawing | done |
-| [US-075](./E02-F40-US-075-undo-and-redo-the-panels-changes.md) | F40 | Undo and redo what is typed and chosen in the panel | ready |
+| [US-075](./E02-F40-US-075-undo-and-redo-the-panels-changes.md) | F40 | Undo and redo what is typed and chosen in the panel | done |
 | [US-076](./E02-F40-US-076-the-historys-memory-size.md) | F40 | The history kept within a memory size the designer sets | ready |
 | [AUD-042](./E02-F40-AUD-042-audit-f40.md) | F40 | Audit F40 | ready |
 | [VAL-041](./E02-F40-VAL-041-validate-f40.md) | F40 | Validate F40 | dropped |

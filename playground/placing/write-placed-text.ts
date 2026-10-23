@@ -1,6 +1,6 @@
 import { centredPosition } from "../../src";
 import { writeInputValue } from "../page";
-import { readTextModel } from "../text";
+import { readShownTextBlock, readTextModel } from "../text";
 import { readTextMeasure, readTextMetrics } from "../text-measure";
 
 import { writeNewTextFields } from "./write-new-text-fields";
@@ -8,9 +8,10 @@ import { writeNewTextFields } from "./write-new-text-fields";
 import type { Point } from "../../src";
 
 /**
- * Places a text by a click (F35): a new text (`writeNewTextFields`) whose measured block is
- * centred on the point on integers (`centredPosition`), a text whose font has no metrics yet
- * (US-056) taken as 0 × 0, its top-left on the point.
+ * Places a text by a click (F35): a new text (`writeNewTextFields`), empty, whose block as shown,
+ * 1 wide and one line tall (`readShownTextBlock`, US-075), is centred on the point on integers
+ * (`centredPosition`), a text whose font has no metrics yet (US-056) taken as 0 × 0, its top-left
+ * on the point.
  *
  * @kind procedure
  * @param document - page document
@@ -23,7 +24,9 @@ export function writePlacedText(document: Document, point: Point): void {
   const text = readTextModel(document);
   const metrics = readTextMetrics(document, text);
   const block =
-    metrics === undefined ? { height: 0, width: 0 } : readTextMeasure(metrics, text).block;
+    metrics === undefined
+      ? { height: 0, width: 0 }
+      : readShownTextBlock(metrics, text, readTextMeasure(metrics, text).block);
   const position = centredPosition(point, block);
 
   writeInputValue(document, "shape-x", position.x);

@@ -1,8 +1,10 @@
 import { DRAWING_KEYS, writeStoredDrawing } from "../kept-shapes";
+import { stopNewText } from "../new-text";
 import { writeShapeSelection } from "../selection";
 
 import { PAGE_HISTORIES } from "./page-histories";
 import { readHeldAction } from "./read-held-action";
+import { readRefusedKind } from "./read-refused-kind";
 import { saveHistoryStep } from "./save-history-step";
 
 import type { History, HistoryState } from "../../src";
@@ -26,11 +28,44 @@ function writeHistoryState(document: Document, state: HistoryState<KeptShape>): 
 }
 
 /**
+ * Reads the history an undo or a redo leaves (F40): a new text's typing ended first
+ * (`stopNewText`), so that a text typed is the step undone and one still empty is dropped; then
+ * what the page shows recorded (`saveHistoryStep`), then the history moved; with a shape refused
+ * (`readRefusedKind`), or a new text dropped, the history as recorded, unmoved, so that its
+ * present gives the shape back with its last valid values, or the drawing before the text.
+ *
+ * @kind procedure
+ * @param document - page document
+ * @param move - `undoneHistory` or `redoneHistory`
+ * @returns the history whose present to write back; undefined with nothing to undo or redo
+ * @see docs/domain/interaction.md#_7-navigation-and-history
+ */
+function readMovedHistory(
+  document: Document,
+  move: (history: History<KeptShape>) => History<KeptShape>,
+): History<KeptShape> | undefined {
+  stopNewText(document);
+
+  const isRefused = readRefusedKind(document) !== undefined;
+  const saved = saveHistoryStep(document);
+
+  if (isRefused) {
+    return saved;
+  }
+
+  const moved = move(saved);
+
+  return moved === saved ? undefined : moved;
+}
+
+/**
  * Undoes or redoes a step of the page (F40): what the page shows recorded first
  * (`saveHistoryStep`), so that a change not yet recorded is the step undone, then the history
- * moved (`undoneHistory`, `redoneHistory`) and its present written back, the drawing and its
+ * moved (`readMovedHistory`, `undoneHistory`, `redoneHistory`) and its present written back, the drawing and its
  * selection (`writeHistoryState`), then the page redrawn; nothing while a press holds its action
- * (`readHeldAction`), nor when there is nothing to undo or redo. The tool armed stays armed.
+ * (`readHeldAction`), nor when there is nothing to undo or redo. A shape refused
+ * (`readRefusedKind`) is given back with its last valid values instead, the present written back,
+ * the history unmoved. The tool armed stays armed.
  *
  * @kind procedure
  * @param document - page document
@@ -47,10 +82,9 @@ export function moveHistory(
     return;
   }
 
-  const saved = saveHistoryStep(document);
-  const moved = move(saved);
+  const moved = readMovedHistory(document, move);
 
-  if (moved === saved) {
+  if (moved === undefined) {
     return;
   }
 
