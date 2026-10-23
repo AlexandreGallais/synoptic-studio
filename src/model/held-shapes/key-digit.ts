@@ -1,3 +1,7 @@
+import { integerQuotient, nonNegativeRemainder } from "../../math";
+
+import { HELD_BRANCHES } from "./held-branches";
+
 /**
  * A key's digit in base 32 at a level of the held counts (EN-147), the level 0 the lowest: 33 is 1
  * at the level 0 and 1 at the level 1, 1 × 32 + 1 (ADR-0097).
@@ -9,5 +13,5 @@
  * @see docs/domain/interaction.md#_7-navigation-and-history
  */
 export function keyDigit(key: number, level: number): number {
-  return key + level;
+  return nonNegativeRemainder(integerQuotient(key, HELD_BRANCHES ** level), HELD_BRANCHES);
 }

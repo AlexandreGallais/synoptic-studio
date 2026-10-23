@@ -1,3 +1,9 @@
+import { historyWithStep } from "../history";
+
+import { measureWithPresent } from "./measure-with-present";
+import { measureWithState } from "./measure-with-state";
+import { measureWithoutState } from "./measure-without-state";
+
 import type { SizedHistory } from "./sized-history";
 import type { HistoryState } from "../history";
 
@@ -18,5 +24,19 @@ export function sizedHistoryWithStep<T extends WeakKey>(
   history: SizedHistory<T>,
   state: HistoryState<T>,
 ): SizedHistory<T> {
-  return { ...history, present: state };
+  const stepped = historyWithStep(history, state);
+
+  if (stepped.past === history.past) {
+    return stepped === history ? history : { ...history, present: stepped.present };
+  }
+
+  const shown = new Set(history.present.drawing);
+  const added = measureWithState(history, history.present, shown);
+  const cleared = history.future.reduce(
+    (before, future) => measureWithoutState(before, future, shown),
+    added,
+  );
+  const measure = measureWithPresent(cleared, history.present.drawing, stepped.present.drawing);
+
+  return { future: stepped.future, past: stepped.past, present: stepped.present, ...measure };
 }

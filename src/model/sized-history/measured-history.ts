@@ -1,3 +1,7 @@
+import { EMPTY_HELD_COUNTS } from "../held-shapes";
+
+import { measureWithState } from "./measure-with-state";
+
 import type { SizedHistory } from "./sized-history";
 import type { History } from "../history";
 
@@ -13,5 +17,11 @@ import type { History } from "../history";
  * @see docs/domain/interaction.md#_7-navigation-and-history
  */
 export function measuredHistory<T extends WeakKey>(history: History<T>): SizedHistory<T> {
-  return { ...history, held: { depth: 0, nodes: [] }, size: -1 };
+  const present = new Set(history.present.drawing);
+  const measure = [...history.past, ...history.future].reduce(
+    (before, state) => measureWithState(before, state, present),
+    { held: EMPTY_HELD_COUNTS, size: 0 },
+  );
+
+  return { future: history.future, past: history.past, present: history.present, ...measure };
 }

@@ -1,3 +1,9 @@
+import { undoneHistory } from "../history";
+
+import { measureWithPresent } from "./measure-with-present";
+import { measureWithState } from "./measure-with-state";
+import { measureWithoutState } from "./measure-without-state";
+
 import type { SizedHistory } from "./sized-history";
 
 /**
@@ -13,5 +19,16 @@ import type { SizedHistory } from "./sized-history";
  * @see docs/domain/interaction.md#_7-navigation-and-history
  */
 export function sizedUndoneHistory<T extends WeakKey>(history: SizedHistory<T>): SizedHistory<T> {
-  return history;
+  const undone = undoneHistory(history);
+
+  if (undone === history) {
+    return history;
+  }
+
+  const shown = new Set(history.present.drawing);
+  const removed = measureWithoutState(history, undone.present, shown);
+  const added = measureWithState(removed, history.present, shown);
+  const measure = measureWithPresent(added, history.present.drawing, undone.present.drawing);
+
+  return { ...undone, ...measure };
 }

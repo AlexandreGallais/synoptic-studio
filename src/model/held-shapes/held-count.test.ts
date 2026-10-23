@@ -30,6 +30,8 @@ describe("heldCount (EN-147)", () => {
     { count: 0, key: 100, title: "a path ending at the root" },
     // 1 024 needs 3 levels, the counts have 2.
     { count: 0, key: 1024, title: "a key past the depth" },
+    // 1 026 = 1 × 32² + 0 × 32 + 2: its two lower digits are the key 2's, its third past the depth.
+    { count: 0, key: 1026, title: "a key past the depth ending as the key 2" },
   ])("[F41.AC2] reads $count at $title", ({ count, key }) => {
     expect(heldCount(TWO_LEVELS, key)).toBe(count);
   });
