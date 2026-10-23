@@ -5,6 +5,7 @@ import { selectElement } from "../page";
 import { createHoverElements } from "./create-hover-elements";
 import { createSelectionElements } from "./create-selection-elements";
 import { createSelectionRectangleElements } from "./create-selection-rectangle-elements";
+import { createTakenElements } from "./create-taken-elements";
 import { readHoverPoint } from "./read-hover-point";
 import { readStartedMove } from "./read-started-move";
 
@@ -12,10 +13,11 @@ import { readStartedMove } from "./read-started-move";
  * Draws the layer above the drawing (F36): an `<svg>` of the drawing's size and origin
  * (`createViewSvg`), which the pointer passes through, holding the outline of the shape selected
  * (`createSelectionElements`), then, with the selector armed, the outline of the shape under the
- * pointer (`createHoverElements`): each a band 2 screen pixels wide about its contour as drawn, a
- * fill, never a native stroke; no hover with a tool armed, nor once the pointer has left the
- * drawing, nor while shapes are moved (`readStartedMove`, F39), nor while a selection rectangle
- * is drawn, which comes last (`createSelectionRectangleElements`, F37). The outlines are computed
+ * pointer (`createHoverElements`): each a band 2 screen pixels wide about its contour as drawn,
+ * over a white one 4 wide (F43), a fill, never a native stroke; no hover with a tool armed, nor
+ * once the pointer has left the drawing, nor while shapes are moved (`readStartedMove`, F39), nor
+ * while a selection rectangle is drawn, which outlines instead the shapes it would take
+ * (`createTakenElements`, F43) and comes last (`createSelectionRectangleElements`, F37). The outlines are computed
  * within the box of the frame it starts (`startHelpsFrame`, EN-149), the area shown widened by half
  * the canvas on each side, kept while a pan stays within it. The drawing's `<svg>` is never
  * touched, so that the export holds no outline.
@@ -34,6 +36,7 @@ export function showHover(document: Document): void {
   svg.append(
     ...createSelectionElements(document),
     ...createHoverElements(document, readHoverPoint(document, isShown)),
+    ...createTakenElements(document),
     ...rectangle,
   );
 

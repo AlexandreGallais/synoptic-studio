@@ -4,9 +4,9 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { isDrawnText } from "../../src";
 import { HELLO_TEXT } from "../../tests";
 import { readFontSession, writeFontSession } from "../fonts";
-import { readTextBlock } from "../hover";
 import { DRAWING_KEYS, readStoredDrawing, writeStoredDrawing } from "../kept-shapes";
 import { selectElement, writeEditedKind } from "../page";
+import { readTextBlock } from "../picking";
 import {
   chooseOption,
   clickAt,

@@ -3,7 +3,7 @@ id: US-080
 epic: E02
 feature: F43
 title: The helps seen on any color, and what a selection rectangle takes
-status: ready
+status: done
 points: 3
 ---
 
@@ -11,7 +11,7 @@ points: 3
 
 As a symbol designer, I want the outlines of the shape under the pointer, of the selection and of the selection rectangle to show on any color, the shapes a rectangle will take to show while I drag it, and the drawing's texts never selected as page text, so that I always see what I point at and what I take.
 
-Corrections 1, 2 and 6 of the Product Owner's first try (2026-10-23). Today every help is filled with `--accent`, `#4a7bd0`, the color a shape is drawn with when it has none of its own, so that the selection of the page's own rectangle cannot be seen ([note 0032](../../research/notes/0032-f43-corrections-from-the-first-try.md), §3). Inkscape draws its rubberband in blue over a white outline and its boxes' dashes in two colors (`REF-INKSCAPE-NODE-HANDLES`, `REF-INKSCAPE-CANVAS-ITEM-RECT`, `REF-INKSCAPE-SELCUE`); Figma outlines each object a marquee takes while it is dragged, Penpot selects them as it goes (`REF-FIGMA-SELECT-LAYERS`, `REF-PENPOT-AREA-SELECTION`). The colors, the widths and what the rectangle shows wait for SP-031's questions 2 and 3; the criteria below take the options proposed first.
+Corrections 1, 2 and 6 of the Product Owner's first try (2026-10-23). Today every help is filled with `--accent`, `#4a7bd0`, the color a shape is drawn with when it has none of its own, so that the selection of the page's own rectangle cannot be seen ([note 0032](../../research/notes/0032-f43-corrections-from-the-first-try.md), §3). Inkscape draws its rubberband in blue over a white outline and its boxes' dashes in two colors (`REF-INKSCAPE-NODE-HANDLES`, `REF-INKSCAPE-CANVAS-ITEM-RECT`, `REF-INKSCAPE-SELCUE`); Figma outlines each object a marquee takes while it is dragged, Penpot selects them as it goes (`REF-FIGMA-SELECT-LAYERS`, `REF-PENPOT-AREA-SELECTION`). The colors and the widths are SP-031's answer 2 (a), Inkscape's white band under the accent's, and what the rectangle shows its answer 3 (a), Figma's shapes outlined during the drag and selected at the release, both given on 2026-10-23; the criteria below follow them.
 
 ## Acceptance criteria
 
@@ -33,9 +33,13 @@ The examples use the opening view, 100 %, and A, B and C, rectangles 100 × 100 
 | --- | --- | --- |
 | 1 | Look at the rectangle the page opens with | its outline shows on its own blue: a blue line with a thin white edge on each side |
 | 2 | Click the empty drawing, then point at the rectangle | the same outline, the shape under the pointer |
-| 3 | Add two rectangles with the Rectangle tool, then drag a selection rectangle from an empty place across two of them, without releasing | the two shapes it touches are outlined before the release; the rectangle's own line shows over the blue |
-| 4 | Release | the two are selected, a dashed box around them, its dashes blue and white |
-| 5 | Add a text, type `Pump`, then double-click on it and drag across it with the Selector | the text is selected as a shape, its letters never highlighted as page text |
+| 3 | Choose the Rectangle tool and click an empty place right of the first rectangle; again, further right | two new blue rectangles, the last one selected and outlined |
+| 4 | Press an empty place above and left of the first rectangle and drag down and right across the first two, the third left out, without releasing | the two shapes it touches are outlined while you drag, the third keeps its selection's outline; the rectangle's own blue line shows a white edge where it crosses the blue |
+| 5 | Still pressed, hold Alt (Option on a Mac) and move the pointer a little | only the rectangles wholly inside it stay outlined; release Alt and move again: the two are outlined again |
+| 6 | Bring the pointer back over the first rectangle alone, then release | the second is no longer outlined before the release; released, the first alone is selected |
+| 7 | Drag a selection rectangle across the first two and release | the two are selected, a dashed box around them, its dashes blue and the gaps between them white |
+| 8 | Choose the Text tool, click an empty place and type `Pump`, then double-click on the text and drag across it with the Selector | the text is picked as a shape and moved by the drag, its letters never highlighted as page text |
+| 9 | Double-click the value of Width in the panel | its number is highlighted, the panel's fields selecting their text as before |
 
 ## Tasks
 

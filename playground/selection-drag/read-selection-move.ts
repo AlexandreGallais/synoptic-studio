@@ -1,6 +1,6 @@
 import { pickAreasBox } from "../../src";
-import { readPickAreas } from "../hover";
 import { readKeptDrawing } from "../kept-shapes";
+import { readPickAreas } from "../picking";
 
 import type { ShapesMove } from "../hover";
 

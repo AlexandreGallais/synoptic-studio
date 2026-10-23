@@ -1,6 +1,6 @@
 import { shapeSelectionAfterClick } from "../../src";
-import { readPickAreas, readShapeAt } from "../hover";
 import { readSelectedShapes } from "../kept-shapes";
+import { readPickAreas, readShapeAt } from "../picking";
 
 import { writeShapeSelection } from "./write-shape-selection";
 

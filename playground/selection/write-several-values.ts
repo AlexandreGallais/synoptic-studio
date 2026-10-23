@@ -5,9 +5,9 @@ import {
   shapePanelValues,
   textPanelValues,
 } from "../../src";
-import { readTextBlock } from "../hover";
 import { readKeptDrawing, readSelectedShapes } from "../kept-shapes";
 import { selectElement } from "../page";
+import { readTextBlock } from "../picking";
 
 import { SEVERAL_FIELDS } from "./several-fields";
 

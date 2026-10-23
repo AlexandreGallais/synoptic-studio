@@ -9,6 +9,8 @@ export type SelectionDrag = {
   readonly pointer: Point;
   /** Whether Shift was held at the pointer's last move, keeping the larger axis of a move (F39). */
   readonly isShift: boolean;
+  /** Whether Alt was held at the pointer's last move, a selection rectangle then taking only the shapes it encloses (F43). */
+  readonly isAlt: boolean;
   /** Whether it draws a selection rectangle: pressed on an empty place of the drawing, in Shape mode. */
   readonly isRectangle: boolean;
   /** The shapes it moves, pressed on a shape in Shape mode (F39); undefined for another press. */

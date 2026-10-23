@@ -158,7 +158,10 @@ describe("a selection rectangle selects shapes (US-069)", () => {
 
   it("[F37.AC3] hides the outline of the shape under the pointer while the rectangle is drawn", () => {
     drawThreeShapes();
-    pressAndMove({ x: -10, y: -10 }, { x: 50, y: 50 });
+    // With Alt, the rectangle from (−10, −10) to (50, 50) encloses no shape, so that A under the
+    // pointer is not outlined: only the shapes it takes are (US-080).
+    dispatchDrawingPointer("pointerdown", { x: -10, y: -10 }, NO_KEY);
+    dispatchDrawingPointer("pointermove", { x: 50, y: 50 }, { altKey: true, shiftKey: false });
 
     expect(readOverlayPath("selection-area")).toBeDefined();
     expect(readOverlayPath("hover")).toBeUndefined();

@@ -21,7 +21,7 @@ This page also says which keys the editor uses, chosen at the spike.
 For the review's summary; each can be changed.
 
 - Shift + click on an empty place of the drawing keeps the selection, nothing being there to add or take out; a plain click there still selects none.
-- The dashed box around several shapes is the smallest upright box holding their outlines as drawn, dashed as the straight box of a turned shape: 4 long every 7, 1 thick, inside the box.
+- The dashed box around several shapes is the smallest upright box holding their outlines as drawn, dashed as the straight box of a turned shape: 4 long every 7, 1 thick, inside the box; since F43 the dashes are blue and the gaps between them white, so that the box shows on any color.
 - With several shapes selected, none is edited: the panel shows no field until F38. Back to one, the panel loads it as a click does, and the shape the panel left keeps its settings for the next shape of its kind.
 - Points mode edits one shape: its button is disabled while several are selected, and in Points mode a click with Shift or on a handle never changes the shapes selected, nor does Ctrl + A. A plain click on a handle used to select none when the point lay in a rounded corner's cut; it now selects the point only.
 - Escape selects none in Shape mode and in Points mode alike, as a click on an empty place does; in a field of the panel it changes nothing.
@@ -29,7 +29,7 @@ For the review's summary; each can be changed.
 - In Points mode, Delete deletes the points selected and never the shape, even with no point selected. Every field of the panel keeps the key, a text's Content too, which used to let Delete reach the points.
 - A selection rectangle that only meets a shape along its outline, a side or a corner, touches it, and a rectangle drawn exactly along a shape's sides encloses it. A side the editor computes a hair off a whole unit, as a polygon's often is, counts as on it, for touching as for enclosing.
 - Alt and Shift count as they are held when you release the rectangle, not when you press: you may press them during the drag.
-- The selection rectangle snaps to whole units, as a drag with a tool does, and shows once the pointer has moved by one; it is a light tint with a thin outline of 1 pixel, and the outline of the shape under the pointer is hidden while you drag it.
+- The selection rectangle snaps to whole units, as a drag with a tool does, and shows once the pointer has moved by one; it is a light tint with a thin outline of 1 pixel, over a white line of 3 since F43, so that it shows over a blue shape, and the outline of the shape under the pointer is hidden while you drag it; since F43 the shapes it would take are outlined as under the pointer while you drag it, those it encloses alone while Alt is held, and selected when you release it.
 - A drag with the Selector is never a click: pressing on a shape, dragging away and coming back, then releasing, selects nothing. Only a release before the pointer has moved away is a click.
 - In Points mode a drag draws no rectangle and selects nothing, the mode editing one shape.
 - Shift + a rectangle only adds shapes, never takes one out, even one already selected; a rectangle taking none leaves the selection as it is.

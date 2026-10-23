@@ -33,6 +33,14 @@
         min-width: 0;
         overflow: hidden;
       }
+      /* No selection of page text starts on the drawing nor on the layer above it (F43), so that a
+         text pressed, dragged across or double-clicked is picked as a shape, its letters never
+         highlighted; the prefixed property for Safari (REF-MDN-USER-SELECT). */
+      #canvas,
+      #overlay {
+        -webkit-user-select: none;
+        user-select: none;
+      }
       #canvas {
         height: 100%;
         background: repeating-conic-gradient(#8881 0 25%, transparent 0 50%) 0 0 / 20px 20px;
@@ -69,6 +77,14 @@
       #overlay path.selection-box,
       #overlay path.selection-rectangle {
         fill: var(--accent);
+      }
+      /* The light band under each of them (F43), so that they show on any color, the accent's
+         own included: wider than the outline, the dashes' gaps, as Inkscape's controls. */
+      #overlay path.hover-light,
+      #overlay path.selection-light,
+      #overlay path.selection-box-light,
+      #overlay path.selection-rectangle-light {
+        fill: #fff;
       }
       /* The selection rectangle's area (F37), a light tint of the outlines' color under its band. */
       #overlay path.selection-area {
