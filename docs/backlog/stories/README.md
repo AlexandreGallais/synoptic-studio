@@ -90,7 +90,7 @@
 | [US-069](./E02-F37-US-069-a-rectangle-selects-shapes.md) | F37 | A selection rectangle selects shapes | done |
 | [AUD-039](./E02-F37-AUD-039-audit-f37.md) | F37 | Audit F37 | done |
 | [VAL-038](./E02-F37-VAL-038-validate-f37.md) | F37 | Validate F37 | dropped |
-| [US-070](./E02-F38-US-070-the-panel-for-several-shapes.md) | F38 | The panel shows several shapes' position and size | ready |
+| [US-070](./E02-F38-US-070-the-panel-for-several-shapes.md) | F38 | The panel shows several shapes' position and size | done |
 | [US-071](./E02-F38-US-071-a-value-typed-for-several-shapes.md) | F38 | A value typed for several shapes, relative or fixed | ready |
 | [AUD-040](./E02-F38-AUD-040-audit-f38.md) | F38 | Audit F38 | ready |
 | [VAL-039](./E02-F38-VAL-039-validate-f38.md) | F38 | Validate F38 | dropped |

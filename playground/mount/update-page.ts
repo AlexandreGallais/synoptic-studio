@@ -46,8 +46,9 @@ function showNoShapeEdited(document: Document, kind: string): void {
 
 /**
  * Redraws the page from its inputs: the Text tool, the shapes, or the drawing alone while none or
- * several shapes are selected (`showNoShapeEdited`, F36, F37), the Points button disabled while
- * several are, Points mode editing one shape; then the layer above the drawing, so that the
+ * several shapes are selected (`showNoShapeEdited`, F36, F37), the Points button disabled and the
+ * fields of several shapes shown while several are (F38), Points mode editing one shape; then the
+ * layer above the drawing, so that the
  * outlines follow a shape changed under a pointer standing still (F36).
  *
  * @kind procedure
@@ -58,6 +59,7 @@ export function updatePage(document: Document): void {
   const kind = readShapeKind(document);
 
   selectElement(document, "mode-points").toggleAttribute("disabled", kind === "several");
+  selectElement(document, "several-fields").hidden = kind !== "several";
 
   if (kind === "none" || kind === "several") {
     showNoShapeEdited(document, kind);
