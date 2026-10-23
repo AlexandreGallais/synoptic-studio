@@ -1,6 +1,6 @@
 import { isDrawnText, shapePickArea, textPickArea } from "../../src";
-import { KEPT_TEXT_METRICS } from "../kept-shapes";
-import { readTextMeasure, readTextMetrics } from "../text-measure";
+
+import { readTextBlock } from "./read-text-block";
 
 import type { DrawingShape, PickArea, Text } from "../../src";
 
@@ -9,7 +9,7 @@ const NO_AREA: PickArea = { corners: [], isFlat: false, pieces: [] };
 
 /**
  * Reads what a text of the drawing offers the pointer: its frame (`textPickArea`) from its block
- * measured with its font's metrics, or with those it was last drawn with (`KEPT_TEXT_METRICS`).
+ * as it is drawn (`readTextBlock`).
  *
  * @kind procedure
  * @param document - page document
@@ -18,9 +18,9 @@ const NO_AREA: PickArea = { corners: [], isFlat: false, pieces: [] };
  * @see docs/domain/interaction.md#_2-selector
  */
 function readTextPickArea(document: Document, text: Text): PickArea {
-  const metrics = readTextMetrics(document, text) ?? KEPT_TEXT_METRICS.get(JSON.stringify(text));
+  const block = readTextBlock(document, text);
 
-  return metrics === undefined ? NO_AREA : textPickArea(text, readTextMeasure(metrics, text).block);
+  return block === undefined ? NO_AREA : textPickArea(text, block);
 }
 
 /**

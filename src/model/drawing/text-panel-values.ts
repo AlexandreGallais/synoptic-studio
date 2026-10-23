@@ -1,3 +1,5 @@
+import { textFrame, textStraightBox } from "../text-layout";
+
 import type { PanelValues } from "./panel-values";
 import type { Size } from "../../geometry";
 import type { Text } from "../text";
@@ -14,5 +16,8 @@ import type { Text } from "../text";
  * @see docs/domain/interaction.md#_2-selector
  */
 export function textPanelValues(text: Text, block: Size): PanelValues {
-  return { height: block.height, width: block.width, x: text.x, y: text.y };
+  const { height, width } = textFrame(text, block);
+  const box = textStraightBox(text, block);
+
+  return { height, width, x: box.minX, y: box.minY };
 }

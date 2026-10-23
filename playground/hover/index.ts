@@ -6,6 +6,7 @@ export * from "./listen-to-hover";
 export * from "./read-pick-areas";
 export * from "./read-selection-box";
 export * from "./read-shape-pick-area";
+export * from "./read-text-block";
 export type * from "./selection-drag";
 export * from "./selection-drags";
 export * from "./show-hover";

@@ -1,3 +1,6 @@
+import { contourBoundingBox, curveContour } from "../../geometry";
+import { shapeCorners } from "../shape";
+
 import type { PanelValues } from "./panel-values";
 import type { Shape } from "../shape";
 
@@ -13,5 +16,7 @@ import type { Shape } from "../shape";
  * @see docs/domain/interaction.md#_2-selector
  */
 export function shapePanelValues(shape: Shape): PanelValues {
-  return { height: shape.height, width: shape.width, x: 0, y: 0 };
+  const box = contourBoundingBox(curveContour(shapeCorners(shape)));
+
+  return { height: shape.height, width: shape.width, x: box.minX, y: box.minY };
 }
