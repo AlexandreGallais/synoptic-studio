@@ -1,7 +1,7 @@
 // @vitest-environment happy-dom
 import { beforeEach, describe, expect, it } from "vitest";
 
-import { isDrawnText } from "../../src";
+import { historySize, isDrawnText } from "../../src";
 import { readDrawnTexts, readKeptDrawing, readSelectedShapes } from "../kept-shapes";
 import {
   chooseOption,
@@ -553,7 +553,9 @@ describe("the Undo and Redo buttons and the history's size (US-074)", () => {
     holdRight(1);
 
     // The rectangle the page opens with, 616 characters, held by the past alone: 616 × 2 =
-    // 1 232 bytes, its reference 8 and its index 8: 1 248 bytes, 1.2 kB.
+    // 1 232 bytes, its reference 8 and its index 8: 1 248 bytes, 1.2 kB; not the 1 244 of A, a
+    // rectangle 100 × 50 of 614 characters, that the moves held count.
+    expect(readHistorySize()).toBe(1248);
     expect(readText("#history-size")).toBe("History 1.2 kB of 100 MB");
     expect(readDisabledState("history-undo")).toBe("false");
     expect(readDisabledState("history-redo")).toBe("true");
@@ -613,6 +615,17 @@ function typeAndLeave(id: string, value: string): void {
  */
 function readPresentDrawing(): readonly KeptShape[] {
   return PAGE_HISTORIES.get(document)?.present.drawing ?? [];
+}
+
+/**
+ * Reads the size of the page's history, as the toolbar counts it (`historySize`).
+ *
+ * @returns its bytes; 0 without a history
+ */
+function readHistorySize(): number {
+  const history = PAGE_HISTORIES.get(document);
+
+  return history === undefined ? 0 : historySize(history);
 }
 
 /**

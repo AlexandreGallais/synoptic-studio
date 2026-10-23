@@ -45,6 +45,18 @@ describe("historyWithStep (F40)", () => {
     expect(historyWithStep(START, again)).toBe(START);
   });
 
+  it("[F40.AC3] keeps the history itself for two shapes of equal texts read again", () => {
+    // A twice, two objects of the same text, both selected: the same drawing read again.
+    const twice: History<KeptRectangle> = {
+      future: [],
+      past: [],
+      present: historyState([keptRectangleAt(10), keptRectangleAt(10)], [0, 1]),
+    };
+    const again = historyState([keptRectangleAt(10), keptRectangleAt(10)], [0, 1]);
+
+    expect(historyWithStep(twice, again)).toBe(twice);
+  });
+
   it("[F40.AC3] takes no step for another selection, the present's selection replaced", () => {
     const selected = historyWithStep(
       NUDGED,
@@ -125,6 +137,19 @@ describe("historyWithStep (F40)", () => {
       expect(after.past).toEqual(isStep ? [...history.past, history.present] : history.past);
       expect(after.future).toEqual(isStep ? [] : history.future);
       expect(JSON.stringify({ history, state })).toBe(before);
+    },
+  );
+
+  test.prop({ history: ANY_HISTORY })(
+    "[F40.AC3] takes no step for a copy of the present, each shape a new object of the same text",
+    ({ history }) => {
+      const { drawing, selection } = history.present;
+      const copy = historyState(
+        drawing.map((shape) => [...shape]),
+        [...selection],
+      );
+
+      expect(historyWithStep(history, copy)).toBe(history);
     },
   );
 });

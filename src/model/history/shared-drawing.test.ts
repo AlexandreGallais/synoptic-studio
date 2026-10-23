@@ -39,6 +39,17 @@ describe("sharedDrawing (F40)", () => {
     expect(shared[1]).toBe(SHAPE_A);
   });
 
+  it("[F40.AC3] keeps each of two present shapes of equal texts at its index, read again", () => {
+    // A twice, two objects: read again, index 0 takes the present's first, index 1 its second,
+    // never the last of the two for both.
+    const first = keptRectangleAt(10);
+    const second = keptRectangleAt(10);
+    const shared = sharedDrawing([keptRectangleAt(10), keptRectangleAt(10)], [first, second]);
+
+    expect(shared[0]).toBe(first);
+    expect(shared[1]).toBe(second);
+  });
+
   it("[F40.AC4] keeps every shape given against an empty present, and an empty drawing empty", () => {
     const added = keptRectangleAt(10);
 

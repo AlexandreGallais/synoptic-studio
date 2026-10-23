@@ -42,6 +42,12 @@ describe("arcCrossing (DERIV-painted-area step 3)", () => {
     // Chord from (20, 0) to (0, 20): d = +1; (−20, 20) × (−18, 8) = −160 + 360 = 200 > 0: +1.
     expect(arcCrossing(REVERSED, { x: 2, y: 8 })).toBe(1);
   });
+
+  it("counts 0 for (8, 8) with the arc travelled the other way", () => {
+    // Chord from (20, 0) to (0, 20): d = +1; (−20, 20) × (−12, 8) = −160 + 240 = 80 > 0: +1.
+    // Inside the circular segment, the arc travelled negatively, σ = −1: +1 − 1 = 0.
+    expect(arcCrossing(REVERSED, { x: 8, y: 8 })).toBe(0);
+  });
 });
 
 describe("arcCrossing (properties)", () => {

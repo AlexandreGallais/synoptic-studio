@@ -10,10 +10,18 @@ import type { History, HistoryBound, HistoryState } from "../../src";
 import type { KeptShape } from "../kept-shapes";
 
 /**
+ * The bound each history the page recorded was last bounded by, by the history itself, so that a
+ * record that took no step, the past and the states to come the same lists, is not measured
+ * again while the bound is the same (`readSavedHistory`).
+ */
+const BOUNDED_HISTORIES = new WeakMap<History<KeptShape>, HistoryBound>();
+
+/**
  * Reads the history once the page's drawing and selection are recorded: a step when the drawing
  * changed, the selection alone replaced otherwise (`historyWithStep`), the history then bounded
- * (`boundedHistory`) by the bound the designer set; with no history yet, one starts from them,
- * nothing past nor to come.
+ * (`boundedHistory`) by the bound the designer set, unless it took no step and was bounded by
+ * that bound already (`BOUNDED_HISTORIES`), its size then the same; with no history yet, one
+ * starts from them, nothing past nor to come.
  *
  * @kind procedure
  * @param history - the page's history; undefined before its first redraw
@@ -27,9 +35,21 @@ function readSavedHistory(
   present: HistoryState<KeptShape>,
   bound: HistoryBound,
 ): History<KeptShape> {
-  return history === undefined
-    ? { future: [], past: [], present }
-    : boundedHistory(historyWithStep(history, present), bound);
+  if (history === undefined) {
+    return { future: [], past: [], present };
+  }
+
+  const stepped = historyWithStep(history, present);
+  const isBounded = [
+    BOUNDED_HISTORIES.get(history) === bound,
+    stepped.past === history.past,
+    stepped.future === history.future,
+  ].every(Boolean);
+  const saved = isBounded ? stepped : boundedHistory(stepped, bound);
+
+  BOUNDED_HISTORIES.set(saved, bound);
+
+  return saved;
 }
 
 /**

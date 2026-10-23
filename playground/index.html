@@ -608,7 +608,7 @@
             Redo
           </button>
           <label
-            title="The memory the history keeps for Undo and Redo, from 0 to 1,000 MB: beyond it, the oldest steps are dropped first, never fewer than the steps kept. A move of one shape adds about 1,244 bytes."
+            title="The memory the history keeps for Undo and Redo, from 0 to 1,000 MB: beyond it, the oldest steps are dropped first, never fewer than the steps kept. A move of a rectangle 100 × 50 alone adds about 1,244 bytes, of the 120 × 80 the page opens with 1,248."
             >Memory
             <input id="history-memory" type="number" min="0" max="1000" step="1" value="100" />
             MB</label
@@ -621,7 +621,7 @@
           <span id="history-size"></span>
           <span
             id="history-moves"
-            title="About how many moves of one shape the memory holds, each adding about 1,244 bytes; a change of more shapes takes more."
+            title="About how many moves of a rectangle 100 × 50 alone the memory holds, each adding about 1,244 bytes; a larger shape, or a change of more shapes, takes more."
           ></span>
         </p>
         <p role="group" aria-label="Page">

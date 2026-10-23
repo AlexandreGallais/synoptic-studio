@@ -9,10 +9,36 @@ import { historyWithStep } from "./history-with-step";
 import { undoneHistory } from "./undone-history";
 
 import type { History } from "./history";
+import type { HistoryBound } from "./history-bound";
 import type { KeptRectangle } from "../../../tests";
 
 /** B, shared by every state. */
 const SHAPE_B = keptRectangleAt(200);
+
+/**
+ * Counts how many times a history is measured as it is bounded: each measure (`historySize`) reads
+ * the selection of every past state it keeps once, so that the newest, never dropped here, is read
+ * once a measure.
+ *
+ * @param history - the history bounded, at least one state past, never all dropped
+ * @param bound - the memory size and the steps kept
+ * @returns how many times `historySize` read it
+ */
+function countedMeasures(history: History<KeptRectangle>, bound: HistoryBound): number {
+  const reads: string[] = [];
+  const newest = history.past.at(-1) ?? historyState([], []);
+  const counted = new Proxy(newest, {
+    get: (state, key): unknown => {
+      reads.push(String(key));
+
+      return Reflect.get(state, key);
+    },
+  });
+
+  boundedHistory({ ...history, past: [...history.past.slice(0, -1), counted] }, bound);
+
+  return reads.filter((key) => key === "selection").length;
+}
 
 /** A nudged twice, A selected: A and B, A′ and B past, A″ and B present; 2 504 bytes. */
 const TWICE: History<KeptRectangle> = {
@@ -73,6 +99,15 @@ describe("boundedHistory (F40)", () => {
       expect(bounded.future).toBe(undone.future);
       expect(historySize(bounded)).toBe(1252);
     }
+  });
+
+  it.each([
+    { measures: 1, size: 2504, title: "once within its size" },
+    { measures: 2, size: 2000, title: "twice over it by its oldest state" },
+  ])("[F40.AC4] measures the history $title", ({ measures, size }) => {
+    // 2 504 ≤ 2 504: measured once, nothing dropped; 2 504 > 2 000, then 1 252 ≤ 2 000 with 1
+    // dropped (`doubledRange`): twice, the range from 1 to 1 needing no halving.
+    expect(countedMeasures(TWICE, { size, steps: 0 })).toBe(measures);
   });
 
   test.prop({
@@ -164,6 +199,15 @@ describe("boundedHistory, A moved again and again (US-076)", () => {
 });
 
 describe("boundedHistory, a size just set smaller (US-076)", () => {
+  it("[F40.AC4] measures 10 moves of A 7 times to drop 7 for 3 732 bytes", () => {
+    // 12 440 > 3 732: 1; doubling, 1, 2 and 4 dropped leave 9, 8 and 6 moves, over, 8 leaves 2,
+    // within: 4 more; halving from 4 + 1 = 5 to 8, 6 leaves 4, over, then 7 leaves 3, within:
+    // 2 more, 7 in all.
+    const history = movedHistory([], 10, 12_440);
+
+    expect(countedMeasures(history, { size: 3732, steps: 0 })).toBe(7);
+  });
+
   it("[F40.AC4] drops 7 of 10 moves of A at once for 3 732 bytes, 3 moves", () => {
     // 10 × 1 244 = 12 440 > 3 732 = 3 × 1 244: the 7 oldest dropped, A at x 17 the oldest left.
     const history = boundedHistory(movedHistory([], 10, 12_440), { size: 3732, steps: 0 });

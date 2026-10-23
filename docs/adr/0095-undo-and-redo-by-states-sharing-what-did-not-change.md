@@ -2,6 +2,8 @@
 
 **Status**: Accepted (2026-10-23): the Product Owner left the choice to the agent, asking for the way that makes most sense for the project rather than the fastest (SP-029's answer 1); research note 0030.
 
+**Note (2026-10-23, AUD-042)**: decision 4's "a 64-bit slot" is the slot of a tagged value without pointer compression, an upper bound: with compression V8 holds it in 32 bits (`REF-V8-POINTER-COMPRESSION`); the 8 bytes counted are unchanged. Each shape's text length is kept once measured (ADR-0096).
+
 ## Context
 
 - The rules of undo and redo were set on 2026-10-22 (Q7, `interaction.md` §7): one step per finished action — a drag at its release, a value typed when Enter is pressed or the field left, a text when its editing is left, an addition, a deletion; selecting alone is never a step; the history is bounded by a memory size the user sets, never by a count of steps. How it is built, commands or states, was left to F40's spike, from read sources.

@@ -74,9 +74,16 @@ describe("the history's memory size and steps kept, set by the designer (US-076)
     expect(readValue("history-steps")).toBe("5");
     expect(readText("#history-size")).toBe("History 0 B of 100 MB");
     expect(readText("#history-moves")).toBe("about 80,380 moves");
-    expect(selectPageElement("#history-memory").closest("label")?.title).toContain("1,244 bytes");
+
+    expect(selectPageElement("#history-memory").closest("label")?.title).toContain(
+      "a rectangle 100 × 50 alone adds about 1,244 bytes, of the 120 × 80 the page opens with 1,248",
+    );
+
     expect(selectPageElement("#history-steps").closest("label")?.title).toContain("whatever");
-    expect(selectPageElement("#history-moves").title).toContain("1,244 bytes");
+
+    expect(selectPageElement("#history-moves").title).toContain(
+      "moves of a rectangle 100 × 50 alone the memory holds, each adding about 1,244 bytes",
+    );
   });
 
   it("[F40.AC4] keeps 20 MB and 3 steps in the browser for the next session", () => {
