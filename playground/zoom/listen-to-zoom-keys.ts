@@ -1,3 +1,4 @@
+import { readListenerSignal } from "../listeners";
 import { readKeyField } from "../selection-keys";
 import { POINTER_OFFSETS } from "../view";
 
@@ -71,15 +72,19 @@ function readZoomKey(event: KeyboardEvent): ZoomName | undefined {
  * @see docs/domain/interaction.md#_1-tools
  */
 export function listenToZoomKeys(document: Document, update: () => void): void {
-  document.addEventListener("keydown", (event) => {
-    const name = readZoomKey(event);
+  document.addEventListener(
+    "keydown",
+    (event) => {
+      const name = readZoomKey(event);
 
-    if (name === undefined) {
-      return;
-    }
+      if (name === undefined) {
+        return;
+      }
 
-    event.preventDefault();
-    applyZoom(document, name, POINTER_OFFSETS.get(document));
-    update();
-  });
+      event.preventDefault();
+      applyZoom(document, name, POINTER_OFFSETS.get(document));
+      update();
+    },
+    { signal: readListenerSignal(document) },
+  );
 }

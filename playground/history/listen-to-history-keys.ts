@@ -1,7 +1,9 @@
 import { sizedRedoneHistory, sizedUndoneHistory } from "../../src";
+import { readListenerSignal } from "../listeners";
 import { readKeyField } from "../selection-keys";
 
 import { moveHistory } from "./move-history";
+import { scheduleHistoryStep } from "./schedule-history-step";
 import { TYPED_FIELDS } from "./typed-fields";
 
 import type { SizedHistory } from "../../src";
@@ -87,15 +89,45 @@ function writeTypedField(event: Event, isTyped: boolean): void {
  * @see docs/domain/interaction.md#_1-tools
  */
 function listenToTypedFields(document: Document): void {
-  document.addEventListener("input", (event) => {
-    writeTypedField(event, true);
-  });
+  document.addEventListener(
+    "input",
+    (event) => {
+      writeTypedField(event, true);
+    },
+    { signal: readListenerSignal(document) },
+  );
 
   for (const type of ["change", "focusout"]) {
-    document.addEventListener(type, (event) => {
-      writeTypedField(event, false);
-    });
+    document.addEventListener(
+      type,
+      (event) => {
+        writeTypedField(event, false);
+      },
+      { signal: readListenerSignal(document) },
+    );
   }
+}
+
+/**
+ * Asks a step of the history at each key released outside the panel's fields
+ * (`scheduleHistoryStep`), so that a key held is one step from its press to its release (SP-029's
+ * answer 3).
+ *
+ * @kind procedure
+ * @param document - page document
+ * @param update - redraws the page from the values typed
+ * @see docs/domain/interaction.md#_7-navigation-and-history
+ */
+function listenToKeyReleases(document: Document, update: () => void): void {
+  document.addEventListener(
+    "keyup",
+    (event) => {
+      if (readKeyField(event) === undefined) {
+        scheduleHistoryStep(document, update);
+      }
+    },
+    { signal: readListenerSignal(document) },
+  );
 }
 
 /**
@@ -103,6 +135,7 @@ function listenToTypedFields(document: Document): void {
  * and Ctrl + Y redo, Cmd for Ctrl on macOS, their default prevented (`readHistoryMove`,
  * `moveHistory`); a field of the panel typed in since its value was applied keeps them, any other
  * field leaves them to the drawing (SP-029's answer 9). Heard as the key goes down to its target.
+ * A key released outside the fields asks a step (`listenToKeyReleases`).
  *
  * @kind procedure
  * @param document - page document
@@ -111,6 +144,7 @@ function listenToTypedFields(document: Document): void {
  */
 export function listenToHistoryKeys(document: Document, update: () => void): void {
   listenToTypedFields(document);
+  listenToKeyReleases(document, update);
 
   document.addEventListener(
     "keydown",
@@ -124,6 +158,6 @@ export function listenToHistoryKeys(document: Document, update: () => void): voi
       event.preventDefault();
       moveHistory(document, move, update);
     },
-    { capture: true },
+    { capture: true, signal: readListenerSignal(document) },
   );
 }

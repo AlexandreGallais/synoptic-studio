@@ -1,9 +1,11 @@
 import { NO_VERTEX_SELECTION } from "../../src";
+import { readListenerSignal } from "../listeners";
 import { selectElement, writeSelection } from "../page";
 import { listenToPoints } from "../points";
 import { listenToPosition, listenToTurn } from "../position";
 import { listenToSeveralFields } from "../selection";
 import { listenToAnchor, listenToRadius, writeChosenFreeShape } from "../shape";
+import { listenToTextFields } from "../text";
 import { listenToModes } from "../toolbar";
 
 /** Number inputs of the shapes, in display order. */
@@ -46,9 +48,9 @@ function listenToPanelControls(document: Document, update: () => void): void {
 
 /**
  * Calls back when a value of the shape changes: a number typed, another shape, anchor or mode
- * chosen, the window resized. A radius typed goes to every vertex: the different radii kept on the
- * radius input are dropped first (F03.AC2). A value typed for several shapes sets each of them
- * (`listenToSeveralFields`, F38).
+ * chosen, the window resized, a field of the text typed (`listenToTextFields`). A radius typed
+ * goes to every vertex: the different radii kept on the radius input are dropped first
+ * (F03.AC2). A value typed for several shapes sets each of them (`listenToSeveralFields`, F38).
  *
  * @kind procedure
  * @param document - page document
@@ -75,5 +77,10 @@ export function listenToInputs(document: Document, update: () => void): void {
   listenToShapeChoice(document, update);
 
   listenToPanelControls(document, update);
-  document.defaultView?.addEventListener("resize", update);
+
+  document.defaultView?.addEventListener("resize", update, {
+    signal: readListenerSignal(document),
+  });
+
+  listenToTextFields(document, update);
 }

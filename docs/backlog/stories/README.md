@@ -119,7 +119,7 @@
 | [AUD-044](./E02-F42-AUD-044-audit-f42.md) | F42 | Audit F42 | done |
 | [VAL-043](./E02-F42-VAL-043-validate-f42.md) | F42 | Validate F42 | dropped |
 | [SP-031](./E02-F43-SP-031-refine-the-corrections.md) | F43 | Refine the corrections from the first try | done |
-| [EN-150](./E02-F43-EN-150-the-playground-tests-fast-again.md) | F43 | The playground's tests fast again | ready |
+| [EN-150](./E02-F43-EN-150-the-playground-tests-fast-again.md) | F43 | The playground's tests fast again | done |
 | [US-080](./E02-F43-US-080-the-helps-seen-on-any-color.md) | F43 | The helps seen on any color, and what a selection rectangle takes | ready |
 | [US-081](./E02-F43-US-081-the-arrows-in-the-fields-and-on-the-drawing.md) | F43 | The arrows in the panel's fields and on the drawing | ready |
 | [US-082](./E02-F43-US-082-a-text-box-square-the-wheel-with-shift.md) | F43 | A text's box kept square, the wheel with Shift, several shapes' sizes | ready |

@@ -25,7 +25,7 @@ In delivery order.
 | ID | Type | Title | Status |
 | --- | --- | --- | --- |
 | [SP-031](../stories/E02-F43-SP-031-refine-the-corrections.md) | SP | Refine the corrections from the first try | done |
-| [EN-150](../stories/E02-F43-EN-150-the-playground-tests-fast-again.md) | EN | The playground's tests fast again | ready |
+| [EN-150](../stories/E02-F43-EN-150-the-playground-tests-fast-again.md) | EN | The playground's tests fast again | done |
 | [US-080](../stories/E02-F43-US-080-the-helps-seen-on-any-color.md) | US | The helps seen on any color, and what a selection rectangle takes | ready |
 | [US-081](../stories/E02-F43-US-081-the-arrows-in-the-fields-and-on-the-drawing.md) | US | The arrows in the panel's fields and on the drawing | ready |
 | [US-082](../stories/E02-F43-US-082-a-text-box-square-the-wheel-with-shift.md) | US | A text's box kept square, the wheel with Shift, several shapes' sizes | ready |

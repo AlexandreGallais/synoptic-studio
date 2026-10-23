@@ -1,10 +1,10 @@
 import { listenToGuide, readStepFromAddress, showGuidedStep } from "../guided-test";
 import { listenToHistory, updateHistory } from "../history";
 import { listenToHover } from "../hover";
+import { removeListeners } from "../listeners";
 import { listenToColorPicker } from "../picker-controls";
 import { scheduleRedraw } from "../redraw";
 import { listenToDrawing } from "../shape-drawing";
-import { listenToTextFields } from "../text";
 
 import { listenToInputs } from "./listen-to-inputs";
 import { updatePage } from "./update-page";
@@ -12,11 +12,12 @@ import { updatePage } from "./update-page";
 import type { GuidedStep } from "../guided-steps";
 
 /**
- * Mounts the playground: redraws on every input and window resize, at most once per animation
- * frame, the inputs before it gathered (`scheduleRedraw`, US-048), each redraw bringing the history
- * of the drawing up to the page (`updateHistory`, F40); wires the toolbar, the guided test and,
- * after them, the history (`listenToHistory`), then shows the step asked by the page address, or
- * the first one.
+ * Mounts the playground, the listeners a mount before this one put on the document and its window
+ * removed first (`removeListeners`, EN-150), so that each event is heard once: redraws on every
+ * input and window resize, at most once per animation frame, the inputs before it gathered
+ * (`scheduleRedraw`, US-048), each redraw bringing the history of the drawing up to the page
+ * (`updateHistory`, F40); wires the toolbar, the guided test and, after them, the history
+ * (`listenToHistory`), then shows the step asked by the page address, or the first one.
  *
  * @kind procedure
  * @param document - page document
@@ -32,8 +33,8 @@ export function mountPlayground(document: Document, steps: readonly GuidedStep[]
     });
   }
 
+  removeListeners(document);
   listenToInputs(document, update);
-  listenToTextFields(document, update);
   listenToColorPicker(document, update);
   listenToDrawing(document, update);
   listenToHover(document);
