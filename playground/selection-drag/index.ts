@@ -3,6 +3,7 @@ export * from "./listen-to-selection-drag";
 export * from "./move-selection-drag";
 export * from "./read-move-shift";
 export * from "./read-moved-drawing";
+export * from "./read-selection-move";
 export * from "./read-shapes-move";
 export * from "./select-shapes-in-box";
 export * from "./show-selection-drag";
