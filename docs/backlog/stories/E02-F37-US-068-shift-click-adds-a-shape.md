@@ -47,7 +47,7 @@ The examples draw three rectangles 100 × 100: A at (0, 0), B at (150, 0), C at 
 ## Tasks
 
 - [x] T1 — The selection of several shapes by their indices, reusing `selectionAfterHandleClick` (`src/model/selection/`): interface and failing tests (1 h)
-- [ ] T2 — Several shapes kept, each outlined and a dashed box around them, the panel saying how many, back to one loaded into the panel, the tests of T1 passing (2 h)
+- [x] T2 — Several shapes kept, each outlined and a dashed box around them, the panel saying how many, back to one loaded into the panel, the tests of T1 passing (2 h)
 - [ ] T3 — Escape and Ctrl + A outside the fields, the Points button; the rules in `interaction.md` §2; the Product Owner test card (1 h)
 
 Files: `playground/selection/` (the click with Shift or Ctrl, the selection kept), `playground/kept-shapes/drawing-keys.ts` (the selection's key), `playground/hover/create-selection-elements.ts` (one outline per shape selected, and the dashed box of `playground/drawing/create-straight-box-element.ts` around them), `playground/mount/update-page.ts` and `playground/page/` (a kind for several shapes beside `none`), `playground/placing/start-new-shape.ts` (a shape placed while several are selected), `playground/toolbar/` (the Points button). `@see` `docs/domain/interaction.md#_2-selector`, `REF-FIGMA-SELECT-LAYERS`.

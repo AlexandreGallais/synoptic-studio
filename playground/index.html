@@ -50,7 +50,7 @@
         width: 100%;
         height: 100%;
       }
-      /* The layer above the drawing (F36): the outlines of the shape selected and of the shape
+      /* The layer above the drawing (F36): the outlines of the shapes selected and of the shape
          under the pointer, which the pointer passes through to the drawing; never exported. */
       #overlay {
         position: absolute;
@@ -62,9 +62,11 @@
         width: 100%;
         height: 100%;
       }
-      /* The outlines: a band about the shape's contour, a fill, never a native stroke. */
+      /* The outlines: a band about the shape's contour, a fill, never a native stroke; the dashed
+         box around several shapes selected (F37), thin filled rectangles. */
       #overlay path.hover,
-      #overlay path.selection {
+      #overlay path.selection,
+      #overlay path.selection-box {
         fill: var(--accent);
       }
       /* A path without its own fill; a text's strokes carry their own color (US-031, US-041). */
@@ -593,6 +595,7 @@
         <option value="text">Text</option>
         <option value="free" hidden>Free shape</option>
         <option value="none" hidden>No shape selected</option>
+        <option value="several" hidden>Several shapes selected</option>
       </select>
       <!-- The fields of the shape edited, hidden while none is selected (F36). -->
       <div id="shape-panel">

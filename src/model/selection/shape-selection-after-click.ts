@@ -1,3 +1,5 @@
+import { selectionAfterHandleClick } from "./selection-after-handle-click";
+
 /**
  * The shapes selected after a click with the Selector (F37): Shift adds the shape under the
  * pointer, or takes it out when it is selected, a plain click selects it alone, as a vertex's
@@ -16,5 +18,12 @@ export function shapeSelectionAfterClick(
   index: number,
   isShift: boolean,
 ): readonly number[] {
-  return isShift ? selected : [index];
+  if (index < 0) {
+    return isShift ? selected : [];
+  }
+
+  // A drawing has no range: the start the vertices keep for one is not read.
+  const keys = { shift: isShift, toggle: false };
+
+  return selectionAfterHandleClick({ selected, start: undefined }, index, keys).selected;
 }

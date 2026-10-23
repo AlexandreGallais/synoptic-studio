@@ -4,7 +4,7 @@ export * from "./load-picked-geometry";
 export * from "./load-picked-shape";
 export * from "./load-picked-text";
 export * from "./pressed-tools";
-export * from "./read-selected-shapes";
+
 export * from "./select-shape-at";
 export * from "./show-no-selection";
 export * from "./show-several-selection";
