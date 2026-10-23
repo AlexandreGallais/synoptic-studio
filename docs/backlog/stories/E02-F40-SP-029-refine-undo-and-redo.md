@@ -3,7 +3,7 @@ id: SP-029
 epic: E02
 feature: F40
 title: Refine undo and redo
-status: ready
+status: done
 points: 3
 ---
 

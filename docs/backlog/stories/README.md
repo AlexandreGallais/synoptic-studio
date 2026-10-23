@@ -100,7 +100,7 @@
 | [US-073](./E02-F39-US-073-the-arrows-nudge-the-shapes-selected.md) | F39 | The arrow keys nudge the shapes selected | done |
 | [AUD-041](./E02-F39-AUD-041-audit-f39.md) | F39 | Audit F39 | done |
 | [VAL-040](./E02-F39-VAL-040-validate-f39.md) | F39 | Validate F39 | dropped |
-| [SP-029](./E02-F40-SP-029-refine-undo-and-redo.md) | F40 | Refine undo and redo | ready |
+| [SP-029](./E02-F40-SP-029-refine-undo-and-redo.md) | F40 | Refine undo and redo | done |
 | [EN-146](./E02-F40-EN-146-the-history-in-the-model.md) | F40 | The history of the drawing in the model | draft |
 | [US-074](./E02-F40-US-074-undo-and-redo-the-drawings-actions.md) | F40 | Undo and redo what is done on the drawing | draft |
 | [US-075](./E02-F40-US-075-undo-and-redo-the-panels-changes.md) | F40 | Undo and redo what is typed and chosen in the panel | draft |

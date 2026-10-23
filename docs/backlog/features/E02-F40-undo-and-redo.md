@@ -24,7 +24,7 @@ In delivery order.
 
 | ID | Type | Title | Status |
 | --- | --- | --- | --- |
-| [SP-029](../stories/E02-F40-SP-029-refine-undo-and-redo.md) | SP | Refine undo and redo | ready |
+| [SP-029](../stories/E02-F40-SP-029-refine-undo-and-redo.md) | SP | Refine undo and redo | done |
 | [EN-146](../stories/E02-F40-EN-146-the-history-in-the-model.md) | EN | The history of the drawing in the model | draft |
 | [US-074](../stories/E02-F40-US-074-undo-and-redo-the-drawings-actions.md) | US | Undo and redo what is done on the drawing | draft |
 | [US-075](../stories/E02-F40-US-075-undo-and-redo-the-panels-changes.md) | US | Undo and redo what is typed and chosen in the panel | draft |
