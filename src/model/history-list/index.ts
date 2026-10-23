@@ -1,6 +1,7 @@
 export * from "./changed-fields";
 export * from "./drawing-changed-fields";
 export * from "./field-words";
+export * from "./fields-step-name";
 export type * from "./history-list";
 export * from "./history-list-rows";
 export type * from "./history-row";

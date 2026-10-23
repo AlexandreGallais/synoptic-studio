@@ -13,5 +13,8 @@ import type { HistoryWindow } from "./history-window";
  * @see docs/domain/interaction.md#_7-navigation-and-history
  */
 export function shownHistoryWindow(past: number, future: number, rows: number): HistoryWindow {
-  return { after: future, before: Math.min(past, rows) };
+  const beside = Math.max(rows - 1, 0);
+  const before = Math.min(past, beside - Math.min(future, Math.floor(beside / 2)));
+
+  return { after: Math.min(future, beside - before), before };
 }

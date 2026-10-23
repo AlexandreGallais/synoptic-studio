@@ -11,5 +11,5 @@ import type { KeptShape } from "../kept-shapes";
  * @see docs/domain/interaction.md#_7-navigation-and-history
  */
 export function readKeptShapeFields(kept: KeptShape): Readonly<Record<string, unknown>> {
-  return kept.shape;
+  return { ...kept.shape, kind: kept.kind };
 }

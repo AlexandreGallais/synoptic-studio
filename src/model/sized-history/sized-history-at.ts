@@ -1,3 +1,6 @@
+import { sizedRedoneHistory } from "./sized-redone-history";
+import { sizedUndoneHistory } from "./sized-undone-history";
+
 import type { SizedHistory } from "./sized-history";
 import type { HistoryState } from "../history";
 
@@ -18,5 +21,10 @@ export function sizedHistoryAt<T extends WeakKey>(
   history: SizedHistory<T>,
   state: HistoryState<T>,
 ): SizedHistory<T> {
-  return state === history.present ? history : { ...history, present: state };
+  const pastIndex = history.past.lastIndexOf(state);
+  const isPast = pastIndex !== -1;
+  const moves = isPast ? history.past.length - pastIndex : history.future.indexOf(state) + 1;
+  const move = isPast ? sizedUndoneHistory : sizedRedoneHistory;
+
+  return Array.from({ length: moves }).reduce<SizedHistory<T>>((moved) => move(moved), history);
 }

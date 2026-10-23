@@ -36,7 +36,7 @@ function writeHistoryState(document: Document, state: HistoryState<KeptShape>): 
  *
  * @kind procedure
  * @param document - page document
- * @param move - `sizedUndoneHistory` or `sizedRedoneHistory`
+ * @param move - `sizedUndoneHistory`, `sizedRedoneHistory`, or `sizedHistoryAt` to a state
  * @returns the history whose present to write back; undefined with nothing to undo or redo
  * @see docs/domain/interaction.md#_7-navigation-and-history
  */
@@ -69,7 +69,7 @@ function readMovedHistory(
  *
  * @kind procedure
  * @param document - page document
- * @param move - `sizedUndoneHistory` or `sizedRedoneHistory`
+ * @param move - `sizedUndoneHistory`, `sizedRedoneHistory`, or `sizedHistoryAt` to a state
  * @param update - redraws the page from the values typed
  * @see docs/domain/interaction.md#_7-navigation-and-history
  */

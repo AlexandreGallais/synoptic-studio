@@ -8,5 +8,7 @@
  * @see docs/domain/interaction.md#_7-navigation-and-history
  */
 export function fieldWords(field: string): string {
-  return field.toUpperCase();
+  const words = field.replaceAll(/(?<capital>[A-Z])/gu, " $<capital>").toLowerCase();
+
+  return `${words.slice(0, 1).toUpperCase()}${words.slice(1)}`;
 }

@@ -1,3 +1,5 @@
+import { changedFields } from "./changed-fields";
+
 import type { ShapeFields } from "./shape-fields";
 
 /**
@@ -17,5 +19,13 @@ export function drawingChangedFields<T>(
   after: readonly T[],
   fields: ShapeFields<T>,
 ): readonly string[] {
-  return [...before, ...after].map((shape) => Object.keys(fields(shape)).join(","));
+  const changed = before.flatMap((shape, index) => {
+    const replaced = after[index];
+
+    return replaced === undefined || replaced === shape
+      ? []
+      : changedFields(fields(shape), fields(replaced));
+  });
+
+  return [...new Set(changed)].toSorted((first, second) => first.localeCompare(second));
 }

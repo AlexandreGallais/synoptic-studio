@@ -1,11 +1,14 @@
+import { drawingChangedFields } from "./drawing-changed-fields";
+import { fieldsStepName } from "./fields-step-name";
+import { isKeptInOrder } from "./is-kept-in-order";
+
 import type { ShapeFields } from "./shape-fields";
 
 /**
  * The name of a step by its action (US-077), read from the drawings before and after it: shapes
  * added, every other kept in order, `Add`; shapes removed, every other kept in order, `Delete`; as
- * many shapes, the fields changed (`drawingChangedFields`): only `x` and `y`, `Move`; `kind`
- * among them, `Convert`; one other field beside `x` and `y`, its words (`fieldWords`), `Width`;
- * any other step, `Change`.
+ * many shapes, named by the fields changed (`drawingChangedFields`, `fieldsStepName`); any other
+ * step, `Change`.
  *
  * @kind domain
  * @template T - type of the shapes, or of what is kept of each
@@ -20,5 +23,16 @@ export function stepName<T>(
   after: readonly T[],
   fields: ShapeFields<T>,
 ): string {
-  return [...before, ...after].map((shape) => Object.keys(fields(shape)).join(",")).join(",");
+  if (after.length === before.length) {
+    return fieldsStepName(drawingChangedFields(before, after, fields));
+  }
+
+  const isAdded = after.length > before.length;
+  const isKept = isAdded ? isKeptInOrder(before, after) : isKeptInOrder(after, before);
+
+  if (!isKept) {
+    return "Change";
+  }
+
+  return isAdded ? "Add" : "Delete";
 }

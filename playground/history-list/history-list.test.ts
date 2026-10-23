@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 
 import { readKeptDrawing } from "../kept-shapes";
 import {
+  chooseOption,
   clickElement,
   dispatchDrawingPointer,
   openServedPage,
@@ -10,6 +11,7 @@ import {
   selectPageElement,
   setElementBox,
   typeAndEnter,
+  typeValue,
 } from "../user-actions";
 
 import type { Point } from "../../src";
@@ -18,10 +20,11 @@ import type { PointerKeys } from "../user-actions";
 /** No key held. */
 const NO_KEY: PointerKeys = { altKey: false, shiftKey: false };
 
-/** The marks of a row's place: the present, and a step to redo. */
+/** The marks of a row's place: none for a past step and the present, `>` for a step to redo. */
 const PLACE_MARKS = new Map([
   ["future", " >"],
-  ["present", " *"],
+  ["past", ""],
+  ["present", ""],
 ]);
 
 /** Inside A, the rectangle the page opens with, 120 × 80 at (0, 0). */
@@ -76,10 +79,9 @@ function readList(): readonly string[] {
       return row.textContent;
     }
 
-    const place =
-      button.getAttribute("aria-current") === "step" ? "present" : button.dataset["place"];
+    const current = button.getAttribute("aria-current") === "step" ? " *" : "";
 
-    return `${button.textContent}${PLACE_MARKS.get(place ?? "") ?? ""}`;
+    return `${button.textContent}${current}${PLACE_MARKS.get(button.dataset["place"] ?? "") ?? ""}`;
   });
 }
 
@@ -207,6 +209,15 @@ describe("The list of the history's steps (US-077)", () => {
     expect(readBoxes()).toEqual([{ width: 150, x: 1 }]);
   });
 
+  it("[F41.AC1] names A made a hexagon, then converted to a free shape, 'Convert' each", () => {
+    typeValue("corners", "6");
+    chooseOption("shape", "polygon");
+    clickElement("convert");
+
+    // The kind the panel shows changed each time, with the shape's fields.
+    expect(readList().slice(-3)).toEqual(["Width", "Convert", "Convert *"]);
+  });
+
   it("[F41.AC1] lists Start alone after Reset", () => {
     clickElement("tool-reset");
 
@@ -255,7 +266,7 @@ describe("The list of a long history (US-077)", () => {
     // 14 − 8 = 6 earlier.
     expect(readList()).toEqual([
       "6 earlier steps",
-      ...Array.from({ length: 7 }, () => "Move"),
+      ...Array.from({ length: 8 }, () => "Move"),
       "Move *",
       ...Array.from({ length: 6 }, () => "Move >"),
     ]);

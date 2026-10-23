@@ -12,5 +12,7 @@ export function changedFields(
   before: Readonly<Record<string, unknown>>,
   after: Readonly<Record<string, unknown>>,
 ): readonly string[] {
-  return Object.keys({ ...before, ...after });
+  return Object.keys({ ...before, ...after })
+    .filter((field) => JSON.stringify(before[field]) !== JSON.stringify(after[field]))
+    .toSorted((first, second) => first.localeCompare(second));
 }

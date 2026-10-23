@@ -45,6 +45,18 @@ describe("drawingChangedFields (US-077)", () => {
     expect(drawingChangedFields([], [], own)).toEqual([]);
   });
 
+  it("[F41.AC1] never reads the fields of a shape shared, the same object", () => {
+    const read: unknown[] = [];
+
+    drawingChangedFields([SHAPE_A, SHAPE_B], [A_NUDGED, SHAPE_B], (shape) => {
+      read.push(shape);
+
+      return shape;
+    });
+
+    expect(read).toEqual([SHAPE_A, A_NUDGED]);
+  });
+
   it("[F41.AC1] reads the fields through the function given", () => {
     const kept = [{ kind: "rectangle", shape: SHAPE_A }];
     const moved = [{ kind: "rectangle", shape: A_NUDGED }];

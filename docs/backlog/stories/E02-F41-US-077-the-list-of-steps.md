@@ -21,8 +21,17 @@ Asked by the Product Owner on 2026-10-23 (SP-029's answer 8), to see its use; cu
 
 ## Product Owner test
 
+`npm run dev`, `http://localhost:5173/`. A **step** is one finished change of the drawing, which Undo takes back.
+
 | Step | Do | You should see |
 | --- | --- | --- |
+| 1 | Open the page and click **Steps** in the toolbar, after Undo and Redo | a list under it holding `Start` alone, marked as the present |
+| 2 | Choose the Rectangle tool and click the empty drawing; choose the Selector; click the first rectangle and press Right once; click the new rectangle and press Delete; click the first rectangle, type 150 in W and press Enter | the list reads `Start`, `Add`, `Move`, `Delete`, `Width`, `Width` marked |
+| 3 | Click `Move` in the list | the rectangle 120 wide again, the new one back; `Move` marked, `Delete` and `Width` greyed and in italics; Redo enabled |
+| 4 | Click `Width` in the list | the second rectangle gone again and the first 150 wide: `Width` marked |
+| 5 | Click `Move` again, then press Right once | `Delete` and `Width` gone from the list, which ends with `Move`, `Move`, the last marked; Redo greyed out |
+| 6 | Press Right 20 more times, releasing it each time | the list holds 15 steps, the last marked, under `9 earlier steps`: 24 states, Start and 23 steps, the 15 last shown |
+| 7 | Click Reset | the list holds `Start` alone |
 
 ## Tasks
 

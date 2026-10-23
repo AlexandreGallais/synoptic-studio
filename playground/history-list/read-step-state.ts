@@ -1,9 +1,11 @@
+import { STEP_BUTTON_STATES } from "./step-button-states";
+
 import type { HistoryState } from "../../src";
 import type { KeptShape } from "../kept-shapes";
 
 /**
  * Reads the state a click on the list of steps goes back to (US-077): the state kept by the
- * button clicked (`STEP_BUTTON_STATES`).
+ * button clicked, or holding the element clicked (`STEP_BUTTON_STATES`).
  *
  * @kind procedure
  * @param event - a click inside the list
@@ -11,5 +13,9 @@ import type { KeptShape } from "../kept-shapes";
  * @see docs/domain/interaction.md#_7-navigation-and-history
  */
 export function readStepState(event: Event): HistoryState<KeptShape> | undefined {
-  return event.target === null ? undefined : undefined;
+  if (!(event.target instanceof Element)) {
+    return undefined;
+  }
+
+  return STEP_BUTTON_STATES.get(event.target.closest("button") ?? event.target);
 }

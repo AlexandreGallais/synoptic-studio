@@ -10,5 +10,7 @@
  * @see docs/domain/interaction.md#_7-navigation-and-history
  */
 export function isKeptInOrder<T>(part: readonly T[], whole: readonly T[]): boolean {
-  return part.length <= whole.length;
+  const found = whole.reduce((count, item) => (part[count] === item ? count + 1 : count), 0);
+
+  return found === part.length;
 }
