@@ -3,7 +3,7 @@ id: US-071
 epic: E02
 feature: F38
 title: A value typed for several shapes, relative or fixed
-status: ready
+status: done
 points: 3
 ---
 
