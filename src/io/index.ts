@@ -1,3 +1,4 @@
+export * from "./byte-size";
 export * from "./character-map";
 export * from "./color";
 export * from "./font-collection";
