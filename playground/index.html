@@ -66,8 +66,13 @@
          box around several shapes selected (F37), thin filled rectangles. */
       #overlay path.hover,
       #overlay path.selection,
-      #overlay path.selection-box {
+      #overlay path.selection-box,
+      #overlay path.selection-rectangle {
         fill: var(--accent);
+      }
+      /* The selection rectangle's area (F37), a light tint of the outlines' color under its band. */
+      #overlay path.selection-area {
+        fill: color-mix(in srgb, var(--accent) 12%, transparent);
       }
       /* A path without its own fill; a text's strokes carry their own color (US-031, US-041). */
       #canvas path:not([fill]) {
