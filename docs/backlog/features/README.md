@@ -41,3 +41,4 @@
 | [F37](./E02-F37-select-shapes.md) | E02 | Select shapes | done |
 | [F38](./E02-F38-the-panel-for-several-shapes.md) | E02 | The panel for several shapes | done |
 | [F39](./E02-F39-move-shapes-on-integers.md) | E02 | Move shapes on integers | done |
+| [F40](./E02-F40-undo-and-redo.md) | E02 | Undo and redo | in-progress |

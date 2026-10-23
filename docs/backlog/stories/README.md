@@ -100,6 +100,9 @@
 | [US-073](./E02-F39-US-073-the-arrows-nudge-the-shapes-selected.md) | F39 | The arrow keys nudge the shapes selected | done |
 | [AUD-041](./E02-F39-AUD-041-audit-f39.md) | F39 | Audit F39 | done |
 | [VAL-040](./E02-F39-VAL-040-validate-f39.md) | F39 | Validate F39 | dropped |
+| [SP-029](./E02-F40-SP-029-refine-undo-and-redo.md) | F40 | Refine undo and redo | ready |
+| [AUD-042](./E02-F40-AUD-042-audit-f40.md) | F40 | Audit F40 | ready |
+| [VAL-041](./E02-F40-VAL-041-validate-f40.md) | F40 | Validate F40 | dropped |
 | [SP-025](./E02-SP-025-cut-the-editing-work-into-small-features.md) | E02 | Cut the editing work into small features | done |
 | [SP-010](./E14-F11-SP-010-research-f11.md) | F11 | Research for F11: folder layouts and test placement | done |
 | [EN-020](./E14-F11-EN-020-property-tests.md) | F11 | Property tests for the nine functions without one | done |
