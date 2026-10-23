@@ -94,6 +94,9 @@
 | [US-071](./E02-F38-US-071-a-value-typed-for-several-shapes.md) | F38 | A value typed for several shapes, relative or fixed | done |
 | [AUD-040](./E02-F38-AUD-040-audit-f38.md) | F38 | Audit F38 | done |
 | [VAL-039](./E02-F38-VAL-039-validate-f38.md) | F38 | Validate F38 | dropped |
+| [SP-028](./E02-F39-SP-028-refine-the-moves.md) | F39 | Refine the moves of shapes | ready |
+| [AUD-041](./E02-F39-AUD-041-audit-f39.md) | F39 | Audit F39 | ready |
+| [VAL-040](./E02-F39-VAL-040-validate-f39.md) | F39 | Validate F39 | dropped |
 | [SP-025](./E02-SP-025-cut-the-editing-work-into-small-features.md) | E02 | Cut the editing work into small features | done |
 | [SP-010](./E14-F11-SP-010-research-f11.md) | F11 | Research for F11: folder layouts and test placement | done |
 | [EN-020](./E14-F11-EN-020-property-tests.md) | F11 | Property tests for the nine functions without one | done |
