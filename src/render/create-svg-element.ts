@@ -2,7 +2,7 @@ import { formatSvgNumber } from "../io";
 
 import { SVG_NAMESPACE } from "./svg-namespace";
 
-import type { ViewBox } from "./view-box";
+import type { ViewBox } from "../model";
 
 /**
  * Creates an empty `<svg>` canvas showing the given region.
