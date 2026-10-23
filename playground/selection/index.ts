@@ -1,5 +1,6 @@
 export * from "./listen-to-picking";
 export * from "./listen-to-selection-keys";
+export * from "./listen-to-several-fields";
 export * from "./load-picked-geometry";
 export * from "./load-picked-shape";
 export * from "./load-picked-text";

@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 
 import { HELLO_TEXT } from "../../tests";
 import { readFontSession, writeFontSession } from "../fonts";
-import { DRAWING_KEYS, writeStoredDrawing } from "../kept-shapes";
+import { DRAWING_KEYS, readStoredDrawing, writeStoredDrawing } from "../kept-shapes";
 import { selectElement, writeEditedKind } from "../page";
 import {
   clickAt,
@@ -16,12 +16,13 @@ import {
   selectInput,
   selectPageElement,
   setElementBox,
+  typeAndEnter,
   typeValue,
 } from "../user-actions";
 
 import { writeSeveralValues } from "./write-several-values";
 
-import type { Point } from "../../src";
+import type { DrawingShape, Point } from "../../src";
 
 // The canvas sits at (100, 50) in the window, and the drawing's origin 40 right of and below its
 // corner (`DRAWING_MARGIN`): the drawing's point (x, y) is the window's (x + 140, y + 90).
@@ -239,5 +240,163 @@ describe("the panel shows several shapes' position and size (US-070)", () => {
 
     expect(alone).toEqual(["4.19873", "-1.65064"]);
     expect(readSeveralFields()).toEqual(["4.19873", "-1.65064", "100", "50"]);
+  });
+});
+
+/**
+ * Reads the shapes kept in the drawing, every one kept below while several are selected (F37).
+ *
+ * @returns each shape, in the order drawn
+ */
+function readDrawing(): readonly DrawingShape[] {
+  return readStoredDrawing(document, DRAWING_KEYS.below).map(({ shape }) => shape);
+}
+
+/**
+ * Reads the box of each shape kept, its position and its own size, the first drawn first.
+ *
+ * @returns x, y, width and height of each, a text's x and y alone
+ */
+function readBoxes(): readonly (readonly number[])[] {
+  return readDrawing().map((shape) =>
+    "content" in shape ? [shape.x, shape.y] : [shape.x, shape.y, shape.width, shape.height],
+  );
+}
+
+/**
+ * Asserts the box of each shape kept, within `EPSILON`: a rounded rectangle's x typed keeps the
+ * rounding error of its arcs' extremes (ADR-0003).
+ *
+ * @param expected - x, y, width and height of each, computed by hand
+ */
+function expectBoxes(expected: readonly (readonly number[])[]): void {
+  const boxes = readBoxes();
+
+  expect(boxes).toHaveLength(expected.length);
+
+  for (const [index, box] of boxes.entries()) {
+    for (const [at, value] of box.entries()) {
+      expect(value).toBeCloseTo(expected[index]?.[at] ?? NaN, 9);
+    }
+  }
+}
+
+/** Draws A and B, then selects both, B by Shift + click. */
+function selectAAndB(): void {
+  drawAAndB();
+  pick({ x: 50, y: 40 }, false);
+  pick({ x: 220, y: 40 }, true);
+}
+
+describe("a value typed for several shapes, relative or fixed (US-071)", () => {
+  beforeEach(() => {
+    openServedPage("?guide=epic");
+    setElementBox("#canvas", { height: 600, left: 100, top: 50, width: 800 });
+  });
+
+  it("[F38.AC2] makes A 150 wide and B 90 for +50 in W, W still Mixed", () => {
+    selectAAndB();
+    typeAndEnter("several-width", "+50");
+
+    expectBoxes([
+      [10, 20, 150, 50],
+      [200, 20, 90, 40],
+    ]);
+
+    expect(readSeveralFields()).toEqual(["[Mixed]", "20", "[Mixed]", "[Mixed]"]);
+  });
+
+  it("[F38.AC2] moves A to x −10 and B to x 180 for -20 in X", () => {
+    selectAAndB();
+    typeAndEnter("several-x", "-20");
+
+    expectBoxes([
+      [-10, 20, 100, 50],
+      [180, 20, 40, 40],
+    ]);
+  });
+
+  it("[F38.AC2] makes both 460 wide for 460 in W, then puts both at x 50 for 50 in X", () => {
+    selectAAndB();
+    typeAndEnter("several-width", "460");
+    typeAndEnter("several-x", "50");
+
+    expectBoxes([
+      [50, 20, 460, 50],
+      [50, 20, 460, 40],
+    ]);
+
+    expect(readSeveralFields()).toEqual(["50", "20", "460", "[Mixed]"]);
+  });
+
+  it("[F38.AC2] applies a value when the field is left, not while it is typed", () => {
+    selectAAndB();
+    typeValue("several-height", "70");
+
+    expectBoxes([
+      [10, 20, 100, 50],
+      [200, 20, 40, 40],
+    ]);
+
+    expect(FIELDS.map((id) => selectInput(id).readOnly)).toEqual([false, false, false, false]);
+  });
+
+  it("[F38.AC2] moves A turned by 30° by its straight box, its x then 55.80127", () => {
+    // A's straight box starts at x 4.19873: 50 typed moves it by 45.80127, from 10 to 55.80127.
+    turnA();
+    placeShape("rectangle", { x: 400, y: 300 });
+    typeBox(["200", "20", "40", "40"]);
+    selectAll();
+    typeAndEnter("several-x", "50");
+
+    const [turned, straight] = readBoxes();
+
+    expect(turned?.[0]).toBeCloseTo(55.80127, 5);
+    expect(straight?.[0]).toBe(50);
+    expect(readSeveralFields()[0]).toBe("50");
+  });
+
+  it("[F38.AC2] keeps the size of a text fitting its content, the rectangle made 460 wide", () => {
+    // The rectangle the page opens with, 120 × 80 at (0, 0), then a text placed beside it.
+    placeShape("text", { x: 250, y: 140 });
+    selectAll();
+
+    const [, text] = readDrawing();
+
+    typeAndEnter("several-width", "460");
+
+    expect(text).toMatchObject({ isInBox: false });
+    expect(readDrawing()).toEqual([expect.objectContaining({ width: 460, x: 0 }), text]);
+  });
+
+  it("[F38.AC2] changes nothing for a value refused, the fields shown again", () => {
+    selectAAndB();
+
+    for (const typed of ["50.5", "abc", "", "-50"]) {
+      // -50: B, 40 wide, would be −10 wide; A is not changed either.
+      typeAndEnter("several-width", typed);
+
+      expectBoxes([
+        [10, 20, 100, 50],
+        [200, 20, 40, 40],
+      ]);
+
+      expect(readSeveralFields()).toEqual(["[Mixed]", "20", "[Mixed]", "[Mixed]"]);
+    }
+  });
+
+  it("[F38.AC2] leaves a text never measured as it is, the rectangle made 460 wide", () => {
+    const never = {
+      kind: "text",
+      shape: { ...HELLO_TEXT, content: "Never drawn", x: 500, y: 500 },
+    };
+
+    writeFontSession(document, { ...readFontSession(document), kept: [] });
+    writeStoredDrawing(document, DRAWING_KEYS.below, [never]);
+    selectAll();
+    typeAndEnter("several-width", "460");
+
+    // The rectangle the page opens with: 120 × 80 at (0, 0).
+    expect(readDrawing()).toEqual([never.shape, expect.objectContaining({ width: 460 })]);
   });
 });
