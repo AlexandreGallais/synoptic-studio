@@ -2,7 +2,7 @@
 export type OwnFieldRange = {
   /** Whether a value beyond the range goes round it, an angle's turn, rather than to its bound. */
   readonly isTurn: boolean;
-  /** Whether it holds whole numbers, its value rounded when a fraction is typed. */
+  /** Whether it holds whole numbers, its value always rounded to the nearest integer (AUD-047). */
   readonly isWhole: boolean;
   /** Its least value, `-Infinity` for none. */
   readonly least: number;

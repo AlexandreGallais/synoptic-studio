@@ -208,6 +208,22 @@ describe("every number field, the rule of one shape's (US-087)", () => {
     expect([readValue("text-size"), readValue("history-memory")]).toEqual(["43", "111"]);
   });
 
+  it.each(["text-letter-spacing", "text-word-spacing"])(
+    "steps %s at −5 by 1 and 10, never reading the step again as typed (AUD-047)",
+    (id) => {
+      // −5 + 1 = −4, then −4 + 10 = 6; before US-088's fix, `-4` shown was read again as a
+      // relative value, −5 − 4 = −9, then −9 + 10 = 1 read as fixed.
+      typeInField(id, "-5");
+      pressIn(id, { key: "ArrowUp" });
+
+      expect(readValue(id)).toBe("-4");
+
+      pressIn(id, { key: "ArrowUp", shiftKey: true });
+
+      expect(readValue(id)).toBe("6");
+    },
+  );
+
   it("[F44.AC4] applies nothing for a value refused, the zoom of 141 % kept exactly", () => {
     setElementBox("#canvas", { height: 600, left: 100, top: 50, width: 800 });
     clickElement("zoom-in");
@@ -347,6 +363,12 @@ describe("readOwnValue (US-087, AUD-046)", () => {
     // A field the table does not name: whole numbers, no bound.
     { expected: -100_000, id: "", shown: 0, typed: { isRelative: false, value: -100_000 } },
     { expected: 3, id: "", shown: 0, typed: { isRelative: false, value: 2.5 } },
+    // A fraction shown is rounded whatever is typed (AUD-047): 33.54102 + 1 = 34.54102 to 35,
+    // 11.83476 + 1 = 12.83476 to 13, 0.5 − 1 = −0.5 to 0, a tie up; an integer fixed is kept.
+    { expected: 35, id: "", shown: 33.54102, typed: { isRelative: true, value: 1 } },
+    { expected: 13, id: "", shown: 11.83476, typed: { isRelative: true, value: 1 } },
+    { expected: 0, id: "", shown: 0.5, typed: { isRelative: true, value: -1 } },
+    { expected: 4, id: "", shown: 11.83476, typed: { isRelative: false, value: 4 } },
     // A fixed value needs no number shown.
     { expected: 7, id: "radius", shown: undefined, typed: { isRelative: false, value: 7 } },
   ])("gives $expected for $typed.value in $id from $shown", ({ expected, id, shown, typed }) => {

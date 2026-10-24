@@ -132,7 +132,7 @@ describe("a handle's fields stepped by the arrows (US-088)", () => {
   ];
 
   it.each(pageMirrored)(
-    "[F45.AC1] [F45.AC2] steps $field on the page, mirroring angle and length",
+    "[F45.AC1] steps $field on the page, mirroring angle and length",
     ({ arrow, expected, field }) => {
       pressArrow(`handle-${field}`, arrow);
 
@@ -161,7 +161,7 @@ describe("a handle's fields stepped by the arrows (US-088)", () => {
   ];
 
   it.each(pageAngle)(
-    "[F45.AC1] [F45.AC2] steps $field on the page, mirroring the angle",
+    "[F45.AC1] steps $field on the page, mirroring the angle",
     ({ arrow, expected, field }) => {
       chooseOption("handle-mode", "angle");
       pressArrow(`handle-${field}`, arrow);
@@ -183,7 +183,7 @@ describe("a handle's fields stepped by the arrows (US-088)", () => {
   ];
 
   it.each(pageAlone)(
-    "[F45.AC1] [F45.AC2] steps $field on the page, mirroring nothing",
+    "[F45.AC1] steps $field on the page, mirroring nothing",
     ({ arrow, expected, field }) => {
       chooseOption("handle-mode", "none");
       pressArrow(`handle-${field}`, arrow);
@@ -206,7 +206,7 @@ describe("a handle's fields stepped by the arrows (US-088)", () => {
   ];
 
   it.each(sideMirrored)(
-    "[F45.AC2] steps $field from the side, mirroring angle and length",
+    "[F45.AC1] steps $field from the side, mirroring angle and length",
     ({ arrow, expected, field }) => {
       typeFromTheSide("angle-and-length");
       pressArrow(`handle-${field}`, arrow);
@@ -228,7 +228,7 @@ describe("a handle's fields stepped by the arrows (US-088)", () => {
   ];
 
   it.each(sideAngle)(
-    "[F45.AC2] steps $field from the side, mirroring the angle",
+    "[F45.AC1] steps $field from the side, mirroring the angle",
     ({ arrow, expected, field }) => {
       typeFromTheSide("angle");
       pressArrow(`handle-${field}`, arrow);
@@ -250,7 +250,7 @@ describe("a handle's fields stepped by the arrows (US-088)", () => {
   ];
 
   it.each(sideAlone)(
-    "[F45.AC2] steps $field from the side, mirroring nothing",
+    "[F45.AC1] steps $field from the side, mirroring nothing",
     ({ arrow, expected, field }) => {
       typeFromTheSide("none");
       pressArrow(`handle-${field}`, arrow);
@@ -259,7 +259,43 @@ describe("a handle's fields stepped by the arrows (US-088)", () => {
     },
   );
 
-  it("[F45.AC2] steps a point's X and Y at −5 by 1 and 10, its handles moving with it", () => {
+  it("rounds Up on a handle showing a fraction, mirroring the angle (AUD-047)", () => {
+    // Up in Before x: before (−11, −5), after mirrored at (11.83476, 5.37944), as above. Up in
+    // After x: 11.83476 + 1 = 12.83476, rounded to 13, the handle drawn at (13, 5.37944), where
+    // before the fix the fraction was refused and the handle left unmoved. Before kept at its
+    // length √146 = 12.0830460 opposite (13, 65 / √146 = 5.3794383): |(13, 5.3794383)| =
+    // √197.938356 = 14.0690567, 12.0830460 / 14.0690567 = 0.8588384, before (−13 · 0.8588384,
+    // −5.3794383 · 0.8588384) = (−11.1649, −4.62007), its fifth decimal a 0 dropped.
+    chooseOption("handle-mode", "angle");
+    pressArrow("handle-before-x", UP);
+    pressArrow("handle-after-x", UP);
+
+    expect(readHandleFields()).toEqual(["-11.1649", "-4.62007", "13", "5.37944"]);
+    expect(readText("#path-data")).toMatch(/^M0 0 C13 5.37944 /u);
+  });
+
+  it("rounds Up on an angle from the side showing a fraction (AUD-047)", () => {
+    // After (12, 5) seen from its side going right: angle atan(5 / 12) = 22.61986°, length 13,
+    // before mirrored at 270 − 22.61986 = 247.38014°. Up: 22.61986 + 1 = 23.61986, rounded to
+    // 24; before at 270 − 24 = 246°, length 13.
+    chooseOption("handle-method", "side");
+
+    expect(readHandleFields()).toEqual(["247.38014", "13", "22.61986", "13"]);
+
+    pressArrow("handle-after-x", UP);
+
+    expect(readHandleFields()).toEqual(["246", "13", "24", "13"]);
+  });
+
+  it("rounds +1 typed on an angle from the side showing a fraction (AUD-047)", () => {
+    // Before at 247.38014°: `+1` gives 248.38014, rounded to 248; after at 270 − 248 = 22°.
+    chooseOption("handle-method", "side");
+    typeInField("handle-before-x", "+1");
+
+    expect(readHandleFields()).toEqual(["248", "13", "22", "13"]);
+  });
+
+  it("[F45.AC1] steps a point's X and Y at −5 by 1 and 10, its handles moving with it", () => {
     // X −5: Up −4, Shift + Up 6; Y −5: Up −4, Shift + Down −14. The handles' vectors kept,
     // (−12, −5) and (12, 5), so that their ends on the page move with the point: at (6, −14),
     // before at (6 − 12, −14 − 5) = (−6, −19), after at (6 + 12, −14 + 5) = (18, −9).
