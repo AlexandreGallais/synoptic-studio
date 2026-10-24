@@ -134,3 +134,9 @@ The cards of E17 were decided at RET-004 ([record](./retrospectives/E17-retrospe
 - Used: `target/release/git-sequences commit -F <message> <paths>` in US-086, one of the paths a folder `git rm` had removed (`playground/helps-frame/`).
 - Failed: "pathspec did not match", the commit refused.
 - Instead: the other paths named alone; the staged deletions went into the commit anyway.
+
+## 2026-10-25 — `heavy-lock --help`
+
+- Used: `target/release/heavy-lock --help` in REV-008.T1, to read its usage.
+- Failed: it took `--help` as the command to run, waited for the lock behind a `check:all`, then failed with "No such file or directory".
+- Instead: its usage read in `docs/tooling/agent-tools.md`.
