@@ -3,9 +3,9 @@
 //! `tools/heavy-lock/`: stories merge one at a time, the next one waiting, then rebasing on the
 //! updated base. A story file still holding rows for the logs stops it first: its `done` commit
 //! moves them (`move-rows`, ADR-0091). Its pull request opened with the `autonomous` label, its
-//! merge by GitHub awaited for at most three minutes; a branch the auto-merge of its base does not take,
-//! an epic's refinement `SP` into `develop`, opened without it, awaited by no one: it says at once
-//! that it waits for the Product Owner's merge (AUD-024, EN-118). Once merged, the base brought up
+//! merge by GitHub awaited for at most three minutes, an epic's refinement `SP` into `develop` as
+//! well (REV-009); a branch the auto-merge of its base does not take, opened without it, awaited
+//! by no one: it says at once that it waits for the Product Owner's merge (EN-118). Once merged, the base brought up
 //! to date where it is checked out, nothing committed on it, and the story's worktree and branch
 //! removed here and on GitHub. A rebase that met the status rows of another story's done commit writes the story's own
 //! again after it; a head that differs from its branch on GitHub is pushed with lease before the
@@ -148,7 +148,7 @@ fn finish(base: &str, title: &str, body: &str) -> Result<u8, String> {
     if start != Start::Clean && by == Merger::ProductOwner {
         println!(
             "{branch} waits for the Product Owner's merge into {base}: `{workflow}` does \
-             not take it (AUD-024); run again once merged, to clean up"
+             not take it (EN-118); run again once merged, to clean up"
         );
         return Ok(0);
     }

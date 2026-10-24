@@ -7,7 +7,7 @@ GitHub's Actions tab now keeps only the workflows the project uses, as the Produ
 | Workflow | Starts on | Does |
 | --- | --- | --- |
 | Story auto-merge (`story-automerge.yml`) | a story's pull request into a feature branch, labelled `autonomous` | merges it by a merge commit |
-| Feature auto-merge (`feature-automerge.yml`) | a feature's or a review's pull request into `develop`, labelled `autonomous` | merges it by a merge commit, then starts _Develop CI_ |
+| Feature auto-merge (`feature-automerge.yml`) | a feature's, a review's or an epic's refinement spike's pull request into `develop`, labelled `autonomous` (the spike since REV-009, 2026-10-25) | merges it by a merge commit, then starts _Develop CI_ |
 | CodeQL (`codeql.yml`) | a pull request into `main`, a push to `main`, weekly | analyses the TypeScript and the workflows in one job, `Analyze` |
 | Links (`links.yml`) | weekly, or by hand | checks the pages' links, blocking nothing |
 

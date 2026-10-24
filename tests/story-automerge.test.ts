@@ -261,6 +261,7 @@ describe("the auto-merge per base (ADR-0086, ADR-0088)", () => {
     expect(passes(feature, "docs/aud-024-audit-f22")).toBe(true);
     expect(passes("develop", feature)).toBe(true);
     expect(passes("develop", "docs/rev-006-review")).toBe(true);
+    expect(passes("develop", "docs/sp-030-refinement-of-e18")).toBe(true);
   });
 
   it("[F22.AC4] still refuses a branch that is neither a story's nor a feature's", () => {
@@ -478,9 +479,11 @@ describe("one branch form for the pre-push, the auto-merge and the guidance (I50
     expect(pattern.test("fix/en-073-shared-files-table-padding")).toBe(true);
   });
 
-  it("[F23.AC2] leaves an epic's refinement spike into develop to the Product Owner's merge", () => {
-    expect(passes("develop", "docs/sp-030-refinement-of-e18")).toBe(false);
+  it("[F23.AC2] lets an epic's refinement spike into develop, as into its feature (REV-009)", () => {
+    expect(passes("develop", "docs/sp-030-refinement-of-e18")).toBe(true);
     expect(passes(feature, "docs/sp-030-refinement-of-e18")).toBe(true);
+    // Three digits, as every story id: a shorter one is refused into develop too.
+    expect(passes("develop", "docs/sp-30-refinement")).toBe(false);
   });
 
   it("[F23.AC2] guides a fix without a story id to the id of the story it serves", () => {

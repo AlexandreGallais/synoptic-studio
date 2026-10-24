@@ -1,6 +1,7 @@
 # The features' auto-merge (ADR-0045, ADR-0086, ADR-0088): merges, always by a merge commit, a
-# pull request of the owner labeled `autonomous` into `develop`, from a feature branch or a review
-# (`…/rev-…`, ADR-0086, decision 4), then dispatches the develop CI, which blocks nothing
+# pull request of the owner labeled `autonomous` into `develop`, from a feature branch, a review
+# (`…/rev-…`, ADR-0086, decision 4) or an epic's refinement spike (`…/sp-…`, decided by the
+# Product Owner on 2026-10-25, REV-009), then dispatches the develop CI, which blocks nothing
 # (ADR-0088, decision 5). A story goes into its feature branch by `story-automerge.yml`; nothing
 # reaches `main` this way: the Product Owner merges it after each review. The agent never merges;
 # removing the label before the merge stops it.
@@ -30,12 +31,12 @@ jobs:
       && !github.event.pull_request.draft
     runs-on: ubuntu-latest
     steps:
-      - name: Check the branch is a feature or a review allowed in autonomous runs
+      - name: Check the branch is a feature, a review or an epic's spike allowed in autonomous runs
         env:
           BRANCH: ${{ github.event.pull_request.head.ref }}
         run: |
-          if ! printf '%s' "$BRANCH" | grep -Eq '^(feature/f[0-9]{2}-|[a-z]+/rev-[0-9]{3}-)'; then
-            echo "Branch $BRANCH into develop is not a feature branch or a REV: no auto-merge (ADR-0045, ADR-0086)."
+          if ! printf '%s' "$BRANCH" | grep -Eq '^(feature/f[0-9]{2}-|[a-z]+/rev-[0-9]{3}-|[a-z]+/sp-[0-9]{3}-)'; then
+            echo "Branch $BRANCH into develop is not a feature branch, a REV nor an SP: no auto-merge (ADR-0045, ADR-0086, REV-009)."
             exit 1
           fi
       - name: Merge (merge commit), then start the develop CI
