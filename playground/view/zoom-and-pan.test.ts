@@ -1,5 +1,5 @@
 // @vitest-environment happy-dom
-import { beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
   clickElement,
@@ -500,5 +500,72 @@ describe("zoom and pan by the wheel, a pinch and a drag (US-078)", () => {
     clickElement(id);
 
     expectViewBox("-40 -40 1200 800");
+  });
+});
+
+/**
+ * Opens the page as the browser names its platform, read once as the page listens, at 200 %.
+ *
+ * @param platform - `MacIntel` for macOS, `Win32` for Windows
+ */
+function openOnPlatform(platform: string): void {
+  vi.spyOn(globalThis.navigator, "platform", "get").mockReturnValue(platform);
+  openServedPage("");
+  setElementBox("#canvas", { height: 800, left: 100, top: 50, width: 1200 });
+  showZoomed();
+}
+
+describe("Shift with the wheel, on macOS and elsewhere (US-082)", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("[F43.AC4] pans by a trackpad's (30, 40) as sent with Shift on macOS, to (195, 150)", () => {
+    openOnPlatform("MacIntel");
+    turnWheel({ ...DOWN, deltaX: 30, deltaY: 40, shiftKey: true }, POINTER);
+
+    // o′ = o + δ / s = (180 + 30 / 2, 130 + 40 / 2) = (195, 150), as without Shift.
+    expectViewBox("195 150 600 400");
+  });
+
+  it("[F43.AC4] pans a mouse's Shift + wheel across on macOS, sent as (100, 0), to (230, 130)", () => {
+    openOnPlatform("MacIntel");
+    turnWheel({ ...DOWN, deltaX: 100, deltaY: 0, shiftKey: true }, POINTER);
+
+    // (180 + 100 / 2, 130 + 0 / 2) = (230, 130).
+    expectViewBox("230 130 600 400");
+  });
+
+  it("[F43.AC4] keeps a vertical delta down with Shift on macOS, (0, 100) to (180, 180)", () => {
+    openOnPlatform("MacIntel");
+    turnWheel({ ...DOWN, shiftKey: true }, POINTER);
+
+    // Taken as sent: (180, 130 + 100 / 2) = (180, 180).
+    expectViewBox("180 180 600 400");
+  });
+
+  it("[F43.AC4] turns a vertical delta across with Shift elsewhere, (0, 100) to (230, 130)", () => {
+    openOnPlatform("Win32");
+    turnWheel({ ...DOWN, shiftKey: true }, POINTER);
+
+    // Across: (180 + (0 + 100) / 2, 130) = (230, 130).
+    expectViewBox("230 130 600 400");
+  });
+
+  it("[F43.AC4] pans (30, 40) with Shift elsewhere across by their sum, 35 units, to (215, 130)", () => {
+    openOnPlatform("Win32");
+    turnWheel({ ...DOWN, deltaX: 30, deltaY: 40, shiftKey: true }, POINTER);
+
+    // Across by 30 + 40 = 70 pixels, 70 / 2 = 35 units: (180 + 35, 130) = (215, 130).
+    expectViewBox("215 130 600 400");
+  });
+
+  it("[F43.AC4] reads the platform once, as the page listens", () => {
+    openOnPlatform("Win32");
+    vi.spyOn(globalThis.navigator, "platform", "get").mockReturnValue("MacIntel");
+    turnWheel({ ...DOWN, shiftKey: true }, POINTER);
+
+    // Still read as Windows: across, (230, 130).
+    expectViewBox("230 130 600 400");
   });
 });
