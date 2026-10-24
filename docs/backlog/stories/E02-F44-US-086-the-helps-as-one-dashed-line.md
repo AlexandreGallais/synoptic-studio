@@ -30,12 +30,13 @@ The examples use the opening view, 100 %, and A and B, rectangles 100 × 100 at 
 
 | Step | Do | You should see |
 | --- | --- | --- |
-| 1 | Look at the rectangle the page opens with | its outline a line of black and white dashes, seen on its blue |
-| 2 | Choose the Text tool, click below the rectangle, type `Pump`, set its color to white, then point at it; do the same with a black text | the dashed line seen on the white letters and on the black ones |
-| 3 | Add a second rectangle, select both with Shift + click | each outlined by the dashed line, and a thinner dashed box around both |
-| 4 | Press an empty place and drag across both, without releasing | the selection rectangle a thin dashed line over its tint, both rectangles outlined by the dashed line |
-| 5 | Zoom to 400 % and back to 100 % | the lines and dashes the same size on screen at each zoom |
-| 6 | Export the SVG and open it | the shapes alone, without any outline |
+| 1 | Look at the rectangle the page opens with | its outline a line 2 pixels wide of black and white dashes, 4 pixels each, seen on its blue |
+| 2 | Choose the Text tool, click below the rectangle, type `Pump`, type `#ffffff` in the text's Color and press Enter; click an empty place, then point at the text's letters | the same dashed line around the text's frame, seen over the white letters |
+| 3 | Do the same with `#000000` beside it | the dashed line seen over the black letters |
+| 4 | Choose the Rectangle tool and click an empty place to add a second rectangle, then Shift + click the first | each rectangle outlined by the dashed line, and a thinner dashed box, 1 pixel wide, just around both |
+| 5 | Press an empty place and drag across both rectangles, without releasing | the selection rectangle a thin dashed line over its light tint, both rectangles outlined by the dashed line |
+| 6 | Release; open the zoom menu (`100 %`), type `400` in Zoom and press Enter, then `100` | the lines, the dashes and the box the same size on screen at each zoom |
+| 7 | Click Export SVG and open the file | the shapes and the texts alone, without any outline, box or dash |
 
 ## Tasks
 
