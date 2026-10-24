@@ -8,7 +8,7 @@ import type { TypedPanelValue } from "../../src";
 
 /**
  * Reads a relative value left as typed in a radius field showing no number, a Mixed one, which
- * each vertex's own takes (`listenToOwnNumberFields`, AUD-046).
+ * each vertex's own takes (`writeOwnValue`, AUD-046).
  *
  * @kind procedure
  * @param document - page document

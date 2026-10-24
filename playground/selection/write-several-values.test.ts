@@ -435,7 +435,7 @@ describe("a value typed for several shapes, relative or fixed (US-071)", () => {
   it("[F38.AC2] changes nothing for a value refused, the fields shown again", () => {
     selectAAndB();
 
-    for (const typed of ["abc", "", "1,5"]) {
+    for (const typed of ["abc", "", "-25+12"]) {
       // No number: neither A nor B changed.
       typeAndEnter("several-width", typed);
 

@@ -21,6 +21,10 @@ describe("parsePanelValue (F38, AUD-046)", () => {
     { expected: { isRelative: true, value: 1.5 }, typed: "+1.5" },
     { expected: { isRelative: true, value: -0.25 }, typed: "-.25" },
     { expected: { isRelative: false, value: 5 }, typed: "5." },
+    // A comma is a decimal separator as a point is.
+    { expected: { isRelative: false, value: 50.5 }, typed: "50,5" },
+    { expected: { isRelative: true, value: 1.5 }, typed: "+1,5" },
+    { expected: { isRelative: true, value: -0.25 }, typed: "-,25" },
     { expected: { isRelative: false, value: 9_007_199_254_740_992 }, typed: "9007199254740992" },
   ])(
     "[F44.AC4] reads '$typed' as $expected.value, its fraction kept for the field",
@@ -33,7 +37,10 @@ describe("parsePanelValue (F38, AUD-046)", () => {
     "",
     " ",
     ".",
-    "50,5",
+    ",",
+    "1,2,3",
+    "1.2,3",
+    "-25+12",
     "1e3",
     "abc",
     "+",

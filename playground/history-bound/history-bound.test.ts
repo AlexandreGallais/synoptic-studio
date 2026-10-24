@@ -174,7 +174,7 @@ describe("the history's memory size and steps kept, set by the designer (US-076)
     { id: "history-memory", typed: "", want: "100" },
     { id: "history-memory", typed: "abc", want: "100" },
     { id: "history-steps", typed: "", want: "5" },
-    { id: "history-steps", typed: "1,5", want: "5" },
+    { id: "history-steps", typed: "1.2.3", want: "5" },
   ])("[F40.AC4] gives back $want in $id for $typed, the bound unchanged", ({ id, typed, want }) => {
     openBoundedPage();
     typeInField(id, typed);

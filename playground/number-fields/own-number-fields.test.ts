@@ -150,6 +150,8 @@ describe("every number field, the rule of one shape's (US-087)", () => {
     { id: "radius", shown: "0", typed: "-15" },
     { id: "radius", shown: "2", typed: "1.5" },
     { id: "radius", shown: "12", typed: "+1.5" },
+    // A comma is a decimal separator: 10 + 1,5 = 11.5 → 12.
+    { id: "radius", shown: "12", typed: "+1,5" },
     // 100 001 taken at the size's 100 000; 32 − 40 = −8 at its least, 1.
     { id: "text-size", shown: "100000", typed: "100001" },
     { id: "text-size", shown: "1", typed: "-40" },
@@ -165,7 +167,7 @@ describe("every number field, the rule of one shape's (US-087)", () => {
   it.each([
     { id: "angle", shown: "0", typed: "abc" },
     { id: "radius", shown: "10", typed: "" },
-    { id: "radius", shown: "10", typed: "1,5" },
+    { id: "radius", shown: "10", typed: "-25+12" },
     { id: "text-size", shown: "32", typed: "+" },
   ])("[F44.AC4] refuses $typed in $id, no number, showing $shown again", ({ id, shown, typed }) => {
     typeInField(id, typed);

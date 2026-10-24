@@ -1,6 +1,8 @@
+export * from "./apply-own-text";
 export * from "./listen-to-number-field";
-export * from "./listen-to-own-number-fields";
+export * from "./listen-to-number-fields";
 export * from "./listen-to-typed-numbers";
+export * from "./number-field-applies";
 export * from "./number-fields";
 export type * from "./own-field-range";
 export * from "./own-field-ranges";
@@ -8,3 +10,4 @@ export * from "./own-number-fields";
 export * from "./read-arrow-step";
 export * from "./read-number-field";
 export * from "./read-own-value";
+export * from "./write-own-value";

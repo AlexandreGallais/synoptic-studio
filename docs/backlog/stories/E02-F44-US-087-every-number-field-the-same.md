@@ -20,7 +20,7 @@ The examples use the page as it opens, the rectangle 120 × 80 at (0, 0), select
 - Given the radius field at 10, when Up is pressed, then it is 11; Shift + Up from 10, 20; Shift + Down from 20, 10; with Ctrl, Cmd or Alt held, the field keeps the key, as US-081 and US-085.
 - Given `+5` typed in the radius and Enter, then the radius is 15; a value beyond the field's range is taken at its bound (a radius of `-5` at 0, a polygon's sides of 2 at 3 and 13 at 12), an angle and the picker's hue going round (370 gives 10), a fraction rounded once the value is computed (`+1.5` at 10 gives 12), and only a text that is no number (an angle of `abc`) is refused, leaving the field unchanged and showing its value again (amended by AUD-046 to the rule the Product Owner gave every number field on 2026-10-24; before, a value past a bound and a fraction were refused).
 - Given Up held in the radius for a second, 30 keys, then released, then the history has one step for the burst, one Ctrl + Z giving 10 (`listenToArrowBursts`, 500 ms).
-- Given a field whose step is not 1 (a font's size, the memory size in MB), then Up and Shift + Up step by its own step and ten times it; the list of fields and their steps written in `interaction.md` §2.
+- Given every number field, a font's size and the memory size in MB included, then Up and Shift + Up step it by 1 and 10, every field of the page stepping by 1 (T1's list); the list of fields and their steps written in `interaction.md` §2 (amended by AUD-046: the criterion assumed fields stepping by other than 1, which the page has none of).
 - Given every `type="number"` field of the page, then a test reads them all and finds each one under the rule, so that a field added later without it fails.
 
 ## Product Owner test

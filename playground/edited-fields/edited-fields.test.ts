@@ -215,10 +215,10 @@ describe("a value typed in one shape's fields, relative or fixed (US-085)", () =
     expect(readShapeModel().x).toBe(50);
   });
 
-  it.each(["abc", "1,5", ""])(
+  it.each(["abc", "-25+12", ""])(
     "[F44.AC2] refuses %j in Width, no number, the rectangle 120 wide and the field showing 120",
     (typed) => {
-      // A word, a comma or nothing is no number.
+      // A word, an expression (E18's) or nothing is no number.
       typeAndEnter("width", typed);
 
       expect(readShapeModel().width).toBe(120);
@@ -273,6 +273,8 @@ describe("a value typed in one shape's fields, relative or fixed (US-085)", () =
     { expected: 0, typed: "-200" },
     { expected: 2, typed: "1.5" },
     { expected: 121, typed: "+0.5" },
+    // A comma as the decimal separator: 1,5 is 1.5, rounded to 2.
+    { expected: 2, typed: "1,5" },
   ])("[F44.AC2] makes the rectangle $expected wide for $typed in Width", ({ expected, typed }) => {
     typeAndEnter("width", typed);
 

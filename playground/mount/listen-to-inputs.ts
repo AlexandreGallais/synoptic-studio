@@ -1,6 +1,6 @@
 import { NO_VERTEX_SELECTION } from "../../src";
 import { listenToEditedFields } from "../edited-fields";
-import { listenToOwnNumberFields } from "../number-fields";
+import { listenToNumberFields } from "../number-fields";
 import { selectElement, writeSelection } from "../page";
 import { listenToPoints } from "../points";
 import { listenToTurn } from "../position";
@@ -55,7 +55,8 @@ function listenToPanelControls(document: Document, update: () => void): void {
  * (F03.AC2). X, Y, Width and Height act as number fields, a value applied on Enter or when the
  * field is left and the arrows stepping it (`listenToEditedFields`, US-085), as the fields of
  * several shapes, whose value sets each of them (`listenToSeveralFields`, F38); every other number
- * field likewise, its value its own, read as the page redraws (`listenToOwnNumberFields`, US-087).
+ * field likewise, its value its own, read as the page redraws, one mechanism for them all
+ * (`listenToNumberFields`, US-087, AUD-046).
  *
  * @kind procedure
  * @param document - page document
@@ -63,7 +64,7 @@ function listenToPanelControls(document: Document, update: () => void): void {
  * @see docs/backlog/stories/E01-F03-US-011-radius-field-mixed.md
  */
 export function listenToInputs(document: Document, update: () => void): void {
-  listenToOwnNumberFields(document);
+  listenToNumberFields(document);
   listenToRadius(document, update);
 
   // Another number of vertices: the selection no longer applies (F03.AC5).
