@@ -1,4 +1,4 @@
-import { heldNudgeShift, nudgeShift } from "../../src";
+import { heldNudgeShift, isBrowserKey, nudgeShift } from "../../src";
 import { readSelectedShapes } from "../kept-shapes";
 import { readListenerSignal } from "../listeners";
 import { readMode } from "../page";
@@ -14,8 +14,8 @@ import type { Point } from "../../src";
 /**
  * Reads how far a key pressed nudges the shapes selected: an arrow, or Shift + an arrow, by the
  * sum of the arrows held (`heldNudgeShift`, `readHeldArrows`, US-081), in Shape mode; none for a
- * key other than an arrow (`nudgeShift`), nor when the key is not the drawing's: Ctrl, Cmd or Alt held,
- * so that the browser keeps the arrows it gives them, the key already taken by a listener before
+ * key other than an arrow (`nudgeShift`), nor when the key is not the drawing's: Ctrl, Cmd or Alt
+ * held, so that the browser keeps the arrows it gives them (`isBrowserKey`), the key already taken by a listener before
  * this one, its default prevented, or the focus in a field of the panel, the color picker's
  * sliders included, which keeps every key (`readKeyField`).
  *
@@ -27,9 +27,7 @@ import type { Point } from "../../src";
  */
 function readNudge(document: Document, event: KeyboardEvent): Point | undefined {
   const isTaken = [
-    event.ctrlKey,
-    event.metaKey,
-    event.altKey,
+    isBrowserKey(event),
     event.defaultPrevented,
     readKeyField(event) !== undefined,
     readMode(document) === "points",

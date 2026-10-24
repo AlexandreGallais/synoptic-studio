@@ -1,4 +1,4 @@
-import { nudgeShift, parsePanelValue } from "../../src";
+import { fieldArrowStep, isBrowserKey, parsePanelValue } from "../../src";
 import { selectElement } from "../page";
 import { readFieldValue } from "../text";
 
@@ -7,14 +7,11 @@ import { SEVERAL_FIELDS } from "./several-fields";
 
 import type { PanelValues, TypedPanelValue } from "../../src";
 
-/** The arrows that step a field of several shapes: Up adds, Down takes away. */
-const FIELD_ARROWS = new Set(["ArrowDown", "ArrowUp"]);
-
 /**
  * Reads the step an arrow pressed in a field of several shapes gives each shape's own value
- * (US-081): Up adds 1, Down takes 1 away, 10 with Shift, the arrow's step on the drawing
- * (`nudgeShift`) read up the field, as `+1` or `-10` typed; none for another key, nor with Ctrl,
- * Cmd or Alt held, which the field keeps.
+ * (US-081): Up adds 1, Down takes 1 away, 10 with Shift (`fieldArrowStep`), as `+1` or `-10`
+ * typed; none for another key, nor with Ctrl, Cmd or Alt held (`isBrowserKey`), which the field
+ * keeps.
  *
  * @kind procedure
  * @param event - the key pressed in the field
@@ -22,15 +19,9 @@ const FIELD_ARROWS = new Set(["ArrowDown", "ArrowUp"]);
  * @see docs/domain/interaction.md#_2-selector
  */
 function readArrowStep(event: KeyboardEvent): TypedPanelValue | undefined {
-  const isLeft = [
-    !FIELD_ARROWS.has(event.key),
-    event.ctrlKey,
-    event.metaKey,
-    event.altKey,
-  ].includes(true);
-  const shift = nudgeShift(event.key, event.shiftKey);
+  const step = fieldArrowStep(event.key, event.shiftKey);
 
-  return isLeft || shift === undefined ? undefined : { isRelative: true, value: -shift.y };
+  return step === undefined || isBrowserKey(event) ? undefined : { isRelative: true, value: step };
 }
 
 /**

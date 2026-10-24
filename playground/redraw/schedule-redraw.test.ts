@@ -17,6 +17,7 @@ import {
 } from "../user-actions";
 
 import { drawPendingRedraw } from "./draw-pending-redraw";
+import { PENDING_REDRAWS } from "./pending-redraws";
 import { scheduleRedraw } from "./schedule-redraw";
 
 /** The animation frames asked and not run yet, as the browser holds them until its next repaint. */
@@ -230,6 +231,39 @@ describe("a value typed then the drawing clicked within the same frame (US-082)"
     expect(readStoredDrawing(document, DRAWING_KEYS.above).map(({ shape }) => shape)).toEqual([
       expect.objectContaining({ height: 100, width: 100, x: 200, y: 20 }),
     ]);
+  });
+
+  it.each(["pointerup", "click"])(
+    "[F43.AC4] draws the redraw at %s before any listener of the canvas or inside it acts",
+    (type) => {
+      // The drawing's layer, inside the canvas: a listener there hears the event before the
+      // canvas's own listeners, after those the canvas holds in the capture phase (AUD-045).
+      const inside = document.querySelector("#canvas > *");
+      const pending: boolean[] = [];
+
+      inside?.addEventListener(type, () => {
+        pending.push(PENDING_REDRAWS.has(document));
+      });
+
+      inside?.dispatchEvent(new MouseEvent(type, { bubbles: true, clientX: 740, clientY: 490 }));
+
+      expect(inside).not.toBeNull();
+      expect(pending).toEqual([false]);
+    },
+  );
+
+  it("[F43.AC4] forgets at a mount the redraw the mount before asked, a redraw then asked anew", () => {
+    openServedPage("?guide=epic");
+    holdFrames();
+
+    // Drawn by the mount itself; the frame the mount before asked then finds nothing to draw.
+    expect(PENDING_REDRAWS.has(document)).toBe(false);
+
+    typeValue("shape-x", "30");
+
+    // A frame of its own: the redraw asked before the mount no longer swallows it.
+    expect(PENDING_REDRAWS.has(document)).toBe(true);
+    expect(FRAMES).toHaveLength(2);
   });
 
   it("[F43.AC4] draws a redraw asked once, at once, its frame then finding nothing to draw", () => {

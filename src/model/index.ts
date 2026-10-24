@@ -12,6 +12,7 @@ export * from "./held-shapes";
 export * from "./history";
 export * from "./history-list";
 export * from "./kerning";
+export * from "./keys";
 export * from "./layout-box";
 export * from "./line-characters";
 export * from "./moving";

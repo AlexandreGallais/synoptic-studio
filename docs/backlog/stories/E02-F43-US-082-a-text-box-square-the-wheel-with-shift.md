@@ -36,9 +36,9 @@ Corrections 7, 9 and 10 of the Product Owner's first try (2026-10-23) ([note 003
 
 ## Tasks
 
-- [ ] T1 — The Text tool's box square with Shift (`show-shape-drawing.ts`, `draggedBox`'s `isSquare`); `interaction.md` §1 (the box dragged), the agent's choice of US-064 superseded, its Q row; tests first, failing (1 h)
-- [ ] T2 — Shift with the wheel as answered, the system read once (`navigator.userAgentData`, or `navigator.platform`, its source read and recorded first); `interaction.md` §7 (The gestures); tests first (1 h)
-- [ ] T3 — The redraw asked drawn before the panel leaves its shape; correction 10's cases and the Product Owner's steps as tests, each value computed by hand, a fix where one is wrong (2 h)
+- [x] T1 — The Text tool's box square with Shift (`show-shape-drawing.ts`, `draggedBox`'s `isSquare`); `interaction.md` §1 (the box dragged), the agent's choice of US-064 superseded, its Q row; tests first, failing (1 h)
+- [x] T2 — Shift with the wheel as answered, the system read once (`navigator.userAgentData`, or `navigator.platform`, its source read and recorded first); `interaction.md` §7 (The gestures); tests first (1 h)
+- [x] T3 — The redraw asked drawn before the panel leaves its shape; correction 10's cases and the Product Owner's steps as tests, each value computed by hand, a fix where one is wrong (2 h)
 
 Files: `playground/shape-drawing/show-shape-drawing.ts`, `playground/view/listen-to-wheel.ts`, `playground/redraw/schedule-redraw.ts`, `draw-pending-redraw.ts`, `listen-to-redraw-before-clicks.ts`, `playground/mount/mount-playground.ts`, `docs/domain/interaction.md` §1, §2 and §7. `@see` `REF-PENPOT-VIEWPORT-ACTIONS`, `REF-MDN-NAVIGATOR-PLATFORM`, `REF-HTML-NAVIGATOR-PLATFORM`, `REF-MDN-USER-AGENT-DATA`, `REF-MDN-RAF`, `docs/domain/interaction.md#_1-tools`.
 

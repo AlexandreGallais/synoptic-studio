@@ -162,6 +162,7 @@ Given on 2026-10-23:
 2. (a) Inkscape's: the accent's band, 2 pixels, over a white band 4 pixels wide, 1 pixel of white showing on each side; the dashed box's dashes in the accent, white between them; the selection rectangle's band, 1 pixel, over a white one of 3. Chosen so that the Product Owner sees it; to judge once seen.
 3. (a) As Figma: the shapes a selection rectangle would take outlined as under the pointer while it is dragged, selected at the release only.
 4. (a) Up adds 1 to each shape's own value in a Mixed field, Shift + Up 10, Down and Shift + Down take them away, as `+1` typed.
+   - On 2026-10-24, asked by AUD-045: (c) added to (a), the arrows kept in X and Y as well as in W and H, X going right and Y down by 1, as US-081 made them.
 5. One step for a burst of arrows in a number field, held or pressed quickly one after the other: the step is taken once the arrow is released and no arrow follows within a short pause, so that Up held for a second is one step, Up pressed ten times quickly is one step, and two bursts two seconds apart are two steps; the pause's length, about 500 ms, chosen by the agent from a short research (the Product Owner's reading, confirmed at question 9).
 6. (a) Each arrow's key moves the selection by the sum of the arrows held: Up then Right held, (+1, −1) at each key; Left and Right cancel out; Shift × 10 on both axes.
 7. (a) Penpot's rule: on macOS the wheel's deltas taken as sent, Shift or not; elsewhere Shift turns the vertical delta across, as today.

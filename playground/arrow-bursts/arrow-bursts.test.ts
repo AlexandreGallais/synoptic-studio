@@ -244,6 +244,36 @@ describe("a burst of arrows in a number field, one step (US-081)", () => {
     expect(readPresentWidths()).toEqual([120]);
   });
 
+  it("[F43.AC3] opens no burst at Cmd + Up, whose keyup macOS never sends", () => {
+    sendKey("width", "keydown", { key: "Meta", metaKey: true });
+    sendKey("width", "keydown", { key: "ArrowUp", metaKey: true });
+    sendKey("width", "keyup", { key: "Meta" });
+    typeAndEnter("width", "90");
+
+    // No burst open: the value applied takes its step at once.
+    expect(readPresentWidths()).toEqual([90]);
+  });
+
+  it.each(["ctrlKey", "altKey"])("[F43.AC3] opens no burst at Up with %s", (modifier) => {
+    sendKey("width", "keydown", { key: "ArrowUp", [modifier]: true });
+    typeAndEnter("width", "90");
+
+    expect(readPresentWidths()).toEqual([90]);
+  });
+
+  it("[F43.AC3] ends a burst at once, its step taken, when Cmd is released, Up's keyup never sent", () => {
+    pressUp("width", 3);
+    // Cmd pressed while Up is held, then both released: macOS sends Cmd's keyup alone.
+    sendKey("width", "keydown", { key: "Meta", metaKey: true });
+
+    expect(readPresentWidths()).toEqual([100]);
+
+    sendKey("width", "keyup", { key: "Meta" });
+
+    // 100 + 3, recorded at Cmd's release, no pause waited for.
+    expect(readPresentWidths()).toEqual([103]);
+  });
+
   it("[F43.AC3] ends a burst at once, its step taken, when an arrow is pressed in another field", () => {
     holdUp("width", 30);
     holdUp("height", 5);
@@ -297,5 +327,52 @@ describe("a burst of arrows in a field of several shapes, one step (US-081)", ()
     undo();
 
     expect(readWidths()).toEqual([120, 40]);
+  });
+
+  it("[F43.AC3] takes two steps for Up released in W, then 150 typed and Enter within the pause", () => {
+    holdUp("several-width", 1);
+    vi.advanceTimersByTime(100);
+
+    for (const key of ["1", "5", "0"]) {
+      sendKey("several-width", "keydown", { key });
+    }
+
+    // The first digit ends the burst, 120 + 1 and 40 + 1, its step taken.
+    expect(readPresentWidths()).toEqual([121, 41]);
+
+    typeAndEnter("several-width", "150");
+
+    expect(readPresentWidths()).toEqual([150, 150]);
+
+    vi.advanceTimersByTime(PAUSE);
+    // Ctrl + Z gives back the burst's widths first, then those before it.
+    undo();
+
+    expect(readWidths()).toEqual([121, 41]);
+
+    undo();
+
+    expect(readWidths()).toEqual([120, 40]);
+  });
+
+  it("[F43.AC3] keeps a burst open at Shift, Ctrl, Alt, Cmd or Left pressed in its field", () => {
+    holdUp("several-width", 1);
+
+    for (const key of ["Shift", "Control", "Alt", "Meta", "ArrowLeft"]) {
+      sendKey("several-width", "keydown", { key });
+    }
+
+    expect(readPresentWidths()).toEqual([120, 40]);
+
+    vi.advanceTimersByTime(PAUSE);
+
+    expect(readPresentWidths()).toEqual([121, 41]);
+  });
+
+  it("[F43.AC3] keeps a burst open at a key typed in another field, as before", () => {
+    holdUp("several-width", 1);
+    sendKey("several-height", "keydown", { key: "5" });
+
+    expect(readPresentWidths()).toEqual([120, 40]);
   });
 });

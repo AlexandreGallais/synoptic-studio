@@ -1,3 +1,4 @@
+import { fieldArrowStep, isBrowserKey, nudgeShift } from "../../src";
 import { readListenerSignal } from "../listeners";
 import { selectElement } from "../page";
 import { readKeyField } from "../selection-keys";
@@ -10,8 +11,8 @@ import { ARROW_BURSTS } from "./arrow-bursts";
  */
 const BURST_FIELDS = 'input[type="number"], #several-fields input';
 
-/** The arrows that step a field: Up and Down. */
-const STEP_ARROWS = new Set(["ArrowDown", "ArrowUp"]);
+/** The keys that type nothing in a field, held for an arrow or a shortcut: the modifiers. */
+const MODIFIER_KEYS: ReadonlySet<string> = new Set(["Alt", "Control", "Meta", "Shift"]);
 
 /**
  * The pause after an arrow's release within which another arrow joins its burst, in ms: as text
@@ -55,6 +56,45 @@ function readSteppedField(event: KeyboardEvent): Element | undefined {
 }
 
 /**
+ * Reads the field an arrow that steps it, Up or Down (`fieldArrowStep`), is pressed in
+ * (`readSteppedField`), without Ctrl, Cmd or Alt, which the browser keeps (`isBrowserKey`), so
+ * that no burst waits for the `keyup` macOS never sends with Cmd held.
+ *
+ * @kind procedure
+ * @param event - a key pressed in the panel
+ * @returns the field; undefined for another key, or outside such a field
+ * @see docs/domain/interaction.md#_7-navigation-and-history
+ */
+function readArrowField(event: KeyboardEvent): Element | undefined {
+  const isStep = fieldArrowStep(event.key, false) !== undefined && !isBrowserKey(event);
+
+  return isStep ? readSteppedField(event) : undefined;
+}
+
+/**
+ * Ends the burst open in the field a key is typed in, its step taken (`stopArrowBurst`, AUD-045):
+ * a key other than an arrow or a modifier, which types the value that then takes a step of its
+ * own, after the burst's.
+ *
+ * @kind procedure
+ * @param document - page document
+ * @param event - a key pressed in the panel, no arrow that steps
+ * @param step - asks the step of the history
+ * @see docs/domain/interaction.md#_7-navigation-and-history
+ */
+function stopTypedBurst(document: Document, event: KeyboardEvent, step: () => void): void {
+  const isTyped = ![
+    readSteppedField(event) === ARROW_BURSTS.get(document)?.field,
+    nudgeShift(event.key, false) === undefined,
+    !MODIFIER_KEYS.has(event.key),
+  ].includes(false);
+
+  if (isTyped) {
+    stopArrowBurst(document, step);
+  }
+}
+
+/**
  * Ends the burst open in another field than the one an arrow is pressed in, its step taken
  * (`stopArrowBurst`); the burst open in that field keeps on, its pause ended, the arrow held.
  *
@@ -75,9 +115,10 @@ function stopOtherBurst(document: Document, field: Element, step: () => void): v
 }
 
 /**
- * Opens a burst at Up or Down pressed in a field whose arrows step a value (`readSteppedField`),
- * the arrow then held; a burst open in that field keeps on, its pause ended, one open in another
- * field ends first (`stopOtherBurst`).
+ * Opens a burst at Up or Down pressed without Ctrl, Cmd or Alt in a field whose arrows step a
+ * value (`readArrowField`), the arrow then held; a burst open in that field keeps
+ * on, its pause ended, one open in another field ends first (`stopOtherBurst`); another key typed
+ * in the burst's field ends it (`stopTypedBurst`).
  *
  * @kind procedure
  * @param document - page document
@@ -86,9 +127,11 @@ function stopOtherBurst(document: Document, field: Element, step: () => void): v
  * @see docs/domain/interaction.md#_7-navigation-and-history
  */
 function startArrowBurst(document: Document, event: KeyboardEvent, step: () => void): void {
-  const field = STEP_ARROWS.has(event.key) ? readSteppedField(event) : undefined;
+  const field = readArrowField(event);
 
   if (field === undefined) {
+    stopTypedBurst(document, event, step);
+
     return;
   }
 
@@ -109,7 +152,7 @@ function startArrowBurst(document: Document, event: KeyboardEvent, step: () => v
 function startBurstPause(document: Document, event: KeyboardEvent, step: () => void): void {
   const burst = ARROW_BURSTS.get(document);
 
-  if (burst === undefined || !STEP_ARROWS.has(event.key)) {
+  if (burst === undefined || fieldArrowStep(event.key, false) === undefined) {
     return;
   }
 
@@ -123,11 +166,29 @@ function startBurstPause(document: Document, event: KeyboardEvent, step: () => v
 }
 
 /**
+ * Ends the burst open at Cmd released, its step taken (`stopArrowBurst`), since macOS sends no
+ * `keyup` for an arrow released while Cmd is held (`REF-WEBKIT-CMD-KEYUP`,
+ * `REF-MOZILLA-CMD-KEYUP`, AUD-045).
+ *
+ * @kind procedure
+ * @param document - page document
+ * @param event - a key released
+ * @param step - asks the step of the history
+ * @see docs/domain/interaction.md#_7-navigation-and-history
+ */
+function closeBurstAtCommand(document: Document, event: KeyboardEvent, step: () => void): void {
+  if (event.key === "Meta") {
+    stopArrowBurst(document, step);
+  }
+}
+
+/**
  * Listens to the bursts of arrows in the panel's fields (US-081, SP-031's answer 5): Up or Down
  * pressed in a number field or a field of several shapes opens a burst (`startArrowBurst`), its
  * release starts a pause of 500 ms (`startBurstPause`), and the burst's step is taken at the
- * pause's end, unless an arrow pressed meanwhile joins the burst; the window losing the focus ends
- * it at once, a release in another window never heard (`stopArrowBurst`). A burst left open by the
+ * pause's end, unless an arrow pressed meanwhile joins the burst; another key typed in its field,
+ * Cmd released and the window losing the focus end it at once, a release in another window never
+ * heard (`stopArrowBurst`). A burst left open by the
  * page mounted before is forgotten, its step not taken.
  *
  * @kind procedure
@@ -146,6 +207,7 @@ export function listenToArrowBursts(document: Document, step: () => void): void 
   document.addEventListener(
     "keyup",
     (event) => {
+      closeBurstAtCommand(document, event, step);
       startBurstPause(document, event, step);
     },
     { signal: readListenerSignal(document) },
