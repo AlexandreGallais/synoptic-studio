@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   chooseOption,
+  chooseShapeKind,
   clickElement,
   commitField,
   openOnStep,
@@ -13,6 +14,7 @@ import {
   readValue,
   selectPageElement,
   setElementBox,
+  typeAndEnter,
   typeValue,
 } from "../../user-actions";
 import { GUIDED_STEPS } from "../lists";
@@ -172,7 +174,7 @@ describe("the guided test of F16 (VAL-016): the ways to type and pick a color", 
 
   it("[F16.AC1] opacity 40: fill-opacity 0.4, the model's opacity 40", () => {
     openStep("Opacity");
-    typeValue("text-opacity", "40");
+    typeAndEnter("text-opacity", "40");
     expect(readFills().slice(0, 2)).toEqual(["#ff8000", "0.4"]);
     expect(readText("#model")).toContain('"opacity": 40');
   });
@@ -505,7 +507,7 @@ describe("the guided test of F16 (VAL-016): its decisions, each with its example
     expect(readText("#text-color-message")).toContain("#ff8800 kept");
   });
 
-  it("decision 15: empty shown again; hue 400 and −10 held at the ends; the opacity a percent", () => {
+  it("decision 15: empty shown again; hue 400 going round to 40, −10 from it; the opacity a percent", () => {
     openStep("Beyond the ends (decision 15)");
     chooseOption("color-model", "hsb");
     clickElement("text-color-swatch");
@@ -518,13 +520,14 @@ describe("the guided test of F16 (VAL-016): its decisions, each with its example
 
     // 100 · 67 / 200 = 33.5, to the nearest percent: 34.
     pressPointer("#color-opacity", "pointerdown", { buttons: 1, clientX: 67, clientY: 5 });
-    expect([...hues, readValue("text-opacity")]).toEqual(["30", "0", "0", "34"]);
+    // 400 − 360 = 40, an angle going round (AUD-046); 40 − 10 = 30.
+    expect([...hues, readValue("text-opacity")]).toEqual(["30", "40", "30", "34"]);
   });
 
   it("decision 16: the opacity typed while open moves the bar; Escape gives the swatch the focus", () => {
     openStep("Under its fields; Escape (decision 16)");
     clickElement("text-color-swatch");
-    typeValue("text-opacity", "50");
+    typeAndEnter("text-opacity", "50");
     expect(selectPageElement("#color-opacity").getAttribute("aria-valuenow")).toBe("50");
     selectPageElement("#color-hue").focus();
     pressKey("body", "Escape");
@@ -634,7 +637,7 @@ describe("the guided test of F16 (VAL-016): its decisions, each with its example
 
   it("[F16.AC4] back to the rectangle, drawn as before", () => {
     openStep("Back to the rectangle");
-    clickElement("tool-rectangle");
+    chooseShapeKind("rectangle");
     expect([readDisplay("text-options"), isPickerOpen()]).toEqual(["none", false]);
     expect(readText("#path-data")).toBe("M0 0 L120 0 L120 80 L0 80 Z");
   });

@@ -2,11 +2,11 @@ import {
   NO_HANDLES,
   cornersWithRadii,
   formatSvgNumber,
-  freeShapeCorners,
   isModelSize,
   isValidFreeShape,
-  turnedCorners,
+  shapeCorners,
 } from "../../src";
+import { readShownText } from "../applied-values";
 import { readNumber, selectElement } from "../page";
 import { readAngle } from "../position";
 
@@ -20,7 +20,7 @@ const INVALID_FREE_SHAPE =
   "Width, height and radius typed must be integers ≥ 0, the angle an integer, and the points must span some width and height.";
 
 /**
- * Reads the text typed in an input.
+ * Reads the text of an input as the page reads it, the value applied (`readShownText`, AUD-046).
  *
  * @kind procedure
  * @param document - page document
@@ -31,7 +31,7 @@ const INVALID_FREE_SHAPE =
 function readInputText(document: Document, id: string): string {
   const input = selectElement(document, id);
 
-  return input instanceof HTMLInputElement ? input.value : "";
+  return input instanceof HTMLInputElement ? readShownText(input) : "";
 }
 
 /**
@@ -85,7 +85,7 @@ export function readFreeShapeShape(document: Document, kept: FreeShape): ShapeRe
   const isValid = [width.isValid, height.isValid, isValidFreeShape(model)].every(Boolean);
 
   return {
-    corners: isValid ? turnedCorners(freeShapeCorners(model), model) : [],
+    corners: isValid ? shapeCorners(model) : [],
     isValid,
     message: INVALID_FREE_SHAPE,
     model,

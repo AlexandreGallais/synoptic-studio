@@ -79,8 +79,8 @@ Run `npm run dev` and open `http://localhost:5173/?checklist=E17`: E17's checkli
 | `target/release/session-report --all --markdown` | the time and tokens of the whole conversation |
 | `target/release/epic-check E17 2026-10-16` (a few minutes: it runs `check:all`) | a table: failed calls, `apart: <n> refused by the worktree isolation`, calls lost at a forced quit |
 | `npm run mutate -- src/math/angle/central-angle.ts -- npx vitest run {test}` | three `caught` lines, then `3 caught, 0 survived, 0 file(s) skipped` |
-| Chrome, Inter not installed: Text tool, **Installed fonts**, allow | when the counting line ends, the list stays greyed: `Reading <family>, the default font: …`; then enabled |
-| Chrome: Text tool, **Installed fonts**, allow, wait for the end | the counting line ends with `… faces of the families read refused: …` when a face was refused; such a face is in no weight list |
+| Chrome, Inter not installed: the Text tool, a click on the drawing, **Installed fonts**, allow | when the counting line ends, the list stays greyed: `Reading <family>, the default font: …`; then enabled |
+| Chrome: the Text tool, a click on the drawing, **Installed fonts**, allow, wait for the end | the counting line ends with `… faces of the families read refused: …` when a face was refused; such a face is in no weight list |
 | `npx vitest run src/io/font-face src/io/font-collection playground/fonts` | every test passed, none skipped |
 
 The documentation site, this page included: `npm run docs:dev`.

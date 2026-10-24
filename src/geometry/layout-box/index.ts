@@ -7,6 +7,7 @@ export * from "./box-size";
 export * from "./fit-in-box";
 export * from "./half-size";
 export * from "./has-area";
+export * from "./meet-scale";
 export type * from "./size";
 export * from "./stretch-factors";
 export * from "./stretch-to-size";

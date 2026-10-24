@@ -2,7 +2,15 @@
 import { beforeEach, describe, expect, it } from "vitest";
 
 import { curveCornerOf } from "../../src";
-import { clickElement, clickPoint, openPage, readText, typeValue } from "../user-actions";
+import {
+  clickElement,
+  clickPoint,
+  openPage,
+  readShapeModel,
+  readText,
+  readValue,
+  typeAndEnter,
+} from "../user-actions";
 
 describe("rectangle as a free shape", () => {
   beforeEach(() => {
@@ -32,7 +40,7 @@ describe("rectangle as a free shape", () => {
     const before = readText("#path-data");
     const model = readText("#model");
 
-    typeValue("width", "0");
+    typeAndEnter("width", "0");
 
     // Nothing drawn across, the stored unit square untouched.
     expect(readText("#path-data")).toBe("M0 0 L0 80 Z");
@@ -47,7 +55,7 @@ describe("rectangle as a free shape", () => {
       width: 0,
     });
 
-    typeValue("width", "120");
+    typeAndEnter("width", "120");
 
     expect(readText("#model")).toBe(model);
     expect(readText("#path-data")).toBe(before);
@@ -62,7 +70,7 @@ describe("rectangle as a free shape", () => {
 
     clickPoint(3, false);
 
-    typeValue("point-radius", "30");
+    typeAndEnter("point-radius", "30");
 
     expect(document.querySelector<HTMLInputElement>("#radius")?.dataset["radii"]).toBe(
       "10 10 30 10",
@@ -79,11 +87,17 @@ describe("rectangle as a free shape", () => {
     expect(readText('#points [data-vertex="3"]')).toBe("3 · x 120 · y 80 · radius 10");
   });
 
-  it("[F09.AC4] still refuses a fractional width typed for the rectangle (Q15)", () => {
-    typeValue("width", "2.5");
+  it("[F09.AC4] keeps the rectangle's width an integer, 2.5 typed rounded to 3 (Q15)", () => {
+    // A fraction typed is rounded once, a tie up (AUD-046): the rectangle stays on integers.
+    typeAndEnter("width", "2.5");
 
-    expect(readText("#status")).toBe(
-      "Width, height and radius must be integers ≥ 0, and the angle an integer.",
-    );
+    expect([readValue("width"), readShapeModel().width, readText("#status")]).toEqual(["3", 3, ""]);
+  });
+
+  it("[F09.AC4] keeps the rectangle's radius an integer, 2.5 typed rounded to 3 (Q15)", () => {
+    typeAndEnter("radius", "2.5");
+
+    expect([readValue("radius"), readText("#status")]).toEqual(["3", ""]);
+    expect(readText("#path-data")).toContain("A3 3");
   });
 });

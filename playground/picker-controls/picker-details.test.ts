@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
   chooseOption,
+  chooseShapeKind,
   clickElement,
   commitField,
   openServedPage,
@@ -45,7 +46,7 @@ function pressCancellableKey(selector: string, key: string): boolean {
 describe("Color picker: focus, keys, rounding and what it writes (US-035, audit, US-040)", () => {
   beforeEach(() => {
     openServedPage("");
-    clickElement("tool-text");
+    chooseShapeKind("text");
     chooseOption("text-weight", "400");
     chooseOption("text-fit", "content");
     chooseOption("color-model", "hsb");

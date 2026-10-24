@@ -29,8 +29,8 @@ export const GUIDED_STEPS_F05_DECISIONS: readonly GuidedStep[] = [
     values: createTextStepValues({}),
   },
   {
-    explanation: "Letter spacing 100001; then −100000.",
-    look: "Refused; then accepted, every line tightened past nothing: no frame.",
+    explanation: "Letter spacing 100001, Enter; then −200000, Enter.",
+    look: "Taken at the most, 100 000; then −200 000 taken from it, −100 000, the least, accepted, every line tightened past nothing: no frame.",
     title: "F05 · Spacing bounds ±100 000 (decision)",
     values: createTextStepValues({}),
   },
@@ -92,7 +92,7 @@ export const GUIDED_STEPS_F05_DECISIONS: readonly GuidedStep[] = [
   },
   {
     explanation: "Letter spacing 1, 2, … up to 10; then a second line; then Size 32.",
-    look: "The P's turned corner stays put, the text grows along its line; X 47, Y 61 show that corner throughout (US-054).",
+    look: "The P's turned corner stays put, the text grows along its line; X and Y show its straight box, Y 61 throughout (AUD-040).",
     title: "F05 · A turned text grows in place (US-038)",
     values: createTextStepValues({ angle: 23, content: "Pump P-101", size: 16, x: 47, y: 61 }),
   },

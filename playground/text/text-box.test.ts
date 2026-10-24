@@ -4,11 +4,12 @@ import { beforeEach, describe, expect, it } from "vitest";
 
 import {
   chooseOption,
+  chooseShapeKind,
   clickElement,
   openServedPage,
   readText,
   selectPageElement,
-  typeValue,
+  typeAndEnter,
 } from "../user-actions";
 
 // Inter 4.1 Regular at size 16, kerning included, as `lineWidth` measures: "Hello" 38.5625,
@@ -78,16 +79,16 @@ function readFrame(): string | null {
 describe("Text tool: a text in a box (US-033)", () => {
   beforeEach(() => {
     openServedPage("");
-    clickElement("tool-text");
-    typeValue("text-size", "16");
+    chooseShapeKind("text");
+    typeAndEnter("text-size", "16");
     // happy-dom loses the option marked `selected` once the page is moved into its document: the
     // choices the page opens with are chosen again.
     chooseOption("text-weight", "400");
     chooseOption("text-vertical-alignment", "top");
     typeContent("Hello World");
     chooseOption("text-fit", "box");
-    typeValue("text-box-width", "50");
-    typeValue("text-box-height", "100");
+    typeAndEnter("text-box-width", "50");
+    typeAndEnter("text-box-height", "100");
   });
 
   it("[F14.AC1] wraps 'Hello World' in a box 50 wide: one <text>, one positioned <tspan> a line", () => {
@@ -116,7 +117,7 @@ describe("Text tool: a text in a box (US-033)", () => {
   });
 
   it("[F14.AC2] cuts at Max lines 1 with 'Hell…', the ellipsis written as a character", () => {
-    typeValue("text-maximum-lines", "1");
+    typeAndEnter("text-maximum-lines", "1");
 
     // "Hello…" (52.39063) is wider than 50; "Hell…" (42.79688) fits.
     expect(readLines()).toEqual([["Hell…", "0", "15.5"]]);
@@ -145,12 +146,12 @@ describe("Text tool: a text in a box (US-033)", () => {
   });
 
   it("[F14.AC1] frames the box at its position and turns both about the box's middle", () => {
-    typeValue("shape-x", "10");
-    typeValue("shape-y", "20");
+    typeAndEnter("shape-x", "10");
+    typeAndEnter("shape-y", "20");
     // The box 50 × 100 at (10, 20): its first dash from (10, 20), its middle (35, 70).
     expect(readFrame()).toMatch(/^M10 20H14V21H10Z /u);
 
-    typeValue("angle", "90");
+    typeAndEnter("angle", "90");
 
     expect(
       ["#canvas g:has(> text)", "#canvas g.text-frame"].map((selector) =>
@@ -168,11 +169,11 @@ describe("Text tool: a text in a box (US-033)", () => {
 
   it("[F14.AC3] spreads the lines 24 apart, then back to the font's line height", () => {
     typeContent(PUMP);
-    typeValue("text-line-height", "24");
+    typeAndEnter("text-line-height", "24");
     // Half-leading (24 − 19.359375) / 2 = 2.3203125: the first baseline at 17.8203125.
     expect(readBaselines()).toEqual(["17.82031", "41.82031", "65.82031", "89.82031"]);
 
-    typeValue("text-line-height", "0");
+    typeAndEnter("text-line-height", "0");
     expect(readBaselines()).toEqual(["15.5", "34.85938", "54.21875", "73.57813"]);
   });
 
@@ -186,15 +187,15 @@ describe("Text tool: a text in a box (US-033)", () => {
 
   it("[F17.AC1] wraps 'Pump P-101 is running' automatically in a box 110 wide", () => {
     typeContent(PUMP);
-    typeValue("text-box-width", "110");
+    typeAndEnter("text-box-width", "110");
     // Inter 16: "Pump P-101 is" (104.77) fits; with " running" (57.53) it would not.
     expect(readContents()).toEqual(["Pump P-101 is", "running"]);
   });
 
   it("turns the text and its box by 90 about the box's middle", () => {
     typeContent(PUMP);
-    typeValue("text-box-width", "110");
-    typeValue("angle", "90");
+    typeAndEnter("text-box-width", "110");
+    typeAndEnter("angle", "90");
 
     // The box 110 × 100 at (0, 0): its middle (55, 50).
     expect(
@@ -205,7 +206,7 @@ describe("Text tool: a text in a box (US-033)", () => {
   });
 
   it("draws no frame around a box 0 wide, its lines still shown", () => {
-    typeValue("text-box-width", "0");
+    typeAndEnter("text-box-width", "0");
 
     expect(document.querySelector("#canvas g.text-frame")).toBeNull();
     // Each word on its own line, kept whole and cut to its first character and the ellipsis,
@@ -215,7 +216,7 @@ describe("Text tool: a text in a box (US-033)", () => {
 
   it("[F14.AC6] draws the text as in F05 once Fit content is chosen again", () => {
     typeContent(PUMP);
-    typeValue("text-maximum-lines", "1");
+    typeAndEnter("text-maximum-lines", "1");
     chooseOption("text-fit", "content");
 
     // One line, the block 166.80469 wide: the frame's right side, 1 thick, ends at it.

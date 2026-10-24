@@ -16,7 +16,7 @@ A rectangle can be edited straight away. A regular polygon is first turned into 
 
 ![A converted hexagon, its point 1 moved right to x 80; the original hexagon dashed](./images/f08-hexagon-moved.svg)
 
-**Only what you type is a whole number.** Typing X 80 on that point leaves its Y at 93.30127: nothing is rounded behind your back. Width and height still stretch the whole shape, every point following, and moving a point after a stretch starts from where the points are drawn.
+**Only what you type is a whole number.** Typing X 80 on that point leaves its Y at 93.30127: nothing is rounded behind your back. The value you change is a whole number, though: Up or `+1` in that Y gives 94 (since AUD-047). Width and height still stretch the whole shape, every point following, and moving a point after a stretch starts from where the points are drawn.
 
 **A point in the middle.** The new point lands exactly in the middle of the side, without rounding, so the drawing does not change; it is selected alone, ready to be moved. Here it was moved up by 20 to make a peak.
 

@@ -79,7 +79,7 @@ export const GUIDED_STEPS_F14_OPTIONS: readonly GuidedStep[] = [
   },
   {
     explanation:
-      "Nothing to type: a box 60 × 40 turned by 30; then the Rectangle tool, Width 60, Height 40, Angle 30.",
+      "Nothing to type: a box 60 × 40 turned by 30; then the Rectangle tool, a click on the drawing, Width 60, Height 40, X 0, Y 0, Angle 30.",
     look: "The text's frame thin and blue, turned with it, an upright dashed box around it: the same two frames as the rectangle's (US-050).",
     title: "F14 · A turned text's frames (US-050)",
     values: createTextBoxStepValues({ angle: 30, boxHeight: 40, boxWidth: 60, isInBox: true }),
@@ -111,8 +111,8 @@ export const GUIDED_STEPS_F14_OPTIONS: readonly GuidedStep[] = [
     values: createTextBoxStepValues(PUMP_110),
   },
   {
-    explanation: "Width 100001; then empty; then 110. Background opacity 101; then 100.",
-    look: "Each refused: drawing gone, message, fields in red; back when valid.",
+    explanation: "Width 100001, Enter; empty, Enter; then 110. Background opacity 101, Enter.",
+    look: "Width capped at 100 000, empty put back; opacity taken at the most, 100.",
     title: "F14 · Refused values",
     values: createTextBoxStepValues(PUMP_110),
   },

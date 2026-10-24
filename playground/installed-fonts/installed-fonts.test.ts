@@ -19,6 +19,7 @@ import { readFontSession } from "../fonts";
 import {
   chooseFiles,
   chooseOption,
+  chooseShapeKind,
   clickElement,
   openServedPage,
   readDisabledState,
@@ -26,7 +27,7 @@ import {
   readValue,
   selectChoice,
   selectPageElement,
-  typeValue,
+  typeAndEnter,
   waitForPageTasks,
 } from "../user-actions";
 
@@ -256,9 +257,9 @@ function refuseCollectionJoins(): void {
 describe("Installed fonts (US-036)", () => {
   beforeEach(() => {
     openServedPage("");
-    clickElement("tool-text");
+    chooseShapeKind("text");
     chooseOption("text-weight", "400");
-    typeValue("text-size", "100");
+    typeAndEnter("text-size", "100");
   });
 
   afterEach(() => {
@@ -819,7 +820,7 @@ function refusedAtSecondRead(font: InstalledFont, error: Error): InstalledFont {
 describe("Installed fonts read whole before they are listed (US-062)", () => {
   beforeEach(() => {
     openServedPage("");
-    clickElement("tool-text");
+    chooseShapeKind("text");
     chooseOption("text-weight", "400");
   });
 

@@ -31,16 +31,68 @@
         position: relative;
         flex: 1 1 0;
         min-width: 0;
-        overflow: hidden;
+        /* Clipped, not hidden: a box clipped is no scroll container, so that no focus on a button
+           of the toolbar beyond the stage scrolls it (US-084, REF-CSS-OVERFLOW-3, §3.1). */
+        overflow: clip;
+      }
+      /* No selection of page text starts on the drawing nor on the layer above it (F43), so that a
+         text pressed, dragged across or double-clicked is picked as a shape, its letters never
+         highlighted; the prefixed property for Safari (REF-MDN-USER-SELECT). */
+      #canvas,
+      #overlay {
+        -webkit-user-select: none;
+        user-select: none;
       }
       #canvas {
         height: 100%;
         background: repeating-conic-gradient(#8881 0 25%, transparent 0 50%) 0 0 / 20px 20px;
       }
+      /* A tool armed places a shape where the drawing is clicked (F35). */
+      #stage:has(
+          #toolbar
+            button[aria-pressed="true"]:is(#tool-rectangle, #tool-polygon, #tool-round, #tool-text)
+        )
+        #canvas {
+        cursor: crosshair;
+      }
       #canvas svg {
         display: block;
         width: 100%;
         height: 100%;
+      }
+      /* The layer above the drawing (F36): the outlines of the shapes selected and of the shape
+         under the pointer, which the pointer passes through to the drawing; never exported. */
+      #overlay {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+      }
+      #overlay svg {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+      /* The helps (US-086, ADR-0099): the outlines, the dashed box around several shapes selected
+         and the selection rectangle's line, each one line of white and black dashes, seen on
+         every color: a white stroke, then black dashes over it, as Inkscape's controls. A native
+         stroke in this layer alone, never on a shape; widths and dashes set by the page. */
+      #overlay path.hover-light,
+      #overlay path.selection-light,
+      #overlay path.selection-box-light,
+      #overlay path.selection-rectangle-light {
+        fill: none;
+        stroke: #fff;
+      }
+      #overlay path.hover,
+      #overlay path.selection,
+      #overlay path.selection-box,
+      #overlay path.selection-rectangle {
+        fill: none;
+        stroke: #000;
+      }
+      /* The selection rectangle's area (F37), a light tint of the outlines' color under its line. */
+      #overlay path.selection-area {
+        fill: color-mix(in srgb, var(--accent) 12%, transparent);
       }
       /* A path without its own fill; a text's strokes carry their own color (US-031, US-041). */
       #canvas path:not([fill]) {
@@ -118,6 +170,109 @@
       #toolbar button[aria-pressed="true"] {
         color: #fff;
         background: var(--accent);
+      }
+      /* Undo and Redo, disabled while there is nothing to undo or redo (F40). */
+      #toolbar button:disabled {
+        cursor: default;
+        opacity: 0.4;
+        background: none;
+      }
+      #history-size,
+      #history-moves {
+        align-self: center;
+        font-size: 0.85em;
+        color: var(--muted);
+        white-space: nowrap;
+      }
+      /* The list of the history's steps, opened under the toolbar (US-077). */
+      #history-steps-box {
+        position: relative;
+        align-self: center;
+        font-size: 0.85em;
+      }
+      #history-steps-box summary {
+        cursor: pointer;
+        white-space: nowrap;
+      }
+      #history-list {
+        position: absolute;
+        top: calc(100% + 0.6rem);
+        left: 0;
+        z-index: 1;
+        min-width: 11rem;
+        margin: 0;
+        padding: 0.35rem;
+        list-style: none;
+        background: var(--panel);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+      }
+      #history-list button {
+        width: 100%;
+        min-height: 1.8rem;
+      }
+      #history-list button[aria-current="step"] {
+        color: #fff;
+        background: var(--accent);
+      }
+      #history-list button[data-place="future"] {
+        color: var(--muted);
+        font-style: italic;
+      }
+      #history-list .history-left-out {
+        padding: 0.2rem 0.7rem;
+        color: var(--muted);
+      }
+      /* The zoom's percentage, its menu opened under it (US-079). */
+      #zoom-box {
+        position: relative;
+        align-self: center;
+        font-size: 0.85em;
+      }
+      #zoom-box summary {
+        min-width: 4.2rem;
+        cursor: pointer;
+        white-space: nowrap;
+      }
+      #zoom-menu {
+        position: absolute;
+        top: calc(100% + 0.6rem);
+        right: 0;
+        z-index: 1;
+        display: grid;
+        gap: 0.1rem;
+        min-width: 14rem;
+        padding: 0.35rem;
+        background: var(--panel);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+      }
+      #zoom-menu button {
+        justify-content: space-between;
+        width: 100%;
+        min-height: 1.8rem;
+      }
+      #zoom-menu kbd {
+        font: inherit;
+        color: var(--muted);
+      }
+      #zoom-menu label {
+        padding: 0.2rem 0.7rem;
+      }
+      /* The history's memory size and steps kept, beside Undo and Redo (US-076). */
+      #toolbar label {
+        display: flex;
+        gap: 0.3rem;
+        align-items: center;
+        margin: 0;
+        font-size: 0.85em;
+        white-space: nowrap;
+      }
+      #toolbar input[data-number-field] {
+        display: inline-block;
+        width: 4.2rem;
+        height: 1.9rem;
+        margin: 0;
       }
       #toolbar svg {
         width: 1.1rem;
@@ -398,7 +553,7 @@
         color: #fff;
         background: var(--accent);
       }
-      input[type="number"] {
+      input[data-number-field] {
         box-sizing: border-box;
         display: block;
         width: 100%;
@@ -481,9 +636,16 @@
   <body>
     <div id="stage">
       <main id="canvas"></main>
+      <div id="overlay" aria-hidden="true"></div>
       <nav id="toolbar" aria-label="Tools">
-        <p role="group" aria-label="Shape kind">
-          <button id="tool-rectangle" type="button" aria-pressed="true" title="Rectangle">
+        <p role="group" aria-label="Tool">
+          <button id="tool-selector" type="button" aria-pressed="true" title="Selector">
+            <svg viewBox="0 0 16 16" aria-hidden="true">
+              <path d="M3 1.5v12l3.2-3 2.3 4.8 2-1-2.3-4.7H12.5z" />
+            </svg>
+            Selector
+          </button>
+          <button id="tool-rectangle" type="button" aria-pressed="false" title="Rectangle">
             <svg viewBox="0 0 16 16" aria-hidden="true">
               <path d="M2 3h12v10H2zM3.5 4.5v7h9v-7z" fill-rule="evenodd" />
             </svg>
@@ -522,6 +684,93 @@
             Points
           </button>
         </p>
+        <div role="group" aria-label="History">
+          <button
+            id="history-undo"
+            type="button"
+            title="Undo (Ctrl + Z, Cmd + Z on macOS)"
+            disabled
+          >
+            Undo
+          </button>
+          <button
+            id="history-redo"
+            type="button"
+            title="Redo (Ctrl + Shift + Z or Ctrl + Y, Cmd for Ctrl on macOS)"
+            disabled
+          >
+            Redo
+          </button>
+          <details
+            id="history-steps-box"
+            title="The last steps, the oldest first: click one to go back to the drawing after it; the steps after it stay to redo until the next change."
+          >
+            <summary>Steps</summary>
+            <ol id="history-list" aria-label="The history's steps"></ol>
+          </details>
+          <label
+            title="The memory the history keeps for Undo and Redo, from 0 to 1,000 MB: beyond it, the oldest steps are dropped first, never fewer than the steps kept. A move of a rectangle 100 × 50 alone adds about 1,244 bytes, of the 120 × 80 the page opens with 1,248."
+            >Memory
+            <input
+              id="history-memory"
+              type="text"
+              autocomplete="off"
+              data-number-field="own"
+              value="100"
+            />
+            MB</label
+          >
+          <label
+            title="The last steps kept whatever their memory, from 0 to 100: a change of many shapes may take more than the whole memory and stays undoable."
+            >Steps kept
+            <input
+              id="history-steps"
+              type="text"
+              autocomplete="off"
+              data-number-field="own"
+              value="5"
+          /></label>
+          <span id="history-size"></span>
+          <span
+            id="history-moves"
+            title="About how many moves of a rectangle 100 × 50 alone the memory holds, each adding about 1,244 bytes; a larger shape, or a change of more shapes, takes more."
+          ></span>
+        </div>
+        <div role="group" aria-label="View">
+          <details
+            id="zoom-box"
+            title="The zoom of the drawing: zoom in and out, back to 100 %, fit the drawing or the selection, or type a percentage."
+          >
+            <summary id="zoom-percentage">100 %</summary>
+            <div id="zoom-menu">
+              <button id="zoom-in" type="button" aria-keyshortcuts="+">Zoom in <kbd>+</kbd></button>
+              <button id="zoom-out" type="button" aria-keyshortcuts="-">
+                Zoom out <kbd>-</kbd>
+              </button>
+              <button id="zoom-actual" type="button" aria-keyshortcuts="Shift+0">
+                Zoom to 100 % <kbd>Shift + 0</kbd>
+              </button>
+              <button id="zoom-fit-drawing" type="button" aria-keyshortcuts="Shift+1">
+                Fit the drawing <kbd>Shift + 1</kbd>
+              </button>
+              <button id="zoom-fit-selection" type="button" aria-keyshortcuts="Shift+2">
+                Fit the selection <kbd>Shift + 2</kbd>
+              </button>
+              <label
+                title="A percentage from 1 to 25,600, applied by Enter or by leaving the field, about the canvas's centre"
+                >Zoom
+                <input
+                  id="zoom-field"
+                  type="text"
+                  autocomplete="off"
+                  data-number-field="own"
+                  value="100"
+                />
+                %</label
+              >
+            </div>
+          </details>
+        </div>
         <p role="group" aria-label="Page">
           <button id="tool-reset" type="button" title="Back to the shape the page opens with">
             Reset
@@ -551,420 +800,521 @@
       <h2 id="checklist-heading">Checklist of <span id="checklist-name"></span></h2>
       <ol id="checklist-lines"></ol>
     </section>
-    <aside>
+    <aside id="panel" aria-label="Panel">
       <h1 id="shape-title">Rectangle</h1>
-      <!-- The shape kind, kept as the page's state; the toolbar sets it. -->
+      <!-- The kind of the shape the panel edits, kept as the page's state; a placed shape sets it. -->
       <select id="shape" aria-label="Shape kind" hidden>
         <option value="rectangle" selected>Rectangle</option>
         <option value="polygon">Polygon</option>
         <option value="round">Round shape</option>
         <option value="text">Text</option>
         <option value="free" hidden>Free shape</option>
+        <option value="none" hidden>No shape selected</option>
+        <option value="several" hidden>Several shapes selected</option>
       </select>
-      <section id="polygon-options" aria-labelledby="polygon-heading">
-        <h2 id="polygon-heading">Polygon</h2>
-        <label id="corners-field" hidden
-          >Corners <input id="corners" type="number" min="3" max="12" step="1" value="6"
-        /></label>
-        <label id="stretched-field" hidden
-          ><input id="stretched" type="checkbox" /> Stretched to its box</label
-        >
-        <fieldset id="anchor-field" hidden>
-          <legend>Anchor</legend>
-          <div id="anchor-grid">
-            <input type="radio" name="anchor" value="min min" aria-label="Top left" />
-            <input type="radio" name="anchor" value="mid min" aria-label="Top center" />
-            <input type="radio" name="anchor" value="max min" aria-label="Top right" />
-            <input type="radio" name="anchor" value="min mid" aria-label="Center left" />
-            <input type="radio" name="anchor" value="mid mid" aria-label="Center" checked />
-            <input type="radio" name="anchor" value="max mid" aria-label="Center right" />
-            <input type="radio" name="anchor" value="min max" aria-label="Bottom left" />
-            <input type="radio" name="anchor" value="mid max" aria-label="Bottom center" />
-            <input type="radio" name="anchor" value="max max" aria-label="Bottom right" />
-          </div>
-        </fieldset>
-      </section>
-      <section id="text-options" aria-labelledby="text-heading" hidden>
-        <h2 id="text-heading">Text</h2>
-        <label
-          >Content
-          <textarea id="text-content" rows="3">
+      <!-- The fields of the shape edited, hidden while none is selected (F36). -->
+      <div id="shape-panel">
+        <section id="polygon-options" aria-labelledby="polygon-heading">
+          <h2 id="polygon-heading">Polygon</h2>
+          <label id="corners-field" hidden
+            >Corners
+            <input id="corners" type="text" autocomplete="off" data-number-field="own" value="6"
+          /></label>
+          <label id="stretched-field" hidden
+            ><input id="stretched" type="checkbox" /> Stretched to its box</label
+          >
+          <fieldset id="anchor-field" hidden>
+            <legend>Anchor</legend>
+            <div id="anchor-grid">
+              <input type="radio" name="anchor" value="min min" aria-label="Top left" />
+              <input type="radio" name="anchor" value="mid min" aria-label="Top center" />
+              <input type="radio" name="anchor" value="max min" aria-label="Top right" />
+              <input type="radio" name="anchor" value="min mid" aria-label="Center left" />
+              <input type="radio" name="anchor" value="mid mid" aria-label="Center" checked />
+              <input type="radio" name="anchor" value="max mid" aria-label="Center right" />
+              <input type="radio" name="anchor" value="min max" aria-label="Bottom left" />
+              <input type="radio" name="anchor" value="mid max" aria-label="Bottom center" />
+              <input type="radio" name="anchor" value="max max" aria-label="Bottom right" />
+            </div>
+          </fieldset>
+        </section>
+        <section id="text-options" aria-labelledby="text-heading" hidden>
+          <h2 id="text-heading">Text</h2>
+          <label
+            >Content
+            <textarea id="text-content" rows="3">
 Pump P-101
 Running</textarea>
-        </label>
-        <p id="font-first" class="font-message">
-          Start with Installed fonts: the font list offers only the fonts read.
-        </p>
-        <p id="font-sources">
-          <button id="installed-fonts" type="button">Installed fonts</button>
-          <label id="font-file-button"
-            >Import a font <input id="font-file" type="file" accept=".ttf,.otf,.ttc"
-          /></label>
-        </p>
-        <p id="font-message" class="font-message" role="status"></p>
-        <p id="installed-fonts-progress" class="font-message" role="status"></p>
-        <label
-          >Font
-          <select id="text-font">
-            <option value="Inter" selected>Inter</option>
-          </select></label
-        >
-        <div class="pair">
+          </label>
+          <p id="font-first" class="font-message">
+            Start with Installed fonts: the font list offers only the fonts read.
+          </p>
+          <p id="font-sources">
+            <button id="installed-fonts" type="button">Installed fonts</button>
+            <label id="font-file-button"
+              >Import a font <input id="font-file" type="file" accept=".ttf,.otf,.ttc"
+            /></label>
+          </p>
+          <p id="font-message" class="font-message" role="status"></p>
+          <p id="installed-fonts-progress" class="font-message" role="status"></p>
           <label
-            >Size <input id="text-size" type="number" min="1" max="100000" step="1" value="32"
-          /></label>
-          <label
-            >Weight
-            <select id="text-weight">
-              <option value="100">100 Thin</option>
-              <option value="200">200 Extra light</option>
-              <option value="300">300 Light</option>
-              <option value="400" selected>400 Regular</option>
-              <option value="500">500 Medium</option>
-              <option value="600">600 Semi-bold</option>
-              <option value="700">700 Bold</option>
-              <option value="800">800 Extra bold</option>
-              <option value="900">900 Black</option>
+            >Font
+            <select id="text-font">
+              <option value="Inter" selected>Inter</option>
             </select></label
           >
-        </div>
-        <p id="text-style">
-          <button id="text-bold" type="button" aria-pressed="false"><b>B</b> Bold</button>
-          <button id="text-italic" type="button" aria-pressed="false"><i>I</i> Italic</button>
-        </p>
-        <div id="text-color-fields" class="pair color-pair">
-          <button
-            id="text-color-swatch"
-            class="swatch"
-            type="button"
-            aria-label="Pick the color"
-            aria-expanded="false"
-            aria-controls="color-picker"
-            data-color="text-color"
-            data-opacity="text-opacity"
-            data-message="text-color-message"
-          ></button>
-          <label>Color <input id="text-color" type="text" value="#1e293b" /></label>
-          <label
-            >Opacity (%)
-            <input id="text-opacity" type="number" min="0" max="100" step="1" value="100"
-          /></label>
-        </div>
-        <p id="text-color-message" class="color-message" role="status"></p>
-        <div class="pair">
-          <label
-            >Letter spacing <input id="text-letter-spacing" type="number" step="1" value="0"
-          /></label>
-          <label
-            >Word spacing <input id="text-word-spacing" type="number" step="1" value="0"
-          /></label>
-        </div>
-        <label><input id="text-underline" type="checkbox" /> Underline</label>
-        <div id="text-underline-color-fields" class="pair color-pair">
-          <button
-            id="text-underline-color-swatch"
-            class="swatch"
-            type="button"
-            aria-label="Pick the underline's color"
-            aria-expanded="false"
-            aria-controls="color-picker"
-            data-color="text-underline-color"
-            data-opacity="text-underline-opacity"
-            data-message="text-underline-color-message"
-            data-follows="text-underline-follows"
-          ></button>
-          <label
-            >Underline color <input id="text-underline-color" type="text" value="#1e293b"
-          /></label>
-          <label
-            >Underline opacity (%)
-            <input id="text-underline-opacity" type="number" min="0" max="100" step="1" value="100"
-          /></label>
-        </div>
-        <p id="text-underline-color-message" class="color-message" role="status"></p>
-        <label
-          ><input id="text-underline-follows" type="checkbox" checked /> Underline follows the
-          text's color</label
-        >
-        <label><input id="text-strike" type="checkbox" /> Strike-through</label>
-        <div id="text-strike-color-fields" class="pair color-pair">
-          <button
-            id="text-strike-color-swatch"
-            class="swatch"
-            type="button"
-            aria-label="Pick the strike-through's color"
-            aria-expanded="false"
-            aria-controls="color-picker"
-            data-color="text-strike-color"
-            data-opacity="text-strike-opacity"
-            data-message="text-strike-color-message"
-            data-follows="text-strike-follows"
-          ></button>
-          <label
-            >Strike-through color <input id="text-strike-color" type="text" value="#1e293b"
-          /></label>
-          <label
-            >Strike-through opacity (%)
-            <input id="text-strike-opacity" type="number" min="0" max="100" step="1" value="100"
-          /></label>
-        </div>
-        <p id="text-strike-color-message" class="color-message" role="status"></p>
-        <label
-          ><input id="text-strike-follows" type="checkbox" checked /> Strike-through follows the
-          text's color</label
-        >
-        <label
-          >Case
-          <select id="text-case">
-            <option value="none" selected>As typed</option>
-            <option value="upper">UPPER CASE</option>
-            <option value="lower">lower case</option>
-            <option value="title">Title Case</option>
-            <option value="camel">camelCase</option>
-            <option value="pascal">PascalCase</option>
-            <option value="kebab">kebab-case</option>
-            <option value="snake">snake_case</option>
-            <option value="constant">CONSTANT_CASE</option>
-          </select></label
-        >
-        <div class="pair">
-          <label
-            >Direction
-            <select id="text-direction">
-              <option value="ltr" selected>Left to right</option>
-              <option value="rtl">Right to left</option>
-            </select></label
-          >
-          <label
-            >Alignment
-            <select id="text-alignment">
-              <option value="left" selected>Left</option>
-              <option value="center">Center</option>
-              <option value="right">Right</option>
-            </select></label
-          >
-        </div>
-        <label
-          >Fit
-          <select id="text-fit">
-            <option value="content" selected>Fit content</option>
-            <option value="box">Box</option>
-          </select></label
-        >
-        <div id="text-box-fields" hidden>
           <div class="pair">
             <label
-              >Width
-              <input id="text-box-width" type="number" min="0" max="100000" step="1" value="200"
+              >Size
+              <input
+                id="text-size"
+                type="text"
+                autocomplete="off"
+                data-number-field="own"
+                value="32"
             /></label>
             <label
-              >Height
-              <input id="text-box-height" type="number" min="0" max="100000" step="1" value="100"
+              >Weight
+              <select id="text-weight">
+                <option value="100">100 Thin</option>
+                <option value="200">200 Extra light</option>
+                <option value="300">300 Light</option>
+                <option value="400" selected>400 Regular</option>
+                <option value="500">500 Medium</option>
+                <option value="600">600 Semi-bold</option>
+                <option value="700">700 Bold</option>
+                <option value="800">800 Extra bold</option>
+                <option value="900">900 Black</option>
+              </select></label
+            >
+          </div>
+          <p id="text-style">
+            <button id="text-bold" type="button" aria-pressed="false"><b>B</b> Bold</button>
+            <button id="text-italic" type="button" aria-pressed="false"><i>I</i> Italic</button>
+          </p>
+          <div id="text-color-fields" class="pair color-pair">
+            <button
+              id="text-color-swatch"
+              class="swatch"
+              type="button"
+              aria-label="Pick the color"
+              aria-expanded="false"
+              aria-controls="color-picker"
+              data-color="text-color"
+              data-opacity="text-opacity"
+              data-message="text-color-message"
+            ></button>
+            <label>Color <input id="text-color" type="text" value="#1e293b" /></label>
+            <label
+              >Opacity (%)
+              <input
+                id="text-opacity"
+                type="text"
+                autocomplete="off"
+                data-number-field="own"
+                value="100"
             /></label>
           </div>
-          <button id="text-box-reset" type="button" title="Back to the size the text fits">
-            Reset
-          </button>
+          <p id="text-color-message" class="color-message" role="status"></p>
+          <div class="pair">
+            <label
+              >Letter spacing
+              <input
+                id="text-letter-spacing"
+                type="text"
+                autocomplete="off"
+                data-number-field="own"
+                value="0"
+            /></label>
+            <label
+              >Word spacing
+              <input
+                id="text-word-spacing"
+                type="text"
+                autocomplete="off"
+                data-number-field="own"
+                value="0"
+            /></label>
+          </div>
+          <label><input id="text-underline" type="checkbox" /> Underline</label>
+          <div id="text-underline-color-fields" class="pair color-pair">
+            <button
+              id="text-underline-color-swatch"
+              class="swatch"
+              type="button"
+              aria-label="Pick the underline's color"
+              aria-expanded="false"
+              aria-controls="color-picker"
+              data-color="text-underline-color"
+              data-opacity="text-underline-opacity"
+              data-message="text-underline-color-message"
+              data-follows="text-underline-follows"
+            ></button>
+            <label
+              >Underline color <input id="text-underline-color" type="text" value="#1e293b"
+            /></label>
+            <label
+              >Underline opacity (%)
+              <input
+                id="text-underline-opacity"
+                type="text"
+                autocomplete="off"
+                data-number-field="own"
+                value="100"
+            /></label>
+          </div>
+          <p id="text-underline-color-message" class="color-message" role="status"></p>
           <label
-            >Max lines (0 none)
-            <input id="text-maximum-lines" type="number" min="0" max="100000" step="1" value="0"
-          /></label>
-          <label><input id="text-ellipsis" type="checkbox" checked /> Ellipsis</label>
+            ><input id="text-underline-follows" type="checkbox" checked /> Underline follows the
+            text's color</label
+          >
+          <label><input id="text-strike" type="checkbox" /> Strike-through</label>
+          <div id="text-strike-color-fields" class="pair color-pair">
+            <button
+              id="text-strike-color-swatch"
+              class="swatch"
+              type="button"
+              aria-label="Pick the strike-through's color"
+              aria-expanded="false"
+              aria-controls="color-picker"
+              data-color="text-strike-color"
+              data-opacity="text-strike-opacity"
+              data-message="text-strike-color-message"
+              data-follows="text-strike-follows"
+            ></button>
+            <label
+              >Strike-through color <input id="text-strike-color" type="text" value="#1e293b"
+            /></label>
+            <label
+              >Strike-through opacity (%)
+              <input
+                id="text-strike-opacity"
+                type="text"
+                autocomplete="off"
+                data-number-field="own"
+                value="100"
+            /></label>
+          </div>
+          <p id="text-strike-color-message" class="color-message" role="status"></p>
           <label
-            >Vertical alignment
-            <select id="text-vertical-alignment">
-              <option value="top" selected>Top</option>
-              <option value="middle">Middle</option>
-              <option value="bottom">Bottom</option>
+            ><input id="text-strike-follows" type="checkbox" checked /> Strike-through follows the
+            text's color</label
+          >
+          <label
+            >Case
+            <select id="text-case">
+              <option value="none" selected>As typed</option>
+              <option value="upper">UPPER CASE</option>
+              <option value="lower">lower case</option>
+              <option value="title">Title Case</option>
+              <option value="camel">camelCase</option>
+              <option value="pascal">PascalCase</option>
+              <option value="kebab">kebab-case</option>
+              <option value="snake">snake_case</option>
+              <option value="constant">CONSTANT_CASE</option>
             </select></label
           >
-        </div>
-        <div class="pair">
-          <label
-            >Line height (0 auto)
-            <input id="text-line-height" type="number" min="0" max="100000" step="1" value="0"
-          /></label>
-          <label><input id="text-trim" type="checkbox" /> Trim</label>
-        </div>
-        <label><input id="text-background" type="checkbox" /> Background</label>
-        <div id="text-background-color-fields" class="pair color-pair">
-          <button
-            id="text-background-color-swatch"
-            class="swatch"
-            type="button"
-            aria-label="Pick the background color"
-            aria-expanded="false"
-            aria-controls="color-picker"
-            data-color="text-background-color"
-            data-opacity="text-background-opacity"
-            data-message="text-background-color-message"
-          ></button>
-          <label
-            >Background color <input id="text-background-color" type="text" value="#ffff00"
-          /></label>
-          <label
-            >Background opacity (%)
-            <input
-              id="text-background-opacity"
-              type="number"
-              min="0"
-              max="100"
-              step="1"
-              value="100"
-          /></label>
-        </div>
-        <p id="text-background-color-message" class="color-message" role="status"></p>
-        <div id="color-picker" role="group" aria-label="Color picker" hidden>
-          <div
-            id="color-plane"
-            role="slider"
-            tabindex="0"
-            aria-label="Saturation and brightness"
-            aria-valuemin="0"
-            aria-valuemax="100"
-            aria-valuenow="0"
-            data-model="hsb"
-          >
-            <div id="color-plane-mark" class="mark"></div>
-          </div>
-          <div
-            id="color-hue"
-            class="color-slider"
-            role="slider"
-            tabindex="0"
-            aria-label="Hue"
-            aria-valuemin="0"
-            aria-valuemax="359"
-            aria-valuenow="0"
-          >
-            <div id="color-hue-thumb" class="thumb"></div>
-          </div>
-          <div
-            id="color-opacity"
-            class="color-slider"
-            role="slider"
-            tabindex="0"
-            aria-label="Opacity"
-            aria-valuemin="0"
-            aria-valuemax="100"
-            aria-valuenow="100"
-          >
-            <div id="color-opacity-thumb" class="thumb"></div>
-          </div>
-          <div id="color-values">
+          <div class="pair">
             <label
-              >Model
-              <select id="color-model">
-                <option value="hsb" selected>HSB</option>
-                <option value="hsl">HSL</option>
+              >Direction
+              <select id="text-direction">
+                <option value="ltr" selected>Left to right</option>
+                <option value="rtl">Right to left</option>
               </select></label
             >
             <label
-              >H (°) <input id="color-hue-value" type="number" min="0" max="360" step="0.1"
-            /></label>
-            <label
-              >S (%) <input id="color-saturation-value" type="number" min="0" max="100" step="0.1"
-            /></label>
-            <label
-              ><span id="color-level-name">B</span> (%)
-              <input id="color-level-value" type="number" min="0" max="100" step="0.1"
-            /></label>
+              >Alignment
+              <select id="text-alignment">
+                <option value="left" selected>Left</option>
+                <option value="center">Center</option>
+                <option value="right">Right</option>
+              </select></label
+            >
           </div>
-        </div>
-        <fieldset id="document-options">
-          <legend>Drawing</legend>
-          <label><input id="embed-fonts" type="checkbox" /> Embed fonts</label>
-          <ul id="font-left-out" class="font-message" aria-label="Faces not embedded" hidden></ul>
-          <button id="export-svg" type="button">Export SVG</button>
-        </fieldset>
-      </section>
-      <section id="size-section" aria-labelledby="size-heading">
-        <h2 id="size-heading">Size</h2>
-        <div class="pair">
           <label
-            >Width <input id="width" type="number" min="0" max="100000" step="1" value="120"
-          /></label>
-          <label
-            >Height <input id="height" type="number" min="0" max="100000" step="1" value="80"
-          /></label>
-        </div>
-      </section>
-      <fieldset id="placement">
-        <legend>Angle and position</legend>
-        <p id="turn">
-          <label>Angle (°) <input id="angle" type="number" step="1" value="0" /></label>
-          <button id="turn-left" type="button">−90°</button>
-          <button id="turn-right" type="button">+90°</button>
-        </p>
-        <div class="pair">
-          <label>X <input id="shape-x" type="number" step="1" value="0" /></label>
-          <label>Y <input id="shape-y" type="number" step="1" value="0" /></label>
-        </div>
-        <p id="straight-box"></p>
-      </fieldset>
-      <section id="corners-section" aria-labelledby="corners-heading">
-        <h2 id="corners-heading">Corners</h2>
-        <label id="radius-field"
-          >Radius <input id="radius" type="number" min="0" max="100000" step="1" value="10"
-        /></label>
-        <p id="effective"></p>
-      </section>
-      <ol id="points" aria-label="Points" hidden></ol>
-      <fieldset id="point-fields" hidden>
-        <legend>Points</legend>
-        <button id="handles-switch" type="button" aria-pressed="false" hidden>Handles</button>
-        <label id="point-radius-field"
-          >Radius <input id="point-radius" type="number" min="0" max="100000" step="1"
-        /></label>
-        <fieldset id="handle-fields" hidden>
-          <legend>Handles</legend>
-          <label
-            >Typed as
-            <select id="handle-method">
-              <option value="page">x, y on the page</option>
-              <option value="side">angle, length from the side</option>
+            >Fit
+            <select id="text-fit">
+              <option value="content" selected>Fit content</option>
+              <option value="box">Box</option>
             </select></label
           >
-          <label
-            >Mode
-            <select id="handle-mode">
-              <option value="angle-and-length">Mirror angle and length</option>
-              <option value="angle">Mirror angle</option>
-              <option value="none">No mirroring</option>
-            </select></label
-          >
-          <div class="pair">
+          <div id="text-box-fields" hidden>
+            <div class="pair">
+              <label
+                >Width
+                <input
+                  id="text-box-width"
+                  type="text"
+                  autocomplete="off"
+                  data-number-field
+                  value="200"
+              /></label>
+              <label
+                >Height
+                <input
+                  id="text-box-height"
+                  type="text"
+                  autocomplete="off"
+                  data-number-field
+                  value="100"
+              /></label>
+            </div>
+            <button id="text-box-reset" type="button" title="Back to the size the text fits">
+              Reset
+            </button>
             <label
-              >Before <span class="handle-axis">x</span>
-              <input id="handle-before-x" type="number" step="1"
+              >Max lines (0 none)
+              <input
+                id="text-maximum-lines"
+                type="text"
+                autocomplete="off"
+                data-number-field="own"
+                value="0"
             /></label>
+            <label><input id="text-ellipsis" type="checkbox" checked /> Ellipsis</label>
             <label
-              >Before <span class="handle-axis">y</span>
-              <input id="handle-before-y" type="number" step="1"
-            /></label>
+              >Vertical alignment
+              <select id="text-vertical-alignment">
+                <option value="top" selected>Top</option>
+                <option value="middle">Middle</option>
+                <option value="bottom">Bottom</option>
+              </select></label
+            >
           </div>
           <div class="pair">
             <label
-              >After <span class="handle-axis">x</span>
-              <input id="handle-after-x" type="number" step="1"
+              >Line height (0 auto)
+              <input
+                id="text-line-height"
+                type="text"
+                autocomplete="off"
+                data-number-field="own"
+                value="0"
+            /></label>
+            <label><input id="text-trim" type="checkbox" /> Trim</label>
+          </div>
+          <label><input id="text-background" type="checkbox" /> Background</label>
+          <div id="text-background-color-fields" class="pair color-pair">
+            <button
+              id="text-background-color-swatch"
+              class="swatch"
+              type="button"
+              aria-label="Pick the background color"
+              aria-expanded="false"
+              aria-controls="color-picker"
+              data-color="text-background-color"
+              data-opacity="text-background-opacity"
+              data-message="text-background-color-message"
+            ></button>
+            <label
+              >Background color <input id="text-background-color" type="text" value="#ffff00"
             /></label>
             <label
-              >After <span class="handle-axis">y</span>
-              <input id="handle-after-y" type="number" step="1"
+              >Background opacity (%)
+              <input
+                id="text-background-opacity"
+                type="text"
+                autocomplete="off"
+                data-number-field="own"
+                value="100"
             /></label>
           </div>
+          <p id="text-background-color-message" class="color-message" role="status"></p>
+          <div id="color-picker" role="group" aria-label="Color picker" hidden>
+            <div
+              id="color-plane"
+              role="slider"
+              tabindex="0"
+              aria-label="Saturation and brightness"
+              aria-valuemin="0"
+              aria-valuemax="100"
+              aria-valuenow="0"
+              data-model="hsb"
+            >
+              <div id="color-plane-mark" class="mark"></div>
+            </div>
+            <div
+              id="color-hue"
+              class="color-slider"
+              role="slider"
+              tabindex="0"
+              aria-label="Hue"
+              aria-valuemin="0"
+              aria-valuemax="359"
+              aria-valuenow="0"
+            >
+              <div id="color-hue-thumb" class="thumb"></div>
+            </div>
+            <div
+              id="color-opacity"
+              class="color-slider"
+              role="slider"
+              tabindex="0"
+              aria-label="Opacity"
+              aria-valuemin="0"
+              aria-valuemax="100"
+              aria-valuenow="100"
+            >
+              <div id="color-opacity-thumb" class="thumb"></div>
+            </div>
+            <div id="color-values">
+              <label
+                >Model
+                <select id="color-model">
+                  <option value="hsb" selected>HSB</option>
+                  <option value="hsl">HSL</option>
+                </select></label
+              >
+              <label
+                >H (°)
+                <input id="color-hue-value" type="text" autocomplete="off" data-number-field="own"
+              /></label>
+              <label
+                >S (%)
+                <input
+                  id="color-saturation-value"
+                  type="text"
+                  autocomplete="off"
+                  data-number-field="own"
+              /></label>
+              <label
+                ><span id="color-level-name">B</span> (%)
+                <input
+                  id="color-level-value"
+                  type="text"
+                  autocomplete="off"
+                  data-number-field="own"
+              /></label>
+            </div>
+          </div>
+          <fieldset id="document-options">
+            <legend>Drawing</legend>
+            <label><input id="embed-fonts" type="checkbox" /> Embed fonts</label>
+            <ul id="font-left-out" class="font-message" aria-label="Faces not embedded" hidden></ul>
+            <button id="export-svg" type="button">Export SVG</button>
+          </fieldset>
+        </section>
+        <!-- One shape's position and size: text fields acting as number fields, as several
+             shapes' (US-085), which keep the + of a relative value a number field drops. -->
+        <section id="size-section" aria-labelledby="size-heading">
+          <h2 id="size-heading">Size</h2>
+          <div class="pair">
+            <label
+              >Width <input id="width" type="text" autocomplete="off" data-number-field value="120"
+            /></label>
+            <label
+              >Height
+              <input id="height" type="text" autocomplete="off" data-number-field value="80"
+            /></label>
+          </div>
+        </section>
+        <fieldset id="placement">
+          <legend>Angle and position</legend>
+          <p id="turn">
+            <label
+              >Angle (°)
+              <input id="angle" type="text" autocomplete="off" data-number-field="own" value="0"
+            /></label>
+            <button id="turn-left" type="button">−90°</button>
+            <button id="turn-right" type="button">+90°</button>
+          </p>
+          <div class="pair">
+            <label
+              >X <input id="shape-x" type="text" autocomplete="off" data-number-field value="0"
+            /></label>
+            <label
+              >Y <input id="shape-y" type="text" autocomplete="off" data-number-field value="0"
+            /></label>
+          </div>
+          <p id="straight-box"></p>
         </fieldset>
+        <section id="corners-section" aria-labelledby="corners-heading">
+          <h2 id="corners-heading">Corners</h2>
+          <label id="radius-field"
+            >Radius
+            <input id="radius" type="text" autocomplete="off" data-number-field="own" value="10"
+          /></label>
+          <p id="effective"></p>
+        </section>
+        <ol id="points" aria-label="Points" hidden></ol>
+        <fieldset id="point-fields" hidden>
+          <legend>Points</legend>
+          <button id="handles-switch" type="button" aria-pressed="false" hidden>Handles</button>
+          <label id="point-radius-field"
+            >Radius <input id="point-radius" type="text" autocomplete="off" data-number-field="own"
+          /></label>
+          <fieldset id="handle-fields" hidden>
+            <legend>Handles</legend>
+            <label
+              >Typed as
+              <select id="handle-method">
+                <option value="page">x, y on the page</option>
+                <option value="side">angle, length from the side</option>
+              </select></label
+            >
+            <label
+              >Mode
+              <select id="handle-mode">
+                <option value="angle-and-length">Mirror angle and length</option>
+                <option value="angle">Mirror angle</option>
+                <option value="none">No mirroring</option>
+              </select></label
+            >
+            <div class="pair">
+              <label
+                >Before <span class="handle-axis">x</span>
+                <input id="handle-before-x" type="text" autocomplete="off" data-number-field="own"
+              /></label>
+              <label
+                >Before <span class="handle-axis">y</span>
+                <input id="handle-before-y" type="text" autocomplete="off" data-number-field="own"
+              /></label>
+            </div>
+            <div class="pair">
+              <label
+                >After <span class="handle-axis">x</span>
+                <input id="handle-after-x" type="text" autocomplete="off" data-number-field="own"
+              /></label>
+              <label
+                >After <span class="handle-axis">y</span>
+                <input id="handle-after-y" type="text" autocomplete="off" data-number-field="own"
+              /></label>
+            </div>
+          </fieldset>
+          <div class="pair">
+            <label
+              >X <input id="point-x" type="text" autocomplete="off" data-number-field="own"
+            /></label>
+            <label
+              >Y <input id="point-y" type="text" autocomplete="off" data-number-field="own"
+            /></label>
+          </div>
+          <button id="add-midpoint" type="button">Add a point in the middle</button>
+          <button id="delete-points" type="button">Delete points</button>
+          <p id="delete-message" hidden></p>
+          <p id="convert-hint" hidden>
+            This shape keeps its points: convert it to a free shape to move, add or delete them.
+          </p>
+          <button id="convert" type="button">Convert to free shape</button>
+        </fieldset>
+      </div>
+      <!-- The values of several shapes selected, and a value typed for all of them, relative with a
+           sign (F38): text fields acting as number fields, which keep the + of a relative value a
+           number field drops (US-085). -->
+      <fieldset id="several-fields" hidden>
+        <legend>Position and size</legend>
         <div class="pair">
-          <label>X <input id="point-x" type="number" step="1" /></label>
-          <label>Y <input id="point-y" type="number" step="1" /></label>
+          <label>X <input id="several-x" type="text" autocomplete="off" data-number-field /></label>
+          <label>Y <input id="several-y" type="text" autocomplete="off" data-number-field /></label>
         </div>
-        <button id="add-midpoint" type="button">Add a point in the middle</button>
-        <button id="delete-points" type="button">Delete points</button>
-        <p id="delete-message" hidden></p>
-        <p id="convert-hint" hidden>
-          This shape keeps its points: convert it to a free shape to move, add or delete them.
-        </p>
-        <button id="convert" type="button">Convert to free shape</button>
+        <div class="pair">
+          <label
+            >Width <input id="several-width" type="text" autocomplete="off" data-number-field
+          /></label>
+          <label
+            >Height <input id="several-height" type="text" autocomplete="off" data-number-field
+          /></label>
+        </div>
       </fieldset>
       <p id="status" role="status"></p>
     </aside>

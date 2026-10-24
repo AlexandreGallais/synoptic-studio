@@ -7,6 +7,7 @@ import { lettersMissingFaceFile, testFaceFile } from "../../tests";
 import {
   chooseFiles,
   chooseOption,
+  chooseShapeKind,
   clickElement,
   openServedPage,
   readDisabledState,
@@ -212,7 +213,7 @@ function readLeftOut(): readonly (string | null)[] {
  */
 function openTextTool(): void {
   openServedPage("");
-  clickElement("tool-text");
+  chooseShapeKind("text");
 }
 
 describe("Inter's faces kept only when the browser draws them (US-053)", () => {

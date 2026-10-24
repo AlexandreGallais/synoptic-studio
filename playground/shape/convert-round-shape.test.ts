@@ -2,6 +2,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  chooseShapeKind,
   clickElement,
   clickPoint,
   openOnStep,
@@ -22,7 +23,7 @@ import { writeConvertedShape } from "./write-converted-shape";
  */
 function openRoundShape(width: string): void {
   openOnStep(1);
-  clickElement("tool-round");
+  chooseShapeKind("round");
   typeAndEnter("width", width);
   typeAndEnter("height", "80");
   clickElement("mode-points");
@@ -117,7 +118,7 @@ describe("converting a round shape (US-030)", () => {
 
   it("shows the conversion for a polygon too", () => {
     openOnStep(1);
-    clickElement("tool-polygon");
+    chooseShapeKind("polygon");
     clickElement("mode-points");
 
     expect(document.querySelector<HTMLElement>("#convert")?.hidden).toBe(false);

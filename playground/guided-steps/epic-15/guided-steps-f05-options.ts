@@ -4,7 +4,7 @@ import type { GuidedStep } from "../guided-step";
 
 /**
  * The F05 options to try (VAL-014), one per step: every field of the Text tool, turning, values
- * refused, and each tool's own placement.
+ * refused, and a new shape leaving the text as it was (US-063).
  */
 export const GUIDED_STEPS_F05_OPTIONS: readonly GuidedStep[] = [
   {
@@ -105,7 +105,7 @@ export const GUIDED_STEPS_F05_OPTIONS: readonly GuidedStep[] = [
   },
   {
     explanation: "Angle 370, Enter; −90, Enter; 360, Enter; then +90°, −90°, −90°.",
-    look: "10, 270, 0 (no transform); then 90, 0, 270.",
+    look: "10, 280 (−90 takes 90 away), 0 (no transform); then 90, 0, 270.",
     title: "F05 · Angle kept from 0 to 359",
     values: createTextStepValues({}),
   },
@@ -122,15 +122,15 @@ export const GUIDED_STEPS_F05_OPTIONS: readonly GuidedStep[] = [
     values: createTextStepValues({ angle: 90, isStruckThrough: true, isUnderlined: true }),
   },
   {
-    explanation: "Size 0; Size 16. Opacity 101; 100. Color red; #1e293b.",
-    look: "Each refused: drawing gone, message, fields in red; back when valid.",
+    explanation: "Size abc, Enter. Opacity 101, Enter. Color red; #1e293b.",
+    look: "Size refused, no number, 32 shown again; opacity taken at the most, 100; the text kept; the color refused: drawing gone, message, field in red; back when valid.",
     title: "F05 · Refused values",
     values: createTextStepValues({}),
   },
   {
-    explanation: "Rectangle; Angle 30; then Text.",
-    look: "The rectangle has its own X, Y, angle (not 100, 50, 90); the text 100, 50, 90 again.",
-    title: "F05 · Each tool keeps its placement",
+    explanation: "The Rectangle tool, then a click on the drawing.",
+    look: "The text stays as it was, at 100, 50, turned by 90; a rectangle 100 × 100 added on top, straight, centred on the click; the tool back to the selector.",
+    title: "F05 · A new shape leaves the text as it was (US-063)",
     values: createTextStepValues({ angle: 90, x: 100, y: 50 }),
   },
 ];

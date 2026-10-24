@@ -1,4 +1,6 @@
+export * from "./box-overlap";
 export * from "./contour";
+export * from "./contour-band";
 export * from "./corner-radius";
 export * from "./curve";
 export * from "./curve-contour";
@@ -6,6 +8,7 @@ export * from "./curve-fillet";
 export * from "./fillet-side";
 export * from "./handles";
 export * from "./layout-box";
+export * from "./painted-area";
 export * from "./placement";
 export * from "./regular-polygon";
 export * from "./round-shape";

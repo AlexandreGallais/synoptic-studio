@@ -1,7 +1,5 @@
-import { quadraticRoots } from "../../math";
-
+import { cubicAxisTurns } from "./cubic-axis-turns";
 import { cubicPoint } from "./cubic-point";
-import { derivativeCoefficients } from "./derivative-coefficients";
 
 import type { Point } from "../../math";
 import type { Cubic } from "../contour";
@@ -10,8 +8,7 @@ import type { Cubic } from "../contour";
  * Points of a cubic side where its x or its y turns between its ends: with its ends, they give its
  * straight box (`DERIV-cubic-sides` step 3, `REF-POMAX-BEZIER`).
  *
- * Formula: B(t) at each root of B′ on x or on y with 0 < t < 1; a degenerate root (infinite, NaN)
- * fails the test.
+ * Formula: B(t) at each root of B′ on x or on y with 0 < t < 1 (`cubicAxisTurns`).
  *
  * @kind geometry
  * @param cubic - start, control points and end
@@ -20,10 +17,10 @@ import type { Cubic } from "../contour";
  */
 export function cubicExtremes(cubic: Cubic): readonly Point[] {
   const { end, first, second, start } = cubic;
-  const roots = [
-    ...quadraticRoots(derivativeCoefficients([start.x, first.x, second.x, end.x])),
-    ...quadraticRoots(derivativeCoefficients([start.y, first.y, second.y, end.y])),
+  const turns = [
+    ...cubicAxisTurns([start.x, first.x, second.x, end.x]),
+    ...cubicAxisTurns([start.y, first.y, second.y, end.y]),
   ];
 
-  return roots.filter((t) => t > 0 && t < 1).map((t) => cubicPoint(cubic, t));
+  return turns.map((t) => cubicPoint(cubic, t));
 }

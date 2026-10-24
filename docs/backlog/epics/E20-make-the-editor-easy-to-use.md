@@ -34,6 +34,8 @@ Candidates grouped by the agent at SP-025 (2026-10-19), to be cut again at the e
 | Lines of a text | trailing empty lines taking no space; one line in a box, the line breaks ignored when the box is wide enough (2) | to refine |
 | A turned text as a shape | a turned text handled as rectangles, polygons and round shapes are, with E18's tools (2 to 3) | to refine |
 | Messages that explain | a polygon converted to a free shape says what happens, with a **do not show again** box (1 to 2) | to refine |
+| Keys of one's own | every shortcut and modifier key changed by the user in a standard place for settings, the defaults Figma's (`interaction.md` §1, Product Owner, 2026-10-22) (2) | to refine |
+| The history's list scrolled whole | every step reached by a scroll that feels whole, only the rows in sight drawn, so that a history of a million steps never slows the page; drafted by SP-031 as US-083 (its draft in SP-031, For the main thread), placed here by the Product Owner on 2026-10-23 (SP-031's answer 1), the list keeping its window of 15 rows until then (1) | to refine |
 
 ## Ideas from the Product Owner (2026-10-11, refinement of F08)
 
@@ -63,3 +65,11 @@ Candidates grouped by the agent at SP-025 (2026-10-19), to be cut again at the e
 ## Ideas from the Product Owner (2026-10-16, review of E15)
 
 - **Remove the text direction**: right to left is of no use, the Latin script being the strict target, as for fonts. It stays until then; this epic drops the options that make no sense, the aim being the fewest options doing the most.
+
+## Ideas from the Product Owner (2026-10-23, first try of E02)
+
+- **A responsive playground with a toolbar as Figma's**: the page fits any window, the tools in a bar at the bottom, not floating; a first icon for the selector, then one for each shape, then the multiple selection, as Figma's.
+- **Settings to tune by hand, then an expert menu**: the pan's speed by the trackpad and the wheel, the zoom's step and the wheel's factor, so that the Product Owner finds good values, which become the fixed defaults; later an expert menu showing every option of the free editor, for people to tune it as they like, with the editable keys.
+- **A number field blocks text as it is typed** (2026-10-24, third try of E02): a letter typed in a number field is not written at all, rather than refused once applied.
+- **A text's box with a negative word spacing** (2026-10-24, third try of E02): a text fitting its content, its word spacing negative, can no longer be picked, its box no longer computed; to look at with the text, not in E02.
+- **`+100` in Width seen not to work** (2026-10-24, third try of E02): to reproduce with E18's number fields that compute, the Product Owner placing it in the next epic.

@@ -1,54 +1,22 @@
 import { selectElement } from "../page";
-import { saveToolPlacement, writeToolPlacement } from "../text";
 
+import { TOOLS } from "./tools";
+import { writeArmedTool } from "./write-armed-tool";
 import { writeDefaultShape } from "./write-default-shape";
-import { writeWholeShapeFields } from "./write-whole-shape-fields";
-
-/** Toolbar buttons and the shape kind each one chooses. */
-const TOOLS = [
-  ["tool-rectangle", "rectangle"],
-  ["tool-polygon", "polygon"],
-  ["tool-round", "round"],
-  ["tool-text", "text"],
-] as const;
 
 /**
- * Chooses a shape kind in the selector, its fields made whole first and the X, Y and angle of
- * the text or of the shapes shown, each tool keeping its own (`saveToolPlacement`,
- * `writeToolPlacement`), and fires the selector's
- * `change` event, as a choice in the selector would.
+ * Listens to the toolbar: a tool's button arms it, the shape the panel edits left as it is, as in
+ * Figma (F35); Reset puts back the shape the page opens with, alone, in Shape mode, the selector
+ * armed; Pipeline shows or hides the pipeline column.
  *
  * @kind procedure
  * @param document - page document
- * @param kind - `rectangle`, `polygon`, `round` or `text`
- * @see docs/backlog/stories/E01-RET-001-retrospective-e01.md
- */
-function writeShapeChoice(document: Document, kind: string): void {
-  const select = selectElement(document, "shape");
-
-  if (!(select instanceof HTMLSelectElement)) {
-    return;
-  }
-
-  saveToolPlacement(document, kind);
-  writeWholeShapeFields(document);
-  writeToolPlacement(document, kind);
-  select.value = kind;
-  select.dispatchEvent(new Event("change"));
-}
-
-/**
- * Listens to the toolbar: a shape button chooses its kind, as the shape selector would; Reset puts
- * back the shape the page opens with, in Shape mode; Pipeline shows or hides the pipeline column.
- *
- * @kind procedure
- * @param document - page document
- * @see docs/backlog/stories/E01-RET-001-retrospective-e01.md
+ * @see docs/backlog/stories/E02-F35-US-063-a-click-adds-a-shape.md
  */
 export function listenToToolbar(document: Document): void {
-  for (const [id, kind] of TOOLS) {
+  for (const [id, tool] of TOOLS) {
     selectElement(document, id).addEventListener("click", () => {
-      writeShapeChoice(document, kind);
+      writeArmedTool(document, tool);
     });
   }
 
@@ -60,6 +28,7 @@ export function listenToToolbar(document: Document): void {
 
   selectElement(document, "tool-reset").addEventListener("click", () => {
     writeDefaultShape(document);
+    writeArmedTool(document, "selector");
     selectElement(document, "mode-shape").click();
   });
 }

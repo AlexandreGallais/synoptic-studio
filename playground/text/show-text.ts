@@ -1,8 +1,11 @@
-import { createSvgElement, measuredTextDrawing } from "../../src";
+import { measuredTextDrawing } from "../../src";
 import { createTextDocument, writeLeftOutFaces } from "../document";
+import { DRAWING_KEYS, createDrawingSvg, writeStoredDrawing } from "../kept-shapes";
+import { NEW_TEXTS } from "../new-text";
 import { selectElement, writeText } from "../page";
 
 import { createTextFrame } from "./create-text-frame";
+import { readShownTextBlock } from "./read-shown-text-block";
 import { writeTextStraightBox } from "./write-text-straight-box";
 
 import type { FontMetrics, MeasuredText, Text } from "../../src";
@@ -15,15 +18,15 @@ type TextMeasures = {
   readonly measured: MeasuredText;
 };
 
-/** Distance from the canvas top-left corner to the origin of the SVG, as for the shapes. */
-const MARGIN = 40;
-
 /** Indentation of the JSON shown in the pipeline panel. */
 const JSON_INDENT = 2;
 
 /**
- * Draws a text at a fixed scale (1 user unit = 1 CSS pixel), turned by its angle, with its
- * measured block, or its box when it sits in one, behind it as a dashed frame turned with it — a
+ * Draws a text at a fixed scale (1 user unit = 1 CSS pixel), between the shapes below and above
+ * it, kept as the shape edited (F35, F36), turned by its angle, with its
+ * measured block, or its box when it sits in one, behind it as a dashed frame turned with it, a
+ * new text being typed showing, while empty, a frame 1 wide and one line tall
+ * (`readShownTextBlock`, `NEW_TEXTS`, US-075) — a
  * turned text also with its straight box, upright, and its x, y, width and height (US-039) — and
  * shows each stage in the pipeline column: the model, the block, the positioned lines and the SVG
  * written. The drawing is written without its embedded fonts, which only Export SVG writes
@@ -38,14 +41,20 @@ const JSON_INDENT = 2;
  * @see docs/backlog/stories/E15-F05-US-032-turn-a-text.md
  */
 export function showText(document: Document, text: Text, measures: TextMeasures): void {
-  const { height, width } = selectElement(document, "canvas").getBoundingClientRect();
-  const svg = createSvgElement(document, { height, width, x: -MARGIN, y: -MARGIN });
   const drawn = measuredTextDrawing(measures.metrics, text, measures.measured);
+  // Only a new text being typed shows a frame while empty (US-075).
+  const block = NEW_TEXTS.has(document)
+    ? readShownTextBlock(measures.metrics, text, drawn.block)
+    : drawn.block;
   const written = createTextDocument(document, { drawn, text });
   const serializer = new XMLSerializer();
+  const svg = createDrawingSvg(document, [
+    ...createTextFrame(document, text, { ...drawn, block }),
+    written.element,
+  ]);
 
-  svg.append(...createTextFrame(document, text, drawn), written.element);
   selectElement(document, "canvas").replaceChildren(svg);
+  writeStoredDrawing(document, DRAWING_KEYS.edited, [{ kind: "text", shape: text }]);
   writeLeftOutFaces(document, written.leftOut);
   writeTextStraightBox(document, text, drawn.block);
   writeText(document, "model", JSON.stringify(text, undefined, JSON_INDENT));

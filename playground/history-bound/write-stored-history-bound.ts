@@ -1,0 +1,31 @@
+import { readBrowserStorage } from "../checklist";
+
+import { HISTORY_BOUND_KEY } from "./history-bound-key";
+
+import type { HistoryBound } from "../../src";
+
+/**
+ * Keeps the history's bound in this browser for the next session (F40, `HISTORY_BOUND_KEY`);
+ * without the browser's storage, or with a storage full, nothing is kept and the page goes on,
+ * the bound kept until the page is closed.
+ *
+ * @kind procedure
+ * @param document - page document
+ * @param bound - the memory size and the steps kept
+ * @see docs/domain/interaction.md#_7-navigation-and-history
+ */
+export function writeStoredHistoryBound(document: Document, bound: HistoryBound): void {
+  const storage = readBrowserStorage(document);
+
+  if (storage === undefined) {
+    return;
+  }
+
+  const written = JSON.stringify({ size: bound.size, steps: bound.steps });
+
+  try {
+    storage.setItem(HISTORY_BOUND_KEY, written);
+  } catch {
+    // The storage is a convenience: the bound holds for the session without it.
+  }
+}

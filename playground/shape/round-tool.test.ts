@@ -2,18 +2,17 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  chooseShapeKind,
   clickElement,
   clickPoint,
   openOnStep,
   pressKey,
   readDisabledState,
   readPointRows,
-  readPressedState,
   readText,
   readValue,
   selectInput,
   typeAndEnter,
-  typeValue,
 } from "../user-actions";
 
 /**
@@ -30,11 +29,10 @@ describe("the Round tool (US-029)", () => {
   it("[F10.AC1] draws a circle in a box 100 × 100: four cubic sides from its top", () => {
     // DERIV-round-shape-curve: handles 50κ = 27.61424, so 50 + 27.61424 = 77.61424.
     openOnStep(1);
-    typeValue("width", "100");
-    typeValue("height", "100");
-    clickElement("tool-round");
+    typeAndEnter("width", "100");
+    typeAndEnter("height", "100");
+    chooseShapeKind("round");
 
-    expect(readPressedState("tool-round")).toBe("true");
     expect(readText("#shape-title")).toBe("Round shape");
 
     expect(readText("#path-data")).toBe(
@@ -45,7 +43,7 @@ describe("the Round tool (US-029)", () => {
   it("[F10.AC1] draws an ellipse touching the four sides of a box 120 × 80", () => {
     // Handles 60κ = 33.13708 across, 40κ = 22.09139 down.
     openOnStep(1);
-    clickElement("tool-round");
+    chooseShapeKind("round");
     typeAndEnter("width", "120");
     typeAndEnter("height", "80");
 
@@ -58,7 +56,7 @@ describe("the Round tool (US-029)", () => {
 
   it("[F10.AC2] has no radius nor anchor, and shows its 4 points without a handles switch", () => {
     openOnStep(1);
-    clickElement("tool-round");
+    chooseShapeKind("round");
 
     expect([
       isHidden("corners-section"),
@@ -87,7 +85,7 @@ describe("the Round tool (US-029)", () => {
 
   it("[F10.AC2] greys adding and deleting points, and keeps the curve; offers converting", () => {
     openOnStep(1);
-    clickElement("tool-round");
+    chooseShapeKind("round");
     clickElement("mode-points");
     clickPoint(1, false);
     clickPoint(2, true);
@@ -113,18 +111,18 @@ describe("the Round tool (US-029)", () => {
 
     const rectangle = readText("#path-data");
 
-    clickElement("tool-round");
-    clickElement("tool-rectangle");
+    chooseShapeKind("round");
+    chooseShapeKind("rectangle");
 
     expect(readText("#path-data")).toBe(rectangle);
     expect([readValue("radius"), isHidden("corners-section")]).toEqual(["10", false]);
 
-    clickElement("tool-polygon");
+    chooseShapeKind("polygon");
 
     const polygon = readText("#path-data");
 
-    clickElement("tool-round");
-    clickElement("tool-polygon");
+    chooseShapeKind("round");
+    chooseShapeKind("polygon");
 
     expect(readText("#path-data")).toBe(polygon);
   });
@@ -132,16 +130,25 @@ describe("the Round tool (US-029)", () => {
   it("turns about the centre of its box: at 30°, its top point at (80, 5.35898)", () => {
     // (60, 0) turned by 30° about (60, 40): (60 + 40 sin 30°, 40 − 40 cos 30°).
     openOnStep(1);
-    clickElement("tool-round");
+    chooseShapeKind("round");
     typeAndEnter("angle", "30");
 
     expect(readText("#path-data")).toMatch(/^M80 5\.35898 C/u);
   });
 
-  it("refuses a negative width", () => {
+  it("[F44.AC4] takes a width below 0 at 0, the round shape 0 wide (AUD-046)", () => {
     openOnStep(1);
-    clickElement("tool-round");
-    typeAndEnter("width", "-1");
+    chooseShapeKind("round");
+    // -200 is relative: 120 − 200 = −80, taken at 0.
+    typeAndEnter("width", "-200");
+
+    expect([readValue("width"), readText("#status")]).toEqual(["0", ""]);
+  });
+
+  it("refuses an angle emptied", () => {
+    openOnStep(1);
+    chooseShapeKind("round");
+    typeAndEnter("angle", "");
 
     expect(readText("#status")).toBe(
       "Width and height must be integers ≥ 0, and the angle an integer.",

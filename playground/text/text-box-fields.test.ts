@@ -4,12 +4,16 @@ import { beforeEach, describe, expect, it } from "vitest";
 
 import {
   chooseOption,
+  chooseShapeKind,
   clickElement,
   openServedPage,
   readDisplay,
+  readModel,
   readText,
+  readValue,
   selectPageElement,
-  typeValue,
+  typeAndEnter,
+  typeInField,
 } from "../user-actions";
 
 /** The fields read only in a box, hidden while the text fits its content. */
@@ -21,21 +25,11 @@ const BOX_ONLY = [
   "text-vertical-alignment",
 ];
 
-/**
- * Reads the text model the pipeline column shows.
- *
- * @returns the JSON written in `#model`, parsed
- */
-function readModel(): Record<string, unknown> {
-  // oxlint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-type-assertion -- written by JSON.stringify of a Text
-  return JSON.parse(readText("#model")) as Record<string, unknown>;
-}
-
 describe("Text tool: the box's fields (US-033)", () => {
   beforeEach(() => {
     openServedPage("");
-    clickElement("tool-text");
-    typeValue("text-size", "16");
+    chooseShapeKind("text");
+    typeAndEnter("text-size", "16");
     // happy-dom loses the option marked `selected` once the page is moved into its document: the
     // choices the page opens with are chosen again.
     chooseOption("text-weight", "400");
@@ -72,12 +66,12 @@ describe("Text tool: the box's fields (US-033)", () => {
 
   it("[F14.AC1] reads every option of the box into the model", () => {
     chooseOption("text-fit", "box");
-    typeValue("text-box-width", "50");
-    typeValue("text-box-height", "60");
-    typeValue("text-maximum-lines", "2");
+    typeAndEnter("text-box-width", "50");
+    typeAndEnter("text-box-height", "60");
+    typeAndEnter("text-maximum-lines", "2");
     clickElement("text-ellipsis");
     chooseOption("text-vertical-alignment", "bottom");
-    typeValue("text-line-height", "24");
+    typeAndEnter("text-line-height", "24");
     clickElement("text-trim");
 
     expect(readModel()).toMatchObject({
@@ -102,40 +96,78 @@ describe("Text tool: the box's fields (US-033)", () => {
     });
   });
 
+  it("[F44.AC4] takes -500 in the box's Height at 0, the text drawn (AUD-046)", () => {
+    chooseOption("text-fit", "box");
+    typeInField("text-box-height", "-500");
+
+    expect([readValue("text-box-height"), readText("#status")]).toEqual(["0", ""]);
+    expect(document.querySelectorAll("#canvas text")).toHaveLength(1);
+  });
+
   it.each([
     { id: "text-box-width", value: "" },
-    { id: "text-box-height", value: "-1" },
-    { id: "text-maximum-lines", value: "1.5" },
-    { id: "text-line-height", value: "100001" },
-    { id: "text-line-height", value: "" },
-    { id: "text-line-height", value: "-1" },
-  ])("refuses $id = '$value', draws nothing and keeps the last valid text", ({ id, value }) => {
+    { id: "text-box-height", value: "abc" },
+  ])(
+    "refuses $id = '$value', the field showing its value again, the text drawn (US-085)",
+    ({ id, value }) => {
+      chooseOption("text-fit", "box");
+
+      const model = readText("#model");
+      const shown = readValue(id);
+
+      typeAndEnter(id, value);
+
+      expect([readValue(id), readText("#status")]).toEqual([shown, ""]);
+      expect(document.querySelectorAll("#canvas text")).toHaveLength(1);
+      expect(readText("#model")).toBe(model);
+    },
+  );
+
+  it.each([
+    // 1.5 rounded to 2, a tie up; 100 001 taken at 100 000 (AUD-046).
+    { expected: "2", id: "text-maximum-lines", value: "1.5" },
+    { expected: "100000", id: "text-line-height", value: "100001" },
+  ])("[F44.AC4] takes $id = '$value' as $expected, the text drawn", ({ expected, id, value }) => {
     chooseOption("text-fit", "box");
+    typeInField(id, value);
 
-    const shown = readText("#model");
-
-    typeValue(id, value);
-
-    expect(readText("#status")).toContain(
-      "the box's width and height, its maximum lines and the line height integers from 0 to 100 000",
-    );
-
-    expect(document.querySelectorAll("#canvas text")).toHaveLength(0);
-    expect(selectPageElement(`#${id}`).getAttribute("aria-invalid")).toBe("true");
-    // No NaN nor refused value reaches the model shown: JSON writes NaN as null.
-    expect(readText("#model")).not.toContain("null");
-    expect(readText("#model")).toBe(shown);
+    expect([readValue(id), readText("#status")]).toEqual([expected, ""]);
   });
+
+  it.each([
+    { id: "text-maximum-lines", value: "abc" },
+    { id: "text-line-height", value: "" },
+  ])(
+    "refuses $id = '$value' emptied by a script, draws nothing and keeps the last valid text",
+    ({ id, value }) => {
+      chooseOption("text-fit", "box");
+
+      const shown = readText("#model");
+
+      typeAndEnter(id, value);
+
+      expect(readText("#status")).toContain(
+        "the box's width and height, its maximum lines and the line height integers from 0 to 100 000",
+      );
+
+      expect(document.querySelectorAll("#canvas text")).toHaveLength(0);
+      expect(selectPageElement(`#${id}`).getAttribute("aria-invalid")).toBe("true");
+      // No NaN nor refused value reaches the model shown: JSON writes NaN as null.
+      expect(readText("#model")).not.toContain("null");
+      expect(readText("#model")).toBe(shown);
+    },
+  );
 
   it("keeps the box's fields shown while one of them is refused, Fit content chosen", () => {
     chooseOption("text-fit", "box");
-    typeValue("text-box-width", "");
+    // Emptied by a script, which the field never read: the text refused.
+    typeAndEnter("text-maximum-lines", "");
     chooseOption("text-fit", "content");
 
     expect(readDisplay("text-box-fields") === "none").toBe(false);
     expect(selectPageElement("#text-box-width").getAttribute("aria-invalid")).toBe("true");
 
-    typeValue("text-box-width", "50");
+    typeAndEnter("text-maximum-lines", "0");
     expect(readDisplay("text-box-fields")).toBe("none");
   });
 });

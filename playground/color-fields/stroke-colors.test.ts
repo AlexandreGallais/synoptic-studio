@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 
 import {
   chooseOption,
+  chooseShapeKind,
   clickElement,
   commitField,
   openServedPage,
@@ -13,6 +14,8 @@ import {
   readValue,
   selectPageElement,
   setElementBox,
+  typeAndEnter,
+  typeInField,
   typeValue,
 } from "../user-actions";
 
@@ -76,7 +79,7 @@ function isFollowing(id: string): boolean {
 describe("The underline's and the strike-through's colors (US-041)", () => {
   beforeEach(() => {
     openServedPage("");
-    clickElement("tool-text");
+    chooseShapeKind("text");
     chooseOption("text-weight", "400");
     chooseOption("text-fit", "content");
     typeContent("P-101");
@@ -125,7 +128,7 @@ describe("The underline's and the strike-through's colors (US-041)", () => {
   });
 
   it("[F16.AC4] follows the text's opacity 40, shown in the strokes' opacity fields", () => {
-    typeValue("text-opacity", "40");
+    typeAndEnter("text-opacity", "40");
 
     expect(readStrokeFills()).toEqual(["#1e293b 0.4", "#1e293b 0.4"]);
 
@@ -160,20 +163,24 @@ describe("The underline's and the strike-through's colors (US-041)", () => {
     expect(readStrokeFills()).toEqual(["#ff0000 1", "#1e293b 1"]);
   });
 
+  it("[F16.AC1] takes text-underline-opacity = '101' at 100, the color then chosen (AUD-046)", () => {
+    typeInField("text-underline-opacity", "101");
+
+    expect(isFollowing("text-underline-follows")).toBe(false);
+    expect([readValue("text-underline-opacity"), readText("#status")]).toEqual(["100", ""]);
+  });
+
   it.each([
-    { id: "text-underline-opacity", value: "101" },
+    { id: "text-underline-opacity", value: "abc" },
     { id: "text-strike-opacity", value: "" },
   ])(
-    "[F16.AC1] refuses $id = '$value' and draws nothing, the stroke still following",
+    "[F16.AC1] refuses $id = '$value', 100 shown again, the stroke still following (US-087)",
     ({ id, value }) => {
-      selectPageElement(`#${id}`).focus();
-      typeValue(id, value);
-      commitField(id);
+      typeInField(id, value);
 
       expect(isFollowing(id.replace("opacity", "follows"))).toBe(true);
-      expect(readText("#status")).toContain("strike-through opacity");
-      expect(document.querySelectorAll("#canvas text")).toHaveLength(0);
-      expect(selectPageElement(`#${id}`).getAttribute("aria-invalid")).toBe("true");
+      expect([readValue(id), readText("#status")]).toEqual(["100", ""]);
+      expect(document.querySelectorAll("#canvas text")).toHaveLength(1);
     },
   );
 

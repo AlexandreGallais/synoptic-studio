@@ -1,5 +1,5 @@
 export * from "./create-handle-elements";
-export * from "./listen-to-delete-key";
+
 export * from "./listen-to-point-fields";
 export * from "./listen-to-points";
 export * from "./show-delete-button";

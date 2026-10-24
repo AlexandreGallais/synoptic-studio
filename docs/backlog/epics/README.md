@@ -9,8 +9,8 @@ Ordered by the Product Owner (2026-10-08; E13 added before E03, confirmed 2026-1
 | 1 | [E01](./E01-draw-shapes.md) | Draw symbol shapes from numbers | done |
 | 2 | [E14](./E14-draw-curves.md) | Draw curves with handles, ellipses and round shapes | done |
 | 3 | [E15](./E15-place-text.md) | Place text in symbols | done |
-| 4 | [E17](./E17-fast-tooling-with-oxc-and-rust.md) | Fast tooling with Oxc and Rust | in-progress |
-| 5 | [E02](./E02-edit-shapes.md) | Select and move shapes on one drawing | draft |
+| 4 | [E17](./E17-fast-tooling-with-oxc-and-rust.md) | Fast tooling with Oxc and Rust | done |
+| 5 | [E02](./E02-edit-shapes.md) | Select and move shapes on one drawing | in-progress |
 | 6 | [E18](./E18-transform-shapes-by-hand.md) | Transform shapes and points by hand | draft |
 | 7 | [E19](./E19-snap-align-and-distribute.md) | Snap, align and distribute shapes | draft |
 | 8 | [E13](./E13-arrange-shapes-in-a-tree.md) | Arrange shapes in a tree and lay them out | draft |

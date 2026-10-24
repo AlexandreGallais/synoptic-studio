@@ -40,9 +40,9 @@ function listenToTurnButton(document: Document, button: TurnButton, update: () =
 }
 
 /**
- * Makes the angle field and the −90° and +90° buttons turn the shape (F04): the shape turns as
- * the angle is typed; once typed (Enter or leaving the field) the field shows the angle kept
- * from 0 to 359, a refused value staying as typed; a button turns by a quarter turn.
+ * Makes the angle field and the −90° and +90° buttons turn the shape (F04): the shape turns once
+ * the angle is applied, Enter or the field left (US-087), the field then showing the angle kept
+ * from 0 to 359; a button turns by a quarter turn.
  *
  * @kind procedure
  * @param document - page document
@@ -52,12 +52,12 @@ function listenToTurnButton(document: Document, button: TurnButton, update: () =
 export function listenToTurn(document: Document, update: () => void): void {
   const angle = selectElement(document, "angle");
 
-  angle.addEventListener("input", update);
-
   angle.addEventListener("change", () => {
     if (Number.isSafeInteger(readNumber(document, "angle"))) {
       writeInputValue(document, "angle", readAngle(document));
     }
+
+    update();
   });
 
   listenToTurnButton(document, { id: "turn-left", turn: -DEGREES_PER_QUARTER_TURN }, update);

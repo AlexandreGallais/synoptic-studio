@@ -1,11 +1,12 @@
-import { createPathElement, formatCoordinatePair, formatSvgNumber } from "../../src";
+import { createPathElement, formatCoordinatePair, formatSvgNumber, screenToUser } from "../../src";
+import { readView } from "../view";
 
 import type { Point } from "../../src";
 
-/** Radius of a handle, in pixels: large enough to be clicked easily (F03). */
+/** Radius of a handle, in screen pixels: large enough to be clicked easily (F03). */
 const HANDLE_RADIUS = 8;
 
-/** Radius of the ring drawn behind a selected handle, in pixels. */
+/** Radius of the ring drawn behind a selected handle, in screen pixels. */
 const HALO_RADIUS = 13;
 
 /**
@@ -14,7 +15,7 @@ const HALO_RADIUS = 13;
  *
  * @kind procedure
  * @param center - point the handle is drawn on
- * @param radius - size of the handle in pixels, > 0
+ * @param radius - size of the handle in user units, > 0
  * @returns a closed `d` made of two arcs
  * @see REF-SVG2-PATHS
  */
@@ -30,7 +31,9 @@ function createCirclePathData(center: Point, radius: number): string {
  * Draws a handle on each vertex of the shape for Points mode: vertex 1 of the contour red,
  * vertex 2 green, so that the start and the direction of the contour can be read, the others
  * neutral. Vertex 1 is drawn last, on top when handles coincide (F03.AC4). A selected vertex
- * gets a ring behind its handle (F03.AC5).
+ * gets a ring behind its handle (F03.AC5). Their radii, 8 and 13 screen pixels, are divided by the
+ * view's scale, so that they keep their size on screen at any zoom (`screenToUser`, ADR-0098,
+ * decision 5).
  *
  * @kind procedure
  * @param document - page document
@@ -44,17 +47,20 @@ export function createHandleElements(
   vertices: readonly Point[],
   selected: readonly number[],
 ): readonly SVGPathElement[] {
+  const { scale } = readView(document);
   const halos = vertices
     .filter((vertex, index) => selected.includes(index))
     .map((vertex) => {
-      const halo = createPathElement(document, createCirclePathData(vertex, HALO_RADIUS));
+      const radius = screenToUser(HALO_RADIUS, scale);
+      const halo = createPathElement(document, createCirclePathData(vertex, radius));
 
       halo.classList.add("halo");
 
       return halo;
     });
   const handles = vertices.map((vertex, index) => {
-    const handle = createPathElement(document, createCirclePathData(vertex, HANDLE_RADIUS));
+    const radius = screenToUser(HANDLE_RADIUS, scale);
+    const handle = createPathElement(document, createCirclePathData(vertex, radius));
 
     handle.classList.add("handle");
     handle.dataset["vertex"] = String(index + 1);

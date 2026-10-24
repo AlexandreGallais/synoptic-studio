@@ -4,3 +4,4 @@ export * from "./fillet-fixtures";
 export * from "./fonts";
 export * from "./text-fixtures";
 export * from "./color-fixtures";
+export * from "./history-fixtures";

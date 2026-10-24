@@ -72,6 +72,76 @@
 | [VAL-009](./E01-F06-VAL-009-validate-stretched-polygon.md) | F06 | Validate F06 on the reference cases | done |
 | [REV-001](./E01-REV-001-review-e01.md) | E01 | Review E01 with the Product Owner | done |
 | [RET-001](./E01-RET-001-retrospective-e01.md) | E01 | Retrospective of E01 | done |
+| [SP-026](./E02-F35-SP-026-what-a-new-shape-starts-with.md) | F35 | What a new shape starts with | done |
+| [EN-142](./E02-F35-EN-142-playground-tests-without-tool-buttons.md) | F35 | The playground's tests set their shape without the tool buttons | done |
+| [US-063](./E02-F35-US-063-a-click-adds-a-shape.md) | F35 | A click with a tool adds a shape where it is clicked | done |
+| [AUD-037](./E02-F35-AUD-037-audit-f35.md) | F35 | Audit F35 | done |
+| [VAL-036](./E02-F35-VAL-036-validate-f35.md) | F35 | Validate F35 | ready |
+| [US-064](./E02-F36-US-064-a-drag-draws-the-box.md) | F36 | A drag with a tool draws the shape's box | done |
+| [EN-143](./E02-F36-EN-143-the-shape-at-a-point.md) | F36 | The shape at a point, by its painted area | done |
+| [US-065](./E02-F36-US-065-the-shape-under-the-pointer-shown.md) | F36 | The shape under the pointer shown | done |
+| [US-067](./E02-F36-US-067-a-click-selects-a-shape.md) | F36 | A click selects a shape, the panel loads it | done |
+| [AUD-038](./E02-F36-AUD-038-audit-f36.md) | F36 | Audit F36 | done |
+| [VAL-037](./E02-F36-VAL-037-validate-f36.md) | F36 | Validate F36 | ready |
+| [SP-027](./E02-F37-SP-027-refine-the-selection-of-shapes.md) | F37 | Refine the selection of several shapes | done |
+| [US-068](./E02-F37-US-068-shift-click-adds-a-shape.md) | F37 | Shift + click adds or removes a shape, Ctrl + A selects all, Escape none | done |
+| [US-066](./E02-F37-US-066-delete-removes-the-shape.md) | F37 | Delete removes the selected shapes | done |
+| [EN-144](./E02-F37-EN-144-a-shape-touched-by-a-rectangle.md) | F37 | A shape touched or enclosed by a rectangle, by its painted area | done |
+| [US-069](./E02-F37-US-069-a-rectangle-selects-shapes.md) | F37 | A selection rectangle selects shapes | done |
+| [AUD-039](./E02-F37-AUD-039-audit-f37.md) | F37 | Audit F37 | done |
+| [VAL-038](./E02-F37-VAL-038-validate-f37.md) | F37 | Validate F37 | dropped |
+| [US-070](./E02-F38-US-070-the-panel-for-several-shapes.md) | F38 | The panel shows several shapes' position and size | done |
+| [US-071](./E02-F38-US-071-a-value-typed-for-several-shapes.md) | F38 | A value typed for several shapes, relative or fixed | done |
+| [AUD-040](./E02-F38-AUD-040-audit-f38.md) | F38 | Audit F38 | done |
+| [VAL-039](./E02-F38-VAL-039-validate-f38.md) | F38 | Validate F38 | dropped |
+| [SP-028](./E02-F39-SP-028-refine-the-moves.md) | F39 | Refine the moves of shapes | done |
+| [EN-145](./E02-F39-EN-145-fast-on-a-large-rounded-shape.md) | F39 | The playground fast on a large rounded shape | done |
+| [US-072](./E02-F39-US-072-a-drag-moves-the-shapes-selected.md) | F39 | A drag moves the shapes selected, landing on integers | done |
+| [US-073](./E02-F39-US-073-the-arrows-nudge-the-shapes-selected.md) | F39 | The arrow keys nudge the shapes selected | done |
+| [AUD-041](./E02-F39-AUD-041-audit-f39.md) | F39 | Audit F39 | done |
+| [VAL-040](./E02-F39-VAL-040-validate-f39.md) | F39 | Validate F39 | dropped |
+| [SP-029](./E02-F40-SP-029-refine-undo-and-redo.md) | F40 | Refine undo and redo | done |
+| [EN-146](./E02-F40-EN-146-the-history-in-the-model.md) | F40 | The history of the drawing in the model | done |
+| [US-074](./E02-F40-US-074-undo-and-redo-the-drawings-actions.md) | F40 | Undo and redo what is done on the drawing | done |
+| [US-075](./E02-F40-US-075-undo-and-redo-the-panels-changes.md) | F40 | Undo and redo what is typed and chosen in the panel | done |
+| [US-076](./E02-F40-US-076-the-historys-memory-size.md) | F40 | The history kept within a memory size the designer sets | done |
+| [AUD-042](./E02-F40-AUD-042-audit-f40.md) | F40 | Audit F40 | done |
+| [VAL-041](./E02-F40-VAL-041-validate-f40.md) | F40 | Validate F40 | dropped |
+| [EN-147](./E02-F41-EN-147-the-history-size-kept-step-to-step.md) | F41 | The history's size kept from step to step | done |
+| [US-077](./E02-F41-US-077-the-list-of-steps.md) | F41 | The list of the history's steps | done |
+| [AUD-043](./E02-F41-AUD-043-audit-f41.md) | F41 | Audit F41 | done |
+| [VAL-042](./E02-F41-VAL-042-validate-f41.md) | F41 | Validate F41 | dropped |
+| [SP-030](./E02-F42-SP-030-refine-zoom-and-pan.md) | F42 | Refine zoom and pan | done |
+| [EN-148](./E02-F42-EN-148-the-view-in-the-model.md) | F42 | The view of the drawing in the model | done |
+| [US-078](./E02-F42-US-078-zoom-and-pan-by-the-wheel-and-a-drag.md) | F42 | Zoom and pan by the wheel, a pinch and a drag | done |
+| [EN-149](./E02-F42-EN-149-the-helps-within-the-area-shown.md) | F42 | The helps drawn within the area shown and its padding | done |
+| [US-079](./E02-F42-US-079-the-zoom-keys-the-fits-and-the-percentage.md) | F42 | The zoom's keys, the fits and the percentage shown | done |
+| [AUD-044](./E02-F42-AUD-044-audit-f42.md) | F42 | Audit F42 | done |
+| [VAL-043](./E02-F42-VAL-043-validate-f42.md) | F42 | Validate F42 | dropped |
+| [SP-031](./E02-F43-SP-031-refine-the-corrections.md) | F43 | Refine the corrections from the first try | done |
+| [EN-150](./E02-F43-EN-150-the-playground-tests-fast-again.md) | F43 | The playground's tests fast again | done |
+| [US-080](./E02-F43-US-080-the-helps-seen-on-any-color.md) | F43 | The helps seen on any color, and what a selection rectangle takes | done |
+| [US-081](./E02-F43-US-081-the-arrows-in-the-fields-and-on-the-drawing.md) | F43 | The arrows in the panel's fields and on the drawing | done |
+| [US-082](./E02-F43-US-082-a-text-box-square-the-wheel-with-shift.md) | F43 | A text's box kept square, the wheel with Shift, several shapes' sizes | done |
+| [AUD-045](./E02-F43-AUD-045-audit-f43.md) | F43 | Audit F43 | done |
+| [VAL-044](./E02-F43-VAL-044-validate-f43.md) | F43 | Validate F43 | dropped |
+| [SP-032](./E02-F44-SP-032-refine-the-second-corrections.md) | F44 | Refine the corrections from the second try | done |
+| [US-084](./E02-F44-US-084-the-view-follows-the-canvas-size.md) | F44 | The view follows the canvas's size | done |
+| [US-085](./E02-F44-US-085-one-shapes-fields-as-several.md) | F44 | The fields of one shape as the fields of several | done |
+| [US-086](./E02-F44-US-086-the-helps-as-one-dashed-line.md) | F44 | The helps as one dashed line of white and black | done |
+| [US-087](./E02-F44-US-087-every-number-field-the-same.md) | F44 | Every number field of the panel the same | done |
+| [AUD-046](./E02-F44-AUD-046-audit-f44.md) | F44 | Audit F44 | done |
+| [VAL-045](./E02-F44-VAL-045-validate-f44.md) | F44 | Validate F44 | dropped |
+| [US-088](./E02-F45-US-088-a-handles-before-y-stepped-by-one.md) | F45 | A handle's Before y stepped by one | done |
+| [AUD-047](./E02-F45-AUD-047-audit-f45.md) | F45 | Audit F45 | done |
+| [VAL-046](./E02-F45-VAL-046-validate-f45.md) | F45 | Validate F45 | dropped |
+| [US-089](./E02-F46-US-089-a-turned-shape-moved-onto-integers.md) | F46 | A turned shape moved by the arrows onto integers | done |
+| [US-090](./E02-F46-US-090-the-rectangle-and-the-canvas-resized.md) | F46 | The selection rectangle always answers, the canvas resized without a flicker | done |
+| [AUD-048](./E02-F46-AUD-048-audit-f46.md) | F46 | Audit F46 | done |
+| [VAL-047](./E02-F46-VAL-047-validate-f46.md) | F46 | Validate F46 | dropped |
+| [US-091](./E02-F47-US-091-space-never-left-held-after-cmd.md) | F47 | Space never left held after Cmd | done |
+| [AUD-049](./E02-F47-AUD-049-audit-f47.md) | F47 | Audit F47 | done |
+| [VAL-048](./E02-F47-VAL-048-validate-f47.md) | F47 | Validate F47 | dropped |
 | [SP-025](./E02-SP-025-cut-the-editing-work-into-small-features.md) | E02 | Cut the editing work into small features | done |
 | [SP-010](./E14-F11-SP-010-research-f11.md) | F11 | Research for F11: folder layouts and test placement | done |
 | [EN-020](./E14-F11-EN-020-property-tests.md) | F11 | Property tests for the nine functions without one | done |

@@ -1,3 +1,4 @@
+export * from "./listen-to-guide";
 export * from "./read-guided-step";
 export * from "./read-guided-test-steps";
 export * from "./read-step-from-address";
@@ -6,4 +7,5 @@ export * from "./write-anchor-value";
 export * from "./write-step-to-address";
 export * from "./write-step-values";
 export * from "./write-stretched-value";
+export * from "./write-text-fields";
 export * from "./write-text-step-values";
