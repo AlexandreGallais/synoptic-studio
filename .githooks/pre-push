@@ -1,9 +1,13 @@
 #!/bin/sh
 set -e
 . "$(dirname "$0")/tool.sh"
-tool shared-files refuse-shared-files
+# The pushed refs, read once: two tools read them (`REF-GITHOOKS`, pre-push).
+refs=$(cat)
+printf '%s\n' "$refs" | tool shared-files refuse-shared-files
 # The branch name, one pattern (`tools/git-hooks/src/branch.rs`).
 tool git-hooks git-hooks branch
+# A push that only deletes branches runs no check (`tools/git-hooks/src/push.rs`).
+if printf '%s\n' "$refs" | tool git-hooks git-hooks push-deletes-only; then exit 0; fi
 npm run check:all
 # The golden file of a refactor (ADR-0049, EN-055): when one is written, a drift of results fails the push.
 if [ -f "$(git rev-parse --path-format=absolute --git-common-dir)/metrics/golden.json" ]; then npm run golden:check; fi
