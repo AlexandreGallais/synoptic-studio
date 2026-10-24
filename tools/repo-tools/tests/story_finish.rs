@@ -698,21 +698,57 @@ fn f23_ac2_labels_a_review_into_develop_and_awaits_its_merge() {
 }
 
 #[test]
-fn f23_ac2_leaves_an_epics_spike_to_the_product_owners_merge_without_waiting() {
-    // [F23.AC2] An epic's refinement `SP` into `develop`: opened without the label, which
-    // `feature-automerge.yml` would refuse, and never awaited; run again, it waits no more, and
-    // cleans up once the Product Owner merged it.
+fn f23_ac2_labels_an_epics_spike_into_develop_and_awaits_its_merge() {
+    // [F23.AC2] An epic's refinement `SP` from `develop`, as a `REV` (REV-009): its pull request
+    // labelled `autonomous`, GitHub's merge awaited, then the clean-up.
     let lab = Lab::new("spike");
     let branch = "docs/sp-930-refinement-of-e99";
-    let waits = format!(
-        "{branch} waits for the Product Owner's merge into develop: `feature-automerge.yml` does \
-         not take it (AUD-024); run again once merged, to clean up\n"
-    );
 
     lab.backlog();
 
     let spike = lab.develop_story(branch, "sp-930");
-    let opened = lab.finish_into(&spike, "develop", &[("GH_STATE", "OPEN")]);
+    let finished = lab.finish_into(&spike, "develop", &[]);
+    let (out, err) = text(&finished);
+    let calls = lab.calls();
+
+    assert!(finished.status.success(), "{out}\n{err}");
+    assert_eq!(
+        out,
+        format!(
+            "https://github.com/owner/name/pull/1\nmerged; develop up to date, {branch} deleted here and on GitHub\n"
+        )
+    );
+    assert!(
+        calls
+            .iter()
+            .any(|call| call.contains(" pr create --base develop --label autonomous ")),
+        "{calls:?}"
+    );
+    assert!(
+        calls
+            .iter()
+            .any(|call| call.contains(" pr view https://github.com/owner/name/pull/1 ")),
+        "{calls:?}"
+    );
+    assert!(!spike.exists());
+}
+
+#[test]
+fn f23_ac2_leaves_to_the_product_owners_merge_a_story_the_auto_merge_refuses() {
+    // [F23.AC2] A story `feature-automerge.yml` refuses into `develop`, an `EN` straight from
+    // it: opened without the label and never awaited; run again, it waits no more, and cleans up
+    // once the Product Owner merged it.
+    let lab = Lab::new("refused");
+    let branch = "chore/en-930-straight-into-develop";
+    let waits = format!(
+        "{branch} waits for the Product Owner's merge into develop: `feature-automerge.yml` does \
+         not take it (EN-118); run again once merged, to clean up\n"
+    );
+
+    lab.backlog();
+
+    let story = lab.develop_story(branch, "en-930");
+    let opened = lab.finish_into(&story, "develop", &[("GH_STATE", "OPEN")]);
     let (out, err) = text(&opened);
     let calls = lab.calls();
 
@@ -732,11 +768,11 @@ fn f23_ac2_leaves_an_epics_spike_to_the_product_owners_merge_without_waiting() {
         !calls.iter().any(|call| call.contains(" pr view https://")),
         "{calls:?}"
     );
-    assert!(spike.exists());
+    assert!(story.exists());
 
     // Run again while it is open: nothing opened, nothing awaited.
     let again = lab.finish_into(
-        &spike,
+        &story,
         "develop",
         &[("GH_STATE", "OPEN"), ("GH_EXISTING", "OPEN")],
     );
@@ -756,9 +792,9 @@ fn f23_ac2_leaves_an_epics_spike_to_the_product_owners_merge_without_waiting() {
     );
 
     // Merged by the Product Owner: the clean-up.
-    lab.git(&spike, &["push", "-q", "origin", "HEAD:develop"]);
+    lab.git(&story, &["push", "-q", "origin", "HEAD:develop"]);
 
-    let merged = lab.finish_into(&spike, "develop", &[("GH_EXISTING", "MERGED")]);
+    let merged = lab.finish_into(&story, "develop", &[("GH_EXISTING", "MERGED")]);
     let (out, err) = text(&merged);
 
     assert!(merged.status.success(), "{out}\n{err}");
@@ -768,7 +804,7 @@ fn f23_ac2_leaves_an_epics_spike_to_the_product_owners_merge_without_waiting() {
         )),
         "{out}"
     );
-    assert!(!spike.exists());
+    assert!(!story.exists());
 }
 
 #[test]

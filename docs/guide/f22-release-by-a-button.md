@@ -69,7 +69,7 @@ AUD-024 had one independent review, the `auditor` alone (ADR-0086, one agent at 
 | nothing compared the version with the notes: a range of tooling only, its body listing changes, would have been published as a patch with those changes | **fixed**: `release publish` refuses notes that disagree with the commits |
 | a Dependabot security update merged into `main` put Dependabot's body among the notes, which the check refuses: the button would fail | **fixed**: a pull request from `dependabot/…` is left out of the notes |
 | `/audit` and `/spike` still started reviewers in parallel; `CLAUDE.md` listed the `doc-editor` with no condition | rewritten: one at a time, each only where its independence pays |
-| an epic's refinement `SP`, its branch from `develop`, is refused by the auto-merge, which lets into `develop` only a feature or a `REV` | a tool incident card; whether the auto-merge should take it is a question for your next review |
+| an epic's refinement `SP`, its branch from `develop`, is refused by the auto-merge, which lets into `develop` only a feature or a `REV` | a tool incident card; whether the auto-merge should take it was a question for your next review, answered at REV-009 (2026-10-25): it does |
 | no test tagged for criteria 1 and 5 | tagged; 1's run on GitHub and 4's half on the docs left to this validation |
 | words of the old flow left (a release commit, a changelog, the epic's end) | removed; one comment of a tool left for the next review |
 
@@ -122,7 +122,7 @@ Run `npm run dev` and open `http://localhost:5173/?checklist=E17`: E17's checkli
 
 - The CI's run on GitHub's runner and the button are seen for the first time at your next review: the pull request `develop` → `main`, then the press that makes 0.3.0. Until then criterion 1 holds on this Mac only, and criterion 2's publication on a copy of the history with a fake GitHub.
 - The first press reads the bodies of the pull requests into `main` merged after `v0.2.0`: the next review's alone, whose text must pass `release check`.
-- An epic's refinement `SP` is not taken by the auto-merge yet: a question for your next review (AUD-024).
+- An epic's refinement `SP` was not taken by the auto-merge (AUD-024): since REV-009 (2026-10-25), as you decided, it merges itself into `develop` as a review does.
 - `tools/lint` still ignores a file named `CHANGELOG.md`, and a comment of the commit-message check names the old release commit: harmless with the file gone, left for the next review.
 
 ## Validation
