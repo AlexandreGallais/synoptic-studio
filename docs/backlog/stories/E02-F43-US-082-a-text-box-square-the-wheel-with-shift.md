@@ -40,6 +40,14 @@ Corrections 7, 9 and 10 of the Product Owner's first try (2026-10-23) ([note 003
 - [ ] T2 — Shift with the wheel as answered, the system read once (`navigator.userAgentData`, or `navigator.platform`, its source read and recorded first); `interaction.md` §7 (The gestures); tests first (1 h)
 - [ ] T3 — The redraw asked drawn before the panel leaves its shape; correction 10's cases and the Product Owner's steps as tests, each value computed by hand, a fix where one is wrong (2 h)
 
-Files: `playground/shape-drawing/show-shape-drawing.ts`, `playground/view/listen-to-wheel.ts`, `playground/redraw/schedule-redraw.ts`, the modules where the panel leaves its shape (`playground/selection/`), `docs/domain/interaction.md` §1, §2 and §7. `@see` `REF-PENPOT-VIEWPORT-ACTIONS`, `REF-PENPOT-NORMALIZE-WHEEL`, `REF-FIGMA-ADJUST`, `docs/domain/interaction.md#_1-tools`.
+Files: `playground/shape-drawing/show-shape-drawing.ts`, `playground/view/listen-to-wheel.ts`, `playground/redraw/schedule-redraw.ts`, `draw-pending-redraw.ts`, `listen-to-redraw-before-clicks.ts`, `playground/mount/mount-playground.ts`, `docs/domain/interaction.md` §1, §2 and §7. `@see` `REF-PENPOT-VIEWPORT-ACTIONS`, `REF-MDN-NAVIGATOR-PLATFORM`, `REF-HTML-NAVIGATOR-PLATFORM`, `REF-MDN-USER-AGENT-DATA`, `REF-MDN-RAF`, `docs/domain/interaction.md#_1-tools`.
 
 One task = one commit, referenced as `US-082.T1` in the commit footer.
+
+## For the main thread
+
+**Where the redraw is drawn early** (T3): not in the modules where the panel leaves its shape, since `writeShapeSelection` also runs inside an undo (`moveHistory`), where a redraw drawn there would record a step between the history's move and its state written back; instead, a listener on the canvas registered before the drawing's own draws the pending redraw at each `pointerup` and `click` (`listenToRedrawBeforeClicks`). A field's `change` fires as the button goes down, after `pointerdown`, so a press is not the place. Left as before: a tool's drag whose first move past 3 pixels comes within the frame of a value applied, a `pointermove` flush costing one redraw a move; and Ctrl + Z, Escape, Ctrl + A or Delete pressed within the frame of a value applied, answer 8 (a) asking nothing else.
+
+**Not tried in a browser**: the same-frame click is proven in happy-dom with the frames held, the order `pointerdown`, `change`, `pointerup`, `click` as a browser fires them for a field left by a press; the spike's reproduction in Chromium was not run again, no browser being in the repository's tools.
+
+**Rule docs**: the Q rows Q46, Q60 and Q7, the guide pages of the features whose behavior changed, F36, F42 and F40; F43 has no guide page of its own and VAL-044 is dropped, as for US-080's and US-081's `done` commits.

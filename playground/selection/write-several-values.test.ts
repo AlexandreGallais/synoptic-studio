@@ -5,16 +5,23 @@ import { isDrawnText } from "../../src";
 import { HELLO_TEXT } from "../../tests";
 import { readFontSession, writeFontSession } from "../fonts";
 import { PAGE_HISTORIES } from "../history";
-import { DRAWING_KEYS, readStoredDrawing, writeStoredDrawing } from "../kept-shapes";
+import {
+  DRAWING_KEYS,
+  readKeptDrawing,
+  readStoredDrawing,
+  writeStoredDrawing,
+} from "../kept-shapes";
 import { selectElement, writeEditedKind } from "../page";
 import { readTextBlock } from "../picking";
 import {
   chooseOption,
   clickAt,
   clickElement,
+  commitField,
   openServedPage,
   pressAndClick,
   pressKey,
+  pressPointer,
   readDisplay,
   readValue,
   selectInput,
@@ -299,12 +306,13 @@ describe("the panel shows several shapes' position and size (US-070)", () => {
 });
 
 /**
- * Reads the shapes kept in the drawing, every one kept below while several are selected (F37).
+ * Reads the shapes kept in the drawing, every one kept below while several are selected (F37),
+ * the one edited and those above it too while one is (`readKeptDrawing`).
  *
  * @returns each shape, in the order drawn
  */
 function readDrawing(): readonly DrawingShape[] {
-  return readStoredDrawing(document, DRAWING_KEYS.below).map(({ shape }) => shape);
+  return readKeptDrawing(document).map(({ shape }) => shape);
 }
 
 /**
@@ -691,6 +699,174 @@ describe("the arrows in a field of several shapes (US-081)", () => {
     expectBoxes([
       [10, 20, 99_999, 50],
       [200, 20, 99_999, 40],
+    ]);
+  });
+});
+
+/**
+ * Places, beside A, the epic's rectangle 120 × 80 at (0, 0), a hexagon by a click at (300, 50),
+ * centred: 100 × 100 at (250, 0); then a round shape by a click at (500, 50), 100 × 100 at
+ * (450, 0), typed 60 × 40, its top-left kept, being straight.
+ */
+function placeHexagonAndRound(): void {
+  placeShape("polygon", { x: 300, y: 50 });
+  placeShape("round", { x: 500, y: 50 });
+  typeValue("width", "60");
+  typeValue("height", "40");
+}
+
+/**
+ * Applies 150 typed in W, the field then left by a press on the drawing as a mouse does: the
+ * press, the field's `change` as it loses the focus, the release and the click.
+ *
+ * @param point - the point of the drawing pressed
+ */
+function applyWidthByClick(point: Point): void {
+  const at = toWindow(point);
+
+  typeValue("several-width", "150");
+  pressPointer("#canvas", "pointerdown", { ...at, buttons: 1 });
+  commitField("several-width");
+  pressPointer("#canvas", "pointerup", { ...at, buttons: 0 });
+  clickAt("#canvas", at);
+}
+
+describe("several shapes' width and height, the cases tried (US-082)", () => {
+  beforeEach(() => {
+    openServedPage("?guide=epic");
+    setElementBox("#canvas", { height: 600, left: 100, top: 50, width: 800 });
+  });
+
+  it("[F43.AC4] makes A, a hexagon and a round shape 150 wide, then 10 higher for +10 in H", () => {
+    placeHexagonAndRound();
+    selectAll();
+    typeAndEnter("several-width", "150");
+
+    expectBoxes([
+      [0, 0, 150, 80],
+      [250, 0, 150, 100],
+      [450, 0, 150, 40],
+    ]);
+
+    expect(readSeveralFields()).toEqual(["[Mixed]", "0", "150", "[Mixed]"]);
+
+    typeAndEnter("several-height", "+10");
+
+    // 80 + 10, 100 + 10, 40 + 10.
+    expectBoxes([
+      [0, 0, 150, 90],
+      [250, 0, 150, 110],
+      [450, 0, 150, 50],
+    ]);
+  });
+
+  it("[F43.AC4] takes -100 in W, 0 in H, then 30 in W, for each shape", () => {
+    placeHexagonAndRound();
+    selectAll();
+    typeAndEnter("several-width", "150");
+    // 150 − 100 = 50 for each.
+    typeAndEnter("several-width", "-100");
+
+    expectBoxes([
+      [0, 0, 50, 80],
+      [250, 0, 50, 100],
+      [450, 0, 50, 40],
+    ]);
+
+    typeAndEnter("several-height", "0");
+    typeAndEnter("several-width", "30");
+
+    expectBoxes([
+      [0, 0, 30, 0],
+      [250, 0, 30, 0],
+      [450, 0, 30, 0],
+    ]);
+
+    expect(readSeveralFields()).toEqual(["[Mixed]", "0", "30", "0"]);
+  });
+
+  it("[F43.AC4] keeps A's turned top-left corner at (28.03848, −24.64102), typed 150 wide", () => {
+    // A turned by 30° about its middle (60, 40): its top-left corner is
+    // (60 − 60 cos 30° + 40 sin 30°, 40 − 60 sin 30° − 40 cos 30°) = (28.03848, −24.64102).
+    // 150 wide, its middle is that corner + (75 cos 30° − 40 sin 30°, 75 sin 30° + 40 cos 30°)
+    // = (72.99038, 47.5), its position (72.99038 − 75, 47.5 − 40) = (−2.00962, 7.5).
+    typeValue("angle", "30");
+    placeHexagonAndRound();
+    selectAll();
+    typeAndEnter("several-width", "150");
+
+    const [turned, hexagon, round] = readBoxes();
+
+    expect(turned?.[0]).toBeCloseTo(-2.00962, 5);
+    expect(turned?.[1]).toBeCloseTo(7.5, 9);
+    expect(turned?.[2]).toBe(150);
+
+    expect([hexagon, round]).toEqual([
+      [250, 0, 150, 100],
+      [450, 0, 150, 40],
+    ]);
+  });
+
+  it("[F43.AC4] sets a text turned by 23° in a box 100 × 20 to 150 × 60, its turned corner kept", () => {
+    // Its middle (97, 71), its top-left corner (97 − 50 cos 23° + 10 sin 23°,
+    // 71 − 50 sin 23° − 10 cos 23°) = (54.88207, 42.25840); 150 × 60, its middle that corner +
+    // (75 cos 23° − 30 sin 23°, 75 sin 23° + 30 cos 23°) = (112.19800, 99.17838), its position
+    // (112.19800 − 75, 99.17838 − 30) = (37.19800, 69.17838).
+    placeHexagonAndRound();
+    placeTurnedText({ x: 450, y: 300 });
+    selectAll();
+    typeAndEnter("several-width", "150");
+    typeAndEnter("several-height", "60");
+
+    const text = readDrawing()[3];
+
+    expect(text).toMatchObject({ boxHeight: 60, boxWidth: 150 });
+    expect(text?.x).toBeCloseTo(37.198, 5);
+    expect(text?.y).toBeCloseTo(69.17838, 5);
+  });
+
+  it.each([
+    {
+      name: "Enter",
+      way: (): void => {
+        typeAndEnter("several-width", "150");
+      },
+    },
+    {
+      name: "Tab",
+      way: (): void => {
+        typeValue("several-width", "150");
+        commitField("several-width");
+        selectInput("several-height").focus();
+      },
+    },
+    {
+      name: "a click on the drawing's empty place",
+      way: (): void => {
+        applyWidthByClick({ x: 600, y: 400 });
+      },
+    },
+    {
+      name: "a click on A",
+      way: (): void => {
+        applyWidthByClick({ x: 60, y: 40 });
+      },
+    },
+    {
+      name: "a click on the hexagon",
+      way: (): void => {
+        applyWidthByClick({ x: 300, y: 50 });
+      },
+    },
+  ])("[F43.AC4] gives the same widths for W applied by $name", ({ way }) => {
+    placeHexagonAndRound();
+    selectAll();
+    way();
+
+    expectBoxes([
+      [0, 0, 150, 80],
+      [250, 0, 150, 100],
+      [450, 0, 150, 40],
     ]);
   });
 });
