@@ -265,6 +265,12 @@ const FIRST_SMALL_FEATURE = 22;
 /** Story kinds every small feature needs: audit, validation (ADR-0084, decision 1). */
 const SMALL_FRAME_PREFIXES = ["AUD-", "VAL-"];
 
+/** The first feature with no validation of its own, an audit ending it (ADR-0100, decision 4). */
+const FIRST_AUDITED_FEATURE = 48;
+
+/** Story kinds every feature needs from ADR-0100: its audit alone. */
+const AUDITED_FRAME_PREFIXES = ["AUD-"];
+
 /** The most stories (`US`, `EN`) a small feature holds; a larger one is split (ADR-0084, decision 1). */
 const MOST_STORIES = 4;
 
@@ -283,12 +289,16 @@ function isSmall(feature: string): boolean {
 
 /**
  * The story kinds a feature needs: the whole frame before ADR-0084; after it, an audit and a
- * validation.
+ * validation; from ADR-0100, the audit alone.
  *
  * @param feature - its id, `F22`
  * @returns the id prefixes its stories must hold
  */
 function framePrefixes(feature: string): readonly string[] {
+  if (Number(feature.slice(1)) >= FIRST_AUDITED_FEATURE) {
+    return AUDITED_FRAME_PREFIXES;
+  }
+
   return isSmall(feature) ? SMALL_FRAME_PREFIXES : FRAME_PREFIXES;
 }
 

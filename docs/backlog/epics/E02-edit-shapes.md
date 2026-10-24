@@ -1,7 +1,7 @@
 ---
 id: E02
 title: Select and move shapes on one drawing
-status: in-progress
+status: done
 ---
 
 # E02 — Select and move shapes on one drawing
@@ -48,6 +48,7 @@ Ordered by the agent at SP-025 (2026-10-19), each needing the one before it. A f
 | Story | Status |
 | --- | --- |
 | [SP-025](../stories/E02-SP-025-cut-the-editing-work-into-small-features.md) — Cut the editing work into small features | done |
+| [REV-008](../stories/E02-REV-008-review-of-e02.md) — Review of 2026-10-24, F35 to F47 | in-progress |
 
 ## Working method for E02 and the epics cut from it
 
