@@ -1,10 +1,12 @@
 ---
 id: E20
 title: Make the editor easy to use
-status: draft
+status: dropped
 ---
 
 # E20 — Make the editor easy to use
+
+**Dropped on 2026-10-25** (SP-033, ADR-0100, decision 1, [note 0034](../../research/notes/0034-regroup-the-epics.md) §4): its content went to [E24](./E24-compute-in-number-fields.md), a letter refused as typed, [E32](./E32-refine-the-texts-lines-and-options.md), the text's second pass, [E33](./E33-choose-fonts-for-synoptic-views.md), the fonts, [E43](./E43-tune-settings-and-keys.md), the settings and keys, and [E45](./E45-design-the-editors-interface.md), the interface designed.
 
 The later epic on ease of use the Product Owner named at the validations of E15 and F08, its ideas gathered here from E02 on 2026-10-19 (SP-025). It is the design of the editors' interface, placed after every epic that builds the library and before the release (Product Owner, 2026-10-19, [order of the epics](./)): the library's epics may offer more options than needed, so that they move fast; here each button and option is questioned — whether it matters, whether the same option sits in two places, whether it is clear, whether it helps or slows the designer. Its aim is the fewest options doing the most.
 

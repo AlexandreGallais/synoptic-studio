@@ -37,7 +37,7 @@ Run `npm run dev` and open `http://localhost:5173/?guide=epic&step=47`: the **Gu
 
 - The shape turns about the center of its box only. The rotation mode — a center you move, snapped to a point of the shape or of another shape, handles on both boxes — comes with the editor applications (E02).
 - The playground's view stays put: a turned shape may leave the canvas.
-- Turning by an animation, from a property's value, comes with E05.
+- Turning by an animation, from a property's value, comes with E35.
 
 ## Validation
 

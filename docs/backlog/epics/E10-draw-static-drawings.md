@@ -1,10 +1,12 @@
 ---
 id: E10
 title: Draw and reuse static drawings
-status: draft
+status: dropped
 ---
 
 # E10 — Draw and reuse static drawings
+
+**Dropped on 2026-10-25** (SP-033, ADR-0100, decision 1, [note 0034](../../research/notes/0034-regroup-the-epics.md) §4): its content went to [E40](./E40-draw-and-reuse-static-drawings.md); point 1 alike in every shape, its note, to [E41](./E41-open-and-save-files-from-the-web-page.md), as that epic's first feature.
 
 | Field | Content |
 | --- | --- |

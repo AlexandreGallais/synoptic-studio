@@ -71,8 +71,8 @@ Agents to add when their epic comes:
 | Agent | Would bring | When |
 | --- | --- | --- |
 | `interaction-designer` | handles, dragging, selection, keyboard: how editors behave | E02, the first editor application |
-| `svg-expert` | the SVG specification: paths, strokes, other tools' files | E04 (strokes), E11 (files) |
-| `performance` | budgets, profiling, large views | E08 (views), or a first performance budget |
+| `svg-expert` | the SVG specification: paths, strokes, other tools' files | E31 (strokes), E41 and E42 (files) |
+| `performance` | budgets, profiling, large views | E38 (views), or a first performance budget |
 
 ## Models
 

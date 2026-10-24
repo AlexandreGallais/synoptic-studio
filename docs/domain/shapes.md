@@ -52,7 +52,7 @@ Reference behavior: Figma.
 - Radius entered **numerically**, never with the mouse.
 - Radius **per vertex**: select one or more vertices (node editing) → type a value (F03).
 - Global radius: in shape mode, the radius field applies to every vertex of the shape. When the vertices have different radii it shows **Mixed** and is empty; typing a value gives it to every vertex (Product Owner, 2026-10-11, as in Figma).
-- Changing the number of corners of a regular polygon keeps the radii **by vertex number**: vertex 1 keeps vertex 1's radius; removed vertices take their radius away; new vertices have radius 0 (Product Owner, 2026-10-11).
+- Changing the number of corners of a regular polygon keeps the radii **by vertex number**: vertex 1 keeps vertex 1's radius; removed vertices take their radius away; new vertices have radius 0 (Product Owner, 2026-10-11). With E23 (Q26, Product Owner, 2026-10-25), the radii of removed vertices are kept while the session lasts, not in the saved file: a polygon of 12 corners of radii 1 to 12 made a triangle, then 12 again, gets radii 4 to 12 back on its vertices 4 to 12.
 - No "independent corners" switch: the radius of one corner is set in node editing only.
 - Geometry: arc tangent to both edges; setback `d = r / tan(θ/2)` (`DERIV-fillet-setback`).
 
@@ -127,7 +127,7 @@ Storing the value (Q8, settled):
 
 ### Rectangle
 
-- The rectangle is a **free shape** of 4 points made by the rectangle tool (Product Owner, 2026-10-11, F09): underneath, a rectangle is always a free shape. Width and height of any free shape stretch its points, the top-left of its box fixed; a rectangle stays a rectangle; stretching is without loss (0 then back gives the same shape). The eight handles of the box, the opposite side fixed as in Inkscape, come with E18.
+- The rectangle is a **free shape** of 4 points made by the rectangle tool (Product Owner, 2026-10-11, F09): underneath, a rectangle is always a free shape. Width and height of any free shape stretch its points, the top-left of its box fixed; a rectangle stays a rectangle; stretching is without loss (0 then back gives the same shape). The eight handles of the box, the opposite side fixed as in Inkscape, come with E21.
 
 - Model (ADR-0032, ADR-0033) — a **free shape** stores:
   - its **corners**, each a point in the shape's own box, its radius (integer ≥ 0) and its **handles** (F12, ADR-0046, "Points with handles" above); at least 3 corners, spanning a box of positive width and height (contour order Q11);
@@ -379,7 +379,7 @@ F14, `DERIV-text-box`; decided at F05's refinement, rounds 1 and 2; the rules ma
   - drawn behind each line as a highlighter, from the font's ascender to its descender and as long as the line with its ellipsis, ending, in a box, with its last character other than a space (US-049), all lines in one `<path>` drawn under the letters; an empty line has none;
   - a line height chosen or a trim leaves each band from ascender to descender: the bands leave a gap under a line height larger than the content area and overlap under a smaller one, the overlap filled once since the bands are one path filled by the nonzero rule (CSS paints each line's background on its own);
   - a trimmed text's first band rises above the top of its block, or of its box (confirmed at VAL-015).
-- **Scrolling**: scrolling a long text inside its box on a touch screen comes with the synoptic views (E08).
+- **Scrolling**: scrolling a long text inside its box on a touch screen comes with the synoptic views (E38).
 
 #### Scripts and turning
 
@@ -414,7 +414,7 @@ F14, `DERIV-text-box`; decided at F05's refinement, rounds 1 and 2; the rules ma
 F15, decided at F05's refinement, round 2; the rules marked "confirmed at VAL-017" were read from it by the agent at SP-018, 2026-10-15, confirmed at VAL-017; research note 0020.
 
 - **Sources**: the designer imports a TrueType or OpenType file (`.ttf`, `.otf`), or, in Chrome and Edge, chooses a font installed on the computer after a click and the browser's permission (`REF-WICG-LOCAL-FONT-ACCESS`):
-  - both are read by the same reader, from the file's bytes, once, into the metrics F05 reads, and kept with the file (confirmed at VAL-017: kept for the session; across sessions with the editor's files, E11);
+  - both are read by the same reader, from the file's bytes, once, into the metrics F05 reads, and kept with the file (confirmed at VAL-017: kept for the session; across sessions with the editor's files, E41);
   - an installed family read ahead keeps its metrics alone until it is chosen (US-053, provisional, below).
 - **Font list**: the editor's font field is a **list of the families it can measure**, not a name typed: the default Inter, the fonts imported and the installed fonts read with the browser's permission (Product Owner, 2026-10-15, US-036):
   - the weight list shows the faces of the family chosen only; the size of a text is computed with the metrics of the font selected, never with Inter's alone;
@@ -489,11 +489,11 @@ A click lists the installed families after the browser's `local-fonts` permissio
 - **Imported faces** — **Settled** (Product Owner, 2026-10-16, ADR-0062, refining ADR-0061, which let such a file be imported unjudged):
   - a face imported with **Import a font** follows the same rules, refused when it lacks a basic Latin letter or its `fsType` forbids embedding it, said why, the other faces of a collection kept;
   - for example `Apple Color Emoji.ttc: Apple Color Emoji 400 refused, it lacks letters of the basic Latin alphabet (A to Z, a to z).` and `Locked.ttf: Locked 400 refused, its fsType forbids embedding it in an exported SVG.`;
-  - whether a font that cannot be embedded may one day be exported once the designer confirms it is left to the epic on ease of use (E20).
+  - whether a font that cannot be embedded may one day be exported once the designer confirms it is left to the epic on fonts (E33).
 
 #### Embedded fonts
 
-F15, ADR-0053, ADR-0060; confirmed at VAL-017. An option of a symbol, off unless turned on, **applied only when a file is exported or saved, never during editing**: the drawing on screen holds no `<style>`, and **Export SVG** writes the rules below (Product Owner, 2026-10-15, at the validation of E15; US-045); once in a synoptic view for all its symbols comes with the views (E08).
+F15, ADR-0053, ADR-0060; confirmed at VAL-017. An option of a symbol, off unless turned on, **applied only when a file is exported or saved, never during editing**: the drawing on screen holds no `<style>`, and **Export SVG** writes the rules below (Product Owner, 2026-10-15, at the validation of E15; US-045); once in a synoptic view for all its symbols comes with the views (E38).
 
 - **One rule per face**: each face its texts are measured with is written once, as an `@font-face` rule with the whole file as a base64 `data:` URL in one `<style>` of the `<defs>`: a symbol of 10 texts in Arial regular and bold writes 2 rules (`DERIV-font-embedding`).
 - **Permission**: a face is embedded only when its `fsType` permits it: not when only bitmaps may be embedded, nor when restricted without the preview-and-print or editable bit (Arial, 8, and Inter, 0, are embeddable; 2 is not).
@@ -522,7 +522,7 @@ F15, ADR-0053, ADR-0060; confirmed at VAL-017. An option of a symbol, off unless
 
 ### Layout box (Q21)
 
-Settled with the Product Owner (2026-10-10, refining F07): a box that places the elements inside it, as a Figma frame with a layout does, made simple for synoptic views rather than following CSS. Delivered by epic E13, with the shape tree; "layout" is a working name, kept only if no better term is found.
+Settled with the Product Owner (2026-10-10, refining F07): a box that places the elements inside it, as a Figma frame with a layout does, made simple for synoptic views rather than following CSS. Delivered by epic E28, after the shape tree of E27; "layout" is a working name, kept only if no better term is found.
 
 - The box is a **rectangle only**, with a corner radius at most: its vertices cannot be edited, otherwise placing its children becomes too complex.
 - Its children are placed **by anchor** (the 3 × 3 grid of F07, top-left … bottom-right), or **stacked** in a row or a column with gaps; the box may have padding. Both modes exist.
@@ -536,7 +536,7 @@ Settled with the Product Owner (2026-10-10, refining F07): a box that places the
 ### Out of scope (symbols)
 
 - **Pen** and **freeform drawing** in the Symbol Editor: contrary to the "logical" principle.
-- Bézier curves other than the cubic sides from handles (ADR-0046); Figma's **Bend** tool dragged on the drawing (E18).
+- Bézier curves other than the cubic sides from handles (ADR-0046); Figma's **Bend** tool dragged on the drawing (out of E23's scope).
 - **Corner smoothing** (Figma squircle smoothing): produces Béziers.
 
 Static drawings of the View Editor follow other rules (§8).

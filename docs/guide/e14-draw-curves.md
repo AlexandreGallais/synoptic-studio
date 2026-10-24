@@ -64,7 +64,7 @@ The review was a free walk through the playground on `develop`, crossing the fea
 ## Limits and next epic
 
 - Points and handles are typed, not dragged: that comes with the editor (E02).
-- Strokes and dashes along a curve: E04.
+- Strokes and dashes along a curve: E31.
 - No text yet: E15, the next epic.
 - Copying a point's rounding or handles onto another point waits for the editors' interface.
 
@@ -87,6 +87,6 @@ Held with the Product Owner on 2026-10-14 (`REV-002`), right after the validatio
 | --- | --- |
 | The angle measured from the side towards the neighbouring point is unusual, but coherent: the same values on two right-angled corners give the same curve. | kept as built |
 | The interface stays simple: few options, many shapes possible. | kept as built |
-| Every shape's point 1 could be its lowest right point, as a polygon's is, so that all shapes start alike. A round shape would start at its bottom or its right point. Not urgent, for the end of V1. | note in [E10](../backlog/epics/E10-draw-static-drawings.md), before E11 fixes the file format |
+| Every shape's point 1 could be its lowest right point, as a polygon's is, so that all shapes start alike. A round shape would start at its bottom or its right point. Not urgent, for the end of V1. | the first feature of [E41](../backlog/epics/E41-open-and-save-files-from-the-web-page.md), before the file format is fixed (2026-10-25) |
 
-**Closure criteria.** A round shape and an ellipse render as specified. A propeller blade is a free shape with curved sides, which F12 draws; the propeller symbol itself is assembled once symbols exist (E05).
+**Closure criteria.** A round shape and an ellipse render as specified. A propeller blade is a free shape with curved sides, which F12 draws; the propeller symbol itself is assembled once symbols exist (E34).

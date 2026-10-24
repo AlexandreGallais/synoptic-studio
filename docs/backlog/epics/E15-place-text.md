@@ -28,7 +28,7 @@ Decided by the Product Owner on 2026-10-12: text is too large a subject for one 
 
 - Native SVG `<text>` (ADR-0002) and its own features, or HTML text inside a `foreignObject` (related to Q24), and the drawbacks of each (rendering in other tools, export, printing).
 - Fonts: which fonts are allowed, how they are named and found, what happens when one is missing.
-- Size: how the size of a text is measured without the DOM in the portable core (ADR-0025), for the layout box (E13) and alignment.
+- Size: how the size of a text is measured without the DOM in the portable core (ADR-0025), for the layout box (E28) and alignment.
 
 ## Before E15's release
 

@@ -1,10 +1,12 @@
 ---
 id: E18
 title: Transform shapes and points by hand
-status: draft
+status: dropped
 ---
 
 # E18 — Transform shapes and points by hand
+
+**Dropped on 2026-10-25** (SP-033, ADR-0100, decision 1, [note 0034](../../research/notes/0034-regroup-the-epics.md) §4): its content went to [E21](./E21-resize-shapes-by-their-box.md), resize by the box, [E22](./E22-turn-shapes-about-a-chosen-center.md), turn about a chosen center, [E23](./E23-drag-points-and-handles.md), dragged points, [E24](./E24-compute-in-number-fields.md), number fields that compute, and [E25](./E25-keep-the-history-fast.md), a history kept fast; a stroke's width kept when stretched went to [E31](./E31-give-shapes-colors-and-strokes.md).
 
 A list of features grouped by theme, with no closing of its own (ADR-0086). Cut from E02 on 2026-10-19 (SP-025): what changes a shape's size, angle or points with the mouse, once E02 lets several shapes be selected and moved; each change lands on integers and is undone by E02's history.
 

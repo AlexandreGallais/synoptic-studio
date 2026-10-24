@@ -1,10 +1,12 @@
 ---
 id: E05
 title: Build animatable symbols
-status: draft
+status: dropped
 ---
 
 # E05 — Build animatable symbols
+
+**Dropped on 2026-10-25** (SP-033, ADR-0100, decision 1, [note 0034](../../research/notes/0034-regroup-the-epics.md) §4): its content went to [E34](./E34-build-symbols-with-ports.md), the symbol, its ports and zones, and [E35](./E35-animate-parts-of-symbols.md), the animatable parts and their preview.
 
 | Field | Content |
 | --- | --- |

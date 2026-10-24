@@ -10,7 +10,7 @@ The structure is **checked by a test** (`backlog.test.ts`): unique IDs, valid st
 
 | Done | Now | Next | Then |
 | --- | --- | --- | --- |
-| E01 — draw symbol shapes, E14 — curves, E15 — text, E17 — fast tooling, its features F18 to F34 reviewed at REV-007 | E02's cut into small features (SP-025, 2026-10-19) | E02 — select and move shapes on one drawing | E18 — transform shapes by hand, E19 — snap, align and distribute |
+| E01 — draw symbol shapes, E14 — curves, E15 — text, E17 — fast tooling, E02 — select and move shapes on one drawing | the epics not done regrouped into E21 to E48, small epics of one subject (SP-033, 2026-10-25) | E21 — resize shapes by their box | E22 — turn shapes about a chosen center, E23 — drag points and handles |
 
 The full order of the epics is the Product Owner's, in [epics](./epics/); each epic orders its features, each feature its stories.
 
@@ -72,7 +72,8 @@ No epic has a closing since ADR-0086: an epic is a list of features grouped by t
 
 | Item | Statuses |
 | --- | --- |
-| Epic, feature | `draft` → `ready` → `in-progress` → `done` |
+| Epic | `draft` → `ready` → `in-progress` → `done`; or `dropped`, its content taken by the epics it names (SP-033, 2026-10-25) |
+| Feature | `draft` → `ready` → `in-progress` → `done` |
 | Story | `draft` → `ready` → `done` on `develop` (`in-progress` only on its branch; or `dropped`); `parked` while a question waits for the Product Owner, the question written in the story, then `ready` again once answered (EN-086) |
 
 An epic or a feature becomes `in-progress` when its first story starts, and `done` when its closing stories are merged: `VAL` for a feature; for an epic, the review of its last feature (`REV` and `RET` up to E17). The agent proposes the change, the Product Owner agrees (decision of 2026-10-08).

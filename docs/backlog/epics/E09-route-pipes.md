@@ -1,10 +1,12 @@
 ---
 id: E09
 title: Connect symbols with orthogonal pipes
-status: draft
+status: dropped
 ---
 
 # E09 — Connect symbols with orthogonal pipes
+
+**Dropped on 2026-10-25** (SP-033, ADR-0100, decision 1, [note 0034](../../research/notes/0034-regroup-the-epics.md) §4): its content went to [E39](./E39-connect-symbols-with-orthogonal-pipes.md), whole.
 
 | Field | Content |
 | --- | --- |

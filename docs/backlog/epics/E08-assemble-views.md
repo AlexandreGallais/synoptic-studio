@@ -1,10 +1,12 @@
 ---
 id: E08
 title: Assemble synoptic views
-status: draft
+status: dropped
 ---
 
 # E08 — Assemble synoptic views
+
+**Dropped on 2026-10-25** (SP-033, ADR-0100, decision 1, [note 0034](../../research/notes/0034-regroup-the-epics.md) §4): its content went to [E38](./E38-assemble-synoptic-views.md), whole.
 
 | Field | Content |
 | --- | --- |
