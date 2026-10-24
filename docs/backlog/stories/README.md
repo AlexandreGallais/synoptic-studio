@@ -128,7 +128,7 @@
 | [SP-032](./E02-F44-SP-032-refine-the-second-corrections.md) | F44 | Refine the corrections from the second try | done |
 | [US-084](./E02-F44-US-084-the-view-follows-the-canvas-size.md) | F44 | The view follows the canvas's size | done |
 | [US-085](./E02-F44-US-085-one-shapes-fields-as-several.md) | F44 | The fields of one shape as the fields of several | done |
-| [US-086](./E02-F44-US-086-the-helps-as-one-dashed-line.md) | F44 | The helps as one dashed line of white and black | ready |
+| [US-086](./E02-F44-US-086-the-helps-as-one-dashed-line.md) | F44 | The helps as one dashed line of white and black | done |
 | [US-087](./E02-F44-US-087-every-number-field-the-same.md) | F44 | Every number field of the panel the same | done |
 | [AUD-046](./E02-F44-AUD-046-audit-f44.md) | F44 | Audit F44 | ready |
 | [VAL-045](./E02-F44-VAL-045-validate-f44.md) | F44 | Validate F44 | dropped |

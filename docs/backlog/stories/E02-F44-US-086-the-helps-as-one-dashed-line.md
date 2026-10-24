@@ -3,7 +3,7 @@ id: US-086
 epic: E02
 feature: F44
 title: The helps as one dashed line of white and black
-status: ready
+status: done
 points: 3
 ---
 
