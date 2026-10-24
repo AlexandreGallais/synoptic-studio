@@ -3,7 +3,7 @@ id: AUD-048
 epic: E02
 feature: F46
 title: Audit F46
-status: ready
+status: done
 points: 1
 ---
 

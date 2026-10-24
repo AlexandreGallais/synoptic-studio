@@ -2,7 +2,7 @@
 id: F46
 epic: E02
 title: Moves on integers, the selection rectangle and the canvas resized
-status: in-progress
+status: done
 ---
 
 # E02 · F46 — Moves on integers, the selection rectangle and the canvas resized
@@ -25,7 +25,7 @@ In delivery order.
 | --- | --- | --- | --- |
 | [US-089](../stories/E02-F46-US-089-a-turned-shape-moved-onto-integers.md) | US | A turned shape moved by the arrows onto integers | done |
 | [US-090](../stories/E02-F46-US-090-the-rectangle-and-the-canvas-resized.md) | US | The selection rectangle always answers, the canvas resized without a flicker | done |
-| [AUD-048](../stories/E02-F46-AUD-048-audit-f46.md) | AUD | Audit F46 | ready |
+| [AUD-048](../stories/E02-F46-AUD-048-audit-f46.md) | AUD | Audit F46 | done |
 | [VAL-047](../stories/E02-F46-VAL-047-validate-f46.md) | VAL | Validate F46 | dropped |
 
 ## Feature plan
