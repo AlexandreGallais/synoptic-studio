@@ -70,3 +70,6 @@ Candidates grouped by the agent at SP-025 (2026-10-19), to be cut again at the e
 
 - **A responsive playground with a toolbar as Figma's**: the page fits any window, the tools in a bar at the bottom, not floating; a first icon for the selector, then one for each shape, then the multiple selection, as Figma's.
 - **Settings to tune by hand, then an expert menu**: the pan's speed by the trackpad and the wheel, the zoom's step and the wheel's factor, so that the Product Owner finds good values, which become the fixed defaults; later an expert menu showing every option of the free editor, for people to tune it as they like, with the editable keys.
+- **A number field blocks text as it is typed** (2026-10-24, third try of E02): a letter typed in a number field is not written at all, rather than refused once applied.
+- **A text's box with a negative word spacing** (2026-10-24, third try of E02): a text fitting its content, its word spacing negative, can no longer be picked, its box no longer computed; to look at with the text, not in E02.
+- **`+100` in Width seen not to work** (2026-10-24, third try of E02): to reproduce with E18's number fields that compute, the Product Owner placing it in the next epic.
