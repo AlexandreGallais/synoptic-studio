@@ -100,7 +100,7 @@ Run `npm run dev` and open `http://localhost:5173/?guide=epic&step=67`. Steps 67
 - Only straight sides and rounded corners: no curve with handles, no ellipse, no round shape. That is E14, the next epic: Bézier curves typed as numbers, the ellipse, and the round shape F10.
 - No text: E15, right after E14.
 - Points are typed, not dragged; one shape at a time; the eight handles of a box, the rotation centre you move, and the warnings on shapes that cross themselves come with the editor (E02).
-- Shapes in a tree and a layout box that places them: E13.
+- Shapes in a tree and a layout box that places them: E27 and E28.
 - The playground is a demonstration of the library, not the Symbol Editor.
 
 ## Questions for the review

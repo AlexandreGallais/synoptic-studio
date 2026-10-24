@@ -6,7 +6,7 @@ status: done
 
 # E02 — Select and move shapes on one drawing
 
-A list of features grouped by theme, with no closing of its own (ADR-0086). Cut again on 2026-10-19 (SP-025), at the Product Owner's request, into small features: E02 holds the drawing of several shapes, their selection, their moves, the history and the view; resizing, turning and dragging points went to [E18](./E18-transform-shapes-by-hand.md), snapping and alignment to [E19](./E19-snap-align-and-distribute.md), the shapes' colors to [E04](./E04-outline-shapes.md), the ideas on ease of use to [E20](./E20-make-the-editor-easy-to-use.md).
+A list of features grouped by theme, with no closing of its own (ADR-0086). Cut again on 2026-10-19 (SP-025), at the Product Owner's request, into small features: E02 holds the drawing of several shapes, their selection, their moves, the history and the view; resizing, turning and dragging points went to [E18](./E18-transform-shapes-by-hand.md), snapping and alignment to [E19](./E19-snap-align-and-distribute.md), the shapes' colors to [E04](./E04-outline-shapes.md), the ideas on ease of use to [E20](./E20-make-the-editor-easy-to-use.md); those four epics, dropped on 2026-10-25, were regrouped into E21 to E48 (SP-033).
 
 | Field | Content |
 | --- | --- |
@@ -21,7 +21,7 @@ A list of features grouped by theme, with no closing of its own (ADR-0086). Cut 
 | Leading indicators | features accepted |
 | Non-functional requirements | integer positions after every move (ADR-0003) |
 | In scope | several shapes on one drawing and their stacking order as drawn, selection by click and by rectangle, moves by the mouse and the keys, undo / redo (Q7), zoom and pan |
-| Out of scope | resizing and turning by handles, dragged points (E18); snapping, align and distribute (E19); the shapes' colors (E04); the tree and the layers panel (E13) |
+| Out of scope | resizing and turning by handles, dragged points (E21, E22, E23); snapping, align and distribute (E26); the shapes' colors (E31); the tree and the layers panel (E27, E44) |
 
 ## Features
 
@@ -29,7 +29,7 @@ Ordered by the agent at SP-025 (2026-10-19), each needing the one before it. A f
 
 | Feature | Expected stories | Status |
 | --- | --- | --- |
-| [F35](../features/E02-F35-several-shapes-on-one-drawing.md) — Several shapes on one drawing | the drawing as an ordered list of shapes, the last drawn on top, flat until E13 makes it a tree; a click with a tool adds a shape 100 × 100 centred on the pointer, the playground migrated to Figma's way, a new shape's starting values researched (3) | in-progress |
+| [F35](../features/E02-F35-several-shapes-on-one-drawing.md) — Several shapes on one drawing | the drawing as an ordered list of shapes, the last drawn on top, flat until E27 makes it a tree; a click with a tool adds a shape 100 × 100 centred on the pointer, the playground migrated to Figma's way, a new shape's starting values researched (3) | in-progress |
 | [F36](../features/E02-F36-draw-pick-and-remove-shapes.md) — Draw and pick shapes | a drag draws the box, Shift keeps it square; the shape at a point by its painted area, shown in a layer above the drawing, a click selects it and the panel loads it; split from F35, then Delete moved to F37, on 2026-10-22 (4) | in-progress |
 | [F37](../features/E02-F37-select-shapes.md) — Select shapes | opened by SP-027, the usual keys of graphic editors and the default keys (`interaction.md` §1); Shift + click adds or removes, Ctrl + A, Escape; Delete (US-066, from F36); a selection rectangle taking what its painted area touches, Alt what it encloses (EN-144) (4) | done |
 | [F38](../features/E02-F38-the-panel-for-several-shapes.md) — The panel for several shapes | X, Y, W and H of several shapes, Mixed where they differ; a value typed relative (`+50`) or fixed; cut from F37 on 2026-10-23 (2) | done |
@@ -62,7 +62,7 @@ Ordered by the agent at SP-025 (2026-10-19), each needing the one before it. A f
 
 Given while trying the playground at the end of F42, each to fix at the end, not during E02's features, perhaps in another epic: the Product Owner decides where at the review, with the validation.
 
-Placed on 2026-10-23, after the Product Owner's walk through E02's whole list the same day: the corrections go to F43, in E02, before the merge into `main`, the Product Owner asking for them there; the responsive toolbar and the settings to E20. Added by that walk: Shift while drawing a text's box does not keep it square; with a trackpad, Shift and the wheel should not force the pan across, as Figma tells a trackpad from a mouse; Option held changes nothing in the view; the wheel's direction seen inverted came from the Mac's own natural scrolling, not from the playground.
+Placed on 2026-10-23, after the Product Owner's walk through E02's whole list the same day: the corrections go to F43, in E02, before the merge into `main`, the Product Owner asking for them there; the responsive toolbar and the settings to E20, now E45 and E43. Added by that walk: Shift while drawing a text's box does not keep it square; with a trackpad, Shift and the wheel should not force the pan across, as Figma tells a trackpad from a mouse; Option held changes nothing in the view; the wheel's direction seen inverted came from the Mac's own natural scrolling, not from the playground.
 
 - **Seen to work well**: drawing by the mouse, with Shift too; undo and redo back to the start; the history's list; the memory size shown with its number of moves; Delete, Escape, Shift + click, Ctrl + A, a value typed `+50`, the arrows; the zoom by a pinch and Ctrl + wheel.
 - **The selection is hard to see**: its outline is blue on a blue shape; the hover is seen.
@@ -76,5 +76,5 @@ Placed on 2026-10-23, after the Product Owner's walk through E02's whole list th
 - **The history's list has no scroll** (perhaps the History group split by the HTML parser, fixed by AUD-044).
 - **Ctrl + wheel zooms in the direction that feels inverted**: an option for its direction, as for scrolling.
 - **Panning up and down** was not found, Shift + wheel panning across: to check that the wheel alone pans down.
-- **Settings to tune by hand**: the pan's speed by the trackpad and the wheel, the zoom's step and the wheel's factor, so that the Product Owner finds good values, which become the fixed defaults. Later, an expert menu showing every option of the free editor (vision; with the editable keys of E20).
-- **Escape** works, but the Product Owner's dictation tool also takes it: the keys being editable (E20) covers it.
+- **Settings to tune by hand**: the pan's speed by the trackpad and the wheel, the zoom's step and the wheel's factor, so that the Product Owner finds good values, which become the fixed defaults. Later, an expert menu showing every option of the free editor (vision; with the editable keys of E43).
+- **Escape** works, but the Product Owner's dictation tool also takes it: the keys being editable (E43) covers it.

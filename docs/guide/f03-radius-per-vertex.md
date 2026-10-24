@@ -50,5 +50,5 @@ Validated by the Product Owner on 2026-10-11 (`VAL-004`): point 1 and point 2 sh
 
 | Remark | Where it went |
 | --- | --- |
-| a polygon could remember the rounding of removed points: 12 corners, then 3, then 12 again gets the 9 back | open question Q26 |
+| a polygon could remember the rounding of removed points: 12 corners, then 3, then 12 again gets the 9 back | Q26, settled on 2026-10-25: kept while the session lasts, not in the saved file, with E23 |
 | the free contour, with x and y typed in the list of points | F08 |

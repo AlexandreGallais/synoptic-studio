@@ -56,4 +56,4 @@ For the review's summary; each can be changed.
 
 ## Limits
 
-The keys are not editable yet (E20); the view is not kept once the page is closed; there is no Hand tool in the toolbar, `Space` and the middle button doing its work.
+The keys are not editable yet (E43); the view is not kept once the page is closed; there is no Hand tool in the toolbar, `Space` and the middle button doing its work.

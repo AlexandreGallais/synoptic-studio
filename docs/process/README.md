@@ -62,5 +62,5 @@ The V-model is not this project's lifecycle (requirements grow feature by featur
 | design description | ADRs, [conventions](../conventions/), derivations |
 | test plan and test cases | [test strategy](../conventions/testing.md#test-strategy); tests tagged `[F01.ACn]` |
 | test report | JUnit report on each GitHub release |
-| traceability matrix | feature plans and test tags; generated page planned (E12) |
+| traceability matrix | feature plans and test tags; generated page planned (E47) |
 | version description | GitHub releases, their notes the bodies of the pull requests into `main` |

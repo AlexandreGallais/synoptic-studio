@@ -81,7 +81,7 @@ A file grows by a third: 4 characters for 3 bytes.
 
 ## Step 7 — Once per document
 
-A face is one family name, one weight, one style and one file (`REF-CSS-FONTS-4`, §4.1: several `@font-face` rules build a family). A document (a symbol; a synoptic view with E08) that holds `k` texts in `m` distinct faces writes `m` rules, not `k`: its length is the sum of `dataUrlLength` over its distinct faces, whatever `k`.
+A face is one family name, one weight, one style and one file (`REF-CSS-FONTS-4`, §4.1: several `@font-face` rules build a family). A document (a symbol; a synoptic view with E38) that holds `k` texts in `m` distinct faces writes `m` rules, not `k`: its length is the sum of `dataUrlLength` over its distinct faces, whatever `k`.
 
 ## Cross-check
 

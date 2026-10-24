@@ -74,4 +74,4 @@ Excluded in v1 (process diagram conventions, orthogonal routing algorithms). Can
 
 ## 6. Storage
 
-Files in a working folder on the user's computer, saved one by one (Q5, [configuration.md](./configuration.md) §6).
+Files on the user's computer, saved one by one: from the web page first, in a working folder with the desktop application (Q5, Q23, [configuration.md](./configuration.md) §6).

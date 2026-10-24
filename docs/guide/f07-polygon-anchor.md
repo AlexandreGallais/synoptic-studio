@@ -37,7 +37,7 @@ Run `npm run dev` and open `http://localhost:5173/?guide=epic&step=20`: the **Gu
 
 ## Limits
 
-- The polygon only: the anchor of any shape placed in a layout box comes with epic E13.
+- The polygon only: the anchor of any shape placed in a layout box comes with epic E28.
 - The arrow keys move from one button to the next in reading order, as in any group of round buttons. They do not move in two directions as in Figma.
 - No option to make a rounded polygon touch its box: the sharp polygon touches it, the rounding goes inwards (decided at the refinement).
 - A polygon stretched to fill its whole box came with F06.
@@ -48,6 +48,6 @@ Validated by the Product Owner on 2026-10-11 (`VAL-003`), after the guided test.
 
 | Remark | What was done |
 | --- | --- |
-| only five of the nine places matter for a polygon; the choice was left to the agent | the nine buttons stay: a corner button holds both choices, and the one that counts follows the shape of the box (step 26); E13 needs all nine |
+| only five of the nine places matter for a polygon; the choice was left to the agent | the nine buttons stay: a corner button holds both choices, and the one that counts follows the shape of the box (step 26); E28 needs all nine |
 | the Next button moved as the text above it changed length | Next is large and stays in place; a link with `?step=N` opens a given step |
 | an option pushing a rounded polygon onto its box | judged not useful: measures are taken from the face that touches the box |

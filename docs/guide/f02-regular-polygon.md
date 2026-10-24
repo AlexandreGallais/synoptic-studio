@@ -61,5 +61,5 @@ Validated by the Product Owner on 2026-10-09 (`VAL-002`): the polygon works as t
 | Idea raised along the way | Where it went |
 | --- | --- |
 | a polygon stretched to its box | F06 |
-| the View Editor asks which screen the view targets | E08 |
-| oversized SVG imports flagged and simplified | E11 |
+| the View Editor asks which screen the view targets | E38 |
+| oversized SVG imports flagged and simplified | E42 |

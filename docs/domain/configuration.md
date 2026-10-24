@@ -38,5 +38,5 @@ The Configurator gives symbols their business meaning, without touching their ge
 
 ## 6. Storage
 
-- Symbols, configurations, libraries and drawings are **files in a working folder** on the user's computer, saved one by one (Q5). No server, not even a local one: servers and online services belong to the pro edition ([editions](./editions.md)).
+- Symbols, configurations, libraries and drawings are **files** on the user's computer, saved one by one (Q5): opened from the disk and saved by Save as from the web page first (E41), in a **working folder** once the desktop application comes (E46, Q23). No server, not even a local one: servers and online services belong to the pro edition ([editions](./editions.md)).
 - The drawing library is shared between projects ([shapes.md](./shapes.md) §8).

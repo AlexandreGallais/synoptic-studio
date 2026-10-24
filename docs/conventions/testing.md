@@ -103,7 +103,7 @@ it("[F01.AC3] clamps a 100 × 25 rectangle with radius 100 to an effective radiu
 
 | Item | Rule |
 | --- | --- |
-| Levels | examples computed by hand; properties; criterion tests `[F01.ACn]`; the epic's checklist page in the playground (`VAL`, `REV`); regression and end-to-end suites once the applications exist (E12, ADR-0020) |
+| Levels | examples computed by hand; properties; criterion tests `[F01.ACn]`; the epic's checklist page in the playground (`VAL`, `REV`); regression and end-to-end suites once the applications exist (E48, ADR-0020) |
 | Environments | the core in Node.js without a DOM; `render` and the playground with happy-dom; browsers for end-to-end, later |
 | Independence | the `auditor`, `verifier` and `math-expert` agents re-derive, recompute and try mutations; the Product Owner tries the checklists |
 | Success | every test green, 100 % coverage of `src/`, no `.skip` nor `.only`, on every push and every release |
