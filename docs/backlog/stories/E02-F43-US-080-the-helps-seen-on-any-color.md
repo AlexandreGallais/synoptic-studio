@@ -43,9 +43,9 @@ The examples use the opening view, 100 %, and A, B and C, rectangles 100 × 100 
 
 ## Tasks
 
-- [ ] T1 — The two bands of each outline, the dashes of two colors and the rectangle's band over a light one, the colors and widths as answered, in `playground/helps-frame/`, `playground/hover/` and the page's style; `interaction.md` §2 (The outline, The selection shown, Shown) and its Q row; tests of the criteria first, failing (2 h)
-- [ ] T2 — The shapes a selection rectangle takes outlined while it is dragged, Alt and Shift read at each move, in `playground/hover/show-hover.ts`; `interaction.md` §2 (The selection rectangle, Shown); tests first (2 h)
-- [ ] T3 — `user-select: none` on the canvas and the layer above, a test reading the computed style and a double click on a text; the Product Owner test (1 h)
+- [x] T1 — The two bands of each outline, the dashes of two colors and the rectangle's band over a light one, the colors and widths as answered, in `playground/helps-frame/`, `playground/hover/` and the page's style; `interaction.md` §2 (The outline, The selection shown, Shown) and its Q row; tests of the criteria first, failing (2 h)
+- [x] T2 — The shapes a selection rectangle takes outlined while it is dragged, Alt and Shift read at each move, in `playground/hover/show-hover.ts`; `interaction.md` §2 (The selection rectangle, Shown); tests first (2 h)
+- [x] T3 — `user-select: none` on the canvas and the layer above, a test reading the computed style and a double click on a text; the Product Owner test (1 h)
 
 Files: `playground/index.html` (`#overlay` and `#canvas` styles), `playground/helps-frame/create-outline-element.ts`, `playground/hover/create-hover-elements.ts`, `create-selection-elements.ts`, `create-selection-rectangle-elements.ts`, `show-hover.ts`, `docs/domain/interaction.md` §2. `@see` `REF-INKSCAPE-NODE-HANDLES`, `REF-INKSCAPE-CANVAS-ITEM-RECT`, `REF-INKSCAPE-SELCUE`, `REF-FIGMA-SELECT-LAYERS`, `REF-PENPOT-AREA-SELECTION`, `REF-CSS-UI4-USER-SELECT`, `docs/domain/interaction.md#_2-selector`.
 

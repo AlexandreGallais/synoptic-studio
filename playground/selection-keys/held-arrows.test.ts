@@ -174,6 +174,41 @@ describe("two arrows held move the selection diagonally (US-081)", () => {
     expect(readA()).toEqual({ x: 10, y: 20 });
   });
 
+  it("[F43.AC3] holds no arrow pressed with Cmd, whose keyup macOS never sends", () => {
+    // Cmd + Up, as macOS sends it: Cmd's key, Up's with Cmd held, Cmd released, Up's never.
+    sendKey("keydown", "Meta", { metaKey: true });
+    sendKey("keydown", "ArrowUp", { metaKey: true });
+    holdArrow("ArrowRight", 1, false);
+    sendKey("keyup", "ArrowRight", {});
+
+    // Right alone, (10 + 1, 20), Up never held; its release taking the step.
+    expect(readA()).toEqual({ x: 11, y: 20 });
+    expect(readPresentA()).toEqual({ x: 11, y: 20 });
+  });
+
+  it.each(["ctrlKey", "altKey"])("[F43.AC3] holds no arrow pressed with %s", (modifier) => {
+    sendKey("keydown", "ArrowUp", { [modifier]: true });
+    holdArrow("ArrowRight", 1, false);
+
+    expect(readA()).toEqual({ x: 11, y: 20 });
+  });
+
+  it("[F43.AC3] releases every arrow at Cmd released, their keyup never sent, the step taken", () => {
+    holdArrow("ArrowUp", 1, false);
+    holdArrow("ArrowRight", 2, false);
+    // Cmd pressed while both are held, then both released and Cmd last: macOS sends Cmd's keyup.
+    sendKey("keydown", "Meta", { metaKey: true });
+    sendKey("keyup", "Meta", {});
+
+    // Up's key, then 2 of both: (10 + 2, 20 − 1 − 2), recorded at Cmd's release.
+    expect(readPresentA()).toEqual({ x: 12, y: 17 });
+
+    holdArrow("ArrowLeft", 1, false);
+
+    // Left alone: (11, 17).
+    expect(readA()).toEqual({ x: 11, y: 17 });
+  });
+
   it("[F43.AC3] takes the step at once when the window loses the focus, arrows held", () => {
     holdArrow("ArrowUp", 1, false);
     holdArrow("ArrowRight", 4, false);

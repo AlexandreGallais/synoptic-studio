@@ -18,7 +18,8 @@ const PANEL_ENDS = [
 /**
  * Asks a step for an event of the panel that reached an element of a kind, itself or inside it
  * (`schedulePanelStep`); none for an event elsewhere, nor for a value applied in the field of
- * the burst of arrows open (`readBurstField`), whose end takes the step.
+ * the burst of arrows open (`readBurstField`), whose end takes the step: a value typed there
+ * ends the burst first (`listenToArrowBursts`, AUD-045), so that it takes its own.
  *
  * @kind procedure
  * @param document - page document

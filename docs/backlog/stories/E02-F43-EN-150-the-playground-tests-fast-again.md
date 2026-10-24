@@ -22,8 +22,8 @@ The measures are the median of 5 runs of the file alone (`npx vitest run <file>`
 
 ## Tasks
 
-- [ ] T1 — The mount's listeners kept with an `AbortController` per document (a `procedure`, `playground/mount/`), each listener of the document and the window given its signal, the controller before aborted at each mount; its test, a key heard once after two mounts, failing first (1 h)
-- [ ] T2 — `selectElement` by `getElementById`; the four files and the hue slider's test measured and written in the story's report; no limit raised (1 h)
+- [x] T1 — The mount's listeners kept with an `AbortController` per document (a `procedure`, `playground/mount/`), each listener of the document and the window given its signal, the controller before aborted at each mount; its test, a key heard once after two mounts, failing first (1 h)
+- [x] T2 — `selectElement` by `getElementById`; the four files and the hue slider's test measured and written in the story's report; no limit raised (1 h)
 
 Files: `playground/mount/mount-playground.ts`, the 9 modules that listen on the document or the window (`shape-drawing/listen-to-shape-drawing.ts`, `picker-controls/listen-to-picker-closing.ts`, `history/listen-to-history-keys.ts`, `history/listen-to-history.ts`, `zoom/listen-to-zoom-keys.ts`, `mount/listen-to-inputs.ts`, `selection-keys/listen-to-space.ts`, `selection-keys/listen-to-nudge-keys.ts`, `selection-keys/listen-to-selection-keys.ts`), `playground/page/select-element.ts`. `@see` `REF-MDN-ADD-EVENT-LISTENER`, `REF-HAPPY-DOM-QUERY`.
 

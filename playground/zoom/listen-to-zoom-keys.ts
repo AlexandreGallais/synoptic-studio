@@ -1,3 +1,4 @@
+import { isBrowserKey } from "../../src";
 import { readListenerSignal } from "../listeners";
 import { readKeyField } from "../selection-keys";
 import { POINTER_OFFSETS } from "../view";
@@ -35,8 +36,8 @@ function readKeyZoom(event: KeyboardEvent): ZoomName | undefined {
 }
 
 /**
- * Reads the zoom a key pressed asks (`readKeyZoom`): none with `Ctrl`, `Cmd` or `Alt` held, so that the browser keeps its own
- * zoom, for a key already taken by a listener before this one, its default prevented, or typed in
+ * Reads the zoom a key pressed asks (`readKeyZoom`): none with `Ctrl`, `Cmd` or `Alt` held, so
+ * that the browser keeps its own zoom (`isBrowserKey`), for a key already taken by a listener before this one, its default prevented, or typed in
  * a field of the panel (`readKeyField`).
  *
  * @kind procedure
@@ -46,9 +47,7 @@ function readKeyZoom(event: KeyboardEvent): ZoomName | undefined {
  */
 function readZoomKey(event: KeyboardEvent): ZoomName | undefined {
   const isTaken = [
-    event.ctrlKey,
-    event.metaKey,
-    event.altKey,
+    isBrowserKey(event),
     event.defaultPrevented,
     readKeyField(event) !== undefined,
   ].includes(true);

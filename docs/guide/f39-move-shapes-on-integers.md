@@ -31,6 +31,7 @@ For the review's summary; each can be changed.
 - The arrows move the shapes whichever tool is armed, as Delete removes them, and one step at each key the browser sends, so that an arrow held moves on; with shapes selected, the page does not scroll.
 - With two arrows held, each key moves by both, since the browser repeats only the last key pressed; an arrow is held from its press outside the fields to its release, wherever the focus is then, and the window losing the focus releases every arrow, as it releases Space, its release in another window never heard.
 - The arrows are left to the browser, which may scroll the page, with no shape selected, in Points mode, and with Ctrl, Cmd or Alt held, which browsers use for some commands of their own. A field of the panel keeps them, the anchor grid's buttons included.
+- An arrow pressed with Ctrl, Cmd or Alt is never held, and releasing Cmd releases every arrow: on a Mac, a key released while Cmd is down sends no release to the page, in Safari, Chrome and Firefox alike, so that Cmd + Up once left Up held for good and no move was recorded after it (F43's audit).
 - While a drag moves shapes, an arrow moves nothing, and neither Delete, Ctrl + A nor Escape changes anything; the drag lands them at the release.
 - A box that starts on a whole number up to a rounding error, as a rounded rectangle at x 0 whose box starts at −0.0000000000000018, lands exactly on that number, its position taking the tiny error, as when X is typed.
 
