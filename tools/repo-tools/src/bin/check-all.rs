@@ -6,7 +6,8 @@
 //! said by a line: the nearest of `develop` and the feature branches on GitHub for a story,
 //! `develop` for a feature; on `main`, `develop`, a detached head or in the CI every lane runs. `.git/config` of the main checkout is read before and after the
 //! lanes: a lane that changed a line a test could break fails the run, its lines named, nothing
-//! restored (F21.AC9, EN-113).
+//! restored (F21.AC9, EN-113). The timing tests run alone after the lanes; on a story branch the
+//! test lane runs only the tests related to the change, without coverage (REV-008).
 
 use std::env;
 use std::fs;
@@ -17,8 +18,9 @@ use std::thread;
 use std::time::Instant;
 
 use repo_tools::check_all::{
-    BEFORE_LANES, change_against_base, command_of, config_report, git_lines, lanes_to_run,
-    report_of, skipped_lines, summary,
+    AFTER_LANES, BEFORE_LANES, TEST_SCRIPT, change_against_base, command_of, config_report,
+    current_branch, git_lines, is_story_branch, lanes_to_run, related_tests_command,
+    related_tests_line, report_of, repository_tests, skipped_lines, summary,
 };
 use repo_tools::scripts::{read_scripts, script_command, shell};
 
@@ -28,12 +30,17 @@ struct Checked {
     is_ok: bool,
 }
 
-/// Runs one npm script's command in the shell npm runs it in, stdout and stderr kept together in
-/// their order, then prints its report line; `check:all` is started by npm, so the command finds
-/// the tools of `node_modules/.bin`.
-fn run_check(name: &str, scripts: &[(String, String)], root: &Path) -> Checked {
+/// Runs one npm script's command in the shell npm runs it in, or the command given in its place,
+/// stdout and stderr kept together in their order, then prints its report line; `check:all` is
+/// started by npm, so the command finds the tools of `node_modules/.bin`.
+fn run_check(
+    name: &str,
+    scripts: &[(String, String)],
+    root: &Path,
+    instead: Option<&str>,
+) -> Checked {
     let start = Instant::now();
-    let command = script_command(scripts, name);
+    let command = instead.map_or_else(|| script_command(scripts, name), str::to_owned);
     let result = io::pipe().and_then(|(mut reader, writer)| {
         let mut shell = shell(command_of(&command), root);
         let mut child = shell
@@ -65,10 +72,16 @@ fn run_check(name: &str, scripts: &[(String, String)], root: &Path) -> Checked {
     }
 }
 
-/// Runs the checks of a lane one after the other, every one even after a failure.
-fn run_lane(lane: &[&str], scripts: &[(String, String)], root: &Path) -> Vec<Checked> {
+/// Runs the checks of a lane one after the other, every one even after a failure, the test
+/// script by the command given for it.
+fn run_lane(
+    lane: &[&str],
+    scripts: &[(String, String)],
+    root: &Path,
+    tests: Option<&str>,
+) -> Vec<Checked> {
     lane.iter()
-        .map(|name| run_check(name, scripts, root))
+        .map(|name| run_check(name, scripts, root, tests.filter(|_| *name == TEST_SCRIPT)))
         .collect()
 }
 
@@ -95,21 +108,33 @@ fn work() -> u8 {
     };
     let to_run = lanes_to_run(change.as_ref().map(|(_, paths)| paths.as_slice()));
 
+    let is_story = current_branch(&root).is_ok_and(|branch| is_story_branch(&branch));
+    let tests = change.as_ref().and_then(|(_, paths)| {
+        related_tests_command(
+            is_story,
+            Some(paths),
+            &repository_tests(&root).unwrap_or_default(),
+        )
+    });
+
     if let Some((base, paths)) = &change {
         for line in skipped_lines(paths, base) {
             println!("{line}");
+        }
+        if tests.is_some() {
+            println!("{}", related_tests_line(base));
         }
     }
 
     let config = config_path(&root);
     let before = config.as_ref().and_then(|path| fs::read(path).ok());
-    let built = run_check(BEFORE_LANES, &scripts, &root);
+    let built = run_check(BEFORE_LANES, &scripts, &root, None);
     // Without the release binaries every lane's `cargo run` would build them at once: none starts.
     let lanes: Vec<Checked> = if built.is_ok {
         thread::scope(|scope| {
             let handles: Vec<_> = to_run
                 .iter()
-                .map(|lane| scope.spawn(|| run_lane(lane, &scripts, &root)))
+                .map(|lane| scope.spawn(|| run_lane(lane, &scripts, &root, tests.as_deref())))
                 .collect();
 
             handles
@@ -120,8 +145,13 @@ fn work() -> u8 {
     } else {
         Vec::new()
     };
+    // Alone, so that no other lane's load slows the speeds they measure.
+    let timed = built
+        .is_ok
+        .then(|| run_check(AFTER_LANES, &scripts, &root, None));
     let mut failed: Vec<String> = std::iter::once(&built)
         .chain(&lanes)
+        .chain(&timed)
         .filter(|checked| !checked.is_ok)
         .map(|checked| checked.name.clone())
         .collect();

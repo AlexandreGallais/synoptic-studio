@@ -244,7 +244,7 @@ describe("check tools given explicit targets (EN-045)", () => {
 });
 
 describe("heavy commands and Rust tools (AUD-020)", () => {
-  it.each(["test", "check:all", "golden:check", "docs:build", "mutate"])(
+  it.each(["test", "test:timings", "check:all", "golden:check", "docs:build", "mutate"])(
     "[F18.AC3] runs %s through the heavy lock",
     (script) => {
       expect(SCRIPTS.get(script)).toMatch(HEAVY_LOCK);
@@ -426,8 +426,18 @@ describe("the Rust tools run as crates of the workspace (EN-068)", () => {
     // Each hook calls `tool <crate> <binary>`, which runs `target/release/<binary>`, and Cargo
     // only when the binary is missing, a checkout not built yet (EN-108).
     expect(hooks[0]).toMatch(/^tool git-hooks git-hooks pre-commit$/mu);
-    expect(hooks[1]).toMatch(/^tool shared-files refuse-shared-files$/mu);
+
+    // The pushed refs read once, handed to the shared files' check and to the deletions' (REV-008).
+    expect(hooks[1]).toMatch(
+      /^printf '%s\\n' "\$refs" \| tool shared-files refuse-shared-files$/mu,
+    );
+
     expect(hooks[1]).toMatch(/^tool git-hooks git-hooks branch$/mu);
+
+    expect(hooks[1]).toContain(
+      `if printf '%s\\n' "$refs" | tool git-hooks git-hooks push-deletes-only; then exit 0; fi`,
+    );
+
     expect(hooks[2]).toMatch(/^tool git-hooks git-hooks commit-msg "\$1"$/mu);
     expect(hooks[2]).toContain('then tool rule-docs check-rule-docs "$1"; fi');
     // After a pull, the binaries rebuilt when a Rust input changed (EN-131).

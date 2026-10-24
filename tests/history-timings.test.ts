@@ -124,7 +124,7 @@ describe.runIf(isAsked)("The timings of a history kept fast (EN-147, AUD-043)", 
   // criterion 2.
   it(
     "[F41.AC2] takes 10 steps on a history of 80 000 moves within 16 ms each",
-    { timeout: 160 },
+    { tags: ["timing"], timeout: 160 },
     () => {
       const after = steppedHistory(LONG, stepNumbers(0));
 
@@ -136,19 +136,27 @@ describe.runIf(isAsked)("The timings of a history kept fast (EN-147, AUD-043)", 
 
   // alone: 109 ms, 10 steps of about 11 ms, each counting every shape of the present (AUD-043);
   // 450 ms is 4.1 times it.
-  it("takes 10 steps in a drawing of 1 000 shapes within 45 ms each", { timeout: 450 }, () => {
-    const after = steppedHistory(WIDE_HISTORY, stepNumbers(2 * STEPS));
+  it(
+    "takes 10 steps in a drawing of 1 000 shapes within 45 ms each",
+    { tags: ["timing"], timeout: 450 },
+    () => {
+      const after = steppedHistory(WIDE_HISTORY, stepNumbers(2 * STEPS));
 
-    expect(after.past).toHaveLength(WIDE_HISTORY.past.length + STEPS);
-  });
+      expect(after.past).toHaveLength(WIDE_HISTORY.past.length + STEPS);
+    },
+  );
 
   // alone: 134 ms, 10 undos of about 13 ms; 14 steps back took 138 ms at the audit; 550 ms is
   // 4.1 times it.
-  it("goes back 10 steps in a drawing of 1 000 shapes within 550 ms", { timeout: 550 }, () => {
-    const state = WIDE_HISTORY.past.at(-STEPS) ?? WIDE_HISTORY.present;
-    const back = sizedHistoryAt(WIDE_HISTORY, state);
+  it(
+    "goes back 10 steps in a drawing of 1 000 shapes within 550 ms",
+    { tags: ["timing"], timeout: 550 },
+    () => {
+      const state = WIDE_HISTORY.past.at(-STEPS) ?? WIDE_HISTORY.present;
+      const back = sizedHistoryAt(WIDE_HISTORY, state);
 
-    expect(back.present).toBe(state);
-    expect(back.future).toHaveLength(STEPS);
-  });
+      expect(back.present).toBe(state);
+      expect(back.future).toHaveLength(STEPS);
+    },
+  );
 });

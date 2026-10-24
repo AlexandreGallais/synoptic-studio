@@ -2,7 +2,7 @@
 id: REV-008
 epic: E02
 title: Review of 2026-10-24, F35 to F47
-status: in-progress
+status: done
 points: 3
 ---
 
@@ -22,7 +22,7 @@ One task = one commit, referenced as `REV-008.Tn`.
 
 - [x] T1 — Naming pass: left to the next review, the time box spent on the method; each feature's audit held its own (AUD-037 to AUD-049)
 - [x] T2 — Session with the Product Owner: the validation, the retrospective, the decisions recorded (1 h)
-- [ ] T3 — The decisions written, the tools changed, the docs brought up to date (1 h)
+- [x] T3 — The decisions written, the tools changed, the docs brought up to date (1 h)
 
 ## The Product Owner's decisions
 
