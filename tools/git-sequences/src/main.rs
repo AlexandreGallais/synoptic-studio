@@ -13,7 +13,7 @@ use std::path::{Path, PathBuf};
 use std::process::{Command, ExitCode, Stdio};
 
 use git_sequences::{
-    Branch, Request, Source, State, Target, branch_of, changes_refusal, changes_step,
+    Branch, Request, Source, State, Target, USAGE, branch_of, changes_refusal, changes_step,
     commit_refusal, commit_steps, fetch_step, message_refusal, parse, state_base, state_report,
     state_steps, sync_steps, sync_target,
 };
@@ -160,8 +160,9 @@ fn commit(
     }
 
     let text = read_message(message)?;
+    let paths = paths_to_add(paths)?;
 
-    for step in commit_steps(paths, push) {
+    for step in commit_steps(&paths, push) {
         let is_commit = step.first().map(String::as_str) == Some("commit");
         let (_, errors) = git_with_errors(&step, is_commit.then_some(text.as_str()))?;
 
@@ -180,6 +181,31 @@ fn commit(
     };
 
     Ok(format!("{} on {}{pushed}", head, branch_name(branch)))
+}
+
+/// The paths named, but those gone from the working tree whose deletion is staged already, which
+/// `git add` refuses as matching no file (`git rm -r <folder>` before the commit, REV-009): the
+/// commit takes their staged deletion. A path neither there nor deleted is kept, for Git to name.
+fn paths_to_add(paths: &[String]) -> Result<Vec<String>, String> {
+    let mut kept = Vec::new();
+
+    for path in paths {
+        let deleted = !Path::new(path).exists()
+            && !git_words(&[
+                "diff",
+                "--cached",
+                "--name-only",
+                "--diff-filter=D",
+                "--",
+                path,
+            ])?
+            .is_empty();
+
+        if !deleted {
+            kept.push(path.clone());
+        }
+    }
+    Ok(kept)
 }
 
 /// Rebuilds the checkout's release binaries after a sync brought new sources: its hooks, its Git
@@ -263,9 +289,6 @@ fn state(branch: &Branch, top: &Path, place: String) -> Result<String, String> {
         commits: next(),
     }))
 }
-
-/// The usage, printed on `--help` or `-h` (REV-009).
-const USAGE: &str = "usage: target/release/git-sequences sync | commit -F <message file|-> [--push] <paths…> | state";
 
 fn main() -> ExitCode {
     if let Some(code) = tool_use::usage(&std::env::args().skip(1).collect::<Vec<_>>(), USAGE) {

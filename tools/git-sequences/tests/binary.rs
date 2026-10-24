@@ -283,6 +283,38 @@ fn f20_ac7_commits_on_develop_but_never_pushes_it() {
 }
 
 #[test]
+fn rev009_commits_a_path_whose_deletion_is_staged() {
+    // `git add -- old` failed with "pathspec did not match" once `git rm -r old` had removed the
+    // folder (incident card of 2026-10-24); a path neither there nor deleted still fails.
+    let repos = repos();
+    let message = "chore(tooling): drop the old folder\n\nRefs: EN-100.T1\n";
+
+    write(&repos.work, "old/x.md", "x\n");
+    write(&repos.work, "old/y.md", "y\n");
+    git(&repos.work, &["add", "old"]);
+    git(&repos.work, &["commit", "--quiet", "-m", "old"]);
+    git(&repos.work, &["rm", "--quiet", "-r", "old"]);
+    write(&repos.work, "a.md", "a\n");
+
+    let output = tool(&repos.work, &["commit", "-F", "-", "old", "a.md"], message);
+
+    assert!(output.status.success(), "{}", stderr(&output));
+    assert_eq!(
+        git(&repos.work, &["show", "--name-only", "--format=", "HEAD"]),
+        "a.md\nold/x.md\nold/y.md"
+    );
+
+    let missing = tool(&repos.work, &["commit", "-F", "-", "nowhere.md"], message);
+
+    assert!(!missing.status.success());
+    assert!(
+        stderr(&missing).contains("pathspec 'nowhere.md' did not match"),
+        "{}",
+        stderr(&missing)
+    );
+}
+
+#[test]
 fn commits_the_named_files_with_a_message_of_several_lines_from_stdin() {
     let repos = repos();
     let message = "chore(tooling): add the sequences\n\nA body line.\n\nRefs: EN-100.T1\n";
