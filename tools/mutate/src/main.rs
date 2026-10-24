@@ -48,9 +48,7 @@ fn mutate(argv: &[String]) -> u8 {
         .unwrap_or(&default);
 
     if files.is_empty() {
-        eprintln!(
-            "usage: npm run mutate -- [--all] <files…> [-- <test command with {{file}} or {{test}}>]"
-        );
+        eprintln!("{USAGE}");
         return 2;
     }
     let Ok(dir) = env::current_dir() else {

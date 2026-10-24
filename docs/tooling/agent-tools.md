@@ -56,11 +56,11 @@ The agent calls a tool by its release binary, from the root of its checkout, rat
 
 | Step | What it does |
 | --- | --- |
-| copy | the repository as a temporary worktree outside it, tracked files with their uncommitted changes; removed at the end |
+| copy | the repository as a temporary worktree outside it, tracked files with their uncommitted changes and the untracked files Git does not ignore, a new module not yet added included (REV-009); removed at the end |
 | tests | each file's related tests (`npx vitest related {file} --run`), which through the barrels are most of the suite; `-- npx vitest run {test}` runs only the file's own test file |
-| unchanged | the tests run once first; a file whose tests fail, or that has none, is skipped |
-| mutations | the first of each kind, every one with `--all`: a comparison flipped (`<` to `>=`, `===` to `!==`), `+` and `-` or `*` and `/` swapped, an integer `n` made `n + 1`, an `if` condition negated, a returned value made `undefined` |
-| where | found in the text, comments and strings skipped, operators only with a space on each side |
+| unchanged | the tests run once first; a file whose tests fail, or that has none, is skipped, its reason quoting the command's last 5 lines |
+| mutations | the first of each kind, every one with `--all`: a comparison flipped (`<` to `>=`, `===` to `!==`), `+` and `-` or `*` and `/` swapped, an integer `n` made `n + 1`, an `if` condition negated, a returned value made `undefined`, in a script only: a Rust return has no value that fits every type |
+| where | found in the text, comments and strings skipped, operators only with a space on each side; in a `.rs` file, `'a` is a lifetime and `'x'` a character, never a string's quote |
 | timeout | over four times the unchanged run plus 30 s |
 
 ### Reading one row or one section
