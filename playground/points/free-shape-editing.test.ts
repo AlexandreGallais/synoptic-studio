@@ -30,6 +30,21 @@ function modelNumber(key: string): number {
 }
 
 /**
+ * Presses Up in a field as a browser sends it: the field given the focus, then the key pressed
+ * and released, bubbling, cancelable.
+ *
+ * @param id - the field, without `#`
+ */
+function pressUp(id: string): void {
+  const field = selectInput(id);
+  const init = { bubbles: true, cancelable: true, key: "ArrowUp" };
+
+  field.focus();
+  field.dispatchEvent(new KeyboardEvent("keydown", init));
+  field.dispatchEvent(new KeyboardEvent("keyup", init));
+}
+
+/**
  * The fieldset holding the radius field.
  *
  * @returns its id, `undefined` when the field sits with the shape's fields
@@ -66,6 +81,33 @@ describe("editing the points of a free shape", () => {
 
     // The model keeps the exact height, 50√3, not the 5 decimals shown in the input (Q27).
     expect(modelNumber("height")).toBeCloseTo(50 * Math.sqrt(3), 12);
+  });
+
+  it.each([
+    // Point 1 of the hexagon converted, at (75, 93.30127): 93.30127 + 1 = 94.30127, rounded to
+    // 94, whether by Up or by `+1` typed, where before the fraction was refused, the point left
+    // where it was (AUD-047).
+    {
+      how: "Up",
+      step: (): void => {
+        pressUp("point-y");
+      },
+    },
+    {
+      how: "+1",
+      step: (): void => {
+        typeInField("point-y", "+1");
+      },
+    },
+  ])("rounds $how on a converted point's Y showing a fraction", ({ step }) => {
+    openOnStep(10);
+    clickElement("mode-points");
+    clickElement("convert");
+    clickPoint(1, false);
+    step();
+
+    expect([selectInput("point-x").value, selectInput("point-y").value]).toEqual(["75", "94"]);
+    expect(readPointRows()[0]).toBe("1 · x 75 · y 94 · radius 0");
   });
 
   it("[F08.AC1] hides the anchor, the corners and the conversion of a free shape", () => {

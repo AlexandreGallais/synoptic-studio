@@ -1,4 +1,4 @@
-import { clamp, modulo, valueWithTyped, wholeValueWithTyped } from "../../src";
+import { clamp, modulo, nearestInteger, valueWithTyped } from "../../src";
 
 import { OWN_FIELD_RANGES } from "./own-field-ranges";
 
@@ -26,8 +26,8 @@ function readValueInRange(value: number, range: OwnFieldRange): number {
 
 /**
  * Reads the value computed from a value applied in a field: from the numbers as typed
- * (`valueWithTyped`), rounded for a field of whole numbers when a fraction is typed
- * (`wholeValueWithTyped`).
+ * (`valueWithTyped`), then rounded to the nearest integer, a tie up, for a field of whole numbers,
+ * whatever was typed (`nearestInteger`, AUD-047): 33.54102 shown and Up give 35, `+1` likewise.
  *
  * @kind procedure
  * @param range - the field's range, telling whether it holds whole numbers
@@ -37,7 +37,9 @@ function readValueInRange(value: number, range: OwnFieldRange): number {
  * @see docs/domain/interaction.md#_2-selector
  */
 function readComputedValue(range: OwnFieldRange, own: number, typed: TypedPanelValue): number {
-  return range.isWhole ? wholeValueWithTyped(own, typed) : valueWithTyped(own, typed);
+  const value = valueWithTyped(own, typed);
+
+  return range.isWhole ? nearestInteger(value) : value;
 }
 
 /**
@@ -61,8 +63,8 @@ function readValueFrom(field: HTMLInputElement, own: number, typed: TypedPanelVa
 /**
  * Reads the value a field acting as a number field of its own takes for a value applied in it
  * (US-087, AUD-046): a value as typed, or a relative one added to the number the field showed
- * before (`valueWithTyped`), rounded when the field holds whole numbers and a fraction is typed
- * (`wholeValueWithTyped`), then within the field's range (`OWN_FIELD_RANGES`,
+ * before (`valueWithTyped`), rounded when the field holds whole numbers (`nearestInteger`), then
+ * within the field's range (`OWN_FIELD_RANGES`,
  * `readValueInRange`): 13 in Corners gives 12, 1.5 in the radius 2, `-20` in the Angle at 10
  * gives 350.
  *
