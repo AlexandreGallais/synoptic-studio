@@ -38,10 +38,14 @@ The way chosen: **any key or pointer event that carries Cmd (`metaKey`) lets Spa
 
 | Step | Do | You should see |
 | --- | --- | --- |
+| 1 | Press Space, then Cmd, release Space, then release Cmd; drag on the empty drawing | the dashed selection rectangle, the view not moved; before, the view moved |
+| 2 | The same, quickly, several times, then once with Cmd released first; drag on the empty drawing after each | the rectangle each time |
+| 3 | Hold Space and drag on the empty drawing, release the button, then Space | the view follows the pointer; a drag after it draws the rectangle again |
+| 4 | Hold Space, press and release Cmd, keep Space held a second, then drag | the view follows the pointer once Space repeats; with the key repeat Off, press Space again |
 
 ## Tasks
 
-- [ ] T1 — The cause checked (a headless Chromium from the machine's caches for the events a page receives with Cmd + Space; MDN or the UI Events specification for key repeat and `KeyboardEvent.repeat`), the way chosen and written; tests first, failing (45 min)
-- [ ] T2 — The fix, the tests passing; the Product Owner test card (45 min)
+- [x] T1 — The cause checked (a headless Chromium from the machine's caches for the events a page receives with Cmd + Space; MDN or the UI Events specification for key repeat and `KeyboardEvent.repeat`), the way chosen and written; tests first, failing (45 min)
+- [x] T2 — The fix, the tests passing; the Product Owner test card (45 min)
 
 One task = one commit, referenced as `US-091.Tn` in the commit footer.
