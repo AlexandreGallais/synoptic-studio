@@ -46,4 +46,4 @@
 | [F42](./E02-F42-zoom-and-pan.md) | E02 | Zoom and pan | done |
 | [F43](./E02-F43-corrections-from-the-first-try.md) | E02 | Corrections from the Product Owner's first try | done |
 | [F44](./E02-F44-corrections-from-the-second-try.md) | E02 | Corrections from the Product Owner's second try | done |
-| [F45](./E02-F45-a-handles-y-stepped-by-one.md) | E02 | A handle's Before y stepped by one | in-progress |
+| [F45](./E02-F45-a-handles-y-stepped-by-one.md) | E02 | A handle's Before y stepped by one | done |
