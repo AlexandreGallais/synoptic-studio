@@ -22,7 +22,8 @@
 
 For the review's summary; each can be changed.
 
-- With `Shift`, the wheel moves the view across by its vertical turn and by the horizontal one macOS sends instead, added, so that the same gesture works on every system.
+- With `Shift`, outside macOS, the wheel moves the view across by its vertical turn and its horizontal one, added. Since F43, on macOS, which already turns a mouse's `Shift` + wheel across, the view follows the wheel's turns as sent, so that two fingers swiping diagonally on a trackpad with `Shift` move it both ways, as in Penpot.
+- The system is told as the page opens by the platform the browser names, `MacIntel` on a Mac; the browsers' newer way of naming it is not yet in all of them.
 - The wheel's vertical turns sent within one frame of the screen zoom once by their sum, so that a slow pinch zooms slowly and a turn back gives the same zoom back. Penpot zooms by the same amount a pixel, but adds each turn's horizontal part to its vertical one and multiplies the zooms of a frame: two turns of 50 pixels zoom here by 1.57, in Penpot by 1.65.
 - Shapes dragged while the wheel zooms stay under the pointer: their place is read through the new view at each move of the pointer.
 - `=` zooms in as `+` does, as in Inkscape, so that `+` needs no `Shift` on a US keyboard.

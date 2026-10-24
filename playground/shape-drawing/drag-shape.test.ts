@@ -192,10 +192,42 @@ describe("a drag with a tool draws the shape's box (US-064)", () => {
     focus.mockRestore();
   });
 
-  it("[F36.AC1] never squares a text with Shift", () => {
-    dragDrawing("text", { from: { x: 10, y: 10 }, isShift: true, to: { x: 210, y: 70 } });
+  it("[F43.AC4] squares a text's box with Shift, 120 × 120 at (10, 10) from (10, 10) to (130, 90)", () => {
+    // 120 and 80 dragged: the side is the larger, 120, laid from the press toward the pointer.
+    dragDrawing("text", { from: { x: 10, y: 10 }, isShift: true, to: { x: 130, y: 90 } });
 
-    expect([readValue("text-box-width"), readValue("text-box-height")]).toEqual(["200", "60"]);
+    expect(readModel()).toMatchObject({
+      boxHeight: 120,
+      boxWidth: 120,
+      isInBox: true,
+      x: 10,
+      y: 10,
+    });
+
+    expect([readValue("text-box-width"), readValue("text-box-height")]).toEqual(["120", "120"]);
+  });
+
+  it("[F43.AC4] lays a text's square up from the press, 120 × 120 at (10, −30) from (130, 90) to (10, 10)", () => {
+    // The side 120 laid left and up from (130, 90): x 130 − 120 = 10, y 90 − 120 = −30.
+    dragDrawing("text", { from: { x: 130, y: 90 }, isShift: true, to: { x: 10, y: 10 } });
+
+    expect(readModel()).toMatchObject({ boxHeight: 120, boxWidth: 120, x: 10, y: -30 });
+  });
+
+  it("[F43.AC4] changes a text's box at once when Shift is pressed or released during the drag", () => {
+    clickElement("tool-text");
+    dispatchDrawingPointer("pointerdown", { x: 10, y: 10 }, NO_KEY);
+    dispatchDrawingPointer("pointermove", { x: 130, y: 90 }, NO_KEY);
+    expect(readModel()).toMatchObject({ boxHeight: 80, boxWidth: 120 });
+
+    fireShift("keydown");
+    expect(readModel()).toMatchObject({ boxHeight: 120, boxWidth: 120 });
+
+    fireShift("keyup");
+    expect(readModel()).toMatchObject({ boxHeight: 80, boxWidth: 120 });
+
+    dispatchDrawingPointer("pointerup", { x: 130, y: 90 }, NO_KEY);
+    expect(readModel()).toMatchObject({ boxHeight: 80, boxWidth: 120, x: 10, y: 10 });
   });
 
   it("[F36.AC1] adds a circle 120 × 120 with the round shape tool and Shift held", () => {

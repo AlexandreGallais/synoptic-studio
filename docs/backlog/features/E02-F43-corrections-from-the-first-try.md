@@ -28,7 +28,7 @@ In delivery order.
 | [EN-150](../stories/E02-F43-EN-150-the-playground-tests-fast-again.md) | EN | The playground's tests fast again | done |
 | [US-080](../stories/E02-F43-US-080-the-helps-seen-on-any-color.md) | US | The helps seen on any color, and what a selection rectangle takes | done |
 | [US-081](../stories/E02-F43-US-081-the-arrows-in-the-fields-and-on-the-drawing.md) | US | The arrows in the panel's fields and on the drawing | done |
-| [US-082](../stories/E02-F43-US-082-a-text-box-square-the-wheel-with-shift.md) | US | A text's box kept square, the wheel with Shift, several shapes' sizes | ready |
+| [US-082](../stories/E02-F43-US-082-a-text-box-square-the-wheel-with-shift.md) | US | A text's box kept square, the wheel with Shift, several shapes' sizes | done |
 | [AUD-045](../stories/E02-F43-AUD-045-audit-f43.md) | AUD | Audit F43 | ready |
 | [VAL-044](../stories/E02-F43-VAL-044-validate-f43.md) | VAL | Validate F43 | dropped |
 

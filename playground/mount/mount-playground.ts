@@ -3,7 +3,7 @@ import { listenToHistory, updateHistory } from "../history";
 import { listenToHover } from "../hover";
 import { removeListeners } from "../listeners";
 import { listenToColorPicker } from "../picker-controls";
-import { scheduleRedraw } from "../redraw";
+import { listenToRedrawBeforeClicks, scheduleRedraw } from "../redraw";
 import { listenToDrawing } from "../shape-drawing";
 
 import { listenToInputs } from "./listen-to-inputs";
@@ -16,7 +16,8 @@ import type { GuidedStep } from "../guided-steps";
  * removed first (`removeListeners`, EN-150), so that each event is heard once: redraws on every
  * input and window resize, at most once per animation frame, the inputs before it gathered
  * (`scheduleRedraw`, US-048), each redraw bringing the history of the drawing up to the page
- * (`updateHistory`, F40); wires the toolbar, the guided test and, after them, the history
+ * (`updateHistory`, F40), a redraw asked drawn before a release or a click on the drawing acts
+ * (`listenToRedrawBeforeClicks`, US-082); wires the toolbar, the guided test and, after them, the history
  * (`listenToHistory`), then shows the step asked by the page address, or the first one.
  *
  * @kind procedure
@@ -36,6 +37,7 @@ export function mountPlayground(document: Document, steps: readonly GuidedStep[]
   removeListeners(document);
   listenToInputs(document, update);
   listenToColorPicker(document, update);
+  listenToRedrawBeforeClicks(document);
   listenToDrawing(document, update);
   listenToHover(document);
   listenToGuide(document, steps, update);
