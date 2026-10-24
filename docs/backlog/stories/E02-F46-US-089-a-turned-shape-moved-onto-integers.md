@@ -3,7 +3,7 @@ id: US-089
 epic: E02
 feature: F46
 title: A turned shape moved by the arrows onto integers
-status: ready
+status: done
 points: 2
 ---
 

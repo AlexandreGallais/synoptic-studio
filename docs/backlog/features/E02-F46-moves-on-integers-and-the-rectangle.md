@@ -23,7 +23,7 @@ In delivery order.
 
 | ID | Type | Title | Status |
 | --- | --- | --- | --- |
-| [US-089](../stories/E02-F46-US-089-a-turned-shape-moved-onto-integers.md) | US | A turned shape moved by the arrows onto integers | ready |
+| [US-089](../stories/E02-F46-US-089-a-turned-shape-moved-onto-integers.md) | US | A turned shape moved by the arrows onto integers | done |
 | [US-090](../stories/E02-F46-US-090-the-rectangle-and-the-canvas-resized.md) | US | The selection rectangle always answers, the canvas resized without a flicker | ready |
 | [AUD-048](../stories/E02-F46-AUD-048-audit-f46.md) | AUD | Audit F46 | ready |
 | [VAL-047](../stories/E02-F46-VAL-047-validate-f46.md) | VAL | Validate F46 | dropped |
