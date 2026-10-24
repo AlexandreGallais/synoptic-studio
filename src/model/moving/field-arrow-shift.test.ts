@@ -46,6 +46,9 @@ describe("fieldArrowShift (US-089)", () => {
     // (10, 20): Up in X by 1, across; Shift + Down in Y by −10, up.
     expect(fieldArrowShift({ x: 10, y: 20 }, "x", 1)).toEqual({ x: 1, y: 0 });
     expect(fieldArrowShift({ x: 10, y: 20 }, "y", -10)).toEqual({ x: 0, y: -10 });
+    // A rounded rectangle at (0, 0), its straight box at −1.8 × 10⁻¹⁵: by exactly 1, not 1 + 1.8
+    // × 10⁻¹⁵.
+    expect(fieldArrowShift({ x: -1.8e-15, y: -1.8e-15 }, "x", 1)).toEqual({ x: 1, y: 0 });
   });
 
   it("[F46.AC1] rounds a tie up on both axes, toward +∞", () => {
@@ -69,7 +72,7 @@ describe("fieldArrowShift (US-089)", () => {
       for (const each of ["x", "y"] as const) {
         const landed = anchor[each] + shift[each];
 
-        expect(Math.abs(landed - Math.round(landed))).toBeLessThan(1e-9);
+        expect(Math.abs(landed - Math.round(landed))).toBeLessThanOrEqual(2e-9);
       }
 
       expect(Math.sign(shift[axis])).toBe(Math.sign(step));

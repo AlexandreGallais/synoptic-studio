@@ -33,7 +33,8 @@ For the review's summary; each can be changed.
 - The arrows are left to the browser, which may scroll the page, with no shape selected, in Points mode, and with Ctrl, Cmd or Alt held, which browsers use for some commands of their own. A field of the panel keeps them, the anchor grid's buttons included.
 - An arrow pressed with Ctrl, Cmd or Alt is never held, and releasing Cmd releases every arrow: on a Mac, a key released while Cmd is down sends no release to the page, in Safari, Chrome and Firefox alike, so that Cmd + Up once left Up held for good and no move was recorded after it (F43's audit).
 - While a drag moves shapes, an arrow moves nothing, and neither Delete, Ctrl + A nor Escape changes anything; the drag lands them at the release.
-- A box that starts on a whole number up to a rounding error, as a rounded rectangle at x 0 whose box starts at −0.0000000000000018, lands exactly on that number, its position taking the tiny error, as when X is typed.
+- A box that starts on a whole number up to a rounding error, as a rounded rectangle at x 0 whose box starts at −0.0000000000000018, lands exactly on that number, its position taking the tiny error, as when X is typed. An arrow instead moves such a box by exactly one or ten, its position staying a whole number, as before F46.
+- Up and Down in X or Y set the shape by the shift the arrow on the drawing lands it by; a shape the panel refuses, or a text never measured, is stepped by one or ten as a value typed, having no upright box to land.
 
 ## The ideas behind it
 

@@ -1,4 +1,5 @@
 export * from "./apply-edited-value";
+export * from "./apply-stepped-position";
 export type * from "./edited-field";
 export * from "./edited-fields";
 export * from "./listen-to-edited-fields";

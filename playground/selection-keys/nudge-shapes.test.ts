@@ -207,9 +207,11 @@ describe("the arrows nudge the shapes selected (US-073)", () => {
     pressOn("body", "a", { ctrlKey: true });
     pressArrow("ArrowDown", true);
 
-    // A from (10, 20) to (10, 30); the text kept at (5, −50).
+    // The dashed box of A and B from (10, −1.65064), + (0, 10) = (10, 8.34936), lands on (10, 8):
+    // A from (10, 20) to (10, 29.65064); the text kept at (5, −50).
     expect(readSelectedShapes(document)).toEqual([0, 1, 2]);
-    expect(readShape(0)).toMatchObject({ x: 10, y: 30 });
+    expect(readShape(0).x).toBe(10);
+    expect(readShape(0).y).toBeCloseTo(29.65064, 5);
     expect(readKeptDrawing(document)[2]?.shape).toEqual(never.shape);
   });
 
@@ -317,11 +319,19 @@ describe("the arrows land a turned shape on integers (US-073, US-089)", () => {
   });
 
   it("[F46.AC1] moves A′ on integers by exactly 1 at the next arrow, as a shape on integers", () => {
-    pressArrow("ArrowRight", false);
-    pressArrow("ArrowRight", false);
-    pressArrow("ArrowDown", true);
+    const body = selectPageElement("body");
 
-    // Landed on (5, −2), then (6, −2), then (6, 8): 1 across, then 10 down, exactly.
+    for (const [key, isShift] of [
+      ["ArrowRight", false],
+      ["ArrowRight", false],
+      ["ArrowDown", true],
+    ] as const) {
+      pressArrow(key, isShift);
+      body.dispatchEvent(new KeyboardEvent("keyup", { bubbles: true, key }));
+    }
+
+    // Each pressed and released: landed on (5, −2), then (6, −2), then (6, 8), 1 across, then 10
+    // down, exactly.
     expect(readValue("shape-x")).toBe("6");
     expect(readValue("shape-y")).toBe("8");
   });

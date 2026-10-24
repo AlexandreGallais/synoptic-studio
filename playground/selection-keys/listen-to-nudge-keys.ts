@@ -1,4 +1,4 @@
-import { heldNudgeShift, isBrowserKey, nudgeShift } from "../../src";
+import { heldNudgeShift, isBrowserKey, landedNudgeShift, nudgeShift } from "../../src";
 import { readSelectedShapes } from "../kept-shapes";
 import { readListenerSignal } from "../listeners";
 import { readMode } from "../page";
@@ -38,14 +38,16 @@ function readNudge(document: Document, event: KeyboardEvent): Point | undefined 
 }
 
 /**
- * Moves the shapes selected by a nudge (F39): every shape selected goes by the same shift, a text
- * never measured left as it is (`readSelectionMove`, `readMovedDrawing`), written back selected
- * (`writeMovedDrawing`), then the page is redrawn; while a press with the Selector moves shapes,
- * none, the drag landing them at the release (`readPressedMove`).
+ * Moves the shapes selected by a nudge (F39): their anchor, the top-left of their dashed box,
+ * moved by it and landed on integers as at a drag's release (`landedNudgeShift`, F46), every shape
+ * selected going by that same shift, a text never measured left as it is (`readSelectionMove`,
+ * `readMovedDrawing`), written back selected (`writeMovedDrawing`), then the page is redrawn;
+ * while a press with the Selector moves shapes, none, the drag landing them at the release
+ * (`readPressedMove`).
  *
  * @kind procedure
  * @param document - page document
- * @param shift - how far they go
+ * @param shift - the nudge, before it lands
  * @param update - redraws the page from the values typed
  * @see docs/domain/interaction.md#_2-selector
  */
@@ -57,7 +59,9 @@ function moveSelectedShapes(document: Document, shift: Point, update: () => void
   const selected = readSelectedShapes(document);
   const move = readSelectionMove(document, selected, selected);
 
-  writeMovedDrawing(document, readMovedDrawing(move, shift), selected);
+  const landed = landedNudgeShift(move.anchor, shift);
+
+  writeMovedDrawing(document, readMovedDrawing(move, landed), selected);
   update();
 }
 
@@ -86,7 +90,7 @@ function moveNudgedShapes(document: Document, event: KeyboardEvent, update: () =
 /**
  * Listens to the arrow keys (F39): outside the panel's fields, the color picker's sliders
  * included, which keep them, an arrow nudges the shapes selected in Shape mode by 1, or 10 with
- * Shift (`nudgeShift`), at each key the browser sends, its repeats included, by the sum of the
+ * Shift (`nudgeShift`), landed on integers (F46), at each key the browser sends, its repeats included, by the sum of the
  * arrows held (`listenToHeldArrows`, US-081), so that Up and Right held move diagonally, then
  * redraws; the page then does not scroll. With no shape selected, in Points mode, or with Ctrl, Cmd or Alt
  * held, the key is left to the browser; while a press with the Selector moves shapes, it moves

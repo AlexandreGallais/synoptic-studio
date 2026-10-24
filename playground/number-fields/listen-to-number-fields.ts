@@ -22,7 +22,7 @@ import type { TypedPanelValue } from "../../src";
  */
 function readFieldApply(
   field: HTMLInputElement,
-): ((typed: TypedPanelValue | undefined) => void) | undefined {
+): ((typed: TypedPanelValue | undefined, isStep: boolean) => void) | undefined {
   return NUMBER_FIELD_APPLIES.get(field.ownerDocument)?.get(field.id);
 }
 
@@ -45,7 +45,7 @@ function applyFieldText(event: Event, field: HTMLInputElement): void {
     return;
   }
 
-  apply(parsePanelValue(field.value));
+  apply(parsePanelValue(field.value), false);
 }
 
 /**
@@ -68,7 +68,7 @@ function applyTypedValue(event: Event): void {
 
 /**
  * Applies an arrow's step, relative, to a field acting as a number field: to the shapes it sets,
- * or, for a field of its own, shown within its range (`writeOwnValue`), then applied as Enter does
+ * told it is a step, or, for a field of its own, shown within its range (`writeOwnValue`), then applied as Enter does
  * (`change`), its own listeners reading it, that `change` marked as applied already
  * (`STEPPED_CHANGES`), so that `-14` shown at Up from −15 is never read again as typed.
  *
@@ -81,7 +81,7 @@ function applySteppedValue(field: HTMLInputElement, step: TypedPanelValue): void
   const apply = readFieldApply(field);
 
   if (apply !== undefined) {
-    apply(step);
+    apply(step, true);
 
     return;
   }
