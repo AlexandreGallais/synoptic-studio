@@ -23,11 +23,11 @@ In delivery order.
 
 | ID | Type | Title | Status |
 | --- | --- | --- | --- |
-| [SP-032](../stories/E02-F44-SP-032-refine-the-second-corrections.md) | SP | Refine the corrections from the second try | ready |
+| [SP-032](../stories/E02-F44-SP-032-refine-the-second-corrections.md) | SP | Refine the corrections from the second try | done |
 | [US-084](../stories/E02-F44-US-084-the-view-follows-the-canvas-size.md) | US | The view follows the canvas's size | ready |
 | [US-085](../stories/E02-F44-US-085-one-shapes-fields-as-several.md) | US | The fields of one shape as the fields of several | ready |
 | [US-086](../stories/E02-F44-US-086-the-helps-as-one-dashed-line.md) | US | The helps as one dashed line of white and black | ready |
-| [AUD-046](../stories/E02-F44-AUD-046-audit-f44.md) | AUD | Audit F44 | draft |
+| [AUD-046](../stories/E02-F44-AUD-046-audit-f44.md) | AUD | Audit F44 | ready |
 | [VAL-045](../stories/E02-F44-VAL-045-validate-f44.md) | VAL | Validate F44 | dropped |
 
 ## Feature plan

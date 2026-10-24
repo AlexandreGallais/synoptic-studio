@@ -125,11 +125,11 @@
 | [US-082](./E02-F43-US-082-a-text-box-square-the-wheel-with-shift.md) | F43 | A text's box kept square, the wheel with Shift, several shapes' sizes | done |
 | [AUD-045](./E02-F43-AUD-045-audit-f43.md) | F43 | Audit F43 | done |
 | [VAL-044](./E02-F43-VAL-044-validate-f43.md) | F43 | Validate F43 | dropped |
-| [SP-032](./E02-F44-SP-032-refine-the-second-corrections.md) | F44 | Refine the corrections from the second try | ready |
+| [SP-032](./E02-F44-SP-032-refine-the-second-corrections.md) | F44 | Refine the corrections from the second try | done |
 | [US-084](./E02-F44-US-084-the-view-follows-the-canvas-size.md) | F44 | The view follows the canvas's size | ready |
 | [US-085](./E02-F44-US-085-one-shapes-fields-as-several.md) | F44 | The fields of one shape as the fields of several | ready |
 | [US-086](./E02-F44-US-086-the-helps-as-one-dashed-line.md) | F44 | The helps as one dashed line of white and black | ready |
-| [AUD-046](./E02-F44-AUD-046-audit-f44.md) | F44 | Audit F44 | draft |
+| [AUD-046](./E02-F44-AUD-046-audit-f44.md) | F44 | Audit F44 | ready |
 | [VAL-045](./E02-F44-VAL-045-validate-f44.md) | F44 | Validate F44 | dropped |
 | [SP-025](./E02-SP-025-cut-the-editing-work-into-small-features.md) | E02 | Cut the editing work into small features | done |
 | [SP-010](./E14-F11-SP-010-research-f11.md) | F11 | Research for F11: folder layouts and test placement | done |

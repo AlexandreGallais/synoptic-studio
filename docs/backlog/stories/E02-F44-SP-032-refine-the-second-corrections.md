@@ -3,7 +3,7 @@ id: SP-032
 epic: E02
 feature: F44
 title: Refine the corrections from the second try
-status: ready
+status: done
 points: 1
 ---
 
@@ -62,3 +62,10 @@ One task = one commit, referenced as `SP-032.T1`.
 **The toolbar**, 1 632 pixels wide in the headless browser's fonts, overflows the stage below a window of about 2 270 pixels with both columns shown; US-084 stops the stage from scrolling, the responsive toolbar being E20's.
 
 **No domain rule changed** by the spike: for the footer, `Rule-docs: none affected, a spike writing stories, a note, two references and a proposed ADR`.
+
+## The main thread's decisions
+
+Made on 2026-10-24, the Product Owner having said there was nothing to ask and that the details are the agent's, to be tuned later:
+
+- ADR-0099 accepted, the Product Owner having asked for a native dashed stroke in the layer above in their own words; US-086's T1 brings `AGENTS.md`'s Geometry line, `.claude/rules/library.md` and the `project-rules` digest in line with it.
+- `src/geometry/contour-band/` and `DERIV-band-within-box` kept, exported, when US-086 leaves them without a caller in the playground: a shape's stroke computed by offset (ADR-0002) is E04's, which will decide whether the band serves it; the option (c) of the spike.

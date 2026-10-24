@@ -1,6 +1,6 @@
 # ADR-0099 — A native stroke for the helps of the layer above, never for shapes
 
-**Status**: Proposed (SP-032, 2026-10-24): asked by the Product Owner on 2026-10-24 with F44's first correction, after the review of the two layers raised it on 2026-10-23; research note 0033, §5 and §6.
+**Status**: Accepted (2026-10-24): asked by the Product Owner on 2026-10-24 with F44's first correction, a native dashed stroke allowed for the helps of the layer above, never for the shapes and texts, after the review of the two layers raised it on 2026-10-23; research note 0033, §5 and §6.
 
 ## Context
 
