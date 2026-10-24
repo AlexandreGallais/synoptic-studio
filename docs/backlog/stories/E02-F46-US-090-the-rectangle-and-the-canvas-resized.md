@@ -35,10 +35,16 @@ A second state left open is safe for the rectangle but not for the drawing: a to
 
 | Step | Do | You should see |
 | --- | --- | --- |
+| 1 | Press on an empty part of the drawing and drag | the dashed selection rectangle follows the pointer; released, it selects the shapes it touches |
+| 2 | Click an empty part of the drawing, then press Space, then Cmd, release Space, then release Cmd (a Mac); drag on the empty drawing | the selection rectangle, the view not moved; before, the drag moved the view and drew no rectangle |
+| 3 | Hold Space and drag, release the button, then Space | the view follows the pointer; a drag after it draws the rectangle again |
+| 4 | Press on the empty drawing, drag out of the window and release the button there; then drag on the empty drawing | the rectangle each time |
+| 5 | Click Pipeline in the toolbar several times, quickly | the column hides and shows; the drawing stays where it is, never stretched, clipped nor flickering |
+| 6 | Drag the window's edge to make it narrower, then wider | the drawing stays in place at its size, the canvas showing less or more on the right, no flicker |
 
 ## Tasks
 
-- [ ] T1 — The rectangle's failure reproduced (each candidate above, in happy-dom and in a headless Chromium from the machine's caches if needed), its cause written; tests of both criteria first, failing (1 h)
-- [ ] T2 — The fixes, the tests passing; the Product Owner test card (1 h)
+- [x] T1 — The rectangle's failure reproduced (each candidate above, in happy-dom and in a headless Chromium from the machine's caches if needed), its cause written; tests of both criteria first, failing (1 h)
+- [x] T2 — The fixes, the tests passing; the Product Owner test card (1 h)
 
 One task = one commit, referenced as `US-090.Tn` in the commit footer.

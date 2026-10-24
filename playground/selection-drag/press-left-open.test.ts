@@ -81,10 +81,10 @@ describe("a press left open, then the next press on the empty drawing (US-090)",
   });
 
   afterEach(() => {
-    // The drag each example leaves open ended, a pan by its click, then cancelled, and Space let
-    // go, so that the next example, on the same document, starts with none.
+    // The drag each example leaves open ended, a pan by its click, the others by a release, and
+    // Space let go, so that the next example, on the same document, starts with none.
     dispatchDrawingPointer("click", POINTER, NO_KEY);
-    dispatchDrawingPointer("pointercancel", POINTER, NO_KEY);
+    dispatchDrawingPointer("pointerup", POINTER, NO_KEY);
     globalThis.dispatchEvent(new Event("blur"));
   });
 
@@ -134,7 +134,7 @@ describe("a press left open, then the next press on the empty drawing (US-090)",
     expect(dragOnEmptyDrawing()).toBe(RECTANGLE);
   });
 
-  it("[F46.AC2] draws the rectangle after a cancelled drag, nothing selected", () => {
+  it("[F46.AC2] draws the rectangle after a drag cancelled", () => {
     pressAndMove({ x: 500, y: 100 }, { x: 600, y: 200 });
     dispatchDrawingPointer("pointercancel", { x: 600, y: 200 }, NO_KEY);
 
