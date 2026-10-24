@@ -270,7 +270,7 @@ fn says_how_to_call_it() {
 
         assert_eq!(output.status.code(), Some(2), "{args:?}");
         assert!(
-            stderr(&output).starts_with("usage: release"),
+            stderr(&output).starts_with("usage: target/release/release"),
             "{}",
             stderr(&output)
         );

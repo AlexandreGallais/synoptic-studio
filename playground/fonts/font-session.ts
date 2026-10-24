@@ -2,7 +2,7 @@ import type { InstalledFont } from "./installed-font";
 import type { FontFamily } from "../../src";
 import type { ReadAheadFont } from "../installed-fonts";
 
-/** The fonts of the page while it stays open (US-036): kept for the session, not across sessions (E11). */
+/** The fonts of the page while it stays open (US-036): kept for the session, not across sessions (E41). */
 export type FontSession = {
   /** The families whose metrics are read: Inter first, then those imported or read from the computer, in their order. */
   readonly kept: readonly FontFamily[];

@@ -133,8 +133,9 @@ fn rev009_prints_its_usage_on_help_and_runs_nothing() {
 
         assert_eq!(output.status.code(), Some(0), "{flag}");
         assert!(
-            String::from_utf8_lossy(&output.stdout)
-                .starts_with("usage: heavy-lock [--lock <name>] <command> [arguments…]"),
+            String::from_utf8_lossy(&output.stdout).starts_with(
+                "usage: target/release/heavy-lock [--lock <name>] <command> [arguments…]"
+            ),
             "{flag}: {output:?}"
         );
     }

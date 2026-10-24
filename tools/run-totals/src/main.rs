@@ -132,13 +132,14 @@ fn run(words: &[String]) -> Result<String, String> {
             _ => String::new(),
         }),
         _ => Err(
-            "usage: run-totals start [session] | end | report | status | should-stop".to_owned(),
+            "usage: target/release/run-totals start [session] | end | report | status | should-stop".to_owned(),
         ),
     }
 }
 
 /// The usage, printed on `--help` or `-h` (REV-009).
-const USAGE: &str = "usage: run-totals start [session] | end | report | status | should-stop";
+const USAGE: &str =
+    "usage: target/release/run-totals start [session] | end | report | status | should-stop";
 
 fn main() -> ExitCode {
     if let Some(code) = tool_use::usage(&std::env::args().skip(1).collect::<Vec<_>>(), USAGE) {
