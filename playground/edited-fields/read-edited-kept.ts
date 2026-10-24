@@ -14,14 +14,10 @@ import type { KeptShape } from "../kept-shapes";
  * @param document - page document
  * @param shape - a shape selected
  * @param edit - the field, the value typed and the largest size (Q20)
- * @returns the shape changed; `undefined` when it refuses the value
+ * @returns the shape changed
  * @see docs/domain/interaction.md#_2-selector
  */
-function readEditedShape(
-  document: Document,
-  shape: DrawingShape,
-  edit: PanelEdit,
-): DrawingShape | undefined {
+function readEditedShape(document: Document, shape: DrawingShape, edit: PanelEdit): DrawingShape {
   if (!isDrawnText(shape)) {
     return shapeAfterPanelEdit(shape, edit);
   }
@@ -40,19 +36,11 @@ function readEditedShape(
  * @param document - page document
  * @param kept - a shape selected and its kind
  * @param edit - the field, the value typed and the largest size (Q20)
- * @returns the shape changed and its kind; `undefined` when it refuses the value
+ * @returns the shape changed and its kind
  * @see docs/domain/interaction.md#_2-selector
  */
-export function readEditedKept(
-  document: Document,
-  kept: KeptShape,
-  edit: PanelEdit,
-): KeptShape | undefined {
+export function readEditedKept(document: Document, kept: KeptShape, edit: PanelEdit): KeptShape {
   const shape = readEditedShape(document, kept.shape, edit);
-
-  if (shape === undefined) {
-    return undefined;
-  }
 
   writeKeptMetrics(kept.shape, shape);
 

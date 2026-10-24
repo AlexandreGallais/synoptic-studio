@@ -186,8 +186,9 @@ describe("the panel loads the shape picked, per kind (US-067)", () => {
     // The triangle left by the click, the last polygon the panel showed (SP-026).
     expect(readValue("corners")).toBe("3");
 
-    // A polygon of 50 corners is refused: left by a click, it leaves nothing for the next.
-    typeAndEnter("corners", "50");
+    // A polygon refused, its corners emptied by a script: left by a click, it leaves nothing for
+    // the next.
+    typeAndEnter("corners", "");
     pick({ x: 60, y: 40 });
     placeShape("polygon", { x: 550, y: 450 });
 

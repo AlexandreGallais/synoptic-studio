@@ -151,7 +151,8 @@ describe("Text tool: the straight box of a turned text (US-039)", () => {
 
   it("hides the line of a turned text refused", () => {
     typeAndEnter("angle", "30");
-    typeAndEnter("angle", "1.5");
+    // An angle emptied by a script, which the field never read: the text refused.
+    typeAndEnter("angle", "");
 
     expect(readDisplay("straight-box")).toBe("none");
   });

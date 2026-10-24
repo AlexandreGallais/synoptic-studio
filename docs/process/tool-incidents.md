@@ -128,3 +128,9 @@ The cards of E17 were decided at RET-004 ([record](./retrospectives/E17-retrospe
 - Used: `npm run mutate -- <20 modules of src/>`, the story's work not yet staged.
 - Failed: every module skipped, "its related tests fail, or none was found, before any mutation", and the new `meet-scale.ts` "not a tracked text file": the copy holds the tracked files only, and the barrels exported modules it did not hold.
 - Instead: `git add` of the work before the run; every module then ran.
+
+## 2026-10-24 — `git-sequences commit`, with a folder already removed by `git rm`
+
+- Used: `target/release/git-sequences commit -F <message> <paths>` in US-086, one of the paths a folder `git rm` had removed (`playground/helps-frame/`).
+- Failed: "pathspec did not match", the commit refused.
+- Instead: the other paths named alone; the staged deletions went into the commit anyway.

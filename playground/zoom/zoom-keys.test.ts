@@ -11,6 +11,7 @@ import {
   selectPageElement,
   setElementBox,
   typeAndEnter,
+  typeInField,
 } from "../user-actions";
 import { PAGE_VIEWS } from "../view";
 
@@ -350,13 +351,31 @@ describe("the zoom's keys, the fits and the percentage shown (US-079)", () => {
   it.each([
     { name: "a text", typed: "abc" },
     { name: "nothing", typed: "" },
-    { name: "0", typed: "0" },
-    { name: "a number below 0", typed: "-50" },
   ])("changes nothing by $name typed in the menu's field, the zoom shown again", ({ typed }) => {
     showView(ZOOMED);
-    typeAndEnter("zoom-field", typed);
+    typeInField("zoom-field", typed);
 
     expectViewBox("180 130 600 400");
     expectZoomShown(200);
+  });
+
+  it("[F44.AC4] takes 0 typed in the menu's field at 1 % (AUD-046)", () => {
+    showView(ZOOMED);
+    typeInField("zoom-field", "0");
+
+    // About the canvas's centre, the point (480, 330) at 200 %: o′ = (480 − 600 / 0.01,
+    // 330 − 400 / 0.01) = (−59 520, −39 670); 1 200 / 0.01 = 120 000, 800 / 0.01 = 80 000.
+    expectViewBox("-59520 -39670 120000 80000");
+    expectZoomShown(1);
+  });
+
+  it("[F44.AC4] takes 50 from 200 % for -50 typed in the menu's field, 150 %", () => {
+    showView(ZOOMED);
+    typeInField("zoom-field", "-50");
+
+    // 200 − 50 = 150: o′ = (480 − 600 / 1.5, 330 − 400 / 1.5) = (80, 63.33333); 1 200 / 1.5 =
+    // 800, 800 / 1.5 = 533.33333.
+    expectViewBox("80 63.33333 800 533.33333");
+    expectZoomShown(150);
   });
 });

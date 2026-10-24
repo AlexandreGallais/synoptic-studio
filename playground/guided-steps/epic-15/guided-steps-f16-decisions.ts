@@ -105,7 +105,7 @@ export const GUIDED_STEPS_F16_DECISIONS: readonly GuidedStep[] = [
   },
   {
     explanation: "Open the picker; H empty, Tab; H 400, Tab; H −10, Tab; click the opacity bar.",
-    look: "Empty: 30 shown again; H 400 gives 0, −10 gives 0; the opacity a whole percent.",
+    look: "Empty: 30 shown again; H 400 goes round to 40, an angle, then −10 takes 10 from it, 30; the opacity a whole percent.",
     title: "F16 · Beyond the ends (decision 15)",
     values: ORANGE,
   },

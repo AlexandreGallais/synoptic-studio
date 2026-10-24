@@ -716,8 +716,6 @@
               type="text"
               autocomplete="off"
               data-number-field="own"
-              data-min="0"
-              data-max="1000"
               value="100"
             />
             MB</label
@@ -730,8 +728,6 @@
               type="text"
               autocomplete="off"
               data-number-field="own"
-              data-min="0"
-              data-max="100"
               value="5"
           /></label>
           <span id="history-size"></span>
@@ -822,14 +818,7 @@
           <h2 id="polygon-heading">Polygon</h2>
           <label id="corners-field" hidden
             >Corners
-            <input
-              id="corners"
-              type="text"
-              autocomplete="off"
-              data-number-field="own"
-              data-min="3"
-              data-max="12"
-              value="6"
+            <input id="corners" type="text" autocomplete="off" data-number-field="own" value="6"
           /></label>
           <label id="stretched-field" hidden
             ><input id="stretched" type="checkbox" /> Stretched to its box</label
@@ -882,8 +871,6 @@ Running</textarea>
                 type="text"
                 autocomplete="off"
                 data-number-field="own"
-                data-min="1"
-                data-max="100000"
                 value="32"
             /></label>
             <label
@@ -925,8 +912,6 @@ Running</textarea>
                 type="text"
                 autocomplete="off"
                 data-number-field="own"
-                data-min="0"
-                data-max="100"
                 value="100"
             /></label>
           </div>
@@ -939,8 +924,6 @@ Running</textarea>
                 type="text"
                 autocomplete="off"
                 data-number-field="own"
-                data-min="-100000"
-                data-max="100000"
                 value="0"
             /></label>
             <label
@@ -950,8 +933,6 @@ Running</textarea>
                 type="text"
                 autocomplete="off"
                 data-number-field="own"
-                data-min="-100000"
-                data-max="100000"
                 value="0"
             /></label>
           </div>
@@ -979,8 +960,6 @@ Running</textarea>
                 type="text"
                 autocomplete="off"
                 data-number-field="own"
-                data-min="0"
-                data-max="100"
                 value="100"
             /></label>
           </div>
@@ -1013,8 +992,6 @@ Running</textarea>
                 type="text"
                 autocomplete="off"
                 data-number-field="own"
-                data-min="0"
-                data-max="100"
                 value="100"
             /></label>
           </div>
@@ -1092,8 +1069,6 @@ Running</textarea>
                 type="text"
                 autocomplete="off"
                 data-number-field="own"
-                data-min="0"
-                data-max="100000"
                 value="0"
             /></label>
             <label><input id="text-ellipsis" type="checkbox" checked /> Ellipsis</label>
@@ -1114,8 +1089,6 @@ Running</textarea>
                 type="text"
                 autocomplete="off"
                 data-number-field="own"
-                data-min="0"
-                data-max="100000"
                 value="0"
             /></label>
             <label><input id="text-trim" type="checkbox" /> Trim</label>
@@ -1143,8 +1116,6 @@ Running</textarea>
                 type="text"
                 autocomplete="off"
                 data-number-field="own"
-                data-min="0"
-                data-max="100"
                 value="100"
             /></label>
           </div>
@@ -1261,13 +1232,7 @@ Running</textarea>
           <h2 id="corners-heading">Corners</h2>
           <label id="radius-field"
             >Radius
-            <input
-              id="radius"
-              type="text"
-              autocomplete="off"
-              data-number-field="own"
-              data-min="0"
-              value="10"
+            <input id="radius" type="text" autocomplete="off" data-number-field="own" value="10"
           /></label>
           <p id="effective"></p>
         </section>
@@ -1276,13 +1241,7 @@ Running</textarea>
           <legend>Points</legend>
           <button id="handles-switch" type="button" aria-pressed="false" hidden>Handles</button>
           <label id="point-radius-field"
-            >Radius
-            <input
-              id="point-radius"
-              type="text"
-              autocomplete="off"
-              data-number-field="own"
-              data-min="0"
+            >Radius <input id="point-radius" type="text" autocomplete="off" data-number-field="own"
           /></label>
           <fieldset id="handle-fields" hidden>
             <legend>Handles</legend>

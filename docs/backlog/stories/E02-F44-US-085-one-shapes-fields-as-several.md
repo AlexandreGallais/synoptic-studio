@@ -20,7 +20,7 @@ The examples use the page as it opens, the rectangle 120 × 80 at (0, 0), select
 - Given Width, when Up is pressed, then the rectangle is 121 wide; Shift + Up from 120, 130; Shift + Down, 110; the key's default, the caret moved, prevented; with Ctrl, Cmd or Alt held, the field keeps the key, as several's (US-081).
 - Given X, when Shift + Up is pressed, then the rectangle moves 10 to the right, X showing 10; Shift + Down in Y moves it 10 up, Y showing −10, the y axis pointing down, as several's Up in X and Y.
 - Given `+10` typed in Width, when Enter is pressed or the field left, then the rectangle is 130 wide, the field showing 130; `-20` in X moves it to x −20; while `150` is typed, the rectangle stays 120 wide until Enter, where today it is drawn 1, 15, then 150 wide.
-- Given `-200` typed in Width, when applied, then the value is refused, the rectangle unchanged and the field showing 120 again, as several's; 200 000 is capped at 100 000 (Q20); `1.5` or `abc` are refused.
+- Given `-200` typed in Width, when applied, then the rectangle is 0 wide, 120 − 200 taken at 0, as several's; 200 000 is capped at 100 000 (Q20); `1.5` gives 2, rounded once the value is computed, and `abc` is refused, the rectangle unchanged and the field showing 120 again (amended by AUD-046 to the rule the Product Owner gave every number field on 2026-10-24; before, `-200` and `1.5` were refused).
 - Given a sharp 100 × 50 at (10, 20) turned by 30° about its middle, its turned top-left corner at (29.19873, −1.65064), when `+50` is applied in Width, then it is 150 wide with its position at (6.65064, 32.5), its turned top-left corner kept (US-019), as for several shapes.
 - Given Up held in Width for a second, 30 keys, then released, then the rectangle is 150 wide and the history has one step for the burst, one Ctrl + Z giving 120 (`listenToArrowBursts`, 500 ms, `interaction.md` §7, A burst of arrows in a field).
 - Given a text in a box 200 × 100 at (40, 40), selected alone, then its X, Y and its box's Width and Height behave as above: Shift + Up in the box's Width gives 210; a text fitting its content shows no Width, as today.
@@ -35,7 +35,7 @@ The examples use the page as it opens, the rectangle 120 × 80 at (0, 0), select
 | 1 | Click in Width and press Shift + Up, then Up | 130, then 131; the rectangle wider each time |
 | 2 | Click in X and press Shift + Up twice | X at 20, the rectangle moved right by 20 |
 | 3 | Type `+19` in Width, then press Enter | 150; the rectangle wider by 19 only once Enter is pressed |
-| 4 | Type `-500` in Width, then press Enter | the field shows 150 again, the rectangle unchanged: 150 − 500 is below 0 |
+| 4 | Type `-500` in Width, then press Enter | 0, the rectangle 0 wide: 150 − 500 is below 0, taken at 0 (AUD-046); type 150 and Enter |
 | 5 | Hold Up in Height for a second, release, then press Ctrl + Z (Cmd + Z on a Mac) | the height grows while held; one undo brings it back to 80 |
 | 6 | Pick the Rectangle tool, click the empty drawing, then Shift + click the first rectangle and press Shift + Up in Width | both 10 wider, as with one |
 

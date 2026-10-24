@@ -194,18 +194,20 @@ describe("Color picker: opening, sliders and values (US-035)", () => {
   });
 
   it("[F16.AC2] sets a value typed, refused when left empty", () => {
+    // 400 − 360: the hue an angle, going round (AUD-046).
     typeAndLeave("color-hue-value", "400");
-    expect(readValue("color-hue-value")).toBe("0");
+    expect(readValue("color-hue-value")).toBe("40");
 
     typeAndLeave("color-saturation-value", "");
     expect(readValue("color-saturation-value")).toBe("100");
   });
 
-  it("[F16.AC2] counts a negative value typed at the lower end, 0", () => {
+  it("[F44.AC4] takes 10 from the hue at 0 going round, 350, and from the saturation at 0, 0", () => {
+    // 0 − 10 = −10, kept from 0 to 359: 350; 0 − 5 taken at the saturation's least, 0.
     typeAndLeave("color-hue-value", "-10");
     typeAndLeave("color-saturation-value", "-5");
 
-    expect(readPickerValues()).toEqual(["0", "0", "100"]);
+    expect(readPickerValues()).toEqual(["350", "0", "100"]);
   });
 
   it("does not answer a key no slider answers", () => {

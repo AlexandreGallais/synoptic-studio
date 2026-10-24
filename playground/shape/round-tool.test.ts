@@ -136,13 +136,13 @@ describe("the Round tool (US-029)", () => {
     expect(readText("#path-data")).toMatch(/^M80 5\.35898 C/u);
   });
 
-  it("refuses a width below 0, the field showing the width again (US-085)", () => {
+  it("[F44.AC4] takes a width below 0 at 0, the round shape 0 wide (AUD-046)", () => {
     openOnStep(1);
     chooseShapeKind("round");
-    // -200 is relative: 120 − 200 is below 0.
+    // -200 is relative: 120 − 200 = −80, taken at 0.
     typeAndEnter("width", "-200");
 
-    expect([readValue("width"), readText("#status")]).toEqual(["120", ""]);
+    expect([readValue("width"), readText("#status")]).toEqual(["0", ""]);
   });
 
   it("refuses an angle emptied", () => {

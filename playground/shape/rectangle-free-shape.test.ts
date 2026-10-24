@@ -6,6 +6,7 @@ import {
   clickElement,
   clickPoint,
   openPage,
+  readShapeModel,
   readText,
   readValue,
   typeAndEnter,
@@ -86,18 +87,17 @@ describe("rectangle as a free shape", () => {
     expect(readText('#points [data-vertex="3"]')).toBe("3 · x 120 · y 80 · radius 10");
   });
 
-  it("[F09.AC4] still refuses a fractional width typed for the rectangle (Q15)", () => {
-    // A value typed is an integer (US-085): refused, the field shows the width again.
+  it("[F09.AC4] keeps the rectangle's width an integer, 2.5 typed rounded to 3 (Q15)", () => {
+    // A fraction typed is rounded once, a tie up (AUD-046): the rectangle stays on integers.
     typeAndEnter("width", "2.5");
 
-    expect([readValue("width"), readText("#status")]).toEqual(["120", ""]);
+    expect([readValue("width"), readShapeModel().width, readText("#status")]).toEqual(["3", 3, ""]);
   });
 
-  it("[F09.AC4] still refuses a fractional radius typed for the rectangle (Q15)", () => {
+  it("[F09.AC4] keeps the rectangle's radius an integer, 2.5 typed rounded to 3 (Q15)", () => {
     typeAndEnter("radius", "2.5");
 
-    expect(readText("#status")).toBe(
-      "Width, height and radius must be integers ≥ 0, and the angle an integer.",
-    );
+    expect([readValue("radius"), readText("#status")]).toEqual(["3", ""]);
+    expect(readText("#path-data")).toContain("A3 3");
   });
 });

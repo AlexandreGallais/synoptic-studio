@@ -10,3 +10,5 @@ export * from "./size-with-panel-value";
 export * from "./text-after-panel-edit";
 export * from "./text-panel-values";
 export type * from "./typed-panel-value";
+export * from "./value-with-typed";
+export * from "./whole-value-with-typed";

@@ -310,12 +310,12 @@ describe("the guided test of F14 (VAL-015): the decisions to confirm", () => {
     expect(readContents()).toEqual(["Hello\u{A0}World"]);
   });
 
-  it("decision 6: one line at least in a box 5 tall; max lines 100 001 refused", () => {
+  it("decision 6: one line at least in a box 5 tall; max lines 100 001 taken at 100 000", () => {
     openStep("One line at least (decision 6)");
     expect(readContents()).toEqual(["Hell…"]);
     typeInField("text-maximum-lines", "100001");
-    // Refused by the field, its 0 shown again (US-087).
-    expect([readValue("text-maximum-lines"), readContents()]).toEqual(["0", ["Hell…"]]);
+    // Taken at the field's most (AUD-046), still one line in a box 5 tall.
+    expect([readValue("text-maximum-lines"), readContents()]).toEqual(["100000", ["Hell…"]]);
   });
 
   it("decision 7: the ellipsis on, then off", () => {

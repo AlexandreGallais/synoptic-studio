@@ -107,8 +107,8 @@ describe("Text tool: turning (US-032)", () => {
     expect(frameTransform).toBe("rotate(0 11.89063 19.35938)");
   });
 
-  it("refuses a fractional angle and draws nothing, saying why", () => {
-    typeAndEnter("angle", "1.5");
+  it("refuses an angle emptied by a script and draws nothing, saying why", () => {
+    typeAndEnter("angle", "");
 
     expect(readText("#status")).toContain("the angle integers");
     expect(document.querySelectorAll("#canvas text")).toHaveLength(0);

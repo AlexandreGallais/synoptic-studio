@@ -233,7 +233,8 @@ describe("The drawing's options: Embed fonts (US-036), no HTML layer (US-044)", 
   it("[F15.AC2] hides the faces left out while the text is refused", () => {
     tick("embed-fonts", true);
     expect(readLeftOut()).toHaveLength(1);
-    typeAndEnter("text-size", "0");
+    // A size emptied by a script, which the field never read: the text refused.
+    typeAndEnter("text-size", "");
     expect(readLeftOut()).toEqual([]);
     expect(readDisplay("font-left-out")).toBe("none");
   });

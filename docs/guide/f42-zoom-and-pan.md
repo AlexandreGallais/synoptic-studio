@@ -30,7 +30,7 @@ For the review's summary; each can be changed.
 - Shapes dragged while the wheel zooms stay under the pointer: their place is read through the new view at each move of the pointer.
 - `=` zooms in as `+` does, as in Inkscape, so that `+` needs no `Shift` on a US keyboard.
 - `Shift` with `0`, `1` or `2` is read by the key's place on the keyboard, so that it works whatever character the layout gives it: `)` on a US keyboard, `0` on a French one.
-- The menu's zooms keep the canvas's centre, the pointer being on the menu; a percentage typed beyond the bounds is taken at the bound, and a text, a fraction or 0 is refused, the field showing the zoom again; since US-087, `-50` takes 50 away, as in every number field, and Up and Down step the percentage by 1, 10 with Shift.
+- The menu's zooms keep the canvas's centre, the pointer being on the menu; a percentage typed beyond the bounds is taken at the bound, 0 and below at 1 % since AUD-046, a fraction kept, and a text is refused, the field showing the zoom again; since US-087, `-50` takes 50 away, as in every number field, and Up and Down step the percentage by 1, 10 with Shift.
 - Until F44, an outline was cut to the region it was computed for by its pieces' chords, each drawn whole or left out; since F44 it is drawn whole, its edge's own path.
 
 ## The ideas behind it

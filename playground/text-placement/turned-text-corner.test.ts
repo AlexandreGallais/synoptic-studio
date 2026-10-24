@@ -125,7 +125,8 @@ describe("Text tool: X and Y of a turned text show its straight box (AUD-040)", 
 
   it("[F17.AC12] places the straight box at the x typed while the angle was refused, at the new angle", () => {
     typeAndEnter("angle", "23");
-    typeAndEnter("angle", "1.5");
+    // An angle emptied by a script, which the field never read: the text refused.
+    typeAndEnter("angle", "");
     typeAndEnter("shape-x", "60");
     typeAndEnter("angle", "40");
 

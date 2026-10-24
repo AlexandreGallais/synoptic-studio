@@ -9,6 +9,7 @@ import {
   clickElement,
   openServedPage,
   readShapeModel,
+  readText,
   readValue,
   selectInput,
   selectPageElement,
@@ -19,6 +20,7 @@ import {
 } from "../user-actions";
 
 import { NUMBER_FIELDS } from "./number-fields";
+import { OWN_FIELD_RANGES } from "./own-field-ranges";
 import { OWN_NUMBER_FIELDS } from "./own-number-fields";
 import { readOwnValue } from "./read-own-value";
 
@@ -72,15 +74,15 @@ function readRadius(): number {
 }
 
 /**
- * Makes a field with bounds.
+ * Makes a field of the id of one of the page's.
  *
- * @param bounds - its least and its most, `data-min` and `data-max`
+ * @param id - its id, its range read by it (`OWN_FIELD_RANGES`)
  * @returns an input outside the page
  */
-function makeField(bounds: Readonly<Record<string, string>>): HTMLInputElement {
+function makeField(id: string): HTMLInputElement {
   const field = document.createElement("input");
 
-  Object.assign(field.dataset, bounds);
+  field.id = id;
 
   return field;
 }
@@ -96,7 +98,9 @@ function undo(): void {
 
 describe("every number field, the rule of one shape's (US-087)", () => {
   beforeEach(() => {
-    // The page as it opens: the rectangle 120 × 80 at (0, 0), selected alone, its radius 10.
+    // The page as it opens: the rectangle 120 × 80 at (0, 0), selected alone, its radius 10; the
+    // history's bound the browser keeps forgotten, a memory taken at 1 000 MB by a test before.
+    localStorage.clear();
     openServedPage("");
   });
 
@@ -142,28 +146,56 @@ describe("every number field, the rule of one shape's (US-087)", () => {
   });
 
   it.each([
-    // 10 − 15 = −5, below the radius's 0.
-    { id: "radius", shown: "10", typed: "-15" },
-    { id: "radius", shown: "10", typed: "1.5" },
-    { id: "angle", shown: "0", typed: "abc" },
-    // 100 001, above the size's 100 000.
-    { id: "text-size", shown: "32", typed: "100001" },
-    { id: "history-memory", shown: "100", typed: "1001" },
-  ])("[F44.AC4] refuses $typed in $id, showing $shown again", ({ id, shown, typed }) => {
+    // 10 − 15 = −5, taken at the radius's 0; 1.5 rounded to 2, a tie up; 10 + 1.5 = 11.5 → 12.
+    { id: "radius", shown: "0", typed: "-15" },
+    { id: "radius", shown: "2", typed: "1.5" },
+    { id: "radius", shown: "12", typed: "+1.5" },
+    // A comma is a decimal separator: 10 + 1,5 = 11.5 → 12.
+    { id: "radius", shown: "12", typed: "+1,5" },
+    // 100 001 taken at the size's 100 000; 32 − 40 = −8 at its least, 1.
+    { id: "text-size", shown: "100000", typed: "100001" },
+    { id: "text-size", shown: "1", typed: "-40" },
+    // 1 001 MB at the memory's 1 000; 2.5 MB rounded to 3.
+    { id: "history-memory", shown: "1000", typed: "1001" },
+    { id: "history-memory", shown: "3", typed: "2.5" },
+  ])("[F44.AC4] takes $typed in $id as $shown, within its range", ({ id, shown, typed }) => {
     typeInField(id, typed);
 
     expect(readValue(id)).toBe(shown);
   });
 
-  it("[F44.AC4] keeps a polygon's sides at least 3, its 6 shown again for 2", () => {
+  it.each([
+    { id: "angle", shown: "0", typed: "abc" },
+    { id: "radius", shown: "10", typed: "" },
+    { id: "radius", shown: "10", typed: "-25+12" },
+    { id: "text-size", shown: "32", typed: "+" },
+  ])("[F44.AC4] refuses $typed in $id, no number, showing $shown again", ({ id, shown, typed }) => {
+    typeInField(id, typed);
+
+    expect(readValue(id)).toBe(shown);
+  });
+
+  it("[F44.AC4] goes round the Angle: -20 at 10 gives 350, 370 gives 10", () => {
+    typeInField("angle", "10");
+    typeInField("angle", "-20");
+
+    // 10 − 20 = −10, kept from 0 to 359: 350.
+    expect([readValue("angle"), readShapeModel().angle]).toEqual(["350", 350]);
+
+    typeInField("angle", "370");
+
+    expect([readValue("angle"), readShapeModel().angle]).toEqual(["10", 10]);
+  });
+
+  it("[F44.AC4] keeps a polygon's sides from 3 to 12: 2 gives 3, 13 gives 12", () => {
     chooseShapeKind("polygon");
     typeInField("corners", "2");
 
-    expect(readValue("corners")).toBe("6");
-
-    typeInField("corners", "3");
-
     expect(readValue("corners")).toBe("3");
+
+    typeInField("corners", "13");
+
+    expect([readValue("corners"), readText("#status")]).toEqual(["12", ""]);
   });
 
   it("[F44.AC4] steps a text's size and the history's memory by 1, and 10 with Shift", () => {
@@ -193,11 +225,11 @@ describe("every number field, the rule of one shape's (US-087)", () => {
     typeInField("history-memory", "1000");
     pressIn("history-memory", { key: "ArrowUp" });
 
-    // 1 000 + 1 above the memory's 1 000 MB: refused, 1 000 shown again.
+    // 1 000 + 1 above the memory's 1 000 MB: taken at 1 000.
     expect(readValue("history-memory")).toBe("1000");
   });
 
-  it("[F44.AC4] steps nothing in a field showing no number, a radius emptied as Mixed shows it", () => {
+  it("[F44.AC4] adds Up's 1 to each vertex's own radius in a field showing no number, as Mixed", () => {
     const field = selectInput("radius");
 
     // Given the focus at 10, then left and emptied by the page, as a radius Mixed shows none.
@@ -208,7 +240,8 @@ describe("every number field, the rule of one shape's (US-087)", () => {
 
     const down = pressIn("radius", { key: "ArrowUp" });
 
-    expect([readValue("radius"), down.defaultPrevented]).toEqual(["", true]);
+    // Each vertex's 10 + 1, the field then showing their common 11.
+    expect([readValue("radius"), readRadius(), down.defaultPrevented]).toEqual(["11", 11, true]);
   });
 
   it("[F44.AC4] steps the number shown before a text typed and not applied", () => {
@@ -218,6 +251,37 @@ describe("every number field, the rule of one shape's (US-087)", () => {
 
     // 10 + 1, the +5 dropped.
     expect([readValue("radius"), readRadius()]).toEqual(["11", 11]);
+  });
+
+  it("[F44.AC4] steps the number shown before 5 typed with its key, not the 5", () => {
+    selectInput("radius").focus();
+    pressIn("radius", { key: "5" });
+    typeValue("radius", "5");
+    pressIn("radius", { key: "ArrowUp" });
+
+    // 10 + 1: the 5 typed, a number, is no value applied.
+    expect([readValue("radius"), readRadius()]).toEqual(["11", 11]);
+  });
+
+  it("[F44.AC4] adds -5 to the Angle at 30, each key of it starting from 30, not from the text", () => {
+    typeInField("angle", "30");
+    typeInField("angle", "-5");
+
+    // 30 − 5 = 25: the keys of `-`, `5` and Enter each sent before the text applied.
+    expect(readValue("angle")).toBe("25");
+  });
+
+  it("[F44.AC4] draws the angle applied, not the one typed, at a redraw before Enter", () => {
+    selectInput("angle").focus();
+    pressIn("angle", { key: "3" });
+    typeValue("angle", "30");
+
+    selectPageElement("#canvas").dispatchEvent(
+      new WheelEvent("wheel", { bubbles: true, cancelable: true, deltaY: 100 }),
+    );
+
+    // The wheel's pan redraws the page from the angle applied, 0, never the 30 typed.
+    expect([readShapeModel().angle, readValue("angle")]).toEqual([0, "30"]);
   });
 
   it("[F44.AC4] finds every number field of the page under the rule", () => {
@@ -264,41 +328,44 @@ describe("a burst of arrows in the radius, one step (US-087)", () => {
   });
 });
 
-describe("readOwnValue (US-087)", () => {
+describe("readOwnValue (US-087, AUD-046)", () => {
   it.each([
-    // 3 typed in a field from 3 to 12; 12 its most; 10 + 2.
-    {
-      bounds: { max: "12", min: "3" },
-      expected: 3,
-      shown: 6,
-      typed: { isRelative: false, value: 3 },
-    },
-    {
-      bounds: { max: "12", min: "3" },
-      expected: 12,
-      shown: 6,
-      typed: { isRelative: false, value: 12 },
-    },
-    {
-      bounds: { max: "12", min: "3" },
-      expected: 12,
-      shown: 10,
-      typed: { isRelative: true, value: 2 },
-    },
-    // No bound: −100 000 typed kept.
-    { bounds: {}, expected: -100_000, shown: 0, typed: { isRelative: false, value: -100_000 } },
+    // Corners, 3 to 12: 3 kept; 2 at 3; 10 + 3 = 13 at 12; 6 + 1.5 = 7.5 rounded to 8.
+    { expected: 3, id: "corners", shown: 6, typed: { isRelative: false, value: 3 } },
+    { expected: 3, id: "corners", shown: 6, typed: { isRelative: false, value: 2 } },
+    { expected: 12, id: "corners", shown: 10, typed: { isRelative: true, value: 3 } },
+    { expected: 8, id: "corners", shown: 6, typed: { isRelative: true, value: 1.5 } },
+    // The Angle goes round: 10 − 20 = −10 is 350, 350 + 20 = 370 is 10, 360 is 0.
+    { expected: 350, id: "angle", shown: 10, typed: { isRelative: true, value: -20 } },
+    { expected: 10, id: "angle", shown: 350, typed: { isRelative: true, value: 20 } },
+    { expected: 0, id: "angle", shown: 0, typed: { isRelative: false, value: 360 } },
+    // The picker's hue is an angle: 370 is 10.
+    { expected: 10, id: "color-hue-value", shown: 0, typed: { isRelative: false, value: 370 } },
+    // The zoom keeps a fraction and starts at 1 %: 141 + 0.5; −50 at 1.
+    { expected: 141.5, id: "zoom-field", shown: 141, typed: { isRelative: true, value: 0.5 } },
+    { expected: 1, id: "zoom-field", shown: 100, typed: { isRelative: false, value: -50 } },
+    // A field the table does not name: whole numbers, no bound.
+    { expected: -100_000, id: "", shown: 0, typed: { isRelative: false, value: -100_000 } },
+    { expected: 3, id: "", shown: 0, typed: { isRelative: false, value: 2.5 } },
     // A fixed value needs no number shown.
-    { bounds: {}, expected: 7, shown: undefined, typed: { isRelative: false, value: 7 } },
-  ])("gives $expected for $typed.value from $shown", ({ bounds, expected, shown, typed }) => {
-    expect(readOwnValue(makeField(bounds), typed, shown)).toBe(expected);
+    { expected: 7, id: "radius", shown: undefined, typed: { isRelative: false, value: 7 } },
+  ])("gives $expected for $typed.value in $id from $shown", ({ expected, id, shown, typed }) => {
+    expect(readOwnValue(makeField(id), typed, shown)).toBe(expected);
   });
 
-  it.each([
-    // 2 below 3; 10 + 3 above 12; +1 from no number shown.
-    { bounds: { max: "12", min: "3" }, shown: 6, typed: { isRelative: false, value: 2 } },
-    { bounds: { max: "12", min: "3" }, shown: 10, typed: { isRelative: true, value: 3 } },
-    { bounds: {}, shown: undefined, typed: { isRelative: true, value: 1 } },
-  ])("refuses $typed.value from $shown", ({ bounds, shown, typed }) => {
-    expect(readOwnValue(makeField(bounds), typed, shown)).toBeUndefined();
+  it("leaves a relative value from no number shown to what the field sets, a Mixed radius", () => {
+    expect(readOwnValue(makeField("radius"), { isRelative: true, value: 1 }, undefined)).toBe(
+      undefined,
+    );
+  });
+
+  it("[F44.AC4] names every field of its own in its table, bounds from what each sets", () => {
+    openServedPage("");
+
+    const ids = [...document.querySelectorAll(OWN_NUMBER_FIELDS)].map((field) => field.id);
+
+    expect(new Set(ids)).toEqual(new Set(OWN_FIELD_RANGES.keys()));
+    expect(ids).toHaveLength(OWN_FIELD_RANGES.size);
+    expect(OWN_FIELD_RANGES.get("corners")).toMatchObject({ least: 3, most: 12 });
   });
 });

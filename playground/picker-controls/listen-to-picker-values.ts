@@ -1,10 +1,4 @@
-import {
-  DEGREES_PER_TURN,
-  PERCENT_SLIDER_RANGE,
-  clamp,
-  nearestInteger,
-  toShownHue,
-} from "../../src";
+import { PERCENT_SLIDER_RANGE, clamp, degreesInTurn, nearestInteger } from "../../src";
 import {
   applyPickedColor,
   readPickedColor,
@@ -29,9 +23,10 @@ const VALUE_FIELDS: readonly ValueField[] = [
 ];
 
 /**
- * Reads a number typed in one of the picker's value fields as the picker holds it: a hue from 0
- * to 360, a whole number, a hue of 360 shown 0 (`toShownHue`), a saturation, lightness or
- * brightness from 0 to 100 as a whole number (`nearestInteger`; ADR-0058); a number beyond an end counts at that end (`clamp`).
+ * Reads a number typed in one of the picker's value fields as the picker holds it, as a whole
+ * number (`nearestInteger`; ADR-0058): a hue, an angle, from 0 to 359, a hue beyond going round,
+ * 370 giving 10 and 360 giving 0 (`degreesInTurn`, AUD-046); a saturation, lightness or
+ * brightness from 0 to 100, a number beyond an end counting at that end (`clamp`).
  *
  * @kind procedure
  * @param document - page document
@@ -43,7 +38,7 @@ function readTypedValue(document: Document, field: ValueField): number {
   const typed = readNumber(document, field.id);
 
   return field.key === "hue"
-    ? toShownHue(clamp(typed, 0, DEGREES_PER_TURN))
+    ? degreesInTurn(nearestInteger(typed))
     : nearestInteger(clamp(typed, 0, PERCENT_SLIDER_RANGE.maximum));
 }
 

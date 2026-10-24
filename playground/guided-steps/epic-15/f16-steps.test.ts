@@ -507,7 +507,7 @@ describe("the guided test of F16 (VAL-016): its decisions, each with its example
     expect(readText("#text-color-message")).toContain("#ff8800 kept");
   });
 
-  it("decision 15: empty shown again; hue 400 and −10 held at the ends; the opacity a percent", () => {
+  it("decision 15: empty shown again; hue 400 going round to 40, −10 from it; the opacity a percent", () => {
     openStep("Beyond the ends (decision 15)");
     chooseOption("color-model", "hsb");
     clickElement("text-color-swatch");
@@ -520,7 +520,8 @@ describe("the guided test of F16 (VAL-016): its decisions, each with its example
 
     // 100 · 67 / 200 = 33.5, to the nearest percent: 34.
     pressPointer("#color-opacity", "pointerdown", { buttons: 1, clientX: 67, clientY: 5 });
-    expect([...hues, readValue("text-opacity")]).toEqual(["30", "0", "0", "34"]);
+    // 400 − 360 = 40, an angle going round (AUD-046); 40 − 10 = 30.
+    expect([...hues, readValue("text-opacity")]).toEqual(["30", "40", "30", "34"]);
   });
 
   it("decision 16: the opacity typed while open moves the bar; Escape gives the swatch the focus", () => {

@@ -22,7 +22,9 @@ function removeWatched(isForgotten: (watched: WatchedElement) => boolean): void 
  * nothing (note 0033, §3), so this one keeps each element it observes with its callback
  * (`WATCHED_ELEMENTS`), which the test calls by `runResizeObservers` where the browser would,
  * after a layout that changed the element's size (`REF-RESIZE-OBSERVER-1`, §3.6.1). Unlike the
- * browser's, it does not call back when observing starts, so that a mount draws the page once.
+ * browser's, it does not call back when observing starts (§1), so that a mount draws the page
+ * once; the browser's extra draw at a mount's first frame is accepted (`listenToCanvasSize`,
+ * AUD-046).
  *
  * @kind procedure
  * @param callback - what the observer calls on a size change

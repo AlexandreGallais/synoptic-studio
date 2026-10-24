@@ -16,6 +16,7 @@ import {
   readShapeModel,
   readText,
   readValue,
+  selectInput,
   selectPageElement,
   setElementBox,
   typeAndEnter,
@@ -189,16 +190,35 @@ describe("a value typed in one shape's fields, relative or fixed (US-085)", () =
     expect(readShapeModel().width).toBe(150);
   });
 
+  it.each(["150", "+10"])(
+    "[F44.AC2] keeps it 120 wide for %s typed in Width while the wheel redraws the page",
+    (typed) => {
+      selectInput("width").focus();
+      typeValue("width", typed);
+
+      selectPageElement("#canvas").dispatchEvent(
+        new WheelEvent("wheel", { bubbles: true, cancelable: true, deltaY: 100 }),
+      );
+
+      // The redraw reads the width applied, 120, never the text typed nor its `+` as no number.
+      expect([readShapeModel().width, readText("#status"), readValue("width")]).toEqual([
+        120,
+        "",
+        typed,
+      ]);
+    },
+  );
+
   it("[F44.AC2] sets 50 in X without a sign, the rectangle at x 50", () => {
     typeAndEnter("shape-x", "50");
 
     expect(readShapeModel().x).toBe(50);
   });
 
-  it.each(["-200", "1.5", "abc", ""])(
-    "[F44.AC2] refuses %j in Width, the rectangle 120 wide and the field showing 120",
+  it.each(["abc", "-25+12", ""])(
+    "[F44.AC2] refuses %j in Width, no number, the rectangle 120 wide and the field showing 120",
     (typed) => {
-      // 120 − 200 is below 0; a fraction, a word or nothing is no integer.
+      // A word, an expression (E18's) or nothing is no number.
       typeAndEnter("width", typed);
 
       expect(readShapeModel().width).toBe(120);
@@ -246,6 +266,39 @@ describe("a value typed in one shape's fields, relative or fixed (US-085)", () =
     expect(readShapeModel().height).toBeCloseTo(50 * Math.sqrt(3) + 10, 12);
     expect(readValue("height")).toBe("96.60254");
     expect(readText("#status")).toBe("");
+  });
+
+  it.each([
+    // 120 − 200 = −80, taken at 0; 1.5 rounded to 2, a tie up; 120 + 0.5 = 120.5 → 121.
+    { expected: 0, typed: "-200" },
+    { expected: 2, typed: "1.5" },
+    { expected: 121, typed: "+0.5" },
+    // A comma as the decimal separator: 1,5 is 1.5, rounded to 2.
+    { expected: 2, typed: "1,5" },
+  ])("[F44.AC2] makes the rectangle $expected wide for $typed in Width", ({ expected, typed }) => {
+    typeAndEnter("width", typed);
+
+    expect([readShapeModel().width, readValue("width")]).toEqual([expected, String(expected)]);
+  });
+
+  it("[F44.AC2] starts a relative value from 0 in a refused shape's Width", () => {
+    // The angle emptied by a script refuses the shape: +30 from 0, then the shape drawn 30 wide.
+    typeAndEnter("angle", "");
+    typeAndEnter("width", "+30");
+
+    expect(readValue("width")).toBe("30");
+
+    typeAndEnter("angle", "0");
+
+    expect(readShapeModel().width).toBe(30);
+  });
+
+  it("[F44.AC2] takes -30 from 0 at 0 in a refused shape's Width", () => {
+    typeAndEnter("angle", "");
+    typeAndEnter("width", "-30");
+
+    // 0 − 30 below 0, taken at 0, as any width.
+    expect(readValue("width")).toBe("0");
   });
 
   it("[F44.AC2] writes a value typed in a refused shape's Width as typed, as a number field", () => {
@@ -312,11 +365,11 @@ describe("a text's X, Y and box, alone (US-085)", () => {
     expect(readTextModel()).toMatchObject({ x: 40, y: 25 });
   });
 
-  it("[F44.AC2] refuses -300 in the box's Width, the box 200 wide and the field showing 200", () => {
+  it("[F44.AC2] makes the box 0 wide for -300 in its Width, 200 − 300 taken at 0", () => {
     typeAndEnter("text-box-width", "-300");
 
-    expect(readTextModel().boxWidth).toBe(200);
-    expect(readValue("text-box-width")).toBe("200");
+    expect(readTextModel().boxWidth).toBe(0);
+    expect(readValue("text-box-width")).toBe("0");
   });
 
   it("[F44.AC2] shows no Width for a text fitting its content, as before", () => {
