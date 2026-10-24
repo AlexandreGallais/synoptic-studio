@@ -31,7 +31,9 @@
         position: relative;
         flex: 1 1 0;
         min-width: 0;
-        overflow: hidden;
+        /* Clipped, not hidden: a box clipped is no scroll container, so that no focus on a button
+           of the toolbar beyond the stage scrolls it (US-084, REF-CSS-OVERFLOW-3, §3.1). */
+        overflow: clip;
       }
       /* No selection of page text starts on the drawing nor on the layer above it (F43), so that a
          text pressed, dragged across or double-clicked is picked as a shape, its letters never

@@ -6,6 +6,7 @@ import { showHover } from "../hover";
 import {
   openServedPage,
   readShapeModel,
+  runResizeObservers,
   selectPageElement,
   setElementBox,
   typeValue,
@@ -27,14 +28,14 @@ import type { BandSize, BoundingBox, ContourPiece, Point, View } from "../../src
 const AT_100: BandSize = { halfWidth: 1, step: 2 };
 
 /**
- * Shows a view, as the page would after a zoom or a pan: kept, then the page redrawn as the window
+ * Shows a view, as the page would after a zoom or a pan: kept, then the page redrawn as the canvas
  * resized.
  *
  * @param view - the view shown
  */
 function showView(view: View): void {
   PAGE_VIEWS.set(document, view);
-  globalThis.dispatchEvent(new Event("resize"));
+  runResizeObservers("#canvas");
 }
 
 /**

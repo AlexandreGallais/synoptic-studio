@@ -13,6 +13,7 @@ import {
   readDisplay,
   readShapeModel,
   readText,
+  runResizeObservers,
   selectPageElement,
   setElementBox,
 } from "../user-actions";
@@ -183,7 +184,7 @@ describe("a click with the selector selects the shape under it (US-067)", () => 
     expect(readShapePaths()).toEqual(paths);
 
     // A redraw keeps none selected.
-    globalThis.dispatchEvent(new Event("resize"));
+    runResizeObservers("#canvas");
 
     expect(readText("#shape-title")).toBe("No shape selected");
     expect(readShapePaths()).toEqual(paths);

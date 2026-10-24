@@ -9,6 +9,7 @@ import {
   dispatchDrawingPointer,
   openServedPage,
   readShapeModel,
+  runResizeObservers,
   selectPageElement,
   setElementBox,
   typeValue,
@@ -152,7 +153,7 @@ describe("the helps seen on any color (US-080)", () => {
 
     dragFrom({ x: 50, y: 50 }, { x: 50, y: 50 }, NO_KEY);
     PAGE_VIEWS.set(document, { origin: { x: 0, y: 0 }, scale: 2 });
-    globalThis.dispatchEvent(new Event("resize"));
+    runResizeObservers("#canvas");
 
     // Half widths 4 / 2 / 2 = 1 and 2 / 2 / 2 = 0.5 unit, chords 2 / 2 = 1 unit.
     expect(readOverlayPath("selection-light")).toBe(bandOf(a, 1, 1));

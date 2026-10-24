@@ -14,7 +14,7 @@ import type { GuidedStep } from "../guided-steps";
 /**
  * Mounts the playground, the listeners a mount before this one put on the document and its window
  * removed first (`removeListeners`, EN-150), so that each event is heard once: redraws on every
- * input and window resize, at most once per animation frame, the inputs before it gathered
+ * input and change of the canvas's size, at most once per animation frame, the inputs before it gathered
  * (`scheduleRedraw`, US-048), each redraw bringing the history of the drawing up to the page
  * (`updateHistory`, F40), a redraw asked drawn before a release or a click on the drawing acts,
  * heard first, the redraw the mount before asked and did not draw forgotten
