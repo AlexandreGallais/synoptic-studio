@@ -99,7 +99,8 @@ describe("playground: stretched polygon (US-021)", () => {
 
   it("ticks and unticks safely on a refused polygon, then draws again once it is valid", () => {
     chooseOption("shape", "polygon");
-    typeAndEnter("radius", "-5");
+    // A radius emptied by a script, which the field never read: the polygon refused.
+    typeAndEnter("radius", "");
     clickElement("stretched");
     clickElement("stretched");
 

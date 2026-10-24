@@ -112,7 +112,7 @@ export const GUIDED_STEPS_F14_OPTIONS: readonly GuidedStep[] = [
   },
   {
     explanation: "Width 100001, Enter; empty, Enter; then 110. Background opacity 101, Enter.",
-    look: "Width capped at 100 000, empty put back; opacity refused, 100 shown again.",
+    look: "Width capped at 100 000, empty put back; opacity taken at the most, 100.",
     title: "F14 · Refused values",
     values: createTextBoxStepValues(PUMP_110),
   },

@@ -36,17 +36,13 @@ function shapeWithSide(shape: Shape, side: "height" | "width", value: number): S
  * @kind domain
  * @param shape - a valid shape of the model
  * @param edit - the field, the value typed and the largest size
- * @returns the shape changed; `undefined` when its new width or height is refused
+ * @returns the shape changed
  * @see docs/domain/interaction.md#_2-selector
  */
-export function shapeAfterPanelEdit(shape: Shape, edit: PanelEdit): Shape | undefined {
+export function shapeAfterPanelEdit(shape: Shape, edit: PanelEdit): Shape {
   const { key } = edit;
   const own = shapePanelValues(shape)[key];
   const value = panelValueAfterEdit(own, edit);
-
-  if (value === undefined) {
-    return undefined;
-  }
 
   return isPanelSize(key)
     ? shapeWithSide(shape, key, value)

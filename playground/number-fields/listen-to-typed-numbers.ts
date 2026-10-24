@@ -53,6 +53,24 @@ function clearTypedField(event: Event): void {
 }
 
 /**
+ * Stops a `change` of a field acting as a number field whose text is the one it showed
+ * (`SHOWN_TEXTS`), no listener applying it, as a browser sends none for a field left unchanged
+ * (`REF-MDN-CHANGE-EVENT`): the 5 decimals of a turned text's X typed again keep its exact
+ * position, where rounding them would move it (AUD-046).
+ *
+ * @kind procedure
+ * @param event - a value applied, `change`, heard before any other listener of the document
+ * @see docs/domain/interaction.md#_2-selector
+ */
+function stopUnchangedText(event: Event): void {
+  const field = readNumberField(event.target);
+
+  if (field !== undefined && SHOWN_TEXTS.get(field) === field.value) {
+    event.stopImmediatePropagation();
+  }
+}
+
+/**
  * Writes the text a field acting as a number field shows as it gets the focus as the value
  * applied (`writeShownText`), a text typed and left without a change forgotten
  * (`clearTypedField`).
@@ -85,5 +103,6 @@ export function listenToTypedNumbers(document: Document): void {
   document.addEventListener("focusin", writeFocusedText, options);
   document.addEventListener("keydown", writeShownText, options);
   document.addEventListener("input", writeTypedField, options);
+  document.addEventListener("change", stopUnchangedText, options);
   document.addEventListener("change", clearTypedField, options);
 }

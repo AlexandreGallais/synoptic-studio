@@ -764,11 +764,12 @@ describe("Undo and Redo what is typed and chosen in the panel (US-075)", () => {
     expect(readShape(0)).toMatchObject({ width: 100 });
   });
 
-  it("[F40.AC2] takes one step from 6 to 8 corners, none while 13 is refused", () => {
+  it("[F40.AC2] takes one step from 6 to 8 corners, none while the polygon is refused", () => {
     chooseShapeKind("polygon");
-    typeAndLeave("corners", "13");
+    // Emptied by a script, which the field never read: no corners, the polygon refused.
+    typeAndLeave("corners", "");
 
-    // Refused (3 to 12): the drawing kept without A, no step.
+    // Refused: the drawing kept without A, no step.
     expect(readKeptDrawing(document)).toHaveLength(2);
     expect(readPresentDrawing()).toHaveLength(3);
 
@@ -784,7 +785,7 @@ describe("Undo and Redo what is typed and chosen in the panel (US-075)", () => {
 
   it("[F40.AC2] gives back a polygon refused, then dropped by a click on the empty drawing", () => {
     chooseShapeKind("polygon");
-    typeAndLeave("corners", "13");
+    typeAndLeave("corners", "");
     clickDrawing({ x: 600, y: 450 }, NO_KEY);
 
     expect(readKeptDrawing(document)).toHaveLength(2);
@@ -798,7 +799,7 @@ describe("Undo and Redo what is typed and chosen in the panel (US-075)", () => {
 
   it("[F40.AC2] gives back the last valid values of a polygon refused, the history unmoved", () => {
     chooseShapeKind("polygon");
-    typeAndLeave("corners", "13");
+    typeAndLeave("corners", "");
     press("body", UNDO);
 
     expect(readValue("corners")).toBe("6");

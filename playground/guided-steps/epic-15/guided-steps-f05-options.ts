@@ -122,8 +122,8 @@ export const GUIDED_STEPS_F05_OPTIONS: readonly GuidedStep[] = [
     values: createTextStepValues({ angle: 90, isStruckThrough: true, isUnderlined: true }),
   },
   {
-    explanation: "Size 0, Enter. Opacity 101, Enter. Color red; #1e293b.",
-    look: "Size and opacity refused, 32 and 100 shown again, the text kept; the color refused: drawing gone, message, field in red; back when valid.",
+    explanation: "Size abc, Enter. Opacity 101, Enter. Color red; #1e293b.",
+    look: "Size refused, no number, 32 shown again; opacity taken at the most, 100; the text kept; the color refused: drawing gone, message, field in red; back when valid.",
     title: "F05 · Refused values",
     values: createTextStepValues({}),
   },

@@ -15,6 +15,7 @@ import {
   readValue,
   selectPageElement,
   typeAndEnter,
+  typeInField,
 } from "../user-actions";
 
 import type { Point, Size } from "../../src";
@@ -273,24 +274,21 @@ describe("Text tool: a turned text grows in place (US-038)", () => {
     expectCorner(corner);
   });
 
-  it("[F05.AC5] refuses a fraction typed in X: a position typed is an integer (ADR-0057)", () => {
-    const { x } = readDrawn();
-    const [shown] = readFields();
-
+  it("[F05.AC5] rounds a fraction typed in X, 47.5 giving 48: a position typed is an integer (ADR-0057)", () => {
     typeAndEnter("shape-x", "47.5");
 
-    // Refused as any value of a field acting as a number field (US-085): X shown again.
-    expect(readFields()[0]).toBe(shown);
+    // Rounded once, a tie up (AUD-046): the straight box starts at 48.
+    expect(readFields()[0]).toBe("48");
     expect(readText("#status")).toBe("");
-    expect(readDrawn().x).toBe(x);
   });
 
-  it("[F05.AC5] accepts the 5 decimals shown typed back, the exact position behind them", () => {
+  it("[F05.AC5] keeps the exact position behind the 5 decimals shown typed back, no change", () => {
     typeAndEnter("text-letter-spacing", "10");
 
     const { x } = readDrawn();
 
-    typeAndEnter("shape-x", "46.71377");
+    // The text the field shows typed again: no change, as a browser sends none.
+    typeInField("shape-x", "46.71377");
 
     expect(readText("#status")).toBe("");
     expect(readDrawn().x).toBe(x);
@@ -331,8 +329,9 @@ describe("Text tool: a turned text grows in place (US-038)", () => {
   });
 
   it("[F05.AC5] draws a text where it is when its angle and its size change together", () => {
-    // The angle refused while the spacing changes: the last text drawn is at 23°, 87.953125 wide.
-    typeAndEnter("angle", "1.5");
+    // The angle refused while the spacing changes, emptied by a script: the last text drawn is at
+    // 23°, 87.953125 wide.
+    typeAndEnter("angle", "");
     typeAndEnter("text-letter-spacing", "10");
     typeAndEnter("angle", "40");
 
@@ -355,7 +354,8 @@ describe("Text tool: a turned text grows in place (US-038)", () => {
   it("[F05.AC5] keeps the corner of the last text drawn across a refused size", () => {
     const corner = readCorner();
 
-    typeAndEnter("text-size", "0");
+    // A size emptied by a script, which the field never read: the text refused.
+    typeAndEnter("text-size", "");
     expect(document.querySelectorAll("#canvas text")).toHaveLength(0);
 
     typeAndEnter("text-size", "24");

@@ -5,9 +5,11 @@ import {
   clickElement,
   clickPoint,
   openPage,
+  pressKey,
   readText,
   selectInput,
   typeAndEnter,
+  typeInField,
 } from "../user-actions";
 
 /**
@@ -92,6 +94,54 @@ describe("radius field", () => {
     expect(selectInput("radius").dataset["radii"]).toBe("0 0 0");
     expect(selectInput("radius").placeholder).toBe("");
     expect(selectInput("radius").value).toBe("0");
+  });
+
+  it("[F44.AC4] adds +5 typed over Mixed to each vertex's own radius, Mixed kept", () => {
+    giveRadii("10 0 0 0 0 6");
+    typeInField("radius", "+5");
+
+    // 10 + 5, 0 + 5 four times, 6 + 5 (AUD-046): each one's own, as several shapes' fields.
+    expect(selectInput("radius").dataset["radii"]).toBe("15 5 5 5 5 11");
+    expect([selectInput("radius").value, selectInput("radius").placeholder]).toEqual(["", "Mixed"]);
+  });
+
+  it("[F44.AC4] adds Up's 1 over Mixed to each vertex's own radius, -10 taken at 0", () => {
+    giveRadii("10 0 0 0 0 6");
+    selectInput("radius").focus();
+    pressKey("#radius", "ArrowUp");
+
+    expect(selectInput("radius").dataset["radii"]).toBe("11 1 1 1 1 7");
+
+    typeInField("radius", "-10");
+
+    // 11 − 10 = 1; 1 − 10 and 7 − 10 below 0, taken at 0.
+    expect(selectInput("radius").dataset["radii"]).toBe("1 0 0 0 0 0");
+  });
+
+  it("[F44.AC4] keeps every radius for +0 typed over Mixed, a relative 0", () => {
+    giveRadii("10 0 0 0 0 6");
+    typeInField("radius", "+0");
+
+    expect(selectInput("radius").dataset["radii"]).toBe("10 0 0 0 0 6");
+  });
+
+  it("[F44.AC4] refuses a text that is no number over Mixed, Mixed shown again", () => {
+    giveRadii("10 0 0 0 0 6");
+    typeInField("radius", "abc");
+
+    expect(selectInput("radius").dataset["radii"]).toBe("10 0 0 0 0 6");
+    expect([selectInput("radius").value, selectInput("radius").placeholder]).toEqual(["", "Mixed"]);
+  });
+
+  it("[F44.AC4] adds +2 typed in the points' field over Mixed to each selected one's own", () => {
+    giveRadii("10 0 0 0 0 6");
+    clickElement("mode-points");
+    clickPoint(1, false);
+    clickPoint(6, true);
+    typeInField("point-radius", "+2");
+
+    // Vertices 1 and 6 selected: 10 + 2 and 6 + 2, the others kept.
+    expect(selectInput("radius").dataset["radii"]).toBe("12 0 0 0 0 8");
   });
 
   it("[F03.AC2] stops reading Mixed as soon as the field is typed in", () => {

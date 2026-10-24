@@ -13,6 +13,7 @@ import {
   readValue,
   selectInput,
   typeAndEnter,
+  typeInField,
 } from "../user-actions";
 
 /**
@@ -103,17 +104,27 @@ describe("editing the points of a free shape", () => {
     expect(selectInput("width").value).toBe("150");
   });
 
-  it("[F08.AC2] ignores a coordinate that is not an integer", () => {
+  it("[F08.AC2] ignores a coordinate that is no number, its x shown again", () => {
+    openOnStep(1);
+    clickElement("mode-points");
+    clickPoint(3, false);
+    typeInField("point-x", "abc");
+
+    expect([readValue("shape"), readValue("point-x")]).toEqual(["rectangle", "120"]);
+    expect(readText('#points [data-vertex="3"]')).toBe("3 · x 120 · y 80 · radius 10");
+  });
+
+  it("[F44.AC4] rounds a coordinate typed with a fraction: 150.5 gives 151, a tie up", () => {
     openOnStep(1);
     clickElement("mode-points");
     clickPoint(3, false);
     typeAndEnter("point-x", "150.5");
 
-    expect(readValue("shape")).toBe("rectangle");
-    expect(readText('#points [data-vertex="3"]')).toBe("3 · x 120 · y 80 · radius 10");
+    expect(readValue("shape")).toBe("free");
+    expect(readText('#points [data-vertex="3"]')).toBe("3 · x 151 · y 80 · radius 10");
   });
 
-  it("[F08.AC1] stretches the converted polygon by an integer width, and refuses a fractional one", () => {
+  it("[F08.AC1] stretches the converted polygon by an integer width, a fraction typed rounded", () => {
     openOnStep(10);
     clickElement("mode-points");
     clickElement("convert");
@@ -121,12 +132,13 @@ describe("editing the points of a free shape", () => {
 
     expect(readText('#points [data-vertex="1"]')).toBe("1 · x 37.5 · y 93.30127 · radius 0");
 
-    // A value typed is an integer (US-085): 12.5 refused, the field shows 50 again.
+    // A fraction typed is rounded, a tie up (AUD-046): 12.5 gives 13.
     typeAndEnter("width", "12.5");
 
-    expect(readValue("width")).toBe("50");
+    expect(readValue("width")).toBe("13");
 
-    typeAndEnter("radius", "-1");
+    // A radius emptied by a script, which the field never read: refused.
+    typeAndEnter("radius", "");
 
     expect(readText("#status")).toBe(
       "Width, height and radius typed must be integers ≥ 0, the angle an integer, and the points must span some width and height.",
@@ -159,10 +171,10 @@ describe("editing the points of a free shape", () => {
   });
 
   it("[F08.AC1] converts no refused polygon", () => {
-    // Step 10 with 2 corners: no polygon.
+    // Step 10, its corners emptied by a script: no polygon.
     openOnStep(10);
     clickElement("mode-points");
-    typeAndEnter("corners", "2");
+    typeAndEnter("corners", "");
     clickElement("convert");
 
     expect(readValue("shape")).toBe("polygon");

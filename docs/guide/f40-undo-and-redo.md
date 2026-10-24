@@ -12,7 +12,7 @@
 
 **A text placed is one step with what you type in it.** Choose the Text tool and click the drawing: the text starts empty, a thin dashed bar one line tall showing where its first letter will go, and the Content field has the focus. Type `Valve` and leave the field: placing the text and typing it are one step, and one Ctrl + Z removes the text, since nothing was there before. Its size or its font may be set before typing it, in the same step. A text left empty is removed as soon as you click elsewhere, choose another tool or press Escape, and takes no step.
 
-**A value refused takes no step.** Type 13 in a polygon's Corners, refused since a polygon has 3 to 12, then 8: that is one step, from 6 to 8. Ctrl + Z while the value is refused gives back the shape as it was last drawn; a click on the empty drawing drops the shape refused, and Ctrl + Z brings it back.
+**A value refused takes no step.** A word typed in a field is refused, its number shown again, and takes no step; since AUD-046, 13 typed in a polygon's Corners is taken at 12, a polygon having 3 to 12, and is a step as any value applied. While a shape is refused, its points spanning no area, no step is taken; Ctrl + Z then gives back the shape as it was last drawn, and a click on the empty drawing drops the shape refused, which Ctrl + Z brings back.
 
 **In a field of the panel.** While you type in a field, Ctrl + Z is the field's own, as in any text box. Once the value is applied, by Enter or by leaving the field, Ctrl + Z goes to the drawing even if the field still has the focus: type 150 in W, press Enter, then Ctrl + Z, and the shape is 100 wide again.
 
@@ -50,7 +50,7 @@ For the review's summary; each can be changed.
 - Ctrl + Z while a new text is still empty removes it without undoing anything else.
 - A drag of a shape not selected gives back, undone, the selection before it, none, the press alone selecting nothing; a tool armed stays armed after an undo; Ctrl + Z is taken even with nothing to undo, so the browser never acts on it, and left to the browser with Alt held.
 - The size is written in B, kB, MB or GB of 1 000 each, to one decimal, `1.2 kB`.
-- Memory is set in whole MB from 0 to 1 000 and Steps kept from 0 to 100, so that 100 steps of 1 000 rectangles changed at once, about 124 MB, stay near the default size; a value outside them, a fraction or an empty field is put back as it was, without a message.
+- Memory is set in whole MB from 0 to 1 000 and Steps kept from 0 to 100, so that 100 steps of 1 000 rectangles changed at once, about 124 MB, stay near the default size; a value outside them is taken at the nearer bound and a fraction rounded, 2.5 MB giving 3, while a word or an empty field is put back as it was, without a message.
 - The moves held are those of one rectangle 100 × 50 moved alone, 1 244 bytes each, rounded down to tens, `about 80,380 moves`, its digits grouped by commas as English writes them; a change of more shapes holds fewer.
 - A memory or a number of steps applied bounds the history at once, as a step does; while a shape is being moved, a new text typed or a value refused, it waits for the next step.
 - The browser keeps both values for the next session, as the checklists keep their ticks; a value it kept that the fields would refuse is put back to its default.

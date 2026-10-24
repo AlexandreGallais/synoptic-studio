@@ -52,11 +52,10 @@ function textWithBoxSide(text: Text, side: "height" | "width", value: number): T
  * @param text - a valid text of the model
  * @param block - its measured block (`textBlock`)
  * @param edit - the field, the value typed and the largest size
- * @returns the text changed, or as it is for a size typed while it fits its content; `undefined`
- * when its box's new width or height is refused
+ * @returns the text changed, or as it is for a size typed while it fits its content
  * @see docs/domain/interaction.md#_2-selector
  */
-export function textAfterPanelEdit(text: Text, block: Size, edit: PanelEdit): Text | undefined {
+export function textAfterPanelEdit(text: Text, block: Size, edit: PanelEdit): Text {
   const { key } = edit;
 
   if (isPanelSize(key) && !text.isInBox) {
@@ -69,10 +68,6 @@ export function textAfterPanelEdit(text: Text, block: Size, edit: PanelEdit): Te
     ...edit,
     maxSize: Math.min(edit.maxSize, TEXT_RANGES.boxSide.last),
   });
-
-  if (value === undefined) {
-    return undefined;
-  }
 
   return isPanelSize(key)
     ? textWithBoxSide(text, key, value)

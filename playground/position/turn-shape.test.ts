@@ -123,14 +123,20 @@ describe("turning and moving a shape (US-018)", () => {
     expect(drawn("box")).toBe(1);
   });
 
-  it("[F04.AC1] refuses an angle that is not an integer", () => {
+  it("[F44.AC4] rounds an angle typed with a fraction: 2.5 gives 3, a tie up", () => {
     typeAndEnter("angle", "2.5");
 
-    expect(readText("#status")).not.toBe("");
+    expect([readValue("angle"), readText("#status")]).toEqual(["3", ""]);
   });
 
-  it("[F04.AC3] moves nothing for a position that is not an integer", () => {
+  it("[F44.AC4] rounds a position typed with a fraction: 2.5 in X gives 3", () => {
     typeAndEnter("shape-x", "2.5");
+
+    expect(readText("#straight-box")).toBe("Straight box: x 3, y 0, width 120, height 80");
+  });
+
+  it("[F04.AC3] moves nothing for a position that is no number", () => {
+    typeAndEnter("shape-x", "abc");
 
     expect(readText("#straight-box")).toBe("Straight box: x 0, y 0, width 120, height 80");
   });

@@ -300,8 +300,8 @@ describe("Text tool", () => {
     expect(readLines()[0]).toEqual(["H", "10", "35.5"]);
   });
 
-  it("refuses a size of 0 and draws nothing, saying why, the last valid text kept", () => {
-    typeAndEnter("text-size", "0");
+  it("refuses a size emptied by a script and draws nothing, saying why, the last valid text kept", () => {
+    typeAndEnter("text-size", "");
     expect(readText("#status")).toContain("Size must be an integer from 1 to 100 000");
     expect(document.querySelectorAll("#canvas text")).toHaveLength(0);
     expect(selectPageElement("#text-size").getAttribute("aria-invalid")).toBe("true");

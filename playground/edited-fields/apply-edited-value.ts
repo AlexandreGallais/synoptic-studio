@@ -1,13 +1,15 @@
-import { isDrawnText, isPanelSize } from "../../src";
+import { isDrawnText, isPanelSize, panelValueAfterEdit } from "../../src";
+import { resetShownText } from "../applied-values";
 import { DRAWING_KEYS, readStoredDrawing, writeStoredDrawing } from "../kept-shapes";
-import { selectElement } from "../page";
+import { selectElement, writeInputValue } from "../page";
 import { MAX_SIZE } from "../shape";
 
 import { readEditedKept } from "./read-edited-kept";
 import { writeEditedGeometry } from "./write-edited-geometry";
 import { writeEditedText } from "./write-edited-text";
 
-import type { PanelEdit, PanelValues, TypedPanelValue } from "../../src";
+import type { EditedField } from "./edited-field";
+import type { PanelEdit, TypedPanelValue } from "../../src";
 import type { KeptShape } from "../kept-shapes";
 
 /**
@@ -37,59 +39,87 @@ function writeEditedShape(document: Document, kept: KeptShape, isBoxTyped: boole
   writeEditedText(document, shape);
 }
 
-/** A value applied in a field of the shape the panel edits: its field, the value and the largest size. */
-type AppliedEdit = Omit<PanelEdit, "typed"> & {
-  /** The value, relative or fixed; `undefined` when the text typed is no integer. */
-  readonly typed: TypedPanelValue | undefined;
-};
+/**
+ * Writes a value applied in a field of a shape refused, which has no value of its own to start
+ * from (AUD-046): a relative value from 0, a size taken within 0 and 100 000
+ * (`panelValueAfterEdit`), so that the redraw reads it; a text that is no number puts back the
+ * text the field showed before (`resetShownText`).
+ *
+ * @kind procedure
+ * @param document - page document
+ * @param field - the value it sets and the field's id
+ * @param typed - the value, relative or fixed; `undefined` when the text typed is no number
+ * @see docs/domain/interaction.md#_2-selector
+ */
+function writeRefusedValue(
+  document: Document,
+  field: EditedField,
+  typed: TypedPanelValue | undefined,
+): void {
+  const [key, id] = field;
+
+  if (typed === undefined) {
+    resetShownText(document, id);
+
+    return;
+  }
+
+  writeInputValue(document, id, panelValueAfterEdit(0, { key, maxSize: MAX_SIZE, typed }));
+}
 
 /**
- * Reads the shape the panel edits once a value is applied in one of its fields, as one of several
- * shapes (`readEditedKept`).
+ * Sets the shape the panel edits, as last drawn, by a value applied in one of its fields
+ * (`readEditedKept`), then keeps it as the one edited and writes it into the panel
+ * (`writeEditedShape`), a width or height marking a text's box as the designer's.
  *
  * @kind procedure
  * @param document - page document
  * @param kept - the shape as last drawn, and its kind
  * @param edit - the field, the value applied and the largest size (Q20)
- * @returns the shape set; as it was for a value refused, or no integer
  * @see docs/domain/interaction.md#_2-selector
  */
-function readAppliedKept(document: Document, kept: KeptShape, edit: AppliedEdit): KeptShape {
-  const { typed } = edit;
+function writeAppliedShape(document: Document, kept: KeptShape, edit: PanelEdit): void {
+  const shown = readEditedKept(document, kept, edit);
 
-  return (
-    (typed === undefined ? undefined : readEditedKept(document, kept, { ...edit, typed })) ?? kept
-  );
+  writeStoredDrawing(document, DRAWING_KEYS.edited, [shown]);
+  writeEditedShape(document, shown, isPanelSize(edit.key));
 }
 
 /**
  * Sets the shape the panel edits, alone, by a value of one of its fields (US-085), as each of
- * several shapes is set (`readEditedKept`, `shapeAfterPanelEdit`, `textAfterPanelEdit`): typed, an
- * integer relative with a sign (`parsePanelValue`), or an arrow's step, relative, from the shape
- * as last drawn, a size capped at 100 000 (Q20); the shape then kept as the one edited, so that
- * the next key starts from it before the redraw, and written into the panel, its fields showing
- * its values again (`writeEditedShape`), a value refused putting them back. A shape refused has no
- * value to start from: its field keeps the text typed, read as before.
+ * several shapes is set (`readEditedKept`, `shapeAfterPanelEdit`, `textAfterPanelEdit`): typed, a
+ * number relative with a sign (`parsePanelValue`), or an arrow's step, relative, from the shape
+ * as last drawn, a size taken within 0 and 100 000 (Q20, AUD-046); the shape then kept as the one
+ * edited, so that the next key starts from it before the redraw, and written into the panel, its
+ * fields showing its values again (`writeEditedShape`), a text that is no number putting them
+ * back. A shape refused has no value to start from: a relative value starts from 0
+ * (`writeRefusedValue`).
  *
  * @kind procedure
  * @param document - page document
- * @param key - the field: `x`, `y`, `width` or `height`
- * @param typed - the value, relative or fixed; `undefined` when the text typed is no integer
+ * @param field - the value it sets, `x`, `y`, `width` or `height`, and the field's id
+ * @param typed - the value, relative or fixed; `undefined` when the text typed is no number
  * @see docs/domain/interaction.md#_2-selector
  */
 export function applyEditedValue(
   document: Document,
-  key: keyof PanelValues,
+  field: EditedField,
   typed: TypedPanelValue | undefined,
 ): void {
   const [kept] = readStoredDrawing(document, DRAWING_KEYS.edited);
 
   if (kept === undefined) {
+    writeRefusedValue(document, field, typed);
+
     return;
   }
 
-  const shown = readAppliedKept(document, kept, { key, maxSize: MAX_SIZE, typed });
+  if (typed === undefined) {
+    // No number: its fields show its values again.
+    writeEditedShape(document, kept, false);
 
-  writeStoredDrawing(document, DRAWING_KEYS.edited, [shown]);
-  writeEditedShape(document, shown, shown !== kept && isPanelSize(key));
+    return;
+  }
+
+  writeAppliedShape(document, kept, { key: field[0], maxSize: MAX_SIZE, typed });
 }

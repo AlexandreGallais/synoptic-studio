@@ -42,9 +42,22 @@ describe("panelValueAfterEdit (F38)", () => {
     expect(panelValueAfterEdit(10.5, edit("width", 5, true))).toBe(15.5);
   });
 
-  it("[F38.AC2] refuses a width or a height below 0: 40 − 41, 0 − 1", () => {
-    expect(panelValueAfterEdit(40, edit("width", -41, true))).toBeUndefined();
-    expect(panelValueAfterEdit(0, edit("height", -1, true))).toBeUndefined();
+  it("[F44.AC4] takes a width or a height below 0 at 0: 40 − 41, 0 − 1", () => {
+    expect(panelValueAfterEdit(40, edit("width", -41, true))).toBe(0);
+    expect(panelValueAfterEdit(0, edit("height", -1, true))).toBe(0);
+  });
+
+  it("[F44.AC4] rounds the value computed from a fraction typed, a tie up: 1.5, 10 + 1.5, 10 − 2.5", () => {
+    // 1.5 → 2; 11.5 → 12; 7.5 → 8; −20.5 in X → −20, the tie toward +∞ (Q45).
+    expect(panelValueAfterEdit(120, edit("width", 1.5, false))).toBe(2);
+    expect(panelValueAfterEdit(10, edit("width", 1.5, true))).toBe(12);
+    expect(panelValueAfterEdit(10, edit("height", -2.5, true))).toBe(8);
+    expect(panelValueAfterEdit(0, edit("x", -20.5, false))).toBe(-20);
+  });
+
+  it("[F44.AC4] rounds before it caps: 99 999.6 typed in W gives 100 000, −0.4 gives 0", () => {
+    expect(panelValueAfterEdit(40, edit("width", 99_999.6, false))).toBe(MAX_SIZE);
+    expect(panelValueAfterEdit(40, edit("width", -0.4, false))).toBe(0);
   });
 
   it("keeps a width or a height of 0: 40 − 40, or 0 typed", () => {

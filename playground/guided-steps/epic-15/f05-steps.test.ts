@@ -334,9 +334,9 @@ describe("the guided test of F05 (VAL-014): placing and turning", () => {
   });
 
   it.each([
-    ["text-size", "0", "32"],
+    ["text-size", "abc", "32"],
     ["text-opacity", "101", "100"],
-  ])("refuses %s %s, %s shown again, the text drawn (US-087)", (id, refused, shown) => {
+  ])("takes %s %s as %s, the text drawn (US-087, AUD-046)", (id, refused, shown) => {
     openStep("Refused values");
     typeInField(id, refused);
 
@@ -421,12 +421,12 @@ describe("the guided test of F05 (VAL-014): the decisions to confirm", () => {
     expect(readValue("text-weight")).toBe("700");
   });
 
-  it("letter spacing 100 001 refused, −100 000 accepted without a frame", () => {
+  it("letter spacing 100 001 taken at 100 000, −100 000 accepted without a frame", () => {
     openStep("Spacing bounds ±100 000 (decision)");
     typeInField("text-letter-spacing", "100001");
-    // Refused by the field, its 0 shown again (US-087); −100 000 then takes 100 000 from 0.
-    expect([readValue("text-letter-spacing"), readText("#status")]).toEqual(["0", ""]);
-    typeInField("text-letter-spacing", "-100000");
+    // Taken at the field's most (AUD-046); −200 000 then takes 200 000 from 100 000: −100 000.
+    expect([readValue("text-letter-spacing"), readText("#status")]).toEqual(["100000", ""]);
+    typeInField("text-letter-spacing", "-200000");
     expect([readText("#status"), hasFrame(), readBlock().width]).toEqual(["", false, 0]);
   });
 

@@ -63,8 +63,9 @@ describe("playground", () => {
     expect(readText("#path-data")).toContain("A10 10 0 0 1 100 10");
   });
 
-  it("refuses a negative radius and clears the effective radius", () => {
-    typeAndEnter("radius", "-3");
+  it("refuses a radius emptied by a script and clears the effective radius", () => {
+    // A field emptied with no focus nor key, the page never reading its text: no radius.
+    typeAndEnter("radius", "");
 
     expect(readText("#status")).toBe(
       "Width, height and radius must be integers ≥ 0, and the angle an integer.",
@@ -276,8 +277,19 @@ describe("playground", () => {
     );
   });
 
-  it("[F02.AC1] refuses 13, 2, 2.5 and no corners", () => {
-    typeAndEnter("corners", "13");
+  it.each([
+    // 13 taken at 12; 2 at 3; 2.5 rounded to 3, a tie up (AUD-046).
+    { expected: "12", typed: "13" },
+    { expected: "3", typed: "2" },
+    { expected: "3", typed: "2.5" },
+  ])("[F44.AC4] takes $typed corners as $expected, from 3 to 12", ({ expected, typed }) => {
+    typeAndEnter("corners", typed);
+
+    expect([readValue("corners"), readText("#status")]).toEqual([expected, ""]);
+  });
+
+  it("[F02.AC1] refuses no corners, emptied by a script", () => {
+    typeAndEnter("corners", "");
 
     expect(readText("#status")).toBe(
       "Width, height and radius must be integers ≥ 0, corners an integer from 3 to 12, and the angle an integer.",
@@ -285,13 +297,6 @@ describe("playground", () => {
 
     expect(document.querySelector("#corners")?.getAttribute("aria-invalid")).toBe("true");
     expect(readText("#effective")).toBe("");
-
-    for (const corners of ["2", "2.5", ""]) {
-      typeAndEnter("corners", corners);
-
-      expect(readText("#status")).toContain("corners an integer from 3 to 12");
-      expect(document.querySelector("#corners")?.getAttribute("aria-invalid")).toBe("true");
-    }
   });
 
   it("[F02.AC4] goes back to the rectangle, the number of corners hidden and ignored", () => {

@@ -163,8 +163,15 @@ describe("The underline's and the strike-through's colors (US-041)", () => {
     expect(readStrokeFills()).toEqual(["#ff0000 1", "#1e293b 1"]);
   });
 
+  it("[F16.AC1] takes text-underline-opacity = '101' at 100, the color then chosen (AUD-046)", () => {
+    typeInField("text-underline-opacity", "101");
+
+    expect(isFollowing("text-underline-follows")).toBe(false);
+    expect([readValue("text-underline-opacity"), readText("#status")]).toEqual(["100", ""]);
+  });
+
   it.each([
-    { id: "text-underline-opacity", value: "101" },
+    { id: "text-underline-opacity", value: "abc" },
     { id: "text-strike-opacity", value: "" },
   ])(
     "[F16.AC1] refuses $id = '$value', 100 shown again, the stroke still following (US-087)",

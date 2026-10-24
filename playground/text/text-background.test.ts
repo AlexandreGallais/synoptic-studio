@@ -8,8 +8,10 @@ import {
   clickElement,
   openServedPage,
   readText,
+  readValue,
   selectPageElement,
   typeAndEnter,
+  typeInField,
   typeValue,
 } from "../user-actions";
 
@@ -133,9 +135,15 @@ describe("Text tool: a background behind the text (US-034)", () => {
     expect(readBackground()[0]?.match(/M/gu)).toHaveLength(2);
   });
 
+  it("[F44.AC4] takes text-background-opacity = '101' at 100, the text drawn (AUD-046)", () => {
+    clickElement("text-background");
+    typeInField("text-background-opacity", "101");
+
+    expect([readValue("text-background-opacity"), readText("#status")]).toEqual(["100", ""]);
+  });
+
   it.each([
     { id: "text-background-color", value: "#ff800" },
-    { id: "text-background-opacity", value: "101" },
     { id: "text-background-opacity", value: "" },
   ])("refuses $id = '$value' and draws nothing", ({ id, value }) => {
     clickElement("text-background");

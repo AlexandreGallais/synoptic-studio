@@ -101,16 +101,16 @@ describe("shapeAfterPanelEdit (F38)", () => {
     // from 10 to 55.80127, as one shape's x typed (ADR-0035).
     const moved = shapeAfterPanelEdit(TURNED_A, edit("x", 50, false));
 
-    expect(moved?.x).toBeCloseTo(55.80127, 5);
-    expect(moved?.y).toBe(20);
-    expect(moved === undefined ? undefined : shapePanelValues(moved).x).toBeCloseTo(50, 9);
+    expect(moved.x).toBeCloseTo(55.80127, 5);
+    expect(moved.y).toBe(20);
+    expect(shapePanelValues(moved).x).toBeCloseTo(50, 9);
   });
 
   it("[F38.AC2] moves A turned by 30° by -20 in Y, its straight box from −1.65064 to −21.65064", () => {
     const moved = shapeAfterPanelEdit(TURNED_A, edit("y", -20, true));
 
-    expect(moved?.x).toBe(10);
-    expect(moved?.y).toBeCloseTo(0, 9);
+    expect(moved.x).toBe(10);
+    expect(moved.y).toBeCloseTo(0, 9);
   });
 
   it("[F38.AC2] sets the width of A turned by 30°, its turned top-left corner kept (US-019)", () => {
@@ -122,18 +122,21 @@ describe("shapeAfterPanelEdit (F38)", () => {
     // (29.19873 + 52.45191, −1.65064 + 59.15064) = (81.65064, 57.5), the position (6.65064, 32.5).
     const resized = shapeAfterPanelEdit(TURNED_A, edit("width", 50, true));
 
-    expect(resized?.width).toBe(150);
-    expect(resized?.height).toBe(50);
-    expect(resized?.x).toBeCloseTo(6.65064, 5);
-    expect(resized?.y).toBeCloseTo(32.5, 5);
+    expect(resized.width).toBe(150);
+    expect(resized.height).toBe(50);
+    expect(resized.x).toBeCloseTo(6.65064, 5);
+    expect(resized.y).toBeCloseTo(32.5, 5);
   });
 
-  it("[F38.AC2] refuses -50 in W for B, 40 wide: −10 below 0", () => {
-    expect(shapeAfterPanelEdit(SHAPE_B, edit("width", -50, true))).toBeUndefined();
+  it("[F44.AC4] makes B 0 wide for -50 in W, 40 wide: −10 taken at 0", () => {
+    expect(shapeAfterPanelEdit(SHAPE_B, edit("width", -50, true))).toEqual({
+      ...SHAPE_B,
+      width: 0,
+    });
   });
 
   it("caps a width at 100 000, as one shape's field (Q20)", () => {
-    expect(shapeAfterPanelEdit(SHAPE_B, edit("width", 250_000, false))?.width).toBe(100_000);
+    expect(shapeAfterPanelEdit(SHAPE_B, edit("width", 250_000, false)).width).toBe(100_000);
   });
 
   it("moves a triangle by its contour's straight box, not its box", () => {
@@ -142,8 +145,8 @@ describe("shapeAfterPanelEdit (F38)", () => {
     const before = shapePanelValues(TRIANGLE).x;
     const moved = shapeAfterPanelEdit(TRIANGLE, edit("x", 50, false));
 
-    expect(moved?.x).toBeCloseTo(10 + 50 - before, 9);
-    expect(moved === undefined ? undefined : shapePanelValues(moved).x).toBeCloseTo(50, 9);
+    expect(moved.x).toBeCloseTo(10 + 50 - before, 9);
+    expect(shapePanelValues(moved).x).toBeCloseTo(50, 9);
   });
 
   it("moves a shape 0 × 0 at (10, 20) by its point: 50 in X puts it at x 50", () => {

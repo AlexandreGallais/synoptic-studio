@@ -12,6 +12,7 @@ import {
   selectPageElement,
   setElementBox,
   typeAndEnter,
+  typeInField,
 } from "../user-actions";
 
 import { HISTORY_BOUND_KEY } from "./history-bound-key";
@@ -153,17 +154,30 @@ describe("the history's memory size and steps kept, set by the designer (US-076)
   });
 
   it.each([
-    { id: "history-memory", typed: "1001", want: "100" },
-    { id: "history-memory", typed: "-1", want: "100" },
-    { id: "history-memory", typed: "2.5", want: "100" },
+    // 1 001 MB taken at 1 000; 100 − 1; 2.5 MB rounded to 3, a tie up.
+    { bound: { size: 1e9, steps: 5 }, id: "history-memory", typed: "1001", want: "1000" },
+    { bound: { size: 99e6, steps: 5 }, id: "history-memory", typed: "-1", want: "99" },
+    { bound: { size: 3e6, steps: 5 }, id: "history-memory", typed: "2.5", want: "3" },
+    // 101 steps taken at 100; 5 − 1; 1.5 rounded to 2.
+    { bound: { size: 1e8, steps: 100 }, id: "history-steps", typed: "101", want: "100" },
+    { bound: { size: 1e8, steps: 4 }, id: "history-steps", typed: "-1", want: "4" },
+    { bound: { size: 1e8, steps: 2 }, id: "history-steps", typed: "1.5", want: "2" },
+  ])("[F44.AC4] takes $typed in $id as $want, within its range", ({ bound, id, typed, want }) => {
+    openBoundedPage();
+    typeInField(id, typed);
+
+    expect(readValue(id)).toBe(want);
+    expect(JSON.parse(localStorage.getItem(HISTORY_BOUND_KEY) ?? "null")).toEqual(bound);
+  });
+
+  it.each([
     { id: "history-memory", typed: "", want: "100" },
-    { id: "history-steps", typed: "101", want: "5" },
-    { id: "history-steps", typed: "-1", want: "5" },
-    { id: "history-steps", typed: "1.5", want: "5" },
+    { id: "history-memory", typed: "abc", want: "100" },
     { id: "history-steps", typed: "", want: "5" },
+    { id: "history-steps", typed: "1,5", want: "5" },
   ])("[F40.AC4] gives back $want in $id for $typed, the bound unchanged", ({ id, typed, want }) => {
     openBoundedPage();
-    typeAndEnter(id, typed);
+    typeInField(id, typed);
 
     expect(readValue(id)).toBe(want);
     expect(localStorage.getItem(HISTORY_BOUND_KEY)).toBeNull();

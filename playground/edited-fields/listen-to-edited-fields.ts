@@ -15,9 +15,9 @@ import { EDITED_FIELDS } from "./edited-fields";
  * @see docs/domain/interaction.md#_2-selector
  */
 export function listenToEditedFields(document: Document, update: () => void): void {
-  for (const [key, id] of EDITED_FIELDS) {
-    listenToNumberField(document, id, (typed) => {
-      applyEditedValue(document, key, typed);
+  for (const field of EDITED_FIELDS) {
+    listenToNumberField(document, field[1], (typed) => {
+      applyEditedValue(document, field, typed);
       update();
     });
   }

@@ -50,8 +50,8 @@ describe("textAfterPanelEdit (F38)", () => {
     const turned = { ...FITTING, angle: 90 };
     const moved = textAfterPanelEdit(turned, BLOCK, edit("x", 0, false));
 
-    expect(moved?.x).toBeCloseTo(-25, 9);
-    expect(moved?.y).toBe(20);
+    expect(moved.x).toBeCloseTo(-25, 9);
+    expect(moved.y).toBe(20);
   });
 
   it("[F38.AC2] sets the box of a text in a box: 460 in W, +10 in H", () => {
@@ -76,19 +76,20 @@ describe("textAfterPanelEdit (F38)", () => {
     const turned = { ...IN_BOX, angle: 23, boxHeight: 20, boxWidth: 100, x: 47, y: 61 };
     const resized = textAfterPanelEdit(turned, BLOCK, edit("width", 120, false));
 
-    expect(resized?.boxWidth).toBe(120);
-    expect(resized?.x).toBeCloseTo(46.20505, 5);
-    expect(resized?.y).toBeCloseTo(64.90731, 5);
+    expect(resized.boxWidth).toBe(120);
+    expect(resized.x).toBeCloseTo(46.20505, 5);
+    expect(resized.y).toBeCloseTo(64.90731, 5);
   });
 
-  it("[F38.AC2] refuses -50 in W for a box 40 wide: −10 below 0", () => {
-    expect(textAfterPanelEdit(IN_BOX, BLOCK, edit("width", -50, true))).toBeUndefined();
+  it("[F44.AC4] makes a box 40 wide 0 wide for -50 in W: −10 taken at 0", () => {
+    expect(textAfterPanelEdit(IN_BOX, BLOCK, edit("width", -50, true))).toEqual({
+      ...IN_BOX,
+      boxWidth: 0,
+    });
   });
 
   it("caps a box's width at 100 000, as the model's range of a box (Q20)", () => {
-    expect(textAfterPanelEdit(IN_BOX, BLOCK, edit("width", 250_000, false))?.boxWidth).toBe(
-      100_000,
-    );
+    expect(textAfterPanelEdit(IN_BOX, BLOCK, edit("width", 250_000, false)).boxWidth).toBe(100_000);
   });
 
   it("caps a box's height at a box's own largest side, 100 000, whatever the interface's cap", () => {
@@ -99,7 +100,7 @@ describe("textAfterPanelEdit (F38)", () => {
       typed: { isRelative: false, value: 150_000 },
     };
 
-    expect(textAfterPanelEdit(IN_BOX, BLOCK, larger)?.boxHeight).toBe(100_000);
+    expect(textAfterPanelEdit(IN_BOX, BLOCK, larger).boxHeight).toBe(100_000);
   });
 
   it("caps a box's height at the interface's cap when smaller than a box's own", () => {
@@ -110,6 +111,6 @@ describe("textAfterPanelEdit (F38)", () => {
       typed: { isRelative: false, value: 600 },
     };
 
-    expect(textAfterPanelEdit(IN_BOX, BLOCK, smaller)?.boxHeight).toBe(500);
+    expect(textAfterPanelEdit(IN_BOX, BLOCK, smaller).boxHeight).toBe(500);
   });
 });

@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 
 import { parsePanelValue } from "./parse-panel-value";
 
-describe("parsePanelValue (F38)", () => {
+describe("parsePanelValue (F38, AUD-046)", () => {
   it.each([
     { expected: { isRelative: false, value: 460 }, typed: "460" },
     { expected: { isRelative: true, value: 50 }, typed: "+50" },
@@ -17,9 +17,22 @@ describe("parsePanelValue (F38)", () => {
   });
 
   it.each([
+    { expected: { isRelative: false, value: 50.5 }, typed: "50.5" },
+    { expected: { isRelative: true, value: 1.5 }, typed: "+1.5" },
+    { expected: { isRelative: true, value: -0.25 }, typed: "-.25" },
+    { expected: { isRelative: false, value: 5 }, typed: "5." },
+    { expected: { isRelative: false, value: 9_007_199_254_740_992 }, typed: "9007199254740992" },
+  ])(
+    "[F44.AC4] reads '$typed' as $expected.value, its fraction kept for the field",
+    ({ expected, typed }) => {
+      expect(parsePanelValue(typed)).toEqual(expected);
+    },
+  );
+
+  it.each([
     "",
     " ",
-    "50.5",
+    ".",
     "50,5",
     "1e3",
     "abc",
@@ -29,11 +42,14 @@ describe("parsePanelValue (F38)", () => {
     "--5",
     "5-",
     "5 0",
+    "1.2.3",
     "50px",
     "0x10",
+    "Infinity",
     "Mixed",
-    "9007199254740992",
-  ])("[F38.AC2] refuses '%s', no integer", (typed) => {
+    // 400 digits: a number too large for a double, read as Infinity.
+    "9".repeat(400),
+  ])("[F44.AC4] refuses '%s', no number", (typed) => {
     expect(parsePanelValue(typed)).toBeUndefined();
   });
 

@@ -2,6 +2,7 @@ export type * from "./click-keys";
 export * from "./edge-of-selection";
 export * from "./no-vertex-selection";
 export * from "./radii-with-selection";
+export * from "./radii-with-typed";
 export * from "./selection-after-click";
 export * from "./selection-after-handle-click";
 export * from "./selection-after-range";

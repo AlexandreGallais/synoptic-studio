@@ -435,8 +435,8 @@ describe("a value typed for several shapes, relative or fixed (US-071)", () => {
   it("[F38.AC2] changes nothing for a value refused, the fields shown again", () => {
     selectAAndB();
 
-    for (const typed of ["50.5", "abc", "", "-50"]) {
-      // -50: B, 40 wide, would be −10 wide; A is not changed either.
+    for (const typed of ["abc", "", "1,5"]) {
+      // No number: neither A nor B changed.
       typeAndEnter("several-width", typed);
 
       expectBoxes([
@@ -446,6 +446,24 @@ describe("a value typed for several shapes, relative or fixed (US-071)", () => {
 
       expect(readSeveralFields()).toEqual(["[Mixed]", "20", "[Mixed]", "[Mixed]"]);
     }
+  });
+
+  it("[F44.AC4] takes B's 40 − 50 at 0 for -50 in W, A made 50 wide, and rounds 50.5 to 51", () => {
+    selectAAndB();
+    typeAndEnter("several-width", "-50");
+
+    // A 100 − 50 = 50; B 40 − 50 = −10, taken at 0 (AUD-046), no longer refused for both.
+    expectBoxes([
+      [10, 20, 50, 50],
+      [200, 20, 0, 40],
+    ]);
+
+    typeAndEnter("several-width", "50.5");
+
+    expectBoxes([
+      [10, 20, 51, 50],
+      [200, 20, 51, 40],
+    ]);
   });
 
   it("[F38.AC2] leaves a text never measured as it is, the rectangle made 460 wide", () => {
@@ -657,29 +675,25 @@ describe("the arrows in a field of several shapes (US-081)", () => {
     expect(down.defaultPrevented).toBe(false);
   });
 
-  it("[F43.AC3] refuses Down in H for both when B is 0 high, no step taken", () => {
+  it("[F44.AC4] takes B's 0 − 1 at 0 for Down in H, A made 49 high", () => {
     pick({ x: 220, y: 40 }, false);
     typeAndEnter("height", "0");
     pick({ x: 50, y: 40 }, true);
-
-    const present = readPresent();
-
     pressIn("several-height", { key: "ArrowDown" });
 
-    // B's 0 − 1 is below 0: the value is refused for A as well, as -1 typed is (US-071).
+    // A 50 − 1 = 49; B's 0 − 1 is below 0: taken at 0 (AUD-046), no longer refused for A.
     expectBoxes([
-      [10, 20, 100, 50],
+      [10, 20, 100, 49],
       [200, 20, 40, 0],
     ]);
 
-    expect(readPresent()).toEqual(present);
     expect(readSeveralFields()).toEqual(["[Mixed]", "20", "[Mixed]", "[Mixed]"]);
 
     pressIn("several-height", { key: "ArrowUp" });
 
-    // Up is taken: 50 + 1 and 0 + 1.
+    // Up: 49 + 1 and 0 + 1.
     expectBoxes([
-      [10, 20, 100, 51],
+      [10, 20, 100, 50],
       [200, 20, 40, 1],
     ]);
   });

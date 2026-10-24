@@ -280,10 +280,11 @@ describe("a click with a tool adds a shape where it is clicked (US-063)", () => 
     expect(readBox()).toEqual([200, 90, 100, 100]);
   });
 
-  it("[F35.AC1] keeps no refused text: a text of size 0 is not drawn below", () => {
+  it("[F35.AC1] keeps no refused text: a text without a size is not drawn below", () => {
     chooseOption("text-weight", "400");
     placeShape("text", { x: 250, y: 140 });
-    typeAndEnter("text-size", "0");
+    // Its size emptied by a script, which the field never read: the text refused.
+    typeAndEnter("text-size", "");
 
     expect(readText("#status")).not.toBe("");
 
