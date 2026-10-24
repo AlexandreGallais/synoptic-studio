@@ -1,17 +1,11 @@
-import {
-  commonPanelValues,
-  formatSvgNumber,
-  isDrawnText,
-  shapePanelValues,
-  textPanelValues,
-} from "../../src";
+import { commonPanelValues, formatSvgNumber } from "../../src";
 import { readKeptDrawing, readSelectedShapes } from "../kept-shapes";
 import { selectElement } from "../page";
-import { readTextBlock } from "../picking";
+import { readPanelValues } from "../picking";
 
 import { SEVERAL_FIELDS } from "./several-fields";
 
-import type { DrawingShape, PanelValues } from "../../src";
+import type { PanelValues } from "../../src";
 
 /** A value of several shapes as its field shows it. */
 type ShownValue = {
@@ -20,26 +14,6 @@ type ShownValue = {
   /** The field's text: the common value, or nothing where the shapes differ. */
   readonly text: string;
 };
-
-/**
- * Reads the values the panel shows for a shape of the drawing (`shapePanelValues`,
- * `textPanelValues`), a text by its block as it is drawn (`readTextBlock`).
- *
- * @kind procedure
- * @param document - page document
- * @param shape - a shape of the drawing
- * @returns its values; none for a text never measured, which is not drawn
- * @see docs/domain/interaction.md#_2-selector
- */
-function readPanelValues(document: Document, shape: DrawingShape): readonly PanelValues[] {
-  if (!isDrawnText(shape)) {
-    return [shapePanelValues(shape)];
-  }
-
-  const block = readTextBlock(document, shape);
-
-  return block === undefined ? [] : [textPanelValues(shape, block)];
-}
 
 /**
  * Reads the values of each shape selected (`readPanelValues`), in the order drawn.

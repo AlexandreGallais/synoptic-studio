@@ -158,6 +158,58 @@ describe("one shape's X and Y, Up and Down (US-085)", () => {
   });
 });
 
+describe("an arrow in a turned shape's X or Y, landed on integers (US-089)", () => {
+  beforeEach(() => {
+    openServedPage("");
+    // A sharp 100 × 50 at (10, 20) turned by 30° about its middle (60, 45): its straight box
+    // starts at (60 − 55.80127, 45 − 46.65064) = (4.19873, −1.65064).
+    typeAndEnter("radius", "0");
+    typeAndEnter("width", "100");
+    typeAndEnter("height", "50");
+    typeAndEnter("shape-x", "10");
+    typeAndEnter("shape-y", "20");
+    typeAndEnter("angle", "30");
+  });
+
+  it.each([
+    // As Right: 4.19873 + 1 = 5.19873 rounds to 5, −1.65064 to −2.
+    { at: ["5", "-2"], field: "shape-x", init: { key: "ArrowUp" }, name: "Up in X" },
+    // As Shift + Right: 14.19873 rounds to 14.
+    {
+      at: ["14", "-2"],
+      field: "shape-x",
+      init: { key: "ArrowUp", shiftKey: true },
+      name: "Shift + Up in X",
+    },
+    // As Left: 3.19873 rounds to 3.
+    { at: ["3", "-2"], field: "shape-x", init: { key: "ArrowDown" }, name: "Down in X" },
+    // As Down, the y axis pointing down: −1.65064 + 1 = −0.65064 rounds to −1, 4.19873 to 4.
+    { at: ["4", "-1"], field: "shape-y", init: { key: "ArrowUp" }, name: "Up in Y" },
+  ])("[F46.AC1] lands its straight box on ($at) for $name, as the arrow on the drawing", (each) => {
+    expect([readValue("shape-x"), readValue("shape-y")]).toEqual(["4.19873", "-1.65064"]);
+
+    pressIn(each.field, each.init);
+
+    expect([readValue("shape-x"), readValue("shape-y")]).toEqual(each.at);
+    expect(readShapeModel()).toMatchObject({ angle: 30, height: 50, width: 100 });
+  });
+
+  it("[F46.AC1] moves it by exactly 1 at the next Up in X, its straight box on integers", () => {
+    pressIn("shape-x", { key: "ArrowUp" });
+    pressIn("shape-x", { key: "ArrowUp" });
+
+    // Landed on (5, −2), then 6 across.
+    expect([readValue("shape-x"), readValue("shape-y")]).toEqual(["6", "-2"]);
+  });
+
+  it("[F46.AC1] keeps its fraction for +1 typed in X, a value typed and not an arrow", () => {
+    typeAndEnter("shape-x", "+1");
+
+    // 4.19873 + 1, Y kept (A value typed, Q27).
+    expect([readValue("shape-x"), readValue("shape-y")]).toEqual(["5.19873", "-1.65064"]);
+  });
+});
+
 describe("a value typed in one shape's fields, relative or fixed (US-085)", () => {
   beforeEach(() => {
     openServedPage("");

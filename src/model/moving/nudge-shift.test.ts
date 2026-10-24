@@ -28,11 +28,11 @@ describe("nudgeShift (US-073)", () => {
   });
 
   it.each([
-    // Never rounded (SP-028, answer 3 (a)): 4.19873 + 1, 4.19873 − 1, 4.19873 − 10.
+    // The nudge itself, before it lands (`landedShift`, F46): 4.19873 + 1, − 1, − 10.
     { isFurther: false, key: "ArrowRight", x: 5.19873 },
     { isFurther: false, key: "ArrowLeft", x: 3.19873 },
     { isFurther: true, key: "ArrowLeft", x: -5.80127 },
-  ])("[F39.AC4] takes A′'s straight box from x 4.19873 to $x on $key", ({ isFurther, key, x }) => {
+  ])("[F39.AC4] nudges A′'s straight box from x 4.19873 to $x on $key", ({ isFurther, key, x }) => {
     const { x: across } = nudgeShift(key, isFurther) ?? { x: NaN };
 
     expect(4.19873 + across).toBeCloseTo(x, 9);
