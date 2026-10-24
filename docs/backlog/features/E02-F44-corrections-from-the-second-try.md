@@ -2,7 +2,7 @@
 id: F44
 epic: E02
 title: Corrections from the Product Owner's second try
-status: in-progress
+status: done
 ---
 
 # E02 · F44 — Corrections from the Product Owner's second try
@@ -29,7 +29,7 @@ In delivery order.
 | [US-085](../stories/E02-F44-US-085-one-shapes-fields-as-several.md) | US | The fields of one shape as the fields of several | done |
 | [US-086](../stories/E02-F44-US-086-the-helps-as-one-dashed-line.md) | US | The helps as one dashed line of white and black | done |
 | [US-087](../stories/E02-F44-US-087-every-number-field-the-same.md) | US | Every number field of the panel the same | done |
-| [AUD-046](../stories/E02-F44-AUD-046-audit-f44.md) | AUD | Audit F44 | ready |
+| [AUD-046](../stories/E02-F44-AUD-046-audit-f44.md) | AUD | Audit F44 | done |
 | [VAL-045](../stories/E02-F44-VAL-045-validate-f44.md) | VAL | Validate F44 | dropped |
 
 ## Feature plan

@@ -29,5 +29,5 @@ Text moved to its own epic, E15, on 2026-10-12 (Product Owner). The shapes' fill
 | Feature | Status |
 | --- | --- |
 | A shape's fill color, with F16's fields and picker (from E02, SP-025) | to refine |
-| Aligned stroke and its color | to refine |
+| Aligned stroke and its color; it decides whether the contour's band (`src/geometry/contour-band/`, `DERIV-band-within-box`), left without a caller by F44's US-086 and kept for it (SP-032, ADR-0099), serves a shape's stroke or goes | to refine |
 | Joins, caps and dashes | to refine |
