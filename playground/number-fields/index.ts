@@ -10,4 +10,5 @@ export * from "./own-number-fields";
 export * from "./read-arrow-step";
 export * from "./read-number-field";
 export * from "./read-own-value";
+export * from "./stepped-changes";
 export * from "./write-own-value";

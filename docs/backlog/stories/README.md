@@ -132,7 +132,7 @@
 | [US-087](./E02-F44-US-087-every-number-field-the-same.md) | F44 | Every number field of the panel the same | done |
 | [AUD-046](./E02-F44-AUD-046-audit-f44.md) | F44 | Audit F44 | done |
 | [VAL-045](./E02-F44-VAL-045-validate-f44.md) | F44 | Validate F44 | dropped |
-| [US-088](./E02-F45-US-088-a-handles-before-y-stepped-by-one.md) | F45 | A handle's Before y stepped by one | ready |
+| [US-088](./E02-F45-US-088-a-handles-before-y-stepped-by-one.md) | F45 | A handle's Before y stepped by one | done |
 | [AUD-047](./E02-F45-AUD-047-audit-f45.md) | F45 | Audit F45 | ready |
 | [VAL-046](./E02-F45-VAL-046-validate-f45.md) | F45 | Validate F45 | dropped |
 | [SP-025](./E02-SP-025-cut-the-editing-work-into-small-features.md) | E02 | Cut the editing work into small features | done |

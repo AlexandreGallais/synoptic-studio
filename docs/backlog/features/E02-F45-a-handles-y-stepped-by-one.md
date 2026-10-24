@@ -21,7 +21,7 @@ In delivery order.
 
 | ID | Type | Title | Status |
 | --- | --- | --- | --- |
-| [US-088](../stories/E02-F45-US-088-a-handles-before-y-stepped-by-one.md) | US | A handle's Before y stepped by one | ready |
+| [US-088](../stories/E02-F45-US-088-a-handles-before-y-stepped-by-one.md) | US | A handle's Before y stepped by one | done |
 | [AUD-047](../stories/E02-F45-AUD-047-audit-f45.md) | AUD | Audit F45 | ready |
 | [VAL-046](../stories/E02-F45-VAL-046-validate-f45.md) | VAL | Validate F45 | dropped |
 
