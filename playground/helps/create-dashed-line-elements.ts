@@ -1,6 +1,10 @@
-import { createPathElement } from "../../src";
+import { createPathElement, formatSvgNumber, screenToUser } from "../../src";
+import { readView } from "../view";
 
 import type { DashedLine } from "./dashed-line";
+
+/** The length of a dash and of the gap after it, in screen pixels, as Inkscape's (4 on, 4 off). */
+const DASH = 4;
 
 /**
  * Creates a help of the layer above the drawing as one line of white and black dashes (US-086,
@@ -21,5 +25,17 @@ export function createDashedLineElements(
   document: Document,
   line: DashedLine,
 ): readonly SVGPathElement[] {
-  return [createPathElement(document, line.data)];
+  const { scale } = readView(document);
+  const width = formatSvgNumber(screenToUser(line.width, scale));
+  const dash = formatSvgNumber(screenToUser(DASH, scale));
+  const light = createPathElement(document, line.data);
+  const dashes = createPathElement(document, line.data);
+
+  light.setAttribute("stroke-width", width);
+  light.classList.add(`${line.name}-light`);
+  dashes.setAttribute("stroke-width", width);
+  dashes.setAttribute("stroke-dasharray", `${dash} ${dash}`);
+  dashes.classList.add(line.name);
+
+  return [light, dashes];
 }

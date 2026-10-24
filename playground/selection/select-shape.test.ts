@@ -1,7 +1,7 @@
 // @vitest-environment happy-dom
 import { beforeEach, describe, expect, it } from "vitest";
 
-import { contourBand, contourPiecesToPathData, shapePickArea } from "../../src";
+import { contourPiecesToPathData, shapePickArea } from "../../src";
 import { readExportedSvg } from "../document";
 import { readDrawnTexts } from "../kept-shapes";
 import {
@@ -80,16 +80,14 @@ function readSelectionOutline(): string | undefined {
 }
 
 /**
- * The outline expected of a shape: the band about its contour as drawn, 2 pixels wide, a chord
- * at most 2 pixels long, as the hover's (US-065).
+ * The outline expected of a shape: the path of its contour as drawn, stroked as the hover's
+ * (US-086).
  *
  * @param shape - the shape outlined
- * @returns the path data of its band
+ * @returns the path data of its contour
  */
 function outlineOf(shape: Shape): string {
-  return contourBand(shapePickArea(shape).pieces, 1, 2)
-    .map((subpath) => contourPiecesToPathData(subpath))
-    .join(" ");
+  return contourPiecesToPathData(shapePickArea(shape).pieces);
 }
 
 /**

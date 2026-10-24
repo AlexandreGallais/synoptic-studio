@@ -1,5 +1,4 @@
 export type * from "./box-band-reach";
-export * from "./create-outline-elements";
 export type * from "./helps-frame";
 export * from "./helps-frames";
 export * from "./read-band-path-data";

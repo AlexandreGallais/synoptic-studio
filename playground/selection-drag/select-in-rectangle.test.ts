@@ -111,14 +111,10 @@ describe("a selection rectangle selects shapes (US-069)", () => {
     drawThreeShapes();
     pressAndMove({ x: -10, y: -10 }, { x: 200, y: 110 });
 
-    // The area from (−10, −10) to (200, 110); its outline 1 pixel wide centred on its sides, from
-    // −10 − 0.5 to 200 + 0.5 outside and from −10 + 0.5 to 200 − 0.5 inside, the hole the other
-    // way round so that the nonzero rule leaves it empty.
+    // The area from (−10, −10) to (200, 110); its line 1 pixel wide on its sides moved half a
+    // pixel inward, from −10 + 0.5 to 200 − 0.5 (US-086).
     expect(readOverlayPath("selection-area")).toBe("M-10 -10H200V110H-10Z");
-
-    expect(readOverlayPath("selection-rectangle")).toBe(
-      "M-10.5 -10.5H200.5V110.5H-10.5Z M-9.5 -9.5V109.5H199.5V-9.5Z",
-    );
+    expect(readOverlayPath("selection-rectangle")).toBe("M-9.5 -9.5H199.5V109.5H-9.5Z");
 
     expect(selectPageElement("#canvas").querySelector(".selection-rectangle")).toBeNull();
   });
@@ -131,12 +127,12 @@ describe("a selection rectangle selects shapes (US-069)", () => {
     expect(readOverlayPath("selection-area")).toBe("M-10 -10H200V111H-10Z");
   });
 
-  it("[F37.AC3] draws a rectangle without width as its outline alone, 1 pixel wide", () => {
+  it("[F37.AC3] draws a rectangle without width as a line along its middle, 1 pixel wide", () => {
     drawThreeShapes();
-    // From (5, 150) to (5, 200): 0 wide, thinner than the band, so no hole.
+    // From (5, 150) to (5, 200): 0 wide, its sides moved by at most half of it across, 0.
     pressAndMove({ x: 5, y: 150 }, { x: 5, y: 200 });
 
-    expect(readOverlayPath("selection-rectangle")).toBe("M4.5 149.5H5.5V200.5H4.5Z");
+    expect(readOverlayPath("selection-rectangle")).toBe("M5 150.5H5V199.5H5Z");
   });
 
   it("[F37.AC3] draws nothing while the pointer stays on the press's integer point", () => {

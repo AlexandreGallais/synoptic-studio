@@ -1,4 +1,4 @@
-import { createOutlineElements } from "../helps-frame";
+import { createOutlineElements } from "../helps";
 import { readPickAreas, readShapesTaken } from "../picking";
 
 import { readRectangleDrag } from "./read-rectangle-drag";

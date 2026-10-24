@@ -193,7 +193,7 @@ describe("the helps as one dashed line of white and black (US-086)", () => {
       dashedLine("hover", contourOf(a), { dash: "4", width: "2" }),
     );
 
-    expect(contourOf(a)).toBe("M0 0L100 0L100 100L0 100Z");
+    expect(contourOf(a)).toBe("M0 0 L100 0 L100 100 L0 100 Z");
 
     expect(
       selectPageElement("#overlay svg path.hover").getAttribute("stroke-dashoffset"),
@@ -342,9 +342,47 @@ describe("R outlined by its contour's path (US-086)", () => {
     expect(readHelps("selection")).toEqual(dashedLine("selection", d, { dash: "4", width: "2" }));
   });
 
+  it("[F44.AC3] keeps R's outline its contour at 1 %, 200 units wide, dashes 400", () => {
+    // Fitted, at 1 %: 2 / 0.01 = 200 units, 4 / 0.01 = 400; once cut to 393 chords a corner.
+    PAGE_VIEWS.set(document, { origin: { x: -10_000.5, y: 10_000 }, scale: 0.01 });
+    runResizeObservers("#canvas");
+
+    const d = contourOf(readShapeModel());
+
+    expect(readHelps("selection")).toEqual(
+      dashedLine("selection", d, { dash: "400", width: "200" }),
+    );
+  });
+
+  it("[F44.AC3] keeps R's outline its contour after a pan of 700 pixels, the viewBox alone changed", () => {
+    const d = contourOf(readShapeModel());
+
+    PAGE_VIEWS.set(document, { origin: { x: 660, y: -40 }, scale: 1 });
+    runResizeObservers("#canvas");
+
+    expect(readHelps("selection")).toEqual(dashedLine("selection", d, { dash: "4", width: "2" }));
+    expect(selectPageElement("#overlay svg").getAttribute("viewBox")).toBe("660 -40 1200 800");
+  });
+
+  it("[F44.AC3] outlines R under the pointer by its contour, the pointer far from it", () => {
+    const d = contourOf(readShapeModel());
+
+    PAGE_VIEWS.set(document, { origin: { x: 49_000, y: 49_000 }, scale: 1 });
+    runResizeObservers("#canvas");
+
+    // Over the offset (100, 100), R's point (49 100, 49 100), 48 000 units and more from its
+    // contour, whose band was empty there.
+    selectPageElement("#canvas").dispatchEvent(
+      new PointerEvent("pointermove", { bubbles: true, clientX: 200, clientY: 150, pointerId: 1 }),
+    );
+
+    expect(readHelps("hover")).toEqual(dashedLine("hover", d, { dash: "4", width: "2" }));
+  });
+
   it(
     "[F44.AC3] draws the layer above 60 times within a second, R selected",
-    // R's band took 156 to 200 ms a redraw (note 0031, §5); 960 ms is 60 frames of 16 ms.
+    // R's band took 156 to 200 ms a redraw (note 0031, §5). alone: 73 ms, the median of 5 runs of
+    // its file (US-086); 960 ms, 60 frames of 16 ms, is 13.2 times it.
     { timeout: 960 },
     () => {
       // 100 % and 200 % in turn, so that each redraw draws its helps at a new scale.

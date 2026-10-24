@@ -1,7 +1,7 @@
 // @vitest-environment happy-dom
 import { beforeEach, describe, expect, it } from "vitest";
 
-import { contourBand, contourPiecesToPathData, shapePickArea } from "../../src";
+import { contourPiecesToPathData, shapePickArea } from "../../src";
 import { HELLO_TEXT } from "../../tests";
 import { readExportedSvg } from "../document";
 import { readFontSession, writeFontSession } from "../fonts";
@@ -29,12 +29,6 @@ const ORIGIN_LEFT = 140;
 
 /** Top of the drawing's origin in the window: the canvas's 50 and the margin's 40. */
 const ORIGIN_TOP = 90;
-
-/** Half the width of the outline: 2 screen pixels wide at the view's scale of 1. */
-const HALF_WIDTH = 1;
-
-/** The longest chord along a curve of the outline: 2 screen pixels at the view's scale of 1. */
-const STEP = 2;
 
 /** No key held. */
 const NO_KEY: PointerKeys = { altKey: false, shiftKey: false };
@@ -69,15 +63,13 @@ function readOutline(): string | undefined {
 }
 
 /**
- * The outline expected of a shape: the band about its contour as drawn, 2 pixels wide.
+ * The outline expected of a shape: the path of its contour as drawn, stroked (US-086).
  *
  * @param shape - the shape outlined
- * @returns the path data of its band
+ * @returns the path data of its contour
  */
 function outlineOf(shape: Shape): string {
-  return contourBand(shapePickArea(shape).pieces, HALF_WIDTH, STEP)
-    .map((subpath) => contourPiecesToPathData(subpath))
-    .join(" ");
+  return contourPiecesToPathData(shapePickArea(shape).pieces);
 }
 
 describe("the shape under the pointer outlined in the layer above (US-065)", () => {
