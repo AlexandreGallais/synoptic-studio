@@ -52,6 +52,10 @@ pub const LANES: &[&[&str]] = &[
 /// The check run alone before the lanes: the release binaries every lane's tools run from.
 pub const BEFORE_LANES: &str = "rust:build";
 
+/// The check run alone after the lanes: the timing tests, whose limits measure a speed that the
+/// lanes' load slowed past them (REV-008), the test lane leaving them out.
+pub const AFTER_LANES: &str = "test:timings";
+
 /// How a script starts when it takes the heavy lock, which `check:all` holds for its lanes.
 const HEAVY_LOCK: &str = "cargo run --release -q -p heavy-lock -- ";
 
@@ -428,6 +432,12 @@ mod tests {
     fn f19_ac9_builds_the_release_binaries_once_before_the_lanes() {
         assert_eq!(BEFORE_LANES, "rust:build");
         assert!(!LANES.iter().any(|lane| lane.contains(&BEFORE_LANES)));
+    }
+
+    #[test]
+    fn runs_the_timing_tests_alone_after_the_lanes() {
+        assert_eq!(AFTER_LANES, "test:timings");
+        assert!(!LANES.iter().any(|lane| lane.contains(&AFTER_LANES)));
     }
 
     #[test]

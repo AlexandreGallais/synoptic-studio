@@ -374,8 +374,17 @@ describe("the SVG elements the library writes (ADR-0060)", () => {
   });
 });
 
-/** A per-test limit, `{ timeout: 1000 }` or with a constant of the same file, outside a comment. */
-const TIMEOUT = /^(?!\s*(?:\/\/|\/\*|\*)).*\{ timeout: (?<limit>\w+) \}/u;
+/**
+ * A per-test limit, `{ timeout: 1000 }` or with a constant of the same file, outside a comment,
+ * its tags before it when it has some (`{ tags: ["timing"], timeout: 960 }`).
+ */
+const TIMEOUT = /^(?!\s*(?:\/\/|\/\*|\*)).*\{ (?:tags: \[[^\]]*\], )?timeout: (?<limit>\w+) \}/u;
+
+/** The tag of a timing test, run alone after the other checks (`vite.config.ts`, REV-008). */
+const TIMING_TAG = 'tags: ["timing"]';
+
+/** Vitest's own limit per test, in ms: a test given a shorter one measures its speed. */
+const VITEST_TIMEOUT = 5000;
 
 /** A test's duration alone, written beside its limit: `alone: 210 ms` (EN-129). */
 const ALONE = /\balone: (?<measure>\d[\d ]*) ms\b/u;
@@ -494,6 +503,37 @@ function limitFault(timing: TimingLimit): string | undefined {
 }
 
 /**
+ * The timing tests of a file without the `timing` tag: a limit under Vitest's 5 s measures a
+ * speed, which the other checks' load would slow, so the test runs alone (REV-008).
+ *
+ * @param path - the file's path, to name it
+ * @param text - the file's text
+ * @returns each such limit, by its file and its line
+ */
+function untaggedTimings(path: string, text: string): readonly string[] {
+  return text
+    .split("\n")
+    .map((line, index) => ({
+      at: `${path}:${String(index + 1)}`,
+      isTagged: line.includes(TIMING_TAG),
+      value: limitValue(TIMEOUT.exec(line)?.groups?.["limit"] ?? "", text),
+    }))
+    .filter(({ isTagged, value }) => !isTagged && (value ?? VITEST_TIMEOUT) < VITEST_TIMEOUT)
+    .map(({ at, value }) => `${at}: a limit of ${String(value)} ms without the timing tag`);
+}
+
+/**
+ * Compares two paths by their names.
+ *
+ * @param left - one path
+ * @param right - another
+ * @returns their order
+ */
+function byName(left: string, right: string): number {
+  return left.localeCompare(right);
+}
+
+/**
  * A per-test limit of a made-up test file, written so that this file's own scan reads none.
  *
  * @param written - what follows `timeout:`
@@ -512,6 +552,41 @@ describe("the timing tests (EN-129)", () => {
 
   it("[F29.AC1] gives every limit its measure alone, the limit at least four times it", () => {
     expect(limits.map((timing) => limitFault(timing)).filter(Boolean)).toEqual([]);
+  });
+
+  it("tags every limit under Vitest's 5 s as a timing test, run alone", () => {
+    expect(timedTestFiles().flatMap(({ path, text }) => untaggedTimings(path, text))).toEqual([]);
+  });
+
+  it("runs alone every file holding a timing test, and no other", () => {
+    const manifest = readFileSync(join(ROOT, "package.json"), "utf8");
+    const script = /"test:timings": "(?<command>[^"]*)"/u.exec(manifest)?.groups?.["command"];
+    const named = (script ?? "").split(" ").filter((word) => word.endsWith(".test.ts"));
+
+    const tagged = timedTestFiles()
+      .filter(({ text }) =>
+        text.split("\n").some((line) => TIMEOUT.test(line) && line.includes(TIMING_TAG)),
+      )
+      .map(({ path }) => path);
+
+    expect(named.toSorted(byName)).toEqual(tagged.toSorted(byName));
+  });
+
+  it("names each timing test of a made-up file without its tag", () => {
+    // 4 999 ms untagged; 4 999 tagged; 5 000, Vitest's own, needs none; `LONG` is 1 200 ms.
+    const tagged = `{ ${TIMING_TAG}, timeout: 4999 }`;
+    const text = [
+      "const LONG = 1_200;",
+      `it("a", () => {}, ${limit("4999")});`,
+      `it("b", () => {}, ${tagged});`,
+      `it("c", () => {}, ${limit("5000")});`,
+      `it("d", () => {}, ${limit("LONG")});`,
+    ].join("\n");
+
+    expect(untaggedTimings("t.test.ts", text)).toEqual([
+      "t.test.ts:2: a limit of 4999 ms without the timing tag",
+      "t.test.ts:5: a limit of 1200 ms without the timing tag",
+    ]);
   });
 
   // A made-up test file (AUD-031, F3): the limits of the repository all hold, so only this one

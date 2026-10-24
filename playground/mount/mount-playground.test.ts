@@ -349,7 +349,7 @@ describe("playground", () => {
     // load, until EN-149 computed the band only within the helps' box, where it is empty. With
     // the radius typed 0 first (EN-145, note 0029 §6), alone: 10 ms, the median of 5 runs of its
     // file (AUD-041); 1 s, 100 times it, fails the 1 063 ms of the band followed.
-    { timeout: 1000 },
+    { tags: ["timing"], timeout: 1000 },
     () => {
       typeAndEnter("radius", "0");
       typeAndEnter("height", "100000");

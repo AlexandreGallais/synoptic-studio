@@ -383,7 +383,7 @@ describe("R outlined by its contour's path (US-086)", () => {
     "[F44.AC3] draws the layer above 60 times within a second, R selected",
     // R's band took 156 to 200 ms a redraw (note 0031, §5). alone: 73 ms, the median of 5 runs of
     // its file (US-086); 960 ms, 60 frames of 16 ms, is 13.2 times it.
-    { timeout: 960 },
+    { tags: ["timing"], timeout: 960 },
     () => {
       // 100 % and 200 % in turn, so that each redraw draws its helps at a new scale.
       const scales = Array.from({ length: 30 }, () => [1, 2]).flat();

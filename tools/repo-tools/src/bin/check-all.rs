@@ -6,7 +6,7 @@
 //! said by a line: the nearest of `develop` and the feature branches on GitHub for a story,
 //! `develop` for a feature; on `main`, `develop`, a detached head or in the CI every lane runs. `.git/config` of the main checkout is read before and after the
 //! lanes: a lane that changed a line a test could break fails the run, its lines named, nothing
-//! restored (F21.AC9, EN-113).
+//! restored (F21.AC9, EN-113). The timing tests run alone after the lanes (REV-008).
 
 use std::env;
 use std::fs;
@@ -17,8 +17,8 @@ use std::thread;
 use std::time::Instant;
 
 use repo_tools::check_all::{
-    BEFORE_LANES, change_against_base, command_of, config_report, git_lines, lanes_to_run,
-    report_of, skipped_lines, summary,
+    AFTER_LANES, BEFORE_LANES, change_against_base, command_of, config_report, git_lines,
+    lanes_to_run, report_of, skipped_lines, summary,
 };
 use repo_tools::scripts::{read_scripts, script_command, shell};
 
@@ -120,8 +120,11 @@ fn work() -> u8 {
     } else {
         Vec::new()
     };
+    // Alone, so that no other lane's load slows the speeds they measure.
+    let timed = built.is_ok.then(|| run_check(AFTER_LANES, &scripts, &root));
     let mut failed: Vec<String> = std::iter::once(&built)
         .chain(&lanes)
+        .chain(&timed)
         .filter(|checked| !checked.is_ok)
         .map(|checked| checked.name.clone())
         .collect();

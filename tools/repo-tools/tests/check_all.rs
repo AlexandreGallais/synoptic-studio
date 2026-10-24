@@ -10,8 +10,8 @@ use std::path::{Path, PathBuf};
 use std::process::Output;
 
 use repo_tools::check_all::{
-    BEFORE_LANES, DOCS_LANE, LANES, RUST_LANES, changed_since, command_of, lanes_to_run,
-    skipped_lines, touches_rust, touches_site,
+    AFTER_LANES, BEFORE_LANES, DOCS_LANE, LANES, RUST_LANES, changed_since, command_of,
+    lanes_to_run, skipped_lines, touches_rust, touches_site,
 };
 use repo_tools::scripts::read_scripts;
 use test_support::command;
@@ -55,8 +55,9 @@ fn git(folder: &Path, arguments: &[&str]) -> String {
 /// A repository whose every script of the lanes passes, but those given.
 fn repository(name: &str, scripts: &[(&str, &str)]) -> PathBuf {
     let folder = scratch(name);
-    let names =
-        std::iter::once(BEFORE_LANES).chain(LANES.iter().flat_map(|lane| lane.iter().copied()));
+    let names = std::iter::once(BEFORE_LANES)
+        .chain(LANES.iter().flat_map(|lane| lane.iter().copied()))
+        .chain(std::iter::once(AFTER_LANES));
     let members: Vec<String> = names
         .map(|script| {
             let command = scripts
@@ -103,11 +104,16 @@ fn runs_every_check_and_says_it_passed() {
 
     fs::remove_dir_all(&folder).expect("cleaned");
     assert!(output.status.success(), "{text}");
-    // The build first, then one line per check of every lane, then the summary.
+    // The build first, then one line per check of every lane, the timing tests alone after them,
+    // then the summary.
     assert!(lines[0].starts_with("✓ rust:build "), "{text}");
     assert_eq!(
         lines.len(),
-        1 + LANES.iter().map(|lane| lane.len()).sum::<usize>() + 1
+        1 + LANES.iter().map(|lane| lane.len()).sum::<usize>() + 2
+    );
+    assert!(
+        lines[lines.len() - 2].starts_with("✓ test:timings "),
+        "{text}"
     );
     assert!(lines.iter().any(|line| line.starts_with("✓ lint ")));
     assert!(lines.iter().any(|line| line.starts_with("✓ check:rust ")));
@@ -461,6 +467,11 @@ fn f24_ac1_runs_each_lane_of_check_all_in_exactly_one_job_of_the_ci() {
     assert!(text.contains(
         "- run: for script in $SCRIPTS; do npm run \"$script\"; done\n        env:\n          SCRIPTS: ${{ matrix.scripts }}\n"
     ));
+    // The timing tests after the tests, in their job: alone on its runner, as after the lanes.
+    assert!(
+        jobs.iter()
+            .any(|(_, scripts)| scripts == &["test", AFTER_LANES])
+    );
 }
 
 #[test]

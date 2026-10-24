@@ -22,6 +22,15 @@ const CI_REPORTERS = ["default", "github-actions", "junit"];
 /** Coverage floor of the playground (RET-001), measured then rounded down; raised, never lowered. */
 const PLAYGROUND_COVERAGE = { branches: 89, functions: 100, lines: 98, statements: 98 };
 
+/**
+ * The tests whose limit under Vitest's 5 s measures a speed (`tests/fitness.test.ts`): left out of
+ * `npm run test`, which runs beside the other checks, and run alone after them by `test:timings`
+ * (REV-008), the load of the other lanes having failed one twice (`REF-VITEST-TAGS`).
+ */
+const TEST_TAGS = [
+  { description: "A test whose limit measures its speed, run alone.", name: "timing" },
+];
+
 /** Library build: one ESM file from `src/index.ts`, declarations written by `tools/declarations` (ADR-0071). */
 const LIBRARY_BUILD: BuildEnvironmentOptions = {
   emptyOutDir: true,
@@ -105,6 +114,7 @@ export default defineConfig(({ mode }) => {
         reporters: [...CI_REPORTERS],
       }),
       root: ROOT,
+      tags: TEST_TAGS,
     },
   };
 });

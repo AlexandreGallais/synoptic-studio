@@ -4,7 +4,8 @@
 | --- | --- |
 | `npm run dev` | Vite server on `playground/` (`http://localhost:5173`) |
 | `npm run build` | `npm audit`, then the library (`dist/editor.js`) and its declarations (`dist/types/`, [build](#build)) |
-| `npm run test` | Vitest under the heavy lock, on half the machine's cores: the library, the playground, `tests/`, the scripts and hooks; coverage of `src/` 100 %, of `playground/` a floor |
+| `npm run test` | Vitest under the heavy lock, on half the machine's cores: the library, the playground, `tests/`, the scripts and hooks, but the timing tests; coverage of `src/` 100 %, of `playground/` a floor |
+| `npm run test:timings` | the timing tests alone, under the heavy lock: those tagged `timing` (`--tags-filter=timing`, `REF-VITEST-TAGS`) in the files the script names, about 4 s; `check:all` runs it after its lanes, and the CI after the tests in their job (REV-008) |
 | `npm run lint` | oxlint with its type-aware rules and TypeScript's own errors (`typeAware` and `typeCheck` in the `options` of `.oxlintrc.json`, the flags `--type-aware` and `--type-check` of `REF-OXLINT-CLI`, `REF-OXLINT-CONFIG-SCHEMA`), then the project's linter (`tools/lint`) with the project's rules and those oxlint lacks, on TypeScript and Markdown; zero warning tolerated |
 | `npm run lint:secrets` | the secret scan (`tools/secret-scan`, secretlint's recommended rules in Rust) on every file Git tracks, less those `.secret-scan-ignore` and the `.gitignore` files name: no key, token or password; exits 1 naming each file, line and rule, the secret masked |
 | `npm run format:check` | the formatter, `tools/format`, with `--check`: oxfmt, then Markdown tables without padding (ADR-0068), changing nothing; `fix` runs it with `--write` |
@@ -37,7 +38,7 @@
 
 ## The lanes of the full check
 
-`check:all` builds the Rust binaries first, then runs the lanes at once, the scripts of a lane in order.
+`check:all` builds the Rust binaries first, then runs the lanes at once, the scripts of a lane in order, then the timing tests alone (`test:timings`). A timing test is one whose Vitest limit, under the 5 s of Vitest's own, measures its speed; the load of the other lanes slowed the 60 redraws of `[F44.AC3]`, 73 ms alone, past their 960 ms twice in one run, so such a test carries the tag `timing` (`{ tags: ["timing"], timeout: 960 }`), `npm run test` leaves it out (`--tags-filter='!timing'`) and it runs once the lanes have ended, its measure kept (decided 2026-10-24, REV-008). `tests/fitness.test.ts` fails on a limit under 5 s without the tag, and on a file holding a tagged test that `test:timings` does not name, or the reverse.
 
 | Lane | Runs | Skipped when |
 | --- | --- | --- |
