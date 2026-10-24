@@ -1,3 +1,4 @@
+export * from "./field-arrow-shift";
 export * from "./field-arrow-step";
 export * from "./held-nudge-shift";
 export * from "./landed-shift";

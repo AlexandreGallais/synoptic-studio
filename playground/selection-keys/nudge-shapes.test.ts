@@ -159,23 +159,28 @@ describe("the arrows nudge the shapes selected (US-073)", () => {
     expect(event.defaultPrevented).toBe(true);
   });
 
-  it("[F39.AC4] moves the shape the panel edits, B, its straight box to (195.19873, −1.65064)", () => {
+  it("[F46.AC1] moves the shape the panel edits, B, its straight box landed on (195, −2)", () => {
     pressArrow("ArrowRight", false);
 
-    // 194.19873 + 1; its position (200, 20) to (201, 20), its angle kept.
-    expect(readValue("shape-x")).toBe("195.19873");
-    expect(readValue("shape-y")).toBe("-1.65064");
-    expect(readShapeModel()).toMatchObject({ angle: 30, x: 201, y: 20 });
+    // 194.19873 + 1 = 195.19873 rounds to 195, a shift of 0.80127; −1.65064 rounds to −2, a
+    // shift of −0.34936: its position (200, 20) to (200.80127, 19.65064), its angle kept.
+    expect(readValue("shape-x")).toBe("195");
+    expect(readValue("shape-y")).toBe("-2");
+    expect(readShapeModel()).toMatchObject({ angle: 30 });
+    expect(readShapeModel().x).toBeCloseTo(200.80127, 5);
+    expect(readShapeModel().y).toBeCloseTo(19.65064, 5);
   });
 
-  it("[F39.AC4] moves A and B by (1, 0), their distances kept, both still selected", () => {
+  it("[F46.AC1] moves A and B by their dashed box landed on (11, −2), both still selected", () => {
     clickA(SHIFT);
     pressArrow("ArrowRight", false);
 
-    // A from (10, 20) to (11, 20); B's straight box from 194.19873 to 195.19873.
+    // The dashed box from (10, −1.65064), + (1, 0) = (11, −1.65064), lands on (11, −2): both go
+    // by (1, −0.34936), A from (10, 20) to (11, 19.65064), B's straight box to (195.19873, −2).
     expect(readSelectedShapes(document)).toEqual([0, 1]);
-    expect(readShape(0)).toMatchObject({ x: 11, y: 20 });
-    expectStraightBoxAt(readShape(1), { x: 195.19873, y: -1.65064 });
+    expect(readShape(0).x).toBe(11);
+    expect(readShape(0).y).toBeCloseTo(19.65064, 5);
+    expectStraightBoxAt(readShape(1), { x: 195.19873, y: -2 });
   });
 
   it("[F39.AC4] moves A one step at each key the browser sends, its repeats included", () => {
@@ -286,7 +291,7 @@ describe("the arrows nudge the shapes selected (US-073)", () => {
   });
 });
 
-describe("the arrows keep the fraction of a turned shape (US-073)", () => {
+describe("the arrows land a turned shape on integers (US-073, US-089)", () => {
   beforeEach(() => {
     openServedPage("?guide=epic");
     setElementBox("#canvas", { height: 600, left: 100, top: 50, width: 800 });
@@ -295,26 +300,64 @@ describe("the arrows keep the fraction of a turned shape (US-073)", () => {
   });
 
   it.each([
-    // A′'s straight box at x 60 − 55.80127 = 4.19873: + 1, − 1, − 10, never rounded.
-    { isShift: false, key: "ArrowRight", x: "5.19873" },
-    { isShift: false, key: "ArrowLeft", x: "3.19873" },
-    { isShift: true, key: "ArrowLeft", x: "-5.80127" },
-  ])("[F39.AC4] takes A′'s X from 4.19873 to $x on $key, Shift $isShift, Y kept", (each) => {
+    // A′'s straight box at (60 − 55.80127, 45 − 46.65064) = (4.19873, −1.65064), moved then
+    // landed: 5.19873 rounds to 5, 3.19873 to 3, −5.80127 to −6, and Y −1.65064 to −2; Up takes
+    // Y to −2.65064, rounding to −3, X 4.19873 to 4.
+    { isShift: false, key: "ArrowRight", x: "5", y: "-2" },
+    { isShift: false, key: "ArrowLeft", x: "3", y: "-2" },
+    { isShift: true, key: "ArrowLeft", x: "-6", y: "-2" },
+    { isShift: false, key: "ArrowUp", x: "4", y: "-3" },
+  ])("[F46.AC1] lands A′ from (4.19873, −1.65064) on ($x, $y) for $key, Shift $isShift", (each) => {
     expect(readValue("shape-x")).toBe("4.19873");
 
     pressArrow(each.key, each.isShift);
 
     expect(readValue("shape-x")).toBe(each.x);
-    expect(readValue("shape-y")).toBe("-1.65064");
+    expect(readValue("shape-y")).toBe(each.y);
   });
 
-  it("[F39.AC4] lands A′ moved by Right at the next drag, its X 5.19873 landing on 9", () => {
+  it("[F46.AC1] moves A′ on integers by exactly 1 at the next arrow, as a shape on integers", () => {
+    pressArrow("ArrowRight", false);
+    pressArrow("ArrowRight", false);
+    pressArrow("ArrowDown", true);
+
+    // Landed on (5, −2), then (6, −2), then (6, 8): 1 across, then 10 down, exactly.
+    expect(readValue("shape-x")).toBe("6");
+    expect(readValue("shape-y")).toBe("8");
+  });
+
+  it("[F46.AC1] lands A′ held on Right for 30 keys one step of the history, Ctrl + Z giving it back", () => {
+    const body = selectPageElement("body");
+    const sent = Array.from({ length: 30 }).keys();
+
+    for (const index of sent) {
+      body.dispatchEvent(
+        new KeyboardEvent("keydown", {
+          bubbles: true,
+          cancelable: true,
+          key: "ArrowRight",
+          repeat: index > 0,
+        }),
+      );
+    }
+
+    body.dispatchEvent(new KeyboardEvent("keyup", { bubbles: true, key: "ArrowRight" }));
+
+    // Landed on (5, −2) at the first key, then 29 × 1 across: (34, −2).
+    expect([readValue("shape-x"), readValue("shape-y")]).toEqual(["34", "-2"]);
+
+    pressOn("body", "z", { ctrlKey: true });
+
+    expect([readValue("shape-x"), readValue("shape-y")]).toEqual(["4.19873", "-1.65064"]);
+  });
+
+  it("[F39.AC4] lands A′ moved by Right at the next drag, its X 5 landing on 9", () => {
     pressArrow("ArrowRight", false);
     dispatchDrawingPointer("pointerdown", IN_A, NO_KEY);
     dispatchDrawingPointer("pointermove", { x: 53.7, y: 40 }, NO_KEY);
     dispatchDrawingPointer("pointerup", { x: 53.7, y: 40 }, NO_KEY);
 
-    // 3.7 pixels, beyond 3: a drag. 5.19873 + 3.7 = 8.89873 rounds to 9; −1.65064 + 0 rounds to −2.
+    // 3.7 pixels, beyond 3: a drag. 5 + 3.7 = 8.7 rounds to 9; −2 + 0 stays −2.
     expect(readValue("shape-x")).toBe("9");
     expect(readValue("shape-y")).toBe("-2");
   });
