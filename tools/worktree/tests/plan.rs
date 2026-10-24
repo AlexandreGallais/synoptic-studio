@@ -146,6 +146,7 @@ fn plans_the_worktree_of_a_story() {
     let request = Request {
         id: "us-061",
         branch_type: None,
+        topic: None,
         story_files: &files,
         remote_branches: &remotes,
         branch_files: &[],
@@ -182,6 +183,7 @@ fn refuses_what_it_cannot_make() {
     let request = Request {
         id: "US-061",
         branch_type: None,
+        topic: None,
         story_files: &files,
         remote_branches: &remotes,
         branch_files: &[],
@@ -262,6 +264,7 @@ fn f23_ac2_starts_a_review_or_an_epics_spike_from_develop() {
             &Request {
                 id,
                 branch_type: None,
+                topic: None,
                 story_files: &files,
                 remote_branches: &remotes,
                 branch_files: &[],
@@ -298,6 +301,7 @@ fn f23_ac2_finds_a_story_missing_from_the_checkout_on_the_one_feature_branch_hol
     let request = Request {
         id: "EN-200",
         branch_type: None,
+        topic: None,
         story_files: &files,
         remote_branches: &remotes,
         branch_files: &held,
@@ -337,6 +341,7 @@ fn f23_ac2_refuses_a_story_two_feature_branches_hold_naming_them() {
     let request = Request {
         id: "EN-200",
         branch_type: None,
+        topic: None,
         story_files: &files,
         remote_branches: &remotes,
         branch_files: &twice,
@@ -692,4 +697,81 @@ fn lists_the_story_files_of_a_checkout() {
 
     assert_eq!(worktree::story_files(&top).expect("listed"), [FILE]);
     fs::remove_dir_all(&top).expect("cleaned");
+}
+
+#[test]
+fn rev009_names_a_bubble_s_branch_by_its_own_type_and_topic_from_develop() {
+    // A review's bubble, `build/rev-009-tool-cards-and-telemetry`, was made by hand: the branch
+    // took the story file's topic (four worktrees of REV-008 and REV-009, 2026-10-24).
+    let files = vec!["E02-REV-009-review-of-2026-10-25.md".to_owned()];
+    let remotes = remotes();
+    let request = Request {
+        id: "REV-009",
+        branch_type: Some("build"),
+        topic: Some("tool-cards-and-telemetry"),
+        story_files: &files,
+        remote_branches: &remotes,
+        branch_files: &[],
+        main: Path::new("/work/repo"),
+    };
+    let made = plan(&request, |_| false).expect("a plan");
+
+    assert_eq!(made.branch, "build/rev-009-tool-cards-and-telemetry");
+    assert_eq!(made.base, "origin/develop");
+    assert_eq!(
+        made.dir,
+        PathBuf::from("/work/repo/.claude/worktrees/rev-009")
+    );
+    // A topic is a branch name's part: one in capitals is refused as the branch is.
+    assert!(
+        plan(
+            &Request {
+                topic: Some("Tool-Cards"),
+                ..request
+            },
+            |_| false
+        )
+        .is_err()
+    );
+}
+
+#[test]
+fn rev009_starts_an_epic_s_spike_without_its_file_from_develop_when_given_its_topic() {
+    // SP-033's file is written in its own branch: neither `develop` nor a feature branch holds it.
+    let remotes = remotes();
+    let request = Request {
+        id: "SP-033",
+        branch_type: None,
+        topic: Some("regroup-the-epics"),
+        story_files: &[],
+        remote_branches: &remotes,
+        branch_files: &[],
+        main: Path::new("/work/repo"),
+    };
+    let made = plan(&request, |_| false).expect("a plan");
+
+    assert_eq!(made.branch, "docs/sp-033-regroup-the-epics");
+    assert_eq!(made.base, "origin/develop");
+    // Without a topic it is refused as before; a user story belongs to a feature, whose branch
+    // holds its file.
+    assert!(
+        plan(
+            &Request {
+                topic: None,
+                ..request
+            },
+            |_| false
+        )
+        .is_err_and(|reason| reason.contains("no file"))
+    );
+    assert!(
+        plan(
+            &Request {
+                id: "US-099",
+                ..request
+            },
+            |_| false
+        )
+        .is_err_and(|reason| reason.contains("no file"))
+    );
 }

@@ -23,6 +23,11 @@ const BRANCH_TYPES: [&str; 11] = [
 /// Base of a story that belongs to no feature (a review, a retrospective).
 const DEVELOP: &str = "origin/develop";
 
+/// Kinds of the stories made from `develop` outside any feature, which may start before their
+/// file is on a branch: an epic's refinement spike and a review (ADR-0086), the prefix with its
+/// hyphen.
+const OUTSIDE_FEATURES: [&str; 2] = ["SP-", "REV-"];
+
 /// A story as its file name gives it.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Story {
@@ -160,6 +165,10 @@ pub struct Request<'a> {
     pub id: &'a str,
     /// A branch type typed with `--type`, for a story whose kind's default does not fit.
     pub branch_type: Option<&'a str>,
+    /// A branch topic typed with `--topic`, a bubble's own (`tool-cards-and-telemetry`) rather
+    /// than the story file's; for an epic's spike or a review whose file no branch holds yet, it
+    /// stands for the file's (REV-009).
+    pub topic: Option<&'a str>,
     /// Names of the files of `docs/backlog/stories/`.
     pub story_files: &'a [String],
     /// Remote branches, `origin/feature/f18-<topic>`.
@@ -221,9 +230,19 @@ pub fn plan(request: &Request, exists: impl Fn(&Path) -> bool) -> Result<Plan, S
     {
         (story, None)
     } else {
-        let (story, branch) = story_on_branches(&id, request.branch_files)?;
-
-        (story, Some(branch))
+        match (story_on_branches(&id, request.branch_files), request.topic) {
+            (Ok((story, branch)), _) => (story, Some(branch)),
+            (Err(_), Some(topic)) if OUTSIDE_FEATURES.iter().any(|kind| id.starts_with(kind)) => (
+                Story {
+                    id: id.clone(),
+                    kind: id.split_once('-').map_or("", |(kind, _)| kind).to_owned(),
+                    feature: None,
+                    topic: topic.to_owned(),
+                },
+                None,
+            ),
+            (Err(reason), _) => return Err(reason),
+        }
     };
     let kind = match request.branch_type {
         Some(kind) if BRANCH_TYPES.contains(&kind) => kind,
@@ -241,7 +260,7 @@ pub fn plan(request: &Request, exists: impl Fn(&Path) -> bool) -> Result<Plan, S
         })?,
     };
     let lower = id.to_ascii_lowercase();
-    let branch = format!("{kind}/{lower}-{}", story.topic);
+    let branch = format!("{kind}/{lower}-{}", request.topic.unwrap_or(&story.topic));
 
     if let Some(reason) = branch_refusal(&branch) {
         return Err(reason);
