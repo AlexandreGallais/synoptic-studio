@@ -8,6 +8,7 @@ import {
   openPage,
   readText,
   selectInput,
+  typeAndEnter,
   typeValue,
 } from "../user-actions";
 
@@ -124,13 +125,13 @@ describe("list of points and selection", () => {
   it("[F03.AC5] keeps every radius while the shape is briefly refused", () => {
     clickWithKeys('#points [data-vertex="6"]', {});
     typeValue("point-radius", "9");
-    typeValue("width", "");
+    typeAndEnter("angle", "");
 
     // Refused: no list nor handle of the last valid shape.
     expect(document.querySelector<HTMLElement>("#points")?.hidden).toBe(true);
     expect(document.querySelectorAll("#canvas path.handle")).toHaveLength(0);
 
-    typeValue("width", "100");
+    typeAndEnter("angle", "0");
 
     expect(keptRadii()).toBe("0 0 0 0 0 9");
   });

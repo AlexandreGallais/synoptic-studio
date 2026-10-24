@@ -1,7 +1,13 @@
 // @vitest-environment happy-dom
 import { beforeEach, describe, expect, it } from "vitest";
 
-import { chooseOption, clickElement, openPage, readPressedState, typeValue } from "../user-actions";
+import {
+  chooseOption,
+  clickElement,
+  openPage,
+  readPressedState,
+  typeAndEnter,
+} from "../user-actions";
 
 /**
  * Handles drawn on the canvas, in drawing order (the last one on top).
@@ -62,8 +68,8 @@ describe("points mode", () => {
   it("[F03.AC4] draws the red handle on top when handles coincide (0 × 50 rectangle)", () => {
     chooseOption("shape", "rectangle");
 
-    typeValue("width", "0");
-    typeValue("height", "50");
+    typeAndEnter("width", "0");
+    typeAndEnter("height", "50");
     clickElement("mode-points");
 
     // Vertices 1 (0, 0) and 2 (0, 0) coincide: the red one is the last drawn.

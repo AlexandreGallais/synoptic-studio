@@ -327,6 +327,7 @@ The spacings and the edge cases:
 F14, `DERIV-text-box`; decided at F05's refinement, rounds 1 and 2; the rules marked "confirmed at VAL-015" were read from those decisions by the agent at SP-016, 2026-10-15, confirmed at VAL-015.
 
 - **Two kinds**: a text **fits its content**, as in F05, or **sits in a box** of a given width and height, integers from 0 to 100 000 (confirmed at VAL-015, the bounds of a size and Q15).
+  - **Its fields** (US-085): the box's Width and Height act as number fields, a value above 100 000 capped at 100 000 as a shape's width, one below 0 refused and the field put back (`interaction.md` §2, One shape's fields, the same rule).
 - **Wrap**: in a box, each paragraph (the text between two line breaks typed) wraps **at spaces only**:
   - after the last space of a run, never at a no-break space, never at a hyphen; the spaces where a line wraps are neither measured nor drawn; lines are filled as much as they can be (greedy). "Hello World" in Arial 16 in a box 50 wide gives "Hello" over "World";
   - the spaces that open a paragraph stay with its first word, so that no line is made of them alone, although UAX #14 (LB18) would allow a break after them (agent, 2026-10-15, EN-033 audit, a design choice, confirmed at VAL-015);

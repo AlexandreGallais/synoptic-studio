@@ -18,6 +18,7 @@ import {
   readValue,
   selectPageElement,
   setElementBox,
+  typeAndEnter,
   typeTextContent,
   typeValue,
 } from "../user-actions";
@@ -118,7 +119,7 @@ describe("the panel loads the shape picked, per kind (US-067)", () => {
 
     placeShape("polygon", { x: 550, y: 200 });
     typeValue("radius", "4");
-    typeValue("width", "60");
+    typeAndEnter("width", "60");
     pick({ x: 300, y: 200 });
 
     expect(readText("#shape-title")).toBe("Rectangle");

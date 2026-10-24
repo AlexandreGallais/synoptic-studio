@@ -256,7 +256,7 @@ describe("the history's memory size and steps kept, set by the designer (US-076)
 
   it("[F40.AC4] leaves the bound's fields unmarked while the shape is refused", () => {
     openBoundedPage();
-    typeAndEnter("width", "-5");
+    typeAndEnter("angle", "");
 
     expect(selectPageElement("#width").getAttribute("aria-invalid")).toBe("true");
     expect(selectPageElement("#history-memory").getAttribute("aria-invalid")).toBeNull();

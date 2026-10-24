@@ -10,6 +10,7 @@ import {
   readDisplay,
   readText,
   readValue,
+  typeAndEnter,
   typeValue,
 } from "../user-actions";
 
@@ -40,8 +41,8 @@ describe("playground", () => {
   });
 
   it("[F01.AC1] renders the rectangle as one <path>", () => {
-    typeValue("width", "100");
-    typeValue("height", "50");
+    typeAndEnter("width", "100");
+    typeAndEnter("height", "50");
     typeValue("radius", "0");
 
     expect(document.querySelectorAll("#canvas svg path")).toHaveLength(1);
@@ -49,14 +50,14 @@ describe("playground", () => {
   });
 
   it("[F01.AC2] shows the effective radius next to the requested one when it was reduced", () => {
-    typeValue("height", "25");
+    typeAndEnter("height", "25");
     typeValue("radius", "100");
 
     expect(readText("#effective")).toBe("Effective radius: 12.5 (requested 100, reduced to fit)");
   });
 
   it("[F01.AC2] says the radius is as requested when it fits", () => {
-    typeValue("height", "50");
+    typeAndEnter("height", "50");
     typeValue("radius", "10");
 
     expect(readText("#effective")).toBe("Effective radius: 10 (as requested)");
@@ -226,8 +227,8 @@ describe("playground", () => {
   });
 
   it("[F02.AC4] draws a polygon in the same box, keeping width, height and radius", () => {
-    typeValue("width", "100");
-    typeValue("height", "100");
+    typeAndEnter("width", "100");
+    typeAndEnter("height", "100");
     typeValue("radius", "0");
     typeValue("corners", "6");
     chooseOption("shape", "polygon");
@@ -320,12 +321,12 @@ describe("playground", () => {
 
   it("[F02.AC5] caps a width or a radius above 100 000 at 100 000, in the input too (Q20)", () => {
     chooseOption("shape", "rectangle");
-    typeValue("width", "250000");
+    typeAndEnter("width", "250000");
 
     expect(readValue("width")).toBe("100000");
     expect(readText("#model")).toContain('"width": 100000');
 
-    typeValue("height", "250000");
+    typeAndEnter("height", "250000");
 
     expect(readValue("height")).toBe("100000");
     expect(readText("#model")).toContain('"height": 100000');
@@ -347,8 +348,8 @@ describe("playground", () => {
     { timeout: 1000 },
     () => {
       typeValue("radius", "0");
-      typeValue("height", "100000");
-      typeValue("width", "99999");
+      typeAndEnter("height", "100000");
+      typeAndEnter("width", "99999");
 
       expect([readValue("height"), readValue("width")]).toEqual(["100000", "99999"]);
       expect(readText("#model")).toContain('"width": 99999');
@@ -361,8 +362,8 @@ describe("playground", () => {
     expect(readDisplay("anchor-field") === "none").toBe(true);
     expect(document.querySelectorAll("#canvas path")).toHaveLength(1);
 
-    typeValue("width", "100");
-    typeValue("height", "100");
+    typeAndEnter("width", "100");
+    typeAndEnter("height", "100");
     typeValue("radius", "0");
     typeValue("corners", "3");
     chooseOption("shape", "polygon");

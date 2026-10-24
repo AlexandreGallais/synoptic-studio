@@ -14,8 +14,8 @@ import {
   readShapeModel,
   selectPageElement,
   setElementBox,
+  typeAndEnter,
   typeTextContent,
-  typeValue,
 } from "../user-actions";
 
 import type { Point, Shape } from "../../src";
@@ -176,7 +176,7 @@ describe("the shape under the pointer outlined in the layer above (US-065)", () 
 
   it("[F36.AC2] follows the shape changed under a pointer standing still", () => {
     hover({ x: 60, y: 40 });
-    typeValue("width", "200");
+    typeAndEnter("width", "200");
 
     expect(readShapeModel().width).toBe(200);
     expect(readOutline()).toBe(outlineOf(readShapeModel()));

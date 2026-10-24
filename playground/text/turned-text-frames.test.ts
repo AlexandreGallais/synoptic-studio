@@ -2,7 +2,13 @@
 
 import { beforeEach, describe, expect, it } from "vitest";
 
-import { chooseOption, chooseShapeKind, openServedPage, typeValue } from "../user-actions";
+import {
+  chooseOption,
+  chooseShapeKind,
+  openServedPage,
+  typeAndEnter,
+  typeValue,
+} from "../user-actions";
 
 /**
  * Reads the path data of the canvas's paths of a class, in order.
@@ -31,10 +37,10 @@ function typeTextBox(box: {
 }): void {
   chooseShapeKind("text");
   chooseOption("text-fit", "box");
-  typeValue("text-box-width", box.width);
-  typeValue("text-box-height", box.height);
-  typeValue("shape-x", "0");
-  typeValue("shape-y", "0");
+  typeAndEnter("text-box-width", box.width);
+  typeAndEnter("text-box-height", box.height);
+  typeAndEnter("shape-x", "0");
+  typeAndEnter("shape-y", "0");
   typeValue("angle", box.angle);
 }
 
@@ -46,11 +52,11 @@ function typeTextBox(box: {
  */
 function readRectangleFrames(angle: string): readonly (readonly (string | null)[])[] {
   chooseShapeKind("rectangle");
-  typeValue("width", "60");
-  typeValue("height", "40");
+  typeAndEnter("width", "60");
+  typeAndEnter("height", "40");
   typeValue("radius", "0");
-  typeValue("shape-x", "0");
-  typeValue("shape-y", "0");
+  typeAndEnter("shape-x", "0");
+  typeAndEnter("shape-y", "0");
   typeValue("angle", angle);
 
   return [readFrames("turned-box"), readFrames("straight-box")];

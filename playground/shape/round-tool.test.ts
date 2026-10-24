@@ -13,7 +13,6 @@ import {
   readValue,
   selectInput,
   typeAndEnter,
-  typeValue,
 } from "../user-actions";
 
 /**
@@ -30,8 +29,8 @@ describe("the Round tool (US-029)", () => {
   it("[F10.AC1] draws a circle in a box 100 × 100: four cubic sides from its top", () => {
     // DERIV-round-shape-curve: handles 50κ = 27.61424, so 50 + 27.61424 = 77.61424.
     openOnStep(1);
-    typeValue("width", "100");
-    typeValue("height", "100");
+    typeAndEnter("width", "100");
+    typeAndEnter("height", "100");
     chooseShapeKind("round");
 
     expect(readText("#shape-title")).toBe("Round shape");
@@ -137,10 +136,19 @@ describe("the Round tool (US-029)", () => {
     expect(readText("#path-data")).toMatch(/^M80 5\.35898 C/u);
   });
 
-  it("refuses a negative width", () => {
+  it("refuses a width below 0, the field showing the width again (US-085)", () => {
     openOnStep(1);
     chooseShapeKind("round");
-    typeAndEnter("width", "-1");
+    // -200 is relative: 120 − 200 is below 0.
+    typeAndEnter("width", "-200");
+
+    expect([readValue("width"), readText("#status")]).toEqual(["120", ""]);
+  });
+
+  it("refuses an angle emptied", () => {
+    openOnStep(1);
+    chooseShapeKind("round");
+    typeAndEnter("angle", "");
 
     expect(readText("#status")).toBe(
       "Width and height must be integers ≥ 0, and the angle an integer.",

@@ -10,7 +10,9 @@ import {
   readDisplay,
   readModel,
   readText,
+  readValue,
   selectPageElement,
+  typeAndEnter,
   typeValue,
 } from "../user-actions";
 
@@ -64,8 +66,8 @@ describe("Text tool: the box's fields (US-033)", () => {
 
   it("[F14.AC1] reads every option of the box into the model", () => {
     chooseOption("text-fit", "box");
-    typeValue("text-box-width", "50");
-    typeValue("text-box-height", "60");
+    typeAndEnter("text-box-width", "50");
+    typeAndEnter("text-box-height", "60");
     typeValue("text-maximum-lines", "2");
     clickElement("text-ellipsis");
     chooseOption("text-vertical-alignment", "bottom");
@@ -96,7 +98,24 @@ describe("Text tool: the box's fields (US-033)", () => {
 
   it.each([
     { id: "text-box-width", value: "" },
-    { id: "text-box-height", value: "-1" },
+    { id: "text-box-height", value: "-500" },
+  ])(
+    "refuses $id = '$value', the field showing its value again, the text drawn (US-085)",
+    ({ id, value }) => {
+      chooseOption("text-fit", "box");
+
+      const model = readText("#model");
+      const shown = readValue(id);
+
+      typeAndEnter(id, value);
+
+      expect([readValue(id), readText("#status")]).toEqual([shown, ""]);
+      expect(document.querySelectorAll("#canvas text")).toHaveLength(1);
+      expect(readText("#model")).toBe(model);
+    },
+  );
+
+  it.each([
     { id: "text-maximum-lines", value: "1.5" },
     { id: "text-line-height", value: "100001" },
     { id: "text-line-height", value: "" },
@@ -121,13 +140,13 @@ describe("Text tool: the box's fields (US-033)", () => {
 
   it("keeps the box's fields shown while one of them is refused, Fit content chosen", () => {
     chooseOption("text-fit", "box");
-    typeValue("text-box-width", "");
+    typeValue("text-maximum-lines", "1.5");
     chooseOption("text-fit", "content");
 
     expect(readDisplay("text-box-fields") === "none").toBe(false);
     expect(selectPageElement("#text-box-width").getAttribute("aria-invalid")).toBe("true");
 
-    typeValue("text-box-width", "50");
+    typeValue("text-maximum-lines", "0");
     expect(readDisplay("text-box-fields")).toBe("none");
   });
 });

@@ -9,6 +9,7 @@ import {
   openPage,
   readText,
   readValue,
+  typeAndEnter,
   typeValue,
 } from "../user-actions";
 
@@ -90,8 +91,8 @@ describe("turning and moving a shape (US-018)", () => {
 
   it("[F04.AC3] moves the shape so that its straight box starts at the x and y typed", () => {
     typeValue("angle", "90");
-    typeValue("shape-x", "0");
-    typeValue("shape-y", "0");
+    typeAndEnter("shape-x", "0");
+    typeAndEnter("shape-y", "0");
 
     // The straight box went from (20, −20) to (0, 0): the shape moved by (−20, 20).
     expect(readText("#straight-box")).toBe("Straight box: x 0, y 0, width 80, height 120");
@@ -99,7 +100,7 @@ describe("turning and moving a shape (US-018)", () => {
   });
 
   it("[F04.AC3] keeps the center of the box where it is when the shape turns", () => {
-    typeValue("shape-x", "100");
+    typeAndEnter("shape-x", "100");
     typeValue("angle", "90");
 
     // At (100, 0) the center is (160, 40); turned, the straight box runs from 160 − 40 = 120.
@@ -110,8 +111,8 @@ describe("turning and moving a shape (US-018)", () => {
     chooseOption("shape", "polygon");
 
     typeValue("corners", "3");
-    typeValue("width", "100");
-    typeValue("height", "100");
+    typeAndEnter("width", "100");
+    typeAndEnter("height", "100");
 
     chooseRadio("anchor", "mid max");
 
@@ -130,7 +131,7 @@ describe("turning and moving a shape (US-018)", () => {
   });
 
   it("[F04.AC3] moves nothing for a position that is not an integer", () => {
-    typeValue("shape-x", "2.5");
+    typeAndEnter("shape-x", "2.5");
 
     expect(readText("#straight-box")).toBe("Straight box: x 0, y 0, width 120, height 80");
   });
@@ -156,8 +157,8 @@ describe("turning and moving a shape (US-018)", () => {
 
   it("[F04.AC3] moves a converted free shape without undoing the width typed", () => {
     convertSquare();
-    typeValue("width", "200");
-    typeValue("shape-x", "10");
+    typeAndEnter("width", "200");
+    typeAndEnter("shape-x", "10");
 
     expect(readText("#straight-box")).toMatch(/^Straight box: x 10, y [^,]+, width 200,/u);
   });

@@ -19,6 +19,7 @@ import {
   readValue,
   selectPageElement,
   setElementBox,
+  typeAndEnter,
   typeValue,
 } from "../user-actions";
 
@@ -82,10 +83,10 @@ function typeRectangle(box: readonly [string, string, string, string, string]): 
 
   typeValue("angle", "0");
   typeValue("radius", "0");
-  typeValue("width", width);
-  typeValue("height", height);
-  typeValue("shape-x", x);
-  typeValue("shape-y", y);
+  typeAndEnter("width", width);
+  typeAndEnter("height", height);
+  typeAndEnter("shape-x", x);
+  typeAndEnter("shape-y", y);
   typeValue("angle", angle);
 }
 
@@ -241,12 +242,12 @@ describe("the arrows nudge the shapes selected (US-073)", () => {
   });
 
   it("[F39.AC4] leaves the arrow to the browser for a shape refused in the panel", () => {
-    typeValue("width", "-1");
+    typeAndEnter("angle", "");
 
     const event = pressArrow("ArrowRight", false);
 
     expect(readShape(0)).toMatchObject({ x: 10, y: 20 });
-    expect(readValue("width")).toBe("-1");
+    expect(readValue("angle")).toBe("");
     expect(event.defaultPrevented).toBe(false);
   });
 

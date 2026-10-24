@@ -1,7 +1,7 @@
 // @vitest-environment happy-dom
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { isDrawnText } from "../../src";
+import { freeShapeRadii, isDrawnText, isFreeShape } from "../../src";
 import { PAGE_HISTORIES } from "../history";
 import { readKeptDrawing } from "../kept-shapes";
 import {
@@ -36,7 +36,8 @@ function sendKey(id: string, type: string, init: KeyboardEventInit): void {
 /**
  * Sends the keys of Up held in a field, its repeats included, as Chromium sends them in a number
  * field: at each key, the value stepped by 1, then `input` and `change` (note 0032, §6); a field
- * of several shapes steps itself at the key (US-081, T1). The key is not released.
+ * acting as a number field, one shape's or several's, steps itself at the key (US-081, US-085).
+ * The key is not released.
  *
  * @param id - the field, without `#`
  * @param count - how many keys the browser sends, the first and its repeats
@@ -99,6 +100,18 @@ function readPresentWidths(): readonly number[] {
   return present.flatMap(({ shape }) => (isDrawnText(shape) ? [] : [shape.width]));
 }
 
+/**
+ * Reads the radius of the first corner of each rectangle of a drawing, stored as a free shape.
+ *
+ * @param drawing - the shapes, in the order drawn
+ * @returns the radii, a text's left out
+ */
+function readRadii(drawing: readonly KeptShape[]): readonly number[] {
+  return drawing.flatMap(({ shape }) =>
+    !isDrawnText(shape) && isFreeShape(shape) ? freeShapeRadii(shape).slice(0, 1) : [],
+  );
+}
+
 describe("a burst of arrows in a number field, one step (US-081)", () => {
   beforeEach(() => {
     vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout"] });
@@ -144,7 +157,8 @@ describe("a burst of arrows in a number field, one step (US-081)", () => {
 
     vi.advanceTimersByTime(1);
 
-    expect(readPresentWidths()).toEqual([130]);
+    // 100 + 30 − 1: the page steps W at Down's key too (US-085).
+    expect(readPresentWidths()).toEqual([129]);
   });
 
   it("[F43.AC3] takes no step while Up is held, however long", () => {
@@ -235,13 +249,13 @@ describe("a burst of arrows in a number field, one step (US-081)", () => {
   it("[F43.AC3] forgets a burst whose pause runs when the page is mounted again", () => {
     holdUp("width", 3);
     openServedPage("");
-    // Typed, not applied: no step of its own.
-    typeValue("width", "90");
+    // Typed in a number field, drawn at once: no step of its own.
+    typeValue("radius", "20");
     vi.advanceTimersByTime(PAUSE);
 
-    // The page's rectangle as it opens, 120 wide: the pause's end took no step.
-    expect(readWidths()).toEqual([90]);
-    expect(readPresentWidths()).toEqual([120]);
+    // The page's rectangle as it opens, its radius 10: the pause's end took no step.
+    expect(readRadii(readKeptDrawing(document))).toEqual([20]);
+    expect(readRadii(PAGE_HISTORIES.get(document)?.present.drawing ?? [])).toEqual([10]);
   });
 
   it("[F43.AC3] opens no burst at Cmd + Up, whose keyup macOS never sends", () => {

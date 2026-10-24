@@ -104,10 +104,10 @@ function placeRectangle(at: Point): void {
   clickElement("tool-rectangle");
   // (800, 600) of the drawing, under no shape of the examples.
   clickAt("#canvas", { clientX: 940, clientY: 690 });
-  typeValue("width", "100");
-  typeValue("height", "50");
-  typeValue("shape-x", String(at.x));
-  typeValue("shape-y", String(at.y));
+  typeAndEnter("width", "100");
+  typeAndEnter("height", "50");
+  typeAndEnter("shape-x", String(at.x));
+  typeAndEnter("shape-y", String(at.y));
 }
 
 describe("the zoom's keys, the fits and the percentage shown (US-079)", () => {
@@ -116,10 +116,10 @@ describe("the zoom's keys, the fits and the percentage shown (US-079)", () => {
     setElementBox("#canvas", { height: 800, left: 100, top: 50, width: 1200 });
     // A, 100 × 50 at (10, 20), sharp, selected.
     typeValue("radius", "0");
-    typeValue("width", "100");
-    typeValue("height", "50");
-    typeValue("shape-x", "10");
-    typeValue("shape-y", "20");
+    typeAndEnter("width", "100");
+    typeAndEnter("height", "50");
+    typeAndEnter("shape-x", "10");
+    typeAndEnter("shape-y", "20");
   });
 
   it("[F42.AC3] zooms in by a step about the pointer over the drawing by +, 141 % shown", () => {

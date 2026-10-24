@@ -2,7 +2,15 @@
 import { beforeEach, describe, expect, it } from "vitest";
 
 import { curveCornerOf } from "../../src";
-import { clickElement, clickPoint, openPage, readText, typeValue } from "../user-actions";
+import {
+  clickElement,
+  clickPoint,
+  openPage,
+  readText,
+  readValue,
+  typeAndEnter,
+  typeValue,
+} from "../user-actions";
 
 describe("rectangle as a free shape", () => {
   beforeEach(() => {
@@ -32,7 +40,7 @@ describe("rectangle as a free shape", () => {
     const before = readText("#path-data");
     const model = readText("#model");
 
-    typeValue("width", "0");
+    typeAndEnter("width", "0");
 
     // Nothing drawn across, the stored unit square untouched.
     expect(readText("#path-data")).toBe("M0 0 L0 80 Z");
@@ -47,7 +55,7 @@ describe("rectangle as a free shape", () => {
       width: 0,
     });
 
-    typeValue("width", "120");
+    typeAndEnter("width", "120");
 
     expect(readText("#model")).toBe(model);
     expect(readText("#path-data")).toBe(before);
@@ -80,7 +88,14 @@ describe("rectangle as a free shape", () => {
   });
 
   it("[F09.AC4] still refuses a fractional width typed for the rectangle (Q15)", () => {
-    typeValue("width", "2.5");
+    // A value typed is an integer (US-085): refused, the field shows the width again.
+    typeAndEnter("width", "2.5");
+
+    expect([readValue("width"), readText("#status")]).toEqual(["120", ""]);
+  });
+
+  it("[F09.AC4] still refuses a fractional radius typed for the rectangle (Q15)", () => {
+    typeValue("radius", "2.5");
 
     expect(readText("#status")).toBe(
       "Width, height and radius must be integers ≥ 0, and the angle an integer.",

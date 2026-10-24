@@ -8,6 +8,7 @@ import {
   readDisabledState,
   readDisplay,
   readText,
+  typeAndEnter,
   typeValue,
 } from "../user-actions";
 
@@ -32,8 +33,8 @@ describe("playground: stretched polygon (US-021)", () => {
   it("[F06.AC5] shows the « Stretched » check box for the polygon only, unticked", () => {
     expect(readDisplay("stretched-field") === "none").toBe(true);
 
-    typeValue("width", "100");
-    typeValue("height", "100");
+    typeAndEnter("width", "100");
+    typeAndEnter("height", "100");
     typeValue("radius", "0");
     typeValue("corners", "6");
     chooseOption("shape", "polygon");
@@ -57,8 +58,8 @@ describe("playground: stretched polygon (US-021)", () => {
 
   it("[F06.AC3] stays stretched when the number of corners and the size change", () => {
     typeValue("corners", "5");
-    typeValue("width", "300");
-    typeValue("height", "50");
+    typeAndEnter("width", "300");
+    typeAndEnter("height", "50");
 
     // DERIV-stretched-polygon, checks: the pentagon in 300 × 50, stopped at its corner guard.
     expect(readText("#path-data")).toBe(
@@ -77,8 +78,8 @@ describe("playground: stretched polygon (US-021)", () => {
   it("[F06.AC1] goes back to the regular polygon, placed by its anchor, when unticked", () => {
     typeValue("radius", "0");
     typeValue("corners", "6");
-    typeValue("width", "100");
-    typeValue("height", "100");
+    typeAndEnter("width", "100");
+    typeAndEnter("height", "100");
     clickElement("stretched");
 
     expect(isStretched()).toBe(false);

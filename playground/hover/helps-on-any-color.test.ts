@@ -12,7 +12,7 @@ import {
   runResizeObservers,
   selectPageElement,
   setElementBox,
-  typeValue,
+  typeAndEnter,
 } from "../user-actions";
 import { PAGE_VIEWS } from "../view";
 
@@ -50,8 +50,8 @@ function dragFrom(from: Point, to: Point, keys: PointerKeys): void {
  * @returns their models
  */
 function drawThreeShapes(): { readonly a: Shape; readonly b: Shape; readonly c: Shape } {
-  typeValue("width", "100");
-  typeValue("height", "100");
+  typeAndEnter("width", "100");
+  typeAndEnter("height", "100");
 
   const a = readShapeModel();
 

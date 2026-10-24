@@ -9,6 +9,7 @@ import {
   readDisplay,
   readText,
   selectPageElement,
+  typeAndEnter,
   typeValue,
 } from "../user-actions";
 
@@ -49,8 +50,8 @@ function readStraightBoxes(): readonly (string | null)[] {
  */
 function typeBox(width: string, height: string): void {
   chooseOption("text-fit", "box");
-  typeValue("text-box-width", width);
-  typeValue("text-box-height", height);
+  typeAndEnter("text-box-width", width);
+  typeAndEnter("text-box-height", height);
 }
 
 describe("Text tool: the straight box of a turned text (US-039)", () => {

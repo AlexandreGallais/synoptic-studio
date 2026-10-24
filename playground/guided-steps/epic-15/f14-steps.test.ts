@@ -10,6 +10,7 @@ import {
   readText,
   readValue,
   selectPageElement,
+  typeAndEnter,
   typeValue,
 } from "../../user-actions";
 import { GUIDED_STEPS } from "../lists";
@@ -126,7 +127,7 @@ describe("the guided test of F14 (VAL-015): the box's options", () => {
   it("[F17.AC15] a step is a new text: Box measures it again, the box typed before forgotten", () => {
     openStep("Fit content or Box");
     chooseOption("text-fit", "box");
-    typeValue("text-box-width", "50");
+    typeAndEnter("text-box-width", "50");
     clickElement("guide-previous");
     clickElement("guide-next");
     chooseOption("text-fit", "box");
@@ -145,8 +146,8 @@ describe("the guided test of F14 (VAL-015): the box's options", () => {
       ["Hello World"],
     ]);
 
-    typeValue("text-box-width", "50");
-    typeValue("text-box-height", "100");
+    typeAndEnter("text-box-width", "50");
+    typeAndEnter("text-box-height", "100");
     expect([readDisplay("text-box-fields"), readContents()]).toEqual(["block", ["Hello", "World"]]);
     // Dashes 4 long every 7, 1 thick: the right side's last from 98 to 100 at x 49.
     expect(readFrame()).toContain("M49 98H50V100H49Z");
@@ -154,9 +155,9 @@ describe("the guided test of F14 (VAL-015): the box's options", () => {
 
   it("width 200: one line; height 10: the line still drawn", () => {
     openStep("Width and height");
-    typeValue("text-box-width", "200");
+    typeAndEnter("text-box-width", "200");
     expect(readContents()).toEqual(["Hello World"]);
-    typeValue("text-box-height", "10");
+    typeAndEnter("text-box-height", "10");
     expect([readContents(), readBaselines()]).toEqual([["Hello World"], ["15.5"]]);
   });
 
@@ -246,14 +247,21 @@ describe("the guided test of F14 (VAL-015): the box's options", () => {
   });
 
   it.each([
-    ["text-box-width", "100001", "110"],
-    ["text-box-width", "", "110"],
-    ["text-background-opacity", "101", "100"],
-  ])("refuses %s %s, and draws again at %s", (id, refused, valid) => {
+    ["100001", "100000"],
+    ["", "110"],
+  ])("caps or refuses the box's width %j, the field then showing %s (US-085)", (typed, shown) => {
     openStep("Refused values");
-    typeValue(id, refused);
-    expect(isRefused(id)).toBe(true);
-    typeValue(id, valid);
+    typeAndEnter("text-box-width", typed);
+    expect([readValue("text-box-width"), readText("#status")]).toEqual([shown, ""]);
+    typeAndEnter("text-box-width", "110");
+    expect([readContents().length, readText("#status")]).toEqual([2, ""]);
+  });
+
+  it("refuses the background's opacity 101, and draws again at 100", () => {
+    openStep("Refused values");
+    typeValue("text-background-opacity", "101");
+    expect(isRefused("text-background-opacity")).toBe(true);
+    typeValue("text-background-opacity", "100");
     expect([readContents().length, readText("#status")]).toEqual([2, ""]);
   });
 
@@ -273,9 +281,10 @@ describe("the guided test of F14 (VAL-015): the box's options", () => {
 describe("the guided test of F14 (VAL-015): the decisions to confirm", () => {
   it("decision 1: a width of 100 001 refused, 60 drawn", () => {
     openStep("Box from 0 to 100 000 (decision 1)");
-    typeValue("text-box-width", "100001");
-    expect(isRefused("text-box-width")).toBe(true);
-    typeValue("text-box-width", "60");
+    // Capped at 100 000 as a shape's width, the same rule (US-085).
+    typeAndEnter("text-box-width", "100001");
+    expect(readValue("text-box-width")).toBe("100000");
+    typeAndEnter("text-box-width", "60");
     expect(readContents()).toEqual(["Hello", "World"]);
   });
 
@@ -313,7 +322,7 @@ describe("the guided test of F14 (VAL-015): the decisions to confirm", () => {
   it("decision 8: the ellipsis removes characters", () => {
     openStep("Ellipsis removes characters (decision 8)");
     expect([readContents(), readBlock().width]).toEqual([["Hello…"], 52.390625]);
-    typeValue("text-box-width", "50");
+    typeAndEnter("text-box-width", "50");
     expect([readContents(), readBlock().width]).toEqual([["Hell…"], 42.796875]);
   });
 
@@ -420,7 +429,7 @@ describe("the guided test of F14 (VAL-015): the decisions to confirm", () => {
 
     // X and Y show its straight box (AUD-040); a width typed keeps its turned top-left corner
     // (ADR-0057), the highest point at 23°, so that, its height kept, X and Y stay.
-    typeValue("text-box-width", "160");
+    typeAndEnter("text-box-width", "160");
     expect([readValue("shape-x"), readValue("shape-y")]).toEqual(["47", "61"]);
   });
 

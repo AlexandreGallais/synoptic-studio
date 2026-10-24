@@ -19,6 +19,7 @@ import {
   readValue,
   selectPageElement,
   setElementBox,
+  typeAndEnter,
   typeTextContent,
   typeValue,
 } from "../user-actions";
@@ -272,8 +273,8 @@ describe("a click with a tool adds a shape where it is clicked (US-063)", () => 
     expect(document.querySelector("#canvas svg")?.textContent).not.toContain("undefined");
   });
 
-  it("[F35.AC1] keeps no refused shape: a rectangle without width is not drawn below", () => {
-    typeValue("width", "");
+  it("[F35.AC1] keeps no refused shape: a rectangle without angle is not drawn below", () => {
+    typeAndEnter("angle", "");
     placeShape("rectangle", { x: 250, y: 140 });
 
     expect(readShapePaths()).toHaveLength(1);
@@ -421,7 +422,7 @@ describe("what a new shape starts with (SP-026)", () => {
     chooseOption("text-weight", "400");
     placeText({ x: 250, y: 140 }, "Pump");
     chooseOption("text-fit", "box");
-    typeValue("text-box-width", "300");
+    typeAndEnter("text-box-width", "300");
     placeShape("rectangle", { x: 400, y: 300 });
     placeText({ x: 250, y: 300 }, "Text");
     chooseOption("text-fit", "box");

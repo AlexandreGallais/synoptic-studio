@@ -14,6 +14,7 @@ import {
   readText,
   readValue,
   selectPageElement,
+  typeAndEnter,
   typeValue,
 } from "../user-actions";
 
@@ -293,8 +294,8 @@ describe("Text tool", () => {
   });
 
   it("moves the text with X and Y", () => {
-    typeValue("shape-x", "10");
-    typeValue("shape-y", "20");
+    typeAndEnter("shape-x", "10");
+    typeAndEnter("shape-y", "20");
     // 20 + 15.5.
     expect(readLines()[0]).toEqual(["H", "10", "35.5"]);
   });

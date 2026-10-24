@@ -9,7 +9,7 @@ import {
   openServedPage,
   readShapeModel,
   setElementBox,
-  typeValue,
+  typeAndEnter,
 } from "../user-actions";
 
 import type { Point, Shape } from "../../src";
@@ -44,8 +44,8 @@ function dragFrom(from: Point, to: Point): void {
  * @returns their models
  */
 function drawThreeShapes(): { readonly a: Shape; readonly b: Shape; readonly c: Shape } {
-  typeValue("width", "100");
-  typeValue("height", "100");
+  typeAndEnter("width", "100");
+  typeAndEnter("height", "100");
 
   const a = readShapeModel();
 

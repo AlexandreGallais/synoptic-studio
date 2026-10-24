@@ -13,6 +13,7 @@ import {
   readShapeModel,
   readText,
   setElementBox,
+  typeAndEnter,
   typeValue,
 } from "../user-actions";
 
@@ -162,7 +163,7 @@ describe("a value typed then the drawing clicked within the same frame (US-082)"
     expect(readShapeModel()).toMatchObject({ height: 100, width: 100, x: 200, y: -5 });
 
     holdFrames();
-    typeValue("shape-y", "20");
+    typeAndEnter("shape-y", "20");
     expect(FRAMES).toHaveLength(1);
   });
 
@@ -259,7 +260,7 @@ describe("a value typed then the drawing clicked within the same frame (US-082)"
     // Drawn by the mount itself; the frame the mount before asked then finds nothing to draw.
     expect(PENDING_REDRAWS.has(document)).toBe(false);
 
-    typeValue("shape-x", "30");
+    typeAndEnter("shape-x", "30");
 
     // A frame of its own: the redraw asked before the mount no longer swallows it.
     expect(PENDING_REDRAWS.has(document)).toBe(true);

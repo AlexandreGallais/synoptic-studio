@@ -3,7 +3,7 @@ id: US-085
 epic: E02
 feature: F44
 title: The fields of one shape as the fields of several
-status: ready
+status: done
 points: 3
 ---
 
@@ -35,14 +35,15 @@ The examples use the page as it opens, the rectangle 120 × 80 at (0, 0), select
 | 1 | Click in Width and press Shift + Up, then Up | 130, then 131; the rectangle wider each time |
 | 2 | Click in X and press Shift + Up twice | X at 20, the rectangle moved right by 20 |
 | 3 | Type `+19` in Width, then press Enter | 150; the rectangle wider by 19 only once Enter is pressed |
-| 4 | Hold Up in Height for a second, release, then press Ctrl + Z (Cmd + Z on a Mac) | the height grows while held; one undo brings it back to 80 |
-| 5 | Add a second rectangle, select both with Shift + click and press Shift + Up in Width | both 10 wider, as with one |
+| 4 | Type `-500` in Width, then press Enter | the field shows 150 again, the rectangle unchanged: 150 − 500 is below 0 |
+| 5 | Hold Up in Height for a second, release, then press Ctrl + Z (Cmd + Z on a Mac) | the height grows while held; one undo brings it back to 80 |
+| 6 | Pick the Rectangle tool, click the empty drawing, then Shift + click the first rectangle and press Shift + Up in Width | both 10 wider, as with one |
 
 ## Tasks
 
-- [ ] T1 — One shape's X, Y, Width and Height, and a text's box Width and Height, as text fields acting as number fields: their values typed (`parsePanelValue`) and their arrows (`fieldArrowStep`) given to the shape edited by the same computation as several's, the field written back after it; `interaction.md` §2 (The panel for several shapes, its rule now for one shape too) and its Q row; tests of the criteria first, failing (2 h)
-- [ ] T2 — The code that passes them, the one shape's `input` listeners on those fields replaced by `change` and `keydown` as several's, `readShape` reading them as before (2 h)
-- [ ] T3 — The burst of arrows and the history for one shape's fields, the tests of US-019, US-032 and AUD-040 on X, Y, W and H brought to the new fields; the Product Owner test (1 h)
+- [x] T1 — One shape's X, Y, Width and Height, and a text's box Width and Height, as text fields acting as number fields: their values typed (`parsePanelValue`) and their arrows (`fieldArrowStep`) given to the shape edited by the same computation as several's, the field written back after it; `interaction.md` §2 (The panel for several shapes, its rule now for one shape too) and its Q row; tests of the criteria first, failing (2 h)
+- [x] T2 — The code that passes them, the one shape's `input` listeners on those fields replaced by `change` and `keydown` as several's, `readShape` reading them as before (2 h)
+- [x] T3 — The burst of arrows and the history for one shape's fields, the tests of US-019, US-032 and AUD-040 on X, Y, W and H brought to the new fields; the Product Owner test (1 h)
 
 Files: `playground/index.html` (`#width`, `#height`, `#shape-x`, `#shape-y`, `#text-box-width`, `#text-box-height`), `playground/mount/listen-to-inputs.ts`, `playground/position/listen-to-position.ts`, `playground/selection/listen-to-several-fields.ts`, `playground/text-placement/`, `playground/arrow-bursts/`, `docs/domain/interaction.md` §2. `@see` `REF-FIGMA-ADJUST`, `docs/domain/interaction.md#_2-selector`.
 
