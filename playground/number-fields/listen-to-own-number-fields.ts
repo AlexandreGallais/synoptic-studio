@@ -1,11 +1,12 @@
 import { parsePanelValue } from "../../src";
+import { SHOWN_TEXTS, readShownNumber } from "../applied-values";
 import { readListenerSignal } from "../listeners";
-import { readNumber, writeInputValue } from "../page";
+import { writeInputValue } from "../page";
 
+import { listenToTypedNumbers } from "./listen-to-typed-numbers";
 import { OWN_NUMBER_FIELDS } from "./own-number-fields";
 import { readArrowStep } from "./read-arrow-step";
 import { readOwnValue } from "./read-own-value";
-import { SHOWN_NUMBERS } from "./shown-numbers";
 
 /**
  * Reads the field acting as a number field of its own an event reached (`OWN_NUMBER_FIELDS`).
@@ -24,50 +25,24 @@ function readOwnField(event: Event): HTMLInputElement | undefined {
 }
 
 /**
- * Writes the number a field of its own shows as it gets a key, before the key types in it, as the
- * number it showed (`SHOWN_NUMBERS`), so that a text typed and not applied keeps the one before.
+ * Reads the number a field of its own showed before a text was typed in it (`SHOWN_TEXTS`,
+ * `listenToTypedNumbers`), none for a field showing none, an empty Radius showing Mixed.
  *
  * @kind procedure
- * @param event - a key pressed, or the focus given
+ * @param field - a field acting as a number field of its own
+ * @returns the number; undefined when it showed none
  * @see docs/domain/interaction.md#_2-selector
  */
-function writeShownNumber(event: Event): void {
-  const field = readOwnField(event);
+function readBeforeNumber(field: HTMLInputElement): number | undefined {
+  const shown = readShownNumber(SHOWN_TEXTS.get(field) ?? "");
 
-  if (field === undefined) {
-    return;
-  }
-
-  const shown = readNumber(field.ownerDocument, field.id);
-
-  if (!Number.isNaN(shown)) {
-    SHOWN_NUMBERS.set(field, shown);
-  }
-}
-
-/**
- * Writes the number a field of its own shows as it gets the focus as the number it showed
- * (`writeShownNumber`), none for a field showing none, an empty Radius showing Mixed, which an
- * arrow then steps by nothing.
- *
- * @kind procedure
- * @param event - the focus given
- * @see docs/domain/interaction.md#_2-selector
- */
-function writeFocusedNumber(event: Event): void {
-  const field = readOwnField(event);
-
-  if (field !== undefined) {
-    SHOWN_NUMBERS.delete(field);
-  }
-
-  writeShownNumber(event);
+  return Number.isNaN(shown) ? undefined : shown;
 }
 
 /**
  * Shows a value in a field of its own; a value refused shows the number it showed again
- * (`SHOWN_NUMBERS`), a field without one keeping its text. The number kept is read again at the
- * next key or focus (`writeShownNumber`), once the field's own listeners have shown the value
+ * (`readBeforeNumber`), a field without one keeping its text. The number kept is read again at
+ * the next key or focus (`listenToTypedNumbers`), once the field's own listeners have shown the value
  * they took, the angle 370 shown 10.
  *
  * @kind procedure
@@ -76,7 +51,7 @@ function writeFocusedNumber(event: Event): void {
  * @see docs/domain/interaction.md#_2-selector
  */
 function showOwnValue(field: HTMLInputElement, value: number | undefined): void {
-  const shown = value ?? SHOWN_NUMBERS.get(field);
+  const shown = value ?? readBeforeNumber(field);
 
   if (shown === undefined) {
     return;
@@ -97,7 +72,7 @@ function showOwnValue(field: HTMLInputElement, value: number | undefined): void 
 function readTypedValue(field: HTMLInputElement): number | undefined {
   const typed = parsePanelValue(field.value);
 
-  return typed === undefined ? undefined : readOwnValue(field, typed, SHOWN_NUMBERS.get(field));
+  return typed === undefined ? undefined : readOwnValue(field, typed, readBeforeNumber(field));
 }
 
 /**
@@ -112,7 +87,7 @@ function readTypedValue(field: HTMLInputElement): number | undefined {
  * @see docs/domain/interaction.md#_2-selector
  */
 function stopRefusedValue(event: Event, field: HTMLInputElement, value: number | undefined): void {
-  if (value === undefined && SHOWN_NUMBERS.has(field)) {
+  if (value === undefined && readBeforeNumber(field) !== undefined) {
     event.stopPropagation();
   }
 }
@@ -159,7 +134,7 @@ function applySteppedValue(field: HTMLInputElement, value: number | undefined): 
 
 /**
  * Steps a field of its own at Up or Down (`readArrowStep`), from the number it showed
- * (`SHOWN_NUMBERS`), within its bounds (`readOwnValue`), the key's default prevented, the value
+ * (`readBeforeNumber`), within its bounds (`readOwnValue`), the key's default prevented, the value
  * applied (`applySteppedValue`) once the panel's listener has opened the burst of arrows
  * (`listenToArrowBursts`), so that it takes no step of its own.
  *
@@ -176,14 +151,14 @@ function applyArrowValue(event: KeyboardEvent): void {
   }
 
   event.preventDefault();
-  applySteppedValue(field, readOwnValue(field, step, SHOWN_NUMBERS.get(field)));
+  applySteppedValue(field, readOwnValue(field, step, readBeforeNumber(field)));
 }
 
 /**
  * Makes the fields acting as number fields of their own act as one shape's (US-087,
  * `OWN_NUMBER_FIELDS`): a value typed applied on Enter or when the field is left, never while it
  * is typed, an integer, relative with a sign from the number shown before it was typed
- * (`writeShownNumber`, `applyTypedValue`), a value refused putting that number back; Up and Down
+ * (`listenToTypedNumbers`, `applyTypedValue`), a value refused putting that number back; Up and Down
  * stepping it by 1, or 10 with Shift (`applyArrowValue`). Heard on the document, a value applied
  * before the field's own listeners, which read the number it shows (`readNumber`), an arrow after
  * the panel's, which opens its burst.
@@ -195,8 +170,7 @@ function applyArrowValue(event: KeyboardEvent): void {
 export function listenToOwnNumberFields(document: Document): void {
   const signal = readListenerSignal(document);
 
-  document.addEventListener("focusin", writeFocusedNumber, { capture: true, signal });
-  document.addEventListener("keydown", writeShownNumber, { capture: true, signal });
+  listenToTypedNumbers(document);
   document.addEventListener("change", applyTypedValue, { capture: true, signal });
   document.addEventListener("keydown", applyArrowValue, { signal });
 }

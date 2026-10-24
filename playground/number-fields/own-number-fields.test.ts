@@ -220,6 +220,37 @@ describe("every number field, the rule of one shape's (US-087)", () => {
     expect([readValue("radius"), readRadius()]).toEqual(["11", 11]);
   });
 
+  it("[F44.AC4] steps the number shown before 5 typed with its key, not the 5", () => {
+    selectInput("radius").focus();
+    pressIn("radius", { key: "5" });
+    typeValue("radius", "5");
+    pressIn("radius", { key: "ArrowUp" });
+
+    // 10 + 1: the 5 typed, a number, is no value applied.
+    expect([readValue("radius"), readRadius()]).toEqual(["11", 11]);
+  });
+
+  it("[F44.AC4] adds -5 to the Angle at 30, each key of it starting from 30, not from the text", () => {
+    typeInField("angle", "30");
+    typeInField("angle", "-5");
+
+    // 30 − 5 = 25: the keys of `-`, `5` and Enter each sent before the text applied.
+    expect(readValue("angle")).toBe("25");
+  });
+
+  it("[F44.AC4] draws the angle applied, not the one typed, at a redraw before Enter", () => {
+    selectInput("angle").focus();
+    pressIn("angle", { key: "3" });
+    typeValue("angle", "30");
+
+    selectPageElement("#canvas").dispatchEvent(
+      new WheelEvent("wheel", { bubbles: true, cancelable: true, deltaY: 100 }),
+    );
+
+    // The wheel's pan redraws the page from the angle applied, 0, never the 30 typed.
+    expect([readShapeModel().angle, readValue("angle")]).toEqual([0, "30"]);
+  });
+
   it("[F44.AC4] finds every number field of the page under the rule", () => {
     const shared = new Set([...EDITED_FIELDS, ...SEVERAL_FIELDS].map(([, id]) => id));
     const fields = [...document.querySelectorAll(NUMBER_FIELDS)];

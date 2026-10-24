@@ -16,6 +16,7 @@ import {
   readShapeModel,
   readText,
   readValue,
+  selectInput,
   selectPageElement,
   setElementBox,
   typeAndEnter,
@@ -188,6 +189,25 @@ describe("a value typed in one shape's fields, relative or fixed (US-085)", () =
 
     expect(readShapeModel().width).toBe(150);
   });
+
+  it.each(["150", "+10"])(
+    "[F44.AC2] keeps it 120 wide for %s typed in Width while the wheel redraws the page",
+    (typed) => {
+      selectInput("width").focus();
+      typeValue("width", typed);
+
+      selectPageElement("#canvas").dispatchEvent(
+        new WheelEvent("wheel", { bubbles: true, cancelable: true, deltaY: 100 }),
+      );
+
+      // The redraw reads the width applied, 120, never the text typed nor its `+` as no number.
+      expect([readShapeModel().width, readText("#status"), readValue("width")]).toEqual([
+        120,
+        "",
+        typed,
+      ]);
+    },
+  );
 
   it("[F44.AC2] sets 50 in X without a sign, the rectangle at x 50", () => {
     typeAndEnter("shape-x", "50");

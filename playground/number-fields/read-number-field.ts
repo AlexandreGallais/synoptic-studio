@@ -9,6 +9,6 @@ import { NUMBER_FIELDS } from "./number-fields";
  * @returns the field; undefined for any other element
  * @see docs/domain/interaction.md#_2-selector
  */
-export function readNumberField(target: EventTarget | null): Element | undefined {
-  return target instanceof Element && target.matches(NUMBER_FIELDS) ? target : undefined;
+export function readNumberField(target: EventTarget | null): HTMLInputElement | undefined {
+  return target instanceof HTMLInputElement && target.matches(NUMBER_FIELDS) ? target : undefined;
 }
