@@ -2,6 +2,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
 
 import { isDrawnText } from "../../src";
+import { readKeptDrawing } from "../kept-shapes";
 import { NUMBER_FIELDS } from "../number-fields";
 import {
   chooseOption,
@@ -344,7 +345,11 @@ describe("several shapes' fields, the same rule (US-085)", () => {
     pressIn("several-width", { key: "ArrowUp", shiftKey: true });
 
     // 120 + 10 and 40 + 10, W Mixed.
-    expect(readValue("several-width")).toBe("");
+    const widths = readKeptDrawing(document).map(({ shape }) =>
+      isDrawnText(shape) ? undefined : shape.width,
+    );
+
+    expect(widths).toEqual([130, 50]);
     expect(selectPageElement("#several-width").getAttribute("placeholder")).toBe("Mixed");
   });
 
