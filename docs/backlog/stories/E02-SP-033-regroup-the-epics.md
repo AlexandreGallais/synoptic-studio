@@ -2,7 +2,7 @@
 id: SP-033
 epic: E02
 title: Regroup the epics not done into small epics of one subject
-status: in-progress
+status: done
 points: 2
 ---
 
@@ -103,9 +103,9 @@ The inventory of T1 (2026-10-25), read at `develop`'s head: every epic not done,
 
 One task = one commit, referenced as `SP-033.Tn`.
 
-- [ ] T1 — Inventory: each epic not done, its features, ideas and cards, its dependencies, the domain files it rests on
-- [ ] T2 — The new list: subjects, epics, features and their sizes, the map from the old epics
-- [ ] T3 — The research note and the questions for the Product Owner
+- [x] T1 — Inventory: each epic not done, its features, ideas and cards, its dependencies, the domain files it rests on
+- [x] T2 — The new list: subjects, epics, features and their sizes, the map from the old epics
+- [x] T3 — The research note and the questions for the Product Owner
 
 ## Answers of the Product Owner
 
