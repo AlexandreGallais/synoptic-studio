@@ -3,7 +3,7 @@ id: US-090
 epic: E02
 feature: F46
 title: The selection rectangle always answers, the canvas resized without a flicker
-status: ready
+status: done
 points: 2
 ---
 

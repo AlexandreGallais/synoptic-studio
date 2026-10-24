@@ -136,7 +136,7 @@
 | [AUD-047](./E02-F45-AUD-047-audit-f45.md) | F45 | Audit F45 | done |
 | [VAL-046](./E02-F45-VAL-046-validate-f45.md) | F45 | Validate F45 | dropped |
 | [US-089](./E02-F46-US-089-a-turned-shape-moved-onto-integers.md) | F46 | A turned shape moved by the arrows onto integers | done |
-| [US-090](./E02-F46-US-090-the-rectangle-and-the-canvas-resized.md) | F46 | The selection rectangle always answers, the canvas resized without a flicker | ready |
+| [US-090](./E02-F46-US-090-the-rectangle-and-the-canvas-resized.md) | F46 | The selection rectangle always answers, the canvas resized without a flicker | done |
 | [AUD-048](./E02-F46-AUD-048-audit-f46.md) | F46 | Audit F46 | ready |
 | [VAL-047](./E02-F46-VAL-047-validate-f46.md) | F46 | Validate F46 | dropped |
 | [SP-025](./E02-SP-025-cut-the-editing-work-into-small-features.md) | E02 | Cut the editing work into small features | done |
