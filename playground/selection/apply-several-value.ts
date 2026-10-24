@@ -1,5 +1,5 @@
 import { fieldArrowShift } from "../../src";
-import { readEditedKept } from "../edited-fields";
+import { readEditedKeptShape } from "../edited-fields";
 import {
   DRAWING_KEYS,
   readKeptDrawing,
@@ -48,7 +48,7 @@ type AxisStep = {
  * Reads a shape selected once an arrow's step in X or Y moves it as one shape's (F46,
  * `applySteppedPosition`): landed on integers from its own straight box as last drawn
  * (`readPanelValues`, `fieldArrowShift`), X then Y set by their shifts as relative values
- * (`readEditedKept`); a shape refused, or a text never measured, which has no straight box, takes
+ * (`readEditedKeptShape`); a shape refused, or a text never measured, which has no straight box, takes
  * the step as a value typed.
  *
  * @kind procedure
@@ -63,7 +63,7 @@ function readSteppedKept(document: Document, kept: KeptShape, stepped: AxisStep)
   const [anchor] = readPanelValues(document, kept.shape);
 
   if (anchor === undefined) {
-    return readEditedKept(document, kept, {
+    return readEditedKeptShape(document, kept, {
       key: axis,
       maxSize: MAX_SIZE,
       typed: { isRelative: true, value: step },
@@ -72,9 +72,9 @@ function readSteppedKept(document: Document, kept: KeptShape, stepped: AxisStep)
 
   const shift = fieldArrowShift(anchor, axis, step);
   const across = { isRelative: true, value: shift.x };
-  const moved = readEditedKept(document, kept, { key: "x", maxSize: MAX_SIZE, typed: across });
+  const moved = readEditedKeptShape(document, kept, { key: "x", maxSize: MAX_SIZE, typed: across });
 
-  return readEditedKept(document, moved, {
+  return readEditedKeptShape(document, moved, {
     key: "y",
     maxSize: MAX_SIZE,
     typed: { isRelative: true, value: shift.y },
@@ -84,7 +84,7 @@ function readSteppedKept(document: Document, kept: KeptShape, stepped: AxisStep)
 /**
  * Reads a shape selected once a value is applied in a field of several shapes: an arrow's step in
  * X or Y moves it as one shape's (`readSteppedKept`), any other value is given to it
- * (`readEditedKept`).
+ * (`readEditedKeptShape`).
  *
  * @kind procedure
  * @param document - page document
@@ -101,7 +101,7 @@ function readSeveralKept(document: Document, kept: KeptShape, value: SeveralValu
     return readSteppedKept(document, kept, { axis, step: typed.value });
   }
 
-  return readEditedKept(document, kept, { key, maxSize: MAX_SIZE, typed });
+  return readEditedKeptShape(document, kept, { key, maxSize: MAX_SIZE, typed });
 }
 
 /**

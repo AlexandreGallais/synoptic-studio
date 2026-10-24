@@ -8,6 +8,6 @@ import type { HistoryBound } from "../../src";
  * default size).
  */
 export const HISTORY_BOUND_FIELDS: Readonly<Record<keyof HistoryBound, HistoryBoundField>> = {
-  size: { id: "history-memory", most: 1000, unit: 1_000_000 },
-  steps: { id: "history-steps", most: 100, unit: 1 },
+  size: { id: "history-memory", maximum: 1000, unit: 1_000_000 },
+  steps: { id: "history-steps", maximum: 100, unit: 1 },
 };

@@ -1,4 +1,4 @@
-import { SHOWN_TEXTS, TYPED_FIELDS } from "../applied-values";
+import { SHOWN_TEXTS, TYPED_NUMBER_FIELDS } from "../applied-values";
 import { readListenerSignal } from "../listeners";
 
 import { readNumberField } from "./read-number-field";
@@ -15,14 +15,14 @@ import { readNumberField } from "./read-number-field";
 function writeShownText(event: Event): void {
   const field = readNumberField(event.target);
 
-  if (field !== undefined && !TYPED_FIELDS.has(field)) {
+  if (field !== undefined && !TYPED_NUMBER_FIELDS.has(field)) {
     SHOWN_TEXTS.set(field, field.value);
   }
 }
 
 /**
  * Marks a field acting as a number field as holding a text typed and not applied
- * (`TYPED_FIELDS`), so that the page reads the value applied until one is (`readShownText`).
+ * (`TYPED_NUMBER_FIELDS`), so that the page reads the value applied until one is (`readShownText`).
  *
  * @kind procedure
  * @param event - a text typed, `input`
@@ -32,7 +32,7 @@ function writeTypedField(event: Event): void {
   const field = readNumberField(event.target);
 
   if (field !== undefined) {
-    TYPED_FIELDS.add(field);
+    TYPED_NUMBER_FIELDS.add(field);
   }
 }
 
@@ -48,7 +48,7 @@ function clearTypedField(event: Event): void {
   const field = readNumberField(event.target);
 
   if (field !== undefined) {
-    TYPED_FIELDS.delete(field);
+    TYPED_NUMBER_FIELDS.delete(field);
   }
 }
 
