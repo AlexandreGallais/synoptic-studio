@@ -123,7 +123,7 @@
 | [US-080](./E02-F43-US-080-the-helps-seen-on-any-color.md) | F43 | The helps seen on any color, and what a selection rectangle takes | done |
 | [US-081](./E02-F43-US-081-the-arrows-in-the-fields-and-on-the-drawing.md) | F43 | The arrows in the panel's fields and on the drawing | done |
 | [US-082](./E02-F43-US-082-a-text-box-square-the-wheel-with-shift.md) | F43 | A text's box kept square, the wheel with Shift, several shapes' sizes | done |
-| [AUD-045](./E02-F43-AUD-045-audit-f43.md) | F43 | Audit F43 | ready |
+| [AUD-045](./E02-F43-AUD-045-audit-f43.md) | F43 | Audit F43 | done |
 | [VAL-044](./E02-F43-VAL-044-validate-f43.md) | F43 | Validate F43 | dropped |
 | [SP-025](./E02-SP-025-cut-the-editing-work-into-small-features.md) | E02 | Cut the editing work into small features | done |
 | [SP-010](./E14-F11-SP-010-research-f11.md) | F11 | Research for F11: folder layouts and test placement | done |

@@ -3,7 +3,7 @@ id: AUD-045
 epic: E02
 feature: F43
 title: Audit F43
-status: ready
+status: done
 points: 1
 ---
 
@@ -17,7 +17,7 @@ Audit F43 following [audit.md](../../conventions/audit.md) (ADR-0020), the `audi
 
 ## Tasks
 
-- [ ] T1 — Criteria traced, findings fixed (1 h)
+- [x] T1 — Criteria traced, findings fixed (1 h)
 
 One task = one commit, referenced as `AUD-045.T1`.
 
