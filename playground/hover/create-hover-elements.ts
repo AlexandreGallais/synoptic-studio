@@ -1,13 +1,12 @@
-import { createOutlineElements } from "../helps-frame";
+import { createOutlineElements } from "../helps";
 import { readPickAreas, readShapeAt } from "../picking";
 
 import type { Point } from "../../src";
 
 /**
  * Creates the outline of the shape under a point as a click reaches it (`readShapeAt`), found on
- * its whole contour: its two bands about its contour as drawn, the light one then the accent's
- * (`createOutlineElements`), of classes `hover-light` and `hover`, computed only within the helps'
- * box (EN-149).
+ * its whole contour: the dashed line of the helps on its contour as drawn (`createOutlineElements`),
+ * of classes `hover-light` and `hover` (US-086).
  *
  * @kind procedure
  * @param document - page document

@@ -72,23 +72,25 @@
         width: 100%;
         height: 100%;
       }
-      /* The outlines: a band about the shape's contour, a fill, never a native stroke; the dashed
-         box around several shapes selected (F37), thin filled rectangles. */
-      #overlay path.hover,
-      #overlay path.selection,
-      #overlay path.selection-box,
-      #overlay path.selection-rectangle {
-        fill: var(--accent);
-      }
-      /* The light band under each of them (F43), so that they show on any color, the accent's
-         own included: wider than the outline, the dashes' gaps, as Inkscape's controls. */
+      /* The helps (US-086, ADR-0099): the outlines, the dashed box around several shapes selected
+         and the selection rectangle's line, each one line of white and black dashes, seen on
+         every color: a white stroke, then black dashes over it, as Inkscape's controls. A native
+         stroke in this layer alone, never on a shape; widths and dashes set by the page. */
       #overlay path.hover-light,
       #overlay path.selection-light,
       #overlay path.selection-box-light,
       #overlay path.selection-rectangle-light {
-        fill: #fff;
+        fill: none;
+        stroke: #fff;
       }
-      /* The selection rectangle's area (F37), a light tint of the outlines' color under its band. */
+      #overlay path.hover,
+      #overlay path.selection,
+      #overlay path.selection-box,
+      #overlay path.selection-rectangle {
+        fill: none;
+        stroke: #000;
+      }
+      /* The selection rectangle's area (F37), a light tint of the outlines' color under its line. */
       #overlay path.selection-area {
         fill: color-mix(in srgb, var(--accent) 12%, transparent);
       }

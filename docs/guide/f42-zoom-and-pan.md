@@ -10,7 +10,7 @@
 
 **Work at any zoom.** A click places a shape where it is clicked, at any zoom; the handles, the frames, the dashed boxes and the outlines keep their size on screen, a handle's radius 8 pixels whether zoomed in or out. A press released within 3 pixels of where it was pressed is a click, at any zoom: zoomed out to 10 %, a hand that trembles by a pixel still places a square 100 × 100 rather than a thin line; with the Selector, a shape moves only once the pointer goes further than 3 pixels.
 
-**Large shapes stay fast.** The outlines of the shape under the pointer and of the selection are computed only where they can be seen: the part of the drawing the canvas shows and half the canvas more on each side. A rectangle 99 999 × 100 000 rounded to the full, selected at 100 %, used to take a fifth of a second to outline at each redraw, its corners far out of sight; its outline is now empty there and the page stays smooth. Move the view by less than half the canvas and the outlines are not computed again; further, or when the drawing changes or the zoom does, they are.
+**Large shapes stay fast.** Since F44 an outline is the shape's own edge, drawn by the browser as a dashed line, nothing computed around it: a rectangle 99 999 × 100 000 rounded to the full, selected at 100 %, which used to take a fifth of a second to outline at each redraw, is outlined at once, at any zoom and wherever the view is.
 
 **Zoom by keys.** Press `+` to zoom in and `-` to zoom out, one step at a time: 100, 141, 200, 283, 400 %, each step × √2. With the pointer over the drawing, the point under it stays under it; elsewhere, the zoom keeps the canvas's centre. `Shift` + `0` goes back to 100 % about the centre. A key typed in a field of the panel stays the field's; with `Ctrl` held, `+` and `-` zoom the page itself, as in any web page.
 
@@ -31,7 +31,7 @@ For the review's summary; each can be changed.
 - `=` zooms in as `+` does, as in Inkscape, so that `+` needs no `Shift` on a US keyboard.
 - `Shift` with `0`, `1` or `2` is read by the key's place on the keyboard, so that it works whatever character the layout gives it: `)` on a US keyboard, `0` on a French one.
 - The menu's zooms keep the canvas's centre, the pointer being on the menu; a percentage typed beyond the bounds is taken at the bound, and a text, a fraction or 0 is refused, the field showing the zoom again; since US-087, `-50` takes 50 away, as in every number field, and Up and Down step the percentage by 1, 10 with Shift.
-- An outline is cut to the region it is computed for by its pieces' chords, each drawn whole or left out, rather than by an arc's angles and a curve's halves, so that the outline seen is exactly the one drawn before, every chord the same.
+- Until F44, an outline was cut to the region it was computed for by its pieces' chords, each drawn whole or left out; since F44 it is drawn whole, its edge's own path.
 
 ## The ideas behind it
 
@@ -43,7 +43,7 @@ For the review's summary; each can be changed.
 
 **Sizes in screen pixels.** A help drawn in the drawing's units would grow with the zoom: a handle of radius 8 would be 2 048 pixels across at 25 600 %. Each help is given in screen pixels and divided by the scale, so that it keeps its size on screen.
 
-**Only what can be seen.** An outline follows a curve by short straight chords, 2 pixels long on screen. Each chord is drawn or left out whole: kept when it comes within the outline's half width of the region computed, the area shown and half the canvas around it (`DERIV-band-within-box`). A whole run of chords far from that region is left out by testing one point in its middle: none of its chords can be farther from that point than half the run's length.
+**Only what can be seen, until F44.** An outline followed a curve by short straight chords, 2 pixels long on screen. Each chord was drawn or left out whole: kept when it came within the outline's half width of the region computed, the area shown and half the canvas around it (`DERIV-band-within-box`); a whole run of chords far from that region was left out by testing one point in its middle. Since F44 the browser draws the outline as the shape's own edge, and the library keeps that computation for a shape's stroke.
 
 | Term | In plain words |
 | --- | --- |

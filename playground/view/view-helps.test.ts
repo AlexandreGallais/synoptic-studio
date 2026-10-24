@@ -1,7 +1,7 @@
 // @vitest-environment happy-dom
 import { beforeEach, describe, expect, it } from "vitest";
 
-import { contourBand, contourPiecesToPathData, shapePickArea } from "../../src";
+import { contourPiecesToPathData, shapePickArea } from "../../src";
 import { readExportedSvg } from "../document";
 import { readBoxPathData } from "../drawing";
 import { readDrawnTexts } from "../kept-shapes";
@@ -159,21 +159,21 @@ describe("a shape placed and moved at any zoom (US-078)", () => {
     expect(readShapeModel()).toMatchObject({ x: 14, y: 20 });
   });
 
-  it("keeps A's band 2 pixels wide at 200 %, its chords at most 2 pixels", () => {
-    const area = shapePickArea(readShapeModel());
+  it("keeps A's outline 2 pixels wide at 200 %, its dashes 4 and 4 pixels", () => {
+    const contour = contourPiecesToPathData(shapePickArea(readShapeModel()).pieces);
 
     showView({ origin: { x: 0, y: 0 }, scale: 2 });
 
-    // A half width of 1 / 2 = 0.5 unit, chords of 2 / 2 = 1 unit.
-    const band = contourBand(area.pieces, 0.5, 1)
-      .map((subpath) => contourPiecesToPathData(subpath))
-      .join(" ");
+    // On A's contour, 2 / 2 = 1 unit wide, dashes 4 / 2 = 2 units (US-086).
+    const outline = selectPageElement("#overlay svg path.selection");
 
-    expect(readPath("#overlay svg path.selection")).toBe(band);
+    expect(outline.getAttribute("d")).toBe(contour);
+    expect(outline.getAttribute("stroke-width")).toBe("1");
+    expect(outline.getAttribute("stroke-dasharray")).toBe("2 2");
 
     // Hovered over A's (50, 40), the offset (100, 80).
     sendPointer("pointermove", { x: 200, y: 130 });
-    expect(readPath("#overlay svg path.hover")).toBe(band);
+    expect(readPath("#overlay svg path.hover")).toBe(contour);
   });
 
   it("draws a turned shape's frame 0.5 wide and its dashes 2 in 3.5 at 200 %", () => {

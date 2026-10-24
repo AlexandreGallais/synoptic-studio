@@ -1,7 +1,7 @@
 // @vitest-environment happy-dom
 import { beforeEach, describe, expect, it } from "vitest";
 
-import { contourBand, contourPiecesToPathData, shapePickArea } from "../../src";
+import { contourPiecesToPathData, shapePickArea } from "../../src";
 import { readSelectedShapes } from "../kept-shapes";
 import {
   clickElement,
@@ -61,7 +61,7 @@ function drawThreeShapes(): { readonly a: Shape; readonly b: Shape; readonly c: 
 }
 
 /**
- * Reads the paths of the layer above the drawing of a class and of its light band.
+ * Reads the paths of the layer above the drawing of a class and of its white line.
  *
  * @param name - the class, `hover` or `selection`
  * @returns their path data, in the order drawn
@@ -73,18 +73,16 @@ function readOutlines(name: string): readonly (string | null)[] {
 }
 
 /**
- * The two bands expected of a shape outlined at 100 %: the white one 4 pixels wide, then the
- * accent's 2 (US-080, T1), chords of 2.
+ * The two paths expected of a shape outlined: its white line, then its black dashes, both on its
+ * contour as drawn (US-086).
  *
  * @param shape - the shape outlined
- * @returns the path data of its light band, then of its outline
+ * @returns the path data of its white line, then of its dashes
  */
 function bandsOf(shape: Shape): readonly string[] {
-  return [2, 1].map((half) =>
-    contourBand(shapePickArea(shape).pieces, half, 2)
-      .map((subpath) => contourPiecesToPathData(subpath))
-      .join(" "),
-  );
+  const contour = contourPiecesToPathData(shapePickArea(shape).pieces);
+
+  return [contour, contour];
 }
 
 describe("the shapes a selection rectangle takes outlined while it is dragged (US-080)", () => {

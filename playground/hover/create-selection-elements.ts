@@ -1,50 +1,47 @@
-import { createPathElement, pickAreasBox, screenToUser } from "../../src";
-import { createStraightBoxElement } from "../drawing";
-import { createOutlineElements, readBoxBandPathData } from "../helps-frame";
+import { pickAreasBox, screenToUser } from "../../src";
+import { createDashedLineElements, createOutlineElements, readInsetBoxPathData } from "../helps";
 import { readKeptDrawing, readSelectedShapes } from "../kept-shapes";
 import { readShapePickArea } from "../picking";
 import { readView } from "../view";
 
 import type { PickArea } from "../../src";
 
-/** Thickness of the dashes and of the light frame under them, in screen pixels. */
+/** Width of the dashed box's line, in screen pixels, laid half of it inside the box. */
 const LINE = 1;
 
 /**
- * Creates the dashed box around several shapes selected (F37, F43): the smallest upright box
+ * Creates the dashed box around several shapes selected (F37, US-086): the smallest upright box
  * holding each one's contour as drawn, or its corners for a shape without area, a shape 0 × 0 its
- * point (`pickAreasBox`); first a light frame 1 screen pixel thick inside its sides
- * (`readBoxBandPathData`), of class `selection-box-light`, then the dashes over it, as a turned
- * shape's straight box (`createStraightBoxElement`), of class `selection-box`, so that the gaps
- * between the dashes show light, as Inkscape's box alternates two colors (`REF-INKSCAPE-SELCUE`);
- * a text never measured, which is not drawn, holds no corner and is left out.
+ * point (`pickAreasBox`); the dashed line of the helps 1 screen pixel wide on its sides moved half
+ * a pixel inward (`readInsetBoxPathData`, `createDashedLineElements`), of classes
+ * `selection-box-light` and `selection-box`, so that it covers whole pixels, as Inkscape's box
+ * alternates two colors (`REF-INKSCAPE-SELCUE`); a text never measured, which is not drawn, holds
+ * no corner and is left out.
  *
  * @kind procedure
  * @param document - page document
  * @param areas - what each shape selected offers the pointer, its contour as drawn
- * @returns the light frame's `<path>`, then the dashes'
+ * @returns the white line's `<path>`, then the dashes'
  * @see docs/domain/interaction.md#_2-selector
  */
 function createSelectionBox(
   document: Document,
   areas: readonly PickArea[],
 ): readonly SVGPathElement[] {
-  const box = pickAreasBox(areas);
-  const inward = screenToUser(LINE, readView(document).scale);
-  const light = createPathElement(document, readBoxBandPathData(box, { inward, outward: 0 }));
-  const dashes = createStraightBoxElement(document, box);
+  const inset = screenToUser(LINE / 2, readView(document).scale);
 
-  light.classList.add("selection-box-light");
-  dashes.classList.add("selection-box");
-
-  return [light, dashes];
+  return createDashedLineElements(document, {
+    data: readInsetBoxPathData(pickAreasBox(areas), inset),
+    name: "selection-box",
+    width: LINE,
+  });
 }
 
 /**
  * Creates the outlines of the shapes selected (F36, F37), in the layer above the drawing: each
- * the two bands about its contour as drawn, as the hover's (`createOutlineElements`), of classes
- * `selection-light` and `selection`, a fill, never a native stroke; with several selected, a
- * dashed box around them all (`createSelectionBox`); shown whichever tool is armed.
+ * the dashed line on its contour as drawn, as the hover's (`createOutlineElements`), of classes
+ * `selection-light` and `selection`; with several selected, a dashed box around them all
+ * (`createSelectionBox`); shown whichever tool is armed.
  *
  * @kind procedure
  * @param document - page document

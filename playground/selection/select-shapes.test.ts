@@ -1,7 +1,7 @@
 // @vitest-environment happy-dom
 import { beforeEach, describe, expect, it } from "vitest";
 
-import { contourBand, contourPiecesToPathData, shapePickArea } from "../../src";
+import { contourPiecesToPathData, shapePickArea } from "../../src";
 import { readExportedSvg } from "../document";
 import { readDrawnTexts } from "../kept-shapes";
 import { readSelection } from "../page";
@@ -136,16 +136,14 @@ function readSelectionBox(): string | undefined {
 }
 
 /**
- * The outline expected of a shape: the band about its contour as drawn, 2 pixels wide, a chord
- * at most 2 pixels long, as the hover's (US-065).
+ * The outline expected of a shape: the path of its contour as drawn, stroked as the hover's
+ * (US-086).
  *
  * @param shape - the shape outlined
- * @returns the path data of its band
+ * @returns the path data of its contour
  */
 function outlineOf(shape: Shape): string {
-  return contourBand(shapePickArea(shape).pieces, 1, 2)
-    .map((subpath) => contourPiecesToPathData(subpath))
-    .join(" ");
+  return contourPiecesToPathData(shapePickArea(shape).pieces);
 }
 
 /**
@@ -192,15 +190,9 @@ describe("Shift + click adds or removes a shape (US-068)", () => {
 
     expect(readSelectionOutlines()).toEqual([outlineOf(a), outlineOf(b)]);
 
-    // The box from (0, 0) to (250, 100), dashed as a turned shape's straight box: dashes 4 long
-    // every 7, 1 thick, inside it. The top side holds ceil(250 / 7) = 36 dashes, the first from 0
-    // to 4, the last from 35 · 7 = 245 to 249, 4 long; the right side's first lies at 250 − 1.
-    const box = readSelectionBox() ?? "";
-
-    expect(box.startsWith("M0 0H4V1H0Z")).toBe(true);
-    expect(box).toContain("M245 0H249V1H245Z");
-    expect(box).toContain("M249 0H250V4H249Z");
-    expect(box).not.toContain("M252 0");
+    // The box from (0, 0) to (250, 100), its dashed line 1 pixel wide half a pixel inside it
+    // (US-086).
+    expect(readSelectionBox()).toBe("M0.5 0.5H249.5V99.5H0.5Z");
     expect(readText("#shape-title")).toBe("2 shapes selected");
     expect(readDisplay("shape-panel")).toBe("none");
     expect(readShapePaths()).toEqual(paths);
@@ -346,11 +338,8 @@ describe("Ctrl + A selects every shape and Escape none (US-068)", () => {
     typeAndEnter("shape-y", "200");
     pressSelectAll("body", { ctrlKey: true });
 
-    // The box from (0, 0) to (400, 200): its right side's first dash lies at 400 − 1.
-    const box = readSelectionBox() ?? "";
-
-    expect(box.startsWith("M0 0H4V1H0Z")).toBe(true);
-    expect(box).toContain("M399 0H400V4H399Z");
+    // The box from (0, 0) to (400, 200), its line half a pixel inside it.
+    expect(readSelectionBox()).toBe("M0.5 0.5H399.5V199.5H0.5Z");
   });
 
   it("[F37.AC2] leaves Ctrl + A to a field having the focus, the shapes' selection unchanged", () => {
