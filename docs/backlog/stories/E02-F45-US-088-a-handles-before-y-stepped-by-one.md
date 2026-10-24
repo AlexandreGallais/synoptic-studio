@@ -3,7 +3,7 @@ id: US-088
 epic: E02
 feature: F45
 title: A handle's Before y stepped by one
-status: ready
+status: done
 points: 2
 ---
 
