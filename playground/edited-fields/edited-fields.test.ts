@@ -2,15 +2,18 @@
 import { beforeEach, describe, expect, it } from "vitest";
 
 import { isDrawnText } from "../../src";
+import { NUMBER_FIELDS } from "../number-fields";
 import {
   chooseOption,
   clickAt,
   clickElement,
   commitField,
+  openOnStep,
   openServedPage,
   readDisplay,
   readModel,
   readShapeModel,
+  readText,
   readValue,
   selectPageElement,
   setElementBox,
@@ -119,6 +122,31 @@ describe("one shape's X and Y, Up and Down (US-085)", () => {
     expect(readValue("shape-y")).toBe("-10");
   });
 
+  it("[F44.AC2] moves it 20 to the right for Shift + Up twice within one frame, not 10", () => {
+    // The browser holds the redraw until its next frame: the second key starts from the shape
+    // the first set, not from the shape as the frame before drew it.
+    const frames: FrameRequestCallback[] = [];
+
+    Object.defineProperty(document.defaultView ?? {}, "requestAnimationFrame", {
+      configurable: true,
+      value: (callback: FrameRequestCallback): number => {
+        frames.push(callback);
+
+        return frames.length;
+      },
+    });
+
+    pressIn("shape-x", { key: "ArrowUp", shiftKey: true });
+    pressIn("shape-x", { key: "ArrowUp", shiftKey: true });
+
+    for (const frame of frames) {
+      frame(0);
+    }
+
+    expect(readShapeModel().x).toBe(20);
+    expect(readValue("shape-x")).toBe("20");
+  });
+
   it("[F44.AC2] moves it 20 to the right for Shift + Up twice in X", () => {
     pressIn("shape-x", { key: "ArrowUp", shiftKey: true });
     pressIn("shape-x", { key: "ArrowUp", shiftKey: true });
@@ -206,6 +234,19 @@ describe("a value typed in one shape's fields, relative or fixed (US-085)", () =
     expect(readValue("shape-x")).toBe("4.19873");
   });
 
+  it("[F44.AC2] adds 10 to a converted triangle's height of 50√3, kept exact", () => {
+    // Step 10, a triangle 100 wide converted to a free shape: 50√3 = 86.60254 high (Q27);
+    // +10 makes it 50√3 + 10 = 96.60254 high, exact behind the 5 decimals shown.
+    openOnStep(10);
+    clickElement("mode-points");
+    clickElement("convert");
+    typeAndEnter("height", "+10");
+
+    expect(readShapeModel().height).toBeCloseTo(50 * Math.sqrt(3) + 10, 12);
+    expect(readValue("height")).toBe("96.60254");
+    expect(readText("#status")).toBe("");
+  });
+
   it("[F44.AC2] writes a value typed in a refused shape's Width as typed, as a number field", () => {
     // The angle emptied refuses the shape: no value of its own to add to, 200 read as typed.
     typeAndEnter("angle", "");
@@ -236,6 +277,18 @@ describe("a text's X, Y and box, alone (US-085)", () => {
 
     expect(readTextModel()).toMatchObject({ boxHeight: 100, boxWidth: 210, x: 40, y: 40 });
     expect(readValue("text-box-width")).toBe("210");
+  });
+
+  it("[F44.AC2] keeps the text drawn while +10 is typed in the box's Width, 210 at Enter", () => {
+    typeValue("text-box-width", "+10");
+
+    // Typed, not applied: no redraw reads the + as a refused width.
+    expect(readText("#status")).toBe("");
+    expect(readTextModel().boxWidth).toBe(200);
+
+    commitField("text-box-width");
+
+    expect(readTextModel().boxWidth).toBe(210);
   });
 
   it("[F44.AC2] makes its box 90 high for -10 in the box's Height", () => {
@@ -303,7 +356,7 @@ describe("several shapes' fields, the same rule (US-085)", () => {
       const field = selectPageElement(`#${id}`);
 
       expect(field.getAttribute("type")).toBe("text");
-      expect(Object.hasOwn(field.dataset, "numberField")).toBe(true);
+      expect(field.matches(NUMBER_FIELDS)).toBe(true);
     }
   });
 });

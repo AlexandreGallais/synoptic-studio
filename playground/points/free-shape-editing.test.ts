@@ -13,6 +13,7 @@ import {
   readValue,
   selectInput,
   typeAndEnter,
+  typeValue,
 } from "../user-actions";
 
 /**
@@ -121,7 +122,12 @@ describe("editing the points of a free shape", () => {
 
     expect(readText('#points [data-vertex="1"]')).toBe("1 · x 37.5 · y 93.30127 · radius 0");
 
+    // A value typed is an integer (US-085): 12.5 refused, the field shows 50 again.
     typeAndEnter("width", "12.5");
+
+    expect(readValue("width")).toBe("50");
+
+    typeValue("radius", "-1");
 
     expect(readText("#status")).toBe(
       "Width, height and radius typed must be integers ≥ 0, the angle an integer, and the points must span some width and height.",
@@ -137,17 +143,17 @@ describe("editing the points of a free shape", () => {
   });
 
   it("[F08.AC2] hides the point fields and moves nothing while the shape is refused", () => {
-    // Step 1, point 3 typed: a free shape; its width then cleared, refused.
+    // Step 1, point 3 typed: a free shape; its angle then cleared, refused.
     openOnStep(1);
     clickElement("mode-points");
     clickPoint(3, false);
     typeAndEnter("point-x", "150");
-    typeAndEnter("width", "");
+    typeAndEnter("angle", "");
 
     expect(document.querySelector<HTMLElement>("#point-fields")?.hidden).toBe(true);
 
     typeAndEnter("point-x", "40");
-    typeAndEnter("width", "150");
+    typeAndEnter("angle", "0");
 
     // The point stayed at 150: the shape kept is intact, drawn again.
     expect(readText('#points [data-vertex="3"]')).toBe("3 · x 150 · y 80 · radius 10");
@@ -264,9 +270,9 @@ describe("editing the points of a free shape", () => {
     clickElement("mode-points");
     clickPoint(1, false);
     clickPoint(2, true);
-    typeAndEnter("width", "");
+    typeAndEnter("angle", "");
     clickElement("add-midpoint");
-    typeAndEnter("width", "120");
+    typeAndEnter("angle", "0");
 
     expect(readPointRows()).toHaveLength(4);
   });

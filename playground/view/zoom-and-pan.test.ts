@@ -11,6 +11,7 @@ import {
   runResizeObservers,
   selectPageElement,
   setElementBox,
+  typeAndEnter,
   typeValue,
 } from "../user-actions";
 
@@ -214,10 +215,10 @@ describe("zoom and pan by the wheel, a pinch and a drag (US-078)", () => {
     setElementBox("#canvas", { height: 800, left: 100, top: 50, width: 1200 });
     // A, 100 × 50 at (10, 20), sharp, selected.
     typeValue("radius", "0");
-    typeValue("width", "100");
-    typeValue("height", "50");
-    typeValue("shape-x", "10");
-    typeValue("shape-y", "20");
+    typeAndEnter("width", "100");
+    typeAndEnter("height", "50");
+    typeAndEnter("shape-x", "10");
+    typeAndEnter("shape-y", "20");
   });
 
   it("[F42.AC1] opens at 100 %, (−40, −40) at the canvas's top-left", () => {

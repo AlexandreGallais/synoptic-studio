@@ -1,3 +1,8 @@
+import { listenToNumberField } from "../number-fields";
+
+import { applyEditedValue } from "./apply-edited-value";
+import { EDITED_FIELDS } from "./edited-fields";
+
 /**
  * Makes the fields of the shape the panel edits, alone, act as number fields (US-085), as several
  * shapes' (`listenToNumberField`, `EDITED_FIELDS`): a value typed applied on Enter or when the
@@ -10,8 +15,10 @@
  * @see docs/domain/interaction.md#_2-selector
  */
 export function listenToEditedFields(document: Document, update: () => void): void {
-  // Placeholder of US-085.T1, hearing no field: the code comes with T2.
-  if (document.defaultView === null) {
-    update();
+  for (const [key, id] of EDITED_FIELDS) {
+    listenToNumberField(document, id, (typed) => {
+      applyEditedValue(document, key, typed);
+      update();
+    });
   }
 }

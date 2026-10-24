@@ -1,14 +1,15 @@
 import { NO_VERTEX_SELECTION } from "../../src";
+import { listenToEditedFields } from "../edited-fields";
 import { selectElement, writeSelection } from "../page";
 import { listenToPoints } from "../points";
-import { listenToPosition, listenToTurn } from "../position";
+import { listenToTurn } from "../position";
 import { listenToSeveralFields } from "../selection";
 import { listenToAnchor, listenToRadius, writeChosenFreeShape } from "../shape";
 import { listenToTextFields } from "../text";
 import { listenToModes } from "../toolbar";
 
-/** Number inputs of the shapes, in display order. */
-const INPUTS = ["corners", "width", "height", "radius"];
+/** Number inputs of the shapes the browser steps, in display order. */
+const INPUTS = ["corners", "radius"];
 
 /**
  * Listens to the shape chosen in the selector: the selection no longer applies, and a free
@@ -50,7 +51,9 @@ function listenToPanelControls(document: Document, update: () => void): void {
  * chosen, a field of the text typed (`listenToTextFields`); the window resized changes the
  * canvas's size, which `listenToCanvasSize` hears (US-084). A radius typed
  * goes to every vertex: the different radii kept on the radius input are dropped first
- * (F03.AC2). A value typed for several shapes sets each of them (`listenToSeveralFields`, F38).
+ * (F03.AC2). X, Y, Width and Height act as number fields, a value applied on Enter or when the
+ * field is left and the arrows stepping it (`listenToEditedFields`, US-085), as the fields of
+ * several shapes, whose value sets each of them (`listenToSeveralFields`, F38).
  *
  * @kind procedure
  * @param document - page document
@@ -67,8 +70,8 @@ export function listenToInputs(document: Document, update: () => void): void {
     });
   }
 
-  // First: a width typed places a turned shape before the page redraws (US-019).
-  listenToPosition(document, update);
+  // X, Y, Width and Height act as number fields, as several shapes' (US-085).
+  listenToEditedFields(document, update);
 
   for (const id of INPUTS) {
     selectElement(document, id).addEventListener("input", update);

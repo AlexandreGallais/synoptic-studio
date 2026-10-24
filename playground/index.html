@@ -552,7 +552,7 @@
         background: var(--accent);
       }
       input[type="number"],
-      #several-fields input {
+      input[data-number-field] {
         box-sizing: border-box;
         display: block;
         width: 100%;
@@ -996,11 +996,21 @@ Running</textarea>
             <div class="pair">
               <label
                 >Width
-                <input id="text-box-width" type="number" min="0" max="100000" step="1" value="200"
+                <input
+                  id="text-box-width"
+                  type="text"
+                  autocomplete="off"
+                  data-number-field
+                  value="200"
               /></label>
               <label
                 >Height
-                <input id="text-box-height" type="number" min="0" max="100000" step="1" value="100"
+                <input
+                  id="text-box-height"
+                  type="text"
+                  autocomplete="off"
+                  data-number-field
+                  value="100"
               /></label>
             </div>
             <button id="text-box-reset" type="button" title="Back to the size the text fits">
@@ -1120,14 +1130,17 @@ Running</textarea>
             <button id="export-svg" type="button">Export SVG</button>
           </fieldset>
         </section>
+        <!-- One shape's position and size: text fields acting as number fields, as several
+             shapes' (US-085), which keep the + of a relative value a number field drops. -->
         <section id="size-section" aria-labelledby="size-heading">
           <h2 id="size-heading">Size</h2>
           <div class="pair">
             <label
-              >Width <input id="width" type="number" min="0" max="100000" step="1" value="120"
+              >Width <input id="width" type="text" autocomplete="off" data-number-field value="120"
             /></label>
             <label
-              >Height <input id="height" type="number" min="0" max="100000" step="1" value="80"
+              >Height
+              <input id="height" type="text" autocomplete="off" data-number-field value="80"
             /></label>
           </div>
         </section>
@@ -1139,8 +1152,12 @@ Running</textarea>
             <button id="turn-right" type="button">+90°</button>
           </p>
           <div class="pair">
-            <label>X <input id="shape-x" type="number" step="1" value="0" /></label>
-            <label>Y <input id="shape-y" type="number" step="1" value="0" /></label>
+            <label
+              >X <input id="shape-x" type="text" autocomplete="off" data-number-field value="0"
+            /></label>
+            <label
+              >Y <input id="shape-y" type="text" autocomplete="off" data-number-field value="0"
+            /></label>
           </div>
           <p id="straight-box"></p>
         </fieldset>
@@ -1210,16 +1227,21 @@ Running</textarea>
         </fieldset>
       </div>
       <!-- The values of several shapes selected, and a value typed for all of them, relative with a
-           sign (F38): text fields, which keep the + of a relative value a number field drops. -->
+           sign (F38): text fields acting as number fields, which keep the + of a relative value a
+           number field drops (US-085). -->
       <fieldset id="several-fields" hidden>
         <legend>Position and size</legend>
         <div class="pair">
-          <label>X <input id="several-x" type="text" autocomplete="off" /></label>
-          <label>Y <input id="several-y" type="text" autocomplete="off" /></label>
+          <label>X <input id="several-x" type="text" autocomplete="off" data-number-field /></label>
+          <label>Y <input id="several-y" type="text" autocomplete="off" data-number-field /></label>
         </div>
         <div class="pair">
-          <label>Width <input id="several-width" type="text" autocomplete="off" /></label>
-          <label>Height <input id="several-height" type="text" autocomplete="off" /></label>
+          <label
+            >Width <input id="several-width" type="text" autocomplete="off" data-number-field
+          /></label>
+          <label
+            >Height <input id="several-height" type="text" autocomplete="off" data-number-field
+          /></label>
         </div>
       </fieldset>
       <p id="status" role="status"></p>

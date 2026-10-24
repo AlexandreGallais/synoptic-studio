@@ -8,6 +8,7 @@ import {
   chooseShapeKind,
   clickElement,
   openServedPage,
+  typeAndEnter,
   typeValue,
 } from "../user-actions";
 
@@ -89,7 +90,7 @@ describe("What a redraw computes again (US-048)", () => {
   });
 
   it("[F17.AC5] X changed: the lines and block kept, the text drawn once where it moved", () => {
-    typeValue("shape-x", "120");
+    typeAndEnter("shape-x", "120");
     runFrames();
 
     expect(readCounts()).toEqual({ drawing: 1, measure: 0, metrics: 0, wholeDrawing: 0 });

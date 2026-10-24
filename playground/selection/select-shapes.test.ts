@@ -21,6 +21,7 @@ import {
   readValue,
   selectPageElement,
   setElementBox,
+  typeAndEnter,
   typeValue,
 } from "../user-actions";
 
@@ -161,8 +162,8 @@ function drawThreeRectangles(): {
   readonly c: Shape;
   readonly paths: readonly string[];
 } {
-  typeValue("width", "100");
-  typeValue("height", "100");
+  typeAndEnter("width", "100");
+  typeAndEnter("height", "100");
 
   const a = { model: readShapeModel(), path: readText("#path-data") };
 
@@ -340,10 +341,10 @@ describe("Ctrl + A selects every shape and Escape none (US-068)", () => {
 
     // C, edited, made 0 × 0 at (400, 200): its contour has no piece, its corners lie on that point.
     typeValue("radius", "0");
-    typeValue("width", "0");
-    typeValue("height", "0");
-    typeValue("shape-x", "400");
-    typeValue("shape-y", "200");
+    typeAndEnter("width", "0");
+    typeAndEnter("height", "0");
+    typeAndEnter("shape-x", "400");
+    typeAndEnter("shape-y", "200");
     pressSelectAll("body", { ctrlKey: true });
 
     // The box from (0, 0) to (400, 200): its right side's first dash lies at 400 − 1.
@@ -570,7 +571,7 @@ describe("Delete removes the selected shapes (US-066)", () => {
     const { paths } = drawThreeRectangles();
 
     pressAndClick("#canvas", toWindow({ x: 200, y: 50 }));
-    typeValue("width", "-1");
+    typeAndEnter("angle", "");
 
     // Refused, B is not outlined.
     expect(readSelectionOutlines()).toEqual([]);

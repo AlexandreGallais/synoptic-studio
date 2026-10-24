@@ -14,6 +14,7 @@ import {
   readText,
   selectInput,
   selectPageElement,
+  typeAndEnter,
   typeValue,
   waitForPageTasks,
 } from "../user-actions";
@@ -181,8 +182,8 @@ describe("The drawing's options: Embed fonts (US-036), no HTML layer (US-044)", 
     tick("embed-fonts", true);
     typeContent("Pump P-101 is running");
     chooseOption("text-fit", "box");
-    typeValue("text-box-width", "50");
-    typeValue("text-box-height", "100");
+    typeAndEnter("text-box-width", "50");
+    typeAndEnter("text-box-height", "100");
     typeValue("text-maximum-lines", "2");
     tick("text-underline", true);
     tick("text-strike", true);

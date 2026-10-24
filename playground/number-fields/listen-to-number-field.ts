@@ -1,6 +1,5 @@
 import { parsePanelValue } from "../../src";
 import { selectElement } from "../page";
-import { readFieldValue } from "../text";
 
 import { readArrowStep } from "./read-arrow-step";
 
@@ -48,7 +47,7 @@ export function listenToNumberField(
   const field = selectElement(document, id);
 
   field.addEventListener("change", () => {
-    apply(parsePanelValue(readFieldValue(document, id)));
+    apply(parsePanelValue(field instanceof HTMLInputElement ? field.value : ""));
   });
 
   field.addEventListener("keydown", (event) => {

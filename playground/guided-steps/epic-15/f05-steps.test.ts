@@ -276,8 +276,8 @@ describe("the guided test of F05 (VAL-014): the Text tool's options", () => {
 describe("the guided test of F05 (VAL-014): placing and turning", () => {
   it("X 100, Y 50 moves the text", () => {
     openStep("Position");
-    typeValue("shape-x", "100");
-    typeValue("shape-y", "50");
+    typeAndEnter("shape-x", "100");
+    typeAndEnter("shape-y", "50");
     expect(readLines()[0]).toEqual(["Pump P-101", "100", "81"]);
   });
 
@@ -500,8 +500,8 @@ describe("the guided test of F05 (VAL-014): the browser checks and the end", () 
   it("[F05.AC5] a step comes back at its own position, not placed from the text last drawn", () => {
     openStep("A turned text grows in place (US-038)");
     typeValue("text-letter-spacing", "10");
-    typeValue("shape-x", "47");
-    typeValue("shape-y", "61");
+    typeAndEnter("shape-x", "47");
+    typeAndEnter("shape-y", "61");
     clickElement("guide-next");
     clickElement("guide-previous");
 

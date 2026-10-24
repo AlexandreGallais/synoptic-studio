@@ -9,6 +9,7 @@ import {
   openServedPage,
   readText,
   selectPageElement,
+  typeAndEnter,
   typeValue,
 } from "../user-actions";
 
@@ -87,8 +88,8 @@ describe("Text tool: a text in a box (US-033)", () => {
     chooseOption("text-vertical-alignment", "top");
     typeContent("Hello World");
     chooseOption("text-fit", "box");
-    typeValue("text-box-width", "50");
-    typeValue("text-box-height", "100");
+    typeAndEnter("text-box-width", "50");
+    typeAndEnter("text-box-height", "100");
   });
 
   it("[F14.AC1] wraps 'Hello World' in a box 50 wide: one <text>, one positioned <tspan> a line", () => {
@@ -146,8 +147,8 @@ describe("Text tool: a text in a box (US-033)", () => {
   });
 
   it("[F14.AC1] frames the box at its position and turns both about the box's middle", () => {
-    typeValue("shape-x", "10");
-    typeValue("shape-y", "20");
+    typeAndEnter("shape-x", "10");
+    typeAndEnter("shape-y", "20");
     // The box 50 × 100 at (10, 20): its first dash from (10, 20), its middle (35, 70).
     expect(readFrame()).toMatch(/^M10 20H14V21H10Z /u);
 
@@ -187,14 +188,14 @@ describe("Text tool: a text in a box (US-033)", () => {
 
   it("[F17.AC1] wraps 'Pump P-101 is running' automatically in a box 110 wide", () => {
     typeContent(PUMP);
-    typeValue("text-box-width", "110");
+    typeAndEnter("text-box-width", "110");
     // Inter 16: "Pump P-101 is" (104.77) fits; with " running" (57.53) it would not.
     expect(readContents()).toEqual(["Pump P-101 is", "running"]);
   });
 
   it("turns the text and its box by 90 about the box's middle", () => {
     typeContent(PUMP);
-    typeValue("text-box-width", "110");
+    typeAndEnter("text-box-width", "110");
     typeValue("angle", "90");
 
     // The box 110 × 100 at (0, 0): its middle (55, 50).
@@ -206,7 +207,7 @@ describe("Text tool: a text in a box (US-033)", () => {
   });
 
   it("draws no frame around a box 0 wide, its lines still shown", () => {
-    typeValue("text-box-width", "0");
+    typeAndEnter("text-box-width", "0");
 
     expect(document.querySelector("#canvas g.text-frame")).toBeNull();
     // Each word on its own line, kept whole and cut to its first character and the ellipsis,

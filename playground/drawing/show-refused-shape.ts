@@ -1,8 +1,6 @@
 import { DRAWING_KEYS, writeStoredDrawing } from "../kept-shapes";
 import { selectElement, writeText } from "../page";
 
-import { clearDrawnBox } from "./clear-drawn-box";
-
 /**
  * Shows a refused shape: the effective radius, the list of points and the handles of the last
  * valid shape no longer match the inputs, so they go (Q8, F03.AC4); the radius field stays
@@ -24,7 +22,6 @@ export function showRefusedShape(document: Document): void {
     mark.remove();
   }
 
-  clearDrawnBox(document);
   // A refused shape is not kept when another is placed (F35).
   writeStoredDrawing(document, DRAWING_KEYS.edited, []);
 

@@ -9,6 +9,7 @@ import {
   runResizeObservers,
   selectPageElement,
   setElementBox,
+  typeAndEnter,
   typeValue,
 } from "../user-actions";
 import { PAGE_VIEWS } from "../view";
@@ -49,10 +50,10 @@ function showView(view: View): void {
 function typeRounded(width: string, height: string, radius: string): void {
   typeValue("angle", "0");
   typeValue("radius", "0");
-  typeValue("width", width);
-  typeValue("height", height);
-  typeValue("shape-x", "0");
-  typeValue("shape-y", "0");
+  typeAndEnter("width", width);
+  typeAndEnter("height", height);
+  typeAndEnter("shape-x", "0");
+  typeAndEnter("shape-y", "0");
   typeValue("radius", radius);
 }
 
@@ -224,7 +225,7 @@ describe("the helps kept while a pan stays within their box (EN-149)", () => {
     showView({ origin: { x: 60, y: -40 }, scale: 1 });
 
     // The circle moved to (10, 0): its band computed again, within the box of the opening view.
-    typeValue("shape-x", "10");
+    typeAndEnter("shape-x", "10");
 
     const { pieces } = shapePickArea(readShapeModel());
 

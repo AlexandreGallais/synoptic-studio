@@ -17,8 +17,8 @@ const BANDS = { content: "Hello\nWorld", hasBackground: true } as const;
  */
 export const GUIDED_STEPS_F14_DECISIONS: readonly GuidedStep[] = [
   {
-    explanation: "Width 100001; then 60.",
-    look: "Refused, then “Hello” over “World” in the box 60 × 40: from 0 to 100 000.",
+    explanation: "Width 100001, Enter; then 60, Enter.",
+    look: "Capped at 100 000, then “Hello” over “World” in the box 60 × 40: from 0 to 100 000.",
     title: "F14 · Box from 0 to 100 000 (decision 1)",
     values: createTextBoxStepValues({ boxHeight: 40, boxWidth: 60, isInBox: true }),
   },

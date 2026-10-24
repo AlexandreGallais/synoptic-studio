@@ -14,6 +14,7 @@ import {
   readText,
   readValue,
   selectPageElement,
+  typeAndEnter,
   typeValue,
 } from "../user-actions";
 
@@ -141,8 +142,8 @@ describe("Text tool: a turned text grows in place (US-038)", () => {
     typeValue("text-size", "16");
     chooseOption("text-weight", "400");
     typeContent("Pump P-101");
-    typeValue("shape-x", "47");
-    typeValue("shape-y", "61");
+    typeAndEnter("shape-x", "47");
+    typeAndEnter("shape-y", "61");
     typeValue("angle", "23");
   });
 
@@ -212,8 +213,8 @@ describe("Text tool: a turned text grows in place (US-038)", () => {
     // The box takes the block rounded up, 88 × 20 (US-055), then 120 × 40.
     chooseOption("text-fit", "box");
     expectCorner(corner);
-    typeValue("text-box-width", "120");
-    typeValue("text-box-height", "40");
+    typeAndEnter("text-box-width", "120");
+    typeAndEnter("text-box-height", "40");
     expectCorner(corner);
 
     const fields = readFields();
@@ -226,10 +227,10 @@ describe("Text tool: a turned text grows in place (US-038)", () => {
     // Placed straight, then turned about its middle.
     typeValue("angle", "0");
     chooseOption("text-fit", "box");
-    typeValue("text-box-width", "120");
-    typeValue("text-box-height", "40");
-    typeValue("shape-x", "47");
-    typeValue("shape-y", "61");
+    typeAndEnter("text-box-width", "120");
+    typeAndEnter("text-box-height", "40");
+    typeAndEnter("shape-x", "47");
+    typeAndEnter("shape-y", "61");
     typeValue("angle", "23");
 
     // Middle (107, 81); P = middle − R(60, 20) = (107 − 47.41567, 81 − 41.85396) = (59.58433, 39.14604);
@@ -239,7 +240,7 @@ describe("Text tool: a turned text grows in place (US-038)", () => {
 
     expect(corner.x).toBeCloseTo(59.58433, 5);
 
-    typeValue("text-box-width", "160");
+    typeAndEnter("text-box-width", "160");
     expectPosition({ x: 45.4101, y: 68.81462 });
     expect(readFields()).toEqual(["43.95509", "39.14604"]);
     expectCorner(corner);
@@ -274,11 +275,15 @@ describe("Text tool: a turned text grows in place (US-038)", () => {
   });
 
   it("[F05.AC5] refuses a fraction typed in X: a position typed is an integer (ADR-0057)", () => {
-    typeValue("shape-x", "47.5");
+    const { x } = readDrawn();
+    const [shown] = readFields();
 
-    expect(readText("#status")).toContain("X, Y and the angle integers");
-    expect(document.querySelectorAll("#canvas text")).toHaveLength(0);
-    expect(selectPageElement("#shape-x").getAttribute("aria-invalid")).toBe("true");
+    typeAndEnter("shape-x", "47.5");
+
+    // Refused as any value of a field acting as a number field (US-085): X shown again.
+    expect(readFields()[0]).toBe(shown);
+    expect(readText("#status")).toBe("");
+    expect(readDrawn().x).toBe(x);
   });
 
   it("[F05.AC5] accepts the 5 decimals shown typed back, the exact position behind them", () => {
@@ -286,7 +291,7 @@ describe("Text tool: a turned text grows in place (US-038)", () => {
 
     const { x } = readDrawn();
 
-    typeValue("shape-x", "46.71377");
+    typeAndEnter("shape-x", "46.71377");
 
     expect(readText("#status")).toBe("");
     expect(readDrawn().x).toBe(x);

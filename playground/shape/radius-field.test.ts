@@ -7,6 +7,7 @@ import {
   openPage,
   readText,
   selectInput,
+  typeAndEnter,
   typeValue,
 } from "../user-actions";
 
@@ -76,10 +77,10 @@ describe("radius field", () => {
 
   it("[F03.AC3] never gives a removed vertex its radius back, even while the shape is refused", () => {
     giveRadii("10 0 0 0 0 6");
-    typeValue("width", "");
+    typeAndEnter("width", "");
     typeValue("corners", "5");
     typeValue("corners", "6");
-    typeValue("width", "100");
+    typeAndEnter("width", "100");
 
     expect(selectInput("radius").dataset["radii"]).toBe("10 0 0 0 0 0");
   });

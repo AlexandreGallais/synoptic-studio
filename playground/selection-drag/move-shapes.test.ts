@@ -19,6 +19,7 @@ import {
   readValue,
   selectPageElement,
   setElementBox,
+  typeAndEnter,
   typeValue,
 } from "../user-actions";
 
@@ -83,10 +84,10 @@ function typeRectangle(box: readonly [string, string, string, string, string]): 
 
   typeValue("angle", "0");
   typeValue("radius", "0");
-  typeValue("width", width);
-  typeValue("height", height);
-  typeValue("shape-x", x);
-  typeValue("shape-y", y);
+  typeAndEnter("width", width);
+  typeAndEnter("height", height);
+  typeAndEnter("shape-x", x);
+  typeAndEnter("shape-y", y);
   typeValue("angle", angle);
 }
 

@@ -9,6 +9,7 @@ import {
   openServedPage,
   readText,
   selectPageElement,
+  typeAndEnter,
   typeValue,
 } from "../user-actions";
 
@@ -101,8 +102,8 @@ describe("Text tool: a background behind the text (US-034)", () => {
   it("[F14.AC4] follows the wrapped lines in a box, the last one up to its ellipsis", () => {
     clickElement("text-background");
     chooseOption("text-fit", "box");
-    typeValue("text-box-width", "50");
-    typeValue("text-box-height", "100");
+    typeAndEnter("text-box-width", "50");
+    typeAndEnter("text-box-height", "100");
     typeValue("text-maximum-lines", "2");
 
     // "Pump" (43.49219) over "P-10…" (46.875), cut at 2 lines in a box 50 wide.

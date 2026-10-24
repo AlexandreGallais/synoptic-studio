@@ -12,6 +12,7 @@ import {
   readText,
   readValue,
   selectPageElement,
+  typeAndEnter,
   typeValue,
 } from "../user-actions";
 
@@ -71,8 +72,8 @@ describe("Text tool: turning (US-032)", () => {
   });
 
   it("[F05.AC5] keeps the middle with the position: X 10, Y 20 at 45", () => {
-    typeValue("shape-x", "10");
-    typeValue("shape-y", "20");
+    typeAndEnter("shape-x", "10");
+    typeAndEnter("shape-y", "20");
     typeValue("angle", "45");
 
     // (10 + 11.890625, 20 + 19.359375).

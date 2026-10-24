@@ -117,10 +117,10 @@ function readSeveralFields(): readonly string[] {
 function typeBox(box: readonly [string, string, string, string]): void {
   const [x, y, width, height] = box;
 
-  typeValue("width", width);
-  typeValue("height", height);
-  typeValue("shape-x", x);
-  typeValue("shape-y", y);
+  typeAndEnter("width", width);
+  typeAndEnter("height", height);
+  typeAndEnter("shape-x", x);
+  typeAndEnter("shape-y", y);
 }
 
 /**
@@ -151,10 +151,10 @@ function turnA(): void {
 function placeTurnedText(point: Point): void {
   placeText(point);
   chooseOption("text-fit", "box");
-  typeValue("text-box-width", "100");
-  typeValue("text-box-height", "20");
-  typeValue("shape-x", "47");
-  typeValue("shape-y", "61");
+  typeAndEnter("text-box-width", "100");
+  typeAndEnter("text-box-height", "20");
+  typeAndEnter("shape-x", "47");
+  typeAndEnter("shape-y", "61");
   typeValue("angle", "23");
 }
 
@@ -186,7 +186,7 @@ describe("the panel shows several shapes' position and size (US-070)", () => {
 
   it("[F38.AC1] shows Y Mixed once B is set to Y 30", () => {
     drawAAndB();
-    typeValue("shape-y", "30");
+    typeAndEnter("shape-y", "30");
     pick({ x: 50, y: 40 }, true);
 
     expect(readSeveralFields()).toEqual(["[Mixed]", "[Mixed]", "[Mixed]", "[Mixed]"]);
@@ -659,7 +659,7 @@ describe("the arrows in a field of several shapes (US-081)", () => {
 
   it("[F43.AC3] refuses Down in H for both when B is 0 high, no step taken", () => {
     pick({ x: 220, y: 40 }, false);
-    typeValue("height", "0");
+    typeAndEnter("height", "0");
     pick({ x: 50, y: 40 }, true);
 
     const present = readPresent();
@@ -711,8 +711,8 @@ describe("the arrows in a field of several shapes (US-081)", () => {
 function placeHexagonAndRound(): void {
   placeShape("polygon", { x: 300, y: 50 });
   placeShape("round", { x: 500, y: 50 });
-  typeValue("width", "60");
-  typeValue("height", "40");
+  typeAndEnter("width", "60");
+  typeAndEnter("height", "40");
 }
 
 /**

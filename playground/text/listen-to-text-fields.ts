@@ -1,9 +1,9 @@
 import { listenToExport } from "../document";
 import { listenToFonts } from "../installed-fonts";
 import { readDrawnTexts } from "../kept-shapes";
+import { readNumberField } from "../number-fields";
 import { selectElement } from "../page";
 import { resetFittedBox, writeFittedBox } from "../text-box";
-import { listenToTextPosition } from "../text-placement";
 
 import { pressBold } from "./press-bold";
 import { readTextModel } from "./read-text-model";
@@ -12,7 +12,8 @@ import { readTextModel } from "./read-text-model";
  * Listens to the choice of Fit content or Box on the choice itself, so that the box's fields take
  * the text's block rounded up before the options redraw the text (`writeFittedBox`, US-055): a
  * browser sends `input`, then `change`, each reaching the choice before its group. A width or
- * height typed marks the box as the designer's (`data-box-typed`), kept from then on (US-057).
+ * height applied marks the box as the designer's (`data-box-typed`, `applyEditedValue`), kept
+ * from then on (US-057).
  *
  * @kind procedure
  * @param document - page document
@@ -26,12 +27,28 @@ function listenToBoxChoice(document: Document): void {
       writeFittedBox(document, readTextModel(document));
     });
   }
+}
 
-  for (const id of ["text-box-width", "text-box-height"]) {
-    selectElement(document, id).addEventListener("input", () => {
-      selectElement(document, "text-options").dataset["boxTyped"] = "true";
-    });
-  }
+/**
+ * Listens to the Text tool's options: a value typed or chosen redraws the text, except a field
+ * acting as a number field, the box's Width and Height, whose value is applied on Enter or when it
+ * is left (`readNumberField`, `listenToEditedFields`, US-085), redrawing nothing while it is typed.
+ *
+ * @kind procedure
+ * @param document - page document
+ * @param update - redraws the playground
+ * @see docs/domain/interaction.md#_2-selector
+ */
+function listenToOptions(document: Document, update: () => void): void {
+  const options = selectElement(document, "text-options");
+
+  options.addEventListener("input", (event) => {
+    if (readNumberField(event.target) === undefined) {
+      update();
+    }
+  });
+
+  options.addEventListener("change", update);
 }
 
 /**
@@ -59,7 +76,8 @@ function listenToBold(document: Document, update: () => void): void {
  * (`listenToExport`, US-036); a value typed or chosen, the drawing's options among them, redraws
  * the text; the bold button gives 700 and gives back the weight before (`pressBold`, US-037), a
  * weight chosen in the list forgetting the weight held; the italic button turns italic on or off;
- * a value typed in X or Y redraws the text (`listenToTextPosition`, US-038); Box chosen after Fit
+ * a field acting as a number field, the box's Width and Height, redraws nothing while it is typed,
+ * its value applied on Enter or when it is left (`listenToEditedFields`, US-085); Box chosen after Fit
  * content first writes the block rounded up in the box's fields (`writeFittedBox`, US-055), unless
  * the designer typed the box, which then comes back (US-057); **Reset** puts the box back to that
  * size and forgets the box typed (`resetFittedBox`, US-057).
@@ -70,17 +88,13 @@ function listenToBold(document: Document, update: () => void): void {
  * @see docs/backlog/stories/E15-F05-US-031-place-a-text.md
  */
 export function listenToTextFields(document: Document, update: () => void): void {
-  const options = selectElement(document, "text-options");
   const italic = selectElement(document, "text-italic");
 
   listenToBoxChoice(document);
   listenToFonts(document, update);
   listenToExport(document, () => readDrawnTexts(document));
-  options.addEventListener("input", update);
-  options.addEventListener("change", update);
-
+  listenToOptions(document, update);
   listenToBold(document, update);
-  listenToTextPosition(document, update);
 
   selectElement(document, "text-box-reset").addEventListener("click", () => {
     resetFittedBox(document, readTextModel(document));

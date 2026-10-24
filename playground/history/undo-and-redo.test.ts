@@ -140,10 +140,10 @@ function dragBy(from: Point, by: Point): void {
 function typeRectangle(x: string): void {
   typeValue("angle", "0");
   typeValue("radius", "0");
-  typeValue("width", "100");
-  typeValue("height", "50");
-  typeValue("shape-x", x);
-  typeValue("shape-y", "20");
+  typeAndEnter("width", "100");
+  typeAndEnter("height", "50");
+  typeAndEnter("shape-x", x);
+  typeAndEnter("shape-y", "20");
 }
 
 /**
@@ -444,7 +444,7 @@ describe("Undo and Redo, by the keys, what is done on the drawing (US-074)", () 
 
   it("[F40.AC1] undoes the drawing from W once its value is applied, and leaves it to W typed in", () => {
     clickDrawing(IN_A, NO_KEY);
-    typeValue("width", "150");
+    typeAndEnter("width", "150");
     commitField("width");
 
     const applied = press("#width", UNDO);
@@ -453,12 +453,13 @@ describe("Undo and Redo, by the keys, what is done on the drawing (US-074)", () 
     expect(readValue("width")).toBe("100");
     expect(readShape(0)).toMatchObject({ width: 100 });
 
+    // Typed, not applied (US-085): W keeps Ctrl + Z, the shape still 100 wide.
     typeValue("width", "1");
 
     const typed = press("#width", UNDO);
 
     expect(typed.defaultPrevented).toBe(false);
-    expect(readShapeModel()).toMatchObject({ width: 1 });
+    expect(readShapeModel()).toMatchObject({ width: 100 });
   });
 
   it("[F40.AC1] takes no step at a key released in a field: 150 typed in W undone at once", () => {
@@ -477,7 +478,7 @@ describe("Undo and Redo, by the keys, what is done on the drawing (US-074)", () 
 
   it("[F40.AC1] leaves Ctrl + Z to the drawing once a field typed in is left", () => {
     clickDrawing(IN_A, NO_KEY);
-    typeValue("width", "100");
+    typeAndEnter("width", "100");
     selectPageElement("#width").dispatchEvent(new FocusEvent("focusout", { bubbles: true }));
     dragBy(IN_A, { x: 30.6, y: 19.4 });
 
@@ -730,17 +731,16 @@ describe("Undo and Redo what is typed and chosen in the panel (US-075)", () => {
   });
 
   it("[F40.AC2] undoes 150 typed in W and applied by Enter in one step, then 70 left in H", () => {
-    for (const [typed, width] of [
-      ["1", 1],
-      ["15", 15],
-      ["150", 150],
-    ] as const) {
+    for (const typed of ["1", "15", "150"]) {
       typeValue("width", typed);
 
-      expect(readShapeModel()).toMatchObject({ width });
+      // Typed, not applied (US-085): A still 100 wide, drawn 150 wide at Enter only.
+      expect(readShapeModel()).toMatchObject({ width: 100 });
     }
 
     commitField("width");
+
+    expect(readShapeModel()).toMatchObject({ width: 150 });
     typeAndLeave("height", "70");
     press("body", UNDO);
 

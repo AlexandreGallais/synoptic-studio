@@ -42,7 +42,6 @@ Every place where the code turns a lint rule off, with its reason (ADR-0066). A 
 | `playground/kind-settings/write-kind-settings.ts` | `readKindMemory` | `@typescript-eslint/consistent-type-assertions`, `@typescript-eslint/no-unsafe-type-assertion` | written by `saveKindSettings` only, from the same inputs |
 | `playground/page/select-element.ts` | `selectElement` | `unicorn/prefer-query-selector` | `getElementById` reads the document's map of ids, where happy-dom's `querySelector` walks the tree again after each change of the document, a redraw included (`REF-HAPPY-DOM-QUERY`, EN-150); the rule's `querySelector` is kept everywhere else |
 | `playground/placing/place-shape.test.ts` | `readBox` | `@typescript-eslint/consistent-type-assertions`, `@typescript-eslint/no-unsafe-type-assertion` | the page writes the model shown by `JSON.stringify` of a shape with a box |
-| `playground/position/write-resized-position.ts` | `readDrawnBox` | `@typescript-eslint/consistent-type-assertions`, `@typescript-eslint/no-unsafe-type-assertion` | written by `writeDrawnBox` only, from a valid shape |
 | `playground/redraw/schedule-redraw.test.ts` | `readBlockHeight` | `@typescript-eslint/consistent-type-assertions`, `@typescript-eslint/no-unsafe-type-assertion` | the block is written by `showText` from a `TextBlock` |
 
 | `playground/shape/read-stored-free-shape.ts` | `readKeptText` | `@typescript-eslint/consistent-type-assertions`, `@typescript-eslint/no-unsafe-type-assertion` | written by `writeStoredFreeShape` only, from a `FreeShape`, and checked just after |

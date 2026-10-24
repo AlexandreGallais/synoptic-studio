@@ -14,6 +14,8 @@
 
 **Each shape keeps its own way of moving and growing.** X and Y place each shape's straight box, as the panel does for one shape: the turned rectangle above, typed 50 in X, has its upright box start at x 50. Width and Height set each shape's own size, a turned shape keeping its turned top-left corner in place, as when you type its width alone. A text in a box gets the new size for its box; a text fitting its content keeps its size, since it has no width of its own to set, and moves with the others.
 
+**One shape's fields follow the same rule.** Since F44, the X, Y, Width and Height of a shape selected alone, and a text's X, Y and its box's Width and Height, answer the keyboard as the four fields of several shapes: Up adds 1, Shift + Up 10, and a value typed, `+10` or `150`, is applied when you press Enter or leave the field, never while you type it. The rectangle the page opens with, 120 × 80, is 130 wide for Shift + Up in Width, and moves to x 10 for Shift + Up in X; `+19` typed in Width and Enter makes it 19 wider at Enter only. Holding Up in Height is one step, which one Ctrl + Z takes back. A turned shape keeps its turned top-left corner, as with several. The panel's other number fields, the radius among them, still step by 1 for now.
+
 **A value that does not fit changes nothing.** A fraction, a word, or a size that would fall below 0 for one shape changes none of them, and the fields show the shapes' values again: `-50` in Width leaves both rectangles as they were, since the second, 40 wide, cannot be −10 wide.
 
 ## The choices the agent made
@@ -27,6 +29,7 @@ For the review's summary; each can be changed.
 - A size that would fall below 0 for one shape refuses the value for all of them, so that a value goes to every shape or to none; the other way was to change the shapes that can take it. A size above 100 000 is brought down to 100 000, as the Width field of one shape does.
 - A text never measured, which is not drawn, is left as it is when a value is typed; a shape 0 × 0, which is a point, is placed by that point.
 - A text never measured, which is not drawn, is left out of the values, as it is left out of the dashed box; with nothing left to show, each field is empty, without Mixed.
+- One shape's X, Y, Width and Height, and a text's box, are the fields the correction of 2026-10-24 named, which several shapes have too; each change is the computation several shapes use, from the shape as last drawn. A box's width above 100 000 is now brought down to 100 000, as a shape's, where it was refused. While a shape is refused for another of its values, its fields keep what is typed, read as before, a value with a sign then refused.
 
 ## The ideas behind it
 

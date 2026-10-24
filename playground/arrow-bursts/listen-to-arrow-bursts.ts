@@ -1,5 +1,6 @@
 import { fieldArrowStep, isBrowserKey, nudgeShift } from "../../src";
 import { readListenerSignal } from "../listeners";
+import { NUMBER_FIELDS } from "../number-fields";
 import { selectElement } from "../page";
 import { readKeyField } from "../selection-keys";
 
@@ -7,9 +8,10 @@ import { ARROW_BURSTS } from "./arrow-bursts";
 
 /**
  * The fields of the panel whose arrows step a value, a burst of them one step: the number fields,
- * which the browser steps, and the fields of several shapes, which the page steps.
+ * which the browser steps, and the fields acting as number fields, several shapes' and one
+ * shape's X, Y, Width and Height, which the page steps (`NUMBER_FIELDS`, US-085).
  */
-const BURST_FIELDS = 'input[type="number"], #several-fields input';
+const BURST_FIELDS = `input[type="number"], ${NUMBER_FIELDS}`;
 
 /** The keys that type nothing in a field, held for an arrow or a shortcut: the modifiers. */
 const MODIFIER_KEYS: ReadonlySet<string> = new Set(["Alt", "Control", "Meta", "Shift"]);
