@@ -3,7 +3,7 @@ id: US-091
 epic: E02
 feature: F47
 title: Space never left held after Cmd
-status: ready
+status: done
 points: 2
 ---
 
