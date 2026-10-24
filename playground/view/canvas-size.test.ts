@@ -153,25 +153,41 @@ describe("the view follows the canvas's size (US-084, REF-RESIZE-OBSERVER-1)", (
     expect(readViewBoxes()).toEqual(["-40 -40 1700 800", "-40 -40 1700 800"]);
   });
 
-  it("draws the page once at the next frame for several size changes, at the last size", () => {
+  it("[F46.AC3] gives both SVGs the new size in the observer's callback, before any frame", () => {
+    holdFrames();
+    FRAMES.length = 0;
+
+    // The column hidden, the canvas 2 260 wide: the callback runs before the browser paints
+    // (REF-RESIZE-OBSERVER-1, §3.6.1), so the new `viewBox` is painted with the new box.
+    clickElement("tool-output");
+    resizeCanvas(2260, 1000);
+    expect(readViewBoxes()).toEqual(["-40 -40 2260 1000", "-40 -40 2260 1000"]);
+
+    clickElement("tool-output");
+    resizeCanvas(1960, 1000);
+    expect(readViewBoxes()).toEqual(["-40 -40 1960 1000", "-40 -40 1960 1000"]);
+
+    // The window resized to 2 300 × 800: the canvas 1 700 × 800, no column toggled.
+    resizeCanvas(1700, 800);
+    expect(readViewBoxes()).toEqual(["-40 -40 1700 800", "-40 -40 1700 800"]);
+  });
+
+  it("[F46.AC3] leaves the frames asked before nothing to draw once the callback drew the page", () => {
     holdFrames();
     FRAMES.length = 0;
 
     clickElement("tool-output");
     resizeCanvas(2260, 1000);
-    clickElement("tool-output");
-    resizeCanvas(1960, 1000);
-    clickElement("tool-output");
-    resizeCanvas(2260, 1000);
 
-    // The toggles and the size changes asked one frame (`scheduleRedraw`, US-048).
+    // The toggle's frame was asked; the callback drew it at once, so the frame draws nothing.
     expect(FRAMES).toHaveLength(1);
+    selectPageElement("#canvas svg").setAttribute("viewBox", "0 0 1 1");
 
     for (const frame of FRAMES.splice(0)) {
       frame(0);
     }
 
-    expect(readViewBoxes()).toEqual(["-40 -40 2260 1000", "-40 -40 2260 1000"]);
+    expect(readViewBoxes()).toEqual(["0 0 1 1", "-40 -40 2260 1000"]);
   });
 
   it("clips the stage, which no focus scrolls (REF-CSS-OVERFLOW-3)", () => {

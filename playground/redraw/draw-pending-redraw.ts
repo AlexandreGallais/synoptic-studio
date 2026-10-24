@@ -3,7 +3,9 @@ import { PENDING_REDRAWS } from "./pending-redraws";
 /**
  * Draws the redraw the page asked and has not drawn yet, if any, at once rather than at its
  * animation frame (`scheduleRedraw`), so that what was typed before is drawn, and its step taken,
- * before an action reads the page as last drawn (US-082); the frame then finds nothing to draw.
+ * before an action reads the page as last drawn (US-082), and so that a canvas resized is painted
+ * at its new size in the frame it changes (`listenToCanvasSize`, US-090); the frame then finds
+ * nothing to draw.
  *
  * @kind procedure
  * @param document - page document
