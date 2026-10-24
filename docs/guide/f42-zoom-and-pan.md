@@ -18,6 +18,8 @@
 
 **Read the zoom.** The toolbar shows the zoom, rounded to a whole percent: 141 % after one step in. Click it for its menu: Zoom in, Zoom out, Zoom to 100 %, Fit the drawing and Fit the selection, each with its key, and a field where a percentage is typed, applied by `Enter`: 200 gives 200 %, about the canvas's centre. A percentage beyond 1 % to 25 600 % is taken at the bound; a text, 0 or a number below 0 changes nothing.
 
+**The view follows the work area's size.** Since F44, hiding the pipeline column, showing the checklist or resizing the window draws the page again at the new size: the drawing never shrinks nor moves, the outline of the shape under the pointer stays on it, and a click lands where it is seen. The view keeps its zoom and the point at its top-left corner, the canvas showing more or less to the right and at the bottom.
+
 ## The choices the agent made
 
 For the review's summary; each can be changed.

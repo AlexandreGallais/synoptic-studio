@@ -1,5 +1,6 @@
 export * from "./apply-wheel-zoom";
 export * from "./held-spaces";
+export * from "./listen-to-canvas-size";
 export * from "./listen-to-pan-drag";
 export * from "./listen-to-view";
 export * from "./listen-to-wheel";

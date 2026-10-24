@@ -39,7 +39,7 @@ The examples use a window of 2 560 × 1 000, the page as it opens, the rectangle
 
 ## Tasks
 
-- [ ] T1 — The canvas's size heard by a `ResizeObserver` on `#canvas` asking the redraw (`listenToCanvasSize` in `playground/view/`, wired by `listenToView`), the window's `resize` listener of `listenToInputs` replaced by it; `interaction.md` §7 (the view after a size change) and its Q row; tests of the criteria first, failing, with a stand-in `ResizeObserver` the test fires, happy-dom's doing nothing (note 0033, §3) (2 h)
+- [x] T1 — The canvas's size heard by a `ResizeObserver` on `#canvas` asking the redraw (`listenToCanvasSize` in `playground/view/`, wired by `listenToView`), the window's `resize` listener of `listenToInputs` replaced by it; `interaction.md` §7 (the view after a size change) and its Q row; tests of the criteria first, failing, with a stand-in `ResizeObserver` the test fires, happy-dom's doing nothing (note 0033, §3) (2 h)
 - [ ] T2 — The code that passes them; `#stage` given `overflow: clip`; the Product Owner test, checked in a browser (1 h)
 
 Files: `playground/view/` (`listen-to-view.ts`, a new `listen-to-canvas-size.ts`), `playground/mount/listen-to-inputs.ts`, `playground/index.html` (`#stage`), `docs/domain/interaction.md` §7. `@see` `REF-RESIZE-OBSERVER-1`, `REF-MDN-RESIZE-OBSERVER`, `REF-SVG2-COORDS`, `REF-CSS-OVERFLOW-3`, `docs/domain/interaction.md#_7-navigation-and-history`.
