@@ -20,7 +20,7 @@ describe("withoutTrailingSpaces (REF-UAX14, SP)", () => {
 
   // alone: 1 ms, the median of 5 runs of its file, 0.50 ms rounded up (EN-129); 500 ms is 500
   // times it.
-  it("reads 40 000 spaces once, in well under a second", { timeout: 500 }, () => {
+  it("reads 40 000 spaces once, in well under a second", { tags: ["timing"], timeout: 500 }, () => {
     // A pattern / +$/ would try each of the 40 000 first spaces as a start: 8 × 10⁸ steps.
     const line = `${" ".repeat(40_000)}x${" ".repeat(40_000)}`;
 

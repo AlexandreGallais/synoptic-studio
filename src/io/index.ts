@@ -1,3 +1,4 @@
+export * from "./byte-size";
 export * from "./character-map";
 export * from "./color";
 export * from "./font-collection";
@@ -7,6 +8,7 @@ export * from "./font-file";
 export * from "./font-name";
 export * from "./font-tables";
 export * from "./kerning";
+export * from "./panel-value";
 export * from "./path-data";
 export * from "./picked-color";
 export * from "./text-style";

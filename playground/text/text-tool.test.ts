@@ -5,6 +5,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { TEXT_OPTIONS } from "../../src";
 import {
   chooseOption,
+  chooseShapeKind,
   clickElement,
   clickWithKeys,
   openServedPage,
@@ -13,6 +14,7 @@ import {
   readText,
   readValue,
   selectPageElement,
+  typeAndEnter,
   typeValue,
 } from "../user-actions";
 
@@ -59,9 +61,9 @@ function readLines(): readonly (readonly (string | null)[])[] {
 describe("Text tool", () => {
   beforeEach(() => {
     openServedPage("");
-    clickElement("tool-text");
+    chooseShapeKind("text");
     // "H" over "HH" in Inter Regular 16: H advances 1522 of 2048 units, 11.890625; HH 23.78125.
-    typeValue("text-size", "16");
+    typeAndEnter("text-size", "16");
     // happy-dom does not select the option marked `selected` once the page is moved into its
     // document: the weight the page opens with, 400, is chosen again.
     chooseOption("text-weight", "400");
@@ -69,8 +71,6 @@ describe("Text tool", () => {
   });
 
   it("[F05.AC2] opens its fields, the shapes' size and corners hidden", () => {
-    expect(readPressedState("tool-text")).toBe("true");
-    expect(readPressedState("tool-rectangle")).toBe("false");
     expect(readText("#shape-title")).toBe("Text");
     expect(readDisplay("text-options") === "none").toBe(false);
     expect(readDisplay("size-section") === "none").toBe(true);
@@ -119,7 +119,7 @@ describe("Text tool", () => {
       expect([id, readDisplay(id)]).toEqual([id, "none"]);
     }
 
-    clickElement("tool-rectangle");
+    chooseShapeKind("rectangle");
 
     for (const id of ["size-section", "corners-section", "turn", "tools"]) {
       expect(readDisplay(id) === "none").toBe(false);
@@ -128,7 +128,7 @@ describe("Text tool", () => {
     // A vertex picked in Points mode: its panels go with the Text tool.
     clickWithKeys("#mode-points", {});
     clickWithKeys('#points [data-vertex="1"]', {});
-    clickElement("tool-text");
+    chooseShapeKind("text");
 
     for (const id of ["points", "point-fields", "handle-fields"]) {
       expect([id, readDisplay(id)]).toEqual([id, "none"]);
@@ -196,9 +196,9 @@ describe("Text tool", () => {
 
   it("[F05.AC2] writes the color, the opacity and the spacing typed", () => {
     typeValue("text-color", "#FF0000");
-    typeValue("text-opacity", "40");
-    typeValue("text-letter-spacing", "2");
-    typeValue("text-word-spacing", "-4");
+    typeAndEnter("text-opacity", "40");
+    typeAndEnter("text-letter-spacing", "2");
+    typeAndEnter("text-word-spacing", "-4");
 
     expect(
       ["fill", "fill-opacity", "letter-spacing", "word-spacing"].map((name) =>
@@ -294,14 +294,14 @@ describe("Text tool", () => {
   });
 
   it("moves the text with X and Y", () => {
-    typeValue("shape-x", "10");
-    typeValue("shape-y", "20");
+    typeAndEnter("shape-x", "10");
+    typeAndEnter("shape-y", "20");
     // 20 + 15.5.
     expect(readLines()[0]).toEqual(["H", "10", "35.5"]);
   });
 
-  it("refuses a size of 0 and draws nothing, saying why, the last valid text kept", () => {
-    typeValue("text-size", "0");
+  it("refuses a size emptied by a script and draws nothing, saying why, the last valid text kept", () => {
+    typeAndEnter("text-size", "");
     expect(readText("#status")).toContain("Size must be an integer from 1 to 100 000");
     expect(document.querySelectorAll("#canvas text")).toHaveLength(0);
     expect(selectPageElement("#text-size").getAttribute("aria-invalid")).toBe("true");
@@ -310,8 +310,8 @@ describe("Text tool", () => {
   });
 
   it("draws the text again once the size is valid, its fields no longer outlined", () => {
-    typeValue("text-size", "0");
-    typeValue("text-size", "16");
+    typeAndEnter("text-size", "0");
+    typeAndEnter("text-size", "16");
     expect(readText("#status")).toBe("");
     expect(selectPageElement("#text-size").getAttribute("aria-invalid")).toBe("false");
     expect(readLines()).toHaveLength(2);
@@ -324,10 +324,10 @@ describe("Text tool", () => {
   });
 
   it("[F05.AC6] goes back to the shapes, the text's fields hidden", () => {
-    clickElement("tool-rectangle");
+    chooseShapeKind("rectangle");
     expect(readDisplay("text-options") === "none").toBe(true);
     expect(readDisplay("size-section") === "none").toBe(false);
-    expect(readPressedState("tool-rectangle")).toBe("true");
+    expect(readText("#shape-title")).toBe("Rectangle");
     expect(document.querySelectorAll("#canvas text")).toHaveLength(0);
     // The rectangle the page opens with, its corners rounded by 10.
     expect(readText("#path-data")).toMatch(/^M10 0 L/u);

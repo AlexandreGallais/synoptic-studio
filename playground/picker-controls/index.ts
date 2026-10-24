@@ -7,4 +7,3 @@ export * from "./listen-to-opacity-slider";
 export * from "./listen-to-picker-closing";
 export * from "./listen-to-picker-values";
 export * from "./read-picker-areas";
-export * from "./read-pointer-offset";

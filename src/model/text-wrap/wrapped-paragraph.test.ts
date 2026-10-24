@@ -146,17 +146,21 @@ describe("wrappedParagraph (DERIV-text-box steps 1 to 4)", () => {
   // alone: 128 ms, the median of 5 runs of its file (EN-129); 1 s, 7.8 times it, failed at 1139 ms
   // in a loaded `check:all`. 3 s is 23 times it, and a wrap measuring each line again at each word
   // takes 16.4 s alone.
-  it("wraps 16 000 words in under 3 s, each measured once", { timeout: 3000 }, () => {
-    // 8000 times "Hello World ": in a box 100 wide, 8000 lines "Hello World". In a box 100 000
-    // wide, 12 800 000 units: "Hello World " is 11 153 units, so about 2295 words a line, 7 lines
-    // for 16 000; measuring each line again at each word would read some 4 × 10⁷ characters.
-    const paragraph = "Hello World ".repeat(8000);
-    const lines = wrappedParagraph(ARIAL_BOX_METRICS, paragraph, { ...BOXED, boxWidth: 100 });
-    const wide = wrappedParagraph(ARIAL_BOX_METRICS, paragraph, { ...BOXED, boxWidth: 100_000 });
+  it(
+    "wraps 16 000 words in under 3 s, each measured once",
+    { tags: ["timing"], timeout: 3000 },
+    () => {
+      // 8000 times "Hello World ": in a box 100 wide, 8000 lines "Hello World". In a box 100 000
+      // wide, 12 800 000 units: "Hello World " is 11 153 units, so about 2295 words a line, 7 lines
+      // for 16 000; measuring each line again at each word would read some 4 × 10⁷ characters.
+      const paragraph = "Hello World ".repeat(8000);
+      const lines = wrappedParagraph(ARIAL_BOX_METRICS, paragraph, { ...BOXED, boxWidth: 100 });
+      const wide = wrappedParagraph(ARIAL_BOX_METRICS, paragraph, { ...BOXED, boxWidth: 100_000 });
 
-    expect(lines).toHaveLength(8000);
-    expect(wide).toHaveLength(7);
-  });
+      expect(lines).toHaveLength(8000);
+      expect(wide).toHaveLength(7);
+    },
+  );
 
   test.prop(PARAGRAPH_IN_BOX)(
     "[F14.AC1] gives back the paragraph joined, but for the spaces dropped at each wrap and at its end",

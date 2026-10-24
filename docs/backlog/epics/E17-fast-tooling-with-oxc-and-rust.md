@@ -1,7 +1,7 @@
 ---
 id: E17
 title: Fast tooling with Oxc and Rust
-status: in-progress
+status: done
 ---
 
 # E17 — Fast tooling with Oxc and Rust

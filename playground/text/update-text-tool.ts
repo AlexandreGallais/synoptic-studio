@@ -1,12 +1,12 @@
 import { isValidText, isValidTextBox } from "../../src";
 import { writeColorSwatches, writeFollowedColors } from "../color-fields";
 import { DEFAULT_FONT_MISSING, writeFontAvailability } from "../default-font";
-import { writeLeftOutFaces } from "../document";
 import { writeFontFields } from "../fonts";
 import { selectElement, writeText } from "../page";
 import { readTextMeasure, readTextMetrics } from "../text-measure";
 import { writeTextPosition } from "../text-placement";
 
+import { clearTextDrawing } from "./clear-text-drawing";
 import { readTextModel } from "./read-text-model";
 import { showText } from "./show-text";
 
@@ -61,20 +61,6 @@ function writeBoldState(document: Document, weight: number): void {
 }
 
 /**
- * Clears what a refused text drew: the drawing, its straight box's line (US-039) and the faces
- * left out of its document.
- *
- * @kind procedure
- * @param document - page document
- * @see docs/backlog/stories/E15-F14-US-039-straight-box-of-a-turned-text.md
- */
-function clearTextDrawing(document: Document): void {
-  selectElement(document, "canvas").replaceChildren();
-  selectElement(document, "straight-box").hidden = true;
-  writeLeftOutFaces(document, []);
-}
-
-/**
  * Draws a valid text from what it measures, its lines and block kept while their inputs stay the
  * same (`readTextMeasure`, US-048), placed so that a turned text keeps its corner
  * (`writeTextPosition`, US-038), then drawn once (`showText`).
@@ -118,8 +104,8 @@ function writeTextRefusal(document: Document, isFontMissing: boolean): void {
  * field enabled only when they can be used (`writeFontAvailability`, US-059); the text drawn with its block, measured with the
  * metrics of the family chosen — the metrics, lines and block kept while their inputs stay the
  * same (`readTextMetrics`, `readTextMeasure`, US-048) — Inter or a font imported or installed and read (US-036), a
- * turned text placed from the turned top-left corner X and Y show, which a change of size keeps
- * (`writeTextPosition`, US-038, US-054);
+ * turned text placed from the start of its straight box X and Y show, a change of size keeping
+ * its turned top-left corner (`writeTextPosition`, US-038, AUD-040);
  * each color's swatch painted with it (US-035);
  * a refused text clears the drawing and its straight box's line and says why, its fields outlined;
  * a text whose font has no face, Inter when the browser draws none of its faces (US-053), is not

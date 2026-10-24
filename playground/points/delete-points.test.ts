@@ -8,7 +8,7 @@ import {
   pressKey,
   readPointRows,
   readValue,
-  typeValue,
+  typeAndEnter,
 } from "../user-actions";
 
 /**
@@ -125,9 +125,9 @@ describe("deleting points", () => {
     clickElement("mode-points");
     clickPoint(2, false);
 
-    typeValue("width", "");
+    typeAndEnter("angle", "");
     pressKey("body", "Delete");
-    typeValue("width", "120");
+    typeAndEnter("angle", "0");
 
     expect(readPointRows()).toHaveLength(4);
   });

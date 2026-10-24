@@ -7,13 +7,14 @@ import { readTextModel } from "../text";
 import {
   chooseFiles,
   chooseOption,
+  chooseShapeKind,
   clickElement,
   openServedPage,
   readDisplay,
   readText,
   selectInput,
   selectPageElement,
-  typeValue,
+  typeAndEnter,
   waitForPageTasks,
 } from "../user-actions";
 
@@ -89,9 +90,9 @@ function readLeftOut(): readonly (string | null)[] {
 describe("The drawing's options: Embed fonts (US-036), no HTML layer (US-044)", () => {
   beforeEach(() => {
     openServedPage("");
-    clickElement("tool-text");
+    chooseShapeKind("text");
     chooseOption("text-weight", "400");
-    typeValue("text-size", "16");
+    typeAndEnter("text-size", "16");
   });
 
   afterEach(() => {
@@ -180,9 +181,9 @@ describe("The drawing's options: Embed fonts (US-036), no HTML layer (US-044)", 
     tick("embed-fonts", true);
     typeContent("Pump P-101 is running");
     chooseOption("text-fit", "box");
-    typeValue("text-box-width", "50");
-    typeValue("text-box-height", "100");
-    typeValue("text-maximum-lines", "2");
+    typeAndEnter("text-box-width", "50");
+    typeAndEnter("text-box-height", "100");
+    typeAndEnter("text-maximum-lines", "2");
     tick("text-underline", true);
     tick("text-strike", true);
     tick("text-background", true);
@@ -232,7 +233,8 @@ describe("The drawing's options: Embed fonts (US-036), no HTML layer (US-044)", 
   it("[F15.AC2] hides the faces left out while the text is refused", () => {
     tick("embed-fonts", true);
     expect(readLeftOut()).toHaveLength(1);
-    typeValue("text-size", "0");
+    // A size emptied by a script, which the field never read: the text refused.
+    typeAndEnter("text-size", "");
     expect(readLeftOut()).toEqual([]);
     expect(readDisplay("font-left-out")).toBe("none");
   });

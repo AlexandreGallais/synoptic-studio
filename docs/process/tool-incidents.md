@@ -92,3 +92,51 @@ The cards of E17 were decided at RET-004 ([record](./retrospectives/E17-retrospe
 - Used: a loop over the story's cases written as `$'…\'EOF\'…'` texts, after the brief's `cd`, to probe the release binary.
 - Failed: the separator reader closed the quote at `\'`, read the rest as commands and refused a chained Git command where none was.
 - Instead: the cases written to a JSON file and read with `jq`; the reader fixed in EN-119.T2, a backslash escaping inside `$'…'`.
+
+## 2026-10-22 — epic-check, to read its usage
+
+- Used: `target/release/epic-check --help`, by the auditor of AUD-037, to read its options.
+- Failed: it ignores `--help` and runs the whole epic check, `check:all` included, in the worktree it was called from.
+- Instead: the check was left to end; it left no file in the worktree, as `git status --ignored` showed at the fixes' start.
+
+## 2026-10-22 — mutate, for the mutation spot-checks of F35
+
+- Used: `npm run mutate -- <files>`, the audit's new modules not yet committed.
+- Failed: the copy takes tracked files only, so every test importing a new module failed in it, and each file was skipped as "its related tests fail, or none was found", the cause unsaid.
+- Instead: the new modules staged with `git add` before the run, which the copy then took.
+
+## 2026-10-22 — `worktree-new`, to make each worktree of F36
+
+- Used: `target/release/worktree-new <ID>` for the stories of F36, a feature started on F35's branch (`feature/f36-draw-pick-and-remove-shapes` stacked on `feature/f35-several-shapes-on-one-drawing`).
+- Failed: it refuses a story whose file is on two feature branches, which every story file of F36 is while F35's branch is not merged.
+- Instead: each worktree was made by hand, `git worktree add` on the story's branch from F36's, then `npm ci`, about 2 min each.
+
+## 2026-10-23 — `mutate`, for the audit's mutation spot-checks
+
+- Used: `npm run mutate -- <27 files> -- npx vitest run {test}` in the background, before the audit's new modules were committed.
+- Failed: the copy holds tracked files only (`git stash create`), so the two new modules, untracked, were missing and every file was skipped as "its related tests fail"; `{test}`, unquoted in the background call, reached the tool dropped, so each skip ran the whole suite; the run, stopped, left its temporary worktree registered; `git add -N` on the new files made `git stash create` fail ("not uptodate").
+- Instead: the run stopped and its worktree removed (`git worktree remove --force`), the new files staged by `git add`, then `npm run mutate` again with `'{test}'` quoted.
+
+## 2026-10-23 — `openServedPage`, mounting the playground once per test of a file
+
+- Used: each test of a playground file mounts the page again by `openServedPage`, in the one `document` happy-dom keeps for the file.
+- Failed: each mount adds its `keydown` listeners to `document` (`listenToSelectionKeys`, `listenToNudgeKeys`), never removed, so that a file's n-th test has n listeners for each key; with the arrows' `event.defaultPrevented` check removed, a key nudged up to 26 times in `nudge-shapes.test.ts` (AUD-041, finding 3).
+- Instead: the check kept, which stops every listener after the first; the listeners left piling up, a key of the selection applied once per mount with the same result.
+
+## 2026-10-23 — mutate, for AUD-044's spot-checks
+
+- Used: `npm run mutate -- <20 modules of src/>`, the story's work not yet staged.
+- Failed: every module skipped, "its related tests fail, or none was found, before any mutation", and the new `meet-scale.ts` "not a tracked text file": the copy holds the tracked files only, and the barrels exported modules it did not hold.
+- Instead: `git add` of the work before the run; every module then ran.
+
+## 2026-10-24 — `git-sequences commit`, with a folder already removed by `git rm`
+
+- Used: `target/release/git-sequences commit -F <message> <paths>` in US-086, one of the paths a folder `git rm` had removed (`playground/helps-frame/`).
+- Failed: "pathspec did not match", the commit refused.
+- Instead: the other paths named alone; the staged deletions went into the commit anyway.
+
+## 2026-10-25 — `heavy-lock --help`
+
+- Used: `target/release/heavy-lock --help` in REV-008.T1, to read its usage.
+- Failed: it took `--help` as the command to run, waited for the lock behind a `check:all`, then failed with "No such file or directory".
+- Instead: its usage read in `docs/tooling/agent-tools.md`.

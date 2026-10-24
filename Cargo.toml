@@ -20,17 +20,17 @@ pedantic = { level = "warn", priority = -1 }
 # docs/tooling/dependencies.md, its release notes read, at least 7 days old.
 [workspace.dependencies]
 markdown = "=1.0.0"
-oxc_allocator = "=0.153.0"
-oxc_ast = "=0.153.0"
-oxc_ast_visit = "=0.153.0"
-oxc_codegen = "=0.153.0"
-oxc_isolated_declarations = "=0.153.0"
-oxc_parser = "=0.153.0"
-oxc_semantic = "=0.153.0"
-oxc_span = "=0.153.0"
-oxc_syntax = "=0.153.0"
+oxc_allocator = "=0.154.0"
+oxc_ast = "=0.154.0"
+oxc_ast_visit = "=0.154.0"
+oxc_codegen = "=0.154.0"
+oxc_isolated_declarations = "=0.154.0"
+oxc_parser = "=0.154.0"
+oxc_semantic = "=0.154.0"
+oxc_span = "=0.154.0"
+oxc_syntax = "=0.154.0"
 regex = "=1.13.1"
 rmcp = { version = "=3.5.1", default-features = false, features = ["server", "transport-io"] }
 rusqlite = "=0.40.2"
 serde_json = "=1.0.154"
-tokio = { version = "=1.53.2", features = ["rt", "macros", "io-std"] }
+tokio = { version = "=1.53.3", features = ["rt", "macros", "io-std"] }

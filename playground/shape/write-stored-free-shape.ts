@@ -1,5 +1,6 @@
 import { freeShapeRadii, isValidFreeShape } from "../../src";
-import { selectElement, writeInputValue } from "../page";
+import { saveKindSettings } from "../kind-settings";
+import { readShapeKind, selectElement, writeInputValue } from "../page";
 
 import type { FreeShape } from "../../src";
 
@@ -24,7 +25,8 @@ function selectFreeShape(document: Document): void {
 /**
  * Keeps a valid free shape on the page (ADR-0033), leaving the one kept when it is not: stored
  * on the shape selector, which shows "Free shape", its width and height written in their inputs
- * and its radii kept on the radius input.
+ * and its radii kept on the radius input; a rectangle or a polygon becoming free keeps its
+ * settings first, as the last shape of its kind (SP-026).
  *
  * @kind procedure
  * @param document - page document
@@ -39,6 +41,7 @@ export function writeStoredFreeShape(document: Document, shape: FreeShape): void
 
   const select = selectElement(document, "shape");
 
+  saveKindSettings(document, readShapeKind(document));
   select.dataset["freeShape"] = JSON.stringify(shape);
   selectFreeShape(document);
   writeInputValue(document, "width", shape.width);

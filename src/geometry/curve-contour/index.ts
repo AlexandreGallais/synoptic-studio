@@ -7,4 +7,5 @@ export * from "./curve-fillets";
 export * from "./drawn-radii";
 export * from "./limited-side";
 export * from "./requested-setbacks";
+export * from "./shape-straight-box";
 export * from "./side-factors";

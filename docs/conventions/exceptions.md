@@ -19,6 +19,7 @@ Every place where the code turns a lint rule off, with its reason (ADR-0066). A 
 | --- | --- | --- | --- |
 | `src/io/font-collection/face-parts-to-file.ts` | `facePartsToFile` | `functional/no-loop-statements` | a buffer of the final size, written once at known places inside the function, then returned: a collection's 191 MB table copied once, never spread into an array (ADR-0066) |
 | `src/io/font-collection/face-parts-to-file.ts` | `facePartsToFile` | `functional/immutable-data`, `functional/no-expression-statements` | the same buffer, its one write: `set` read by name as a map's, a typed array's here, and its result left (ADR-0066) |
+| `src/model/shape-memo/memorized-shape.ts` | `memorizedShape` | `functional/immutable-data`, `functional/no-expression-statements` | the memo of each shape, its key and its text's length, and the next key, written once for each shape in one call, read by nothing else, a shape never changed (ADR-0096, ADR-0097) |
 | `src/model/handles/are-valid-handles.test.ts` | `refuses an unknown mode, a vector not finite, a switch not boolean` | `@typescript-eslint/consistent-type-assertions`, `@typescript-eslint/no-unsafe-type-assertion` | data read from outside: an unknown mode |
 | `src/model/handles/are-valid-handles.test.ts` | `refuses an unknown mode, a vector not finite, a switch not boolean` | `@typescript-eslint/consistent-type-assertions`, `@typescript-eslint/no-unsafe-type-assertion` | data read from outside: a switch that is not a boolean |
 | `src/model/layout-box/is-anchor.test.ts` | `[F07.AC1] refuses any other value on either axis` | `@typescript-eslint/consistent-type-assertions`, `@typescript-eslint/no-unsafe-type-assertion` | data read from outside may hold any string |
@@ -35,11 +36,16 @@ Every place where the code turns a lint rule off, with its reason (ADR-0066). A 
 | `playground/fonts/import-font.test.ts` | `readBlock` | `@typescript-eslint/consistent-type-assertions`, `@typescript-eslint/no-unsafe-type-assertion` | the block is written by `showText` from a `TextBlock` |
 | `playground/guided-steps/epic-15/f05-steps.test.ts` | `readBlock` | `@typescript-eslint/consistent-type-assertions`, `@typescript-eslint/no-unsafe-type-assertion` | the block is written by `showText` from a `TextBlock` |
 | `playground/guided-steps/epic-15/f14-steps.test.ts` | `readBlock` | `@typescript-eslint/consistent-type-assertions`, `@typescript-eslint/no-unsafe-type-assertion` | the block is written by `showText` from a `TextBlock` |
+
 | `playground/installed-fonts/listen-to-installed-fonts.ts` | `readLocalFontAccess` | `@typescript-eslint/consistent-type-assertions`, `@typescript-eslint/no-unsafe-type-assertion` | the DOM types do not hold the draft Local Font Access API, detected as Chrome advises |
-| `playground/position/write-resized-position.ts` | `readDrawnBox` | `@typescript-eslint/consistent-type-assertions`, `@typescript-eslint/no-unsafe-type-assertion` | written by `writeDrawnBox` only, from a valid shape |
+| `playground/kept-shapes/read-stored-drawing.ts` | `readStoredDrawing` | `@typescript-eslint/consistent-type-assertions`, `@typescript-eslint/no-unsafe-type-assertion` | written by `writeStoredDrawing` only, from shapes drawn valid |
+| `playground/kind-settings/write-kind-settings.ts` | `readKindMemory` | `@typescript-eslint/consistent-type-assertions`, `@typescript-eslint/no-unsafe-type-assertion` | written by `saveKindSettings` only, from the same inputs |
+| `playground/page/select-element.ts` | `selectElement` | `unicorn/prefer-query-selector` | `getElementById` reads the document's map of ids, where happy-dom's `querySelector` walks the tree again after each change of the document, a redraw included (`REF-HAPPY-DOM-QUERY`, EN-150); the rule's `querySelector` is kept everywhere else |
+| `playground/placing/place-shape.test.ts` | `readBox` | `@typescript-eslint/consistent-type-assertions`, `@typescript-eslint/no-unsafe-type-assertion` | the page writes the model shown by `JSON.stringify` of a shape with a box |
 | `playground/redraw/schedule-redraw.test.ts` | `readBlockHeight` | `@typescript-eslint/consistent-type-assertions`, `@typescript-eslint/no-unsafe-type-assertion` | the block is written by `showText` from a `TextBlock` |
+
 | `playground/shape/read-stored-free-shape.ts` | `readKeptText` | `@typescript-eslint/consistent-type-assertions`, `@typescript-eslint/no-unsafe-type-assertion` | written by `writeStoredFreeShape` only, from a `FreeShape`, and checked just after |
-| `playground/text-box/fit-to-box.test.ts` | `readModel` | `@typescript-eslint/consistent-type-assertions`, `@typescript-eslint/no-unsafe-type-assertion` | written by `JSON.stringify` of a `Text` |
+
 | `playground/text-placement/read-drawn-text.ts` | `readDrawnText` | `@typescript-eslint/consistent-type-assertions`, `@typescript-eslint/no-unsafe-type-assertion` | written by `writeTextPosition` only, from a valid text |
 | `playground/text-placement/turned-text-corner.test.ts` | `readStored` | `@typescript-eslint/consistent-type-assertions`, `@typescript-eslint/no-unsafe-type-assertion` | the page writes the model as JSON |
 | `playground/text-placement/turned-text-in-place.test.ts` | `readDrawn` | `@typescript-eslint/consistent-type-assertions`, `@typescript-eslint/no-unsafe-type-assertion` | the page writes the model as JSON |
@@ -48,8 +54,7 @@ Every place where the code turns a lint rule off, with its reason (ADR-0066). A 
 | `playground/text/read-text-model.ts` | `readTextModel` | `@typescript-eslint/consistent-type-assertions`, `@typescript-eslint/no-unsafe-type-assertion` | the page offers only the values of this type: the font style |
 | `playground/text/read-text-model.ts` | `readTextModel` | `@typescript-eslint/consistent-type-assertions`, `@typescript-eslint/no-unsafe-type-assertion` | the page offers only the values of this type: the horizontal alignment |
 | `playground/text/read-text-model.ts` | `readTextModel` | `@typescript-eslint/consistent-type-assertions`, `@typescript-eslint/no-unsafe-type-assertion` | the page offers only the values of this type: the text direction |
-| `playground/text/text-box-fields.test.ts` | `readModel` | `@typescript-eslint/consistent-type-assertions`, `@typescript-eslint/no-unsafe-type-assertion` | written by `JSON.stringify` of a `Text` |
-| `playground/text/write-tool-placement.ts` | `readKeptPlacement` | `@typescript-eslint/consistent-type-assertions`, `@typescript-eslint/no-unsafe-type-assertion` | written by `saveToolPlacement` or `TOOL_PLACEMENT.start` only |
+| `playground/user-actions/read-model.ts` | `readModel` | `@typescript-eslint/consistent-type-assertions`, `@typescript-eslint/no-unsafe-type-assertion` | the page writes the model shown by `JSON.stringify` of a shape or a text |
 
 ## Tooling and tests
 

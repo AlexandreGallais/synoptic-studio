@@ -30,6 +30,7 @@ How a run's worker works one story in its own worktree. The `story-worker` and `
 - **Docs in the same task as the code** they describe: domain, derivations, references, playground.
 - **A binary that runs a command given to it** (`heavy-lock`, `bench`, a wrapper): `guard-bash`'s reading of that command lands in a task before the one that builds the binary, and the worker hands back once that task is pushed, before building the binary, so that the main thread rebuilds the main checkout's `guard-bash` from the branch, whose judgment every call goes through (AUD-035).
 - **The current step**, one short line in French, goes to `.git/metrics/step` of the main checkout (`git rev-parse --git-common-dir` gives its folder): the status line shows it.
+- **Never a polling loop** (REV-008, the telemetry of E02: 45 `until` loops, 219 minutes, up to the 10-minute limit of a call): a command expected to last over a minute runs with `run_in_background`, and its end arrives as a notification; nothing waits on a file in a loop.
 
 ## Shared files (ADR-0065, ADR-0091)
 

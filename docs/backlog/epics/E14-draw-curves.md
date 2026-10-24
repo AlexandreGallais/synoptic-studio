@@ -16,12 +16,12 @@ Decided by the Product Owner on 2026-10-12, at the validation of F10. The round 
 | is a | Bézier curves in symbols, each point with two handles typed as numbers, in Figma's three modes; an ellipse filling its box |
 | that | curved symbols drawn exactly from typed numbers |
 | unlike | E01, where a curve is only the rounding of a corner, and a free shape's point is a corner, not a point on the curve |
-| our solution | handles and points are typed numbers, edited in fields as every shape so far; dragging them comes with E02 |
+| our solution | handles and points are typed numbers, edited in fields as every shape so far; dragging them comes with E18 |
 | Business outcomes | a round shape draws a circle in a square box and an ellipse otherwise; a free shape has points on the curve with two handles; a propeller symbol can be drawn |
 | Leading indicators | the ADR superseding ADR-0001 accepted; Q4 settled; reference cases of curves accepted |
 | Non-functional requirements | integer inputs (ADR-0003); a rule for strokes and dashes on curves whose offset is not a curve of the same kind, decided in the spike |
 | In scope | Bézier curves in symbols; handle modes: independent, mirrored angle, mirrored angle and length (Figma); ellipse; round shape (F10); converting a round shape to a free shape |
-| Out of scope | dragging points and handles on the drawing (E02); freehand and pen tools |
+| Out of scope | dragging points and handles on the drawing (E18); freehand and pen tools |
 | Closure criteria | a round shape, an ellipse and a propeller symbol render as specified in the playground |
 
 ## To study in the first spike

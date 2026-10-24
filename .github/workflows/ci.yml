@@ -46,7 +46,7 @@ jobs:
             git-hooks: true
           # cargo-deny for `[F19.AC9]`'s advisories test (EN-126).
           - name: TypeScript tests
-            scripts: test
+            scripts: test test:timings
             node-packages: true
             cargo-deny: true
             test-report: true

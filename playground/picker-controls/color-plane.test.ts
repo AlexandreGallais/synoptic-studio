@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 
 import {
   chooseOption,
+  chooseShapeKind,
   clickElement,
   commitField,
   openServedPage,
@@ -51,7 +52,7 @@ function pressPlane(type: string, clientX: number, clientY: number): void {
 describe("Color picker: the plane (US-035, US-040)", () => {
   beforeEach(() => {
     openServedPage("");
-    clickElement("tool-text");
+    chooseShapeKind("text");
     chooseOption("text-weight", "400");
     chooseOption("text-fit", "content");
     chooseOption("color-model", "hsb");

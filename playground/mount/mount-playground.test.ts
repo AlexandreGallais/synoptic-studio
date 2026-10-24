@@ -10,7 +10,7 @@ import {
   readDisplay,
   readText,
   readValue,
-  typeValue,
+  typeAndEnter,
 } from "../user-actions";
 
 /**
@@ -40,31 +40,32 @@ describe("playground", () => {
   });
 
   it("[F01.AC1] renders the rectangle as one <path>", () => {
-    typeValue("width", "100");
-    typeValue("height", "50");
-    typeValue("radius", "0");
+    typeAndEnter("width", "100");
+    typeAndEnter("height", "50");
+    typeAndEnter("radius", "0");
 
     expect(document.querySelectorAll("#canvas svg path")).toHaveLength(1);
     expect(readText("#path-data")).toBe("M0 0 L100 0 L100 50 L0 50 Z");
   });
 
   it("[F01.AC2] shows the effective radius next to the requested one when it was reduced", () => {
-    typeValue("height", "25");
-    typeValue("radius", "100");
+    typeAndEnter("height", "25");
+    typeAndEnter("radius", "100");
 
     expect(readText("#effective")).toBe("Effective radius: 12.5 (requested 100, reduced to fit)");
   });
 
   it("[F01.AC2] says the radius is as requested when it fits", () => {
-    typeValue("height", "50");
-    typeValue("radius", "10");
+    typeAndEnter("height", "50");
+    typeAndEnter("radius", "10");
 
     expect(readText("#effective")).toBe("Effective radius: 10 (as requested)");
     expect(readText("#path-data")).toContain("A10 10 0 0 1 100 10");
   });
 
-  it("refuses a negative radius and clears the effective radius", () => {
-    typeValue("radius", "-3");
+  it("refuses a radius emptied by a script and clears the effective radius", () => {
+    // A field emptied with no focus nor key, the page never reading its text: no radius.
+    typeAndEnter("radius", "");
 
     expect(readText("#status")).toBe(
       "Width, height and radius must be integers ≥ 0, and the angle an integer.",
@@ -226,10 +227,10 @@ describe("playground", () => {
   });
 
   it("[F02.AC4] draws a polygon in the same box, keeping width, height and radius", () => {
-    typeValue("width", "100");
-    typeValue("height", "100");
-    typeValue("radius", "0");
-    typeValue("corners", "6");
+    typeAndEnter("width", "100");
+    typeAndEnter("height", "100");
+    typeAndEnter("radius", "0");
+    typeAndEnter("corners", "6");
     chooseOption("shape", "polygon");
 
     // Hexagon (6 corners by default) in 100 × 100: flat top and bottom at (100 − 50√3)/2.
@@ -255,14 +256,14 @@ describe("playground", () => {
   });
 
   it("[F02.AC4] follows the number of corners: a triangle pointing up", () => {
-    typeValue("corners", "3");
+    typeAndEnter("corners", "3");
 
     expect(readText("#path-data")).toBe("M100 93.30127 L0 93.30127 L50 6.69873 Z");
   });
 
   it("[F02.AC2] shows the incircle radius when the radius is too big", () => {
-    typeValue("corners", "6");
-    typeValue("radius", "1000");
+    typeAndEnter("corners", "6");
+    typeAndEnter("radius", "1000");
 
     // Inradius of the hexagon: 50 cos(π/6) = 43.30127.
     expect(readText("#effective")).toBe(
@@ -276,8 +277,19 @@ describe("playground", () => {
     );
   });
 
-  it("[F02.AC1] refuses 13, 2, 2.5 and no corners", () => {
-    typeValue("corners", "13");
+  it.each([
+    // 13 taken at 12; 2 at 3; 2.5 rounded to 3, a tie up (AUD-046).
+    { expected: "12", typed: "13" },
+    { expected: "3", typed: "2" },
+    { expected: "3", typed: "2.5" },
+  ])("[F44.AC4] takes $typed corners as $expected, from 3 to 12", ({ expected, typed }) => {
+    typeAndEnter("corners", typed);
+
+    expect([readValue("corners"), readText("#status")]).toEqual([expected, ""]);
+  });
+
+  it("[F02.AC1] refuses no corners, emptied by a script", () => {
+    typeAndEnter("corners", "");
 
     expect(readText("#status")).toBe(
       "Width, height and radius must be integers ≥ 0, corners an integer from 3 to 12, and the angle an integer.",
@@ -285,17 +297,10 @@ describe("playground", () => {
 
     expect(document.querySelector("#corners")?.getAttribute("aria-invalid")).toBe("true");
     expect(readText("#effective")).toBe("");
-
-    for (const corners of ["2", "2.5", ""]) {
-      typeValue("corners", corners);
-
-      expect(readText("#status")).toContain("corners an integer from 3 to 12");
-      expect(document.querySelector("#corners")?.getAttribute("aria-invalid")).toBe("true");
-    }
   });
 
   it("[F02.AC4] goes back to the rectangle, the number of corners hidden and ignored", () => {
-    typeValue("radius", "0");
+    typeAndEnter("radius", "0");
     chooseOption("shape", "rectangle");
 
     expect(readDisplay("corners-field") === "none").toBe(true);
@@ -320,29 +325,40 @@ describe("playground", () => {
 
   it("[F02.AC5] caps a width or a radius above 100 000 at 100 000, in the input too (Q20)", () => {
     chooseOption("shape", "rectangle");
-    typeValue("width", "250000");
+    typeAndEnter("width", "250000");
 
     expect(readValue("width")).toBe("100000");
     expect(readText("#model")).toContain('"width": 100000');
 
-    typeValue("height", "250000");
+    typeAndEnter("height", "250000");
 
     expect(readValue("height")).toBe("100000");
     expect(readText("#model")).toContain('"height": 100000');
 
-    typeValue("radius", "500000");
+    typeAndEnter("radius", "500000");
 
     expect(readValue("radius")).toBe("100000");
     expect(readText("#model")).toContain('"radius": 100000');
   });
 
-  it("[F02.AC5] keeps 100 000 and smaller values exactly", () => {
-    typeValue("height", "100000");
-    typeValue("width", "99999");
+  it(
+    "[F02.AC5] [F39.AC1] keeps 100 000 and smaller values exactly",
+    // The test before leaves a radius of 100 000: the rectangle 99 999 × 100 000 would then
+    // have corners of radius 49 999.5, its band following each by about 39 270 chords of at
+    // most 2 screen pixels (Q48), 1 063 ms alone and over Vitest's 5 s under the pre-push's
+    // load, until EN-149 computed the band only within the helps' box, where it is empty. With
+    // the radius typed 0 first (EN-145, note 0029 §6), alone: 10 ms, the median of 5 runs of its
+    // file (AUD-041); 1 s, 100 times it, fails the 1 063 ms of the band followed.
+    { tags: ["timing"], timeout: 1000 },
+    () => {
+      typeAndEnter("radius", "0");
+      typeAndEnter("height", "100000");
+      typeAndEnter("width", "99999");
 
-    expect([readValue("height"), readValue("width")]).toEqual(["100000", "99999"]);
-    expect(readText("#model")).toContain('"width": 99999');
-  });
+      expect([readValue("height"), readValue("width")]).toEqual(["100000", "99999"]);
+      expect(readText("#model")).toContain('"width": 99999');
+    },
+  );
 
   it("[F07.AC5] hides the anchor grid for the rectangle, shows it for the polygon on the center", () => {
     chooseOption("shape", "rectangle");
@@ -350,10 +366,10 @@ describe("playground", () => {
     expect(readDisplay("anchor-field") === "none").toBe(true);
     expect(document.querySelectorAll("#canvas path")).toHaveLength(1);
 
-    typeValue("width", "100");
-    typeValue("height", "100");
-    typeValue("radius", "0");
-    typeValue("corners", "3");
+    typeAndEnter("width", "100");
+    typeAndEnter("height", "100");
+    typeAndEnter("radius", "0");
+    typeAndEnter("corners", "3");
     chooseOption("shape", "polygon");
 
     expect(readDisplay("anchor-field") === "none").toBe(false);
@@ -415,7 +431,7 @@ describe("playground", () => {
   });
 
   it("[F07.AC4] lets the radius round the triangle without moving its base", () => {
-    typeValue("radius", "10");
+    typeAndEnter("radius", "10");
 
     // The base stays on y = 100 between its fillets' tangent points, r / tan(30°) = 17.32051
     // from each base vertex (it would rise if the rounded shape were anchored instead).

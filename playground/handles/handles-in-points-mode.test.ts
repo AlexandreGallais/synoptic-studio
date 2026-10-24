@@ -13,6 +13,7 @@ import {
   selectChoice,
   selectInput,
   typeAndEnter,
+  typeInField,
 } from "../user-actions";
 
 /**
@@ -110,11 +111,12 @@ describe("handles in Points mode (US-022)", () => {
     expect(document.querySelectorAll("#canvas path.curve-handle")).toHaveLength(2);
   });
 
-  it("refuses a value that is not an integer: the side stays straight", () => {
+  it("refuses a value that is no number: the side stays straight, 0 shown again", () => {
     clickElement("handles-switch");
-    typeAndEnter("handle-after-x", "1.5");
+    typeInField("handle-after-x", "abc");
 
     expect(readText("#path-data")).not.toContain("C");
+    expect(selectInput("handle-after-x").value).toBe("0");
   });
 
   it("[F12.AC4] types the ends as x and y on the page, for a point away from the origin", () => {
@@ -214,11 +216,12 @@ describe("handles in Points mode (US-022)", () => {
     expect(isHidden("handles-switch")).toBe(false);
   });
 
-  it("keeps the text of a value that is not an integer in its field", () => {
+  it("[F44.AC4] rounds a fraction typed in a handle's field: 1.5 gives 2, the side curved", () => {
     clickElement("handles-switch");
     typeAndEnter("handle-after-x", "1.5");
 
-    expect(selectInput("handle-after-x").value).toBe("1.5");
+    expect(selectInput("handle-after-x").value).toBe("2");
+    expect(readText("#path-data")).toContain("C");
   });
 
   it("changes nothing when the switch is pressed with no point selected, or the mode list holds no mode", () => {

@@ -50,7 +50,7 @@ export const EPIC_17_F18_LINES: readonly ChecklistLine[] = [
   },
   {
     feature: "F18",
-    todo: "Chrome, Inter not installed: Text tool, Installed fonts, allow; watch the counting line end",
+    todo: "Chrome, Inter not installed: the Text tool, a click on the drawing, Installed fonts, allow; watch the counting line end",
     see: "the counting line ends with the faces refused, if any (“1 faces of the families read refused: 1 unreadable (…)”, US-062); the font list stays greyed, “Reading <family>, the default font: …”, then enabled, that family chosen (US-061)",
   },
   {

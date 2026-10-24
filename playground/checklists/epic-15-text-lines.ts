@@ -7,7 +7,7 @@ import type { ChecklistLine } from "./checklist-line";
 export const EPIC_15_TEXT_LINES: readonly ChecklistLine[] = [
   {
     feature: "F05",
-    todo: "Choose the Text tool, Inter 4.1 installed",
+    todo: "Inter 4.1 installed: choose the Text tool, click the drawing, type “Pump P-101”, Enter, “Running”",
     see: "“Pump P-101” over “Running” in Inter 32, the dashed frame hugging the letters",
   },
   {
@@ -62,8 +62,8 @@ export const EPIC_15_TEXT_LINES: readonly ChecklistLine[] = [
   },
   {
     feature: "F05",
-    todo: "Turn the text, choose the rectangle, then the text again",
-    see: "each tool keeps its own X, Y and angle; the rectangle 120 × 80 as before",
+    todo: "Turn the text by 30, then choose the Rectangle tool and click the drawing",
+    see: "the text stays as it was, turned; a rectangle 100 × 100 added on top, straight, centred on the click, the tool back to the selector",
   },
   {
     feature: "F14",

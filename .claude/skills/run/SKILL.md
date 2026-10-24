@@ -12,7 +12,7 @@ Scope: $ARGUMENTS.
 
 ## The scope
 
-- **Only on the Product Owner's explicit start** in this conversation. They set the scope at the start, as a time (until an hour) or an end (a story, a feature, an epic), so that they decide how much is delivered; the run sets no bound of its own (2026-10-17). Without argument, the scope is the feature `in-progress`, from its next unfinished story up to its `VAL`; with none in progress, propose the next feature: a new feature starts with its refinement, never with code; a new epic with its own, an `SP` from `develop` (`/spike`, ADR-0086), which the Product Owner merges: the auto-merge lets into `develop` only a feature branch or a `REV` (AUD-024), so `npm run story:finish -- develop …` opens its pull request without the label, says it waits for that merge and stops; run again once merged, it cleans up (EN-118).
+- **Only on the Product Owner's explicit start** in this conversation. They set the scope at the start, as a time (until an hour) or an end (a story, a feature, an epic), so that they decide how much is delivered; the run sets no bound of its own (2026-10-17). Without argument, the scope is the feature `in-progress`, from its next unfinished story up to its audit; with none in progress, propose the next feature, its stories known from its epic's research (ADR-0100); a new epic starts with its whole refinement, every question asked at once, an `SP` from `develop` (`/spike`, ADR-0086), which the Product Owner merges: the auto-merge lets into `develop` only a feature branch or a `REV` (AUD-024), so `npm run story:finish -- develop …` opens its pull request without the label, says it waits for that merge and stops; run again once merged, it cleans up (EN-118).
 - **The order guard**: the backlog's order is the one place where the Product Owner sets priorities (2026-10-10), so a run takes only the next feature: the one `in-progress`, else the first feature not `done` in the **Features** table of the first epic not `done` in `docs/backlog/epics/README.md` (table order, not file order). A scope naming another feature, or one of its stories, is refused before anything else: say which feature is next and why, and do nothing. To change it, the Product Owner reorders the tables on `develop` and starts the run again.
 - **A refinement takes two rounds** (2026-10-14), so that the Product Owner can leave after the second: first the questions the research prepared (with the `functional-analyst` only when business rules are to check), each with options and numeric examples, then one open question for every remark, idea and constraint; second, every remaining question at once, again ending with room for remarks. After it the run asks nothing more; a business rule nobody foresaw parks its story.
 
@@ -21,9 +21,9 @@ Scope: $ARGUMENTS.
 1. The first feature of an epic: `target/release/epic-check <epic> <first day>`, the code scanning alerts included; what it finds is fixed or listed for the Product Owner.
 2. **`/run` is the go-ahead**: set the feature `in-progress` and its stories `ready` yourself, a `docs(backlog)` commit on `develop`; never ask the Product Owner to, and ask them only business questions. Then `target/release/run-totals start` (EN-092), which counts the run's duration and tokens from now; a run continued in a new session runs it again, which adds the session and keeps the start.
 3. Record the authorization in `docs/process/journal.md` on `develop`: the scope set, the date, the request in neutral words.
-4. The feature branch `feature/f<nn>-<topic>` exists on `origin`, or is created there from `develop`, once the previous feature merged (ADR-0084), without switching the main checkout; while it is open nothing is pushed to `develop`, the main thread's docs and log rows going to the feature branch: `git fetch origin`, then `git push origin origin/develop:refs/heads/feature/f<nn>-<topic>`. It is never rebased: `develop` enters it by a merge (ADR-0086).
+4. The feature branch `feature/f<nn>-<topic>` is created on `origin` from `develop` once the previous feature is in `develop` (ADR-0100): `git fetch origin`, then `git push origin origin/develop:refs/heads/feature/f<nn>-<topic>`; the main checkout stays on `develop`. The main thread's own docs and log rows reach the feature branch through a small branch of their own merged by a merge commit, never a commit on it, so that the history is bubbles only (ADR-0100, decision 5). It is never rebased: `develop` enters it by a merge (ADR-0086).
 5. `/triage` if issues are open: present them at the next stop, act on none.
-6. List the scope's stories in delivery order; stop now if the next is a library feature's `VAL` or a `REV`, which need the Product Owner (a tooling feature's `VAL` is the agent's, ADR-0072). A story a business question of `docs/domain/README.md` blocks is parked, and the run starts with the next one independent of it.
+6. List the scope's stories in delivery order; stop now if the next is a `REV`, which needs the Product Owner. A story a business question of `docs/domain/README.md` blocks is parked, and the run starts with the next one independent of it.
 
 ## The main thread
 
@@ -88,7 +88,7 @@ A push reaches the Product Owner away from the screen, so it is kept for what on
 
 A run stops only when it must, and says which in its message:
 
-- **its scope ends**: the time set has passed, or the end named is reached; the next story is a library feature's `VAL` or a `REV`, which needs the Product Owner;
+- **its scope ends**: the time set has passed, or the end named is reached; the next story is a `REV`, which needs the Product Owner;
 - **a blocker it cannot get around** and no independent story left: a check still red after three attempts, a tool or an access missing, every story left parked, blocked, or depending on one that is;
 - **the Product Owner says stop**;
 - **the week's usage reaches 90 %**, so that the margin stays the Product Owner's own work until the week resets: `target/release/run-totals should-stop` prints `stop` and exits 1 once `sevenDay.usedPercent` of `.git/metrics/usage.json` reaches it, and lists the parked stories of the checkout it runs in.
@@ -99,20 +99,14 @@ A run stops only when it must, and says which in its message:
 2. A journal entry on `develop`: the stories merged with their pull requests, the findings, the stop's reason.
 3. The message to the Product Owner, in French (`docs/conventions/writing.md`): what was built in plain words, the **test cards to run**, the findings, the questions, what the next step needs from them, the run's table of step 1 as it is, and at a session's end the session report.
 
-## Validation (`VAL`, with the Product Owner)
+## A feature's end (ADR-0100)
 
-The Product Owner may test over several sessions: never wait for them in a loop, and start nothing else until they have finished.
+A feature ends with its audit; it has no `VAL` of its own (2026-10-23, ADR-0100).
 
-1. `target/release/worktree-new VAL-<nnn>`; there, merge `origin/develop` (no force push) and see `check:all` green.
-2. **Prepare**, as the `VAL` tasks:
-   - one test per feature criterion `[F01.ACn]`;
-   - the feature's lines in its epic's checklist (`playground/checklists/`, `?checklist=E15`), drafted by `target/release/val-prepare . <feature>` from its criteria (EN-056): at most 12 per feature, one per thing to see, one per option kept and per decision to confirm, each what to try and what to see after a check box, the panel beside the drawing, no Previous nor Next; when no drawing changes, still one line saying what to check; each tried in a browser first, and tested in happy-dom (every option named, none removed);
-   - the demo page in `docs/guide/` (`/review`), whose **How to try it** names the checklist's address. No new guided steps: those written up to E15 stay in `?guide=epic`.
-3. Tell the Product Owner how to launch it themselves, rather than starting servers for them: `npm run dev` then `http://localhost:5173/?checklist=<epic>`, and `npm run docs:dev` for the demo page.
-4. They try the lines in any order, tick each one seen, and say what they see; compare it with what each line meant to show (`/review`), record the result and each remark in neutral words in the `VAL` story and the demo page, and route the remarks (stories, improvement log, memory).
-5. Last commit: the `VAL` and the feature `done` (feature file, epic table, features index), `Closes:` both, pushed.
-6. **Clean up, then ask** (2026-10-11): before the feature's pull request nothing is stale — every status `done`, the **State** table of `AGENTS.md`, the demo page and the journal up to date, no stash nor stray file. Then tell the Product Owner all is clean and checked, and wait for their yes.
-7. Finish the `VAL` into the feature branch (`npm run story:finish`), then open **one** pull request from the feature branch into `develop`, its body the stories with their pull requests, the evidence and the validation's result, labeled `autonomous` once the Product Owner said the validation is done: GitHub merges it with a merge commit. A **tooling feature** is validated by the agent, which labels it without waiting; the Product Owner may try the lines that concern them. Once merged: delete the feature branch here and on GitHub, its bubble and its name staying in the merge commit, then `target/release/branches-clean`, until `git branch -a` shows only `main` and `develop`, and a journal entry. When the scope goes on, the run starts the next feature.
+1. Once its `AUD` is merged into the feature branch, its status and the feature's `done` in the audit's done commit, open **one** pull request from the feature branch into `develop`, its body the stories with their pull requests and the evidence, labeled `autonomous`: GitHub merges it with a merge commit.
+2. Then bring the main checkout to `develop` (`git switch develop`, `git merge --ff-only origin/develop`, `npm ci`), so that the Product Owner's `npm run dev` shows the latest work; delete the feature branch here and on GitHub (`gh api -X DELETE repos/<owner>/<repo>/git/refs/heads/<branch>`, which runs no checks).
+3. The next feature's branch starts from that `develop`, never from the feature before it.
+4. When the Product Owner comes back they try on `develop` only what changed since their last try: give them the short list of those changes alone.
 
 ## Review (at each return of the Product Owner)
 

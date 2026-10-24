@@ -288,7 +288,7 @@ describe("parseFontFace, measuring with its face (F15.AC4)", () => {
   // over that load and is 57 times the measure alone. No clock is read in the test.
   it(
     "[F15.AC4] [F18.AC10] measures the blocks of 1 000 texts of two lines in under 0.4 s",
-    { timeout: 400 },
+    { tags: ["timing"], timeout: 400 },
     () => {
       const blocks = texts.map((text) =>
         metrics === undefined ? undefined : textBlock(metrics, text, shownLines(metrics, text)),

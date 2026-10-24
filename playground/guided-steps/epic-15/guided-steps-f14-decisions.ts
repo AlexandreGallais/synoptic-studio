@@ -17,8 +17,8 @@ const BANDS = { content: "Hello\nWorld", hasBackground: true } as const;
  */
 export const GUIDED_STEPS_F14_DECISIONS: readonly GuidedStep[] = [
   {
-    explanation: "Width 100001; then 60.",
-    look: "Refused, then “Hello” over “World” in the box 60 × 40: from 0 to 100 000.",
+    explanation: "Width 100001, Enter; then 60, Enter.",
+    look: "Capped at 100 000, then “Hello” over “World” in the box 60 × 40: from 0 to 100 000.",
     title: "F14 · Box from 0 to 100 000 (decision 1)",
     values: createTextBoxStepValues({ boxHeight: 40, boxWidth: 60, isInBox: true }),
   },
@@ -47,7 +47,7 @@ export const GUIDED_STEPS_F14_DECISIONS: readonly GuidedStep[] = [
   },
   {
     explanation: "Nothing to type: a box 50 × 5. Then Max lines 100001.",
-    look: "“Hell…”: one line at least, though 19.36 is taller than 5; then refused.",
+    look: "“Hell…”: one line at least, though 19.36 is taller than 5; then taken at the most, 100 000, still one line.",
     title: "F14 · One line at least (decision 6)",
     values: createTextBoxStepValues({ boxHeight: 5, boxWidth: 50, isInBox: true }),
   },
@@ -146,7 +146,7 @@ export const GUIDED_STEPS_F14_DECISIONS: readonly GuidedStep[] = [
   },
   {
     explanation: "Letter spacing 10; then Width 160.",
-    look: "The spacing moves nothing; at 160 the box's turned corner stays put: X 47, Y 61, that corner (US-054).",
+    look: "The spacing moves nothing; at 160 the box's turned corner stays put, X 47, Y 61 its straight box (AUD-040).",
     title: "F14 · A turned box resized in place (US-038)",
     values: createTextBoxStepValues({
       angle: 23,

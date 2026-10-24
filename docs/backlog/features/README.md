@@ -36,3 +36,16 @@
 | [F32](./E17-F32-reports-that-say-what-happened.md) | E17 | Reports that say what happened | done |
 | [F33](./E17-F33-the-checks-ret-004-listed.md) | E17 | The checks RET-004 listed | done |
 | [F34](./E17-F34-the-use-of-each-workflow.md) | E17 | The use of each workflow | done |
+| [F35](./E02-F35-several-shapes-on-one-drawing.md) | E02 | Several shapes on one drawing | in-progress |
+| [F36](./E02-F36-draw-pick-and-remove-shapes.md) | E02 | Draw and pick shapes | in-progress |
+| [F37](./E02-F37-select-shapes.md) | E02 | Select shapes | done |
+| [F38](./E02-F38-the-panel-for-several-shapes.md) | E02 | The panel for several shapes | done |
+| [F39](./E02-F39-move-shapes-on-integers.md) | E02 | Move shapes on integers | done |
+| [F40](./E02-F40-undo-and-redo.md) | E02 | Undo and redo | done |
+| [F41](./E02-F41-the-list-of-steps.md) | E02 | The list of the history's steps and a history kept fast | done |
+| [F42](./E02-F42-zoom-and-pan.md) | E02 | Zoom and pan | done |
+| [F43](./E02-F43-corrections-from-the-first-try.md) | E02 | Corrections from the Product Owner's first try | done |
+| [F44](./E02-F44-corrections-from-the-second-try.md) | E02 | Corrections from the Product Owner's second try | done |
+| [F45](./E02-F45-a-handles-y-stepped-by-one.md) | E02 | A handle's Before y stepped by one | done |
+| [F46](./E02-F46-moves-on-integers-and-the-rectangle.md) | E02 | Moves on integers, the selection rectangle and the canvas resized | done |
+| [F47](./E02-F47-space-left-held-after-cmd.md) | E02 | Space never left held after Cmd | done |

@@ -1,7 +1,6 @@
 import { readNumber, writeInputValue } from "../page";
 
-/** Largest width, height or radius the interface accepts, in pixels (Q20): a larger one is capped. */
-const MAX_SIZE = 100_000;
+import { MAX_SIZE } from "./max-size";
 
 /** Inputs capped at `MAX_SIZE`. */
 const SIZE_INPUTS = ["width", "height", "radius", "point-radius"];

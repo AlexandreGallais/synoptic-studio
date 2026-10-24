@@ -50,7 +50,7 @@ fn indent(source: &Source, offset: u32) -> String {
 fn line_group(source: &Source, comment: Comment) -> Vec<Comment> {
     let mut group = vec![comment];
     loop {
-        let current = group[0];
+        let current = &group[0];
         let jsdoc::Before::Comment(previous) = jsdoc::before(source, current.span.start) else {
             break;
         };
@@ -103,9 +103,9 @@ impl ConvertToJsdocComments {
             return None;
         }
         let group = if comment.is_block() {
-            vec![comment]
+            vec![comment.clone()]
         } else {
-            line_group(source, comment)
+            line_group(source, comment.clone())
         };
         let mut finding = source.finding(
             self.name(),
@@ -149,7 +149,7 @@ impl ConvertToJsdocComments {
             let insert = target.kind().span().start;
             let insertion = format!(
                 "{}*/\n{}",
-                opening(source, &indent, &[comment]),
+                opening(source, &indent, std::slice::from_ref(&comment)),
                 indent.get(1..).unwrap_or_default()
             );
             finding.fix = Some(Fix {
