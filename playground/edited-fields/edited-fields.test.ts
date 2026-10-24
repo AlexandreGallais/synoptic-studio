@@ -270,7 +270,7 @@ describe("a value typed in one shape's fields, relative or fixed (US-085)", () =
   it.each(["abc", "-25+12", ""])(
     "[F44.AC2] refuses %j in Width, no number, the rectangle 120 wide and the field showing 120",
     (typed) => {
-      // A word, an expression (E18's) or nothing is no number.
+      // A word, an expression (E24's) or nothing is no number.
       typeAndEnter("width", typed);
 
       expect(readShapeModel().width).toBe(120);

@@ -10,7 +10,7 @@ const PANEL_NUMBER = /^(?<sign>[+-]?)(?:\d+(?:[,.]\d*)?|[,.]\d+)$/u;
  * field to round once its value is computed; a comma is a decimal separator as a point is,
  * `1,5` reading 1.5 (Product Owner, 2026-10-24). An empty field, a number too large for a double
  * (`Infinity`) or any other text, an exponent, a unit or an expression such as `-25+12`
- * included (E18's), is refused, as no number.
+ * included (E24's), is refused, as no number.
  *
  * @kind format
  * @param typed - the text of the field
