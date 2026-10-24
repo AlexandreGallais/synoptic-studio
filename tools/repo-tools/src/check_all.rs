@@ -59,6 +59,22 @@ pub const AFTER_LANES: &str = "test:timings";
 /// How a script starts when it takes the heavy lock, which `check:all` holds for its lanes.
 const HEAVY_LOCK: &str = "cargo run --release -q -p heavy-lock -- ";
 
+/// The script of the test lane, which a story branch's push narrows to the tests its change can
+/// affect ([`related_tests_command`]).
+pub const TEST_SCRIPT: &str = "test";
+
+/// What every test reads beside its imports, so that a change to one runs every test: Vitest's
+/// configuration, the packages, the TypeScript settings, and the global setup with the font file
+/// it reads for every test file (EN-089).
+const WHOLE_TESTS_INPUTS: &[&str] = &[
+    "vite.config.ts",
+    "package.json",
+    "package-lock.json",
+    "tsconfig.json",
+    "tests/font-files-setup.ts",
+    "tests/inter-regular.ttf",
+];
+
 /// What the docs lane reads: the site, the library its API pages come from, the playground built
 /// into it, the API pages' generator and the Rust toolchain and crates it is built with (an Oxc
 /// bump changes its pages), and the build's own configuration and packages.
@@ -107,6 +123,85 @@ pub fn lanes_to_run(paths: Option<&[String]>) -> Vec<&'static [&'static str]> {
         .copied()
         .filter(|lane| !skipped.iter().any(|group| group.contains(lane)))
         .collect()
+}
+
+/// A path as one word of `sh`: in single quotes, each quote inside closed, escaped and opened
+/// again.
+fn quoted(path: &str) -> String {
+    format!("'{}'", path.replace('\'', r"'\''"))
+}
+
+/// The command of the test lane on a story branch's push (decided 2026-10-24, REV-008): Vitest's
+/// `related` (`REF-VITEST-RELATED`) on the files changed against the base, through the static
+/// imports of the module graph, and on the repository's own tests given (`tests/`, `scripts/`),
+/// which read files through the file system rather than imports, so that a change of the docs
+/// they check runs them; the timing tests left out, as `npm run test` does, and no coverage: a
+/// partial run cannot hold the floor of 100 %, which the full run keeps for a feature branch,
+/// `develop` and the CI. `None`, the whole `test` script, off a story branch, for an unknown
+/// change, for a change to an input every test reads ([`WHOLE_TESTS_INPUTS`]), or with no file
+/// to give.
+#[must_use]
+pub fn related_tests_command(
+    is_story: bool,
+    paths: Option<&[String]>,
+    repository_tests: &[String],
+) -> Option<String> {
+    let paths = paths.filter(|paths| is_story && !touches(paths, WHOLE_TESTS_INPUTS))?;
+    let mut files: Vec<&str> = paths.iter().map(String::as_str).collect();
+
+    for test in repository_tests {
+        if !files.contains(&test.as_str()) {
+            files.push(test);
+        }
+    }
+
+    // `vitest related` without a file: what it runs is not said, so every test runs.
+    if files.is_empty() {
+        return None;
+    }
+
+    let words: Vec<String> = files.iter().map(|path| quoted(path)).collect();
+
+    Some(format!(
+        "vitest related --run --passWithNoTests --tags-filter='!timing' {}",
+        words.join(" ")
+    ))
+}
+
+/// The line saying the test lane runs only the tests related to the change.
+#[must_use]
+pub fn related_tests_line(base: &str) -> String {
+    format!(
+        "- test: only the tests related to the change against {base}, without coverage; the full \
+         run on a feature branch, develop and the CI"
+    )
+}
+
+/// Whether a branch is a story's, `<type>/<id>-<topic>` (ADR-0038): its push may run only the
+/// tests its change affects; a feature branch, `develop`, `main` or a detached head run them all.
+#[must_use]
+pub fn is_story_branch(branch: &str) -> bool {
+    shared_files::shared::story_of(branch).is_some()
+}
+
+/// The current branch, `HEAD` when it is detached.
+///
+/// # Errors
+/// When Git fails.
+pub fn current_branch(root: &Path) -> io::Result<String> {
+    Ok(git_lines(root, &["rev-parse", "--abbrev-ref", "HEAD"])?
+        .into_iter()
+        .next()
+        .unwrap_or_else(|| "HEAD".to_owned()))
+}
+
+/// The repository's own tests, which read its files beside their imports: every test file of
+/// `tests/` and `scripts/` Git tracks.
+///
+/// # Errors
+/// When Git fails.
+pub fn repository_tests(root: &Path) -> io::Result<Vec<String>> {
+    git_lines(root, &["ls-files", "tests/*.test.ts", "scripts/*.test.ts"])
 }
 
 /// The remote branches a branch may have started from (ADR-0072): `origin/develop` and the feature
@@ -378,10 +473,7 @@ pub fn changed_since(root: &Path, fork: &str) -> io::Result<Vec<String>> {
 /// # Errors
 /// When Git fails.
 pub fn change_against_base(root: &Path) -> io::Result<Option<(String, Vec<String>)>> {
-    let branch = git_lines(root, &["rev-parse", "--abbrev-ref", "HEAD"])?
-        .into_iter()
-        .next()
-        .unwrap_or_else(|| "HEAD".to_owned());
+    let branch = current_branch(root)?;
     let remotes = git_lines(
         root,
         &[
@@ -432,6 +524,89 @@ mod tests {
     fn f19_ac9_builds_the_release_binaries_once_before_the_lanes() {
         assert_eq!(BEFORE_LANES, "rust:build");
         assert!(!LANES.iter().any(|lane| lane.contains(&BEFORE_LANES)));
+    }
+
+    #[test]
+    fn runs_on_a_story_branch_only_the_tests_related_to_its_change() {
+        let change = owned(&["src/math/sequence/scan.ts", "docs/domain/x.md"]);
+        let ours = owned(&["tests/backlog.test.ts", "scripts/x.test.ts"]);
+
+        // The changed files, then the repository's own tests, each quoted.
+        assert_eq!(
+            related_tests_command(true, Some(&change), &ours).as_deref(),
+            Some(
+                "vitest related --run --passWithNoTests --tags-filter='!timing' \
+                 'src/math/sequence/scan.ts' 'docs/domain/x.md' 'tests/backlog.test.ts' \
+                 'scripts/x.test.ts'"
+            )
+        );
+        // A repository test changed is named once; a quote in a path stays one word.
+        assert_eq!(
+            related_tests_command(
+                true,
+                Some(&owned(&["tests/backlog.test.ts", "a'b.ts"])),
+                &ours
+            )
+            .as_deref(),
+            Some(
+                "vitest related --run --passWithNoTests --tags-filter='!timing' \
+                 'tests/backlog.test.ts' 'a'\\''b.ts' 'scripts/x.test.ts'"
+            )
+        );
+        // Nothing changed: the repository's tests alone; no file at all, every test.
+        assert_eq!(
+            related_tests_command(true, Some(&[]), &ours).as_deref(),
+            Some(
+                "vitest related --run --passWithNoTests --tags-filter='!timing' \
+                 'tests/backlog.test.ts' 'scripts/x.test.ts'"
+            )
+        );
+        assert_eq!(related_tests_command(true, Some(&[]), &[]), None);
+    }
+
+    #[test]
+    fn runs_every_test_off_a_story_branch_or_for_an_input_of_every_test() {
+        let change = owned(&["src/math/sequence/scan.ts"]);
+
+        // A feature branch, develop, main; an unknown change (the CI, no base).
+        assert_eq!(related_tests_command(false, Some(&change), &[]), None);
+        assert_eq!(related_tests_command(true, None, &[]), None);
+        for input in [
+            "vite.config.ts",
+            "package.json",
+            "package-lock.json",
+            "tsconfig.json",
+            "tests/font-files-setup.ts",
+            "tests/inter-regular.ttf",
+        ] {
+            let both = owned(&["src/math/sequence/scan.ts", input]);
+
+            assert_eq!(
+                related_tests_command(true, Some(&both), &[]),
+                None,
+                "{input}"
+            );
+        }
+        assert_eq!(
+            related_tests_line("origin/feature/f47-x"),
+            "- test: only the tests related to the change against origin/feature/f47-x, without \
+             coverage; the full run on a feature branch, develop and the CI"
+        );
+    }
+
+    #[test]
+    fn reads_a_story_branch_by_its_name() {
+        assert!(is_story_branch("build/rev-008-pre-push-by-change"));
+        assert!(is_story_branch("fix/us-091-space"));
+        for other in [
+            "feature/f47-space",
+            "develop",
+            "main",
+            "HEAD",
+            "dependabot/npm/x",
+        ] {
+            assert!(!is_story_branch(other), "{other}");
+        }
     }
 
     #[test]

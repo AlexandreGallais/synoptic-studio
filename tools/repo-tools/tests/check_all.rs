@@ -6,6 +6,7 @@
 
 use std::env;
 use std::fs;
+use std::os::unix::fs::PermissionsExt;
 use std::path::{Path, PathBuf};
 use std::process::Output;
 
@@ -78,10 +79,27 @@ fn repository(name: &str, scripts: &[(&str, &str)]) -> PathBuf {
     folder
 }
 
-/// `check-all` run in a folder, in the CI unless told otherwise.
+/// `check-all` run in a folder, in the CI unless told otherwise, `vitest` a stub that writes its
+/// arguments into `.git/vitest-args`, a folder Git does not list among the changes.
 fn check_all(folder: &Path, in_ci: bool) -> Output {
     let mut check = command(env!("CARGO_BIN_EXE_check-all"));
+    let stubs = folder.join(".git/stubs");
 
+    fs::create_dir_all(&stubs).expect("stubs");
+    fs::write(
+        stubs.join("vitest"),
+        "#!/bin/sh\necho \"$*\" > .git/vitest-args\n",
+    )
+    .expect("stub");
+    fs::set_permissions(stubs.join("vitest"), fs::Permissions::from_mode(0o755)).expect("mode");
+    check.env(
+        "PATH",
+        format!(
+            "{}:{}",
+            stubs.display(),
+            env::var("PATH").unwrap_or_default()
+        ),
+    );
     check.current_dir(folder);
     if in_ci {
         check.env("CI", "1");
@@ -252,6 +270,62 @@ fn f19_ac8_skips_the_docs_lane_for_a_story_that_changed_none_of_its_inputs() {
     assert!(!text.contains("docs:build "), "{text}");
     assert_eq!(again.status.code(), Some(1));
     assert!(stdout(&again).contains("✗ docs:build "));
+}
+
+#[test]
+fn runs_on_a_story_branch_only_the_tests_related_to_its_change() {
+    let root = scratch("related");
+    let origin = root.join("origin.git");
+    let folder = repository("related-work", &[("test", "echo all > .git/vitest-args")]);
+
+    git(
+        &root,
+        &["init", "-q", "--bare", origin.to_str().expect("path")],
+    );
+    fs::create_dir_all(folder.join("tests")).expect("folder");
+    fs::write(folder.join("tests/docs.test.ts"), "\n").expect("test");
+    git(&folder, &["add", "package.json", "tests/docs.test.ts"]);
+    git(&folder, &["commit", "-q", "-m", "start"]);
+    git(
+        &folder,
+        &["remote", "add", "origin", origin.to_str().expect("path")],
+    );
+    git(&folder, &["push", "-q", "origin", "HEAD:develop"]);
+    git(&folder, &["fetch", "-q", "origin"]);
+    git(&folder, &["switch", "-q", "-c", "fix/us-1-scan"]);
+    fs::create_dir_all(folder.join("src")).expect("folder");
+    fs::write(folder.join("src/scan.ts"), "\n").expect("file");
+
+    let output = check_all(&folder, false);
+    let text = stdout(&output);
+    let related = fs::read_to_string(folder.join(".git/vitest-args")).expect("args");
+
+    // `vite.config.ts` changed: every input of every test, the whole script.
+    fs::write(folder.join("vite.config.ts"), "\n").expect("config");
+    let whole = check_all(&folder, false);
+    let all = fs::read_to_string(folder.join(".git/vitest-args")).expect("args");
+
+    // The same change on a feature branch: the whole script too.
+    fs::remove_file(folder.join("vite.config.ts")).expect("removed");
+    git(&folder, &["switch", "-q", "-c", "feature/f1-scan"]);
+    check_all(&folder, false);
+    let feature = fs::read_to_string(folder.join(".git/vitest-args")).expect("args");
+
+    fs::remove_dir_all(&root).expect("cleaned");
+    fs::remove_dir_all(&folder).expect("cleaned");
+    assert!(output.status.success(), "{text}");
+    assert!(text.contains(
+        "- test: only the tests related to the change against origin/develop, without coverage"
+    ));
+    // The change, then the repository's own test, which reads files beside its imports.
+    assert_eq!(
+        related,
+        "related --run --passWithNoTests --tags-filter=!timing src/scan.ts tests/docs.test.ts\n"
+    );
+    assert!(whole.status.success());
+    assert!(!stdout(&whole).contains("- test: only"));
+    assert_eq!(all, "all\n");
+    assert_eq!(feature, "all\n");
 }
 
 #[test]
