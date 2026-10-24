@@ -65,7 +65,13 @@ fn report(options: &[String]) -> Result<String, String> {
     Ok(metrics_report(&inputs, &exact))
 }
 
+/// The usage, printed on `--help` or `-h` (REV-009).
+const USAGE: &str = "usage: target/release/metrics [--since <YYYY-MM-DD>]";
+
 fn main() -> ExitCode {
+    if let Some(code) = tool_use::usage(&std::env::args().skip(1).collect::<Vec<_>>(), USAGE) {
+        return code;
+    }
     let options: Vec<String> = env::args().skip(1).collect();
     let mode = if options.iter().any(|option| option == "--since") {
         "--since"

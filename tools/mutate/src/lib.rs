@@ -6,5 +6,5 @@
 mod mutations;
 mod runner;
 
-pub use mutations::{Kind, Mutation, code_mask, mutations, selected};
+pub use mutations::{Kind, Language, Mutation, code_mask, mutations, selected};
 pub use runner::{Outcome, Request, VITEST_RELATED, Verdict, run, summary, test_file};

@@ -69,7 +69,13 @@ fn check_unused() -> u8 {
     u8::from(!findings.is_empty())
 }
 
+/// The usage, printed on `--help` or `-h` (REV-009).
+const USAGE: &str = "usage: dependencies outdated|unused";
+
 fn main() -> std::process::ExitCode {
+    if let Some(code) = tool_use::usage(&std::env::args().skip(1).collect::<Vec<_>>(), USAGE) {
+        return code;
+    }
     let command = env::args().nth(1).unwrap_or_default();
 
     tool_use::run("dependencies", &command, || match command.as_str() {

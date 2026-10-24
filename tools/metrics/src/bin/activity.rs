@@ -70,7 +70,13 @@ fn activity(arguments: &[String]) -> Result<String, String> {
     ))
 }
 
+/// The usage, printed on `--help` or `-h` (REV-009).
+const USAGE: &str = "usage: target/release/activity [count]";
+
 fn main() -> ExitCode {
+    if let Some(code) = tool_use::usage(&std::env::args().skip(1).collect::<Vec<_>>(), USAGE) {
+        return code;
+    }
     let arguments: Vec<String> = env::args().skip(1).collect();
 
     tool_use::run("activity", "", || match activity(&arguments) {

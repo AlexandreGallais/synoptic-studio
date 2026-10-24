@@ -72,6 +72,9 @@ fn output(database: &Connection, command: &str, rest: &[String]) -> Result<Strin
 }
 
 fn main() -> ExitCode {
+    if let Some(code) = tool_use::usage(&std::env::args().skip(1).collect::<Vec<_>>(), USAGE) {
+        return code;
+    }
     let arguments: Vec<String> = env::args().skip(1).collect();
     let (command, rest) = arguments
         .split_first()

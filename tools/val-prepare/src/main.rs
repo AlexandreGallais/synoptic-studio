@@ -7,7 +7,13 @@ use std::process::ExitCode;
 
 use val_prepare::{feature_id, plan};
 
+/// The usage, printed on `--help` or `-h` (REV-009).
+const USAGE: &str = "usage: target/release/val-prepare . <feature, F18>";
+
 fn main() -> ExitCode {
+    if let Some(code) = tool_use::usage(&std::env::args().skip(1).collect::<Vec<_>>(), USAGE) {
+        return code;
+    }
     let args: Vec<String> = std::env::args().skip(1).collect();
 
     tool_use::run("val-prepare", "", || prepare(&args))

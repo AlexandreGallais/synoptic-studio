@@ -71,17 +71,96 @@ fn is_command_word(word: &str) -> bool {
         && !word.contains('=')
 }
 
-/// What one segment of a shell command runs: its command words, empty for a directory change or
-/// variables only.
-fn segment_key(segment: &str) -> String {
-    let words: Vec<&str> = segment
-        .split(crate::transcript::is_js_space)
-        .filter(|word| is_command_word(word))
+/// One segment of a command line: whether `||` opened it, and its words, each quoted text kept
+/// whole with its quotes.
+type Segment = (bool, Vec<String>);
+
+/// The segments of a command line, split at `&&`, `||`, `;` and line breaks outside quotes, into
+/// words split at spaces outside quotes; a backslash keeps the next character (REV-009: a `;` of
+/// a quoted message named `the` and `to`).
+fn segments(command: &str) -> Vec<Segment> {
+    let mut found: Vec<Segment> = vec![(false, Vec::new())];
+    let mut word = String::new();
+    let mut quote: Option<char> = None;
+    let mut characters = command.chars().peekable();
+    let end_word = |found: &mut Vec<Segment>, word: &mut String| {
+        if !word.is_empty()
+            && let Some((_, words)) = found.last_mut()
+        {
+            words.push(std::mem::take(word));
+        }
+    };
+
+    while let Some(character) = characters.next() {
+        match (quote, character) {
+            (Some(open), _) if character == open => {
+                word.push(character);
+                quote = None;
+            }
+            (None, '"' | '\'') => {
+                word.push(character);
+                quote = Some(character);
+            }
+            (_, '\\') => {
+                word.push(character);
+                word.extend(characters.next());
+            }
+
+            (None, '\n' | ';') => {
+                end_word(&mut found, &mut word);
+                found.push((false, Vec::new()));
+            }
+            (None, '&' | '|') if characters.peek() == Some(&character) => {
+                characters.next();
+                end_word(&mut found, &mut word);
+                found.push((character == '|', Vec::new()));
+            }
+            (None, space) if crate::transcript::is_js_space(space) => {
+                end_word(&mut found, &mut word);
+            }
+            // Inside quotes every character is the word's, a separator included.
+            _ => word.push(character),
+        }
+    }
+    end_word(&mut found, &mut word);
+    found
+}
+
+/// What one segment runs: its command words, empty for a directory change, a comment or
+/// variables only; a negation `!` and the assignments before the program left out, and after
+/// `||` an `exit` and its code, which run only when the command before fails: the words after
+/// them are the next command, of a summary whose line break became a space (REV-009).
+fn segment_key(is_after_or: bool, words: &[String]) -> String {
+    let mut words: Vec<&str> = words
+        .iter()
+        .map(String::as_str)
+        .skip_while(|word| *word == "!" || (word.contains('=') && !word.starts_with('-')))
         .collect();
 
-    if words.first() == Some(&"cd") {
+    if is_after_or && words.first() == Some(&"exit") {
+        let code = words
+            .get(1)
+            .is_some_and(|code| code.bytes().all(|byte| byte.is_ascii_digit()));
+        words.drain(..if code { 2 } else { 1 });
+        return segment_key(
+            false,
+            &words
+                .iter()
+                .map(|&word| word.to_owned())
+                .collect::<Vec<_>>(),
+        );
+    }
+    if words
+        .first()
+        .is_none_or(|first| *first == "cd" || first.starts_with('#'))
+    {
         return String::new();
     }
+
+    let words: Vec<&str> = words
+        .into_iter()
+        .filter(|word| is_command_word(word))
+        .collect();
 
     words[..word_count(&words).min(words.len())].join(" ")
 }
@@ -89,23 +168,12 @@ fn segment_key(segment: &str) -> String {
 /// What a shell command runs, without its directory change, variables, flags and arguments: the
 /// first segment between `&&`, `||`, `;` and line breaks that runs something, an `exit` after `||`
 /// left out, since it runs only when the command before it fails: the brief's
-/// `cd "<worktree>" || exit 9` names the command after it (EN-120).
+/// `cd "<worktree>" || exit 9` names the command after it (EN-120), on the same line too.
 #[must_use]
 pub fn command_key(command: &str) -> String {
-    command
-        .replace("&&", "\n")
-        .replace("||", "\n\u{0}")
-        .replace(';', "\n")
-        .split('\n')
-        .filter_map(|segment| {
-            let (is_after_or, text) = match segment.strip_prefix('\u{0}') {
-                Some(rest) => (true, rest),
-                None => (false, segment),
-            };
-            let key = segment_key(text.trim_matches(crate::transcript::is_js_space));
-
-            (!(is_after_or && key == "exit")).then_some(key)
-        })
+    segments(command)
+        .iter()
+        .map(|(is_after_or, words)| segment_key(*is_after_or, words))
         .find(|key| !key.is_empty())
         .unwrap_or_default()
 }

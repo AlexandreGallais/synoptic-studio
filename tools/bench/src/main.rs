@@ -61,6 +61,9 @@ fn run_once(command: &[String]) -> Result<Run, String> {
 }
 
 fn main() -> std::process::ExitCode {
+    if let Some(code) = tool_use::usage(&std::env::args().skip(1).collect::<Vec<_>>(), USAGE) {
+        return code;
+    }
     tool_use::run("bench", "", || {
         let arguments: Vec<String> = env::args().skip(1).collect();
 

@@ -107,7 +107,13 @@ fn run(arguments: Vec<String>) -> Result<u8, String> {
     Ok(u8::from(!output.is_empty()))
 }
 
+/// The usage, printed on `--help` or `-h` (REV-009).
+const USAGE: &str = "usage: target/release/secret-scan [--staged | <files>…]";
+
 fn main() -> std::process::ExitCode {
+    if let Some(code) = tool_use::usage(&std::env::args().skip(1).collect::<Vec<_>>(), USAGE) {
+        return code;
+    }
     let arguments: Vec<String> = env::args().skip(1).collect();
     let subcommand = if arguments.first().map(String::as_str) == Some("--staged") {
         "--staged"

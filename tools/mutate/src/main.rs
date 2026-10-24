@@ -13,7 +13,14 @@ use mutate::{Outcome, Request, VITEST_RELATED, Verdict, run, summary};
 /// Time a mutated run may last beyond four times the unchanged one.
 const GRACE: Duration = Duration::from_secs(30);
 
+/// The usage, printed on `--help` or `-h` (REV-009).
+const USAGE: &str =
+    "usage: npm run mutate -- [--all] <files…> [-- <test command with {file} or {test}>]";
+
 fn main() -> ExitCode {
+    if let Some(code) = tool_use::usage(&std::env::args().skip(1).collect::<Vec<_>>(), USAGE) {
+        return code;
+    }
     let argv: Vec<String> = env::args().skip(1).collect();
     let mode = if argv.iter().any(|argument| argument == "--all") {
         "--all"
@@ -41,9 +48,7 @@ fn mutate(argv: &[String]) -> u8 {
         .unwrap_or(&default);
 
     if files.is_empty() {
-        eprintln!(
-            "usage: npm run mutate -- [--all] <files…> [-- <test command with {{file}} or {{test}}>]"
-        );
+        eprintln!("{USAGE}");
         return 2;
     }
     let Ok(dir) = env::current_dir() else {

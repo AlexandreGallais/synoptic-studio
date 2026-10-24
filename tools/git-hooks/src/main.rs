@@ -237,6 +237,9 @@ fn run_after_pull(hook: &str, options: &[String]) -> u8 {
 }
 
 fn main() -> ExitCode {
+    if let Some(code) = tool_use::usage(&std::env::args().skip(1).collect::<Vec<_>>(), USAGE) {
+        return code;
+    }
     let arguments: Vec<String> = env::args().skip(1).collect();
     let command = arguments.first().map_or("", String::as_str);
     let options = arguments.get(1..).unwrap_or_default();

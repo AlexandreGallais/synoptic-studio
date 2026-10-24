@@ -200,9 +200,13 @@ fn stops_a_mutation_that_never_ends() {
 
 #[test]
 fn skips_a_file_whose_tests_fail_unchanged_or_that_is_not_in_the_repository() {
+    // The cause is the test command's last lines (REV-009): before, every skip read the same.
     let project = Project::new(&[
         ("lib.mjs", "export const one = () => 1;\n"),
-        ("test.mjs", "process.exit(1);\n"),
+        (
+            "test.mjs",
+            "console.log('ran');\nconsole.error('no module ./meet-scale');\nprocess.exit(1);\n",
+        ),
     ]);
     let outcomes = project.mutate("lib.mjs", "test.mjs", false);
 
@@ -210,7 +214,9 @@ fn skips_a_file_whose_tests_fail_unchanged_or_that_is_not_in_the_repository() {
         outcomes,
         [Outcome::Skipped {
             file: "lib.mjs".to_owned(),
-            reason: "its related tests fail, or none was found, before any mutation".to_owned(),
+            reason: "its related tests fail, or none was found, before any mutation; the \
+                     command's last lines:\n    ran\n    no module ./meet-scale"
+                .to_owned(),
         }]
     );
     assert!(matches!(
@@ -249,5 +255,36 @@ fn runs_only_the_file_s_own_test_file_when_asked() {
     assert_eq!(
         verdicts(&run(&request, &mut |_| {}).unwrap()),
         [(Kind::Constant, Verdict::Caught)]
+    );
+}
+
+#[test]
+fn rev009_copies_the_untracked_files_and_leaves_the_ignored_ones() {
+    // `extra.mjs` is new, never added: the copy held tracked files only, so the test importing it
+    // failed and the file was skipped (three incident cards). `secret.txt` is ignored: the test
+    // fails if the copy holds it.
+    let project = Project::new(&[
+        (".gitignore", "secret.txt\n"),
+        (
+            "lib.mjs",
+            "import { two } from './extra.mjs';\nexport const one = () => two - 1;\n",
+        ),
+        (
+            "test.mjs",
+            "import { existsSync } from 'node:fs';\nimport { one } from './lib.mjs';\nif (one() !== 1 || existsSync('secret.txt')) { process.exit(1); }\n",
+        ),
+    ]);
+    project.write(&[
+        ("extra.mjs", "export const two = 2;\n"),
+        ("secret.txt", "kept out\n"),
+    ]);
+
+    // `-` to `+` gives 3, caught.
+    assert_eq!(
+        verdicts(&project.mutate("lib.mjs", "test.mjs", false)),
+        [
+            (Kind::Arithmetic, Verdict::Caught),
+            (Kind::Constant, Verdict::Caught)
+        ]
     );
 }

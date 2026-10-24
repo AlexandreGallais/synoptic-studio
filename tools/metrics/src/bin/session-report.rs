@@ -98,7 +98,14 @@ fn report(arguments: &[String]) -> Result<String, String> {
     ))
 }
 
+/// The usage, printed on `--help` or `-h` (REV-009).
+const USAGE: &str =
+    "usage: target/release/session-report [session id] [--all] [--markdown] [--run]";
+
 fn main() -> ExitCode {
+    if let Some(code) = tool_use::usage(&std::env::args().skip(1).collect::<Vec<_>>(), USAGE) {
+        return code;
+    }
     let arguments: Vec<String> = env::args().skip(1).collect();
     let mode = ["--run", "--all"]
         .into_iter()

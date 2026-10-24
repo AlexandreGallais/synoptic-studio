@@ -137,7 +137,13 @@ fn run(words: &[String]) -> Result<String, String> {
     }
 }
 
+/// The usage, printed on `--help` or `-h` (REV-009).
+const USAGE: &str = "usage: run-totals start [session] | end | report | status | should-stop";
+
 fn main() -> ExitCode {
+    if let Some(code) = tool_use::usage(&std::env::args().skip(1).collect::<Vec<_>>(), USAGE) {
+        return code;
+    }
     let words: Vec<String> = env::args().skip(1).collect();
     let subcommand = words.first().map_or("", String::as_str);
 

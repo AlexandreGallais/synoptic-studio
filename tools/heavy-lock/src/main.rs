@@ -32,7 +32,13 @@ fn git_common_dir() -> io::Result<PathBuf> {
     }
 }
 
+/// The usage, printed on `--help` or `-h` (REV-009).
+const USAGE: &str = "usage: heavy-lock [--lock <name>] <command> [arguments…]";
+
 fn main() -> ExitCode {
+    if let Some(code) = tool_use::usage(&std::env::args().skip(1).collect::<Vec<_>>(), USAGE) {
+        return code;
+    }
     let argv: Vec<String> = env::args().skip(1).collect();
     // What it runs: the npm script that started it (`check:all`), else the command's program.
     let script = env::var("npm_lifecycle_event").unwrap_or_default();

@@ -34,6 +34,37 @@ fn f32_ac1_names_the_command_after_the_brief_s_cd_or_exit() {
 }
 
 #[test]
+fn rev009_names_the_command_of_a_summary_whose_line_breaks_became_spaces() {
+    // The hook's summary writes a call on one line: `cd "<w>" || exit 9\n<command>` reads
+    // `cd "<w>" || exit 9 <command>`, which named nothing, 224 calls and 45 min since 2026-10-24,
+    // or named the next command after a `;`: a `done` commit's push counted as `backlog-status`.
+    assert_eq!(
+        command_key("cd \"/a b/w\" || exit 9 git push origin --delete x"),
+        "git push"
+    );
+    assert_eq!(
+        command_key(
+            "cd \"/w\" || exit 9 target/release/move-rows b | grep -v x; target/release/backlog-status US-090 done"
+        ),
+        "target/release/move-rows"
+    );
+    assert_eq!(command_key("cd \"/w\" || exit 9 S=/tmp/x; ls"), "ls");
+    assert_eq!(command_key("make || exit"), "make");
+}
+
+#[test]
+fn rev009_reads_no_command_inside_a_quoted_text_and_skips_comments_and_negations() {
+    // A `;` inside quotes splits no command: `the` and `to` were named from such texts.
+    assert_eq!(
+        command_key("S=\"a; the b\"; T='c && to d'; npx vitest run x"),
+        "npx vitest"
+    );
+    assert_eq!(command_key("# the check first\nnpm run fix"), "npm run fix");
+    assert_eq!(command_key("! grep -q x f"), "grep");
+    assert_eq!(command_key("A=1 B=2 cargo test -p x"), "cargo");
+}
+
+#[test]
 fn is_empty_when_nothing_runs() {
     assert_eq!(command_key("cd \"/repo\""), "");
     assert_eq!(command_key(""), "");

@@ -1,4 +1,6 @@
-//! `worktree-new <ID> [--type <type>]` (`target/release/worktree-new US-061`): fetches GitHub, adds
+//! `worktree-new <ID> [--type <type>] [--topic <topic>]` (`target/release/worktree-new US-061`):
+//! `--topic` names a bubble's branch, and starts from `develop` an epic's spike or a review whose
+//! file no branch holds yet (REV-009). It fetches GitHub, adds
 //! `.claude/worktrees/us-061` on `feat/us-061-<topic>` from the story's feature branch — the one of
 //! `origin` holding the story's file when the checkout lacks it (`git ls-tree`, EN-118) — and links
 //! the main checkout's `node_modules` into it, then sets the hooks folder `.githooks` if it is not
@@ -23,13 +25,22 @@ fn git(arguments: &[&str]) -> Result<String, String> {
         .map_err(|failure| failure.to_string())
 }
 
-/// The story id and the branch type given by `--type`.
-fn arguments(argv: &[String]) -> Result<(&str, Option<&str>), String> {
-    match argv {
-        [id] => Ok((id, None)),
-        [id, flag, kind] if flag == "--type" => Ok((id, Some(kind))),
-        _ => Err("usage: target/release/worktree-new <ID> [--type <type>]".to_owned()),
+/// The story id, the branch type given by `--type` and the topic given by `--topic`, in either
+/// order.
+fn arguments(argv: &[String]) -> Result<(&str, Option<&str>, Option<&str>), String> {
+    let [id, options @ ..] = argv else {
+        return Err(USAGE.to_owned());
+    };
+    let (mut kind, mut topic) = (None, None);
+
+    for pair in options.chunks(2) {
+        match pair {
+            [flag, value] if flag == "--type" && kind.is_none() => kind = Some(value.as_str()),
+            [flag, value] if flag == "--topic" && topic.is_none() => topic = Some(value.as_str()),
+            _ => return Err(USAGE.to_owned()),
+        }
     }
+    Ok((id, kind, topic))
 }
 
 /// Names of the story files of the checkout the tool runs in.
@@ -120,7 +131,7 @@ fn build_tools(dir: &Path) -> Result<(), String> {
 }
 
 fn run(argv: &[String]) -> Result<Plan, String> {
-    let (id, branch_type) = arguments(argv)?;
+    let (id, branch_type, topic) = arguments(argv)?;
     let common = PathBuf::from(git(&[
         "rev-parse",
         "--path-format=absolute",
@@ -147,6 +158,7 @@ fn run(argv: &[String]) -> Result<Plan, String> {
     let request = Request {
         id,
         branch_type,
+        topic,
         story_files: &files,
         remote_branches: &remote_branches,
         branch_files: &branch_files,
@@ -165,7 +177,13 @@ fn run(argv: &[String]) -> Result<Plan, String> {
     Ok(plan)
 }
 
+/// The usage, printed on `--help` or `-h` (REV-009).
+const USAGE: &str = "usage: target/release/worktree-new <ID> [--type <type>] [--topic <topic>]";
+
 fn main() -> ExitCode {
+    if let Some(code) = tool_use::usage(&std::env::args().skip(1).collect::<Vec<_>>(), USAGE) {
+        return code;
+    }
     tool_use::run("worktree-new", "", add_worktree)
 }
 

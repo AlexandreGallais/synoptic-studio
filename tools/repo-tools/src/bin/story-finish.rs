@@ -223,6 +223,12 @@ fn work() -> u8 {
     })
 }
 
+/// The usage, printed on `--help` or `-h` (REV-009).
+const USAGE: &str = "usage: npm run story:finish -- <base> <title> <body file>";
+
 fn main() -> ExitCode {
+    if let Some(code) = tool_use::usage(&std::env::args().skip(1).collect::<Vec<_>>(), USAGE) {
+        return code;
+    }
     tool_use::run("story-finish", "", work)
 }
