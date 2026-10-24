@@ -13,7 +13,6 @@ import {
   readValue,
   selectInput,
   typeAndEnter,
-  typeValue,
 } from "../user-actions";
 
 /**
@@ -127,7 +126,7 @@ describe("editing the points of a free shape", () => {
 
     expect(readValue("width")).toBe("50");
 
-    typeValue("radius", "-1");
+    typeAndEnter("radius", "-1");
 
     expect(readText("#status")).toBe(
       "Width, height and radius typed must be integers ≥ 0, the angle an integer, and the points must span some width and height.",

@@ -22,7 +22,6 @@ import {
   selectPageElement,
   setElementBox,
   typeAndEnter,
-  typeValue,
 } from "../user-actions";
 
 import type { Point, Shape } from "../../src";
@@ -268,7 +267,7 @@ describe("Shift + click adds or removes a shape (US-068)", () => {
   it("[F37.AC2] keeps A's radius typed 25 when B is added, for the next rectangle placed", () => {
     drawThreeRectangles();
     pressAndClick("#canvas", toWindow({ x: 50, y: 50 }));
-    typeValue("radius", "25");
+    typeAndEnter("radius", "25");
 
     const a = readShapeModel();
 
@@ -340,7 +339,7 @@ describe("Ctrl + A selects every shape and Escape none (US-068)", () => {
     drawThreeRectangles();
 
     // C, edited, made 0 × 0 at (400, 200): its contour has no piece, its corners lie on that point.
-    typeValue("radius", "0");
+    typeAndEnter("radius", "0");
     typeAndEnter("width", "0");
     typeAndEnter("height", "0");
     typeAndEnter("shape-x", "400");
@@ -560,7 +559,7 @@ describe("Delete removes the selected shapes (US-066)", () => {
   it("[F37.AC1] keeps B's radius typed 25 for the next rectangle placed once B is removed", () => {
     drawThreeRectangles();
     pressAndClick("#canvas", toWindow({ x: 200, y: 50 }));
-    typeValue("radius", "25");
+    typeAndEnter("radius", "25");
     pressKey("body", "Delete");
     placeShape("rectangle", { x: 550, y: 250 });
 

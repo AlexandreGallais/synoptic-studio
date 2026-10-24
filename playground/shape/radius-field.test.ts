@@ -8,7 +8,6 @@ import {
   readText,
   selectInput,
   typeAndEnter,
-  typeValue,
 } from "../user-actions";
 
 /**
@@ -22,7 +21,7 @@ function giveRadii(radii: string): void {
 
   for (const [index, radius] of radii.split(" ").entries()) {
     clickPoint(index + 1, false);
-    typeValue("point-radius", radius);
+    typeAndEnter("point-radius", radius);
   }
 
   clickElement("mode-shape");
@@ -50,7 +49,7 @@ describe("radius field", () => {
 
   it("[F03.AC2] gives every vertex the radius typed over Mixed", () => {
     giveRadii("10 0 0 0 0 0");
-    typeValue("radius", "7");
+    typeAndEnter("radius", "7");
 
     expect(selectInput("radius").dataset["radii"]).toBe("7 7 7 7 7 7");
     expect(selectInput("radius").placeholder).toBe("");
@@ -66,11 +65,11 @@ describe("radius field", () => {
 
   it("[F03.AC3] keeps the radii by vertex number when the number of corners changes", () => {
     giveRadii("10 0 0 0 0 6");
-    typeValue("corners", "5");
+    typeAndEnter("corners", "5");
 
     expect(selectInput("radius").dataset["radii"]).toBe("10 0 0 0 0");
 
-    typeValue("corners", "8");
+    typeAndEnter("corners", "8");
 
     expect(selectInput("radius").dataset["radii"]).toBe("10 0 0 0 0 0 0 0");
   });
@@ -78,8 +77,8 @@ describe("radius field", () => {
   it("[F03.AC3] never gives a removed vertex its radius back, even while the shape is refused", () => {
     giveRadii("10 0 0 0 0 6");
     typeAndEnter("width", "");
-    typeValue("corners", "5");
-    typeValue("corners", "6");
+    typeAndEnter("corners", "5");
+    typeAndEnter("corners", "6");
     typeAndEnter("width", "100");
 
     expect(selectInput("radius").dataset["radii"]).toBe("10 0 0 0 0 0");
@@ -97,7 +96,7 @@ describe("radius field", () => {
 
   it("[F03.AC2] stops reading Mixed as soon as the field is typed in", () => {
     giveRadii("10 0 0 0 0 6");
-    typeValue("radius", "-");
+    typeAndEnter("radius", "-");
 
     expect(selectInput("radius").placeholder).toBe("");
   });

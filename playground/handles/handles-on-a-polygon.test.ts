@@ -11,7 +11,6 @@ import {
   readText,
   readValue,
   typeAndEnter,
-  typeValue,
 } from "../user-actions";
 
 describe("handles on a point of a regular polygon (US-028)", () => {
@@ -20,7 +19,7 @@ describe("handles on a point of a regular polygon (US-028)", () => {
     openOnStep(1);
     typeAndEnter("width", "100");
     typeAndEnter("height", "100");
-    typeValue("corners", "6");
+    typeAndEnter("corners", "6");
     chooseOption("shape", "polygon");
     typeAndEnter("radius", "10");
     clickElement("mode-points");
@@ -56,7 +55,7 @@ describe("handles on a point of a regular polygon (US-028)", () => {
   it("hides the switch on a polygon that cannot be converted, of width 0", () => {
     openOnStep(1);
     typeAndEnter("width", "0");
-    typeValue("corners", "6");
+    typeAndEnter("corners", "6");
     chooseOption("shape", "polygon");
     clickElement("mode-points");
     clickPoint(1, false);

@@ -28,7 +28,7 @@ function writePointRadius(document: Document): void {
 /**
  * Applies a radius typed: the shape's field gives it to every vertex, the radii kept being
  * dropped (F03.AC2), in both modes; the points' field gives it to the selected vertices only
- * (F03.AC5). Neither field is moved nor rewritten while typed in, so typing goes on (VAL-005).
+ * (F03.AC5), each once applied, Enter or the field left (US-087).
  *
  * @kind procedure
  * @param document - page document
@@ -38,14 +38,14 @@ function writePointRadius(document: Document): void {
 export function listenToRadius(document: Document, update: () => void): void {
   const field = selectElement(document, "radius");
 
-  field.addEventListener("input", () => {
+  field.addEventListener("change", () => {
     // Capped first, as every size typed (Q20).
     writeCappedSizes(document);
     delete field.dataset["radii"];
     field.setAttribute("placeholder", "");
   });
 
-  selectElement(document, "point-radius").addEventListener("input", () => {
+  selectElement(document, "point-radius").addEventListener("change", () => {
     writePointRadius(document);
     update();
   });

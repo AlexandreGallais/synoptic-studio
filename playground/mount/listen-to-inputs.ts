@@ -1,5 +1,6 @@
 import { NO_VERTEX_SELECTION } from "../../src";
 import { listenToEditedFields } from "../edited-fields";
+import { listenToOwnNumberFields } from "../number-fields";
 import { selectElement, writeSelection } from "../page";
 import { listenToPoints } from "../points";
 import { listenToTurn } from "../position";
@@ -8,7 +9,7 @@ import { listenToAnchor, listenToRadius, writeChosenFreeShape } from "../shape";
 import { listenToTextFields } from "../text";
 import { listenToModes } from "../toolbar";
 
-/** Number inputs of the shapes the browser steps, in display order. */
+/** The fields of the shape's numbers the page reads when it redraws, in display order. */
 const INPUTS = ["corners", "radius"];
 
 /**
@@ -53,7 +54,8 @@ function listenToPanelControls(document: Document, update: () => void): void {
  * goes to every vertex: the different radii kept on the radius input are dropped first
  * (F03.AC2). X, Y, Width and Height act as number fields, a value applied on Enter or when the
  * field is left and the arrows stepping it (`listenToEditedFields`, US-085), as the fields of
- * several shapes, whose value sets each of them (`listenToSeveralFields`, F38).
+ * several shapes, whose value sets each of them (`listenToSeveralFields`, F38); every other number
+ * field likewise, its value its own, read as the page redraws (`listenToOwnNumberFields`, US-087).
  *
  * @kind procedure
  * @param document - page document
@@ -61,11 +63,12 @@ function listenToPanelControls(document: Document, update: () => void): void {
  * @see docs/backlog/stories/E01-F03-US-011-radius-field-mixed.md
  */
 export function listenToInputs(document: Document, update: () => void): void {
+  listenToOwnNumberFields(document);
   listenToRadius(document, update);
 
   // Another number of vertices: the selection no longer applies (F03.AC5).
   for (const id of ["corners", "shape"]) {
-    selectElement(document, id).addEventListener("input", () => {
+    selectElement(document, id).addEventListener("change", () => {
       writeSelection(document, NO_VERTEX_SELECTION);
     });
   }
@@ -74,7 +77,7 @@ export function listenToInputs(document: Document, update: () => void): void {
   listenToEditedFields(document, update);
 
   for (const id of INPUTS) {
-    selectElement(document, id).addEventListener("input", update);
+    selectElement(document, id).addEventListener("change", update);
   }
 
   listenToShapeChoice(document, update);

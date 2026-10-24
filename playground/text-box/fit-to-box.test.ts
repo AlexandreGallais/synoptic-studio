@@ -75,7 +75,7 @@ describe("Text tool: a text put in a box keeps its fitted size (US-055)", () => 
   beforeEach(() => {
     openServedPage("");
     chooseShapeKind("text");
-    typeValue("text-size", "16");
+    typeAndEnter("text-size", "16");
     chooseOption("text-weight", "400");
     chooseOption("text-fit", "content");
     chooseOption("text-vertical-alignment", "top");
@@ -127,13 +127,13 @@ describe("Text tool: a text put in a box keeps its fitted size (US-055)", () => 
   it("[F17.AC13] leaves the box typed when a value other than the kind changes", () => {
     chooseOption("text-fit", "box");
     typeAndEnter("text-box-width", "150");
-    typeValue("text-letter-spacing", "10");
+    typeAndEnter("text-letter-spacing", "10");
 
     expect(readBoxFields()).toEqual(["150", "20"]);
   });
 
   it("[F17.AC13] keeps a turned text's corner, X and Y showing its straight box", () => {
-    typeValue("angle", "23");
+    typeAndEnter("angle", "23");
 
     // Its turned top-left corner P = (54.27808, 44.58648) (ADR-0057). In a box 88 × 20,
     // k' = (44, 10), R(k') = (44 cos 23° − 10 sin 23°, 44 sin 23° + 10 cos 23°)
@@ -163,7 +163,7 @@ describe("Text tool: the box typed is kept when the text comes back to Box (US-0
   beforeEach(() => {
     openServedPage("");
     chooseShapeKind("text");
-    typeValue("text-size", "16");
+    typeAndEnter("text-size", "16");
     chooseOption("text-weight", "400");
     chooseOption("text-fit", "content");
     chooseOption("text-vertical-alignment", "top");
@@ -192,7 +192,7 @@ describe("Text tool: the box typed is kept when the text comes back to Box (US-0
 
   it("[F17.AC15] keeps the maximum number of lines with the box typed", () => {
     typeAndEnter("text-box-height", "40");
-    typeValue("text-maximum-lines", "1");
+    typeAndEnter("text-maximum-lines", "1");
     chooseOption("text-fit", "content");
     chooseOption("text-fit", "box");
 
@@ -217,7 +217,7 @@ describe("Text tool: the box typed is kept when the text comes back to Box (US-0
 
   it("[F17.AC15] Reset leaves the box as it is when the text cannot be measured", () => {
     typeAndEnter("text-box-width", "100");
-    typeValue("text-size", "");
+    typeAndEnter("text-size", "");
     clickElement("text-box-reset");
 
     expect(readBoxFields()).toEqual(["100", "20"]);
@@ -234,7 +234,7 @@ describe("Text tool: the box typed is kept when the text comes back to Box (US-0
   });
 
   it("[F17.AC15] does not count the maximum number of lines alone as a box typed", () => {
-    typeValue("text-maximum-lines", "1");
+    typeAndEnter("text-maximum-lines", "1");
     chooseOption("text-fit", "content");
     typeContent("Pump P-101\nTank");
     chooseOption("text-fit", "box");

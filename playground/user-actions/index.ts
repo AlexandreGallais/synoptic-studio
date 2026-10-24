@@ -32,6 +32,7 @@ export * from "./select-input";
 export * from "./select-page-element";
 export * from "./set-element-box";
 export * from "./type-and-enter";
+export * from "./type-in-field";
 export * from "./type-text-content";
 export * from "./type-value";
 export * from "./wait-for-page-tasks";

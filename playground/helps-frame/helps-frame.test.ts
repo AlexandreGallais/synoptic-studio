@@ -10,7 +10,6 @@ import {
   selectPageElement,
   setElementBox,
   typeAndEnter,
-  typeValue,
 } from "../user-actions";
 import { PAGE_VIEWS } from "../view";
 
@@ -48,13 +47,13 @@ function showView(view: View): void {
  * @param radius - its corners' radius
  */
 function typeRounded(width: string, height: string, radius: string): void {
-  typeValue("angle", "0");
-  typeValue("radius", "0");
+  typeAndEnter("angle", "0");
+  typeAndEnter("radius", "0");
   typeAndEnter("width", width);
   typeAndEnter("height", height);
   typeAndEnter("shape-x", "0");
   typeAndEnter("shape-y", "0");
-  typeValue("radius", radius);
+  typeAndEnter("radius", radius);
 }
 
 /**

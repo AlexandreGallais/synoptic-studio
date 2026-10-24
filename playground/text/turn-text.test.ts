@@ -13,7 +13,6 @@ import {
   readValue,
   selectPageElement,
   typeAndEnter,
-  typeValue,
 } from "../user-actions";
 
 /**
@@ -49,7 +48,7 @@ describe("Text tool: turning (US-032)", () => {
     chooseShapeKind("text");
     // "H" over "HH" in Inter Regular 16: block 23.78125 × 2 × 19.359375 = 38.71875, its middle
     // (11.890625, 19.359375), written 11.89063 and 19.35938.
-    typeValue("text-size", "16");
+    typeAndEnter("text-size", "16");
     chooseOption("text-weight", "400");
     typeContent("H\nHH");
   });
@@ -61,7 +60,7 @@ describe("Text tool: turning (US-032)", () => {
   });
 
   it("[F05.AC5] turns the text and its block's frame by 90 about the block's middle", () => {
-    typeValue("angle", "90");
+    typeAndEnter("angle", "90");
 
     expect(readTransforms()).toEqual([
       "rotate(90 11.89063 19.35938)",
@@ -74,7 +73,7 @@ describe("Text tool: turning (US-032)", () => {
   it("[F05.AC5] keeps the middle with the position: X 10, Y 20 at 45", () => {
     typeAndEnter("shape-x", "10");
     typeAndEnter("shape-y", "20");
-    typeValue("angle", "45");
+    typeAndEnter("angle", "45");
 
     // (10 + 11.890625, 20 + 19.359375).
     expect(readTransforms()[0]).toBe("rotate(45 21.89063 39.35938)");
@@ -85,7 +84,7 @@ describe("Text tool: turning (US-032)", () => {
     { kept: "270", typed: "-90" },
     { kept: "0", typed: "360" },
   ])("[F05.AC5] keeps an angle typed $typed as $kept", ({ kept, typed }) => {
-    typeValue("angle", typed);
+    typeAndEnter("angle", typed);
     commitField("angle");
 
     expect(readValue("angle")).toBe(kept);
@@ -109,7 +108,7 @@ describe("Text tool: turning (US-032)", () => {
   });
 
   it("refuses a fractional angle and draws nothing, saying why", () => {
-    typeValue("angle", "1.5");
+    typeAndEnter("angle", "1.5");
 
     expect(readText("#status")).toContain("the angle integers");
     expect(document.querySelectorAll("#canvas text")).toHaveLength(0);

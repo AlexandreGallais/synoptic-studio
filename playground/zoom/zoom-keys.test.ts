@@ -11,7 +11,6 @@ import {
   selectPageElement,
   setElementBox,
   typeAndEnter,
-  typeValue,
 } from "../user-actions";
 import { PAGE_VIEWS } from "../view";
 
@@ -115,7 +114,7 @@ describe("the zoom's keys, the fits and the percentage shown (US-079)", () => {
     openServedPage("");
     setElementBox("#canvas", { height: 800, left: 100, top: 50, width: 1200 });
     // A, 100 × 50 at (10, 20), sharp, selected.
-    typeValue("radius", "0");
+    typeAndEnter("radius", "0");
     typeAndEnter("width", "100");
     typeAndEnter("height", "50");
     typeAndEnter("shape-x", "10");

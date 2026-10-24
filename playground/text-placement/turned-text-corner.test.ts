@@ -10,7 +10,6 @@ import {
   readText,
   readValue,
   typeAndEnter,
-  typeValue,
 } from "../user-actions";
 
 /**
@@ -58,14 +57,14 @@ describe("Text tool: X and Y of a turned text show its straight box (AUD-040)", 
   });
 
   it("[F17.AC12] shows the straight box (47.06745, 42.2584) when turned by 23, the position kept", () => {
-    typeValue("angle", "23");
+    typeAndEnter("angle", "23");
 
     expect(readFields()).toEqual(["47.06745", "42.2584"]);
     expect(readStored()).toMatchObject({ angle: 23, x: 47, y: 61 });
   });
 
   it("[F17.AC12] moves the straight box to x 60 when X is typed 60, the angle, the size and Y kept", () => {
-    typeValue("angle", "23");
+    typeAndEnter("angle", "23");
     typeAndEnter("shape-x", "60");
 
     // The shift 60 − 47.06745 = 12.93255: x = 47 + 12.93255 = 59.93255, y kept (ADR-0035).
@@ -79,7 +78,7 @@ describe("Text tool: X and Y of a turned text show its straight box (AUD-040)", 
   });
 
   it("[F17.AC12] moves the straight box to y 50 when Y is typed 50, X kept", () => {
-    typeValue("angle", "23");
+    typeAndEnter("angle", "23");
     typeAndEnter("shape-y", "50");
 
     // The shift 50 − 42.258395 = 7.741605: y = 61 + 7.741605 = 68.741605, x kept.
@@ -93,7 +92,7 @@ describe("Text tool: X and Y of a turned text show its straight box (AUD-040)", 
   it("[F17.AC12] shows the straight box turned about the same middle when +90° is pressed", () => {
     typeAndEnter("text-box-width", "120");
     typeAndEnter("text-box-height", "40");
-    typeValue("angle", "23");
+    typeAndEnter("angle", "23");
     clickElement("turn-right");
 
     // Box 120 × 40 at (47, 61), middle (107, 81); |cos 113°| = 0.39073113, sin 113° = 0.92050485.
@@ -104,7 +103,7 @@ describe("Text tool: X and Y of a turned text show its straight box (AUD-040)", 
   });
 
   it("[F17.AC12] keeps its turned corner when the box grows, X and Y showing its straight box", () => {
-    typeValue("angle", "23");
+    typeAndEnter("angle", "23");
     typeAndEnter("text-box-width", "120");
 
     // ADR-0057: k' = (60, 10), R(k') = (55.23029 − 3.90731, 23.44387 + 9.20505) = (51.32298, 32.64892):
@@ -125,10 +124,10 @@ describe("Text tool: X and Y of a turned text show its straight box (AUD-040)", 
   });
 
   it("[F17.AC12] places the straight box at the x typed while the angle was refused, at the new angle", () => {
-    typeValue("angle", "23");
-    typeValue("angle", "1.5");
+    typeAndEnter("angle", "23");
+    typeAndEnter("angle", "1.5");
     typeAndEnter("shape-x", "60");
-    typeValue("angle", "40");
+    typeAndEnter("angle", "40");
 
     // Turned about its middle (97, 71), its position kept, then moved along x: cos 40° =
     // 0.76604444, sin 40° = 0.64278761; half spans (76.60444 + 12.85575) / 2 = 44.73010 and
@@ -142,8 +141,8 @@ describe("Text tool: X and Y of a turned text show its straight box (AUD-040)", 
   });
 
   it("[F17.AC12] goes back to the position at 0°", () => {
-    typeValue("angle", "23");
-    typeValue("angle", "0");
+    typeAndEnter("angle", "23");
+    typeAndEnter("angle", "0");
 
     expect(readFields()).toEqual(["47", "61"]);
   });

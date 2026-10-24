@@ -10,7 +10,6 @@ import {
   readText,
   selectPageElement,
   typeAndEnter,
-  typeValue,
 } from "../user-actions";
 
 // "H" over "HH" in Inter Regular 16: block 23.78125 × 2 × 19.359375 = 38.71875 at (0, 0), its
@@ -58,7 +57,7 @@ describe("Text tool: the straight box of a turned text (US-039)", () => {
   beforeEach(() => {
     openServedPage("");
     chooseShapeKind("text");
-    typeValue("text-size", "16");
+    typeAndEnter("text-size", "16");
     // happy-dom loses the option marked `selected` once the page is moved into its document.
     chooseOption("text-weight", "400");
     chooseOption("text-vertical-alignment", "top");
@@ -68,7 +67,7 @@ describe("Text tool: the straight box of a turned text (US-039)", () => {
   it("[F14.AC7] boxes a box 40 × 20 turned by 45: x −1.2132, y −11.2132, 42.42641 square", () => {
     // About (20, 10), half sizes 20c + 10s = 20s + 10c = 30·√2/2 = 21.21320.
     typeBox("40", "20");
-    typeValue("angle", "45");
+    typeAndEnter("angle", "45");
 
     expect(readText("#straight-box")).toBe(
       "Straight box: x -1.2132, y -11.2132, width 42.42641, height 42.42641",
@@ -82,7 +81,7 @@ describe("Text tool: the straight box of a turned text (US-039)", () => {
   it("[F14.AC7] boxes a box 60 × 40 turned by 90 at (10, −10), 40 × 60, upright, beside its frame", () => {
     // R(90°) about (30, 20): (0, 0) ↦ (50, −10), (60, 40) ↦ (10, 50).
     typeBox("60", "40");
-    typeValue("angle", "90");
+    typeAndEnter("angle", "90");
 
     expect(readText("#straight-box")).toBe("Straight box: x 10, y -10, width 40, height 60");
     expect(readStraightBoxes()).toHaveLength(1);
@@ -95,7 +94,7 @@ describe("Text tool: the straight box of a turned text (US-039)", () => {
 
   it("[F14.AC7] draws the straight box first, behind the turned frame and the text", () => {
     typeBox("60", "40");
-    typeValue("angle", "90");
+    typeAndEnter("angle", "90");
 
     // Painted in document order (SVG 1.1 §3.3): the first child is the furthest behind.
     const children = [...document.querySelectorAll("#canvas > svg > *")];
@@ -109,7 +108,7 @@ describe("Text tool: the straight box of a turned text (US-039)", () => {
   it("[F14.AC7] boxes the block fitting its content turned by 90, as tall as the text is long", () => {
     // Half sizes swapped about (11.890625, 19.359375): x 11.890625 − 19.359375 = −7.46875,
     // y 19.359375 − 11.890625 = 7.46875.
-    typeValue("angle", "90");
+    typeAndEnter("angle", "90");
 
     expect(readText("#straight-box")).toBe(
       "Straight box: x -7.46875, y 7.46875, width 38.71875, height 23.78125",
@@ -125,8 +124,8 @@ describe("Text tool: the straight box of a turned text (US-039)", () => {
   });
 
   it("[F14.AC7] shows one frame only at 0°, and no line", () => {
-    typeValue("angle", "30");
-    typeValue("angle", "0");
+    typeAndEnter("angle", "30");
+    typeAndEnter("angle", "0");
 
     expect(readStraightBoxes()).toHaveLength(0);
     expect(document.querySelectorAll("#canvas path.straight-box")).toHaveLength(1);
@@ -144,23 +143,23 @@ describe("Text tool: the straight box of a turned text (US-039)", () => {
       typeBox(width, height);
     }
 
-    typeValue("angle", "30");
+    typeAndEnter("angle", "30");
 
     expect(document.querySelectorAll("#canvas path.straight-box")).toHaveLength(0);
     expect(readDisplay("straight-box")).toBe("none");
   });
 
   it("hides the line of a turned text refused", () => {
-    typeValue("angle", "30");
-    typeValue("angle", "1.5");
+    typeAndEnter("angle", "30");
+    typeAndEnter("angle", "1.5");
 
     expect(readDisplay("straight-box")).toBe("none");
   });
 
   it("[F14.AC7] draws a turned shape's straight box as before once the text is left", () => {
-    typeValue("angle", "30");
+    typeAndEnter("angle", "30");
     chooseShapeKind("rectangle");
-    typeValue("angle", "90");
+    typeAndEnter("angle", "90");
 
     // The rectangle 120 × 80 at (0, 0) turned by 90 about (60, 40): x 20, y −20, 80 × 120.
     expect(readText("#straight-box")).toBe("Straight box: x 20, y -20, width 80, height 120");

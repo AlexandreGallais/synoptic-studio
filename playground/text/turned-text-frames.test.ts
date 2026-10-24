@@ -2,13 +2,7 @@
 
 import { beforeEach, describe, expect, it } from "vitest";
 
-import {
-  chooseOption,
-  chooseShapeKind,
-  openServedPage,
-  typeAndEnter,
-  typeValue,
-} from "../user-actions";
+import { chooseOption, chooseShapeKind, openServedPage, typeAndEnter } from "../user-actions";
 
 /**
  * Reads the path data of the canvas's paths of a class, in order.
@@ -41,7 +35,7 @@ function typeTextBox(box: {
   typeAndEnter("text-box-height", box.height);
   typeAndEnter("shape-x", "0");
   typeAndEnter("shape-y", "0");
-  typeValue("angle", box.angle);
+  typeAndEnter("angle", box.angle);
 }
 
 /**
@@ -54,10 +48,10 @@ function readRectangleFrames(angle: string): readonly (readonly (string | null)[
   chooseShapeKind("rectangle");
   typeAndEnter("width", "60");
   typeAndEnter("height", "40");
-  typeValue("radius", "0");
+  typeAndEnter("radius", "0");
   typeAndEnter("shape-x", "0");
   typeAndEnter("shape-y", "0");
-  typeValue("angle", angle);
+  typeAndEnter("angle", angle);
 
   return [readFrames("turned-box"), readFrames("straight-box")];
 }

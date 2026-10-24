@@ -13,7 +13,6 @@ import {
   readValue,
   selectPageElement,
   typeAndEnter,
-  typeValue,
 } from "../user-actions";
 
 /** The fields read only in a box, hidden while the text fits its content. */
@@ -29,7 +28,7 @@ describe("Text tool: the box's fields (US-033)", () => {
   beforeEach(() => {
     openServedPage("");
     chooseShapeKind("text");
-    typeValue("text-size", "16");
+    typeAndEnter("text-size", "16");
     // happy-dom loses the option marked `selected` once the page is moved into its document: the
     // choices the page opens with are chosen again.
     chooseOption("text-weight", "400");
@@ -68,10 +67,10 @@ describe("Text tool: the box's fields (US-033)", () => {
     chooseOption("text-fit", "box");
     typeAndEnter("text-box-width", "50");
     typeAndEnter("text-box-height", "60");
-    typeValue("text-maximum-lines", "2");
+    typeAndEnter("text-maximum-lines", "2");
     clickElement("text-ellipsis");
     chooseOption("text-vertical-alignment", "bottom");
-    typeValue("text-line-height", "24");
+    typeAndEnter("text-line-height", "24");
     clickElement("text-trim");
 
     expect(readModel()).toMatchObject({
@@ -125,7 +124,7 @@ describe("Text tool: the box's fields (US-033)", () => {
 
     const shown = readText("#model");
 
-    typeValue(id, value);
+    typeAndEnter(id, value);
 
     expect(readText("#status")).toContain(
       "the box's width and height, its maximum lines and the line height integers from 0 to 100 000",
@@ -140,13 +139,13 @@ describe("Text tool: the box's fields (US-033)", () => {
 
   it("keeps the box's fields shown while one of them is refused, Fit content chosen", () => {
     chooseOption("text-fit", "box");
-    typeValue("text-maximum-lines", "1.5");
+    typeAndEnter("text-maximum-lines", "1.5");
     chooseOption("text-fit", "content");
 
     expect(readDisplay("text-box-fields") === "none").toBe(false);
     expect(selectPageElement("#text-box-width").getAttribute("aria-invalid")).toBe("true");
 
-    typeValue("text-maximum-lines", "0");
+    typeAndEnter("text-maximum-lines", "0");
     expect(readDisplay("text-box-fields")).toBe("none");
   });
 });

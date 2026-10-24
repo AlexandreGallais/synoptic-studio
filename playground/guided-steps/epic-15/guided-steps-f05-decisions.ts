@@ -29,8 +29,8 @@ export const GUIDED_STEPS_F05_DECISIONS: readonly GuidedStep[] = [
     values: createTextStepValues({}),
   },
   {
-    explanation: "Letter spacing 100001; then −100000.",
-    look: "Refused; then accepted, every line tightened past nothing: no frame.",
+    explanation: "Letter spacing 100001, Enter; then −100000, Enter.",
+    look: "Refused, 0 shown again; then −100 000, taken from 0, accepted, every line tightened past nothing: no frame.",
     title: "F05 · Spacing bounds ±100 000 (decision)",
     values: createTextStepValues({}),
   },

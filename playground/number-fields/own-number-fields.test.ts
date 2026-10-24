@@ -6,12 +6,15 @@ import { PAGE_HISTORIES } from "../history";
 import { SEVERAL_FIELDS } from "../selection";
 import {
   chooseShapeKind,
+  clickElement,
   openServedPage,
   readShapeModel,
   readValue,
   selectInput,
   selectPageElement,
+  setElementBox,
   typeAndEnter,
+  typeInField,
   typeValue,
 } from "../user-actions";
 
@@ -51,17 +54,6 @@ function pressIn(id: string, init: KeyboardEventInit): KeyboardEvent {
   sendKey(id, "keyup", init);
 
   return down;
-}
-
-/**
- * Clicks in a field, then types a value and presses Enter, as a user does.
- *
- * @param id - the field, without `#`
- * @param value - the text typed
- */
-function enterIn(id: string, value: string): void {
-  selectInput(id).focus();
-  typeAndEnter(id, value);
 }
 
 /**
@@ -158,18 +150,18 @@ describe("every number field, the rule of one shape's (US-087)", () => {
     { id: "text-size", shown: "32", typed: "100001" },
     { id: "history-memory", shown: "100", typed: "1001" },
   ])("[F44.AC4] refuses $typed in $id, showing $shown again", ({ id, shown, typed }) => {
-    enterIn(id, typed);
+    typeInField(id, typed);
 
     expect(readValue(id)).toBe(shown);
   });
 
   it("[F44.AC4] keeps a polygon's sides at least 3, its 6 shown again for 2", () => {
     chooseShapeKind("polygon");
-    enterIn("corners", "2");
+    typeInField("corners", "2");
 
     expect(readValue("corners")).toBe("6");
 
-    enterIn("corners", "3");
+    typeInField("corners", "3");
 
     expect(readValue("corners")).toBe("3");
   });
@@ -182,6 +174,50 @@ describe("every number field, the rule of one shape's (US-087)", () => {
     pressIn("history-memory", { key: "ArrowUp", shiftKey: true });
 
     expect([readValue("text-size"), readValue("history-memory")]).toEqual(["43", "111"]);
+  });
+
+  it("[F44.AC4] applies nothing for a value refused, the zoom of 141 % kept exactly", () => {
+    setElementBox("#canvas", { height: 600, left: 100, top: 50, width: 800 });
+    clickElement("zoom-in");
+
+    const shown = document.querySelector("#canvas svg")?.getAttribute("viewBox");
+
+    // × √2 shows 141, which applied again would zoom to 141 % exactly.
+    typeInField("zoom-field", "abc");
+
+    expect(readValue("zoom-field")).toBe("141");
+    expect(document.querySelector("#canvas svg")?.getAttribute("viewBox")).toBe(shown);
+  });
+
+  it("[F44.AC4] keeps a field at its bound for Up past it", () => {
+    typeInField("history-memory", "1000");
+    pressIn("history-memory", { key: "ArrowUp" });
+
+    // 1 000 + 1 above the memory's 1 000 MB: refused, 1 000 shown again.
+    expect(readValue("history-memory")).toBe("1000");
+  });
+
+  it("[F44.AC4] steps nothing in a field showing no number, a radius emptied as Mixed shows it", () => {
+    const field = selectInput("radius");
+
+    // Given the focus at 10, then left and emptied by the page, as a radius Mixed shows none.
+    field.focus();
+    field.blur();
+    field.value = "";
+    field.focus();
+
+    const down = pressIn("radius", { key: "ArrowUp" });
+
+    expect([readValue("radius"), down.defaultPrevented]).toEqual(["", true]);
+  });
+
+  it("[F44.AC4] steps the number shown before a text typed and not applied", () => {
+    selectInput("radius").focus();
+    typeValue("radius", "+5");
+    pressIn("radius", { key: "ArrowUp" });
+
+    // 10 + 1, the +5 dropped.
+    expect([readValue("radius"), readRadius()]).toEqual(["11", 11]);
   });
 
   it("[F44.AC4] finds every number field of the page under the rule", () => {

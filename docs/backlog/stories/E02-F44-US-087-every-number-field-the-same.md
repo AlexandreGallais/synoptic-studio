@@ -37,7 +37,7 @@ The examples use the page as it opens, the rectangle 120 × 80 at (0, 0), select
 ## Tasks
 
 - [x] T1 — The page's number fields listed with their steps and bounds, the rule of US-085 given to them all as text fields acting as number fields; `interaction.md` §2 and its Q row; tests of the criteria first, failing, the test over every field included (1 h)
-- [ ] T2 — The code that passes them, each field's `input` listener replaced by `change` and `keydown` as US-085's, its burst and its step; the existing tests of those fields brought to the new behaviour (2 h)
+- [x] T2 — The code that passes them, each field's `input` listener replaced by `change` and `keydown` as US-085's, its burst and its step; the existing tests of those fields brought to the new behaviour (2 h)
 - [ ] T3 — The Product Owner test card, and the guide pages that name a field's step (1 h)
 
 One task = one commit, referenced as `US-087.Tn` in the commit footer.
