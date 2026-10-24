@@ -168,18 +168,24 @@ function startBurstPause(document: Document, event: KeyboardEvent, step: () => v
 }
 
 /**
- * Ends the burst open at Cmd released, its step taken (`stopArrowBurst`), since macOS sends no
- * `keyup` for an arrow released while Cmd is held (`REF-WEBKIT-CMD-KEYUP`,
- * `REF-MOZILLA-CMD-KEYUP`, AUD-045).
+ * Ends the burst open at any key or pointer event that carries Cmd, its step taken
+ * (`stopArrowBurst`): macOS sends no `keyup` for an arrow released while Cmd is held
+ * (`REF-WEBKIT-CMD-KEYUP`, `REF-MOZILLA-CMD-KEYUP`), and a system shortcut may take Cmd's own
+ * `keyup`, while Cmd's `keydown` carries it (`REF-UIEVENTS-KEYS`, AUD-049); an event without Cmd
+ * changes nothing.
  *
  * @kind procedure
  * @param document - page document
- * @param event - a key released
+ * @param event - the key pressed, or the pointer pressed
  * @param step - asks the step of the history
  * @see docs/domain/interaction.md#_7-navigation-and-history
  */
-function closeBurstAtCommand(document: Document, event: KeyboardEvent, step: () => void): void {
-  if (event.key === "Meta") {
+function closeBurstAtCommand(
+  document: Document,
+  event: KeyboardEvent | PointerEvent,
+  step: () => void,
+): void {
+  if (event.metaKey) {
     stopArrowBurst(document, step);
   }
 }
@@ -189,9 +195,9 @@ function closeBurstAtCommand(document: Document, event: KeyboardEvent, step: () 
  * pressed in a number field or a field of several shapes opens a burst (`startArrowBurst`), its
  * release starts a pause of 500 ms (`startBurstPause`), and the burst's step is taken at the
  * pause's end, unless an arrow pressed meanwhile joins the burst; another key typed in its field,
- * Cmd released and the window losing the focus end it at once, a release in another window never
- * heard (`stopArrowBurst`). A burst left open by the
- * page mounted before is forgotten, its step not taken.
+ * any key or pointer press carrying Cmd, heard first (`closeBurstAtCommand`), and the window
+ * losing the focus end it at once, a release in another window never heard (`stopArrowBurst`). A
+ * burst left open by the page mounted before is forgotten, its step not taken.
  *
  * @kind procedure
  * @param document - page document
@@ -202,6 +208,16 @@ export function listenToArrowBursts(document: Document, step: () => void): void 
   clearTimeout(ARROW_BURSTS.get(document)?.pause);
   ARROW_BURSTS.delete(document);
 
+  for (const type of ["keydown", "pointerdown"] as const) {
+    document.addEventListener(
+      type,
+      (event) => {
+        closeBurstAtCommand(document, event, step);
+      },
+      { capture: true, signal: readListenerSignal(document) },
+    );
+  }
+
   selectElement(document, "panel").addEventListener("keydown", (event) => {
     startArrowBurst(document, event, step);
   });
@@ -209,7 +225,6 @@ export function listenToArrowBursts(document: Document, step: () => void): void 
   document.addEventListener(
     "keyup",
     (event) => {
-      closeBurstAtCommand(document, event, step);
       startBurstPause(document, event, step);
     },
     { signal: readListenerSignal(document) },

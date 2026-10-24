@@ -2,7 +2,7 @@
 id: F47
 epic: E02
 title: Space never left held after Cmd
-status: in-progress
+status: done
 ---
 
 # E02 · F47 — Space never left held after Cmd
@@ -22,7 +22,7 @@ In delivery order.
 | ID | Type | Title | Status |
 | --- | --- | --- | --- |
 | [US-091](../stories/E02-F47-US-091-space-never-left-held-after-cmd.md) | US | Space never left held after Cmd | done |
-| [AUD-049](../stories/E02-F47-AUD-049-audit-f47.md) | AUD | Audit F47 | ready |
+| [AUD-049](../stories/E02-F47-AUD-049-audit-f47.md) | AUD | Audit F47 | done |
 | [VAL-048](../stories/E02-F47-VAL-048-validate-f47.md) | VAL | Validate F47 | dropped |
 
 ## Feature plan
