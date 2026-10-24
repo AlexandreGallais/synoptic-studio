@@ -20,7 +20,6 @@ import {
   setElementBox,
   typeAndEnter,
   typeTextContent,
-  typeValue,
 } from "../user-actions";
 
 import type { FontFamily, Point } from "../../src";
@@ -118,7 +117,7 @@ describe("the panel loads the shape picked, per kind (US-067)", () => {
     const rectangle = readModel();
 
     placeShape("polygon", { x: 550, y: 200 });
-    typeValue("radius", "4");
+    typeAndEnter("radius", "4");
     typeAndEnter("width", "60");
     pick({ x: 300, y: 200 });
 
@@ -138,7 +137,7 @@ describe("the panel loads the shape picked, per kind (US-067)", () => {
 
   it("[F36.AC3] gives a turned rectangle picked back its angle, in place", () => {
     placeShape("rectangle", { x: 300, y: 200 });
-    typeValue("angle", "30");
+    typeAndEnter("angle", "30");
 
     const rectangle = readModel();
 
@@ -153,16 +152,16 @@ describe("the panel loads the shape picked, per kind (US-067)", () => {
     // A pentagon in the box 100 × 100 at (250, 150), anchored at its top-left: 100 wide, about
     // 95 high, so that (300, 200), 50 from its left and its top, is inside.
     placeShape("polygon", { x: 300, y: 200 });
-    typeValue("corners", "5");
-    typeValue("radius", "4");
+    typeAndEnter("corners", "5");
+    typeAndEnter("radius", "4");
     chooseRadio("anchor", "min min");
 
     const pentagon = readModel();
 
     placeShape("polygon", { x: 550, y: 200 });
     clickElement("stretched");
-    typeValue("corners", "8");
-    typeValue("radius", "0");
+    typeAndEnter("corners", "8");
+    typeAndEnter("radius", "0");
     chooseRadio("anchor", "mid mid");
     pick({ x: 300, y: 200 });
 
@@ -179,7 +178,7 @@ describe("the panel loads the shape picked, per kind (US-067)", () => {
 
   it("[F36.AC3] keeps the settings of the shape the panel leaves for the next of its kind", () => {
     placeShape("polygon", { x: 300, y: 200 });
-    typeValue("corners", "3");
+    typeAndEnter("corners", "3");
     // A, the rectangle the page opens with, 120 × 80 at (0, 0), holds (60, 40).
     pick({ x: 60, y: 40 });
     placeShape("polygon", { x: 550, y: 200 });
@@ -188,7 +187,7 @@ describe("the panel loads the shape picked, per kind (US-067)", () => {
     expect(readValue("corners")).toBe("3");
 
     // A polygon of 50 corners is refused: left by a click, it leaves nothing for the next.
-    typeValue("corners", "50");
+    typeAndEnter("corners", "50");
     pick({ x: 60, y: 40 });
     placeShape("polygon", { x: 550, y: 450 });
 
@@ -213,7 +212,7 @@ describe("the panel loads the shape picked, per kind (US-067)", () => {
     // about its middle, (232.328125, 300.359375), which stays there.
     placeShape("text", { x: 200, y: 300 });
     typeTextContent("Text");
-    typeValue("angle", "30");
+    typeAndEnter("angle", "30");
 
     const turned = readModel();
 
@@ -231,7 +230,7 @@ describe("the panel loads the shape picked, per kind (US-067)", () => {
     clickElement("text-italic");
     chooseOption("text-weight", "700");
     clickElement("text-strike");
-    typeValue("text-size", "40");
+    typeAndEnter("text-size", "40");
     typeContent("Pump");
 
     const pump = readModel();
@@ -242,7 +241,7 @@ describe("the panel loads the shape picked, per kind (US-067)", () => {
     clickElement("text-italic");
     chooseOption("text-weight", "400");
     clickElement("text-strike");
-    typeValue("text-size", "24");
+    typeAndEnter("text-size", "24");
     typeContent("Valve");
 
     expect(readFontSession(document).measured).toBe("Inter");

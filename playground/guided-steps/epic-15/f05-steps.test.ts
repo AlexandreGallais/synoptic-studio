@@ -16,6 +16,7 @@ import {
   selectInput,
   selectPageElement,
   typeAndEnter,
+  typeInField,
   typeValue,
 } from "../../user-actions";
 import { GUIDED_STEPS } from "../lists";
@@ -165,7 +166,7 @@ describe("the guided test of F05 (VAL-014): the Text tool's options", () => {
 
   it("size 48: the first baseline at 1984 × 48 / 2048 = 46.5", () => {
     openStep("Size");
-    typeValue("text-size", "48");
+    typeAndEnter("text-size", "48");
     expect(readLines()[0]?.[2]).toBe("46.5");
     // 175.90625 × 48 / 32 and 3 × 38.71875.
     expect(readBlock()).toEqual({ height: 116.15625, width: 263.859375 });
@@ -199,27 +200,27 @@ describe("the guided test of F05 (VAL-014): the Text tool's options", () => {
   it("color, opacity 40, then 0: the frame stays", () => {
     openStep("Color and opacity");
     typeValue("text-color", "#dc2626");
-    typeValue("text-opacity", "40");
+    typeAndEnter("text-opacity", "40");
 
     expect([readTextAttribute("fill"), readTextAttribute("fill-opacity")]).toEqual([
       "#dc2626",
       "0.4",
     ]);
 
-    typeValue("text-opacity", "0");
+    typeAndEnter("text-opacity", "0");
     expect([readTextAttribute("fill-opacity"), hasFrame()]).toEqual(["0", true]);
   });
 
   it("letter spacing 10: 9 gaps in “Pump P-101”, none after its end", () => {
     openStep("Letter spacing");
-    typeValue("text-letter-spacing", "10");
+    typeAndEnter("text-letter-spacing", "10");
     // 175.90625 + 9 × 10.
     expect(readBlock().width).toBe(265.90625);
   });
 
   it("word spacing 20: the one space of “Pump P-101” widens", () => {
     openStep("Word spacing");
-    typeValue("text-word-spacing", "20");
+    typeAndEnter("text-word-spacing", "20");
     expect(readBlock().width).toBe(195.90625);
     expect(readText("#pieces")).toContain('"width": 123.609375');
   });
@@ -283,7 +284,7 @@ describe("the guided test of F05 (VAL-014): placing and turning", () => {
 
   it("[F05.AC5] turned by 90 about the middle of its block", () => {
     openStep("Turned");
-    typeValue("angle", "90");
+    typeAndEnter("angle", "90");
 
     // (100 + 175.90625 / 2, 50 + 77.4375 / 2).
     expect(readTransforms()).toEqual([
@@ -296,12 +297,13 @@ describe("the guided test of F05 (VAL-014): placing and turning", () => {
     openStep("Angle kept from 0 to 359");
 
     const kept = ["370", "-90", "360"].map((typed) => {
-      typeAndEnter("angle", typed);
+      typeInField("angle", typed);
 
       return readValue("angle");
     });
 
-    expect(kept).toEqual(["10", "270", "0"]);
+    // 370 kept as 10; −90 takes 90 away (US-087), 10 − 90 = −80, kept as 280; 360 as 0.
+    expect(kept).toEqual(["10", "280", "0"]);
     expect(readTransforms()[0]).toBeNull();
 
     const turned = ["turn-right", "turn-left", "turn-left"].map((id) => {
@@ -332,22 +334,31 @@ describe("the guided test of F05 (VAL-014): placing and turning", () => {
   });
 
   it.each([
-    ["text-size", "0", "16"],
+    ["text-size", "0", "32"],
     ["text-opacity", "101", "100"],
-    ["text-color", "red", "#1e293b"],
-  ])("refuses %s %s, and draws again at %s", (id, refused, valid) => {
+  ])("refuses %s %s, %s shown again, the text drawn (US-087)", (id, refused, shown) => {
     openStep("Refused values");
-    typeValue(id, refused);
+    typeInField(id, refused);
 
-    expect([readLines(), selectPageElement(`#${id}`).getAttribute("aria-invalid")]).toEqual([
-      [],
-      "true",
-    ]);
-
-    expect(readText("#status")).not.toBe("");
-    typeValue(id, valid);
-    expect([readLines().length, readText("#status")]).toEqual([2, ""]);
+    expect([readValue(id), readLines().length, readText("#status")]).toEqual([shown, 2, ""]);
   });
+
+  it.each([["text-color", "red", "#1e293b"]])(
+    "refuses %s %s, and draws again at %s",
+    (id, refused, valid) => {
+      openStep("Refused values");
+      typeValue(id, refused);
+
+      expect([readLines(), selectPageElement(`#${id}`).getAttribute("aria-invalid")]).toEqual([
+        [],
+        "true",
+      ]);
+
+      expect(readText("#status")).not.toBe("");
+      typeValue(id, valid);
+      expect([readLines().length, readText("#status")]).toEqual([2, ""]);
+    },
+  );
 
   it("[F35.AC1] a new shape leaves the text as it was", () => {
     openStep("A new shape leaves the text as it was (US-063)");
@@ -412,9 +423,10 @@ describe("the guided test of F05 (VAL-014): the decisions to confirm", () => {
 
   it("letter spacing 100 001 refused, −100 000 accepted without a frame", () => {
     openStep("Spacing bounds ±100 000 (decision)");
-    typeValue("text-letter-spacing", "100001");
-    expect(readText("#status")).not.toBe("");
-    typeValue("text-letter-spacing", "-100000");
+    typeInField("text-letter-spacing", "100001");
+    // Refused by the field, its 0 shown again (US-087); −100 000 then takes 100 000 from 0.
+    expect([readValue("text-letter-spacing"), readText("#status")]).toEqual(["0", ""]);
+    typeInField("text-letter-spacing", "-100000");
     expect([readText("#status"), hasFrame(), readBlock().width]).toEqual(["", false, 0]);
   });
 
@@ -482,7 +494,7 @@ describe("the guided test of F05 (VAL-014): the browser checks and the end", () 
 
   it("[F05.AC5] a turned text grows in place: X 47, Y 61, its straight box, at a letter spacing of 10", () => {
     openStep("A turned text grows in place (US-038)");
-    typeValue("text-letter-spacing", "10");
+    typeAndEnter("text-letter-spacing", "10");
 
     // X and Y show its straight box (AUD-040); a growing text keeps its turned top-left corner
     // (ADR-0057), the highest point at 23°, so that, its height kept, X and Y stay.
@@ -491,7 +503,7 @@ describe("the guided test of F05 (VAL-014): the browser checks and the end", () 
 
   it("[F05.AC5] a step forgets the text last drawn, so that it is never placed from it", () => {
     openStep("A turned text grows in place (US-038)");
-    typeValue("text-letter-spacing", "10");
+    typeAndEnter("text-letter-spacing", "10");
 
     writeTextStepValues(document, readStepText("A turned text grows in place (US-038)"));
     expect(selectPageElement("#text-options").dataset["drawnText"]).toBeUndefined();
@@ -499,7 +511,7 @@ describe("the guided test of F05 (VAL-014): the browser checks and the end", () 
 
   it("[F05.AC5] a step comes back at its own position, not placed from the text last drawn", () => {
     openStep("A turned text grows in place (US-038)");
-    typeValue("text-letter-spacing", "10");
+    typeAndEnter("text-letter-spacing", "10");
     typeAndEnter("shape-x", "47");
     typeAndEnter("shape-y", "61");
     clickElement("guide-next");

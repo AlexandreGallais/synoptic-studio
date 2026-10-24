@@ -9,7 +9,6 @@ import {
   readText,
   readValue,
   typeAndEnter,
-  typeValue,
 } from "../user-actions";
 
 describe("rectangle as a free shape", () => {
@@ -70,7 +69,7 @@ describe("rectangle as a free shape", () => {
 
     clickPoint(3, false);
 
-    typeValue("point-radius", "30");
+    typeAndEnter("point-radius", "30");
 
     expect(document.querySelector<HTMLInputElement>("#radius")?.dataset["radii"]).toBe(
       "10 10 30 10",
@@ -95,7 +94,7 @@ describe("rectangle as a free shape", () => {
   });
 
   it("[F09.AC4] still refuses a fractional radius typed for the rectangle (Q15)", () => {
-    typeValue("radius", "2.5");
+    typeAndEnter("radius", "2.5");
 
     expect(readText("#status")).toBe(
       "Width, height and radius must be integers ≥ 0, and the angle an integer.",

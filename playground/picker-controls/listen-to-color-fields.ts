@@ -10,9 +10,9 @@ import { showColorPicker, updateColorPicker } from "../color-picker";
 /**
  * Listens to each color's fields: the hexadecimal field keeps its color when it gets the focus,
  * and commits what it holds when it is left or Enter pressed (`commitColorField`), the page
- * redrawn after, and an open picker following the color and its opacity; an opacity committed
- * and accepted marks a color that follows the text's as chosen (`commitOpacityField`, US-041),
- * before the page is redrawn.
+ * redrawn after, and an open picker following the color and its opacity; an opacity applied, on
+ * Enter or when it is left (US-087), and accepted marks a color that follows the text's as chosen
+ * (`commitOpacityField`, US-041), before the page is redrawn.
  *
  * @kind procedure
  * @param document - page document
@@ -35,12 +35,10 @@ export function listenToColorFields(document: Document, update: () => void): voi
       updateColorPicker(document);
     });
 
-    opacity.addEventListener("input", () => {
-      showColorPicker(document);
-    });
-
+    // Applied on Enter or when it is left, as every number field (US-087).
     opacity.addEventListener("change", () => {
       commitOpacityField(document, ids);
+      showColorPicker(document);
     });
   }
 }

@@ -9,7 +9,6 @@ import {
   readDisplay,
   readText,
   typeAndEnter,
-  typeValue,
 } from "../user-actions";
 
 /**
@@ -35,8 +34,8 @@ describe("playground: stretched polygon (US-021)", () => {
 
     typeAndEnter("width", "100");
     typeAndEnter("height", "100");
-    typeValue("radius", "0");
-    typeValue("corners", "6");
+    typeAndEnter("radius", "0");
+    typeAndEnter("corners", "6");
     chooseOption("shape", "polygon");
 
     expect(readDisplay("stretched-field") === "none").toBe(false);
@@ -57,7 +56,7 @@ describe("playground: stretched polygon (US-021)", () => {
   });
 
   it("[F06.AC3] stays stretched when the number of corners and the size change", () => {
-    typeValue("corners", "5");
+    typeAndEnter("corners", "5");
     typeAndEnter("width", "300");
     typeAndEnter("height", "50");
 
@@ -68,7 +67,7 @@ describe("playground: stretched polygon (US-021)", () => {
   });
 
   it("[F06.AC5] says the effective radii differ when its corners are clamped unequally", () => {
-    typeValue("radius", "1000");
+    typeAndEnter("radius", "1000");
 
     expect(readText("#effective")).toBe(
       "Effective radius: mixed, shown for each point in Points mode.",
@@ -76,8 +75,8 @@ describe("playground: stretched polygon (US-021)", () => {
   });
 
   it("[F06.AC1] goes back to the regular polygon, placed by its anchor, when unticked", () => {
-    typeValue("radius", "0");
-    typeValue("corners", "6");
+    typeAndEnter("radius", "0");
+    typeAndEnter("corners", "6");
     typeAndEnter("width", "100");
     typeAndEnter("height", "100");
     clickElement("stretched");
@@ -100,14 +99,14 @@ describe("playground: stretched polygon (US-021)", () => {
 
   it("ticks and unticks safely on a refused polygon, then draws again once it is valid", () => {
     chooseOption("shape", "polygon");
-    typeValue("radius", "-5");
+    typeAndEnter("radius", "-5");
     clickElement("stretched");
     clickElement("stretched");
 
     expect(readText("#status")).not.toBe("");
     expect(readText("#effective")).toBe("");
 
-    typeValue("radius", "0");
+    typeAndEnter("radius", "0");
 
     expect(readText("#status")).toBe("");
     expect(readText("#effective")).not.toBe("");

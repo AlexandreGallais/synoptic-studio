@@ -9,7 +9,7 @@ import {
   clickElement,
   openServedPage,
   selectChoice,
-  typeValue,
+  typeAndEnter,
   waitForPageTasks,
 } from "../user-actions";
 
@@ -73,8 +73,8 @@ describe("The font list written only when the session's fonts change (US-048)", 
 
   it("[F17.AC5] leaves the list as it is when the size, then the opacity changes", () => {
     markFontList();
-    typeValue("text-size", "40");
-    typeValue("text-opacity", "50");
+    typeAndEnter("text-size", "40");
+    typeAndEnter("text-opacity", "50");
 
     expect(isFontListMarked()).toBe(true);
   });

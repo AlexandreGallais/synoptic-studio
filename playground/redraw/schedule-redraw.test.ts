@@ -14,7 +14,6 @@ import {
   readText,
   setElementBox,
   typeAndEnter,
-  typeValue,
 } from "../user-actions";
 
 import { drawPendingRedraw } from "./draw-pending-redraw";
@@ -73,7 +72,7 @@ describe("A redraw per animation frame (US-048, REF-MDN-RAF)", () => {
       area.value = "Pump P-101\nRunning";
     }
 
-    typeValue("text-size", "16");
+    typeAndEnter("text-size", "16");
 
     // From here, the frames wait for the test to run them, as in a browser.
     holdFrames();
@@ -85,7 +84,7 @@ describe("A redraw per animation frame (US-048, REF-MDN-RAF)", () => {
     const sizes = Array.from({ length: 30 }, (unused, index) => 17 + index);
 
     for (const size of sizes) {
-      typeValue("text-size", String(size));
+      typeAndEnter("text-size", String(size));
     }
 
     // One frame asked for the 30 inputs, none drawn yet: no redraw waits behind another.
@@ -101,9 +100,9 @@ describe("A redraw per animation frame (US-048, REF-MDN-RAF)", () => {
   });
 
   it("[F17.AC5] asks a new frame for a value typed after the frame ran", () => {
-    typeValue("text-size", "20");
+    typeAndEnter("text-size", "20");
     runFrames();
-    typeValue("text-size", "32");
+    typeAndEnter("text-size", "32");
 
     expect(FRAMES).toHaveLength(1);
     runFrames();

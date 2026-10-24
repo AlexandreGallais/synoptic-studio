@@ -27,7 +27,7 @@ import {
   readValue,
   selectChoice,
   selectPageElement,
-  typeValue,
+  typeAndEnter,
   waitForPageTasks,
 } from "../user-actions";
 
@@ -259,7 +259,7 @@ describe("Installed fonts (US-036)", () => {
     openServedPage("");
     chooseShapeKind("text");
     chooseOption("text-weight", "400");
-    typeValue("text-size", "100");
+    typeAndEnter("text-size", "100");
   });
 
   afterEach(() => {

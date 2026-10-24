@@ -14,6 +14,7 @@ import {
   readValue,
   selectPageElement,
   setElementBox,
+  typeAndEnter,
   typeValue,
 } from "../user-actions";
 
@@ -169,7 +170,7 @@ describe("Color picker: opening, sliders and values (US-035)", () => {
   );
 
   it("[F16.AC2] draws the opacity's thumb at its percent: 40 % at 40 % of the track", () => {
-    typeValue("text-opacity", "40");
+    typeAndEnter("text-opacity", "40");
 
     // 100 · 40 / 100 = 40.
     expect(selectPageElement("#color-opacity-thumb").style.left).toBe("40%");
@@ -183,7 +184,7 @@ describe("Color picker: opening, sliders and values (US-035)", () => {
   });
 
   it("follows the opacity and the hexadecimal typed while it is open", () => {
-    typeValue("text-opacity", "40");
+    typeAndEnter("text-opacity", "40");
     expect(readAttribute("#color-opacity", "aria-valuenow")).toBe("40");
 
     typeAndLeave("text-color", "#336699");

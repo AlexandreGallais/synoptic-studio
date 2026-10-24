@@ -63,7 +63,7 @@ describe("Text tool", () => {
     openServedPage("");
     chooseShapeKind("text");
     // "H" over "HH" in Inter Regular 16: H advances 1522 of 2048 units, 11.890625; HH 23.78125.
-    typeValue("text-size", "16");
+    typeAndEnter("text-size", "16");
     // happy-dom does not select the option marked `selected` once the page is moved into its
     // document: the weight the page opens with, 400, is chosen again.
     chooseOption("text-weight", "400");
@@ -196,9 +196,9 @@ describe("Text tool", () => {
 
   it("[F05.AC2] writes the color, the opacity and the spacing typed", () => {
     typeValue("text-color", "#FF0000");
-    typeValue("text-opacity", "40");
-    typeValue("text-letter-spacing", "2");
-    typeValue("text-word-spacing", "-4");
+    typeAndEnter("text-opacity", "40");
+    typeAndEnter("text-letter-spacing", "2");
+    typeAndEnter("text-word-spacing", "-4");
 
     expect(
       ["fill", "fill-opacity", "letter-spacing", "word-spacing"].map((name) =>
@@ -301,7 +301,7 @@ describe("Text tool", () => {
   });
 
   it("refuses a size of 0 and draws nothing, saying why, the last valid text kept", () => {
-    typeValue("text-size", "0");
+    typeAndEnter("text-size", "0");
     expect(readText("#status")).toContain("Size must be an integer from 1 to 100 000");
     expect(document.querySelectorAll("#canvas text")).toHaveLength(0);
     expect(selectPageElement("#text-size").getAttribute("aria-invalid")).toBe("true");
@@ -310,8 +310,8 @@ describe("Text tool", () => {
   });
 
   it("draws the text again once the size is valid, its fields no longer outlined", () => {
-    typeValue("text-size", "0");
-    typeValue("text-size", "16");
+    typeAndEnter("text-size", "0");
+    typeAndEnter("text-size", "16");
     expect(readText("#status")).toBe("");
     expect(selectPageElement("#text-size").getAttribute("aria-invalid")).toBe("false");
     expect(readLines()).toHaveLength(2);

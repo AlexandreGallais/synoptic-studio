@@ -138,8 +138,8 @@ function dragBy(from: Point, by: Point): void {
  * @param x - its x, its y 20
  */
 function typeRectangle(x: string): void {
-  typeValue("angle", "0");
-  typeValue("radius", "0");
+  typeAndEnter("angle", "0");
+  typeAndEnter("radius", "0");
   typeAndEnter("width", "100");
   typeAndEnter("height", "50");
   typeAndEnter("shape-x", x);
@@ -970,7 +970,7 @@ describe("Undo and Redo the buttons of the panel (US-075)", () => {
       name: "Convert to free shape",
       prepare: (): void => {
         // A rectangle is kept as a free shape already: a hexagon converted.
-        typeValue("corners", "6");
+        typeAndEnter("corners", "6");
         chooseOption("shape", "polygon");
       },
     },

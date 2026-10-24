@@ -14,7 +14,7 @@ import {
   selectChoice,
   selectInput,
   selectPageElement,
-  typeValue,
+  typeAndEnter,
 } from "../user-actions";
 
 import type { TestFace } from "../../tests";
@@ -128,7 +128,7 @@ describe("Import a font (US-036)", () => {
     openServedPage("");
     chooseShapeKind("text");
     chooseOption("text-weight", "400");
-    typeValue("text-size", "100");
+    typeAndEnter("text-size", "100");
     typeContent("AB");
   });
 
@@ -235,7 +235,7 @@ describe("Import a font (US-036)", () => {
         "Other Grotesk 400 imported.",
       );
 
-      typeValue("text-size", "16");
+      typeAndEnter("text-size", "16");
       typeContent("Hello World");
 
       // Inter's advances 11 279 units, its kerning W o −104 and r l +32: 11 207 × 16 / 1024 =

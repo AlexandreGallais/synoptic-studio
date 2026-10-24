@@ -14,6 +14,7 @@ import {
   readValue,
   selectPageElement,
   setElementBox,
+  typeAndEnter,
   typeValue,
 } from "../../user-actions";
 import { GUIDED_STEPS } from "../lists";
@@ -173,7 +174,7 @@ describe("the guided test of F16 (VAL-016): the ways to type and pick a color", 
 
   it("[F16.AC1] opacity 40: fill-opacity 0.4, the model's opacity 40", () => {
     openStep("Opacity");
-    typeValue("text-opacity", "40");
+    typeAndEnter("text-opacity", "40");
     expect(readFills().slice(0, 2)).toEqual(["#ff8000", "0.4"]);
     expect(readText("#model")).toContain('"opacity": 40');
   });
@@ -525,7 +526,7 @@ describe("the guided test of F16 (VAL-016): its decisions, each with its example
   it("decision 16: the opacity typed while open moves the bar; Escape gives the swatch the focus", () => {
     openStep("Under its fields; Escape (decision 16)");
     clickElement("text-color-swatch");
-    typeValue("text-opacity", "50");
+    typeAndEnter("text-opacity", "50");
     expect(selectPageElement("#color-opacity").getAttribute("aria-valuenow")).toBe("50");
     selectPageElement("#color-hue").focus();
     pressKey("body", "Escape");

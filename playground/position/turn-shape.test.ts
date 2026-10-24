@@ -10,7 +10,6 @@ import {
   readText,
   readValue,
   typeAndEnter,
-  typeValue,
 } from "../user-actions";
 
 /**
@@ -27,7 +26,7 @@ function drawn(name: string): number {
 function convertSquare(): void {
   chooseOption("shape", "polygon");
 
-  typeValue("corners", "4");
+  typeAndEnter("corners", "4");
   clickElement("mode-points");
   clickElement("convert");
 }
@@ -36,7 +35,7 @@ describe("turning and moving a shape (US-018)", () => {
   beforeEach(() => {
     // Step 1 of the guided test: a 120 × 80 rectangle, radius 10 (F01).
     openPage("?step=1");
-    typeValue("radius", "0");
+    typeAndEnter("radius", "0");
   });
 
   it("[F04.AC5] shows a straight shape at 0°, its straight box being its box", () => {
@@ -49,26 +48,26 @@ describe("turning and moving a shape (US-018)", () => {
   it("[F04.AC1] turns the rectangle clockwise by 90° about the center of its box", () => {
     // 120 × 80, center (60, 40): (0, 0) ↦ (60 + 40, 40 − 60) = (100, −20); the straight box runs
     // from (20, −20), 80 wide and 120 high.
-    typeValue("angle", "90");
+    typeAndEnter("angle", "90");
 
     expect(readText("#straight-box")).toBe("Straight box: x 20, y -20, width 80, height 120");
     expect(readText("#path-data")).toBe("M100 -20 L100 100 L20 100 L20 -20 Z");
   });
 
   it("[F04.AC5] draws the turned box as the selection and the straight box dashed", () => {
-    typeValue("angle", "30");
+    typeAndEnter("angle", "30");
 
     expect(drawn("turned-box")).toBe(1);
     expect(drawn("straight-box")).toBe(1);
   });
 
   it("[F04.AC1] shows the angle kept from 0 to 359 once typed", () => {
-    typeValue("angle", "370");
+    typeAndEnter("angle", "370");
     commitField("angle");
 
     expect(readValue("angle")).toBe("10");
 
-    typeValue("angle", "-90");
+    typeAndEnter("angle", "-90");
     commitField("angle");
 
     expect(readValue("angle")).toBe("270");
@@ -90,7 +89,7 @@ describe("turning and moving a shape (US-018)", () => {
   });
 
   it("[F04.AC3] moves the shape so that its straight box starts at the x and y typed", () => {
-    typeValue("angle", "90");
+    typeAndEnter("angle", "90");
     typeAndEnter("shape-x", "0");
     typeAndEnter("shape-y", "0");
 
@@ -101,7 +100,7 @@ describe("turning and moving a shape (US-018)", () => {
 
   it("[F04.AC3] keeps the center of the box where it is when the shape turns", () => {
     typeAndEnter("shape-x", "100");
-    typeValue("angle", "90");
+    typeAndEnter("angle", "90");
 
     // At (100, 0) the center is (160, 40); turned, the straight box runs from 160 − 40 = 120.
     expect(readText("#straight-box")).toBe("Straight box: x 120, y -20, width 80, height 120");
@@ -110,13 +109,13 @@ describe("turning and moving a shape (US-018)", () => {
   it("[F04.AC2] turns a polygon's box with it: a triangle's base at the bottom goes to the left", () => {
     chooseOption("shape", "polygon");
 
-    typeValue("corners", "3");
+    typeAndEnter("corners", "3");
     typeAndEnter("width", "100");
     typeAndEnter("height", "100");
 
     chooseRadio("anchor", "mid max");
 
-    typeValue("angle", "90");
+    typeAndEnter("angle", "90");
 
     // The base, at y = 100 from x = 0 to 100, turned about (50, 50), lies on x = 0: point 1, the
     // right end of the base (100, 100), is drawn at (0, 100).
@@ -125,7 +124,7 @@ describe("turning and moving a shape (US-018)", () => {
   });
 
   it("[F04.AC1] refuses an angle that is not an integer", () => {
-    typeValue("angle", "2.5");
+    typeAndEnter("angle", "2.5");
 
     expect(readText("#status")).not.toBe("");
   });
@@ -138,7 +137,7 @@ describe("turning and moving a shape (US-018)", () => {
 
   it("[F04.AC5] draws the turned box as a frame: the box and the box inset by 1", () => {
     // 120 × 80 at 90°: outer box from (20, −20) to (100, 100); inner one from (21, −19) to (99, 99).
-    typeValue("angle", "90");
+    typeAndEnter("angle", "90");
 
     expect(document.querySelector("#canvas path.turned-box")?.getAttribute("d")).toBe(
       "M100 -20 L100 100 L20 100 L20 -20 Z M99 -19 L99 99 L21 99 L21 -19 Z",
@@ -149,7 +148,7 @@ describe("turning and moving a shape (US-018)", () => {
     const field = document.querySelector<HTMLInputElement>("#shape-x");
 
     field?.focus();
-    typeValue("angle", "90");
+    typeAndEnter("angle", "90");
 
     // The straight box starts at 20 now, but the field being typed keeps what it holds.
     expect(field?.value).toBe("0");
@@ -166,13 +165,13 @@ describe("turning and moving a shape (US-018)", () => {
   it("[F04.AC1] turns a converted free shape from the angle field", () => {
     convertSquare();
     // The square fitted in the 120 × 80 box is 80 × 80; at 45° its straight box is 80√2 wide.
-    typeValue("angle", "45");
+    typeAndEnter("angle", "45");
 
     expect(readText("#straight-box")).toMatch(/width 113\.13708, height 113\.13708$/u);
   });
 
   it("[F04.AC5] turns from 0 with a button when the angle field is empty", () => {
-    typeValue("angle", "");
+    typeAndEnter("angle", "");
     clickElement("turn-right");
 
     expect(readValue("angle")).toBe("90");
@@ -180,7 +179,7 @@ describe("turning and moving a shape (US-018)", () => {
 
   it("[F04.AC1] keeps the view still while the shape turns, so that it turns about its center on screen", () => {
     // 120 × 80 turned by 90° goes up to y −20: the view does not follow it (VAL-007).
-    typeValue("angle", "90");
+    typeAndEnter("angle", "90");
 
     expect(document.querySelector("#canvas svg")?.getAttribute("viewBox")).toMatch(/^-40 -40 /u);
   });
@@ -190,7 +189,7 @@ describe("turning and moving a shape (US-018)", () => {
 
     expect(readText("#guide-title")).toBe("F04 · Turn by 90°");
 
-    typeValue("angle", "90");
+    typeAndEnter("angle", "90");
 
     expect(readText("#straight-box")).toBe("Straight box: x 20, y -20, width 80, height 120");
 

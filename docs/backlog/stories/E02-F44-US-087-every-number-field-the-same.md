@@ -3,7 +3,7 @@ id: US-087
 epic: E02
 feature: F44
 title: Every number field of the panel the same
-status: ready
+status: done
 points: 3
 ---
 
@@ -29,15 +29,18 @@ The examples use the page as it opens, the rectangle 120 × 80 at (0, 0), select
 
 | Step | Do | You should see |
 | --- | --- | --- |
-| 1 | Click in the corner radius and press Shift + Up | the radius 10 more, the corners rounder |
-| 2 | Type `+5` in the radius, then Enter | the radius 5 more, only once Enter is pressed |
-| 3 | Pick the polygon, click in its sides and press Shift + Up | 10 more sides |
-| 4 | Hold Up in the radius for a second, release, then Ctrl + Z (Cmd + Z on a Mac) | one undo brings the radius back |
+| 1 | Click in the corner radius (10) and press Shift + Up, then Up | 20, then 21; the corners rounder each time |
+| 2 | Type `+5` in the radius, then press Enter | 26, the corners rounder only once Enter is pressed |
+| 3 | Type `-30` in the radius, then press Enter | the field shows 26 again, the rectangle unchanged: 26 − 30 is below 0 |
+| 4 | Hold Up in the radius for a second, release, then press Ctrl + Z (Cmd + Z on a Mac) | the radius grows while held; one undo brings it back to 26 |
+| 5 | Click in the history's Memory (100 MB), in the toolbar, and press Shift + Up | 110 |
+| 6 | Pick the Polygon tool, click the empty drawing, click in Corners (6) and press Up, then Shift + Up | 7 corners, then still 7: 17 is past 12 |
+| 7 | Type `-90` in Angle (0), then press Enter | 270, the polygon turned a quarter left: −90 is 90 taken away, kept from 0 to 359 |
 
 ## Tasks
 
-- [ ] T1 — The page's number fields listed with their steps and bounds, the rule of US-085 given to them all as text fields acting as number fields; `interaction.md` §2 and its Q row; tests of the criteria first, failing, the test over every field included (1 h)
-- [ ] T2 — The code that passes them, each field's `input` listener replaced by `change` and `keydown` as US-085's, its burst and its step; the existing tests of those fields brought to the new behaviour (2 h)
-- [ ] T3 — The Product Owner test card, and the guide pages that name a field's step (1 h)
+- [x] T1 — The page's number fields listed with their steps and bounds, the rule of US-085 given to them all as text fields acting as number fields; `interaction.md` §2 and its Q row; tests of the criteria first, failing, the test over every field included (1 h)
+- [x] T2 — The code that passes them, each field's `input` listener replaced by `change` and `keydown` as US-085's, its burst and its step; the existing tests of those fields brought to the new behaviour (2 h)
+- [x] T3 — The Product Owner test card, and the guide pages that name a field's step (1 h)
 
 One task = one commit, referenced as `US-087.Tn` in the commit footer.

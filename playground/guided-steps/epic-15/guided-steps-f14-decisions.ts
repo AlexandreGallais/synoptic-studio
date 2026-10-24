@@ -47,7 +47,7 @@ export const GUIDED_STEPS_F14_DECISIONS: readonly GuidedStep[] = [
   },
   {
     explanation: "Nothing to type: a box 50 × 5. Then Max lines 100001.",
-    look: "“Hell…”: one line at least, though 19.36 is taller than 5; then refused.",
+    look: "“Hell…”: one line at least, though 19.36 is taller than 5; then refused, 0 shown again.",
     title: "F14 · One line at least (decision 6)",
     values: createTextBoxStepValues({ boxHeight: 5, boxWidth: 50, isInBox: true }),
   },

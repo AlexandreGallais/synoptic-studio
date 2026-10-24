@@ -9,7 +9,6 @@ import {
   readText,
   selectInput,
   typeAndEnter,
-  typeValue,
 } from "../user-actions";
 
 /**
@@ -82,10 +81,10 @@ describe("list of points and selection", () => {
   it("[F03.AC5] gives the radius typed to the selected points only", () => {
     // Vertex 2 first gets a radius of its own, which must stay.
     clickWithKeys('#points [data-vertex="2"]', {});
-    typeValue("point-radius", "3");
+    typeAndEnter("point-radius", "3");
     clickWithKeys('#points [data-vertex="1"]', {});
     clickWithKeys('#points [data-vertex="4"]', { ctrlKey: true });
-    typeValue("point-radius", "10");
+    typeAndEnter("point-radius", "10");
 
     expect(keptRadii()).toBe("10 3 0 10 0 0");
     expect(readText("#path-data").match(/A10 10/gu)).toHaveLength(2);
@@ -103,7 +102,7 @@ describe("list of points and selection", () => {
     // Hexagon edge 50, turning angle 60°: setback 1000 · tan 30° = 577.35 per corner; the edge
     // allows 50, so r' = 1000 · 50 / 577.35 = 86.60254.
     clickWithKeys('#points [data-vertex="1"]', {});
-    typeValue("point-radius", "1000");
+    typeAndEnter("point-radius", "1000");
 
     expect(readText('#points [data-vertex="1"]')).toBe(
       "1 · x 75 · y 93.30127 · radius 1000 (effective 86.60254)",
@@ -112,7 +111,7 @@ describe("list of points and selection", () => {
 
   it("[F03.AC5] clears the selection when the number of corners changes or Shape mode is chosen", () => {
     clickWithKeys('#points [data-vertex="2"]', {});
-    typeValue("corners", "5");
+    typeAndEnter("corners", "5");
 
     expect(pressedRows()).toEqual([]);
 
@@ -124,7 +123,7 @@ describe("list of points and selection", () => {
 
   it("[F03.AC5] keeps every radius while the shape is briefly refused", () => {
     clickWithKeys('#points [data-vertex="6"]', {});
-    typeValue("point-radius", "9");
+    typeAndEnter("point-radius", "9");
     typeAndEnter("angle", "");
 
     // Refused: no list nor handle of the last valid shape.
@@ -151,7 +150,7 @@ describe("list of points and selection", () => {
 
   it("[F02.AC5] caps a radius typed in Points mode at 100 000 (Q20)", () => {
     clickWithKeys('#points [data-vertex="1"]', {});
-    typeValue("point-radius", "200000");
+    typeAndEnter("point-radius", "200000");
 
     expect(selectInput("point-radius").value).toBe("100000");
     expect(keptRadii()).toBe("100000 0 0 0 0 0");
@@ -159,21 +158,21 @@ describe("list of points and selection", () => {
 
   it("[F03.AC3] keeps a radius given in Points mode by vertex number when the corners change", () => {
     clickWithKeys('#points [data-vertex="1"]', {});
-    typeValue("point-radius", "10");
+    typeAndEnter("point-radius", "10");
     clickWithKeys('#points [data-vertex="6"]', {});
-    typeValue("point-radius", "9");
-    typeValue("corners", "5");
+    typeAndEnter("point-radius", "9");
+    typeAndEnter("corners", "5");
 
     expect(keptRadii()).toBe("10 0 0 0 0");
 
-    typeValue("corners", "6");
+    typeAndEnter("corners", "6");
 
     expect(keptRadii()).toBe("10 0 0 0 0 0");
   });
 
   it("[F03.AC3] keeps the radii by vertex number when switching to the rectangle and back", () => {
     clickWithKeys('#points [data-vertex="2"]', {});
-    typeValue("point-radius", "7");
+    typeAndEnter("point-radius", "7");
 
     chooseOption("shape", "rectangle");
     chooseOption("shape", "polygon");

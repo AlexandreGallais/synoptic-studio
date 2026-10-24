@@ -9,7 +9,6 @@ import {
   clickElement,
   openServedPage,
   typeAndEnter,
-  typeValue,
 } from "../user-actions";
 
 /** The library, its measuring functions typed: the others are spread as they are. */
@@ -67,7 +66,7 @@ describe("What a redraw computes again (US-048)", () => {
   beforeEach(() => {
     openServedPage("");
     chooseShapeKind("text");
-    typeValue("text-size", "16");
+    typeAndEnter("text-size", "16");
 
     // From here, the frames wait for the test to run them, as in a browser.
     Object.defineProperty(document.defaultView ?? {}, "requestAnimationFrame", {
@@ -83,7 +82,7 @@ describe("What a redraw computes again (US-048)", () => {
   });
 
   it("[F17.AC5] an opacity changed: the metrics, lines and block kept, the text drawn once", () => {
-    typeValue("text-opacity", "50");
+    typeAndEnter("text-opacity", "50");
     runFrames();
 
     expect(readCounts()).toEqual({ drawing: 1, measure: 0, metrics: 0, wholeDrawing: 0 });
@@ -97,7 +96,7 @@ describe("What a redraw computes again (US-048)", () => {
   });
 
   it("[F17.AC5] a size changed: the metrics kept, the lines and block measured again", () => {
-    typeValue("text-size", "20");
+    typeAndEnter("text-size", "20");
     runFrames();
 
     expect(readCounts()).toEqual({ drawing: 1, measure: 1, metrics: 0, wholeDrawing: 0 });

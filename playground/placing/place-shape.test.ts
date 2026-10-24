@@ -21,7 +21,6 @@ import {
   setElementBox,
   typeAndEnter,
   typeTextContent,
-  typeValue,
 } from "../user-actions";
 
 import type { Point } from "../../src";
@@ -284,7 +283,7 @@ describe("a click with a tool adds a shape where it is clicked (US-063)", () => 
   it("[F35.AC1] keeps no refused text: a text of size 0 is not drawn below", () => {
     chooseOption("text-weight", "400");
     placeShape("text", { x: 250, y: 140 });
-    typeValue("text-size", "0");
+    typeAndEnter("text-size", "0");
 
     expect(readText("#status")).not.toBe("");
 
@@ -338,12 +337,12 @@ describe("what a new shape starts with (SP-026)", () => {
 
   it("[F35.AC1] gives a polygon the last polygon's settings, a rectangle the last rectangle's", () => {
     placeShape("polygon", { x: 100, y: 100 });
-    typeValue("corners", "3");
-    typeValue("radius", "4");
+    typeAndEnter("corners", "3");
+    typeAndEnter("radius", "4");
     chooseRadio("anchor", "mid max");
-    typeValue("angle", "30");
+    typeAndEnter("angle", "30");
     placeShape("rectangle", { x: 400, y: 100 });
-    typeValue("radius", "0");
+    typeAndEnter("radius", "0");
 
     placeShape("polygon", { x: 250, y: 140 });
 
@@ -361,7 +360,7 @@ describe("what a new shape starts with (SP-026)", () => {
   });
 
   it("[F35.AC1] gives the first polygon the page's 6 corners and radius 10, whatever the rectangle's", () => {
-    typeValue("radius", "4");
+    typeAndEnter("radius", "4");
     placeShape("polygon", { x: 250, y: 140 });
 
     expect([readValue("corners"), readValue("radius"), readCheckedRadio("anchor")]).toEqual([
@@ -377,7 +376,7 @@ describe("what a new shape starts with (SP-026)", () => {
 
   it("[F35.AC1] gives a polygon the settings of the last one, converted to a free shape since", () => {
     placeShape("polygon", { x: 250, y: 140 });
-    typeValue("corners", "3");
+    typeAndEnter("corners", "3");
     clickElement("mode-points");
     clickElement("convert");
 
@@ -392,7 +391,7 @@ describe("what a new shape starts with (SP-026)", () => {
   it("[F35.AC1] gives a rectangle the last rectangle's radius of each corner", () => {
     clickElement("mode-points");
     clickPoint(1, false);
-    typeValue("point-radius", "20");
+    typeAndEnter("point-radius", "20");
     clickElement("mode-shape");
     placeShape("polygon", { x: 250, y: 140 });
 
@@ -410,8 +409,8 @@ describe("what a new shape starts with (SP-026)", () => {
   it("[F35.AC1] gives a new text the last text's options and no content of its own", () => {
     chooseOption("text-weight", "400");
     placeText({ x: 250, y: 140 }, "Pump");
-    typeValue("text-size", "20");
-    typeValue("angle", "45");
+    typeAndEnter("text-size", "20");
+    typeAndEnter("angle", "45");
     placeShape("rectangle", { x: 400, y: 300 });
     placeShape("text", { x: 250, y: 300 });
 
@@ -433,7 +432,7 @@ describe("what a new shape starts with (SP-026)", () => {
 
   it("[F35.AC1] forgets the settings kept on Reset: the next polygon has the page's", () => {
     placeShape("polygon", { x: 250, y: 140 });
-    typeValue("corners", "3");
+    typeAndEnter("corners", "3");
     placeShape("rectangle", { x: 400, y: 300 });
     clickElement("tool-reset");
     placeShape("polygon", { x: 250, y: 140 });
@@ -443,7 +442,7 @@ describe("what a new shape starts with (SP-026)", () => {
 
   it("[F35.AC1] forgets the last text's options on Reset: the next text is Inter 32 Regular", () => {
     placeShape("text", { x: 250, y: 140 });
-    typeValue("text-size", "20");
+    typeAndEnter("text-size", "20");
     chooseOption("text-weight", "700");
     clickElement("tool-reset");
     placeShape("text", { x: 250, y: 140 });
@@ -455,7 +454,7 @@ describe("what a new shape starts with (SP-026)", () => {
     ]);
 
     // The epic's step 2 holds no text: the next text is the page's too.
-    typeValue("text-size", "20");
+    typeAndEnter("text-size", "20");
     clickElement("guide-next");
     placeShape("text", { x: 250, y: 140 });
 

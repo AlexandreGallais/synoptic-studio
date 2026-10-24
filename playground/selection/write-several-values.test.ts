@@ -137,10 +137,10 @@ function drawAAndB(): void {
  * Sets the rectangle the panel edits to A, sharp, 100 × 50 at (10, 20), then turns it by 30°.
  */
 function turnA(): void {
-  typeValue("angle", "0");
-  typeValue("radius", "0");
+  typeAndEnter("angle", "0");
+  typeAndEnter("radius", "0");
   typeBox(["10", "20", "100", "50"]);
-  typeValue("angle", "30");
+  typeAndEnter("angle", "30");
 }
 
 /**
@@ -155,7 +155,7 @@ function placeTurnedText(point: Point): void {
   typeAndEnter("text-box-height", "20");
   typeAndEnter("shape-x", "47");
   typeAndEnter("shape-y", "61");
-  typeValue("angle", "23");
+  typeAndEnter("angle", "23");
 }
 
 /**
@@ -790,7 +790,7 @@ describe("several shapes' width and height, the cases tried (US-082)", () => {
     // (60 − 60 cos 30° + 40 sin 30°, 40 − 60 sin 30° − 40 cos 30°) = (28.03848, −24.64102).
     // 150 wide, its middle is that corner + (75 cos 30° − 40 sin 30°, 75 sin 30° + 40 cos 30°)
     // = (72.99038, 47.5), its position (72.99038 − 75, 47.5 − 40) = (−2.00962, 7.5).
-    typeValue("angle", "30");
+    typeAndEnter("angle", "30");
     placeHexagonAndRound();
     selectAll();
     typeAndEnter("several-width", "150");

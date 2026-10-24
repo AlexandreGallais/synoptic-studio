@@ -11,7 +11,6 @@ import {
   selectPageElement,
   setElementBox,
   typeAndEnter,
-  typeValue,
 } from "../user-actions";
 
 import type { Point } from "../../src";
@@ -219,7 +218,7 @@ describe("The list of the history's steps (US-077)", () => {
   });
 
   it("[F41.AC1] names A made a hexagon, then converted to a free shape, 'Convert' each", () => {
-    typeValue("corners", "6");
+    typeAndEnter("corners", "6");
     chooseOption("shape", "polygon");
     clickElement("convert");
 

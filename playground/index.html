@@ -266,7 +266,7 @@
         font-size: 0.85em;
         white-space: nowrap;
       }
-      #toolbar input[type="number"] {
+      #toolbar input[data-number-field] {
         display: inline-block;
         width: 4.2rem;
         height: 1.9rem;
@@ -551,7 +551,6 @@
         color: #fff;
         background: var(--accent);
       }
-      input[type="number"],
       input[data-number-field] {
         box-sizing: border-box;
         display: block;
@@ -710,13 +709,28 @@
           <label
             title="The memory the history keeps for Undo and Redo, from 0 to 1,000 MB: beyond it, the oldest steps are dropped first, never fewer than the steps kept. A move of a rectangle 100 × 50 alone adds about 1,244 bytes, of the 120 × 80 the page opens with 1,248."
             >Memory
-            <input id="history-memory" type="number" min="0" max="1000" step="1" value="100" />
+            <input
+              id="history-memory"
+              type="text"
+              autocomplete="off"
+              data-number-field="own"
+              data-min="0"
+              data-max="1000"
+              value="100"
+            />
             MB</label
           >
           <label
             title="The last steps kept whatever their memory, from 0 to 100: a change of many shapes may take more than the whole memory and stays undoable."
             >Steps kept
-            <input id="history-steps" type="number" min="0" max="100" step="1" value="5"
+            <input
+              id="history-steps"
+              type="text"
+              autocomplete="off"
+              data-number-field="own"
+              data-min="0"
+              data-max="100"
+              value="5"
           /></label>
           <span id="history-size"></span>
           <span
@@ -747,7 +761,13 @@
               <label
                 title="A percentage from 1 to 25,600, applied by Enter or by leaving the field, about the canvas's centre"
                 >Zoom
-                <input id="zoom-field" type="number" min="1" max="25600" step="any" value="100" />
+                <input
+                  id="zoom-field"
+                  type="text"
+                  autocomplete="off"
+                  data-number-field="own"
+                  value="100"
+                />
                 %</label
               >
             </div>
@@ -799,7 +819,15 @@
         <section id="polygon-options" aria-labelledby="polygon-heading">
           <h2 id="polygon-heading">Polygon</h2>
           <label id="corners-field" hidden
-            >Corners <input id="corners" type="number" min="3" max="12" step="1" value="6"
+            >Corners
+            <input
+              id="corners"
+              type="text"
+              autocomplete="off"
+              data-number-field="own"
+              data-min="3"
+              data-max="12"
+              value="6"
           /></label>
           <label id="stretched-field" hidden
             ><input id="stretched" type="checkbox" /> Stretched to its box</label
@@ -846,7 +874,15 @@ Running</textarea>
           >
           <div class="pair">
             <label
-              >Size <input id="text-size" type="number" min="1" max="100000" step="1" value="32"
+              >Size
+              <input
+                id="text-size"
+                type="text"
+                autocomplete="off"
+                data-number-field="own"
+                data-min="1"
+                data-max="100000"
+                value="32"
             /></label>
             <label
               >Weight
@@ -882,16 +918,39 @@ Running</textarea>
             <label>Color <input id="text-color" type="text" value="#1e293b" /></label>
             <label
               >Opacity (%)
-              <input id="text-opacity" type="number" min="0" max="100" step="1" value="100"
+              <input
+                id="text-opacity"
+                type="text"
+                autocomplete="off"
+                data-number-field="own"
+                data-min="0"
+                data-max="100"
+                value="100"
             /></label>
           </div>
           <p id="text-color-message" class="color-message" role="status"></p>
           <div class="pair">
             <label
-              >Letter spacing <input id="text-letter-spacing" type="number" step="1" value="0"
+              >Letter spacing
+              <input
+                id="text-letter-spacing"
+                type="text"
+                autocomplete="off"
+                data-number-field="own"
+                data-min="-100000"
+                data-max="100000"
+                value="0"
             /></label>
             <label
-              >Word spacing <input id="text-word-spacing" type="number" step="1" value="0"
+              >Word spacing
+              <input
+                id="text-word-spacing"
+                type="text"
+                autocomplete="off"
+                data-number-field="own"
+                data-min="-100000"
+                data-max="100000"
+                value="0"
             /></label>
           </div>
           <label><input id="text-underline" type="checkbox" /> Underline</label>
@@ -915,10 +974,11 @@ Running</textarea>
               >Underline opacity (%)
               <input
                 id="text-underline-opacity"
-                type="number"
-                min="0"
-                max="100"
-                step="1"
+                type="text"
+                autocomplete="off"
+                data-number-field="own"
+                data-min="0"
+                data-max="100"
                 value="100"
             /></label>
           </div>
@@ -946,7 +1006,14 @@ Running</textarea>
             /></label>
             <label
               >Strike-through opacity (%)
-              <input id="text-strike-opacity" type="number" min="0" max="100" step="1" value="100"
+              <input
+                id="text-strike-opacity"
+                type="text"
+                autocomplete="off"
+                data-number-field="own"
+                data-min="0"
+                data-max="100"
+                value="100"
             /></label>
           </div>
           <p id="text-strike-color-message" class="color-message" role="status"></p>
@@ -1018,7 +1085,14 @@ Running</textarea>
             </button>
             <label
               >Max lines (0 none)
-              <input id="text-maximum-lines" type="number" min="0" max="100000" step="1" value="0"
+              <input
+                id="text-maximum-lines"
+                type="text"
+                autocomplete="off"
+                data-number-field="own"
+                data-min="0"
+                data-max="100000"
+                value="0"
             /></label>
             <label><input id="text-ellipsis" type="checkbox" checked /> Ellipsis</label>
             <label
@@ -1033,7 +1107,14 @@ Running</textarea>
           <div class="pair">
             <label
               >Line height (0 auto)
-              <input id="text-line-height" type="number" min="0" max="100000" step="1" value="0"
+              <input
+                id="text-line-height"
+                type="text"
+                autocomplete="off"
+                data-number-field="own"
+                data-min="0"
+                data-max="100000"
+                value="0"
             /></label>
             <label><input id="text-trim" type="checkbox" /> Trim</label>
           </div>
@@ -1057,10 +1138,11 @@ Running</textarea>
               >Background opacity (%)
               <input
                 id="text-background-opacity"
-                type="number"
-                min="0"
-                max="100"
-                step="1"
+                type="text"
+                autocomplete="off"
+                data-number-field="own"
+                data-min="0"
+                data-max="100"
                 value="100"
             /></label>
           </div>
@@ -1111,15 +1193,24 @@ Running</textarea>
                 </select></label
               >
               <label
-                >H (°) <input id="color-hue-value" type="number" min="0" max="360" step="0.1"
+                >H (°)
+                <input id="color-hue-value" type="text" autocomplete="off" data-number-field="own"
               /></label>
               <label
                 >S (%)
-                <input id="color-saturation-value" type="number" min="0" max="100" step="0.1"
+                <input
+                  id="color-saturation-value"
+                  type="text"
+                  autocomplete="off"
+                  data-number-field="own"
               /></label>
               <label
                 ><span id="color-level-name">B</span> (%)
-                <input id="color-level-value" type="number" min="0" max="100" step="0.1"
+                <input
+                  id="color-level-value"
+                  type="text"
+                  autocomplete="off"
+                  data-number-field="own"
               /></label>
             </div>
           </div>
@@ -1147,7 +1238,10 @@ Running</textarea>
         <fieldset id="placement">
           <legend>Angle and position</legend>
           <p id="turn">
-            <label>Angle (°) <input id="angle" type="number" step="1" value="0" /></label>
+            <label
+              >Angle (°)
+              <input id="angle" type="text" autocomplete="off" data-number-field="own" value="0"
+            /></label>
             <button id="turn-left" type="button">−90°</button>
             <button id="turn-right" type="button">+90°</button>
           </p>
@@ -1164,7 +1258,14 @@ Running</textarea>
         <section id="corners-section" aria-labelledby="corners-heading">
           <h2 id="corners-heading">Corners</h2>
           <label id="radius-field"
-            >Radius <input id="radius" type="number" min="0" max="100000" step="1" value="10"
+            >Radius
+            <input
+              id="radius"
+              type="text"
+              autocomplete="off"
+              data-number-field="own"
+              data-min="0"
+              value="10"
           /></label>
           <p id="effective"></p>
         </section>
@@ -1173,7 +1274,13 @@ Running</textarea>
           <legend>Points</legend>
           <button id="handles-switch" type="button" aria-pressed="false" hidden>Handles</button>
           <label id="point-radius-field"
-            >Radius <input id="point-radius" type="number" min="0" max="100000" step="1"
+            >Radius
+            <input
+              id="point-radius"
+              type="text"
+              autocomplete="off"
+              data-number-field="own"
+              data-min="0"
           /></label>
           <fieldset id="handle-fields" hidden>
             <legend>Handles</legend>
@@ -1195,27 +1302,31 @@ Running</textarea>
             <div class="pair">
               <label
                 >Before <span class="handle-axis">x</span>
-                <input id="handle-before-x" type="number" step="1"
+                <input id="handle-before-x" type="text" autocomplete="off" data-number-field="own"
               /></label>
               <label
                 >Before <span class="handle-axis">y</span>
-                <input id="handle-before-y" type="number" step="1"
+                <input id="handle-before-y" type="text" autocomplete="off" data-number-field="own"
               /></label>
             </div>
             <div class="pair">
               <label
                 >After <span class="handle-axis">x</span>
-                <input id="handle-after-x" type="number" step="1"
+                <input id="handle-after-x" type="text" autocomplete="off" data-number-field="own"
               /></label>
               <label
                 >After <span class="handle-axis">y</span>
-                <input id="handle-after-y" type="number" step="1"
+                <input id="handle-after-y" type="text" autocomplete="off" data-number-field="own"
               /></label>
             </div>
           </fieldset>
           <div class="pair">
-            <label>X <input id="point-x" type="number" step="1" /></label>
-            <label>Y <input id="point-y" type="number" step="1" /></label>
+            <label
+              >X <input id="point-x" type="text" autocomplete="off" data-number-field="own"
+            /></label>
+            <label
+              >Y <input id="point-y" type="text" autocomplete="off" data-number-field="own"
+            /></label>
           </div>
           <button id="add-midpoint" type="button">Add a point in the middle</button>
           <button id="delete-points" type="button">Delete points</button>

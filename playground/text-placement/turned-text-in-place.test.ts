@@ -15,7 +15,6 @@ import {
   readValue,
   selectPageElement,
   typeAndEnter,
-  typeValue,
 } from "../user-actions";
 
 import type { Point, Size } from "../../src";
@@ -139,12 +138,12 @@ describe("Text tool: a turned text grows in place (US-038)", () => {
   beforeEach(() => {
     openServedPage("");
     chooseShapeKind("text");
-    typeValue("text-size", "16");
+    typeAndEnter("text-size", "16");
     chooseOption("text-weight", "400");
     typeContent("Pump P-101");
     typeAndEnter("shape-x", "47");
     typeAndEnter("shape-y", "61");
-    typeValue("angle", "23");
+    typeAndEnter("angle", "23");
   });
 
   it("[F05.AC5] keeps the corner (54.27808, 44.58648) when the letter spacing rises to 10", () => {
@@ -153,7 +152,7 @@ describe("Text tool: a turned text grows in place (US-038)", () => {
     expect(corner.x).toBeCloseTo(54.27808, 5);
     expect(corner.y).toBeCloseTo(44.58648, 5);
 
-    typeValue("text-letter-spacing", "10");
+    typeAndEnter("text-letter-spacing", "10");
 
     // k' = (88.9765625, 9.6796875), R(k') = (78.12120, 43.67611):
     // b' = P − k' + R(k') = (54.27808 − 88.97656 + 78.12120, 44.58648 − 9.67969 + 43.67611);
@@ -167,7 +166,7 @@ describe("Text tool: a turned text grows in place (US-038)", () => {
     const corner = readCorner();
 
     for (const spacing of ["1", "2", "5", "10"]) {
-      typeValue("text-letter-spacing", spacing);
+      typeAndEnter("text-letter-spacing", spacing);
       expectCorner(corner);
     }
   });
@@ -175,7 +174,7 @@ describe("Text tool: a turned text grows in place (US-038)", () => {
   it("[F05.AC5] keeps the corner when a second line makes the block 38.71875 tall", () => {
     const corner = readCorner();
 
-    typeValue("text-letter-spacing", "10");
+    typeAndEnter("text-letter-spacing", "10");
     typeContent("Pump P-101\nTank");
 
     // k' = (88.9765625, 19.359375), R(k') = (74.33905, 52.58631):
@@ -190,7 +189,7 @@ describe("Text tool: a turned text grows in place (US-038)", () => {
   it("[F05.AC5] keeps the corner when the size goes from 16 to 32, and when the weight changes", () => {
     const corner = readCorner();
 
-    typeValue("text-size", "32");
+    typeAndEnter("text-size", "32");
     expectCorner(corner);
 
     chooseOption("text-weight", "700");
@@ -203,7 +202,7 @@ describe("Text tool: a turned text grows in place (US-038)", () => {
   it("[F05.AC5] keeps the corner when the word spacing changes", () => {
     const corner = readCorner();
 
-    typeValue("text-word-spacing", "20");
+    typeAndEnter("text-word-spacing", "20");
     expectCorner(corner);
   });
 
@@ -219,19 +218,19 @@ describe("Text tool: a turned text grows in place (US-038)", () => {
 
     const fields = readFields();
 
-    typeValue("text-letter-spacing", "10");
+    typeAndEnter("text-letter-spacing", "10");
     expect(readFields()).toEqual(fields);
   });
 
   it("[F05.AC5] keeps the corner of a box 120 × 40 at (47, 61) set to 160 wide", () => {
     // Placed straight, then turned about its middle.
-    typeValue("angle", "0");
+    typeAndEnter("angle", "0");
     chooseOption("text-fit", "box");
     typeAndEnter("text-box-width", "120");
     typeAndEnter("text-box-height", "40");
     typeAndEnter("shape-x", "47");
     typeAndEnter("shape-y", "61");
-    typeValue("angle", "23");
+    typeAndEnter("angle", "23");
 
     // Middle (107, 81); P = middle − R(60, 20) = (107 − 47.41567, 81 − 41.85396) = (59.58433, 39.14604);
     // k' = (80, 20), R(k') = (65.82577, 49.66859): b' = (59.58433 − 80 + 65.82577, 39.14604 − 20 + 49.66859).
@@ -247,7 +246,7 @@ describe("Text tool: a turned text grows in place (US-038)", () => {
   });
 
   it("[F05.AC5] turns the dashed frame with the text, about the same new middle", () => {
-    typeValue("text-letter-spacing", "10");
+    typeAndEnter("text-letter-spacing", "10");
 
     // (43.42272 + 88.97656, 78.58290 + 9.67969) = (132.39928, 88.26259); the position, behind
     // the straight box X and Y show (AUD-040).
@@ -258,7 +257,7 @@ describe("Text tool: a turned text grows in place (US-038)", () => {
   });
 
   it("[F05.AC5] keeps the exact position behind the 5 decimals shown, a tool armed then left", () => {
-    typeValue("text-letter-spacing", "10");
+    typeAndEnter("text-letter-spacing", "10");
 
     const corner = readCorner();
     const { x } = readDrawn();
@@ -270,7 +269,7 @@ describe("Text tool: a turned text grows in place (US-038)", () => {
     expect(readFields()).toEqual(START_SHOWN);
     expect(readDrawn().x).toBe(x);
 
-    typeValue("text-letter-spacing", "4");
+    typeAndEnter("text-letter-spacing", "4");
     expectCorner(corner);
   });
 
@@ -287,7 +286,7 @@ describe("Text tool: a turned text grows in place (US-038)", () => {
   });
 
   it("[F05.AC5] accepts the 5 decimals shown typed back, the exact position behind them", () => {
-    typeValue("text-letter-spacing", "10");
+    typeAndEnter("text-letter-spacing", "10");
 
     const { x } = readDrawn();
 
@@ -316,11 +315,11 @@ describe("Text tool: a turned text grows in place (US-038)", () => {
   });
 
   it("[F05.AC5] turns about the middle when the angle changes, the position kept", () => {
-    typeValue("text-letter-spacing", "10");
+    typeAndEnter("text-letter-spacing", "10");
 
     const { x } = readDrawn();
 
-    typeValue("angle", "40");
+    typeAndEnter("angle", "40");
 
     // cos 40° = 0.76604444, sin 40° = 0.64278761; k = (88.97656, 9.67969), middle
     // (43.42272 + 88.97656, 78.58290 + 9.67969) = (132.39928, 88.26259);
@@ -333,9 +332,9 @@ describe("Text tool: a turned text grows in place (US-038)", () => {
 
   it("[F05.AC5] draws a text where it is when its angle and its size change together", () => {
     // The angle refused while the spacing changes: the last text drawn is at 23°, 87.953125 wide.
-    typeValue("angle", "1.5");
-    typeValue("text-letter-spacing", "10");
-    typeValue("angle", "40");
+    typeAndEnter("angle", "1.5");
+    typeAndEnter("text-letter-spacing", "10");
+    typeAndEnter("angle", "40");
 
     // Middle (47 + 88.97656, 61 + 9.67969) = (135.97656, 70.67969), R(−k) as at 40 above:
     // the corner (74.03854, 6.07158), X and Y showing (74.03854 − 12.44397, 6.07158) =
@@ -345,8 +344,8 @@ describe("Text tool: a turned text grows in place (US-038)", () => {
   });
 
   it("[F05.AC5] moves nothing at 0: the block grows to the right and down", () => {
-    typeValue("angle", "0");
-    typeValue("text-letter-spacing", "10");
+    typeAndEnter("angle", "0");
+    typeAndEnter("text-letter-spacing", "10");
     typeContent("Pump P-101\nTank");
 
     expect(readFields()).toEqual(["47", "61"]);
@@ -356,10 +355,10 @@ describe("Text tool: a turned text grows in place (US-038)", () => {
   it("[F05.AC5] keeps the corner of the last text drawn across a refused size", () => {
     const corner = readCorner();
 
-    typeValue("text-size", "0");
+    typeAndEnter("text-size", "0");
     expect(document.querySelectorAll("#canvas text")).toHaveLength(0);
 
-    typeValue("text-size", "24");
+    typeAndEnter("text-size", "24");
     commitField("text-size");
     expectCorner(corner);
   });

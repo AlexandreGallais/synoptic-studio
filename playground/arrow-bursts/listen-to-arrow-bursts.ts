@@ -7,11 +7,11 @@ import { readKeyField } from "../selection-keys";
 import { ARROW_BURSTS } from "./arrow-bursts";
 
 /**
- * The fields of the panel whose arrows step a value, a burst of them one step: the number fields,
- * which the browser steps, and the fields acting as number fields, several shapes' and one
- * shape's X, Y, Width and Height, which the page steps (`NUMBER_FIELDS`, US-085).
+ * The fields of the panel whose arrows step a value, a burst of them one step: the fields acting
+ * as number fields, several shapes', one shape's X, Y, Width and Height and every other, which
+ * the page steps (`NUMBER_FIELDS`, US-085, US-087).
  */
-const BURST_FIELDS = `input[type="number"], ${NUMBER_FIELDS}`;
+const BURST_FIELDS = NUMBER_FIELDS;
 
 /** The keys that type nothing in a field, held for an arrow or a shortcut: the modifiers. */
 const MODIFIER_KEYS: ReadonlySet<string> = new Set(["Alt", "Control", "Meta", "Shift"]);

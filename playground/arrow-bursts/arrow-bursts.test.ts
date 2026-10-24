@@ -12,8 +12,9 @@ import {
   selectPageElement,
   setElementBox,
   typeAndEnter,
-  typeValue,
 } from "../user-actions";
+
+import { ARROW_BURSTS } from "./arrow-bursts";
 
 import type { KeptShape } from "../kept-shapes";
 
@@ -249,13 +250,15 @@ describe("a burst of arrows in a number field, one step (US-081)", () => {
   it("[F43.AC3] forgets a burst whose pause runs when the page is mounted again", () => {
     holdUp("width", 3);
     openServedPage("");
-    // Typed in a number field, drawn at once: no step of its own.
-    typeValue("radius", "20");
+    setElementBox("#canvas", { height: 600, left: 100, top: 50, width: 800 });
+    // No burst left open, its pause's end finding none (US-087: every field applies its value on
+    // Enter, a step taken at once).
+    expect(ARROW_BURSTS.has(document)).toBe(false);
+
+    typeAndEnter("radius", "20");
     vi.advanceTimersByTime(PAUSE);
 
-    // The page's rectangle as it opens, its radius 10: the pause's end took no step.
-    expect(readRadii(readKeptDrawing(document))).toEqual([20]);
-    expect(readRadii(PAGE_HISTORIES.get(document)?.present.drawing ?? [])).toEqual([10]);
+    expect(readRadii(PAGE_HISTORIES.get(document)?.present.drawing ?? [])).toEqual([20]);
   });
 
   it("[F43.AC3] opens no burst at Cmd + Up, whose keyup macOS never sends", () => {

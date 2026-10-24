@@ -105,7 +105,7 @@ export const GUIDED_STEPS_F05_OPTIONS: readonly GuidedStep[] = [
   },
   {
     explanation: "Angle 370, Enter; −90, Enter; 360, Enter; then +90°, −90°, −90°.",
-    look: "10, 270, 0 (no transform); then 90, 0, 270.",
+    look: "10, 280 (−90 takes 90 away), 0 (no transform); then 90, 0, 270.",
     title: "F05 · Angle kept from 0 to 359",
     values: createTextStepValues({}),
   },
@@ -122,8 +122,8 @@ export const GUIDED_STEPS_F05_OPTIONS: readonly GuidedStep[] = [
     values: createTextStepValues({ angle: 90, isStruckThrough: true, isUnderlined: true }),
   },
   {
-    explanation: "Size 0; Size 16. Opacity 101; 100. Color red; #1e293b.",
-    look: "Each refused: drawing gone, message, fields in red; back when valid.",
+    explanation: "Size 0, Enter. Opacity 101, Enter. Color red; #1e293b.",
+    look: "Size and opacity refused, 32 and 100 shown again, the text kept; the color refused: drawing gone, message, field in red; back when valid.",
     title: "F05 · Refused values",
     values: createTextStepValues({}),
   },

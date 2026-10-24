@@ -54,7 +54,7 @@ describe("Text tool: a background behind the text (US-034)", () => {
   beforeEach(() => {
     openServedPage("");
     chooseShapeKind("text");
-    typeValue("text-size", "16");
+    typeAndEnter("text-size", "16");
     // happy-dom loses the option marked `selected` once the page is moved into its document: the
     // choices the page opens with are chosen again.
     chooseOption("text-weight", "400");
@@ -85,7 +85,7 @@ describe("Text tool: a background behind the text (US-034)", () => {
   it("[F14.AC4] fills the bands with the background's color and opacity", () => {
     clickElement("text-background");
     typeValue("text-background-color", "#22c55e");
-    typeValue("text-background-opacity", "40");
+    typeAndEnter("text-background-opacity", "40");
 
     expect(readBackground().slice(1)).toEqual(["#22c55e", "0.4"]);
     expect(readText("#model")).toContain('"backgroundOpacity": 40');
@@ -104,7 +104,7 @@ describe("Text tool: a background behind the text (US-034)", () => {
     chooseOption("text-fit", "box");
     typeAndEnter("text-box-width", "50");
     typeAndEnter("text-box-height", "100");
-    typeValue("text-maximum-lines", "2");
+    typeAndEnter("text-maximum-lines", "2");
 
     // "Pump" (43.49219) over "P-10…" (46.875), cut at 2 lines in a box 50 wide.
     expect([...document.querySelectorAll("#canvas tspan")].map((span) => span.textContent)).toEqual(
@@ -118,7 +118,7 @@ describe("Text tool: a background behind the text (US-034)", () => {
 
   it("[F14.AC4] turns the bands with the text: the group turns, not the path", () => {
     clickElement("text-background");
-    typeValue("angle", "30");
+    typeAndEnter("angle", "30");
 
     const group = selectPageElement("#canvas text").parentElement;
 
@@ -139,7 +139,7 @@ describe("Text tool: a background behind the text (US-034)", () => {
     { id: "text-background-opacity", value: "" },
   ])("refuses $id = '$value' and draws nothing", ({ id, value }) => {
     clickElement("text-background");
-    typeValue(id, value);
+    (id.endsWith("opacity") ? typeAndEnter : typeValue)(id, value);
 
     expect(readText("#status")).toContain("background opacity from 0 to 100");
     expect(document.querySelectorAll("#canvas text")).toHaveLength(0);

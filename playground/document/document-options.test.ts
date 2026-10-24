@@ -15,7 +15,6 @@ import {
   selectInput,
   selectPageElement,
   typeAndEnter,
-  typeValue,
   waitForPageTasks,
 } from "../user-actions";
 
@@ -93,7 +92,7 @@ describe("The drawing's options: Embed fonts (US-036), no HTML layer (US-044)", 
     openServedPage("");
     chooseShapeKind("text");
     chooseOption("text-weight", "400");
-    typeValue("text-size", "16");
+    typeAndEnter("text-size", "16");
   });
 
   afterEach(() => {
@@ -184,7 +183,7 @@ describe("The drawing's options: Embed fonts (US-036), no HTML layer (US-044)", 
     chooseOption("text-fit", "box");
     typeAndEnter("text-box-width", "50");
     typeAndEnter("text-box-height", "100");
-    typeValue("text-maximum-lines", "2");
+    typeAndEnter("text-maximum-lines", "2");
     tick("text-underline", true);
     tick("text-strike", true);
     tick("text-background", true);
@@ -234,7 +233,7 @@ describe("The drawing's options: Embed fonts (US-036), no HTML layer (US-044)", 
   it("[F15.AC2] hides the faces left out while the text is refused", () => {
     tick("embed-fonts", true);
     expect(readLeftOut()).toHaveLength(1);
-    typeValue("text-size", "0");
+    typeAndEnter("text-size", "0");
     expect(readLeftOut()).toEqual([]);
     expect(readDisplay("font-left-out")).toBe("none");
   });

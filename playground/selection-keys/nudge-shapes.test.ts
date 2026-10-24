@@ -20,7 +20,6 @@ import {
   selectPageElement,
   setElementBox,
   typeAndEnter,
-  typeValue,
 } from "../user-actions";
 
 import type { Point, Shape } from "../../src";
@@ -81,13 +80,13 @@ function clickA(keys: PointerKeys): void {
 function typeRectangle(box: readonly [string, string, string, string, string]): void {
   const [x, y, width, height, angle] = box;
 
-  typeValue("angle", "0");
-  typeValue("radius", "0");
+  typeAndEnter("angle", "0");
+  typeAndEnter("radius", "0");
   typeAndEnter("width", width);
   typeAndEnter("height", height);
   typeAndEnter("shape-x", x);
   typeAndEnter("shape-y", y);
-  typeValue("angle", angle);
+  typeAndEnter("angle", angle);
 }
 
 /**

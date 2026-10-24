@@ -3,11 +3,12 @@ import { writeText } from "./write-text";
 import type { ShapeReading } from "../shape";
 
 /**
- * The fields of the shape's values: the panel's number fields, and the shape's fields acting as
- * number fields (`NUMBER_FIELDS`, US-085), several shapes' left out, which no shape read sets; the
- * toolbar's bound the history's.
+ * The fields of the shape's values, all acting as number fields (`NUMBER_FIELDS`): the panel's
+ * fields of their own (`OWN_NUMBER_FIELDS`, US-087) and the shape's (US-085), several shapes'
+ * left out, which no shape read sets; the toolbar's bound the history's.
  */
-const SHAPE_VALUE_FIELDS = '#panel input[type="number"], #shape-panel input[data-number-field]';
+const SHAPE_VALUE_FIELDS =
+  '#panel input[data-number-field="own"], #shape-panel input[data-number-field]';
 
 /**
  * Shows the validity of the inputs: invalid ones are outlined and a message explains why.

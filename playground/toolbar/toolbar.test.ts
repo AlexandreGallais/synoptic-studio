@@ -16,7 +16,7 @@ import {
   readText,
   readValue,
   selectInput,
-  typeValue,
+  typeAndEnter,
 } from "../user-actions";
 
 describe("toolbar", () => {
@@ -56,7 +56,7 @@ describe("toolbar after a free shape", () => {
     // A pentagon 120 × 80 converted to a free shape: its width becomes 84.11698.
     chooseShapeKind("polygon");
 
-    typeValue("corners", "5");
+    typeAndEnter("corners", "5");
 
     clickWithKeys("#mode-points", {});
     clickWithKeys("#convert", {});
