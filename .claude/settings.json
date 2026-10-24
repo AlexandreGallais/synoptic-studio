@@ -5,6 +5,9 @@
   },
   "permissions": {
     "allow": [
+      "Bash(git switch *)",
+      "Bash(git push origin --delete *)",
+      "Bash(gh api -X DELETE repos/AlexandreGallais/synoptic-studio/git/refs/heads/*)",
       "Bash(npm run *)",
       "Bash(target/release/activity *)",
       "Bash(target/release/backlog-status *)",
