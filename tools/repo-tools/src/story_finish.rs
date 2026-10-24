@@ -77,20 +77,20 @@ pub fn next_step(state: &str, readings: u32) -> Next {
 pub enum Merger {
     /// The auto-merge of its base, once the pull request is labelled `autonomous`: awaited.
     GitHub,
-    /// The Product Owner: opened without the label, never awaited (AUD-024).
+    /// The Product Owner: opened without the label, never awaited (EN-118).
     ProductOwner,
 }
 
 /// Who merges a story branch into its base, as the auto-merge of that base lets it through: into
-/// a feature branch a `US`, `EN`, `SP`, `CHK`, `AUD` or `VAL`, into `develop` a `REV`; anything else,
-/// an epic's refinement `SP` into `develop` first, is the Product Owner's.
+/// a feature branch a `US`, `EN`, `SP`, `CHK`, `AUD` or `VAL`, into `develop` a `REV` or an epic's
+/// refinement `SP` (REV-009); anything else is the Product Owner's.
 #[must_use]
 pub fn merger(base: &str, branch: &str) -> Merger {
     let kind = story_of(branch)
         .and_then(|id| id.split_once('-').map(|(kind, _)| kind.to_owned()))
         .unwrap_or_default();
     let taken: &[&str] = if base == "develop" {
-        &["REV"]
+        &["REV", "SP"]
     } else if base.starts_with("feature/") {
         &["US", "EN", "SP", "CHK", "AUD", "VAL"]
     } else {
@@ -726,17 +726,18 @@ mod tests {
 
     #[test]
     fn f23_ac2_leaves_to_the_product_owner_what_the_auto_merge_does_not_take() {
-        // [F23.AC2] A `REV` into `develop` and a story into its feature are merged by GitHub;
-        // an epic's `SP`, or any other story, into `develop` by the Product Owner (AUD-024).
+        // [F23.AC2] A `REV` or an epic's `SP` into `develop` and a story into its feature are
+        // merged by GitHub (REV-009); any other story into `develop` by the Product Owner.
         assert_eq!(merger("develop", "docs/rev-006-review"), Merger::GitHub);
         assert_eq!(
             merger("develop", "docs/sp-030-refinement-of-e18"),
-            Merger::ProductOwner
+            Merger::GitHub
         );
         assert_eq!(
             merger("develop", "chore/en-114-a-tool"),
             Merger::ProductOwner
         );
+        assert_eq!(merger("develop", "feat/us-061-x"), Merger::ProductOwner);
         for branch in [
             "feat/us-061-x",
             "chore/en-118-x",
