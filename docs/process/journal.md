@@ -2,6 +2,12 @@
 
 What each working session dealt with, in the agent's words: the Product Owner's requests in neutral words, decisions, where they were recorded. Newest first. Written by the agent at the end of each session or before a long pause (ADR-0024); searched with `grep` (tags written `#tag`).
 
+## 2026-10-24 — REV-008, the review of E02
+
+- `#review` E02 merged into `develop` (#490) once the Product Owner validated it over three tries of the playground; the retrospective held (`docs/process/retrospectives/E02-retrospective.md`); the Product Owner's decisions written as ADR-0100: small epics of one subject researched in full at their start, each feature into `develop` at its audit's end, the main checkout on `develop`, no `VAL` per feature, `develop` → `main` at each return, bubbles only, this project's rigour kept, estimates from the measures, advisories settled by the agent.
+- `#tooling` The telemetry since 2026-10-22 read: 45 polling loops for 219 minutes (the worker brief now forbids them); every push running `check:all`, a deletion included (REV-008.T3: no checks for a deletion, a story branch running the tests its change reaches).
+- `#backlog` E02 done; the epics not done to be regrouped into small ones before the next starts.
+
 ## 2026-10-22 — The run of E02
 
 - `#run` The Product Owner started a run on 2026-10-22 over the whole of E02, feature by feature, and asked to be told at the epic's end; F35 refined in one round, no question left. Since they are away until then, each feature goes up to its prepared validation, the next one started on the previous feature's branch, and the validations are held together at the epic's end (the scope they set, 2026-10-22).
