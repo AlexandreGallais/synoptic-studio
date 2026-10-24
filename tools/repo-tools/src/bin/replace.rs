@@ -85,5 +85,8 @@ fn work() -> u8 {
 }
 
 fn main() -> ExitCode {
+    if let Some(code) = tool_use::usage(&std::env::args().skip(1).collect::<Vec<_>>(), USAGE) {
+        return code;
+    }
     tool_use::run("replace", "", work)
 }

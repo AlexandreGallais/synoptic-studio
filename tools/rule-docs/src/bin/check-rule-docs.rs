@@ -75,7 +75,13 @@ fn check(message: &str) -> io::Result<String> {
     Ok(refusals)
 }
 
+/// The usage, printed on `--help` or `-h` (REV-009).
+const USAGE: &str = "usage: check-rule-docs <message file>";
+
 fn main() -> ExitCode {
+    if let Some(code) = tool_use::usage(&std::env::args().skip(1).collect::<Vec<_>>(), USAGE) {
+        return code;
+    }
     tool_use::run("check-rule-docs", "", check_message)
 }
 

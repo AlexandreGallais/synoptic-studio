@@ -104,7 +104,13 @@ fn run(backlog: &Path, check: bool) -> io::Result<Result<(), String>> {
     )))
 }
 
+/// The usage, printed on `--help` or `-h` (REV-009).
+const USAGE: &str = "usage: backlog-index <backlog folder> [--check]";
+
 fn main() -> ExitCode {
+    if let Some(code) = tool_use::usage(&std::env::args().skip(1).collect::<Vec<_>>(), USAGE) {
+        return code;
+    }
     let args: Vec<String> = std::env::args().skip(1).collect();
     let check = args.iter().any(|arg| arg == "--check");
 

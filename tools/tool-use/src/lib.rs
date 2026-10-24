@@ -187,3 +187,22 @@ pub fn json_string(text: &str) -> String {
     quoted.push('"');
     quoted
 }
+
+/// Whether a call asks for its tool's usage: `--help` or `-h` as its first argument (REV-009,
+/// the cards of `epic-check --help`, which ran the whole check, and `heavy-lock --help`, which
+/// ran `--help` as a command).
+#[must_use]
+pub fn asks_usage(arguments: &[String]) -> bool {
+    matches!(arguments.first().map(String::as_str), Some("--help" | "-h"))
+}
+
+/// Prints a tool's usage on standard output when its arguments ask for it ([`asks_usage`]) and
+/// returns the success its `main` exits with, before any work and any record; `None` for any
+/// other call, which the tool then works.
+#[must_use]
+pub fn usage(arguments: &[String], text: &str) -> Option<ExitCode> {
+    asks_usage(arguments).then(|| {
+        println!("{}", text.trim_end());
+        ExitCode::SUCCESS
+    })
+}

@@ -72,7 +72,13 @@ fn by_id(id: &str) -> Result<String, Failure> {
     }
 }
 
+/// The usage, printed on `--help` or `-h` (REV-009).
+const USAGE: &str = "usage: target/release/page [<file>] <id or heading>";
+
 fn main() -> ExitCode {
+    if let Some(code) = tool_use::usage(&std::env::args().skip(1).collect::<Vec<_>>(), USAGE) {
+        return code;
+    }
     let words: Vec<String> = env::args().skip(1).collect();
 
     tool_use::run("page", "", || print_part(&words))

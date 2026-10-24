@@ -378,3 +378,20 @@ fn f21_ac2_backlog_status_names_an_item_it_does_not_find() {
         "usage: target/release/backlog-status <ID> <status>; no item EN-1\n"
     );
 }
+
+#[test]
+fn rev009_epic_check_prints_its_usage_on_help_and_checks_nothing() {
+    let lab = Lab::new("epic-help", &[]);
+    let output = lab
+        .command(env!("CARGO_BIN_EXE_epic-check"), &lab.root)
+        .arg("--help")
+        .output()
+        .expect("epic-check");
+
+    assert_eq!(output.status.code(), Some(0));
+    assert!(
+        String::from_utf8_lossy(&output.stdout)
+            .starts_with("usage: target/release/epic-check <epic> <first day>")
+    );
+    assert!(output.stderr.is_empty(), "{output:?}");
+}

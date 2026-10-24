@@ -264,6 +264,12 @@ fn work() -> u8 {
     u8::from(!findings.iter().all(|finding| finding.is_ok))
 }
 
+/// The usage, printed on `--help` or `-h` (REV-009).
+const USAGE: &str = "usage: target/release/epic-check <epic> <first day>";
+
 fn main() -> ExitCode {
+    if let Some(code) = tool_use::usage(&std::env::args().skip(1).collect::<Vec<_>>(), USAGE) {
+        return code;
+    }
     tool_use::run("epic-check", "", work)
 }

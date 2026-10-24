@@ -264,7 +264,13 @@ fn state(branch: &Branch, top: &Path, place: String) -> Result<String, String> {
     }))
 }
 
+/// The usage, printed on `--help` or `-h` (REV-009).
+const USAGE: &str = "usage: target/release/git-sequences sync | commit -F <message file|-> [--push] <paths…> | state";
+
 fn main() -> ExitCode {
+    if let Some(code) = tool_use::usage(&std::env::args().skip(1).collect::<Vec<_>>(), USAGE) {
+        return code;
+    }
     let argv: Vec<String> = env::args().skip(1).collect();
     let subcommand = argv.first().map_or("", String::as_str);
 

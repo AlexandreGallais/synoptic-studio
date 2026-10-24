@@ -39,7 +39,13 @@ impl Watching for Watched {
     }
 }
 
+/// The usage, printed on `--help` or `-h` (REV-009).
+const USAGE: &str = "usage: target/release/watch-task <output file> [--stall 120] [--until <start of a line>] [--max 1800]";
+
 fn main() -> ExitCode {
+    if let Some(code) = tool_use::usage(&std::env::args().skip(1).collect::<Vec<_>>(), USAGE) {
+        return code;
+    }
     let options: Vec<String> = env::args().skip(1).collect();
 
     tool_use::run("watch-task", "", || {

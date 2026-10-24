@@ -4,6 +4,8 @@
 
 ## Tools
 
+Every binary of `tools/` that takes arguments prints its usage on standard output and exits 0 when its first argument is `--help` or `-h`, before any work (`tool_use::usage`, REV-009); a help flag further on belongs to the command a wrapper runs (`heavy-lock npx vitest --help`).
+
 | Command | Does | Replaces |
 | --- | --- | --- |
 | `target/release/replace` | reads blocks `@@ file`, `<<<`, old text, `===`, new text, `>>>` on standard input, and writes nothing unless each old text is found exactly once; a line outside a block but blank lines, or a text holding a line `<<<` or `>>>` (a block that lost its `@@` line or its `>>>`), refuses the whole input, naming the block and its line (EN-103); `--help` prints its usage and exits 0, and an argument, or none with a terminal for input, prints it on standard error and exits 2 rather than wait for blocks (EN-138); alone with a closed input, as the agent's Bash tool gives it, it ends at once with `no edit block read` (AUD-033) | a Python script of `replace` calls |

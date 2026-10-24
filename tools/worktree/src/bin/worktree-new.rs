@@ -165,7 +165,13 @@ fn run(argv: &[String]) -> Result<Plan, String> {
     Ok(plan)
 }
 
+/// The usage, printed on `--help` or `-h` (REV-009).
+const USAGE: &str = "usage: target/release/worktree-new <ID> [--type <type>]";
+
 fn main() -> ExitCode {
+    if let Some(code) = tool_use::usage(&std::env::args().skip(1).collect::<Vec<_>>(), USAGE) {
+        return code;
+    }
     tool_use::run("worktree-new", "", add_worktree)
 }
 

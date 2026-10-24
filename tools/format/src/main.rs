@@ -282,7 +282,13 @@ fn run(arguments: &[String]) -> Result<bool, String> {
     .map_err(|error| error.to_string())
 }
 
+/// The usage, printed on `--help` or `-h` (REV-009).
+const USAGE: &str = "usage: format --write|--check <targets…>";
+
 fn main() -> ExitCode {
+    if let Some(code) = tool_use::usage(&std::env::args().skip(1).collect::<Vec<_>>(), USAGE) {
+        return code;
+    }
     let arguments: Vec<String> = env::args().skip(1).collect();
     let mode = arguments.first().map_or("", String::as_str);
 

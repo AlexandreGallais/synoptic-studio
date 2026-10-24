@@ -49,12 +49,7 @@ fn binaries() -> Vec<(String, PathBuf)> {
 /// Whether a binary's source calls `tool_use::run` or `run_or_poll` under its name, in its code,
 /// however the formatter breaks its lines: a comment naming the call does not count (AUD-023).
 fn calls_run(source: &str, name: &str) -> bool {
-    let code: String = source
-        .lines()
-        .map(|line| line.split_once("//").map_or(line, |(code, _)| code))
-        .flat_map(str::chars)
-        .filter(|character| !character.is_whitespace())
-        .collect();
+    let code = code_of(source);
 
     code.contains(&format!("tool_use::run(\"{name}\","))
         || code.contains(&format!("tool_use::run_or_poll(\"{name}\","))
@@ -97,5 +92,51 @@ fn f21_ac7_every_binary_of_the_workspace_records_its_use_under_its_name() {
     assert!(
         missing.is_empty(),
         "binaries whose main does not call tool_use::run under their name: {missing:?}"
+    );
+}
+
+/// A binary's code, its comments dropped and its spaces removed, so that a call is found however
+/// the formatter breaks its lines.
+fn code_of(source: &str) -> String {
+    source
+        .lines()
+        .map(|line| line.split_once("//").map_or(line, |(code, _)| code))
+        .flat_map(str::chars)
+        .filter(|character| !character.is_whitespace())
+        .collect()
+}
+
+#[test]
+fn rev009_asks_usage_on_a_first_help_flag_only() {
+    let words = |list: &[&str]| {
+        list.iter()
+            .map(|word| (*word).to_owned())
+            .collect::<Vec<_>>()
+    };
+
+    assert!(tool_use::asks_usage(&words(&["--help"])));
+    assert!(tool_use::asks_usage(&words(&["-h"])));
+    assert!(tool_use::asks_usage(&words(&["--help", "x"])));
+    // A help flag further on belongs to the command a tool runs: `heavy-lock npx vitest --help`.
+    assert!(!tool_use::asks_usage(&words(&["npx", "--help"])));
+    assert!(!tool_use::asks_usage(&words(&[])));
+    assert!(!tool_use::asks_usage(&words(&["--helpful"])));
+    assert_eq!(tool_use::usage(&words(&["x"]), "usage: x"), None);
+}
+
+#[test]
+fn rev009_every_binary_reading_its_arguments_prints_its_usage_on_help() {
+    let missing: Vec<String> = binaries()
+        .iter()
+        .filter(|(_, path)| {
+            let code = code_of(&fs::read_to_string(path).expect("binary source"));
+            code.contains("env::args") && !code.contains("tool_use::usage(")
+        })
+        .map(|(name, _)| name.clone())
+        .collect();
+
+    assert!(
+        missing.is_empty(),
+        "binaries reading their arguments without tool_use::usage first: {missing:?}"
     );
 }

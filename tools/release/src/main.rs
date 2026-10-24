@@ -126,7 +126,13 @@ fn publish_release() -> u8 {
     }
 }
 
+/// The usage, printed on `--help` or `-h` (REV-009).
+const USAGE: &str = "usage: release <notes [<base>] | check <file> | publish>";
+
 fn main() -> ExitCode {
+    if let Some(code) = tool_use::usage(&std::env::args().skip(1).collect::<Vec<_>>(), USAGE) {
+        return code;
+    }
     let args: Vec<String> = std::env::args().skip(1).collect();
     let subcommand = args.first().cloned().unwrap_or_default();
     let rest = args.get(1..).unwrap_or_default().to_vec();

@@ -9,7 +9,13 @@ use std::process::ExitCode;
 
 use api_pages::{Output, api, pages, problems, write};
 
+/// The usage, printed on `--help` or `-h` (REV-009).
+const USAGE: &str = "usage: api-pages <entry module> <output folder> <site path> <title>";
+
 fn main() -> ExitCode {
+    if let Some(code) = tool_use::usage(&std::env::args().skip(1).collect::<Vec<_>>(), USAGE) {
+        return code;
+    }
     let arguments: Vec<String> = std::env::args().skip(1).collect();
 
     tool_use::run("api-pages", "", || write_pages(&arguments))
