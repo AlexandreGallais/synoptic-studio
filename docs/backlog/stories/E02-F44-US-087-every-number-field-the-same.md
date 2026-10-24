@@ -3,7 +3,7 @@ id: US-087
 epic: E02
 feature: F44
 title: Every number field of the panel the same
-status: ready
+status: done
 points: 3
 ---
 
