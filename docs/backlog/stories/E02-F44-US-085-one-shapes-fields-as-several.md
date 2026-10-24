@@ -3,7 +3,7 @@ id: US-085
 epic: E02
 feature: F44
 title: The fields of one shape as the fields of several
-status: ready
+status: done
 points: 3
 ---
 
