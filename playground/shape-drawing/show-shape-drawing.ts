@@ -8,7 +8,7 @@ import type { ShapeDrawing } from "./shape-drawing";
 import type { Point, Size } from "../../src";
 
 /**
- * Reads the box of a drag (`draggedBox`), square with Shift for every tool but text.
+ * Reads the box of a drag (`draggedBox`), square with Shift for every tool, a text's box included.
  *
  * @kind procedure
  * @param drawing - the drag, its press, its pointer and Shift
@@ -16,9 +16,7 @@ import type { Point, Size } from "../../src";
  * @see docs/domain/interaction.md#_1-tools
  */
 function readDrawingBox(drawing: ShapeDrawing): Point & Size {
-  const isSquare = drawing.isShift && drawing.tool !== "text";
-
-  return draggedBox({ isSquare, press: drawing.press, release: drawing.pointer });
+  return draggedBox({ isSquare: drawing.isShift, press: drawing.press, release: drawing.pointer });
 }
 
 /**
