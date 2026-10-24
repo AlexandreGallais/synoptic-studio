@@ -3,7 +3,7 @@ id: US-084
 epic: E02
 feature: F44
 title: The view follows the canvas's size
-status: ready
+status: done
 points: 2
 ---
 
