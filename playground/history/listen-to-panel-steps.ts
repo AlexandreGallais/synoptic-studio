@@ -1,3 +1,4 @@
+import { listenToArrowBursts, readBurstField } from "../arrow-bursts";
 import { listenToNewText } from "../new-text";
 import { selectElement } from "../page";
 
@@ -16,7 +17,8 @@ const PANEL_ENDS = [
 
 /**
  * Asks a step for an event of the panel that reached an element of a kind, itself or inside it
- * (`schedulePanelStep`); none for an event elsewhere.
+ * (`schedulePanelStep`); none for an event elsewhere, nor for a value applied in the field of
+ * the burst of arrows open (`readBurstField`), whose end takes the step.
  *
  * @kind procedure
  * @param document - page document
@@ -25,9 +27,17 @@ const PANEL_ENDS = [
  * @see docs/domain/interaction.md#_7-navigation-and-history
  */
 function scheduleStepAt(document: Document, event: Event, selector: string): void {
-  if (event.target instanceof Element && event.target.closest(selector) !== null) {
-    schedulePanelStep(document);
+  const isAt = event.target instanceof Element && event.target.closest(selector) !== null;
+
+  const isBurst = ![event.type === "change", event.target === readBurstField(document)].includes(
+    false,
+  );
+
+  if ([isAt, !isBurst].includes(false)) {
+    return;
   }
+
+  schedulePanelStep(document);
 }
 
 /**
@@ -35,10 +45,13 @@ function scheduleStepAt(document: Document, event: Event, selector: string): voi
  * applied or choice made in the panel, `change` fired by Enter, by leaving a field typed in or by
  * a choice (`REF-MDN-CHANGE-EVENT`), at each click on one of its buttons, at each key released on
  * a slider of the color picker and at each release of the pointer on one, or on the plane
- * (SP-029's answer 4); and at the Content field of a new text left with a content typed, its
- * placing and its typing one step (`listenToNewText`, SP-029's answer 5). A value typed back as it was, or a button that changes no shape, takes
- * none, the drawing the same (`historyWithStep`). Heard as the event bubbles up to the panel,
- * after the field's or the button's own listeners, which redraw the page (`schedulePanelStep`).
+ * (SP-029's answer 4); at the end of a burst of arrows in a number field or a field of several
+ * shapes, the values its arrows applied taking none (`listenToArrowBursts`, `readBurstField`,
+ * SP-031's answer 5); and at the Content field of a new text left with a content typed, its
+ * placing and its typing one step (`listenToNewText`, SP-029's answer 5). A value typed back as
+ * it was, or a button that changes no shape, takes none, the drawing the same
+ * (`historyWithStep`). Heard as the event bubbles up to the panel, after the field's or the
+ * button's own listeners, which redraw the page (`schedulePanelStep`).
  *
  * @kind procedure
  * @param document - page document
@@ -52,6 +65,10 @@ export function listenToPanelSteps(document: Document): void {
       scheduleStepAt(document, event, selector);
     });
   }
+
+  listenToArrowBursts(document, () => {
+    schedulePanelStep(document);
+  });
 
   listenToNewText(document, () => {
     schedulePanelStep(document);

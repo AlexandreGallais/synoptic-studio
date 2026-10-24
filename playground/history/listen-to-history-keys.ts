@@ -111,7 +111,8 @@ function listenToTypedFields(document: Document): void {
 /**
  * Asks a step of the history at each key released outside the panel's fields
  * (`scheduleHistoryStep`), so that a key held is one step from its press to its release (SP-029's
- * answer 3).
+ * answer 3), arrows held together from the first press to the last release (US-081); and when
+ * the window loses the focus, which releases the arrows held, their releases never heard.
  *
  * @kind procedure
  * @param document - page document
@@ -125,6 +126,14 @@ function listenToKeyReleases(document: Document, update: () => void): void {
       if (readKeyField(event) === undefined) {
         scheduleHistoryStep(document, update);
       }
+    },
+    { signal: readListenerSignal(document) },
+  );
+
+  document.defaultView?.addEventListener(
+    "blur",
+    () => {
+      scheduleHistoryStep(document, update);
     },
     { signal: readListenerSignal(document) },
   );

@@ -10,6 +10,8 @@
 
 **Type a value for all of them.** Type a whole number in one of the four fields and press Enter, or leave the field: with a sign, `+50` or `-20`, it is added to each shape's own value; without one, each shape takes it. The two rectangles above: `+50` in Width makes the first 150 wide and the second 90; `-20` in X moves them to x −10 and 180; 460 in Width makes both 460 wide, and 50 in X puts both at x 50. A negative number has a sign, so it always moves or shrinks the shapes from where they are. Click one shape alone and the panel shows and edits it as before, the four fields gone.
 
+**Step them by the arrows.** Since F43, Up in one of the four fields adds 1 to each shape's own value, Down takes 1 away, and with Shift both go by 10, as `+1` or `-10` typed: the two rectangles above, Up in Width, are 101 and 41 wide, Width still reading Mixed; Up in Y moves both 1 down, the way a number field counts up, and Up in X 1 right. A step that one shape cannot take changes none, as a value typed: a shape 0 high keeps both shapes as they are on Down in Height.
+
 **Each shape keeps its own way of moving and growing.** X and Y place each shape's straight box, as the panel does for one shape: the turned rectangle above, typed 50 in X, has its upright box start at x 50. Width and Height set each shape's own size, a turned shape keeping its turned top-left corner in place, as when you type its width alone. A text in a box gets the new size for its box; a text fitting its content keeps its size, since it has no width of its own to set, and moves with the others.
 
 **A value that does not fit changes nothing.** A fraction, a word, or a size that would fall below 0 for one shape changes none of them, and the fields show the shapes' values again: `-50` in Width leaves both rectangles as they were, since the second, 40 wide, cannot be −10 wide.
@@ -21,6 +23,7 @@ For the review's summary; each can be changed.
 - Two values count as one when they differ by no more than a billionth of a unit, the editor's tolerance for computed numbers, so that a side computed a hair off zero still reads 0 beside a side at 0; the first shape's value is shown, with the five decimals of the SVG.
 - The values of several shapes have four fields of their own, X, Y, Width and Height, the shape's other fields staying hidden, so that the settings a new shape takes from the last one of its kind are never overwritten by a selection of several.
 - A value typed is applied on Enter or when the field is left, as the fields under the list of points, never while it is typed, so that a sign or an emptied field moves nothing on its way.
+- An arrow in one of the four fields is applied at once, the fields then showing the shapes' values again: a text typed there and not yet applied by Enter is dropped, the other way being to apply it first. With Ctrl, Cmd or Alt held, the arrow is left to the field, which moves its caret.
 - A size that would fall below 0 for one shape refuses the value for all of them, so that a value goes to every shape or to none; the other way was to change the shapes that can take it. A size above 100 000 is brought down to 100 000, as the Width field of one shape does.
 - A text never measured, which is not drawn, is left as it is when a value is typed; a shape 0 × 0, which is a point, is placed by that point.
 - A text never measured, which is not drawn, is left out of the values, as it is left out of the dashed box; with nothing left to show, each field is empty, without Mixed.
@@ -32,6 +35,8 @@ For the review's summary; each can be changed.
 **A text placed as a shape is.** Until this feature, a turned text alone showed the top-left corner of its turned frame in X and Y; on 2026-10-23, at this feature's audit, X and Y of a text became the top-left of its upright box, as a shape's, alone or among several, so that one text and several read the same. Figma's help, read the same day, bases a rotated layer's X and Y "on the original top-left corner of the layer's bounds", the turned corner a text showed before.
 
 **A sign for relative, none for fixed.** Figma applies a value typed to every layer selected, and adds to each layer's own with an equation such as `Mixed+100`; here a sign alone is enough, `+100`, chosen on 2026-10-23 with the rest of this feature, while a text fitting its content keeps its size, as it has no width to set.
+
+**The arrows step each shape.** Penpot's fields step by Up and Down, 10 with Shift, but a field of several values goes to one value for all of them; on 2026-10-23, after the first try of the editor, each shape's own value was chosen to move instead, as a value typed with a sign moves it.
 
 | Term | In plain words |
 | --- | --- |

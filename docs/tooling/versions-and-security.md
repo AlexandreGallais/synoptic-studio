@@ -29,6 +29,7 @@ A pre-release is never adopted, except VitePress 2.0 alpha (ADR-0075, decision 1
 
 - **Any advisory fails**, whatever its severity: `npm run deps:audit` (`npm audit --audit-level=low`) in `check` and `check:all`, before `npm run build` and in the CI; `npm run rust:advisories` for every crate of `Cargo.lock`, unmaintained and yanked ones included. A vulnerable tree can be neither checked nor built.
 - **Fixing**: upgrade the direct dependency; otherwise force the transitive one through `overrides` in `package.json`, documented under [Overrides](./dependencies.md#overrides).
+- **A fix younger than 7 days**, once (Product Owner, 2026-10-24): `happy-dom` 21.0.4, published on 2026-10-20, taken 4 days old, since GHSA-834v-8h66-3h79 (high, code run on the host through the ESM compiler) failed every push on 21.0.3 and `npm audit` cannot leave out one advisory; its release notes read (a code injection in the ESM compiler and the isolation of `data:` iframes fixed). Whether a security fix may always pass the 7 days is for the next review.
 - Dependencies' install scripts stay blocked by npm unless approved; none is needed today.
 
 ## Packages blocked by an advisory
