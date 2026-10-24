@@ -193,7 +193,7 @@ describe("two arrows held move the selection diagonally (US-081)", () => {
     expect(readA()).toEqual({ x: 11, y: 20 });
   });
 
-  it("[F43.AC3] releases every arrow at Cmd released, their keyup never sent, the step taken", () => {
+  it("[F43.AC3] releases every arrow at Cmd pressed, their keyup never sent, the step taken", () => {
     holdArrow("ArrowUp", 1, false);
     holdArrow("ArrowRight", 2, false);
     // Cmd pressed while both are held, then both released and Cmd last: macOS sends Cmd's keyup.
@@ -206,6 +206,43 @@ describe("two arrows held move the selection diagonally (US-081)", () => {
     holdArrow("ArrowLeft", 1, false);
 
     // Left alone: (11, 17).
+    expect(readA()).toEqual({ x: 11, y: 17 });
+  });
+
+  it("[F43.AC3] releases every arrow at Cmd's keydown, its keyup taken by the system (AUD-049)", () => {
+    holdArrow("ArrowUp", 1, false);
+    // Up released under Cmd, and Cmd's keyup taken by a shortcut: no keyup at all.
+    sendKey("keydown", "Meta", { metaKey: true });
+    holdArrow("ArrowRight", 1, false);
+
+    // Up's key (10, 19), then Right alone: (10 + 1, 19), never (+1, −1) to (11, 18).
+    expect(readA()).toEqual({ x: 11, y: 19 });
+  });
+
+  it.each(["pointerdown", "pointermove"])(
+    "[F43.AC3] releases every arrow at a %s carrying Cmd, no keyup sent (AUD-049)",
+    (type) => {
+      holdArrow("ArrowUp", 1, false);
+
+      selectPageElement("#canvas").dispatchEvent(
+        new PointerEvent(type, { bubbles: true, cancelable: true, metaKey: true, pointerId: 1 }),
+      );
+
+      holdArrow("ArrowRight", 1, false);
+
+      // Up's key (10, 19), then Right alone: (11, 19).
+      expect(readA()).toEqual({ x: 11, y: 19 });
+    },
+  );
+
+  it("[F43.AC3] holds an arrow again at its repeat once Cmd is gone from it (AUD-049)", () => {
+    holdArrow("ArrowUp", 1, false);
+    sendKey("keydown", "Meta", { metaKey: true });
+    // Cmd released, its keyup lost, Up still down: its repeat comes without Cmd.
+    sendKey("keydown", "ArrowUp", { repeat: true });
+    holdArrow("ArrowRight", 1, false);
+
+    // Up's two keys (10, 18), then Right with Up held: (10 + 1, 18 − 1).
     expect(readA()).toEqual({ x: 11, y: 17 });
   });
 

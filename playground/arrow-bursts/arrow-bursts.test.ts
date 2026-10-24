@@ -278,16 +278,28 @@ describe("a burst of arrows in a number field, one step (US-081)", () => {
     expect(readPresentWidths()).toEqual([90]);
   });
 
-  it("[F43.AC3] ends a burst at once, its step taken, when Cmd is released, Up's keyup never sent", () => {
+  it("[F43.AC3] ends a burst at once, its step taken, when Cmd is pressed, no keyup sent (AUD-049)", () => {
     pressUp("width", 3);
-    // Cmd pressed while Up is held, then both released: macOS sends Cmd's keyup alone.
+    // Cmd pressed while Up is held, then both released, Cmd's keyup taken by a shortcut: none sent.
     sendKey("width", "keydown", { key: "Meta", metaKey: true });
 
-    expect(readPresentWidths()).toEqual([100]);
+    // 100 + 3, recorded at Cmd's press, no pause waited for.
+    expect(readPresentWidths()).toEqual([103]);
 
-    sendKey("width", "keyup", { key: "Meta" });
+    vi.advanceTimersByTime(PAUSE);
+    undo();
 
-    // 100 + 3, recorded at Cmd's release, no pause waited for.
+    expect(readWidths()).toEqual([100]);
+  });
+
+  it("[F43.AC3] ends a burst at once, its step taken, at a pointerdown carrying Cmd (AUD-049)", () => {
+    pressUp("width", 3);
+
+    selectPageElement("#canvas").dispatchEvent(
+      new PointerEvent("pointerdown", { bubbles: true, cancelable: true, metaKey: true }),
+    );
+
+    // 100 + 3.
     expect(readPresentWidths()).toEqual([103]);
   });
 
@@ -372,10 +384,10 @@ describe("a burst of arrows in a field of several shapes, one step (US-081)", ()
     expect(readWidths()).toEqual([120, 40]);
   });
 
-  it("[F43.AC3] keeps a burst open at Shift, Ctrl, Alt, Cmd or Left pressed in its field", () => {
+  it("[F43.AC3] keeps a burst open at Shift, Ctrl, Alt or Left pressed in its field", () => {
     holdUp("several-width", 1);
 
-    for (const key of ["Shift", "Control", "Alt", "Meta", "ArrowLeft"]) {
+    for (const key of ["Shift", "Control", "Alt", "ArrowLeft"]) {
       sendKey("several-width", "keydown", { key });
     }
 
