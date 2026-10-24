@@ -29,14 +29,23 @@ The fix: the `change` an arrow sends a field of its own carries its value alread
 
 ## Product Owner test
 
-`npm run dev`, `http://localhost:5173/`.
+`npm run dev`, `http://localhost:5173/`. The page opens with a rectangle 120 × 80 at (0, 0), selected. A handle's Before is the one towards the previous point, its After towards the next one; on the page, y grows downwards, so that a negative y is above the point.
 
 | Step | Do | You should see |
 | --- | --- | --- |
+| 1 | Click Edit its points in the panel, then point 1 in the list of points, the top left corner at (0, 0), then Handles | the handle fields, Mode Mirror angle and length, Typed as x, y on the page, the four at 0 |
+| 2 | Type `30` in After x and press Enter, then `15` in After y and Enter | Before x −30 and Before y −15, the mirror of After; the top left corner a curve |
+| 3 | Click in Before y and press Up three times | −14, −13, then −12, After y following at 14, 13, then 12; never a jump by thousands |
+| 4 | Press Shift + Up in Before y, then Shift + Down, then Down | −2, After y 2; then −12; then −13, After y 13 |
+| 5 | Press Up in Before x, then in After x, then Shift + Up in After y | Before x −29, After x 29; then After x 30, Before x −30; then After y 23, Before y −23 |
+| 6 | Choose No mirroring in Mode, then press Up in Before y | Before y −22, After y staying at 23 |
+| 7 | Choose angle, length from the side in Typed as, type `30` in After angle and press Enter, `20` in After length and Enter, then press Up in After angle and Shift + Up in After length | After at 30, 20, then 31, then length 30, the handle longer each time; Before staying, Mode being No mirroring |
+| 8 | Choose x, y on the page in Typed as, type `-5` in Y, beneath the handles, and press Enter, then press Up, then Shift + Up | −5, the point and its handles moved up; then −4; then 6 |
+| 9 | Type `-5` in Y and press Enter | 1: a value typed with a sign is still added to the one shown, 6 − 5 |
 
 ## Tasks
 
 - [x] T1 — The bug reproduced (each method and mode, Up and Shift + Up in each handle field, the point's X and Y, a point on a curve), its cause found and written; tests of the criteria first, failing (1 h)
-- [ ] T2 — The fix, the tests passing; the Product Owner test card (1 h)
+- [x] T2 — The fix, the tests passing; the Product Owner test card (1 h)
 
 One task = one commit, referenced as `US-088.Tn` in the commit footer.

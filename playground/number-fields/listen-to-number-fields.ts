@@ -6,6 +6,7 @@ import { listenToTypedNumbers } from "./listen-to-typed-numbers";
 import { NUMBER_FIELD_APPLIES } from "./number-field-applies";
 import { readArrowStep } from "./read-arrow-step";
 import { readNumberField } from "./read-number-field";
+import { STEPPED_CHANGES } from "./stepped-changes";
 import { writeOwnValue } from "./write-own-value";
 
 import type { TypedPanelValue } from "../../src";
@@ -49,7 +50,9 @@ function applyFieldText(event: Event, field: HTMLInputElement): void {
 
 /**
  * Applies a value typed in a field acting as a number field, at Enter or when it is left
- * (`change`, `applyFieldText`).
+ * (`change`, `applyFieldText`); the `change` of an arrow's step, its value applied already
+ * (`STEPPED_CHANGES`), goes to the field's own listeners as it is, where reading it again as
+ * typed made a negative one relative (US-088).
  *
  * @kind procedure
  * @param event - a `change` heard on the document before the field
@@ -58,7 +61,7 @@ function applyFieldText(event: Event, field: HTMLInputElement): void {
 function applyTypedValue(event: Event): void {
   const field = readNumberField(event.target);
 
-  if (field !== undefined) {
+  if (field !== undefined && !STEPPED_CHANGES.has(event)) {
     applyFieldText(event, field);
   }
 }
@@ -66,7 +69,8 @@ function applyTypedValue(event: Event): void {
 /**
  * Applies an arrow's step, relative, to a field acting as a number field: to the shapes it sets,
  * or, for a field of its own, shown within its range (`writeOwnValue`), then applied as Enter does
- * (`change`), its own listeners reading it.
+ * (`change`), its own listeners reading it, that `change` marked as applied already
+ * (`STEPPED_CHANGES`), so that `-14` shown at Up from −15 is never read again as typed.
  *
  * @kind procedure
  * @param field - a field acting as a number field
@@ -82,8 +86,11 @@ function applySteppedValue(field: HTMLInputElement, step: TypedPanelValue): void
     return;
   }
 
+  const change = new Event("change", { bubbles: true });
+
   writeOwnValue(field, step);
-  field.dispatchEvent(new Event("change", { bubbles: true }));
+  STEPPED_CHANGES.add(change);
+  field.dispatchEvent(change);
 }
 
 /**
