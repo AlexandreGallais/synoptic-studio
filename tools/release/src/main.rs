@@ -46,7 +46,7 @@ fn print_notes(args: &[String]) -> u8 {
         [] => DEFAULT_BASE,
         [base] => base.as_str(),
         _ => {
-            eprintln!("usage: release notes [<base>]");
+            eprintln!("usage: target/release/release notes [<base>]");
             return 2;
         }
     };
@@ -74,7 +74,7 @@ fn print_notes(args: &[String]) -> u8 {
 /// `release check`: its exit code.
 fn check_text(args: &[String]) -> u8 {
     let [file] = args else {
-        eprintln!("usage: release check <file>");
+        eprintln!("usage: target/release/release check <file>");
         return 2;
     };
     let body = match fs::read_to_string(file) {
@@ -127,7 +127,7 @@ fn publish_release() -> u8 {
 }
 
 /// The usage, printed on `--help` or `-h` (REV-009).
-const USAGE: &str = "usage: release <notes [<base>] | check <file> | publish>";
+const USAGE: &str = "usage: target/release/release <notes [<base>] | check <file> | publish>";
 
 fn main() -> ExitCode {
     if let Some(code) = tool_use::usage(&std::env::args().skip(1).collect::<Vec<_>>(), USAGE) {
@@ -142,7 +142,7 @@ fn main() -> ExitCode {
         "check" => check_text(&rest),
         "publish" => publish_release(),
         _ => {
-            eprintln!("usage: release <notes [<base>] | check <file> | publish>");
+            eprintln!("usage: target/release/release <notes [<base>] | check <file> | publish>");
             2
         }
     })

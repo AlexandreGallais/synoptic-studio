@@ -33,7 +33,7 @@ fn git_common_dir() -> io::Result<PathBuf> {
 }
 
 /// The usage, printed on `--help` or `-h` (REV-009).
-const USAGE: &str = "usage: heavy-lock [--lock <name>] <command> [arguments…]";
+const USAGE: &str = "usage: target/release/heavy-lock [--lock <name>] <command> [arguments…]";
 
 fn main() -> ExitCode {
     if let Some(code) = tool_use::usage(&std::env::args().skip(1).collect::<Vec<_>>(), USAGE) {
@@ -56,7 +56,7 @@ fn main() -> ExitCode {
 /// Runs the command under its lock; its exit code.
 fn lock_and_run(argv: &[String]) -> u8 {
     let Some((name, command)) = lock_and_command(argv) else {
-        eprintln!("usage: heavy-lock [--lock <name>] <command> [arguments…]");
+        eprintln!("usage: target/release/heavy-lock [--lock <name>] <command> [arguments…]");
         return 2;
     };
 

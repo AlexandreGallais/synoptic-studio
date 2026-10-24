@@ -74,7 +74,7 @@ fn move_rows(story_id: &str, path: &Path, notes_only: bool) -> io::Result<Vec<St
 }
 
 /// The usage, printed on `--help` or `-h` (REV-009).
-const USAGE: &str = "usage: move-rows [--notes] <story branch>";
+const USAGE: &str = "usage: target/release/move-rows [--notes] <story branch>";
 
 fn main() -> ExitCode {
     if let Some(code) = tool_use::usage(&std::env::args().skip(1).collect::<Vec<_>>(), USAGE) {
@@ -90,7 +90,7 @@ fn move_story_rows() -> u8 {
         [flag, branch] if flag == "--notes" => (true, branch),
         [branch] if branch != "--notes" => (false, branch),
         _ => {
-            eprintln!("usage: move-rows [--notes] <story branch>");
+            eprintln!("usage: target/release/move-rows [--notes] <story branch>");
             return 2;
         }
     };

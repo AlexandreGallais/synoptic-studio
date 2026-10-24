@@ -856,7 +856,7 @@ fn f33_ac2_names_each_note_with_its_story_and_with_notes_writes_nothing() {
         assert_eq!(refused.status.code(), Some(2), "{arguments:?}");
         assert_eq!(
             String::from_utf8_lossy(&refused.stderr),
-            "usage: move-rows [--notes] <story branch>\n"
+            "usage: target/release/move-rows [--notes] <story branch>\n"
         );
     }
 

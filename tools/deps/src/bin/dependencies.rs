@@ -70,7 +70,7 @@ fn check_unused() -> u8 {
 }
 
 /// The usage, printed on `--help` or `-h` (REV-009).
-const USAGE: &str = "usage: dependencies outdated|unused";
+const USAGE: &str = "usage: target/release/dependencies outdated|unused";
 
 fn main() -> std::process::ExitCode {
     if let Some(code) = tool_use::usage(&std::env::args().skip(1).collect::<Vec<_>>(), USAGE) {
@@ -82,7 +82,7 @@ fn main() -> std::process::ExitCode {
         "outdated" => check_outdated(),
         "unused" => check_unused(),
         _ => {
-            eprintln!("usage: dependencies outdated|unused");
+            eprintln!("usage: target/release/dependencies outdated|unused");
             2
         }
     })
