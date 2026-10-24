@@ -40,7 +40,7 @@ The examples use the page as it opens, the rectangle 120 × 80 at (0, 0), select
 
 ## Tasks
 
-- [ ] T1 — One shape's X, Y, Width and Height, and a text's box Width and Height, as text fields acting as number fields: their values typed (`parsePanelValue`) and their arrows (`fieldArrowStep`) given to the shape edited by the same computation as several's, the field written back after it; `interaction.md` §2 (The panel for several shapes, its rule now for one shape too) and its Q row; tests of the criteria first, failing (2 h)
+- [x] T1 — One shape's X, Y, Width and Height, and a text's box Width and Height, as text fields acting as number fields: their values typed (`parsePanelValue`) and their arrows (`fieldArrowStep`) given to the shape edited by the same computation as several's, the field written back after it; `interaction.md` §2 (The panel for several shapes, its rule now for one shape too) and its Q row; tests of the criteria first, failing (2 h)
 - [ ] T2 — The code that passes them, the one shape's `input` listeners on those fields replaced by `change` and `keydown` as several's, `readShape` reading them as before (2 h)
 - [ ] T3 — The burst of arrows and the history for one shape's fields, the tests of US-019, US-032 and AUD-040 on X, Y, W and H brought to the new fields; the Product Owner test (1 h)
 

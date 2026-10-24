@@ -1,0 +1,15 @@
+import type { PanelValues } from "../../src";
+
+/**
+ * Each value of the shape the panel edits, alone, and the id of the field that shows it and sets
+ * it (US-085), as several shapes' (`SEVERAL_FIELDS`): X and Y for a shape and a text alike, the
+ * shape's Width and Height, then a text's box's.
+ */
+export const EDITED_FIELDS: readonly (readonly [keyof PanelValues, string])[] = [
+  ["x", "shape-x"],
+  ["y", "shape-y"],
+  ["width", "width"],
+  ["height", "height"],
+  ["width", "text-box-width"],
+  ["height", "text-box-height"],
+];
