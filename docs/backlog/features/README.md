@@ -47,4 +47,4 @@
 | [F43](./E02-F43-corrections-from-the-first-try.md) | E02 | Corrections from the Product Owner's first try | done |
 | [F44](./E02-F44-corrections-from-the-second-try.md) | E02 | Corrections from the Product Owner's second try | done |
 | [F45](./E02-F45-a-handles-y-stepped-by-one.md) | E02 | A handle's Before y stepped by one | done |
-| [F46](./E02-F46-moves-on-integers-and-the-rectangle.md) | E02 | Moves on integers, the selection rectangle and the canvas resized | in-progress |
+| [F46](./E02-F46-moves-on-integers-and-the-rectangle.md) | E02 | Moves on integers, the selection rectangle and the canvas resized | done |
