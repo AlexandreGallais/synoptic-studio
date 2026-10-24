@@ -1,10 +1,12 @@
 ---
 id: E06
 title: Configure business types in cascade
-status: draft
+status: dropped
 ---
 
 # E06 — Configure business types in cascade
+
+**Dropped on 2026-10-25** (SP-033, ADR-0100, decision 1, [note 0034](../../research/notes/0034-regroup-the-epics.md) §4): its content went to [E36](./E36-configure-business-types.md), whole.
 
 | Field | Content |
 | --- | --- |

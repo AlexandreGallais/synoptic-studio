@@ -1,10 +1,12 @@
 ---
 id: E12
 title: Release a product people can trust
-status: draft
+status: dropped
 ---
 
 # E12 — Release a product people can trust
+
+**Dropped on 2026-10-25** (SP-033, ADR-0100, decision 1, [note 0034](../../research/notes/0034-regroup-the-epics.md) §4): its content went to [E47](./E47-explain-the-project-to-newcomers.md), the documents for newcomers, and [E48](./E48-check-each-release.md), the release's checks; npm publication is dropped, the library being never published on npm (Q40).
 
 | Field | Content |
 | --- | --- |

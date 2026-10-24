@@ -1,10 +1,12 @@
 ---
 id: E13
 title: Arrange shapes in a tree and lay them out
-status: draft
+status: dropped
 ---
 
 # E13 — Arrange shapes in a tree and lay them out
+
+**Dropped on 2026-10-25** (SP-033, ADR-0100, decision 1, [note 0034](../../research/notes/0034-regroup-the-epics.md) §4): its content went to [E27](./E27-group-shapes-and-order-their-stacking.md), the shape tree, [E28](./E28-lay-out-shapes-in-boxes.md), the layout box, and [E44](./E44-edit-the-shape-tree-in-a-layers-panel.md), the layers panel.
 
 Idea of the Product Owner (2026-10-10, refining F07): an epic between the shapes and the symbols, about the tree only, so that shapes can hold other shapes, in the code at least, and the layout box (Q21) can place them.
 

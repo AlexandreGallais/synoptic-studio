@@ -1,10 +1,12 @@
 ---
 id: E11
 title: Store and share as files in a working folder
-status: draft
+status: dropped
 ---
 
 # E11 — Store and share as files in a working folder
+
+**Dropped on 2026-10-25** (SP-033, ADR-0100, decision 1, [note 0034](../../research/notes/0034-regroup-the-epics.md) §4): its content went to [E41](./E41-open-and-save-files-from-the-web-page.md), the formats and the editor's files opened and saved from the web page, [E42](./E42-import-svg-from-other-tools.md), SVG from other tools, and [E46](./E46-run-the-editor-as-a-desktop-application.md), the working folder and the desktop application (Q23, settled on 2026-10-25); Q30 is asked with [E34](./E34-build-symbols-with-ports.md).
 
 | Field | Content |
 | --- | --- |

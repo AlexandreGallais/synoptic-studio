@@ -72,7 +72,8 @@ No epic has a closing since ADR-0086: an epic is a list of features grouped by t
 
 | Item | Statuses |
 | --- | --- |
-| Epic, feature | `draft` → `ready` → `in-progress` → `done` |
+| Epic | `draft` → `ready` → `in-progress` → `done`; or `dropped`, its content taken by the epics it names (SP-033, 2026-10-25) |
+| Feature | `draft` → `ready` → `in-progress` → `done` |
 | Story | `draft` → `ready` → `done` on `develop` (`in-progress` only on its branch; or `dropped`); `parked` while a question waits for the Product Owner, the question written in the story, then `ready` again once answered (EN-086) |
 
 An epic or a feature becomes `in-progress` when its first story starts, and `done` when its closing stories are merged: `VAL` for a feature; for an epic, the review of its last feature (`REV` and `RET` up to E17). The agent proposes the change, the Product Owner agrees (decision of 2026-10-08).

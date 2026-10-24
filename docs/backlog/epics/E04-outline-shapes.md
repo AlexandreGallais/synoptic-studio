@@ -1,10 +1,12 @@
 ---
 id: E04
 title: Give shapes colors and exact strokes
-status: draft
+status: dropped
 ---
 
 # E04 — Give shapes colors and exact strokes
+
+**Dropped on 2026-10-25** (SP-033, ADR-0100, decision 1, [note 0034](../../research/notes/0034-regroup-the-epics.md) §4): its content went to [E31](./E31-give-shapes-colors-and-strokes.md), the fill first, then the strokes.
 
 Text moved to its own epic, E15, on 2026-10-12 (Product Owner). The shapes' fill and stroke colors joined it from E02 on 2026-10-19 (SP-025), as `interaction.md` §5 already placed them: a stroke's color comes with the stroke, and both reuse F16's color fields and picker.
 

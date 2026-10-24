@@ -1,10 +1,12 @@
 ---
 id: E03
 title: Combine shapes without losing their numbers
-status: draft
+status: dropped
 ---
 
 # E03 — Combine shapes without losing their numbers
+
+**Dropped on 2026-10-25** (SP-033, ADR-0100, decision 1, [note 0034](../../research/notes/0034-regroup-the-epics.md) §4): its content went to [E29](./E29-combine-shapes-by-boolean-operations.md), the six operations, and [E30](./E30-rebuild-shapes-from-their-pieces.md), the shape builder and the operations on edges.
 
 | Field | Content |
 | --- | --- |

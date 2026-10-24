@@ -1,10 +1,12 @@
 ---
 id: E19
 title: Snap, align and distribute shapes
-status: draft
+status: dropped
 ---
 
 # E19 — Snap, align and distribute shapes
+
+**Dropped on 2026-10-25** (SP-033, ADR-0100, decision 1, [note 0034](../../research/notes/0034-regroup-the-epics.md) §4): its content went to [E26](./E26-snap-align-and-distribute-shapes.md), whole; snapping to ports stays with the ports, [E34](./E34-build-symbols-with-ports.md).
 
 A list of features grouped by theme, with no closing of its own (ADR-0086). Cut from E02 on 2026-10-19 (SP-025): the help to place shapes against each other, once E02 moves them and E18 resizes and turns them.
 

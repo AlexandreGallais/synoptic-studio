@@ -1,10 +1,12 @@
 ---
 id: E16
 title: Check the contrast of texts on their background
-status: draft
+status: dropped
 ---
 
 # E16 — Check the contrast of texts on their background
+
+**Dropped on 2026-10-25** (SP-033, ADR-0100, decision 1, [note 0034](../../research/notes/0034-regroup-the-epics.md) §4): its content belongs entirely to the pro edition, written in `editions.md` §2 (Product Owner, 2026-10-25); no new epic takes it.
 
 An idea to refine, recorded on 2026-10-15 from the Product Owner's description. Not part of E15 and not in the run order: the Product Owner places it later. No research done yet. Its edition, free V1 or pro, is to be decided with the Product Owner (ADR-0030).
 

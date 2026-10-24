@@ -1,10 +1,12 @@
 ---
 id: E07
 title: Publish business symbol libraries
-status: draft
+status: dropped
 ---
 
 # E07 — Publish business symbol libraries
+
+**Dropped on 2026-10-25** (SP-033, ADR-0100, decision 1, [note 0034](../../research/notes/0034-regroup-the-epics.md) §4): its content went to [E37](./E37-publish-business-symbols-and-libraries.md), whole.
 
 | Field | Content |
 | --- | --- |
