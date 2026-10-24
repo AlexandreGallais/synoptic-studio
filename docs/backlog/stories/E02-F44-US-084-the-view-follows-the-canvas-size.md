@@ -35,12 +35,13 @@ The examples use a window of 2 560 × 1 000, the page as it opens, the rectangle
 | 2 | Choose the Rectangle tool and click an empty place | a new rectangle centred under the pointer, the first one not moving |
 | 3 | Click Pipeline again, then point at the new rectangle | the column back; both rectangles in place, the outline on the one under the pointer |
 | 4 | Resize the window narrower, then wider, and point at a rectangle | the drawing never shrinks nor moves; the outline on the rectangle |
-| 5 | Open `http://localhost:5173/?checklist=E15` and point at the rectangle | the checklist on the right; the rectangle at its full size, its outline on it; a click on it selects it |
+| 5 | Open `http://localhost:5173/?checklist=E15` and point at the rectangle | the checklist on the right; the rectangle at its full size, its outline on it |
+| 6 | Still with the checklist, click an empty place of the drawing, then the rectangle | nothing selected, then the rectangle selected again, its outline on it |
 
 ## Tasks
 
 - [x] T1 — The canvas's size heard by a `ResizeObserver` on `#canvas` asking the redraw (`listenToCanvasSize` in `playground/view/`, wired by `listenToView`), the window's `resize` listener of `listenToInputs` replaced by it; `interaction.md` §7 (the view after a size change) and its Q row; tests of the criteria first, failing, with a stand-in `ResizeObserver` the test fires, happy-dom's doing nothing (note 0033, §3) (2 h)
-- [ ] T2 — The code that passes them; `#stage` given `overflow: clip`; the Product Owner test, checked in a browser (1 h)
+- [x] T2 — The code that passes them; `#stage` given `overflow: clip`; the Product Owner test, checked in a browser (1 h)
 
 Files: `playground/view/` (`listen-to-view.ts`, a new `listen-to-canvas-size.ts`), `playground/mount/listen-to-inputs.ts`, `playground/index.html` (`#stage`), `docs/domain/interaction.md` §7. `@see` `REF-RESIZE-OBSERVER-1`, `REF-MDN-RESIZE-OBSERVER`, `REF-SVG2-COORDS`, `REF-CSS-OVERFLOW-3`, `docs/domain/interaction.md#_7-navigation-and-history`.
 

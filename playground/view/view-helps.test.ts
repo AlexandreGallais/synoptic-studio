@@ -10,6 +10,7 @@ import {
   clickPoint,
   openServedPage,
   readShapeModel,
+  runResizeObservers,
   selectPageElement,
   setElementBox,
   typeAndEnter,
@@ -30,13 +31,13 @@ const ZOOMED: View = { origin: { x: 180, y: 130 }, scale: 2 };
 const POINTER: Point = { x: 540, y: 390 };
 
 /**
- * Shows a view, as the page would after a zoom: kept, then the page redrawn as the window resized.
+ * Shows a view, as the page would after a zoom: kept, then the page redrawn as the canvas resized.
  *
  * @param view - the view shown
  */
 function showView(view: View): void {
   PAGE_VIEWS.set(document, view);
-  globalThis.dispatchEvent(new Event("resize"));
+  runResizeObservers("#canvas");
 }
 
 /**

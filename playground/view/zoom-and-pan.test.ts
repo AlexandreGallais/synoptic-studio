@@ -8,6 +8,7 @@ import {
   readShapeModel,
   readText,
   readValue,
+  runResizeObservers,
   selectPageElement,
   setElementBox,
   typeValue,
@@ -90,11 +91,11 @@ function turnWheel(wheel: Wheel, client: Point): WheelEvent {
 
 /**
  * Shows the view at 200 %, (180, 130) at the canvas's top-left, as the page would after a zoom:
- * kept, then the page redrawn as the window resized.
+ * kept, then the page redrawn as the canvas resized.
  */
 function showZoomed(): void {
   PAGE_VIEWS.set(document, ZOOMED);
-  globalThis.dispatchEvent(new Event("resize"));
+  runResizeObservers("#canvas");
 }
 
 /**

@@ -1,3 +1,6 @@
+import { readListenerSignal } from "../listeners";
+import { selectElement } from "../page";
+
 /**
  * Listens to the canvas's size (US-084): a `ResizeObserver` on `#canvas` asks the redraw at each
  * change of its size, whatever its cause, the window resized, the pipeline column hidden or shown,
@@ -13,8 +16,17 @@
  * @see docs/domain/interaction.md#_7-navigation-and-history
  */
 export function listenToCanvasSize(document: Document, update: () => void): void {
-  // Placeholder of US-084.T1, hearing no size change: the observer comes with T2.
-  if (document.defaultView === null) {
-    update();
+  const view = document.defaultView;
+
+  if (view === null) {
+    return;
   }
+
+  const observer = new view.ResizeObserver(update);
+
+  observer.observe(selectElement(document, "canvas"));
+
+  readListenerSignal(document).addEventListener("abort", () => {
+    observer.disconnect();
+  });
 }

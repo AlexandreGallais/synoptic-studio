@@ -1,7 +1,7 @@
 // @vitest-environment happy-dom
 import { describe, expect, it } from "vitest";
 
-import { openServedPage, readValue, selectPageElement } from "../user-actions";
+import { openServedPage, readValue, runResizeObservers, selectPageElement } from "../user-actions";
 
 import { readListenerSignal } from "./read-listener-signal";
 import { removeListeners } from "./remove-listeners";
@@ -86,12 +86,12 @@ describe("the listeners of a mount removed at the next one (EN-150, REF-MDN-ADD-
     },
   );
 
-  it("[F43.AC1] redraws the page once for the window resized after 2 mounts", () => {
+  it("[F43.AC1] redraws the page once for the canvas resized after 2 mounts", () => {
     openTimes(2);
 
     const redraws = countRedraws();
 
-    globalThis.dispatchEvent(new Event("resize"));
+    runResizeObservers("#canvas");
 
     expect(redraws()).toBe(1);
   });
