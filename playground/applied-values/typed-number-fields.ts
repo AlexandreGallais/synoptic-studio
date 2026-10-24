@@ -3,4 +3,4 @@
  * at its `input`, cleared as a value is applied (`change`) or the page writes one in it
  * (`writeInputValue`), so that a redraw meanwhile reads the value applied (`readShownText`).
  */
-export const TYPED_FIELDS = new WeakSet<Element>();
+export const TYPED_NUMBER_FIELDS = new WeakSet<Element>();

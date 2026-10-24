@@ -1,4 +1,4 @@
-import { centredPosition } from "../../src";
+import { centeredPosition } from "../../src";
 import { writeInputValue } from "../page";
 import { readShownTextBlock, readTextModel } from "../text";
 import { readTextMeasure, readTextMetrics } from "../text-measure";
@@ -10,7 +10,7 @@ import type { Point } from "../../src";
 /**
  * Places a text by a click (F35): a new text (`writeNewTextFields`), empty, whose block as shown,
  * 1 wide and one line tall (`readShownTextBlock`, US-075), is centred on the point on integers
- * (`centredPosition`), a text whose font has no metrics yet (US-056) taken as 0 × 0, its top-left
+ * (`centeredPosition`), a text whose font has no metrics yet (US-056) taken as 0 × 0, its top-left
  * on the point.
  *
  * @kind procedure
@@ -27,7 +27,7 @@ export function writePlacedText(document: Document, point: Point): void {
     metrics === undefined
       ? { height: 0, width: 0 }
       : readShownTextBlock(metrics, text, readTextMeasure(metrics, text).block);
-  const position = centredPosition(point, block);
+  const position = centeredPosition(point, block);
 
   writeInputValue(document, "shape-x", position.x);
   writeInputValue(document, "shape-y", position.y);

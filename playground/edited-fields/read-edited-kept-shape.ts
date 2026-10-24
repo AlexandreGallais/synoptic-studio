@@ -39,7 +39,11 @@ function readEditedShape(document: Document, shape: DrawingShape, edit: PanelEdi
  * @returns the shape changed and its kind
  * @see docs/domain/interaction.md#_2-selector
  */
-export function readEditedKept(document: Document, kept: KeptShape, edit: PanelEdit): KeptShape {
+export function readEditedKeptShape(
+  document: Document,
+  kept: KeptShape,
+  edit: PanelEdit,
+): KeptShape {
   const shape = readEditedShape(document, kept.shape, edit);
 
   writeKeptMetrics(kept.shape, shape);

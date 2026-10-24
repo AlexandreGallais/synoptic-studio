@@ -4,8 +4,8 @@ export type OwnFieldRange = {
   readonly isTurn: boolean;
   /** Whether it holds whole numbers, its value always rounded to the nearest integer (AUD-047). */
   readonly isWhole: boolean;
-  /** Its least value, `-Infinity` for none. */
-  readonly least: number;
-  /** Its most value, `Infinity` for none; for a turn, the value that goes round to the least. */
-  readonly most: number;
+  /** Its minimum, `-Infinity` for none. */
+  readonly minimum: number;
+  /** Its maximum, `Infinity` for none; for a turn, the value that goes round to the minimum. */
+  readonly maximum: number;
 };

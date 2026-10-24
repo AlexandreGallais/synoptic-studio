@@ -186,7 +186,7 @@ describe("an arrow in several shapes' X or Y, each landed on integers (AUD-048)"
     holdIn("several-x", { key: "ArrowUp" }, 1);
 
     // A′ and A landed as above; the text, which has no straight box, given `+1` in X, which a text
-    // never measured leaves as it is (A text, `readEditedKept`).
+    // never measured leaves as it is (A text, `readEditedKeptShape`).
     expect(readAnchors()).toEqual([
       { x: 5, y: -2 },
       { x: 11, y: 20 },

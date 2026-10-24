@@ -4,7 +4,7 @@ import { DRAWING_KEYS, readStoredDrawing, writeStoredDrawing } from "../kept-sha
 import { selectElement, writeInputValue } from "../page";
 import { MAX_SIZE } from "../shape";
 
-import { readEditedKept } from "./read-edited-kept";
+import { readEditedKeptShape } from "./read-edited-kept-shape";
 import { writeEditedGeometry } from "./write-edited-geometry";
 import { writeEditedText } from "./write-edited-text";
 
@@ -69,7 +69,7 @@ function writeRefusedValue(
 
 /**
  * Sets the shape the panel edits, as last drawn, by a value applied in one of its fields
- * (`readEditedKept`), then keeps it as the one edited and writes it into the panel
+ * (`readEditedKeptShape`), then keeps it as the one edited and writes it into the panel
  * (`writeEditedShape`), a width or height marking a text's box as the designer's.
  *
  * @kind procedure
@@ -79,7 +79,7 @@ function writeRefusedValue(
  * @see docs/domain/interaction.md#_2-selector
  */
 function writeAppliedShape(document: Document, kept: KeptShape, edit: PanelEdit): void {
-  const shown = readEditedKept(document, kept, edit);
+  const shown = readEditedKeptShape(document, kept, edit);
 
   writeStoredDrawing(document, DRAWING_KEYS.edited, [shown]);
   writeEditedShape(document, shown, isPanelSize(edit.key));
@@ -87,7 +87,7 @@ function writeAppliedShape(document: Document, kept: KeptShape, edit: PanelEdit)
 
 /**
  * Sets the shape the panel edits, alone, by a value of one of its fields (US-085), as each of
- * several shapes is set (`readEditedKept`, `shapeAfterPanelEdit`, `textAfterPanelEdit`): typed, a
+ * several shapes is set (`readEditedKeptShape`, `shapeAfterPanelEdit`, `textAfterPanelEdit`): typed, a
  * number relative with a sign (`parsePanelValue`), or an arrow's step, relative, from the shape
  * as last drawn, a size taken within 0 and 100 000 (Q20, AUD-046); the shape then kept as the one
  * edited, so that the next key starts from it before the redraw, and written into the panel, its

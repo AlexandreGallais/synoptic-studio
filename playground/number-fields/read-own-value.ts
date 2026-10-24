@@ -6,7 +6,12 @@ import type { OwnFieldRange } from "./own-field-range";
 import type { TypedPanelValue } from "../../src";
 
 /** The range of a field the table does not name: whole numbers without a bound. */
-const NO_RANGE: OwnFieldRange = { isTurn: false, isWhole: true, least: -Infinity, most: Infinity };
+const NO_RANGE: OwnFieldRange = {
+  isTurn: false,
+  isWhole: true,
+  minimum: -Infinity,
+  maximum: Infinity,
+};
 
 /**
  * Reads a value within a field's range: taken at its bound beyond it, or, for a turn, gone round
@@ -19,9 +24,11 @@ const NO_RANGE: OwnFieldRange = { isTurn: false, isWhole: true, least: -Infinity
  * @see docs/domain/interaction.md#_2-selector
  */
 function readValueInRange(value: number, range: OwnFieldRange): number {
-  const { isTurn, least, most } = range;
+  const { isTurn, minimum, maximum } = range;
 
-  return isTurn ? least + modulo(value - least, most - least) : clamp(value, least, most);
+  return isTurn
+    ? minimum + modulo(value - minimum, maximum - minimum)
+    : clamp(value, minimum, maximum);
 }
 
 /**

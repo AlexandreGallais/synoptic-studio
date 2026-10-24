@@ -388,6 +388,6 @@ describe("readOwnValue (US-087, AUD-046)", () => {
 
     expect(new Set(ids)).toEqual(new Set(OWN_FIELD_RANGES.keys()));
     expect(ids).toHaveLength(OWN_FIELD_RANGES.size);
-    expect(OWN_FIELD_RANGES.get("corners")).toMatchObject({ least: 3, most: 12 });
+    expect(OWN_FIELD_RANGES.get("corners")).toMatchObject({ maximum: 12, minimum: 3 });
   });
 });

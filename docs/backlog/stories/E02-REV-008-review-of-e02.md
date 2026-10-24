@@ -20,7 +20,7 @@ Held on 2026-10-24 with the Product Owner, after E02's merge into `develop` (#49
 
 One task = one commit, referenced as `REV-008.Tn`.
 
-- [x] T1 — Naming pass: left to the next review, the time box spent on the method; each feature's audit held its own (AUD-037 to AUD-049)
+- [x] T1 — Naming pass over E02's code, on 2026-10-25: two stores of typed fields told apart (`TYPED_NUMBER_FIELDS`), range bounds `least`/`most` named `minimum`/`maximum` as elsewhere, `readEditedKeptShape`, `centeredPosition` spelled as the code spells center, a function name corrected in `interaction.md`; behaviour unchanged, the golden results equal
 - [x] T2 — Session with the Product Owner: the validation, the retrospective, the decisions recorded (1 h)
 - [x] T3 — The decisions written, the tools changed, the docs brought up to date (1 h)
 
