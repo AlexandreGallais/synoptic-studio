@@ -9,6 +9,7 @@ import {
   selectPageElement,
   setElementBox,
 } from "../user-actions";
+import { PAN_DRAGS } from "../view";
 
 import type { Point } from "../../src";
 import type { PointerKeys } from "../user-actions";
@@ -42,10 +43,40 @@ function pressAndMove(from: Point, to: Point): void {
  *
  * @param type - `keydown` or `keyup`
  * @param key - the key, `" "` for Space, `Meta` for Cmd
+ * @param init - the event's other fields: `metaKey` while Cmd is held, `repeat` for a key repeated
  */
-function sendKey(type: string, key: string): void {
+function sendKey(type: string, key: string, init: KeyboardEventInit): void {
   selectPageElement("body").dispatchEvent(
-    new KeyboardEvent(type, { bubbles: true, cancelable: true, key }),
+    new KeyboardEvent(type, { ...init, bubbles: true, cancelable: true, key }),
+  );
+}
+
+/**
+ * Presses Cmd, as the browser sends it: its `keydown` with `metaKey` set, a modifier's state
+ * changing as it is pressed down (UI Events 4.3.1).
+ */
+function pressCommand(): void {
+  sendKey("keydown", "Meta", { metaKey: true });
+}
+
+/**
+ * Sends a pointer event of the main button to the canvas, Cmd held, at the window's (x, y).
+ *
+ * @param type - `pointermove` or `pointerdown`
+ * @param client - the point in the window
+ */
+function sendPointerWithCommand(type: string, client: Point): void {
+  selectPageElement("#canvas").dispatchEvent(
+    new PointerEvent(type, {
+      bubbles: true,
+      button: 0,
+      buttons: type === "pointerdown" ? 1 : 0,
+      cancelable: true,
+      clientX: client.x,
+      clientY: client.y,
+      metaKey: true,
+      pointerId: 1,
+    }),
   );
 }
 
@@ -95,15 +126,68 @@ describe("a press left open, then the next press on the empty drawing (US-090)",
   it("[F46.AC2] draws the rectangle after Space released while Cmd was held, no keyup sent", () => {
     // macOS sends no keyup for a key released while Cmd is held (REF-WEBKIT-CMD-KEYUP): Space
     // pressed, Cmd pressed, Space released, then Cmd released; only Cmd's keyup reaches the page.
-    sendKey("keydown", " ");
-    sendKey("keydown", "Meta");
-    sendKey("keyup", "Meta");
+    sendKey("keydown", " ", {});
+    pressCommand();
+    sendKey("keyup", "Meta", {});
 
     expect(dragOnEmptyDrawing()).toBe(RECTANGLE);
   });
 
+  it("[F47.AC1] draws the rectangle after Space then Cmd pressed, neither keyup heard", () => {
+    // Cmd + Space is a system shortcut (REF-APPLE-SHORTCUTS): Space's and Cmd's keyups may never
+    // reach the page; Cmd's keydown comes first, as a modifier's state changes as it is pressed.
+    sendKey("keydown", " ", {});
+    pressCommand();
+
+    expect(dragOnEmptyDrawing()).toBe(RECTANGLE);
+  });
+
+  it("[F47.AC1] draws the rectangle after Space repeated with Cmd held, no other key heard", () => {
+    // Cmd's own keydown lost: Space's next repeat carries Cmd's state, and holds Space no more.
+    sendKey("keydown", " ", {});
+    sendKey("keydown", " ", { metaKey: true, repeat: true });
+
+    expect(dragOnEmptyDrawing()).toBe(RECTANGLE);
+  });
+
+  it("[F47.AC1] draws the rectangle after the pointer moved with Cmd held, no key heard", () => {
+    // No key event at all after Space's press: the pointer's move carries Cmd's state.
+    sendKey("keydown", " ", {});
+    sendPointerWithCommand("pointermove", { x: 600, y: 200 });
+
+    expect(dragOnEmptyDrawing()).toBe(RECTANGLE);
+  });
+
+  it("[F47.AC1] pans no view at a press with Cmd held, Space's keydown the last key heard", () => {
+    // The press itself carries Cmd: Space may have been let go under it, never heard.
+    sendKey("keydown", " ", {});
+    sendPointerWithCommand("pointerdown", PRESS);
+
+    expect(PAN_DRAGS.has(document)).toBe(false);
+  });
+
+  it("[F47.AC1] holds Space again at its next repeat once Cmd is released", () => {
+    // Space still down as Cmd is released: its next keydown, Cmd's state gone, holds it again.
+    sendKey("keydown", " ", {});
+    pressCommand();
+    sendKey("keyup", "Meta", {});
+    sendKey("keydown", " ", { repeat: true });
+    dispatchDrawingPointer("pointerdown", PRESS, NO_KEY);
+
+    expect(PAN_DRAGS.has(document)).toBe(true);
+  });
+
+  it("[F47.AC1] pans by a drag with Space really held, its repeats heard", () => {
+    // US-078: Space held, repeated, then the press: a pan, no rectangle drawn.
+    sendKey("keydown", " ", {});
+    sendKey("keydown", " ", { repeat: true });
+
+    expect(dragOnEmptyDrawing()).toBeUndefined();
+    expect(PAN_DRAGS.has(document)).toBe(true);
+  });
+
   it("[F46.AC2] draws the rectangle after Space held as the window lost the focus", () => {
-    sendKey("keydown", " ");
+    sendKey("keydown", " ", {});
     globalThis.dispatchEvent(new Event("blur"));
 
     expect(dragOnEmptyDrawing()).toBe(RECTANGLE);

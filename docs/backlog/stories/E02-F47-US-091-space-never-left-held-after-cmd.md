@@ -21,6 +21,17 @@ A likely cause, to check: Cmd + Space is a system shortcut on macOS (Spotlight, 
 - Given the sequence of the Product Owner (Space down, Cmd down, Space up, Cmd up), with or without the `keyup`s reaching the page, when the empty drawing is dragged, then a selection rectangle is drawn.
 - Given Space really held, then a drag pans, as today (US-078).
 
+## The cause and the way chosen
+
+The cause, checked by its sources, not reproduced: Cmd + Space is the system's shortcut, Spotlight or the input source (`REF-APPLE-SHORTCUTS`), and a key released while Cmd is held sends no `keyup` on macOS (`REF-WEBKIT-CMD-KEYUP`, `REF-MOZILLA-CMD-KEYUP`); a tool holding that shortcut may take Cmd's `keyup` too, so that US-090's Cmd release is never heard. A headless Chromium cannot show it: its keys are given to the page by the browser, never through macOS and its shortcuts.
+
+The two ways the criteria name do not hold alone (agent's choice, 2026-10-24):
+
+- a press's own state tells the modifiers only, `ctrlKey`, `shiftKey`, `altKey` and `metaKey`, never Space (`REF-UIEVENTS-KEYS`, §3.5.1.1);
+- Space's repeat comes "at a rate determined by the system configuration", after a configuration-dependent delay (`REF-UIEVENTS-KEYS`), and macOS lets it be Off (`REF-APPLE-KEY-REPEAT`): no source bounds the time, so that a window would either keep a pan after a release, or drop Space really held.
+
+The way chosen: **any key or pointer event that carries Cmd (`metaKey`) lets Space go**, a press with Cmd included, and a Space `keydown` with Cmd holds it not. Cmd's own `keydown` carries it, a modifier's state changing as it is pressed down (`REF-UIEVENTS-KEYS`, §4.3.1), and it comes before any key a shortcut may take (`REF-MOZILLA-CMD-KEYUP`: Cmd's `keydown`, then the other key's); were it lost too, Space's repeat under Cmd, a move of the pointer or the press itself carries Cmd. Nothing rests on a `keyup`, so that US-090's Cmd release goes. Space still down as Cmd is released is held again by its next repeat, Cmd gone from it, as an arrow is; with the repeat Off, Space is pressed again.
+
 ## Product Owner test
 
 `npm run dev`, `http://localhost:5173/`.
