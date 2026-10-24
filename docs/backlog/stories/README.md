@@ -145,6 +145,7 @@
 | [SP-025](./E02-SP-025-cut-the-editing-work-into-small-features.md) | E02 | Cut the editing work into small features | done |
 | [REV-008](./E02-REV-008-review-of-e02.md) | E02 | Review of 2026-10-24, F35 to F47 | done |
 | [SP-033](./E02-SP-033-regroup-the-epics.md) | E02 | Regroup the epics not done into small epics of one subject | done |
+| [REV-009](./E02-REV-009-review-of-2026-10-25.md) | E02 | Review of 2026-10-25, the regrouping and the documentation | in-progress |
 | [SP-010](./E14-F11-SP-010-research-f11.md) | F11 | Research for F11: folder layouts and test placement | done |
 | [EN-020](./E14-F11-EN-020-property-tests.md) | F11 | Property tests for the nine functions without one | done |
 | [EN-021](./E14-F11-EN-021-shared-test-helpers.md) | F11 | Shared test helpers, one path writer, one pass per corner | done |
