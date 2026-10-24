@@ -106,3 +106,20 @@ One task = one commit, referenced as `SP-033.Tn`.
 - [ ] T1 — Inventory: each epic not done, its features, ideas and cards, its dependencies, the domain files it rests on
 - [ ] T2 — The new list: subjects, epics, features and their sizes, the map from the old epics
 - [ ] T3 — The research note and the questions for the Product Owner
+
+## Answers of the Product Owner
+
+Given on 2026-10-25, to the twelve questions of note 0034, §6:
+
+1. (a) The 28 small epics as proposed, each holding one subject.
+2. (a) The helps still drawn in the drawing's SVG are the first feature of Resize shapes by their box (E21), every later handle being drawn in the layer above (the agent's placement, option (a)).
+3. The history's list scrolled whole stays with the interface designed (E45), as decided on 2026-10-23 at SP-029 (the agent's placement): A history that stays fast (E25) holds its one step story.
+4. A letter refused as it is typed goes with Number fields that compute (E24), which rewrites how every field reads its text (the agent's placement).
+5. The fill color is the first feature of Colors and strokes of shapes (E31) (the agent's placement).
+6. (a) Point 1 alike in every shape is the first feature of the files' epic (E41), before the format is fixed, as RET-002 placed it.
+7. The text's second pass and the fonts are epics 12 and 13 as proposed, E32 and E33 (the agent's placement).
+8. (b) The contrast of texts belongs entirely to the pro edition: its epic is dropped from the list and its content kept in `editions.md` §2, the Product Owner's choice of edition (ADR-0030).
+9. The editor works first as a web page, in every browser: files are opened from the disk and saved by Save as, a download, which stands in for the working folder; Ctrl + S saves in place where the browser allows it (the File System Access API, to source at that epic's refinement), otherwise opens Save as. A file is saved only when the designer asks, never continuously. The desktop application is an epic of its own (E46), placed just before the release's epics, likely a Rust program hosting a web view, how being researched then; the working folder moves to it. The reason: an editor that runs everywhere from the start, the desktop shell coming once its need is known (Q23 settled).
+10. (a) The radii of removed corners are kept while the session lasts, not in the saved file: a story of Drag points and handles (E23) (Q26 settled).
+11. How a rule and an animation run is settled at the refinements of Animatable parts (E35) and Business configuration (E36), from their sources (option (c), the agent's placement).
+12. (a) The order of §2, with the two changes above: the contrast out, the desktop application in before the release; still 28 epics, E21 to E48 (note 0034, §7).

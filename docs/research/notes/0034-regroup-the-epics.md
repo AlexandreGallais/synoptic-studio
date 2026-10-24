@@ -369,3 +369,59 @@ Each with its options and an example; the agent's proposal is the first option, 
 10. **The radii of removed corners (Q26).** (a) A story of Drag points and handles, the radii kept while the session lasts. (b) The same, and kept in the saved file, with the files. (c) Not built, the corners coming back sharp as F03 decided. Example: a polygon of 12 corners of radii 1 to 12 made a triangle, then 12 again: corners 4 to 12 get radii 4 to 12 back in (a) and (b), radius 0 in (c).
 11. **How a rule and an animation run.** For the sizes of Animatable parts and Business configuration. (a) A rule as a form of conditions, a property compared to a value giving a part's state, played by the library in the view. (b) An expression language, written as text. (c) Settled at the epics' refinements, from their sources. Example: `isRunning` true makes the body green, otherwise grey: one line of a form in (a), the text `isRunning ? green : grey` in (b).
 12. **The order of the epics.** (a) The order of §2: the shapes edited by hand (1 to 6), the tree and the operations (7 to 11), the text (12, 13), the symbols to the drawings (14 to 20), the files (21, 22), the contrast (23), the settings and panels (24, 25), the interface (26), the release (27, 28). (b) As (a), the colors and strokes moved before the booleans (epic 11 after epic 8), the shapes' paint being seen in every later try. (c) As (a), the files moved right after the symbols (21 and 22 after 14), so that a symbol is saved early, the format growing with each later kind of document. Example: in (c), a symbol is saved at epic 16 of 28 instead of 21; in (b) a stroke is seen from epic 9 instead of 11.
+
+### The answers
+
+Given by the Product Owner on 2026-10-25; questions 2, 3, 4, 5, 7 and 11 placed by the agent the same day, within those answers.
+
+1. (a) The 28 small epics.
+2. (a) The helps of the drawing's SVG are the first feature of Resize shapes by their box (the agent's).
+3. (a) The history's list scrolled whole stays with the interface designed, as decided on 2026-10-23 (the agent's): A history that stays fast holds its one step story.
+4. (a) A letter refused as it is typed goes with Number fields that compute (the agent's).
+5. (a) The fill color is the first feature of Colors and strokes of shapes (the agent's).
+6. (a) Point 1 alike in every shape is the first feature of the files' epic.
+7. (a) The text's second pass and the fonts are epics 12 and 13 (the agent's).
+8. (b) The contrast of texts belongs entirely to the pro edition: The contrast of texts leaves the list, its three features written in `editions.md` §2.
+9. Neither option as written: the editor works first as a web page, in every browser. A file is opened from the disk and saved by Save as, a download, which stands in for the working folder; Ctrl + S saves in place where the browser allows it (the File System Access API, to source at that epic's refinement), otherwise it opens Save as; a file is saved only when the designer asks, never continuously. The desktop application is an epic of its own, placed just before the release's epics, likely a Rust program hosting a web view, how being researched at its refinement; the working folder moves to it. Files in a working folder becomes Open and save files from the web page. Q23 is settled so.
+10. (a) The radii of removed corners are kept while the session lasts, a story of Drag points and handles. Q26 is settled so.
+11. (c) Settled at the refinements of Animatable parts and Business configuration, from their sources (the agent's).
+12. (a) The order of §2, the contrast out and the desktop application in: still 28 epics.
+
+## 7. The list as decided
+
+The epics of §2 as the answers leave them, each given its id, E21 to E48 in order, and a title of a verb and its result as every epic's (the subject's name of §2 kept in its file); each epic's file in `docs/backlog/epics/` holds its features as drafts, the items of §4 it takes and its open points of §5. The changes from §2: A history that stays fast holds 1 story, the list scrolled whole going to the interface designed as a feature of 1 story; Drag points and handles takes the radii of removed corners into its second feature; the files' third feature opens and saves from the web page; The contrast of texts leaves; The desktop application comes in before the release.
+
+| Order | ID | Epic | Features | Stories | Duration |
+| --- | --- | --- | --- | --- | --- |
+| 1 | E21 | Resize shapes by their box | 3 | 7 | 5.5 to 7 h |
+| 2 | E22 | Turn shapes about a chosen center | 3 | 7 | 5.5 to 7 h |
+| 3 | E23 | Drag points and handles | 2 | 6 | 4.3 to 5.3 h |
+| 4 | E24 | Compute in number fields | 1 | 3 | 2.3 to 2.8 h |
+| 5 | E25 | Keep the history fast | 1 | 1 | 1.5 to 2 h |
+| 6 | E26 | Snap, align and distribute shapes | 3 | 8 | 5.9 to 7.4 h |
+| 7 | E27 | Group shapes and order their stacking | 3 | 8 | 5.9 to 7.4 h |
+| 8 | E28 | Lay out shapes in boxes | 3 | 8 | 5.9 to 7.4 h |
+| 9 | E29 | Combine shapes by boolean operations | 3 | 8 | 5.9 to 7.4 h, and §5 |
+| 10 | E30 | Rebuild shapes from their pieces | 2 | 6 | 4.3 to 5.3 h |
+| 11 | E31 | Give shapes colors and strokes | 4 | 10 | 7.5 to 9.5 h, and §5 |
+| 12 | E32 | Refine the text's lines and options | 3 | 7 | 5.5 to 7 h |
+| 13 | E33 | Choose fonts for synoptic views | 2 | 6 | 4.3 to 5.3 h |
+| 14 | E34 | Build symbols with ports | 3 | 7 | 5.5 to 7 h |
+| 15 | E35 | Animate parts of symbols | 3 | 7 | 5.5 to 7 h, and §5 |
+| 16 | E36 | Configure business types | 4 | 11 | 7.9 to 9.9 h, and §5 |
+| 17 | E37 | Publish business symbols and libraries | 3 | 6 | 5.1 to 6.6 h |
+| 18 | E38 | Assemble synoptic views | 3 | 10 | 6.8 to 8.3 h |
+| 19 | E39 | Connect symbols with orthogonal pipes | 4 | 11 | 7.9 to 9.9 h, and §5 |
+| 20 | E40 | Draw and reuse static drawings | 3 | 7 | 5.5 to 7 h |
+| 21 | E41 | Open and save files from the web page | 3 | 9 | 6.3 to 7.8 h, and §5 |
+| 22 | E42 | Import SVG from other tools | 2 | 5 | 3.9 to 4.9 h |
+| 23 | E43 | Tune settings and keys | 3 | 6 | 5.1 to 6.6 h |
+| 24 | E44 | Edit the shape tree in a layers panel | 1 | 3 | 2.3 to 2.8 h |
+| 25 | E45 | Design the editor's interface | 3 | 6 | 5.1 to 6.6 h, and §5 |
+| 26 | E46 | Run the editor as a desktop application | 2 | 5 | 3.9 to 4.9 h, and §5 |
+| 27 | E47 | Explain the project to newcomers | 3 | 7 | 5.5 to 7 h |
+| 28 | E48 | Check each release | 2 | 5 | 3.9 to 4.9 h |
+
+In all: 28 epics, 75 features, 190 stories, 8 685 to 10 935 active minutes (145 to 182 hours), before the open points of §5. Example, E25: 20 + 25 × 1 + (45 to 75) × 1 = 90 to 120 minutes; E46: 20 + 25 × 5 + (45 to 75) × 2 = 235 to 295 minutes.
+
+The epics not done before (E03 to E13, E16, E18 to E20) are `dropped`, each naming the new epics that took its content.
