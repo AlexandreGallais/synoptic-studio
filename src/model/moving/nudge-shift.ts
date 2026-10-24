@@ -20,7 +20,7 @@ const ARROW_DIRECTIONS: ReadonlyMap<string, Point> = new Map([
  * How far an arrow key nudges the shapes selected (F39): 1 toward the arrow, or 10 with Shift, as
  * Figma nudges (`interaction.md` §1), the arrow's direction scaled by the step (`scale`), Right
  * adding 1 across, Shift + Up taking 10 down away; the anchor then lands on integers by this
- * nudge as by a drag's offset (`landedShift`, F46).
+ * nudge as by a drag's offset (`landedNudgeShift`, F46).
  *
  * @kind domain
  * @param key - the key pressed, as `KeyboardEvent.key` names it
