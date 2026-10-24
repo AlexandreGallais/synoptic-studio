@@ -5,7 +5,7 @@ import type { Size } from "../../geometry";
 import type { Point } from "../../math";
 
 /**
- * Position of a box centred on a point, on integers (F35): the top-left of the box, half its size
+ * Position of a box centered on a point, on integers (F35): the top-left of the box, half its size
  * up and left of the point, each coordinate rounded to the nearest integer, a tie rounded up
  * (`nearestInteger`), so that a point clicked between two integers places the box on integers.
  *
@@ -17,7 +17,7 @@ import type { Point } from "../../math";
  * @returns the top-left of the box before it turns (ADR-0035), integers
  * @see docs/domain/interaction.md#_1-tools
  */
-export function centredPosition(point: Point, size: Size): Point {
+export function centeredPosition(point: Point, size: Size): Point {
   const corner = subtract(point, halfSize(size));
 
   return { x: nearestInteger(corner.x), y: nearestInteger(corner.y) };
