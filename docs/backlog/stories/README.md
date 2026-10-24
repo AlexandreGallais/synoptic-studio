@@ -139,6 +139,9 @@
 | [US-090](./E02-F46-US-090-the-rectangle-and-the-canvas-resized.md) | F46 | The selection rectangle always answers, the canvas resized without a flicker | done |
 | [AUD-048](./E02-F46-AUD-048-audit-f46.md) | F46 | Audit F46 | done |
 | [VAL-047](./E02-F46-VAL-047-validate-f46.md) | F46 | Validate F46 | dropped |
+| [US-091](./E02-F47-US-091-space-never-left-held-after-cmd.md) | F47 | Space never left held after Cmd | ready |
+| [AUD-049](./E02-F47-AUD-049-audit-f47.md) | F47 | Audit F47 | ready |
+| [VAL-048](./E02-F47-VAL-048-validate-f47.md) | F47 | Validate F47 | dropped |
 | [SP-025](./E02-SP-025-cut-the-editing-work-into-small-features.md) | E02 | Cut the editing work into small features | done |
 | [SP-010](./E14-F11-SP-010-research-f11.md) | F11 | Research for F11: folder layouts and test placement | done |
 | [EN-020](./E14-F11-EN-020-property-tests.md) | F11 | Property tests for the nine functions without one | done |

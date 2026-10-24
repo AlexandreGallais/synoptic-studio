@@ -41,6 +41,7 @@ Ordered by the agent at SP-025 (2026-10-19), each needing the one before it. A f
 | [F44](../features/E02-F44-corrections-from-the-second-try.md) — Corrections from the Product Owner's second try | the helps as one dashed line of white and black, seen on every color; one shape's fields behaving as several shapes'; the view following the work area's size after a resize; opened on 2026-10-24 from the Product Owner's second try, before the merge into `main` (2 to 4) | done |
 | [F45](../features/E02-F45-a-handles-y-stepped-by-one.md) — A handle's Before y stepped by one | Up in a handle's Before y stepped by about 20 000 at a key; the cause found and fixed, every handle field stepped by 1 or 10; opened on 2026-10-24 from the Product Owner's try of F44 (1) | done |
 | [F46](../features/E02-F46-moves-on-integers-and-the-rectangle.md) — Moves on integers, the selection rectangle and the canvas resized | a turned shape moved by the arrows landing on integers; the selection rectangle that once did nothing; no flicker as the canvas changes size; opened on 2026-10-24 from the Product Owner's third try (2) | done |
+| [F47](../features/E02-F47-space-left-held-after-cmd.md) — Space never left held after Cmd | after Space, Cmd, Space released, Cmd released, a drag panned instead of selecting; opened on 2026-10-24 from the Product Owner's try of F46 (1) | in-progress |
 
 ## Refinement
 
