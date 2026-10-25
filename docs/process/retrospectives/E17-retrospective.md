@@ -181,7 +181,7 @@ The cost of B and C: a checkout of `v0.3.0` reads `0.0.0-development` in `packag
 
 Decided by the Product Owner on 2026-10-18.
 
-- [ADR-0083](../../adr/0083-the-release-made-by-the-merge-into-main-from-a-tag.md), superseding ADR-0079: the merge of `develop` into `main` makes the tag and the GitHub release, the version from the tags, no release branch nor version commit; 0.3.0 its first release, E17 closing at its publication.
+- [ADR-0083](../../adr/0101-the-adrs-that-no-longer-hold-removed-into-one-record.md), superseding ADR-0079: the merge of `develop` into `main` makes the tag and the GitHub release, the version from the tags, no release branch nor version commit; 0.3.0 its first release, E17 closing at its publication.
 - [F22](../../backlog/features/E17-F22-the-release-from-the-merge-into-main.md), E17's last feature: EN-116 (the CI green on GitHub's runner), EN-117 (the release of ADR-0083), AUD-024, VAL-023; no checkpoint.
 - [ADR-0084](../../adr/0084-small-features-tests-first-and-a-linear-history.md), from E02: features of 2 to 4 stories, one at a time; `T1` the interface and its failing tests, `T2` the code; a linear history with the feature rebased with lease when `develop` moved; two agents per story as a trial on two stories; researchers on separate topics; a lighter main thread. Written into `AGENTS.md` (Work, Never), the project rules, the run skill, the worker brief, `docs/process/agile.md`, `docs/backlog/README.md`, the templates and `tests/backlog.test.ts`.
 - [ADR-0085](../../adr/0085-tool-incident-cards-tools-changed-at-an-epics-end.md), amending ADR-0074: a tool that fails is a card in [tool incidents](../tool-incidents.md), tools changed only at an epic's end; the nine cards moved there.

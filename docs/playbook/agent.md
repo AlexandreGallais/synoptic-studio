@@ -62,7 +62,7 @@ The Product Owner's critiques of E01, E14, E15 and E17, written as habits: what 
 | finish an option | test the way back, the automatic path as well as the chosen one, a real computer's fonts, a turned object against a turned shape (E15) |
 | prepare a validation | one short checklist page, at most 12 lines per feature, one line per thing to see, each tried in a browser first, the panel beside the drawing (E15, EN-056) |
 | run work in the background | say each worker's start and end with an estimate; the status line shows each running subagent (E15, EN-053) |
-| start subagents | at most three at once and one heavy command at a time, refused or queued by the tools (E15, ADR-0063, EN-047) |
+| start subagents | at most three at once and one heavy command at a time, refused or queued by the tools (E15, ADR-0072, EN-047) |
 | run work in parallel | keep branches on separate files; merge one at a time; never edit shared indexes and logs from a story branch (E15, ADR-0065) |
 | explain a behaviour | give the situation as an example, in names or numbers: the default font missing, another chosen automatically, the one picked during the reading kept (E15) |
 | report a session's figures | report the whole session, with `--all`, at its end only (E15) |

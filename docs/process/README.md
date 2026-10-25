@@ -13,7 +13,7 @@ Each moment has one owner and one output, so that nothing waits on an unnamed pe
 | start of each story and review | triage of open GitHub issues (`/triage`), each with a recommendation (ADR-0026) | agent, then Product Owner | decisions, backlog items, replies |
 | start of an epic | refinement: the Product Owner's account, the documentary research, the features cut, in an `SP` from `develop` (ADR-0086) | both, then agent | features, sources |
 | start of a feature | refinement interview; a short spike `SP` on its branch when questions remain | both, then agent | stories, sources |
-| during a run (ADR-0028) | stories follow one another on the feature branch up to the scope the Product Owner set, a fresh worker each; a test card per user story | agent | stories merged into the feature branch, cards to run |
+| during a run (ADR-0072) | stories follow one another on the feature branch up to the scope the Product Owner set, a fresh worker each; a test card per user story | agent | stories merged into the feature branch, cards to run |
 | end of a feature | audit `AUD` (with a light evolvability check), validation `VAL` (demo page, checklist page) | agent, then Product Owner | findings, [guide](../guide/) page, feedback |
 | after `VAL` | local previews: what the Product Owner saw against what the demo meant to show | both | gaps recorded |
 | release | the Product Owner runs `release.yml` on `main` from the Actions tab, when they choose (ADR-0086) | Product Owner | a tag and a GitHub release |

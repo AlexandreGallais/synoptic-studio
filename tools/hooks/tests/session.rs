@@ -121,7 +121,7 @@ fn tells_a_feature_file_by_its_name() {
 fn prints_the_state_with_or_without_a_feature_started() {
     assert_eq!(
         state_text("develop", 2, "abc1234 docs: x", &[], &[]),
-        "Project state (SessionStart hook, ADR-0021):\n- branch develop, 2 uncommitted file(s), last commit: abc1234 docs: x\n- no feature started\n- a story is implemented only when ready; the Product Owner's /run sets its scope ready (ADR-0045).\n"
+        "Project state (SessionStart hook, ADR-0021):\n- branch develop, 2 uncommitted file(s), last commit: abc1234 docs: x\n- no feature started\n- a story is implemented only when ready; the Product Owner's /run sets its scope ready (ADR-0072).\n"
     );
     assert!(
         state_text("d", 0, "c", &["E01-F01-x: 1/3".into()], &[])

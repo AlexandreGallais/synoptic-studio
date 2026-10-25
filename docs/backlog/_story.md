@@ -17,7 +17,7 @@ As a _role_, I want _action_ so that _value_.
 
 ## Product Owner test
 
-User stories only (ADR-0028): what the Product Owner runs in the playground, with the expected result of each step and the words explained.
+User stories only (ADR-0072): what the Product Owner runs in the playground, with the expected result of each step and the words explained.
 
 | Step | Do | You should see |
 | --- | --- | --- |

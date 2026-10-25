@@ -1,6 +1,6 @@
 # ADR-0020 — Every feature starts with a research spike and ends with an audit
 
-**Status**: Accepted. Decision 4 amended on 2026-10-17 (Product Owner, review of the ADRs, EN-094): a tooling feature is validated by the agent, who opens its pull request into `develop` without waiting (ADR-0072).
+**Status**: Accepted. Decision 4 amended on 2026-10-17 (Product Owner, review of the ADRs, EN-094): a tooling feature is validated by the agent, who opens its pull request into `develop` without waiting (ADR-0072). Decisions 1 and 4 superseded by ADR-0100 (2026-10-24): the research spike is the epic's, at its start, a feature opening with its stories; no `VAL` per feature, the Product Owner trying what changed at each return.
 
 ## Context
 

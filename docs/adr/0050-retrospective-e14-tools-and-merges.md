@@ -1,6 +1,6 @@
 # ADR-0050 — The agent's tools, parallel checks, and validated epic stories that merge by themselves
 
-**Status**: Accepted (Product Owner, 2026-10-14, at RET-002). Extends ADR-0045 to an epic's closing stories. Decision 1 superseded by ADR-0073 (every new tool in Rust), decisions 2 and 3 by ADR-0072 (how a run works), both on 2026-10-17 at the review of the ADRs (EN-094); decisions 4 and 5 stand.
+**Status**: Accepted (Product Owner, 2026-10-14, at RET-002). Extended ADR-0045, removed since (ADR-0101), to an epic's closing stories. Decision 1 superseded by ADR-0073 (every new tool in Rust), decisions 2 and 3 by ADR-0072 (how a run works), both on 2026-10-17 at the review of the ADRs (EN-094); decisions 4 and 5 stand.
 
 ## Context
 
@@ -29,4 +29,4 @@ The Product Owner asked for tools instead of repeated scripts, for faster checks
 
 ## References
 
-ADR-0023, ADR-0038, ADR-0045, ADR-0049, `docs/tooling/metrics.md`, `docs/tooling/agent-tools.md`
+ADR-0023, ADR-0049, ADR-0072, ADR-0101 (ADR-0038 and ADR-0045, removed), `docs/tooling/metrics.md`, `docs/tooling/agent-tools.md`

@@ -20,7 +20,7 @@ jobs:
   # `release publish` checks that the run is on the branch main (`GITHUB_REF`, `REF-GH-VARIABLES`),
   # computes the version from the last tag `vx.y.z` and the commits since, and makes the GitHub
   # release on main's head, which GitHub tags: its notes the bodies of the pull requests into main
-  # merged since that tag, the test report of the last one's CI attached (ADR-0027, ADR-0038: the
+  # merged since that tag, the test report of the last one's CI attached (ADR-0027, ADR-0072: the
   # report of the code released, not a new run). It makes no commit; without a commit since the
   # last tag it does nothing. GITHUB_TOKEN suffices: nothing has to start from the release, the
   # site being deployed by the push.

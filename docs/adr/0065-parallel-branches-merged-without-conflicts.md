@@ -33,4 +33,4 @@
 
 ## References
 
-ADR-0038, ADR-0045, ADR-0063, Git docs (gitattributes, git-rerere), `docs/process/retrospectives/E15-retrospective.md`
+ADR-0072, ADR-0101 (ADR-0038, ADR-0045 and ADR-0063, removed), Git docs (gitattributes, git-rerere), `docs/process/retrospectives/E15-retrospective.md`

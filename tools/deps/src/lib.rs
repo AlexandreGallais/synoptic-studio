@@ -1,6 +1,6 @@
 //! The dependency checks of the repository (EN-109), in place of `npm-check-updates`,
 //! `scripts/tool-versions.ts` and `knip`: `deps outdated`, every pinned version against its
-//! latest version at least 7 days old (ADR-0038); `deps unused`, the unused files, exports and
+//! latest version at least 7 days old (ADR-0072); `deps unused`, the unused files, exports and
 //! dev packages. Neither ports code of those packages: each follows their documented behaviour
 //! (`REF-NCU-COOLDOWN`, `REF-KNIP-ISSUE-TYPES`), checked against their findings on this tree.
 
@@ -15,7 +15,7 @@ pub mod outdated;
 pub mod unused;
 pub mod version;
 
-/// The cooldown: a version is taken once it is 7 days old (ADR-0038), in milliseconds.
+/// The cooldown: a version is taken once it is 7 days old (ADR-0072), in milliseconds.
 pub const COOLDOWN_MS: i64 = 7 * calendar::DAY_MS;
 
 /// Whether a version published at `published_ms` is past the cooldown at `now_ms`: 7 days old or

@@ -4,12 +4,12 @@ What went wrong in this project, and the check that now prevents it. Newest firs
 
 | Date | What happened | Now prevented by |
 | --- | --- | --- |
-| 2026-10-16 | Four subagents ran tests and checks at once; the computer froze and the session was force-quit | at most three subagents, one heavy command at a time, enforced by a hook and a lock (ADR-0063, EN-047) |
+| 2026-10-16 | Four subagents ran tests and checks at once; the computer froze and the session was force-quit | at most three subagents, one heavy command at a time, enforced by a hook and a lock (ADR-0072, EN-047) |
 | 2026-10-16 | Parallel story branches edited the same indexes, logs and checklist; the conflicts stayed open | shared files written by the main thread at merge, generated indexes, unpadded tables, one merge at a time (ADR-0065) |
 | 2026-10-16 | 549 commands refused in worktrees, each a round trip | the worker brief names the forms that fit a worktree; a guard answers at once (EN-052) |
 | 2026-10-15 | The session report showed 10 h 40 of work as 2.8 s | cause found (one turn without `--all`); the report at a session's end with `--all` |
 | 2026-10-15 | Validating E15 took 176 guided steps one after the other, slow and tiring for the Product Owner | one checklist page per epic: a line per option and per decision, a check box, tried in any order (US-051, EN-044) |
-| 2026-10-13 | The agent waited for the CI after every story, at least 40 minutes over E01, while the pre-push hook had already run the same checks | checks run locally; one CI, on the pull request into `main` (ADR-0038) |
+| 2026-10-13 | The agent waited for the CI after every story, at least 40 minutes over E01, while the pre-push hook had already run the same checks | checks run locally; one CI, on the pull request into `main` (ADR-0072, ADR-0088) |
 | 2026-10-13 | A package released 36 seconds before the version check turned `main` red | a 7-day cooldown on versions (`.ncurc.cjs`) |
 | 2026-10-13 | Dependencies were upgraded, a major among them, without reading what changed | the upgrade procedure reads the release notes first (`docs/tooling/versions-and-security.md`) |
 | 2026-10-13 | The Product Owner's spoken words were quoted throughout a public repository | writing rules: decisions in neutral words; the `doc-editor` agent checks |
@@ -18,7 +18,7 @@ What went wrong in this project, and the check that now prevents it. Newest firs
 | 2026-10-13 | Hooks and scripts run by Node.js lost their `.ts` extensions to the import autofix | a `node-run` lint scope |
 | 2026-10-09 | Validating a feature from a test card read beside the page was slow for the Product Owner | a guided test inside the playground: one step at a time, values typed by Next, what to look at; tested end to end |
 | 2026-10-09 | Story branches merged by GitHub auto-merge stayed on the remote; deleting them with `git push --delete` ran the full pre-push check each time | delete each merged branch right after the merge, through the GitHub API (`/run` step 9) |
-| 2026-10-09 | A wait loop that only looked for "merged" kept waiting on a failed check | statuses read, stop at the first failure; since ADR-0038, no CI on work branches |
+| 2026-10-09 | A wait loop that only looked for "merged" kept waiting on a failed check | statuses read, stop at the first failure; since ADR-0072, no CI on work branches |
 | 2026-10-09 | `atan2(+0, −0) = π`: a zero-length edge after a negative edge gave a half turn instead of none; found by the independent auditor, not by the tests | zero vectors handled explicitly; signed zeros in the library rules; the auditor reviews every story |
 | 2026-10-09 | The unused-imports autofix removed a type import written before its use; Vitest (types stripped) stayed green | `tsc` before each commit (library rules); `check:all` before push |
 | 2026-10-09 | A spike (contour turning back) is consumed by its fillet: a behavior no rectangle test could show | auditor probes on non-rectangular contours; business question raised (Q16) instead of a silent choice |

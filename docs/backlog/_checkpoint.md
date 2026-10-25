@@ -9,7 +9,7 @@ points: 1
 
 # E00 · F00 · CHK-000 — Checkpoint in the middle of F00
 
-Pause between the geometry and the rendering stories of F00: bring documentation and methods up to date as the project grows, before going on (ADR-0028, `/run` skill).
+Pause between the geometry and the rendering stories of F00: bring documentation and methods up to date as the project grows, before going on (ADR-0072, `/run` skill).
 
 ## Acceptance criteria
 

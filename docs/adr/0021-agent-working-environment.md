@@ -1,6 +1,6 @@
 # ADR-0021 — Agent working environment: skills, rules, hooks and an independent auditor
 
-**Status**: Accepted, partly superseded by ADR-0038 (configuration changes go to `develop`) and ADR-0040 (`AGENTS.md`)
+**Status**: Accepted, partly superseded by ADR-0072 (configuration changes go to `develop`, after ADR-0038, removed: ADR-0101), now through a branch of their own (ADR-0100), and ADR-0040 (`AGENTS.md`)
 
 ## Context
 

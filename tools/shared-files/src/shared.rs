@@ -30,7 +30,7 @@ pub const LOGS: [&str; 4] = [
     "docs/process/tool-incidents.md",
 ];
 
-/// The story types a worker implements in a run (ADR-0063); the others are the main thread's.
+/// The story types a worker implements in a run (ADR-0072); the others are the main thread's.
 const WORKER_TYPES: [&str; 2] = ["us", "en"];
 
 /// The kind of a shared file, from its path relative to the repository's root.
@@ -57,7 +57,7 @@ pub fn shared_kind(path: &str) -> Option<Kind> {
         .then_some(Kind::Checklist)
 }
 
-/// The story id of a story branch (`<type>/<id>-<topic>`, ADR-0038), `chore/en-050-topic` giving
+/// The story id of a story branch (`<type>/<id>-<topic>`, ADR-0072), `chore/en-050-topic` giving
 /// `EN-050`; `None` for `develop`, `main` or a feature branch.
 #[must_use]
 pub fn story_of(branch: &str) -> Option<String> {

@@ -15,6 +15,6 @@ What made it work:
 - **Status in three places checked by a test**: the item, its folder index, its parent's table.
 - **Research before code, audit after**: a spike reads every source of a feature; an audit re-derives, recomputes and re-reads.
 - **Plain language at every demo**: the Product Owner tests what they understand, on one checklist page per epic, a line per option with a check box, tried in any order; the epic review reruns it whole.
-- **Feature branches and autonomous runs**: stories chain on the feature's branch and merge themselves once checked locally and reviewed; the Product Owner validates the feature and merges it, then the release (ADR-0028, ADR-0038).
+- **Feature branches and autonomous runs**: stories chain on the feature's branch and merge themselves once checked locally and reviewed; the Product Owner validates the feature and merges it, then the release (ADR-0072, ADR-0086).
 - **Logs, emptied at each review**: ideas in the improvement log, critiques in the feedback log; the method's part of the review opens with one table of them all, decided row by row.
 - **Every four to five epics, every rule questioned**: harden by default.

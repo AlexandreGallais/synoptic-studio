@@ -1,6 +1,6 @@
 # ADR-0019 — Kebab-case file names, one export per file
 
-**Status**: Accepted — supersedes ADR-0015
+**Status**: Accepted — supersedes ADR-0015, removed since (ADR-0101, which lists the rules of it this ADR keeps)
 
 ## Context
 
@@ -19,4 +19,4 @@ Enforced by `local/one-export-per-file` (name check) and `unicorn/filename-case`
 
 ## References
 
-ADR-0015, `REF-ANGULAR-STYLE`, `REF-AIRBNB-STYLE`
+ADR-0101 (ADR-0015, removed), `REF-ANGULAR-STYLE`, `REF-AIRBNB-STYLE`

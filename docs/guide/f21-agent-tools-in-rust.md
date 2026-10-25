@@ -48,7 +48,7 @@ The dev packages went from 38 at E17's start to 23 at F21's (F19 removed ESLint,
 
 ## The release, by our own tool
 
-A release used to be two merges by you: release-please's pull request into `develop`, then `develop` into `main`, with a personal token and a third-party action. Now (ADR-0079), when you ask for a release, `release prepare` makes a branch `release/x.y.z` from `develop`, sets the version and drafts the entry of `CHANGELOG.md` from the commits; the agent rewrites each line for the library's users, `release check` refuses an entry that breaks a rule of good notes ([releases](../tooling/releases.md), from Keep a Changelog and Common Changelog), and the pull request into `main` holds that commit before it merges. You merge it; `release publish` tags the merge and publishes the GitHub release with the same notes. No commit follows the merge.
+A release used to be two merges by you: release-please's pull request into `develop`, then `develop` into `main`, with a personal token and a third-party action. Now (ADR-0079, removed since: ADR-0101), when you ask for a release, `release prepare` makes a branch `release/x.y.z` from `develop`, sets the version and drafts the entry of `CHANGELOG.md` from the commits; the agent rewrites each line for the library's users, `release check` refuses an entry that breaks a rule of good notes ([releases](../tooling/releases.md), from Keep a Changelog and Common Changelog), and the pull request into `main` holds that commit before it merges. You merge it; `release publish` tags the merge and publishes the GitHub release with the same notes. No commit follows the merge.
 
 The notes of 0.2.0, drafted again by the tool and rewritten by the agent (EN-112), against release-please's:
 
@@ -95,7 +95,7 @@ Left for E17's naming and tooling pass (NAM-002): 25 places starting Git each th
 | --- | --- | --- |
 | The library's file is named by `AGENT_LIBRARY_FILE` when set, never `LIBRARY_PATH` | `LIBRARY_PATH` is the C toolchain's search path: Apple's `python3` sets it, and a library script started from it opened a store there | ADR-0077 |
 | The hooks, the status line, the Git hooks and the agent call each Rust tool by its binary's path, `npm run` kept for you | 3 ms a call instead of 47 to 150 ms; a binary older than its sources is rebuilt after each sync and merge, and `npm run rust:fresh` names it | ADR-0078, ADR-0080 for `.githooks/` |
-| A release is prepared on a branch `release/x.y.z` from `develop`, not by a commit on `develop` | `develop` moves often; the pull request into `main` keeps its checks and its version while `develop` goes on | ADR-0079 |
+| A release is prepared on a branch `release/x.y.z` from `develop`, not by a commit on `develop` | `develop` moves often; the pull request into `main` keeps its checks and its version while `develop` goes on | ADR-0079 (removed since: ADR-0101) |
 | After the worktree's `cd`, `guard-bash` lets one Git command through piped into read-only filters (`head`, `grep`, `wc`, `sed -n`…); a second command is still refused | a refusal costs the agent a call; a filter only reads | EN-104 |
 | `run-totals status` is not recorded | the status line calls it every second during a run: about 18,000 lines a run, no information | EN-102, `docs/tooling/metrics.md` |
 | The story worker stays on Opus | F20's trial on Sonnet was too small to compare; a fair trial works one story twice from the same base | EN-066, CHK-021 |

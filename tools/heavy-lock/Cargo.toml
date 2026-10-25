@@ -2,7 +2,7 @@
 name = "heavy-lock"
 version = "0.1.0"
 edition.workspace = true
-description = "One heavy command at a time across every worktree (ADR-0063, EN-047)"
+description = "One heavy command at a time across every worktree (ADR-0072, EN-047)"
 license.workspace = true
 publish.workspace = true
 

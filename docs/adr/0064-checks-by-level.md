@@ -1,6 +1,6 @@
 # ADR-0064 — Checks by level: the story, the feature, the epic
 
-**Status**: Accepted (Product Owner, 2026-10-16, at RET-003), applied from E02. Supersedes the reviews per story of ADR-0051, decision 3.
+**Status**: Accepted (Product Owner, 2026-10-16, at RET-003), applied from E02. Supersedes the reviews per story of ADR-0051, decision 3 (removed since, ADR-0101). Its epic level superseded by ADR-0086 (decision 8, 2026-10-18): an epic has no closing of its own, the naming pass and the merge audit held by each review.
 
 ## Context
 
@@ -30,4 +30,4 @@
 
 ## References
 
-ADR-0020, ADR-0049, ADR-0051, ADR-0063, `docs/conventions/audit.md`
+ADR-0020, ADR-0049, ADR-0072, ADR-0101 (ADR-0051 and ADR-0063, removed), `docs/conventions/audit.md`

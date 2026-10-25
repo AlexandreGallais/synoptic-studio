@@ -1,10 +1,10 @@
 # ADR-0072 — How a run works: the go-ahead, the branches and merges, three agents and one heavy command
 
-**Status**: Accepted (Product Owner, 2026-10-17, review of the ADRs, EN-094). Supersedes ADR-0028, ADR-0038, ADR-0045 and ADR-0063, and ADR-0050's decisions 2 and 3: it gathers what stands of them, as practised in F19's run, with the decisions of 2026-10-17. ADR-0064 (checks by level), ADR-0065 (shared files) and ADR-0067 (the release pull request on `develop`) stand beside it. Its release lines, which restate ADR-0067 (Decision, the release pull request into `develop`; the table's release row), superseded by ADR-0079 (2026-10-18, EN-112): a release branch from `develop`, published by the project's own tool, itself superseded by ADR-0083 (2026-10-18, RET-004). From E02, ADR-0084 supersedes its checkpoint per feature (The run, decision 6) and lets a feature start only once the previous one merged, and ADR-0085 its comment about tools sent to another agent during a run (The run, decision 2). ADR-0087 (2026-10-18, F24) lets one job run on a push to `develop`, the Rust cache's (The run, decision 1).
+**Status**: Accepted (Product Owner, 2026-10-17, review of the ADRs, EN-094). Supersedes ADR-0028, ADR-0038, ADR-0045 and ADR-0063, removed since (ADR-0101), and the decisions 2 and 3 of ADR-0050: it gathers what stands of them, as practised in F19's run, with the decisions of 2026-10-17. ADR-0064 (checks by level) and ADR-0065 (shared files) stand beside it. Its release lines (Decision, the release pull request into `develop`; the table's release row) superseded by ADR-0086 (2026-10-18), the release by a button, after ADR-0067, ADR-0079 and ADR-0083, removed since (ADR-0101). From E02, ADR-0084 supersedes its checkpoint per feature (The run, decision 6) and lets a feature start only once the previous one merged, and ADR-0085 its comment about tools sent to another agent during a run (The run, decision 2). ADR-0087 (2026-10-18, F24) lets one job run on a push to `develop`, the Rust cache's (The run, decision 1).
 
 ## Context
 
-- How a run works was spread over five ADRs, each superseding parts of the one before: feature branches and autonomous runs (ADR-0028), `develop` and local checks (ADR-0038), `/run` as the go-ahead (ADR-0045), parallel checks and validated epic stories (ADR-0050), the limit on agents (ADR-0063, after ADR-0051). Reading one of them alone gave a rule no longer applied, such as the feature branch created from `main`.
+- How a run works was spread over five ADRs, each superseding parts of the one before: feature branches and autonomous runs (ADR-0028), `develop` and local checks (ADR-0038), `/run` as the go-ahead (ADR-0045), parallel checks and validated epic stories (ADR-0050), the limit on agents (ADR-0063, after ADR-0051). Each was removed on 2026-10-25 but ADR-0050 (ADR-0101). Reading one of them alone gave a rule no longer applied, such as the feature branch created from `main`.
 - On 2026-10-17 the Product Owner reviewed every accepted ADR with the agent. They kept the way runs work, asked for it in one up-to-date ADR, and decided two changes:
   - a **tooling feature** — one whose criteria concern the agent's tools, checks and hooks, not the library nor its applications — is validated by the agent, who opens its pull request into `develop` without waiting for them;
   - **three subagents and one heavy command at a time** is the rule, no longer a trial: E15's freeze did not come back since the hook and the lock (EN-047, EN-063).
@@ -21,7 +21,7 @@
 | `<type>/<id>-<topic>` | one story, one commit per task | its feature branch on GitHub (`develop` for an epic's story) | its feature by a rebase |
 
 - `git log --first-parent main` lists the releases; each feature is one merge on `develop`.
-- Release-please's release pull request goes into `develop`, and the Product Owner merges it just before `develop` → `main` (ADR-0067). After a release, `develop` follows `main` by a fast-forward.
+- Release-please's release pull request goes into `develop`, and the Product Owner merges it just before `develop` → `main` (ADR-0067, removed: ADR-0101). After a release, `develop` follows `main` by a fast-forward.
 - After every merge the branches are cleaned (`npm run branches:clean`); GitHub deletes a merged branch.
 
 ### Checks
@@ -63,8 +63,8 @@
 
 - `AGENTS.md`, `CLAUDE.md`, the run and story skills and the worker brief cite this ADR where they cited the superseded ones.
 - `story-automerge.yml` already accepts `feat/val-` branches into `develop`: a tooling feature uses the same path, its label set by the agent.
-- The superseded ADRs stay as the record of each step: ADR-0028 (autonomous runs, 2026-10-08), ADR-0038 (`develop` and local checks, RET-001), ADR-0045 (`/run` as the go-ahead), ADR-0050 (parallel checks, epic stories merged), ADR-0051 and ADR-0063 (the main thread kept free, the limit on agents).
+- The superseded ADRs stayed as the record of each step until 2026-10-25, when ADR-0101 removed them into its record, ADR-0050 excepted: ADR-0028 (autonomous runs, 2026-10-08), ADR-0038 (`develop` and local checks, RET-001), ADR-0045 (`/run` as the go-ahead), ADR-0050 (parallel checks, epic stories merged), ADR-0051 and ADR-0063 (the main thread kept free, the limit on agents).
 
 ## References
 
-ADR-0028, ADR-0038, ADR-0045, ADR-0050, ADR-0051, ADR-0063, ADR-0064, ADR-0065, ADR-0067, ADR-0069, `REF-GITFLOW`, `REF-GH-MERGE-METHODS`, `REF-GH-REQUIRED-CHECKS`, `REF-GH-AUTO-MERGE`, `REF-NCU-COOLDOWN`, [VAL-019](../backlog/stories/E17-F18-VAL-019-validate-f18.md), [EN-094](../backlog/stories/E17-F19-EN-094-adrs-reviewed-with-the-product-owner.md)
+ADR-0050, ADR-0064, ADR-0065, ADR-0069, ADR-0101 (ADR-0028, ADR-0038, ADR-0045, ADR-0051, ADR-0063 and ADR-0067, removed), `REF-GITFLOW`, `REF-GH-MERGE-METHODS`, `REF-GH-REQUIRED-CHECKS`, `REF-GH-AUTO-MERGE`, `REF-NCU-COOLDOWN`, [VAL-019](../backlog/stories/E17-F18-VAL-019-validate-f18.md), [EN-094](../backlog/stories/E17-F19-EN-094-adrs-reviewed-with-the-product-owner.md)

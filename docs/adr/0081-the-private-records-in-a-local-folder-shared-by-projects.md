@@ -1,6 +1,6 @@
 # ADR-0081 — The private records in a local folder shared by every project, never sent
 
-**Status**: Accepted (Product Owner, 2026-10-18, EN-114). Supersedes ADR-0041 (a private repository, committed and pushed) and ADR-0044 (that repository in `records/` inside the project).
+**Status**: Accepted (Product Owner, 2026-10-18, EN-114). Supersedes ADR-0041 (a private repository, committed and pushed) and ADR-0044 (that repository in `records/` inside the project), both removed since (ADR-0101).
 
 ## Context
 
@@ -25,4 +25,4 @@
 
 ## References
 
-ADR-0041, ADR-0044
+ADR-0101 (ADR-0041 and ADR-0044, removed)

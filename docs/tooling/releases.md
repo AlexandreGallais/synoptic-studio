@@ -1,6 +1,6 @@
 # Releases
 
-The project's own tool, `tools/release/` (`target/release/release`), drafts and checks the features' text of each pull request into `main`, and makes a release by a button (ADR-0086, superseding ADR-0083 and the release branch of ADR-0079): the version lives only in the tags `vx.y.z` and their GitHub releases, never in a commit, and `package.json` holds `0.0.0-development`. The tool replaced release-please on 2026-10-18 (EN-112) and became the button with EN-117.
+The project's own tool, `tools/release/` (`target/release/release`), drafts and checks the features' text of each pull request into `main`, and makes a release by a button (ADR-0086; the flows before it, ADR-0067, ADR-0079 and ADR-0083, recorded in ADR-0101): the version lives only in the tags `vx.y.z` and their GitHub releases, never in a commit, and `package.json` holds `0.0.0-development`. The tool replaced release-please on 2026-10-18 (EN-112) and became the button with EN-117.
 
 | Step | Branch | Who | What happens |
 | --- | --- | --- | --- |
@@ -31,7 +31,7 @@ The project's own tool, `tools/release/` (`target/release/release`), drafts and 
 | anything else, or no commit of the library nor the playground: then its notes are the notice of no change | patch | patch |
 | no commit since the last tag | no release: `release publish` does nothing | no release |
 
-**Rolling back** to the release branch of ADR-0079: `tools/release/`, `release.yml`, `package.json`, `package-lock.json` and `CHANGELOG.md` from the commit before EN-117's. To release-please (ADR-0067): `release-please-config.json`, `.release-please-manifest.json`, the `release-pr`, `release-please` and `test-report` jobs of `release.yml`, the `release-please--` branch pattern and the commit-message exception of `tools/git-hooks/`, from the commit before EN-112's, and a personal token in the secret `RELEASE_PLEASE_TOKEN`.
+**Rolling back** to the release branch of ADR-0079 (removed: ADR-0101): `tools/release/`, `release.yml`, `package.json`, `package-lock.json` and `CHANGELOG.md` from the commit before EN-117's. To release-please (ADR-0067, removed: ADR-0101): `release-please-config.json`, `.release-please-manifest.json`, the `release-pr`, `release-please` and `test-report` jobs of `release.yml`, the `release-please--` branch pattern and the commit-message exception of `tools/git-hooks/`, from the commit before EN-112's, and a personal token in the secret `RELEASE_PLEASE_TOKEN`.
 
 ## What a release text holds
 

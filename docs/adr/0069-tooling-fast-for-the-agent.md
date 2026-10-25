@@ -30,4 +30,4 @@
 
 ## References
 
-ADR-0049, ADR-0063, ADR-0064, [EN-089](../backlog/stories/E17-F19-EN-089-font-files-read-once-per-test-run.md), [EN-090](../backlog/stories/E17-F19-EN-090-tests-without-over-testing.md), [E17](../backlog/epics/E17-fast-tooling-with-oxc-and-rust.md)
+ADR-0049, ADR-0064, ADR-0072, ADR-0101 (ADR-0063, removed), [EN-089](../backlog/stories/E17-F19-EN-089-font-files-read-once-per-test-run.md), [EN-090](../backlog/stories/E17-F19-EN-090-tests-without-over-testing.md), [E17](../backlog/epics/E17-fast-tooling-with-oxc-and-rust.md)

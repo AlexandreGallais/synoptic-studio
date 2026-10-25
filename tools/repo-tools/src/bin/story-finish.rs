@@ -1,4 +1,4 @@
-//! `story-finish <base> <title> <body file>` (`npm run story:finish`, RET-002, ADR-0045, EN-051,
+//! `story-finish <base> <title> <body file>` (`npm run story:finish`, RET-002, ADR-0072, EN-051,
 //! EN-103), in the story's checkout once its branch is pushed, under the merge lock of
 //! `tools/heavy-lock/`: stories merge one at a time, the next one waiting, then rebasing on the
 //! updated base. A story file still holding rows for the logs stops it first: its `done` commit

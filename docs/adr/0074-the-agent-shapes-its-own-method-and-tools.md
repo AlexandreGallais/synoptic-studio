@@ -4,7 +4,7 @@
 
 ## Context
 
-- The method of this project — epics, features, stories, reviews and retrospectives — was written for a team of people, then fitted to one agent and its subagents run by run: the main thread kept free (ADR-0051), the limit on agents (ADR-0072), the shared files written at merge (ADR-0065), the tooling made fast for the agent (ADR-0069).
+- The method of this project — epics, features, stories, reviews and retrospectives — was written for a team of people, then fitted to one agent and its subagents run by run: the main thread kept free (ADR-0051, removed: ADR-0101), the limit on agents (ADR-0072), the shared files written at merge (ADR-0065), the tooling made fast for the agent (ADR-0069).
 - Each of these changes came from a friction the agent met: a freeze, a conflict on a shared file, a slow check, a wait. They were often seen late, in the retrospective's metrics, rather than written when they happened.
 - On 2026-10-17 the Product Owner decided to give the agent growing freedom over its own method and tools, so that it proposes what fits an agent best, with evidence, rather than following a method made for people.
 
@@ -31,4 +31,4 @@
 
 ## References
 
-ADR-0023, ADR-0051, ADR-0065, ADR-0069, ADR-0072, ADR-0073, [EN-094](../backlog/stories/E17-F19-EN-094-adrs-reviewed-with-the-product-owner.md)
+ADR-0023, ADR-0065, ADR-0069, ADR-0072, ADR-0073, ADR-0101 (ADR-0051, removed), [EN-094](../backlog/stories/E17-F19-EN-094-adrs-reviewed-with-the-product-owner.md)

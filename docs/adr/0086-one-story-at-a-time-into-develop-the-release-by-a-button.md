@@ -1,12 +1,12 @@
 # ADR-0086 — One story at a time, a merge commit for every merge, a review at each return, the release by a button
 
-**Status**: Accepted (Product Owner, 2026-10-18, during F22's run, revised the same day); its feature frame (a `VAL` per feature, a feature into `develop` once validated) superseded by ADR-0100 on 2026-10-24. Supersedes ADR-0083: the release is no longer made by the merge into `main`, and `CHANGELOG.md` goes. Supersedes, in ADR-0084, decision 3 for the rebase of a story into its feature and of a feature onto `develop`, and for `develop` → `main` at the epic's end; decision 4 (two agents per story); and the parallel researchers of decision 5. ADR-0084's decisions 1 and 2, small features and tests first in their own commit, stand, and so does its feature branch from `develop`. Supersedes, since the review now holds them: ADR-0085's tools changed only at an epic's end (now at each review), ADR-0049's naming pass per epic and ADR-0023's retrospective per epic (now in each review). Implemented by [EN-122](../backlog/stories/E17-F22-EN-122-one-story-at-a-time-into-develop.md), [EN-117](../backlog/stories/E17-F22-EN-117-release-from-the-merge-into-main.md) and EN-123.
+**Status**: Accepted (Product Owner, 2026-10-18, during F22's run, revised the same day); its feature frame (a `VAL` per feature, a feature into `develop` once validated) superseded by ADR-0100 on 2026-10-24. Supersedes ADR-0083, removed since (ADR-0101): the release is no longer made by the merge into `main`, and `CHANGELOG.md` goes. Supersedes, in ADR-0084, decision 3 for the rebase of a story into its feature and of a feature onto `develop`, and for `develop` → `main` at the epic's end; decision 4 (two agents per story); and the parallel researchers of decision 5. ADR-0084's decisions 1 and 2, small features and tests first in their own commit, stand, and so does its feature branch from `develop`. Supersedes, since the review now holds them: ADR-0085's tools changed only at an epic's end (now at each review), ADR-0049's naming pass per epic and ADR-0023's retrospective per epic (now in each review). Implemented by [EN-122](../backlog/stories/E17-F22-EN-122-one-story-at-a-time-into-develop.md), [EN-117](../backlog/stories/E17-F22-EN-117-release-from-the-merge-into-main.md) and EN-123.
 
 ## Context
 
 - During F21 and F22's start the parallel work cost more than it saved: two stories open at once meant rebases and merges done again, each by an agent that starts cold, and a week's usage that a run of two days could spend whole. The Product Owner prefers a slower run they can afford each day.
 - A story rebased into its feature leaves no trace of itself in the graph, and a feature rebased onto `develop` is rewritten under new hashes; a merge commit keeps each piece of work visible where it joined.
-- Under ADR-0083 the merge into `main` is the release, so the site cannot follow a reviewed feature without making a version.
+- Under ADR-0083 (removed since, ADR-0101) the merge into `main` is the release, so the site cannot follow a reviewed feature without making a version.
 - The Product Owner comes back once or twice a day; an epic's closing (`NAM`, `REV`, `RET`) came weeks apart, so the naming, the tool fixes and the method's changes waited that long.
 - semantic-release reads the version from the tags and writes it only into the published package, never in a commit (`REF-SEMANTIC-RELEASE-FAQ`); GitHub runs a workflow on demand from a button of its Actions tab (`workflow_dispatch`, `REF-GH-WORKFLOW-DISPATCH`); `release.yml` already accepts it.
 
@@ -26,7 +26,7 @@
 - One agent at a time trades speed for usage: no merge nor rebase is done twice, and each worker's cold start is paid once per story.
 - A merge commit for every merge keeps the graph the Product Owner reads: each story and each feature stays one bubble, with its name, and no commit is rewritten.
 - A review at each return keeps the naming, the tools and the method a day behind the code at most, instead of an epic.
-- A button computes the number, so the Product Owner chooses when to release without choosing, or mistyping, the number (ADR-0083's reason against a tag typed by hand).
+- A button computes the number, so the Product Owner chooses when to release without choosing, or mistyping, the number (the reason of ADR-0083, recorded in ADR-0101, against a tag typed by hand).
 - The features' texts are written once, by the agent who knows the feature, and read by the Product Owner at the review; commits would give a raw list (0.2.0's draft had 163 change lines before sorting).
 
 ## Consequences
@@ -38,4 +38,4 @@
 
 ## References
 
-ADR-0023, ADR-0049, ADR-0072, ADR-0083, ADR-0084, ADR-0085, `REF-SEMANTIC-RELEASE-FAQ`, `REF-GH-WORKFLOW-DISPATCH`, `REF-SEMVER`
+ADR-0023, ADR-0049, ADR-0072, ADR-0084, ADR-0101 (ADR-0083, removed), ADR-0085, `REF-SEMANTIC-RELEASE-FAQ`, `REF-GH-WORKFLOW-DISPATCH`, `REF-SEMVER`

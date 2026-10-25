@@ -40,7 +40,7 @@ So the step on `main` runs with `target-branch: develop` and `skip-github-pull-r
 
 ## The change (T2)
 
-- `.github/workflows/release.yml`: a `release-pr` job on pushes to `develop` (`target-branch: develop`, `skip-github-release: true`); the `release-please` job on pushes to `main` (`target-branch: develop`, `skip-github-pull-request: true`); the automatic merge of the release pull request removed ([ADR-0067](../../adr/0067-release-pull-request-on-develop.md), decision 2: the Product Owner merges it into `develop` when they ask for a release).
+- `.github/workflows/release.yml`: a `release-pr` job on pushes to `develop` (`target-branch: develop`, `skip-github-release: true`); the `release-please` job on pushes to `main` (`target-branch: develop`, `skip-github-pull-request: true`); the automatic merge of the release pull request removed ([ADR-0067](../../adr/0101-the-adrs-that-no-longer-hold-removed-into-one-record.md), decision 2: the Product Owner merges it into `develop` when they ask for a release).
 - `commitlint.config.ts`: the release commit `chore(develop): release x.y.z` is let through, since the CI of the pull request into `main` checks every commit it brings.
 - `tests/release-flow.test.ts`: each job's branch, `target-branch` and `skip-` input, no `gh pr merge`, the release commit of either branch; broken once on purpose (`skip-github-pull-request: false`, then the `develop` scope removed), each run failed.
 - Docs: [releases](../../tooling/releases.md), [Git workflow](../../tooling/git-workflow.md) (`develop` follows `main` by a fast-forward), [CI](../../tooling/ci.md), ADR-0038's status.

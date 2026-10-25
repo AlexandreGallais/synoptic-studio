@@ -1,4 +1,4 @@
-# The features' auto-merge (ADR-0045, ADR-0086, ADR-0088): merges, always by a merge commit, a
+# The features' auto-merge (ADR-0072, ADR-0086, ADR-0088): merges, always by a merge commit, a
 # pull request of the owner labeled `autonomous` into `develop`, from a feature branch, a review
 # (`…/rev-…`, ADR-0086, decision 4) or an epic's refinement spike (`…/sp-…`, decided by the
 # Product Owner on 2026-10-25, REV-009), then dispatches the develop CI, which blocks nothing
@@ -36,7 +36,7 @@ jobs:
           BRANCH: ${{ github.event.pull_request.head.ref }}
         run: |
           if ! printf '%s' "$BRANCH" | grep -Eq '^(feature/f[0-9]{2}-|[a-z]+/rev-[0-9]{3}-|[a-z]+/sp-[0-9]{3}-)'; then
-            echo "Branch $BRANCH into develop is not a feature branch, a REV nor an SP: no auto-merge (ADR-0045, ADR-0086, REV-009)."
+            echo "Branch $BRANCH into develop is not a feature branch, a REV nor an SP: no auto-merge (ADR-0072, ADR-0086, REV-009)."
             exit 1
           fi
       - name: Merge (merge commit), then start the develop CI
