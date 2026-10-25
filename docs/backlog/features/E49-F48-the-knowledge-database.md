@@ -25,7 +25,7 @@ In delivery order.
 | ID | Type | Title | Status |
 | --- | --- | --- | --- |
 | [EN-151](../stories/E49-F48-EN-151-the-tables-opened-by-two-worktrees.md) | EN | The tables, opened by two worktrees | done |
-| [EN-152](../stories/E49-F48-EN-152-add-search-show-and-list-by-branch.md) | EN | Add, search, show and list, by branch | ready |
+| [EN-152](../stories/E49-F48-EN-152-add-search-show-and-list-by-branch.md) | EN | Add, search, show and list, by branch | done |
 | [EN-153](../stories/E49-F48-EN-153-a-clean-snapshot-into-the-synced-folder.md) | EN | A clean snapshot into the synced folder | ready |
 | [AUD-050](../stories/E49-F48-AUD-050-audit-f48.md) | AUD | Audit F48 | ready |
 

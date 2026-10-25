@@ -18,6 +18,7 @@
       "Bash(target/release/git-sequences commit *)",
       "Bash(target/release/git-sequences sync *)",
       "Bash(target/release/git-sequences state *)",
+      "Bash(target/release/knowledge *)",
       "Bash(target/release/library *)",
       "Bash(target/release/metrics *)",
       "Bash(target/release/page *)",

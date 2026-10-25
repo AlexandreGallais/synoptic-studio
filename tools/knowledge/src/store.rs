@@ -4,8 +4,9 @@
 //! (`REF-SQLITE-FTS5`). Two worktrees write at once: the file in WAL (`REF-SQLITE-WAL`), each write
 //! in `BEGIN IMMEDIATE` (`REF-SQLITE-TRANSACTION`), a second writer waiting within rusqlite's busy
 //! timeout (`REF-RUSQLITE-CONNECTION`, `REF-SQLITE-BUSY-TIMEOUT`). The schema's number is
-//! `PRAGMA user_version` (`REF-SQLITE-PRAGMA`); its changes are additive, so that an older binary
-//! still reads a newer file, and refuses to write to it.
+//! `PRAGMA user_version` (`REF-SQLITE-PRAGMA`); its changes add a table, a column or a wider key,
+//! never rename nor drop a column, so that an older binary still reads a newer file, and refuses
+//! to write to it.
 
 use std::fs;
 use std::path::Path;
@@ -13,14 +14,14 @@ use std::path::Path;
 use rusqlite::{Connection, Transaction, TransactionBehavior};
 
 /// The number of the schema this binary writes, `PRAGMA user_version` of the file.
-pub const SCHEMA_VERSION: i64 = 1;
+pub const SCHEMA_VERSION: i64 = 2;
 
 /// The tables of schema 1 (research note 0035, Its tables). A document is any former file or
 /// record, cut into sections at its headings; `sections_index` indexes the sections without a copy
 /// of their text, kept by the three triggers (`REF-SQLITE-FTS5`, §4.4.3); `calls` and `turns` take
 /// the fields of the hooks' `tool-calls.jsonl` and `turns.jsonl` under their names, a field an older
 /// line lacks left null.
-const SCHEMA: &str = "
+const SCHEMA_1: &str = "
   CREATE TABLE IF NOT EXISTS documents (
     id TEXT PRIMARY KEY, kind TEXT NOT NULL, title TEXT NOT NULL, epic TEXT NOT NULL,
     feature TEXT NOT NULL, status TEXT NOT NULL, date TEXT NOT NULL, branch TEXT NOT NULL,
@@ -72,6 +73,76 @@ const SCHEMA: &str = "
   );
 ";
 
+/// Schema 2 keys a document by its id and its branch, so that a branch writes its draft of an id
+/// another branch holds (research note 0035, The rows of a branch): the four tables of the
+/// documents rebuilt by SQLite's procedure for a changed key, new tables made, filled, the old
+/// dropped and the new renamed (`REF-SQLITE-ALTER-TABLE`, §8), each row and each section's rowid
+/// kept, so that the full-text index still points at its sections; the children of a document
+/// take its branch. No column is renamed nor dropped: a query of schema 1 still reads the file.
+const SCHEMA_2: &str = "
+  CREATE TABLE documents_2 (
+    id TEXT NOT NULL, kind TEXT NOT NULL, title TEXT NOT NULL, epic TEXT NOT NULL,
+    feature TEXT NOT NULL, status TEXT NOT NULL, date TEXT NOT NULL, branch TEXT NOT NULL,
+    state TEXT NOT NULL CHECK (state IN ('draft', 'merged', 'dropped')),
+    private INTEGER NOT NULL CHECK (private IN (0, 1)), path TEXT NOT NULL,
+    PRIMARY KEY (id, branch)
+  );
+  INSERT INTO documents_2 (id, kind, title, epic, feature, status, date, branch, state, private, path)
+    SELECT id, kind, title, epic, feature, status, date, branch, state, private, path
+    FROM documents ORDER BY rowid;
+  CREATE TABLE fields_2 (
+    document TEXT NOT NULL, branch TEXT NOT NULL, key TEXT NOT NULL, value TEXT NOT NULL,
+    FOREIGN KEY (document, branch) REFERENCES documents (id, branch) ON DELETE CASCADE
+  );
+  INSERT INTO fields_2 (document, branch, key, value)
+    SELECT fields.document, documents.branch, fields.key, fields.value
+    FROM fields JOIN documents ON documents.id = fields.document ORDER BY fields.rowid;
+  CREATE TABLE sections_2 (
+    id INTEGER PRIMARY KEY, document TEXT NOT NULL, branch TEXT NOT NULL,
+    position INTEGER NOT NULL, heading TEXT NOT NULL, text TEXT NOT NULL,
+    UNIQUE (document, branch, position),
+    FOREIGN KEY (document, branch) REFERENCES documents (id, branch) ON DELETE CASCADE
+  );
+  INSERT INTO sections_2 (id, document, branch, position, heading, text)
+    SELECT sections.id, sections.document, documents.branch, sections.position, sections.heading,
+      sections.text
+    FROM sections JOIN documents ON documents.id = sections.document;
+  CREATE TABLE links_2 (
+    \"from\" TEXT NOT NULL, branch TEXT NOT NULL, \"to\" TEXT NOT NULL,
+    PRIMARY KEY (\"from\", branch, \"to\"),
+    FOREIGN KEY (\"from\", branch) REFERENCES documents (id, branch) ON DELETE CASCADE
+  );
+  INSERT INTO links_2 (\"from\", branch, \"to\")
+    SELECT links.\"from\", documents.branch, links.\"to\"
+    FROM links JOIN documents ON documents.id = links.\"from\";
+  DROP TABLE links;
+  DROP TABLE sections;
+  DROP TABLE fields;
+  DROP TABLE documents;
+  ALTER TABLE documents_2 RENAME TO documents;
+  ALTER TABLE fields_2 RENAME TO fields;
+  ALTER TABLE sections_2 RENAME TO sections;
+  ALTER TABLE links_2 RENAME TO links;
+  CREATE INDEX fields_by_key ON fields (key, value);
+  CREATE INDEX fields_by_document ON fields (document, branch);
+  CREATE TRIGGER sections_insert AFTER INSERT ON sections BEGIN
+    INSERT INTO sections_index (rowid, heading, text) VALUES (new.id, new.heading, new.text);
+  END;
+  CREATE TRIGGER sections_delete AFTER DELETE ON sections BEGIN
+    INSERT INTO sections_index (sections_index, rowid, heading, text)
+      VALUES ('delete', old.id, old.heading, old.text);
+  END;
+  CREATE TRIGGER sections_update AFTER UPDATE ON sections BEGIN
+    INSERT INTO sections_index (sections_index, rowid, heading, text)
+      VALUES ('delete', old.id, old.heading, old.text);
+    INSERT INTO sections_index (rowid, heading, text) VALUES (new.id, new.heading, new.text);
+  END;
+";
+
+/// The migrations, the one of index `n` bringing a file of schema `n` up to `n + 1`: a new file
+/// runs them all.
+pub const MIGRATIONS: [&str; 2] = [SCHEMA_1, SCHEMA_2];
+
 /// A failure of SQLite on the store's file, named by its path.
 fn on_file(path: &Path, error: &impl std::fmt::Display) -> String {
     format!("{}: {error}", path.display())
@@ -79,34 +150,66 @@ fn on_file(path: &Path, error: &impl std::fmt::Display) -> String {
 
 /// Brings a file of an older schema up to `SCHEMA_VERSION`, in one `BEGIN IMMEDIATE`: of several
 /// connections opening a new file at once, the first makes the tables while the others wait, then
-/// find them made.
+/// find them made. Runs with the foreign keys off, as a rebuilt table needs
+/// (`REF-SQLITE-ALTER-TABLE`, §8); each child row is copied joined to its document, so that none
+/// can cite a document the file lacks.
 fn migrate(database: &Connection) -> rusqlite::Result<()> {
     if schema_version(database)? >= SCHEMA_VERSION {
         return Ok(());
     }
 
     let transaction = Transaction::new_unchecked(database, TransactionBehavior::Immediate)?;
+    let version = schema_version(&transaction)?;
 
-    if schema_version(&transaction)? < SCHEMA_VERSION {
-        transaction.execute_batch(SCHEMA)?;
+    for migration in MIGRATIONS
+        .iter()
+        .skip(usize::try_from(version).unwrap_or(0))
+    {
+        transaction.execute_batch(migration)?;
+    }
+    if version < SCHEMA_VERSION {
         transaction.pragma_update(None, "user_version", SCHEMA_VERSION)?;
     }
     transaction.commit()
 }
 
-/// Sets what a connection needs: the deletes cascading to a document's rows, which SQLite turns on
-/// per connection, and WAL, set once on the file and kept by it (`REF-SQLITE-WAL`, §3.3).
-fn prepare(database: &Connection) -> rusqlite::Result<()> {
-    database.pragma_update(None, "foreign_keys", true)?;
-
+/// Whether the file is in WAL, as this connection reads its mode.
+fn is_wal(database: &Connection) -> rusqlite::Result<bool> {
     let mode: String = database.query_row("PRAGMA journal_mode", [], |row| row.get(0))?;
 
-    if !mode.eq_ignore_ascii_case("wal") {
-        database.query_row("PRAGMA journal_mode = WAL", [], |row| {
-            row.get::<_, String>(0)
-        })?;
+    Ok(mode.eq_ignore_ascii_case("wal"))
+}
+
+/// Switches the file to WAL, the mode the switch leaves it in.
+fn switch_to_wal(database: &Connection) -> rusqlite::Result<bool> {
+    let mode: String = database.query_row("PRAGMA journal_mode = WAL", [], |row| row.get(0))?;
+
+    Ok(mode.eq_ignore_ascii_case("wal"))
+}
+
+/// Puts the file in WAL. The switch needs the file alone, and SQLite refuses it at once, without
+/// waiting, while another connection writes (`REF-SQLITE-WAL`, §9): that write is then waited for,
+/// by a `BEGIN IMMEDIATE` within the busy timeout, and the mode read again, the other connection
+/// having maybe switched the file itself, before one more switch, whose failure is the opening's.
+fn in_wal(database: &Connection) -> rusqlite::Result<()> {
+    if is_wal(database)? || switch_to_wal(database).unwrap_or(false) {
+        return Ok(());
     }
-    migrate(database)
+    database.execute_batch("BEGIN IMMEDIATE; ROLLBACK;")?;
+    if !is_wal(database)? {
+        switch_to_wal(database)?;
+    }
+    Ok(())
+}
+
+/// Sets what a connection needs: WAL, set once on the file and kept by it (`REF-SQLITE-WAL`, §3.3),
+/// the migration, then the deletes cascading to a document's rows, which SQLite turns on per
+/// connection, outside any transaction.
+fn prepare(database: &Connection) -> rusqlite::Result<()> {
+    database.pragma_update(None, "foreign_keys", false)?;
+    in_wal(database)?;
+    migrate(database)?;
+    database.pragma_update(None, "foreign_keys", true)
 }
 
 /// Opens the store, creating its folder and its file when missing, in WAL, and bringing a file of

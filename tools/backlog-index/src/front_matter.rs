@@ -5,6 +5,7 @@ use std::collections::HashMap;
 /// Fields of a file's front matter, a value's surrounding double quotes removed.
 ///
 /// A file without front matter gives no field.
+#[must_use]
 pub fn front_matter(text: &str) -> HashMap<String, String> {
     let mut lines = text.lines();
 

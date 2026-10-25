@@ -3,6 +3,7 @@
 //! id when none is named. A line scan of the standard library, so that the agent reads the part it
 //! needs rather than the whole page.
 
+pub mod fallback;
 pub mod fence;
 pub mod locate;
 pub mod section;

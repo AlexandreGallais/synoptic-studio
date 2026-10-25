@@ -8,7 +8,7 @@ use std::sync::mpsc;
 use std::thread;
 use std::time::Duration;
 
-use knowledge::store::{SCHEMA_VERSION, open_store, schema_version, write};
+use knowledge::store::{MIGRATIONS, SCHEMA_VERSION, open_store, schema_version, write};
 use rusqlite::{Connection, params};
 
 /// A folder of its own in the temporary folder, emptied first, and its store's path.
@@ -99,7 +99,8 @@ fn f48_ac1_keeps_the_index_of_the_sections_on_insert_update_and_delete() {
     add_document(&database, "EN-151").unwrap();
     database
         .execute(
-            "INSERT INTO sections (document, position, heading, text) VALUES (?, 0, 'Tables', ?)",
+            "INSERT INTO sections (document, branch, position, heading, text)
+            VALUES (?, 'chore/en-151', 0, 'Tables', ?)",
             params!["EN-151", "Two worktrees write at once."],
         )
         .unwrap();
@@ -181,9 +182,9 @@ fn f48_ac1_sets_user_version_to_the_schemas_number_and_keeps_the_rows_when_opene
         .unwrap();
 
     clean(&file);
-    assert_eq!(SCHEMA_VERSION, 1);
-    assert_eq!(version, 1);
-    assert_eq!(pragma, 1);
+    assert_eq!(SCHEMA_VERSION, 2);
+    assert_eq!(version, 2);
+    assert_eq!(pragma, 2);
     assert_eq!(rows, 1);
 }
 
@@ -205,7 +206,7 @@ fn f48_ac1_makes_one_schema_when_four_connections_open_a_new_file_at_once() {
         .collect();
 
     clean(&file);
-    assert_eq!(opened, [Ok(1), Ok(1), Ok(1), Ok(1)]);
+    assert_eq!(opened, [Ok(2), Ok(2), Ok(2), Ok(2)]);
 }
 
 #[test]
@@ -300,11 +301,11 @@ fn f48_ac1_refuses_to_write_to_a_newer_file_and_still_reads_it() {
         .unwrap();
 
     clean(&file);
-    assert_eq!(version, 2);
+    assert_eq!(version, 3);
     assert_eq!(
         refused,
         Err(
-            "the file's schema is 2, newer than this binary's 1: rebuild the tools from your base, target/release/git-sequences sync"
+            "the file's schema is 3, newer than this binary's 2: rebuild the tools from your base, target/release/git-sequences sync"
                 .to_owned()
         )
     );
@@ -326,4 +327,143 @@ fn f48_ac1_fails_aloud_on_a_file_that_is_no_database() {
 
     clean(&file);
     assert!(opened.is_err_and(|error| error.starts_with(&file.display().to_string())));
+}
+
+/// A file of schema 1, as EN-151's binary made it, holding a document, a field, a section and a
+/// link.
+fn schema_1_file(file: &std::path::Path) {
+    fs::create_dir_all(file.parent().unwrap()).unwrap();
+
+    let database = Connection::open(file).unwrap();
+
+    database.execute_batch(MIGRATIONS[0]).unwrap();
+    database.pragma_update(None, "user_version", 1).unwrap();
+    add_document(&database, "EN-151").unwrap();
+    database
+        .execute_batch(
+            "INSERT INTO fields (document, key, value) VALUES ('EN-151', 'epic', 'E49');
+            INSERT INTO sections (document, position, heading, text)
+              VALUES ('EN-151', 0, 'Tables', 'Two worktrees write at once.');
+            INSERT INTO links (\"from\", \"to\") VALUES ('EN-151', 'ADR-0081');",
+        )
+        .unwrap();
+}
+
+/// A count of a query's rows.
+fn count(database: &Connection, query: &str) -> i64 {
+    database.query_row(query, [], |row| row.get(0)).unwrap()
+}
+
+#[test]
+fn f48_ac1_brings_a_schema_1_file_up_to_2_its_rows_kept_with_their_branch() {
+    let file = place("from-1");
+
+    schema_1_file(&file);
+
+    let database = open_store(&file).unwrap();
+    let version = schema_version(&database).unwrap();
+    let kept = [
+        "SELECT count(*) FROM documents WHERE id = 'EN-151' AND branch = 'chore/en-151'",
+        "SELECT count(*) FROM fields WHERE document = 'EN-151' AND branch = 'chore/en-151'",
+        "SELECT count(*) FROM sections WHERE document = 'EN-151' AND branch = 'chore/en-151'",
+        "SELECT count(*) FROM links WHERE \"from\" = 'EN-151' AND branch = 'chore/en-151'",
+    ]
+    .map(|query| count(&database, query));
+    // The index still finds the section, whose rowid the rebuild kept.
+    let indexed = found(&database, "worktrees");
+    let triggers = names(&database, "trigger");
+
+    clean(&file);
+    assert_eq!(version, 2);
+    assert_eq!(kept, [1, 1, 1, 1]);
+    assert_eq!(indexed, ["EN-151"]);
+    assert_eq!(
+        triggers,
+        ["sections_delete", "sections_insert", "sections_update"]
+    );
+}
+
+#[test]
+fn f48_ac1_keys_a_document_by_its_id_and_its_branch_from_schema_2() {
+    let file = place("key");
+
+    schema_1_file(&file);
+
+    let database = open_store(&file).unwrap();
+    // The same id on another branch is a row of its own; on the same branch, refused.
+    let other_branch = database.execute(
+        "INSERT INTO documents (id, kind, title, epic, feature, status, date, branch, state, private, path)
+        VALUES ('EN-151', 'story', 'Changed', '', '', '', '', 'chore/en-152', 'draft', 0, '')",
+        [],
+    );
+    let same_branch = add_document(&database, "EN-151");
+    let section_of_another = database.execute(
+        "INSERT INTO sections (document, branch, position, heading, text)
+        VALUES ('EN-151', 'chore/none', 0, 'A', 'b')",
+        [],
+    );
+
+    // A document deleted takes its own branch's rows with it, never the other branch's.
+    database
+        .execute(
+            "INSERT INTO sections (document, branch, position, heading, text)
+            VALUES ('EN-151', 'chore/en-152', 0, 'Tables', 'Changed.')",
+            [],
+        )
+        .unwrap();
+    database
+        .execute(
+            "DELETE FROM documents WHERE id = 'EN-151' AND branch = 'chore/en-151'",
+            [],
+        )
+        .unwrap();
+
+    let left = [
+        "SELECT count(*) FROM documents",
+        "SELECT count(*) FROM fields",
+        "SELECT count(*) FROM sections",
+        "SELECT count(*) FROM links",
+    ]
+    .map(|query| count(&database, query));
+
+    clean(&file);
+    assert_eq!(other_branch, Ok(1));
+    assert!(same_branch.is_err());
+    // A section of a document no branch holds breaks the foreign key.
+    assert!(section_of_another.is_err());
+    assert_eq!(left, [1, 0, 1, 0]);
+}
+
+#[test]
+fn f48_ac1_puts_the_file_in_wal_while_another_connection_writes_it_in_its_old_mode() {
+    let file = place("wal-while-writing");
+
+    fs::create_dir_all(file.parent().unwrap()).unwrap();
+
+    let (holding, held) = mpsc::channel();
+    let writer_file = file.clone();
+    // A connection of the rollback journal holds the write lock; switching to WAL needs the file
+    // alone, which SQLite refuses at once rather than wait (`REF-SQLITE-WAL`, §9).
+    let writer = thread::spawn(move || {
+        let database = Connection::open(&writer_file).unwrap();
+
+        database
+            .execute_batch("BEGIN IMMEDIATE; CREATE TABLE other (a);")
+            .unwrap();
+        holding.send(()).unwrap();
+        thread::sleep(Duration::from_millis(300));
+        database.execute_batch("COMMIT;").unwrap();
+    });
+
+    held.recv().unwrap();
+
+    let opened = open_store(&file).map(|database| {
+        database
+            .query_row("PRAGMA journal_mode", [], |row| row.get::<_, String>(0))
+            .unwrap()
+    });
+
+    writer.join().unwrap();
+    clean(&file);
+    assert_eq!(opened, Ok("wal".to_owned()));
 }

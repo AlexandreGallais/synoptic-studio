@@ -607,7 +607,11 @@ dependencies = [
 name = "knowledge"
 version = "0.1.0"
 dependencies = [
+ "backlog-index",
+ "calendar",
  "git-repository",
+ "library",
+ "page",
  "rusqlite",
  "test-support",
  "tool-use",
@@ -1031,6 +1035,7 @@ dependencies = [
 name = "page"
 version = "0.1.0"
 dependencies = [
+ "test-support",
  "tool-use",
 ]
 

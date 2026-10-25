@@ -3,7 +3,7 @@ id: EN-152
 epic: E49
 feature: F48
 title: Add, search, show and list, by branch
-status: ready
+status: done
 points: 3
 ---
 
