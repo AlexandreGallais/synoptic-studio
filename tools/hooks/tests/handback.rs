@@ -250,7 +250,7 @@ fn words_the_refusal_and_the_line_for_the_main_thread() {
             Some("feature/f20-a-diet"),
             &[]
         ),
-        "check-handback: EN-123 on `chore/en-123-a-topic` pushed at abcdef1; next: `npm run story:finish -- feature/f20-a-diet`."
+        "check-handback: EN-123 on `chore/en-123-a-topic` pushed at abcdef1; next: `target/release/heavy-lock --lock merge target/release/story-finish feature/f20-a-diet \"<title>\" <body file>`."
     );
     assert_eq!(
         finish_line("EN-123", "b", "abcdef1", None, &items),
@@ -472,7 +472,7 @@ fn f20_ac3_the_hook_refuses_once_then_lets_through_and_names_story_finish() {
     assert_eq!(
         message,
         format!(
-            "check-handback: EN-123 on `chore/en-123-a-topic` pushed at {head}; next: `npm run story:finish -- feature/f20-a-diet`.\n\nCommits: {head}"
+            "check-handback: EN-123 on `chore/en-123-a-topic` pushed at {head}; next: `target/release/heavy-lock --lock merge target/release/story-finish feature/f20-a-diet \"<title>\" <body file>`.\n\nCommits: {head}"
         )
     );
 
@@ -557,7 +557,7 @@ fn the_hook_reads_the_story_from_the_branch_when_the_folder_is_named_otherwise()
     assert_eq!(
         through.get("updatedInput").get("message").text(),
         format!(
-            "check-handback: EN-123 on `chore/en-123-a-topic` pushed at {head}; next: `npm run story:finish -- feature/f20-a-diet`.\n\nCommits: {head}"
+            "check-handback: EN-123 on `chore/en-123-a-topic` pushed at {head}; next: `target/release/heavy-lock --lock merge target/release/story-finish feature/f20-a-diet \"<title>\" <body file>`.\n\nCommits: {head}"
         )
     );
     fs::remove_dir_all(&root).expect("cleaned");
@@ -583,7 +583,7 @@ fn the_hook_checks_no_commit_naming_without_a_base() {
     assert_eq!(
         through.get("updatedInput").get("message").text(),
         format!(
-            "check-handback: EN-123 on `chore/en-123-a-topic` pushed at {head}; next: `npm run story:finish`.\n\nNames no commit."
+            "check-handback: EN-123 on `chore/en-123-a-topic` pushed at {head}; next: `target/release/heavy-lock --lock merge target/release/story-finish <base> \"<title>\" <body file>`.\n\nNames no commit."
         )
     );
     fs::remove_dir_all(&root).expect("cleaned");

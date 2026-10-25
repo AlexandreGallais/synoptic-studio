@@ -1,4 +1,4 @@
-# The Rust caches of main (docs/tooling/ci.md, ADR-0088): a push to main, a review's merge, saves
+# The Rust caches of main (the records' workflows, ADR-0088): a push to main, a review's merge, saves
 # the toolchain, the cargo tools and the Rust build under main, for the site and the release, which
 # restore them (EN-111, EN-125, AUD-030). It checks nothing: the review's CI checked that code
 # before its merge (ADR-0072). Develop's caches are the develop CI's, saved after its tests

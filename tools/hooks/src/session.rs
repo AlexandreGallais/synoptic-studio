@@ -97,7 +97,7 @@ pub fn state_text(
     lines.extend(features.iter().map(|line| format!("- {line}")));
     if !stale.is_empty() {
         lines.push(format!(
-            "- release binaries older than their sources, which the hooks run: {}; `npm run rust:build` rebuilds them",
+            "- release binaries older than their sources, which the hooks run: {}; `cargo build --release --workspace --locked` rebuilds them",
             stale.join("; ")
         ));
     }

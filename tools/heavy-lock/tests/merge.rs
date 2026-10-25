@@ -1,4 +1,4 @@
-//! Tests of a lock other than the heavy one, the merge lock of `story:finish` (EN-051);
+//! Tests of a lock other than the heavy one, the merge lock of `story-finish` (EN-051);
 //! `[F18.AC7]` marks a test proving the feature's criterion.
 
 use std::fs;
@@ -21,10 +21,10 @@ fn args(words: &[&str]) -> Vec<String> {
     words.iter().map(|word| (*word).to_owned()).collect()
 }
 
-/// An owner as `story:finish` writes it.
+/// An owner as `story-finish` writes it.
 fn owner() -> LockOwner {
     LockOwner {
-        command: "npm run story:finish".to_owned(),
+        command: "target/release/story-finish develop".to_owned(),
         cwd: "/work/repo/.claude/worktrees/en-051".to_owned(),
         pid: 4242,
         start: 1_000,
@@ -164,11 +164,11 @@ fn says_which_lock_it_waits_for() {
 
     assert_eq!(
         waiting_line(&Held::By(Some(owner())), path, 1_065),
-        "merge lock held by process 4242 (npm run story:finish in en-051, for 1 min 05 s): waiting\n"
+        "merge lock held by process 4242 (target/release/story-finish develop in en-051, for 1 min 05 s): waiting\n"
     );
     assert_eq!(
         take_over_line(Some(&owner()), path),
-        "merge lock of process 4242 (npm run story:finish) taken over: that process no longer holds it\n"
+        "merge lock of process 4242 (target/release/story-finish develop) taken over: that process no longer holds it\n"
     );
 }
 

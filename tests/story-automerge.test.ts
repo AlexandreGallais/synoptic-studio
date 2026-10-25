@@ -53,11 +53,11 @@ function workflowInto(base: string): string {
 /** The pre-push hook's branch check, `BRANCH_PATTERN` (`tools/git-hooks`). */
 const BRANCH_RS = join(import.meta.dirname, "..", "tools", "git-hooks", "src", "branch.rs");
 
-/** The Git workflow's guidance on the branches. */
-const GIT_WORKFLOW = join(import.meta.dirname, "..", "docs", "tooling", "git-workflow.md");
+/** The tooling rules of the agent, which name the work branches' form. */
+const TOOLING_RULES = join(import.meta.dirname, "..", ".agents", "rules", "tooling.md");
 
-/** The agent's guide, whose parallel sessions make branches too. */
-const AGENT_GUIDE = join(import.meta.dirname, "..", "docs", "tooling", "agent.md");
+/** The entry point of any agent. */
+const AGENTS_PAGE = join(import.meta.dirname, "..", "AGENTS.md");
 
 /** Indentation of a step's script lines under `run: |`. */
 const SCRIPT_INDENT = " ".repeat(10);
@@ -511,11 +511,11 @@ describe("one branch form for the pre-push, the auto-merge and the guidance (I50
     expect(passes("develop", "docs/sp-30-refinement")).toBe(false);
   });
 
-  it("[F23.AC2] guides a fix without a story id to the id of the story it serves", () => {
-    const workflow = readFileSync(GIT_WORKFLOW, "utf8");
+  it("[F23.AC2] guides a work branch to the id of the story it serves", () => {
+    const rules = readFileSync(TOOLING_RULES, "utf8");
 
-    expect(workflow).toContain("takes the id of the story it serves (`fix/en-073-<topic>`)");
-    expect(workflow).not.toContain("`<type>/<topic>`");
-    expect(readFileSync(AGENT_GUIDE, "utf8")).not.toContain("<type>/<topic>");
+    expect(rules).toContain("`<type>/<id>-<topic>`");
+    expect(rules).not.toContain("<type>/<topic>");
+    expect(readFileSync(AGENTS_PAGE, "utf8")).not.toContain("<type>/<topic>");
   });
 });

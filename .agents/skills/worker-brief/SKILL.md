@@ -18,7 +18,7 @@ A worker works one story in its own worktree, in the background, and stops befor
 ## Read first
 
 - The story from the records, `target/release/knowledge show <ID>`, then what it cites: its feature, rules, decisions, derivations, sources (`knowledge show <id>`).
-- The rules of the area it touches, in `.agents/rules/`: `library.md` (`src/`, `playground/`), `tooling.md` (tooling, tests, `tools/`), `docs.md` (Markdown); a subagent does not load them by itself. The conventions: `docs/conventions/`.
+- The rules of the area it touches, in `.agents/rules/`: `library.md` (`src/`, `playground/`), `tooling.md` (tooling, tests, `tools/`), `docs.md` (Markdown); a subagent does not load them by itself. The conventions: the records' `conventions` of its area (`knowledge sql "SELECT topic, rule, checked_by FROM conventions WHERE area = '<area>'"`), the lint rules in `lint_rules`.
 
 ## Work
 

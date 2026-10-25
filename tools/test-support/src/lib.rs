@@ -2,7 +2,7 @@
 //! runs it, starts it through [`command`]: the pre-push hook sets `GIT_DIR` before `check:all`
 //! runs the tests, and a command inheriting it works on the real repository instead of the
 //! test's own (a set-up wrote `core.bare=true` into the shared `.git/config`, 2026-10-17). The
-//! rule binds the tests, not the binaries (`docs/tooling/commands.md`, Tests that run Git).
+//! rule binds the tests, not the binaries (`the records' conventions, area checks`, Tests that run Git).
 //!
 //! It also removes the variables naming the agent's real records, `AGENT_RECORDS_ROOT` and
 //! `AGENT_KNOWLEDGE_SNAPSHOT`, which Claude Code exports to every process: a binary run in a test's

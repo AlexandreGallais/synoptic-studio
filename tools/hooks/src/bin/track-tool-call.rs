@@ -1,4 +1,4 @@
-//! `PreToolUse` hook on every tool, in the background (`docs/tooling/metrics.md`, EN-104): writes
+//! `PreToolUse` hook on every tool, in the background (`the records' conventions, area metrics`, EN-104): writes
 //! the tool call that starts to `.git/metrics/running/<id>.json`, so that the `log-tool-call` hook
 //! records when it started and how long it ran, then removes it.
 

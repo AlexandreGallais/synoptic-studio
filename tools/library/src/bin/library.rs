@@ -1,4 +1,4 @@
-//! Command line of the local source library (`docs/tooling/sources.md`):
+//! Command line of the local source library (`the records' conventions, area library`):
 //!   `target/release/library search <words>`       sections best matching the words
 //!   `target/release/library get <url> [--refresh]` table of contents, fetched when missing or stale
 //!   `target/release/library read <url> <n> [<n>…]` sections of a page

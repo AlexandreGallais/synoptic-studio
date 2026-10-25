@@ -1,4 +1,4 @@
-//! What the agents are doing (RET-002, `docs/tooling/agent-tools.md`): the calls running now, the
+//! What the agents are doing (RET-002, `the records' tools`): the calls running now, the
 //! latest calls of the main agent and of each subagent, and the end of the output of the
 //! background commands of the last hour, for the Product Owner, who cannot see a subagent's work
 //! until its final message. Its lines are those of `activity.ts` (EN-107).

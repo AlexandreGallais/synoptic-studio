@@ -11,13 +11,13 @@ paths:
 
 # Tooling
 
-The traps of this repository's tooling that a check does not catch by itself. The tools: `docs/tooling/`.
+The traps of this repository's tooling that a check does not catch by itself. The tools: the records' `tools`, `check_lanes`, `workflows` and `conventions` (areas checks, ci, git, release, dependencies, records, metrics, agent, library).
 
 ## The toolchain
 
 - **TypeScript 7 is the only TypeScript, VitePress 2.0 alpha** (ADR-0075): no tool imports `typescript`; the API pages come from `tools/api-pages`, the declarations from Oxc. Either changes only with a decision.
 - **oxlint, then our Rust linter `tools/lint`; oxfmt through `tools/format`**: a rule oxlint lacks is written in `tools/lint`, never with ESLint nor a JavaScript plugin. An oxlint upgrade may rename rules: `tests/oxlint-config.test.ts` fails on one it no longer has.
-- A new dev package, crate, Action or cargo tool: its row in `docs/tooling/dependencies.md`, its release notes read, a version at least 7 days old, `npm audit` clean; `target/release/dependencies outdated` checks them all.
+- A new dev package, crate, Action or cargo tool: its row in the records' `dependencies`, then `target/release/knowledge export-data` writes `tests/data/dependencies.json`, which the CI reads; its release notes read, a version at least 7 days old, `npm audit` clean; `target/release/dependencies outdated` checks them all. A lint exception the same: its row in `lint_exceptions`, then `export-data`.
 - A check tool is given explicit targets, never `.` nor `**/*`: a new tracked folder joins the targets in `package.json`, or `tests/check-targets.test.ts` fails. A tooling change that makes existing files invalid is committed with their fix.
 
 ## Tools of our own

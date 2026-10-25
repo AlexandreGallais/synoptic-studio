@@ -30,8 +30,9 @@ type Group = {
 };
 
 /**
- * The site for a person: the editor, how the project works and where it stands, the order of the
- * epics, then the API and the commands. Everything else the agent reads in its records.
+ * The site for a person: the editor, how the project works, where it stands and the commands,
+ * then the API. Everything else the agent reads in its records (AUD-054). A group of one section
+ * is one entry of the navigation bar, a menu otherwise.
  */
 const GROUPS: readonly Group[] = [
   {
@@ -43,25 +44,42 @@ const GROUPS: readonly Group[] = [
         pages: ["the-editor.md", "how-it-works.md", "where-it-stands.md"],
         title: "Overview",
       },
-      { collapsed: false, folder: "backlog", overview: true, pages: [], title: "Epics" },
+      {
+        collapsed: false,
+        folder: "",
+        overview: false,
+        pages: ["commands.md"],
+        title: "Commands",
+      },
     ],
     title: "The project",
   },
 
   {
-    sections: [
-      { collapsed: true, folder: "api", overview: true, pages: [], title: "API" },
-      {
-        collapsed: false,
-        folder: "",
-        overview: false,
-        pages: ["commands.md", "tooling/knowledge.md"],
-        title: "Tools",
-      },
-    ],
-    title: "Reference",
+    sections: [{ collapsed: true, folder: "api", overview: true, pages: [], title: "API" }],
+    title: "API",
   },
 ];
+
+/**
+ * The navigation bar's entry of a group: a link for a group of one section, a menu otherwise.
+ *
+ * @param group - group of the site
+ * @returns its entry in the navigation bar
+ */
+function navItem(group: Group): DefaultTheme.NavItem {
+  const [only] = group.sections;
+
+  return only !== undefined && group.sections.length === 1
+    ? { link: sectionLink(only), text: group.title }
+    : {
+        items: group.sections.map((section) => ({
+          link: sectionLink(section),
+          text: section.title,
+        })),
+        text: group.title,
+      };
+}
 
 /** The address of the playground, as of the last merge into `main`. */
 const PLAYGROUND = "https://alexandregallais.github.io/synoptic-studio/playground/";
@@ -148,16 +166,7 @@ export default defineConfig({
     ":section/README.md": ":section/index.md",
   },
   themeConfig: {
-    nav: [
-      ...GROUPS.map((group) => ({
-        items: group.sections.map((section) => ({
-          link: sectionLink(section),
-          text: section.title,
-        })),
-        text: group.title,
-      })),
-      { link: PLAYGROUND, text: "Playground" },
-    ],
+    nav: [...GROUPS.map((group) => navItem(group)), { link: PLAYGROUND, text: "Playground" }],
     outline: "deep",
     search: { provider: "local" },
     sidebar: GROUPS.map((group) => ({

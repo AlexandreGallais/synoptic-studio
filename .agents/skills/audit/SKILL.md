@@ -6,7 +6,7 @@ argument-hint: "[audit id, e.g. AUD-001]"
 
 # Audit
 
-Audit: $ARGUMENTS. Checklist: `docs/conventions/audit.md` (A to H); the findings go into the audit's row of the records, each with its evidence. Stories have no review, so the audit is the feature's thorough check; an epic tagged **method and tools** has one, at its end, over the whole epic.
+Audit: $ARGUMENTS. Checklist: the records' `audit_checks` (A to H, `knowledge sql "SELECT section, number, item FROM audit_checks"`); the findings go into the audit's row of the records, each with its evidence. Stories have no review, so the audit is the feature's thorough check; an epic tagged **method and tools** has one, at its end, over the whole epic.
 
 1. **Scope**: the feature's functions, tests, derivations, rules and sources in depth; the project in breadth.
 2. **Independent review**, in the background: the `auditor` first; the `math-expert` too for a feature holding mathematics. They return findings with evidence and edit nothing.

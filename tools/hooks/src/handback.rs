@@ -220,9 +220,11 @@ pub fn finish_line(
         );
     }
 
-    let next = feature.map_or("npm run story:finish".to_owned(), |feature| {
-        format!("npm run story:finish -- {feature}")
-    });
+    let finish = "target/release/heavy-lock --lock merge target/release/story-finish";
+    let next = feature.map_or(
+        format!("{finish} <base> \"<title>\" <body file>"),
+        |feature| format!("{finish} {feature} \"<title>\" <body file>"),
+    );
 
     format!("check-handback: {story} on `{branch}` pushed at {head}; next: `{next}`.")
 }

@@ -1,6 +1,6 @@
 # Where it stands
 
-The library draws shapes from numbers — rectangles, regular polygons, free shapes, round shapes and curves —, places text with real font metrics, and lets the playground select, move, zoom and undo on one drawing. The editors themselves come later. The [order of the epics](./backlog/) says what comes next; the [playground](https://alexandregallais.github.io/synoptic-studio/playground/) shows the library at work.
+The library draws shapes from numbers — rectangles, regular polygons, free shapes, round shapes and curves —, places text with real font metrics, and lets the playground select, move, zoom and undo on one drawing. The editors themselves come later. The Product Owner's order of the epics says what comes next; the [playground](https://alexandregallais.github.io/synoptic-studio/playground/) shows the library at work.
 
 ## What was done
 

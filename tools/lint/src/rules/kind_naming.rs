@@ -1,6 +1,6 @@
 //! `local/kind-naming`: a top-level function's name fits its kind — a verb for a `procedure`, a
 //! conversion for a `format`, no vague verb for the pure kinds — and starts with a predicate word
-//! exactly when it returns a boolean (docs/conventions/naming.md).
+//! exactly when it returns a boolean (the records' conventions, area naming).
 
 use oxc_ast::ast::{Function, TSType};
 

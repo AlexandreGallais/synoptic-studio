@@ -183,13 +183,7 @@ describe("backlog", () => {
     expect(testTitles(text)).toBe("[F18.AC5] keeps the index");
   });
 
-  it("keeps no backlog file but its readable page: the stories, features and epics are in the records (EN-154)", () => {
-    const backlog = join(ROOT, "docs", "backlog");
-
-    expect(
-      ["stories", "features", "epics"].filter((folder) => existsSync(join(backlog, folder))),
-    ).toEqual([]);
-
-    expect(existsSync(join(backlog, "README.md"))).toBe(true);
+  it("keeps no backlog page: the epics, their order, features and stories are in the records (EN-154, AUD-054)", () => {
+    expect(existsSync(join(ROOT, "docs", "backlog"))).toBe(false);
   });
 });

@@ -1,4 +1,4 @@
-//! A pull request's body into `main` (ADR-0086, `docs/tooling/releases.md`): the text of the
+//! A pull request's body into `main` (ADR-0086, `the records' conventions, area release`): the text of the
 //! features it brings, read up to its first thematic break, then joined with the other bodies of
 //! a release into its notes.
 

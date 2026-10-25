@@ -1,4 +1,4 @@
-# The documentation site and the playground (docs/tooling/releases.md, ADR-0086, ADR-0088): a push
+# The documentation site and the playground (the records' conventions, area release, ADR-0086, ADR-0088): a push
 # to main, a review's merge, deploys them to GitHub Pages, so that they follow each review without
 # a release, on the Rust caches rust-caches.yml saves under main. A push to develop deploys
 # nothing, nor does the release's button: the push of the head it releases already did.

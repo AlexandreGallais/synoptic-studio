@@ -439,7 +439,7 @@ fn f21_ac4_passes_the_project_s_messages_and_names_what_it_refuses() {
          ✖   type must be one of [build, chore, ci, docs, feat, fix, perf, refactor, revert, style, test] [type-enum]\n\
          ✖   scope must be one of [adr, backlog, ci, deps, docs, geometry, interaction, io, math, model, playground, render, routing, tooling] [scope-enum]\n\
          \n✖   found 5 problems, 0 warnings\n\
-         ⓘ   The rules: docs/tooling/git-workflow.md, Commit messages\n"
+         ⓘ   The rules: the records' conventions, area git, topic commit messages\n"
     );
     // A missing header is too long for commitlint, its length undefined.
     let headless = lint("#c\n\nbody\n", Some("#")).expect("a report");

@@ -1,4 +1,4 @@
-//! Report of one working session (`docs/tooling/metrics.md`): how long it took, how many tokens it
+//! Report of one working session (`the records' conventions, area metrics`): how long it took, how many tokens it
 //! used and by which model (EN-066), how many tool calls and failures, which commits it made.
 //! Without `--all`, the current turn only: from the prompt that started it.
 

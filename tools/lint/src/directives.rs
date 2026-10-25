@@ -1,5 +1,5 @@
 //! One-off exceptions: `// lint-disable-next-line rule[, rule] -- justification` turns the rules
-//! off on the next line (docs/conventions/lint.md, each with its row in the register of
+//! off on the next line (the records' conventions, area lint, each with its row in the register of
 //! exceptions). A directive that turns off nothing, or gives no justification, is reported, as
 //! `ESLint` reports its unused ones.
 

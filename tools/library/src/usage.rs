@@ -1,4 +1,4 @@
-//! Uses of the local source library (`docs/tooling/sources.md`): each search and each page read
+//! Uses of the local source library (`the records' conventions, area library`): each search and each page read
 //! is recorded, so that a retrospective sees which sources the agent consulted most, what it
 //! searched for, and how often the library spared a request online. The library serves every
 //! project of the machine: each use names the project that asked (EN-101).

@@ -1,4 +1,4 @@
-//! `jsdoc/sort-tags` with the project's sequence (`docs/conventions/documentation.md`):
+//! `jsdoc/sort-tags` with the project's sequence (`the records' conventions, area documentation`):
 //! `@kind`, then `@template`, `@param`, `@returns`, `@yields`, `@throws`, `@rejects`, then `@see`,
 //! `@deprecated`, other tags last; no blank line inside a group (`eslint-plugin-jsdoc` 65.3.1,
 //! `src/rules/sortTags.js`, group spacing not reported). Autofixed.

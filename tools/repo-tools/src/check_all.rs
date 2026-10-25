@@ -77,10 +77,10 @@ pub const CHECKS: &[(&str, &str)] = &[
         concat!(
             "cargo fmt --all --check && cargo clippy --workspace --all-targets --locked --quiet && ",
             "{ cargo deny --version > /dev/null 2>&1 || { echo 'cargo-deny is missing: run cargo ",
-            "install --locked cargo-deny@0.20.2, then cargo deny fetch db ",
-            "(docs/tooling/commands.md)' >&2; exit 1; }; cargo deny --offline check advisories || ",
+            "install --locked cargo-deny@0.20.2, then cargo deny fetch db' >&2; exit 1; }; ",
+            "cargo deny --offline check advisories || ",
             "{ echo 'A Rust crate has a RustSec advisory, or the advisory database is missing: ",
-            "cargo deny fetch db fetches it (docs/tooling/commands.md)' >&2; exit 1; }; } && ",
+            "cargo deny fetch db fetches it' >&2; exit 1; }; } && ",
             "cargo check --workspace --all-targets --locked --quiet --target ",
             "x86_64-pc-windows-msvc && target/release/stale-binaries"
         ),
@@ -90,10 +90,10 @@ pub const CHECKS: &[(&str, &str)] = &[
         concat!(
             "cargo llvm-cov --version > /dev/null 2>&1 || { echo 'cargo-llvm-cov is missing: ",
             "rustup installs llvm-tools from rust-toolchain.toml, then run cargo install --locked ",
-            "cargo-llvm-cov@0.9.1 (docs/tooling/commands.md)' >&2; exit 1; }; cargo llvm-cov ",
+            "cargo-llvm-cov@0.9.1 and run the check again' >&2; exit 1; }; cargo llvm-cov ",
             "--workspace --locked --quiet --summary-only --fail-under-lines 95 ",
             "--fail-under-functions 95 || { echo 'Rust tests failed, or their coverage fell under ",
-            "the floor of 95 % of lines and 95 % of functions (docs/tooling/commands.md)' >&2; ",
+            "the floor of 95 % of lines and 95 % of functions' >&2; ",
             "exit 1; }"
         ),
     ),

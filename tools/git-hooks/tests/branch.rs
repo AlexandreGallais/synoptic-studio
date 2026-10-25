@@ -102,7 +102,7 @@ fn names_the_branch_and_the_rule_it_breaks() {
     let refusal = branch_refusal("worktree-agent-a13").unwrap();
 
     assert!(refusal.starts_with("✖   branch name \"worktree-agent-a13\" refused: it must be"));
-    assert!(refusal.contains("docs/tooling/git-workflow.md"));
+    assert!(refusal.contains("the records' conventions, area git"));
     assert!(refusal.contains("`<type>/<story-id>-<kebab-case-topic>`"));
     assert_eq!(branch_refusal("develop"), None);
 }

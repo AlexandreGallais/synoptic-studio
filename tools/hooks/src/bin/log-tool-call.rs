@@ -1,5 +1,5 @@
 //! `PostToolUse` and `PostToolUseFailure` hook on every tool, in the background (RET-001,
-//! `docs/tooling/metrics.md`, EN-104): appends one line per tool call to
+//! `the records' conventions, area metrics`, EN-104): appends one line per tool call to
 //! `.git/metrics/tool-calls.jsonl` — what ran, who ran it, when it started and ended, the size of
 //! what it read and returned, whether it failed, and the session's state at that moment as the
 //! status line last saw it — then removes the call's running file. `target/release/metrics` reads it.

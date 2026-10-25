@@ -10,7 +10,7 @@
 //! locks a file checks it is still the one at the lock's path: two commands taking over the same
 //! file left behind never both run (AUD-020, A4).
 //!
-//! `--lock <name>` takes another lock the same way: `story:finish` takes `merge.lock`, so stories
+//! `--lock <name>` takes another lock the same way: `story-finish` takes `merge.lock`, so stories
 //! merge one at a time (ADR-0065, decision 5; EN-051). Each lock names its owner to the commands it
 //! starts in a variable of its own: a command under the merge lock never runs inside the heavy one.
 

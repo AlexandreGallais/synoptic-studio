@@ -1,4 +1,4 @@
-//! Storage of the local source library (`docs/tooling/sources.md`, ADR-0039): one SQLite file
+//! Storage of the local source library (`the records' conventions, area library`, ADR-0039): one SQLite file
 //! shared by every project of the machine, a table of pages and a full-text index of their
 //! sections (FTS5, ranked by BM25, `REF-SQLITE-FTS5`), through `rusqlite` (`REF-RUSQLITE`). The
 //! schema is the one `library-store.ts` wrote, so that a file written here is read by an older

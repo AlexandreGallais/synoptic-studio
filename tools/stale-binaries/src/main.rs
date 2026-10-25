@@ -1,4 +1,4 @@
-//! `stale-binaries [<checkout>]` (`npm run rust:fresh`, EN-104, ADR-0078): prints each release
+//! `stale-binaries [<checkout>]` (the last step of the `check:rust` check, EN-104, ADR-0078): prints each release
 //! binary older than its sources, or missing, with the rebuild that refreshes it, and exits 1;
 //! prints nothing and exits 0 when every binary is fresh. The checkout is the current folder's
 //! when none is named.
@@ -29,7 +29,7 @@ fn main() -> ExitCode {
             0
         } else {
             eprintln!(
-                "stale-binaries: {} release binaries older than their sources: run `npm run rust:build`",
+                "stale-binaries: {} release binaries older than their sources: run `cargo build --release --workspace --locked`",
                 stale.len()
             );
             1

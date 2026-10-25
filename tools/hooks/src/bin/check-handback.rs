@@ -2,7 +2,7 @@
 //! that its story branch is pushed and that the report names its commits. Missing, the hand-back is
 //! refused once, the reason the worker's next instruction; the next one goes through with what is
 //! missing written above the report. Complete, a line above the report names the story, its branch
-//! and `story:finish` for the main thread. The main thread, a read-only agent and an agent without
+//! and `story-finish` for the main thread. The main thread, a read-only agent and an agent without
 //! a worktree are left alone; any failure lets the call through: the hook never blocks by its own
 //! fault.
 

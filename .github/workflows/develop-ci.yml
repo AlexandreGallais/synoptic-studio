@@ -1,4 +1,4 @@
-# The develop CI (docs/tooling/ci.md, ADR-0088, decisions 4 and 5): after each pull request merged
+# The develop CI (the records' workflows, ADR-0088, decisions 4 and 5): after each pull request merged
 # into develop, the Rust checks and tests on Linux, then the Rust caches saved under develop, the
 # scope the review's pull request into main restores first (`REF-GH-CACHE`). A person's merge
 # starts it by its push; the features' auto-merge, whose push by the GITHUB_TOKEN starts no run,

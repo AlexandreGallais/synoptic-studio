@@ -7,8 +7,8 @@ import { describe, expect, it } from "vitest";
 const ROOT = join(import.meta.dirname, "..");
 
 /**
- * The pages the agent reads beside `.agents/`'s, from the root; the pages of `docs/tooling/` move
- * into the records.
+ * The pages the agent reads beside `.agents/`'s, from the root; everything else it reads is in
+ * the records (AUD-054).
  */
 const PAGES = ["AGENTS.md", "CLAUDE.md"];
 

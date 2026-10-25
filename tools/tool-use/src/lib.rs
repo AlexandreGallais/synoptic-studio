@@ -1,5 +1,5 @@
 //! Each use of a tool of the workspace, one line of `.git/metrics/tool-uses.jsonl` in the main
-//! checkout's Git folder, a linked worktree's uses included (EN-102, `docs/tooling/metrics.md`):
+//! checkout's Git folder, a linked worktree's uses included (EN-102, `the records' conventions, area metrics`):
 //! the tool, its subcommand, the worktree, its start, its duration and its exit code, so that
 //! `target/release/metrics` lists each tool's calls, failures and times.
 //!

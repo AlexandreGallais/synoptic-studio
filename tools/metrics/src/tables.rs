@@ -1,4 +1,4 @@
-//! Statistics and Markdown tables of the metrics report (`docs/tooling/metrics.md`): commands
+//! Statistics and Markdown tables of the metrics report (`the records' conventions, area metrics`): commands
 //! grouped by what they run, counted and timed.
 
 use std::collections::HashMap;

@@ -29,11 +29,10 @@ const RUST_CACHES = workflowOf("rust-caches.yml");
 /** Text of the develop CI, whose run after each merge into develop saves develop's caches. */
 const DEVELOP_CI = workflowOf("develop-ci.yml");
 
-/** Text of the CI into main's ruleset, its required checks, in the CI's page. */
-const MAIN_RULESET =
-  readFileSync(join(ROOT, "docs", "tooling", "ci.md"), "utf8")
-    .split("\n")
-    .find((line) => line.trimStart().startsWith("| `main` | default branch |")) ?? "";
+/** The checks main's ruleset requires, as `tests/data/required-checks.json` lists them. */
+const MAIN_RULESET: unknown = JSON.parse(
+  readFileSync(join(ROOT, "tests", "data", "required-checks.json"), "utf8"),
+);
 
 /** Text of the release's workflow, run by its button. */
 const RELEASE = workflowOf("release.yml");
@@ -308,8 +307,8 @@ describe("the Rust caches of the CI (EN-111)", () => {
     // Its run is on develop's head, the review's head commit: a job named as a required check
     // would make that check ambiguous on the review (REF-GH-PROTECTED-BRANCHES).
     expect(name).not.toBe("");
-    expect(MAIN_RULESET).toContain("`Rust coverage`");
-    expect(MAIN_RULESET).not.toContain(`\`${name}\``);
+    expect(MAIN_RULESET).toContain("Rust coverage");
+    expect(MAIN_RULESET).not.toContain(name);
     expect(jobOf(CI, "lanes")).not.toContain(name);
   });
 

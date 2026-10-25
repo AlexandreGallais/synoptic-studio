@@ -83,7 +83,6 @@ const TEST_PROJECTS: readonly TestProjectInlineConfiguration[] = [
  * @param env - what Vite runs
  * @param env.mode - `playground` for the playground build, the library build otherwise
  * @returns the configuration of that mode
- * @see docs/tooling/commands.md
  */
 export default defineConfig(({ mode }) => {
   const junitFile = process.env["VITEST_JUNIT"];

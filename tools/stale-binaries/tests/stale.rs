@@ -189,7 +189,10 @@ fn fails_naming_the_stale_binaries_and_passes_once_they_are_rebuilt() {
         String::from_utf8_lossy(&output.stdout),
         "target/release/x is older than tools/b/src/bin/x.rs\ntarget/release/y is missing\n"
     );
-    assert!(String::from_utf8_lossy(&output.stderr).contains("run `npm run rust:build`"));
+    assert!(
+        String::from_utf8_lossy(&output.stderr)
+            .contains("run `cargo build --release --workspace --locked`")
+    );
     // Rebuilt: both binaries written after their sources.
     file(&root.join("target/release/x"), "", 60);
     file(&root.join("target/release/y"), "", 60);

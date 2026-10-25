@@ -245,7 +245,7 @@ fn f22_ac3_does_nothing_without_a_commit_since_the_last_tag() {
     assert!(!out.0.exists());
 }
 
-/// The notice of no change, copied by hand from `docs/tooling/releases.md` (How the draft is
+/// The notice of no change, copied by hand from `the records' conventions, area release` (How the draft is
 /// made), not taken from the code it tests.
 const NOTICE: &str =
     "_No change to the library nor the playground: documentation and tooling only._";
@@ -296,14 +296,14 @@ fn f22_ac3_refuses_notes_that_disagree_with_the_commits() {
         released(&tooling_only(), [BODY_21, NOTICE]),
         Err(
             "pull request #21 lists changes, but no commit since v0.2.0 changes the library nor \
-             the playground: write the notice of no change in its body (docs/tooling/releases.md)"
+             the playground: write the notice of no change in its body (the records' conventions, area release)"
                 .to_owned()
         )
     );
     // A feat of the library, but no body lists a change: a minor version with empty notes.
     let refused = "commits since v0.2.0 change the library or the playground, but no pull \
                    request's body lists a change: write the features' texts in the review's body \
-                   (docs/tooling/releases.md)"
+                   (the records' conventions, area release)"
         .to_owned();
     assert_eq!(
         released(&a_feature(), [NOTICE, NOTICE]),

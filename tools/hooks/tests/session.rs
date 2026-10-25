@@ -121,7 +121,7 @@ fn prints_the_state_with_or_without_a_feature_started() {
     // The stale release binaries named after the features, before the rule.
     assert!(
         state_text("d", 0, "c", &[], &["target/release/a is missing".into(), "target/release/b is older than s.rs".into()])
-            .contains("\n- no feature started\n- release binaries older than their sources, which the hooks run: target/release/a is missing; target/release/b is older than s.rs; `npm run rust:build` rebuilds them\n- a story")
+            .contains("\n- no feature started\n- release binaries older than their sources, which the hooks run: target/release/a is missing; target/release/b is older than s.rs; `cargo build --release --workspace --locked` rebuilds them\n- a story")
     );
 }
 

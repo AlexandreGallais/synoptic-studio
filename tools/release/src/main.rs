@@ -58,7 +58,7 @@ fn print_notes(args: &[String]) -> u8 {
             eprint!("{}", drafted.hints);
             eprintln!(
                 "{} line(s) drafted from the commits {base} lacks. Rewrite each `[draft]` line in \
-                 the imperative mood (docs/tooling/releases.md), then run `release check` on the \
+                 the imperative mood (the records' conventions, area release), then run `release check` on the \
                  body.",
                 drafted.lines
             );

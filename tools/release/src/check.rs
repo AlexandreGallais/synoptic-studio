@@ -1,5 +1,5 @@
 //! `release check`: a release text, the body of a pull request into `main` up to its first
-//! thematic break, against the rules it can check (`docs/tooling/releases.md`, What a release
+//! thematic break, against the rules it can check (`the records' conventions, area release`, What a release
 //! text holds): a notice at most, then the groups in their order, one line per change with its
 //! references last, the breaking changes first, and no line left as drafted.
 

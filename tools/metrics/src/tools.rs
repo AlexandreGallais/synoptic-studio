@@ -1,6 +1,6 @@
-//! The agent's own tools in the metrics (RET-002, `docs/tooling/agent-tools.md`): how often each
+//! The agent's own tools in the metrics (RET-002, `the records' tools`): how often each
 //! one ran through npm, how long it took and how often it failed, from the hook's log; and each
-//! Rust tool's own record of its uses, `tool-uses.jsonl` (EN-102, `docs/tooling/metrics.md`).
+//! Rust tool's own record of its uses, `tool-uses.jsonl` (EN-102, `the records' conventions, area metrics`).
 
 use std::cmp::Ordering;
 

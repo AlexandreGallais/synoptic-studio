@@ -912,11 +912,10 @@ describe("one workflow per purpose (ADR-0088)", () => {
 });
 
 describe("each workflow's use, as decided on 2026-10-18 (EN-134)", () => {
-  /** The ruleset row of `main` in the CI's page, which lists its required checks. */
-  const mainRuleset =
-    readFileSync(join(ROOT, "docs", "tooling", "ci.md"), "utf8")
-      .split("\n")
-      .find((line) => line.includes("| `main` | default branch |")) ?? "";
+  /** The checks main's ruleset requires, as `tests/data/required-checks.json` lists them. */
+  const mainRuleset: unknown = JSON.parse(
+    readFileSync(join(ROOT, "tests", "data", "required-checks.json"), "utf8"),
+  );
 
   it("[F34.AC1] keeps the workflows the project uses, the closing of outside pull requests removed (ADR-0094)", () => {
     // The repository's setting "Collaborators only" keeps outsiders out (REF-GH-PR-ACCESS): the
@@ -946,7 +945,7 @@ describe("each workflow's use, as decided on 2026-10-18 (EN-134)", () => {
     expect(codeql).toContain("\n          languages: javascript-typescript, actions\n");
     // A matrix would name each job `Analyze (<language>)`, a check main's ruleset does not require.
     expect(codeql).not.toContain("matrix");
-    expect(mainRuleset).toContain("`Analyze`");
+    expect(mainRuleset).toContain("Analyze");
   });
 
   it("[F34.AC1] checks the links weekly and by hand, blocking nothing", () => {
@@ -957,8 +956,8 @@ describe("each workflow's use, as decided on 2026-10-18 (EN-134)", () => {
     );
 
     expect(links).toContain("\n    name: Link check\n");
-    expect(mainRuleset).toContain("`Analyze`");
-    expect(mainRuleset).not.toContain("`Link check`");
+    expect(mainRuleset).toContain("Analyze");
+    expect(mainRuleset).not.toContain("Link check");
   });
 });
 

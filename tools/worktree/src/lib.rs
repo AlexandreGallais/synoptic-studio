@@ -1,4 +1,4 @@
-//! A worktree named after its story (EN-052, `docs/tooling/agent-tools.md`): `US-061` gets
+//! A worktree named after its story (EN-052, `the records' tools`): `US-061` gets
 //! `.claude/worktrees/us-061` on the branch `feat/us-061-<topic>`, made from its feature branch on
 //! GitHub. The story's kind, feature and topic come from the records, one database every branch
 //! reads, so that a story written on a feature branch is found from the main checkout too (EN-154,
@@ -133,7 +133,7 @@ pub fn branch_refusal(name: &str) -> Option<String> {
     (!is_story_branch).then(|| {
         format!(
             "`{name}` is not `<type>/<story-id>-<topic>` in kebab-case, a story id of a kind the \
-             pre-push accepts (docs/tooling/git-workflow.md)"
+             pre-push accepts (the records' conventions, area git)"
         )
     })
 }

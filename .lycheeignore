@@ -1,7 +1,6 @@
 # Link checker exclusions (ADR-0022): one regular expression per line, each with its reason.
 # Local development server, only up during `npm run dev`.
 ^https?://localhost
-# Backlog templates (docs/backlog/_*.md) link as if copied into stories/: excluded by path in links.yml.
 # Standards publishers that refuse automated clients such as lychee and WebFetch (HTTP 403,
 # 2026-10-09); their pages are cited with that qualifier in the records' sources (REF-…).
 ^https://library\.iec\.ch/

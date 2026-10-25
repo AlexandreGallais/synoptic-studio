@@ -1,4 +1,4 @@
-//! `jsdoc/require-jsdoc` with the project's contexts (`docs/conventions/documentation.md`): every
+//! `jsdoc/require-jsdoc` with the project's contexts (`the records' conventions, area documentation`): every
 //! function declaration, class, method, type alias, interface and module-level constant has a
 //! block, and in the library every type member too, which the API pages read; an overload's
 //! implementation may lean on its first signature's block (`eslint-plugin-jsdoc` 65.3.1,

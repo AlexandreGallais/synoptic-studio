@@ -1,5 +1,5 @@
 //! `@typescript-eslint/naming-convention`: each name's casing by its role, with the project's
-//! options (`docs/conventions/naming.md`, `REF-TSESLINT-NAMING-CONVENTION`). The options are
+//! options (`the records' conventions, area naming`, `REF-TSESLINT-NAMING-CONVENTION`). The options are
 //! sorted and matched as the rule sorts and matches them: a selector before a group of
 //! selectors, then the most modifiers and types; the first option that applies is the only one
 //! checked. Its `types` option asked the compiler for a name's type; here the type is read from

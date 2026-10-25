@@ -1,5 +1,5 @@
 //! What the `track-tool-call` and `log-tool-call` hooks write of a tool call (RET-001,
-//! `docs/tooling/metrics.md`): the call starting, read back when it ends, and one line per call
+//! `the records' conventions, area metrics`): the call starting, read back when it ends, and one line per call
 //! ended in `.git/metrics/tool-calls.jsonl`, with the session's state the status line last saw.
 //! Rewritten from `.claude/hooks/log-tool-call.ts` and `status-place.ts` (EN-104): the same fields in
 //! the same order, written as `JSON.stringify` writes them.

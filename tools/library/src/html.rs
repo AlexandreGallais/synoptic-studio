@@ -1,5 +1,5 @@
 //! HTML of a documentation page turned into plain Markdown for the local source library
-//! (`docs/tooling/sources.md`): headings, paragraphs, lists, code blocks and links kept; scripts,
+//! (`the records' conventions, area library`): headings, paragraphs, lists, code blocks and links kept; scripts,
 //! styles, navigation and page chrome dropped. A simple converter, enough for documentation pages;
 //! pages that build their text in the browser are left to `WebFetch`. Each step is the one
 //! `library-html.ts` made with a regular expression, written here as a scan of the text, so that a
