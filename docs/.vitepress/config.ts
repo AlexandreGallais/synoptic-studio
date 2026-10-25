@@ -30,9 +30,9 @@ type Group = {
 };
 
 /**
- * The site for a person: the editor, how the project works, where it stands and the commands,
- * then the API. Everything else the agent reads in its records (AUD-054). A group of one section
- * is one entry of the navigation bar, a menu otherwise.
+ * The site for a person: what the software is and how it is made, then the API. Everything else
+ * the agent reads in its records (AUD-054). A group of one section is one entry of the navigation
+ * bar, a menu otherwise.
  */
 const GROUPS: readonly Group[] = [
   {
@@ -41,7 +41,7 @@ const GROUPS: readonly Group[] = [
         collapsed: false,
         folder: "",
         overview: false,
-        pages: ["the-software.md", "how-it-is-made.md", "where-it-stands.md"],
+        pages: ["the-software.md", "how-it-is-made.md"],
         title: "Overview",
       },
     ],

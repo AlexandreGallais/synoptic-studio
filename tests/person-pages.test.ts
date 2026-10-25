@@ -43,8 +43,6 @@ function scriptNames(): readonly string[] {
   return typeof scripts === "object" && scripts !== null ? Object.keys(scripts) : [];
 }
 
-// The order of the epics and their statuses live in the records (epics.position), which the CI
-// cannot read: `docs/where-it-stands.md` is kept true to them at each review (AUD-054).
 describe("the pages a person reads, kept true to the repository", () => {
   const scripts = scriptNames();
 

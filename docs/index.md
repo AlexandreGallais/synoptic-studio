@@ -23,9 +23,6 @@ features:
   - title: How it is made
     details: An AI agent and a Product Owner, a light agile flow, and how the quality is kept.
     link: /how-it-is-made
-  - title: Where it stands
-    details: What is done, and what comes next.
-    link: /where-it-stands
 ---
 
 ## Try it

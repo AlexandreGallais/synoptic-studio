@@ -24,15 +24,9 @@
     "noImplicitOverride": true,
     "noImplicitReturns": true,
     "noPropertyAccessFromIndexSignature": true,
-    "useUnknownInCatchVariables": true,
 
-    // Delegated to oxlint (off here so that they never block the build)
-    // noUnusedLocals / noUnusedParameters -> no-unused-vars
-    // noFallthroughCasesInSwitch          -> no-fallthrough
-    // allowUnreachableCode                -> no-unreachable
-    "noUnusedLocals": false,
-    "noUnusedParameters": false,
-    "noFallthroughCasesInSwitch": false,
+    // Left to oxlint, off by default here: noUnusedLocals and noUnusedParameters (no-unused-vars),
+    // noFallthroughCasesInSwitch (no-fallthrough), allowUnreachableCode (no-unreachable).
 
     // Output: checking only; tools/declarations writes the library's .d.ts (EN-091)
     "noEmit": true,

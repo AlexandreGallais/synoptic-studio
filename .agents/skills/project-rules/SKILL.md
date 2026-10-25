@@ -27,7 +27,7 @@ Everything the agent works from lives in the records, one SQLite file outside th
 | a story's status | `target/release/backlog-status <ID> <status>` |
 | the ids a change cites, checked | `knowledge check-ids <paths>` |
 
-The records are kept true with the work: a rule, a decision, a source, an incident or a status changes in the same task as the code. The docs are the Product Owner's, refreshed only at a review: nothing is written in them while working. Code cites short ids, never a path into the records.
+The records are kept true with the work: a rule, a decision, a source, an incident or a status changes in the same task as the code. The docs are the Product Owner's: nothing in `docs/` is changed, not even at a review, until they say otherwise. Code cites short ids, never a path into the records.
 
 ## Always
 
@@ -61,7 +61,7 @@ Hooks refuse most of these; none is worked around.
 
 - Every change on a branch of its own, merged by a merge commit, so that the history shows each story and feature as a bubble.
 - Conventional Commits, a scope of `SCOPES` in `tools/git-hooks/src/message.rs`, a subject starting with a verb, no body line starting with `word:` (read as a footer), footers within 100 characters, `Refs: <ID>.Tn`.
-- Commits by `target/release/git-sequences commit -F <file or -> [--push] <paths>`; a story brought up to its feature branch by `git-sequences sync`. A commit refused by a hook leaves its files staged: `git status` before retrying.
+- Commits by `target/release/git-sequences commit -F <file or -> [--push] <paths>`; a story brought up to its feature branch by `git-sequences sync`; `develop` never merged into a work branch. A commit refused by a hook leaves its files staged: `git status` before retrying.
 
 ## Stop and report
 
