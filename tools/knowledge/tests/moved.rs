@@ -630,6 +630,11 @@ fn merges_a_library_into_the_records_its_pages_replaced_and_its_uses_kept_once()
         .unwrap();
 
     let (first, again) = twice(&database, |done| import_library(done, &source));
+    // An older copy of the page, read at 0, never replaces the one read at 1.
+    source
+        .execute("UPDATE pages SET fetched_at = 0, title = 'Old'", [])
+        .unwrap();
+    let older = write(&database, |done| import_library(done, &source)).unwrap();
     let pages = rows(&database, "SELECT url, title FROM pages");
     let chunks = rows(&database, "SELECT count(*) FROM chunks");
     let uses = rows(&database, "SELECT count(*) FROM project_uses");
@@ -646,6 +651,7 @@ fn merges_a_library_into_the_records_its_pages_replaced_and_its_uses_kept_once()
         }
     );
     assert_eq!(again, first);
+    assert_eq!(older, Moved::default());
     assert_eq!(pages, ["https://a.example\tA"]);
     assert_eq!(chunks, ["2"]);
     assert_eq!(uses, ["1"]);

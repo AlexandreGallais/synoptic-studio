@@ -8,7 +8,7 @@ use std::path::Path;
 use std::time::UNIX_EPOCH;
 
 use rusqlite::types::Value;
-use rusqlite::{Connection, OpenFlags, params, params_from_iter};
+use rusqlite::{Connection, OpenFlags, OptionalExtension, params, params_from_iter};
 use serde_json::Value as Json;
 
 use crate::add::{Origin, put_merged};
@@ -233,8 +233,8 @@ pub fn import_metrics(database: &Connection, folder: &Path) -> rusqlite::Result<
 }
 
 /// Copies the library of another file into the records' tables (`library::store`), the source
-/// opened apart and only read: each page replaced, its sections written again, each use kept
-/// once. The pages copied.
+/// opened apart and only read: each page replaced unless the records read it later, its sections
+/// written again, each use kept once. The pages copied.
 ///
 /// # Errors
 /// When SQLite fails on either file.
@@ -247,7 +247,19 @@ pub fn import_library(database: &Connection, source: &Connection) -> rusqlite::R
 
     while let Some(row) = rows.next()? {
         let url: String = row.get(0)?;
+        let fetched: Value = row.get(2)?;
+        // A page the records read later than the source is kept: an older copy never wins.
+        let newer: Option<i64> = database
+            .query_row(
+                "SELECT 1 FROM pages WHERE url = ?1 AND fetched_at > ?2",
+                params![url, fetched],
+                |_| Ok(1),
+            )
+            .optional()?;
 
+        if newer.is_some() {
+            continue;
+        }
         database.execute(
             "INSERT OR REPLACE INTO pages (url, title, fetched_at, modified_at, etag, last_modified, markdown)
             VALUES (?, ?, ?, ?, ?, ?, ?)",
