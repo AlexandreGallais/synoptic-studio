@@ -1,6 +1,6 @@
 //! What the `track-tool-call` and `log-tool-call` hooks write of a tool call (RET-001,
 //! `the records' conventions, area metrics`): the call starting, read back when it ends, and one line per call
-//! ended in `.git/metrics/tool-calls.jsonl`, with the session's state the status line last saw.
+//! ended in `.git/metrics/tool-calls.jsonl`.
 //! Rewritten from `.claude/hooks/log-tool-call.ts` and `status-place.ts` (EN-104): the same fields in
 //! the same order, written as `JSON.stringify` writes them.
 
@@ -8,7 +8,6 @@ use std::path::{Component, Path, PathBuf};
 
 use crate::guard::is_space;
 use crate::json::{Value, js_length, number_text, quote, write};
-use crate::tokens::whole;
 
 /// Longest summary kept for one call: a long heredoc is cut, its length is kept.
 pub const SUMMARY_LENGTH: usize = 300;
@@ -187,35 +186,10 @@ pub fn running_call(input: &Value, start: i64) -> String {
 pub struct CallContext {
     /// The branch checked out.
     pub branch: String,
-    /// `now.json`, written by the status line; `Null` when missing.
-    pub snapshot: Value,
     /// When the call started, from its running file; 0 when unknown.
     pub started_at: f64,
     /// When the hook runs, epoch milliseconds.
     pub time: i64,
-}
-
-/// The session's state when a call ends, from the status line's last snapshot, as JSON members:
-/// tokens of the turn, memory, background tasks, all 0 when the snapshot is missing.
-#[must_use]
-pub fn session_moment(snapshot: &Value, time: i64) -> String {
-    // Its times are whole numbers, as the status line writes them.
-    let turn_start = whole(snapshot, "turnStart");
-    let taken = whole(snapshot, "time");
-    let since = |moment: i64| if moment == 0 { 0 } else { time - moment };
-
-    format!(
-        "\"contextPercent\":{},\"model\":{},\"pendingAgents\":{},\"pendingCommands\":{},\"snapshotAgeMs\":{},\"turnElapsedMs\":{},\"turnOutputTokens\":{},\"turnStart\":{},\"turnTokens\":{}",
-        number_text(count(snapshot, "contextPercent")),
-        quote(snapshot.get("model").text()),
-        number_text(count(snapshot, "pendingAgents")),
-        number_text(count(snapshot, "pendingCommands")),
-        since(taken),
-        since(turn_start),
-        number_text(count(snapshot, "turnOutputTokens")),
-        turn_start,
-        number_text(count(snapshot, "turnTokens")),
-    )
 }
 
 /// Characters of a JSON value written out, 0 when it is missing.
@@ -260,8 +234,7 @@ pub fn tool_call_record(input: &Value, context: &CallContext) -> String {
         || tool_input.get("run_in_background") == &Value::Bool(true);
 
     format!(
-        "{{{},\"agent\":{},\"agentId\":{},\"branch\":{},\"description\":{},{duration}\"error\":{},\"inputChars\":{},\"isBackground\":{is_background},\"isOk\":{},\"outputChars\":{},\"permissionMode\":{},\"session\":{},\"startedAt\":{},\"summary\":{},\"time\":\"{}\",\"tool\":{},\"toolUseId\":{}}}",
-        session_moment(&context.snapshot, context.time),
+        "{{\"agent\":{},\"agentId\":{},\"branch\":{},\"description\":{},{duration}\"error\":{},\"inputChars\":{},\"isBackground\":{is_background},\"isOk\":{},\"outputChars\":{},\"permissionMode\":{},\"session\":{},\"startedAt\":{},\"summary\":{},\"time\":\"{}\",\"tool\":{},\"toolUseId\":{}}}",
         quote(text_or(input, "agent_type", "main")),
         quote(input.get("agent_id").text()),
         quote(&context.branch),

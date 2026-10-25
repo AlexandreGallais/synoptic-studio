@@ -1,9 +1,9 @@
-//! Tests of the background tasks read from a transcript, the same cases as `status-line.test.ts`.
+//! Tests of the background tasks read from a transcript, the cases `limit-agents` counts.
 
 use hooks::json::parse;
 use hooks::tasks::{
-    Kind, LOST_TASK_MS, Task, after_line, cached_tasks, completed_ids, failed_ids, notified_ids,
-    pending_after, started_tasks,
+    Kind, LOST_TASK_MS, Task, after_line, completed_ids, failed_ids, notified_ids, pending_after,
+    started_tasks,
 };
 
 /// A transcript line where the agent starts tool calls, given as JSON blocks.
@@ -150,35 +150,6 @@ fn drops_a_task_older_than_three_hours() {
 }
 
 #[test]
-fn reads_the_tasks_of_the_status_line_cache_for_its_transcript_only() {
-    let cache = parse(
-        r#"{"transcript":"/t.jsonl","tally":{"offset":120,"pending":[{"id":"t1","kind":"agent","label":"x: y","start":5},{"id":"t2","kind":"command","label":"z","start":6}]}}"#,
-    )
-    .expect("JSON");
-    let (tasks, offset) = cached_tasks(&cache, "/t.jsonl");
-
-    assert_eq!(offset, 120);
-    assert_eq!(
-        tasks,
-        vec![
-            Task {
-                id: "t1".into(),
-                kind: Kind::Agent,
-                label: "x: y".into(),
-                start: 5
-            },
-            Task {
-                id: "t2".into(),
-                kind: Kind::Command,
-                label: "z".into(),
-                start: 6
-            },
-        ]
-    );
-    assert_eq!(cached_tasks(&cache, "/other.jsonl"), (Vec::new(), 0));
-}
-
-#[test]
 fn f18_ac9_counts_a_subagent_resumed_by_a_message_until_its_notification() {
     // The lines that showed "your turn" for 15 minutes while a worker ran (2026-10-15, 12:07 to
     // 12:22 UTC): a message resumed the stopped EN-039 worker, its end notified under the
@@ -227,13 +198,6 @@ fn f18_ac9_counts_a_subagent_resumed_by_a_message_until_its_notification() {
         ),
         Vec::new()
     );
-    let (tasks, _) = cached_tasks(
-        &parse(r#"{"transcript":"/t","tally":{"pending":[{"id":"m","kind":"message"}]}}"#)
-            .expect("JSON"),
-        "/t",
-    );
-
-    assert_eq!(tasks[0].kind, Kind::Message);
 }
 
 #[test]

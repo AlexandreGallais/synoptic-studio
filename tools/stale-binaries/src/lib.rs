@@ -1,5 +1,5 @@
-//! The release binaries older than their sources (EN-104, ADR-0078). The hooks, the status line,
-//! the Git hooks and the agent call `target/release/<binary>` by its path, not through `cargo run`,
+//! The release binaries older than their sources (EN-104, ADR-0078). The hooks, the
+//! Git hooks and the agent call `target/release/<binary>` by its path, not through `cargo run`,
 //! which would rebuild it: a binary built before its sources changed runs the old code. A binary is
 //! stale when one of the files Cargo built it from — listed by Cargo in its dep-info,
 //! `target/release/<binary>.d` — was written after it, or when it is missing. Read from the files

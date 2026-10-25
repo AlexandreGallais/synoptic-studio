@@ -215,11 +215,6 @@
       }
     ]
   },
-  "statusLine": {
-    "type": "command",
-    "command": "\"$(git rev-parse --show-toplevel)/target/release/status-line\"",
-    "refreshInterval": 1
-  },
   "enabledMcpjsonServers": ["library"],
   "cleanupPeriodDays": 3650
 }

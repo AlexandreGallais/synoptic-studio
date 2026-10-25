@@ -1,8 +1,8 @@
 //! `PostToolUse` and `PostToolUseFailure` hook on every tool, in the background (RET-001,
 //! `the records' conventions, area metrics`, EN-104): appends one line per tool call to
 //! `.git/metrics/tool-calls.jsonl` — what ran, who ran it, when it started and ended, the size of
-//! what it read and returned, whether it failed, and the session's state at that moment as the
-//! status line last saw it — then removes the call's running file. `target/release/metrics` reads it.
+//! what it read and returned, whether it failed — then removes the call's running file.
+//! `target/release/metrics` reads it.
 //! On `SubagentStop`, of any agent type, it removes the running files the subagent left and logs
 //! nothing (EN-120).
 
@@ -63,7 +63,6 @@ fn hook() -> u8 {
         .join(format!("{}.json", input.get("tool_use_id").text()));
     let context = CallContext {
         branch: branch_of(&checkout),
-        snapshot: json_of(&folder.join("now.json")),
         started_at: count(&json_of(&running), "start"),
         time: now_ms(),
     };
