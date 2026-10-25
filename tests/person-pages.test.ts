@@ -7,7 +7,7 @@ import { describe, expect, it } from "vitest";
 const ROOT = join(import.meta.dirname, "..");
 
 /** The pages a person reads that name the commands to run. */
-const COMMAND_PAGES = ["README.md", "docs/commands.md"];
+const COMMAND_PAGES = ["README.md", "docs/index.md"];
 
 /**
  * A file of the repository.
@@ -54,7 +54,8 @@ describe("the pages a person reads, kept true to the repository", () => {
       .map((match) => match.groups?.["script"] ?? "")
       .toArray();
 
-    expect(named.length).toBeGreaterThan(3);
+    // The two commands a person types: the playground and this site.
+    expect(named.length).toBeGreaterThan(1);
     expect(named.filter((script) => !scripts.includes(script))).toEqual([]);
   });
 });

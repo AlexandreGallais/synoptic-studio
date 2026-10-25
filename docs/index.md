@@ -2,38 +2,35 @@
 layout: home
 
 hero:
-  name: editor
-  text: Integer, orthogonal, path-only SVG editing
-  tagline: A dependency-free TypeScript library that draws the symbols of synoptic views from numbers.
+  name: Synoptic Studio
+  text: Symbols for synoptic views, drawn from numbers
+  tagline: A dependency-free TypeScript library and the editors built on it, made by an AI agent with one Product Owner.
   actions:
     - theme: brand
-      text: The editor
-      link: /the-editor
+      text: The software
+      link: /the-software
     - theme: alt
-      text: How it works
-      link: /how-it-works
-    - theme: alt
-      text: Where it stands
-      link: /where-it-stands
+      text: How it is made
+      link: /how-it-is-made
     - theme: alt
       text: Playground
       link: https://alexandregallais.github.io/synoptic-studio/playground/
 
 features:
-  - title: How it works
-    details: What the library computes, who does what, how work flows and how quality is kept.
-    link: /how-it-works
+  - title: The software
+    details: What a synoptic view is, why every shape is defined by numbers, and the three editors to come.
+    link: /the-software
+  - title: How it is made
+    details: An AI agent and a Product Owner, a light agile flow, and how the quality is kept.
+    link: /how-it-is-made
   - title: Where it stands
-    details: What is done, what is under way.
+    details: What is done, and what comes next.
     link: /where-it-stands
-
-  - title: The editor
-    details: The editors, what one can draw, how one selects, moves and undoes.
-    link: /the-editor
-  - title: API
-    details: One page per exported function, generated from the code.
-    link: /api/
-  - title: Commands
-    details: What a person runs in a clone of the repository.
-    link: /commands
 ---
+
+## Try it
+
+In a clone of the repository, after `npm install`:
+
+- `npm run dev` opens the playground on `http://localhost:5173`;
+- `npm run docs:dev` opens this site.
