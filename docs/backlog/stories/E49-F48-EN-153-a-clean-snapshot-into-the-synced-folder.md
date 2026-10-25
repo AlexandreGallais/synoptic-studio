@@ -26,3 +26,10 @@ The copy the Product Owner keeps ([note 0035](../../research/notes/0035-e49-the-
 - [ ] T3 — Its time measured; `docs/tooling/knowledge.md` and `docs/tooling/agent.md`'s hooks (30 min)
 
 One task = one commit, referenced as `EN-153.T1` in the commit footer.
+
+## For the main thread
+
+### Journal
+
+- `#decision` EN-153: the snapshot's choices left to the agent — the `SessionEnd` hook calls `knowledge snapshot` itself, the one hook outside `tools/hooks` (`hooks` cannot depend on `knowledge`, which depends on it through `library`), its `timeout` 30 seconds; the day is UTC's, as `calendar::today`; a temporary file over an hour old is a killed copy's leftover and removed; without a working file it copies nothing, exit 0; a synced folder named but missing fails, exit 1, never made; every command but `path` refuses a working file in the synced folder or below it.
+- `#run` EN-153: the snapshot measured on a working file made for the measure, `AGENT_KNOWLEDGE_SNAPSHOT` not being set on this machine and no real `records.sqlite` existing yet: 52 ms on the repository's 767 pages (12 MB), 201 ms with the library's tables copied in (82 MB).
