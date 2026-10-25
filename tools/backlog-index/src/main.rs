@@ -7,7 +7,6 @@
 //! script `backlog:index` runs this tool alone and npm passes its arguments to it: `npm run
 //! backlog:index -- --check` reaches the check (EN-140).
 
-mod front_matter;
 mod order;
 mod story;
 mod table;
@@ -18,7 +17,7 @@ use std::io;
 use std::path::Path;
 use std::process::ExitCode;
 
-use front_matter::front_matter;
+use backlog_index::front_matter::front_matter;
 use order::{Parent, ordered};
 use story::Story;
 use table::{normalized, render};

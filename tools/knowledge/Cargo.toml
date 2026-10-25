@@ -2,12 +2,16 @@
 name = "knowledge"
 version = "0.1.0"
 edition.workspace = true
-description = "The project's records in one SQLite file, its knowledge tables first (E49, EN-151)"
+description = "The project's records in one SQLite file, its knowledge tables first (E49, EN-151, EN-152)"
 license.workspace = true
 publish.workspace = true
 
 [dependencies]
+backlog-index = { path = "../backlog-index" }
+calendar = { path = "../calendar" }
 git-repository = { path = "../git-repository" }
+library = { path = "../library" }
+page = { path = "../page" }
 tool-use = { path = "../tool-use" }
 
 # SQLite compiled into the binary, FTS5 included, except for the Windows check of check:rust, whose

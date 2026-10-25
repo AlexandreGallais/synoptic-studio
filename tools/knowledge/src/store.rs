@@ -20,7 +20,7 @@ pub const SCHEMA_VERSION: i64 = 1;
 /// of their text, kept by the three triggers (`REF-SQLITE-FTS5`, §4.4.3); `calls` and `turns` take
 /// the fields of the hooks' `tool-calls.jsonl` and `turns.jsonl` under their names, a field an older
 /// line lacks left null.
-const SCHEMA: &str = "
+const SCHEMA_1: &str = "
   CREATE TABLE IF NOT EXISTS documents (
     id TEXT PRIMARY KEY, kind TEXT NOT NULL, title TEXT NOT NULL, epic TEXT NOT NULL,
     feature TEXT NOT NULL, status TEXT NOT NULL, date TEXT NOT NULL, branch TEXT NOT NULL,
@@ -72,6 +72,10 @@ const SCHEMA: &str = "
   );
 ";
 
+/// The migrations, the one of index `n` bringing a file of schema `n` up to `n + 1`: a new file
+/// runs them all.
+pub const MIGRATIONS: [&str; 1] = [SCHEMA_1];
+
 /// A failure of SQLite on the store's file, named by its path.
 fn on_file(path: &Path, error: &impl std::fmt::Display) -> String {
     format!("{}: {error}", path.display())
@@ -88,7 +92,7 @@ fn migrate(database: &Connection) -> rusqlite::Result<()> {
     let transaction = Transaction::new_unchecked(database, TransactionBehavior::Immediate)?;
 
     if schema_version(&transaction)? < SCHEMA_VERSION {
-        transaction.execute_batch(SCHEMA)?;
+        transaction.execute_batch(MIGRATIONS[0])?;
         transaction.pragma_update(None, "user_version", SCHEMA_VERSION)?;
     }
     transaction.commit()

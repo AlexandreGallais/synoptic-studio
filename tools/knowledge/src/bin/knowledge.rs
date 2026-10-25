@@ -14,7 +14,7 @@ use knowledge::records::{DATABASE_FILE, ROOT_VARIABLE, main_and_origin, project_
 use knowledge::store::{SCHEMA_VERSION, open_store, schema_version};
 
 /// The usage, printed for an unknown command.
-const USAGE: &str = "Usage: target/release/knowledge init | path";
+const USAGE: &str = "Usage: target/release/knowledge init | path | add <kind> <file or -> | search <words> [<filters>] | show <id> [<heading>] [<filters>] | list [<filters>] | sync; the filters: --kind, --epic, --feature, --status, --since, --branch, --state <value>, --all";
 
 /// What a command prints, or the error it met.
 fn output(command: &str) -> Result<String, String> {
