@@ -1,6 +1,6 @@
 # ADR-0091 — A story's log rows and cards moved in its `done` commit
 
-**Status**: Accepted (the agent, 2026-10-19, EN-137, from the Product Owner's decision at REV-006 on 2026-10-18 that no commit sits between the bubbles of a feature's stories; to be told to the Product Owner). Supersedes, in ADR-0065's decision 4, "at merge" for the logs: the main thread writes a story's rows into the logs in the story's `done` commit, on its branch, before its merge; the rest of decision 4 stands. Supersedes, in ADR-0085's decision 2, "written by the main thread at merge like the other logs": the cards are moved the same way.
+**Status**: Accepted (the agent, 2026-10-19, EN-137, from the Product Owner's decision at REV-006 on 2026-10-18 that no commit sits between the bubbles of a feature's stories; to be told to the Product Owner). Supersedes, in ADR-0065's decision 4, "at merge" for the logs: the main thread writes a story's rows into the logs in the story's `done` commit, on its branch, before its merge; the rest of decision 4 stands. Supersedes, in ADR-0085's decision 2, "written by the main thread at merge like the other logs": the cards are moved the same way. Decision 2 superseded by ADR-0102 (2026-10-25): no pre-push check reads the logs, and `move-rows` is no longer required.
 
 ## Context
 

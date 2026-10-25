@@ -27,8 +27,11 @@ pub const DOCS_LANE: &[&str] = &["docs:build", "playground:build"];
 /// and the binaries' freshness (EN-068, EN-069).
 const RUST_CHECKS_LANE: &[&str] = &["check:rust"];
 
+/// The script of the Rust workspace's tests under the coverage floor (EN-130).
+pub const RUST_COVERAGE: &str = "rust:coverage";
+
 /// The lane of the Rust workspace's tests under the coverage floor, beside its checks (EN-130).
-const RUST_COVERAGE_LANE: &[&str] = &["rust:coverage"];
+const RUST_COVERAGE_LANE: &[&str] = &[RUST_COVERAGE];
 
 /// The lanes of the Rust workspace, left out when the branch changed none of their inputs.
 pub const RUST_LANES: &[&[&str]] = &[RUST_CHECKS_LANE, RUST_COVERAGE_LANE];
@@ -127,7 +130,8 @@ pub fn lanes_to_run(paths: Option<&[String]>) -> Vec<&'static [&'static str]> {
 
 /// A path as one word of `sh`: in single quotes, each quote inside closed, escaped and opened
 /// again.
-fn quoted(path: &str) -> String {
+#[must_use]
+pub fn quoted(path: &str) -> String {
     format!("'{}'", path.replace('\'', r"'\''"))
 }
 

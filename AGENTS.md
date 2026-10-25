@@ -94,7 +94,7 @@ Each is a step the project cannot take back cheaply; hooks refuse most of them, 
 ## Definition of done
 
 1. `npm run fix`.
-2. `npm run check:all` green, seen and not assumed (`docs/tooling/commands.md` lists what it runs, 95 % coverage of `src/` included while it is developed (2026-10-25)); a failure is reported with its output.
+2. `npm run check:all` green, seen and not assumed (`docs/tooling/commands.md` lists what it runs, 95 % coverage of `src/` included on a feature branch while the library is developed (2026-10-25); a story's push runs only the checks its change needs); a failure is reported with its output.
 3. Docs up to date: domain, references, derivations, ADRs, backlog.
 4. A summary in French: result, changes, evidence, decisions needed, next step (`docs/conventions/writing.md`, Messages to the Product Owner).
 
