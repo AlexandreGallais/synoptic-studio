@@ -403,5 +403,5 @@
 | [EN-151](./E49-F48-EN-151-the-tables-opened-by-two-worktrees.md) | F48 | The tables, opened by two worktrees | done |
 | [EN-152](./E49-F48-EN-152-add-search-show-and-list-by-branch.md) | F48 | Add, search, show and list, by branch | done |
 | [EN-153](./E49-F48-EN-153-a-clean-snapshot-into-the-synced-folder.md) | F48 | A clean snapshot into the synced folder | done |
-| [AUD-050](./E49-F48-AUD-050-audit-f48.md) | F48 | Audit F48 | ready |
+| [AUD-050](./E49-F48-AUD-050-audit-f48.md) | F48 | Audit F48 | done |
 | [SP-034](./E49-SP-034-refine-e49.md) | E49 | Refine E49, the knowledge database and the light docs | done |

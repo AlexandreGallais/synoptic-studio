@@ -15,7 +15,7 @@
 //!
 //! `search`, `show` and `list` read the merged rows and the current branch's drafts, filtered by
 //! `--kind`, `--epic`, `--feature`, `--status`, `--since`, `--branch` and `--state`; `--all` adds
-//! the dropped rows. Every command but `path` refuses a working file inside the synced folder. An
+//! the dropped rows. Every command refuses a working file inside the synced folder. An
 //! error is printed on the error output, exit 1.
 
 use std::env;
@@ -29,12 +29,15 @@ use knowledge::add::{Origin, add_document, is_kind};
 use knowledge::read::{
     Filters, hit_lines, list, listed_line, parse_filters, search, section_of, show,
 };
-use knowledge::records::{DATABASE_FILE, ROOT_VARIABLE, git, main_and_origin, project_records};
+use knowledge::records::{
+    DATABASE_FILE, ROOT_VARIABLE, git, main_and_origin, project_name, project_records,
+    records_folder,
+};
 use knowledge::snapshot::{
     NOT_SET, SNAPSHOT_VARIABLE, refuse_synced, snapshot_folder, take_snapshot,
 };
 use knowledge::store::{SCHEMA_VERSION, open_store, schema_version, write};
-use knowledge::sync::{mark_merged, merged_branches};
+use knowledge::sync::{TRUNK, mark_merged, merged_branches};
 use rusqlite::Connection;
 
 /// The usage, printed for an unknown command or a wrong call.
@@ -156,13 +159,19 @@ fn shown(
     }
 }
 
-/// Marks merged the drafts of the branches Git lists as merged into `develop`.
+/// Marks merged the drafts of the branches a merge commit brought into `develop`, and `develop`'s.
 fn synced(database: &Connection, cwd: &Path) -> Result<String, String> {
     let listed = git(
         cwd,
-        &["branch", "--merged", "develop", "--format=%(refname:short)"],
+        &[
+            "branch",
+            "--merged",
+            TRUNK,
+            "--format=%(refname:short) %(objectname)",
+        ],
     )?;
-    let branches = merged_branches(&listed);
+    let parents = git(cwd, &["log", "--merges", "--format=%P", TRUNK])?;
+    let branches = merged_branches(&listed, &parents);
     let marked = write(database, |transaction| mark_merged(transaction, &branches))?;
 
     Ok(format!(
@@ -196,14 +205,17 @@ fn output(arguments: &[String]) -> Result<String, String> {
     let cwd = Path::new(".");
     let root = env::var(ROOT_VARIABLE).ok();
     let (main, origin) = main_and_origin(cwd)?;
+    let folder = records_folder(root.as_deref(), &project_name(&origin, &main))?;
+
+    // Refused before any message naming a path, `path`'s own line and a missing root's included,
+    // so that none prints one inside the synced folder; a synced folder named but not made yet is
+    // refused around the file too.
+    if let Some(named) = setting.as_deref().filter(|named| !named.is_empty()) {
+        refuse_synced(&folder.join(DATABASE_FILE), Path::new(named))?;
+    }
+
     let file = project_records(root.as_deref(), &main, &origin)?.join(DATABASE_FILE);
 
-    // A synced folder named but not made yet is refused around the file too.
-    if let Some(named) = setting.as_deref().filter(|named| !named.is_empty())
-        && command != "path"
-    {
-        refuse_synced(&file, Path::new(named))?;
-    }
     if let Some(folder) = snapshot_into {
         return take_snapshot(&file, &folder, &calendar::today()).map(|line| line + "\n");
     }
