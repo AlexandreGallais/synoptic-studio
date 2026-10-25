@@ -23,6 +23,6 @@ jobs:
             --root-dir ${{ github.workspace }}/docs
             --exclude-path docs/api --exclude-path node_modules
             --exclude-path docs/backlog/_
-            './**/*.md' './.claude/**/*.md'
+            './**/*.md' './.agents/**/*.md'
           fail: true
           jobSummary: true

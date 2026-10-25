@@ -1,22 +1,19 @@
 ---
 name: spike
-description: Run a research spike (SP story) — an epic's refinement from `develop`, or the short spike that opens a feature with questions left — sourcing every story before any code. Use when starting an epic or a feature with open questions, or for a story of type SP.
+description: Run a research spike (SP story) — an epic's refinement from `develop`, or a short spike opening a feature with questions left — sourcing every story before any code. Use when starting an epic or a feature with open questions, or for a story of type SP.
 argument-hint: "[spike id, e.g. SP-001]"
 ---
 
 # Research spike
 
-Spike: $ARGUMENTS. Protocol: the research protocol of the records (`knowledge search research protocol`): levels of sources, stop rule, recording.
+Spike: $ARGUMENTS. The protocol: `knowledge show PAGE-research` (the order of the sources, how many, when to stop); what is written goes into the records, not into the repository.
 
-Two kinds:
+- **An epic's refinement**: an `SP` from `develop`. The Product Owner's account of the epic, the research, then its features of 2 to 4 stories, each of at most 3 tasks, written as rows of the records; every question asked at once, each with options and a numeric example. An epic about the agent's own work is tagged **method and tools**: one audit, at its end.
+- **A feature's spike**, only for questions left after the refinement: a short `SP`, the first story of its feature branch.
 
-- **An epic's refinement**, when a new epic starts: an `SP` story from `develop`, merged into `develop` by its auto-merge (`npm run story:finish -- develop …`). It records the Product Owner's account of the epic, the documentary research on it (steps 2 to 5), and cuts its features, each of a few `US` or `EN` stories of at most 3 tasks, written as rows of the records. A larger story is not written: the agent proposes its split to the Product Owner, with an example.
-- **A feature's spike**, only when questions remain after the refinement: a short `SP`, the first story of its feature branch.
-
-1. **Inventory**: for each story, every formula, algorithm, specification point and interface behavior it needs.
-2. **Internal first**: the records (`knowledge search`, `--kind ref`, `--kind note`), the rules, then the local library (`library_search`). Reuse before searching. Then, one at a time, in the background, and only when the feature holds them: the `functional-analyst` on its business rules and open questions, the `math-expert` on its formulas.
-3. **Search and read**: spec > paper > book > official docs > code (read only, never copied) > blog (never alone). Read the source itself, through `library_get` so that it is kept; a search result summary is not a reading. A paywalled or unreadable source is not cited: derive from readable sources, or write a research request.
-4. **Record before use**: a `REF-*` in the records (what it says that we use, `[verified] YYYY-MM-DD`, with qualifiers if partial); a derivation when no single source states the result (`/derivation`).
-5. **Write the note** into the records (`knowledge add note <file>`): per story, the sources and what remains open.
-6. **Update the stories** in the records: acceptance criteria from the sources' examples, `@see` targets in the tasks, blocked points; business questions go to the Product Owner, all at once.
-7. Branch, commits and pull request as for a story (`/story` steps 3 to 7).
+1. **Inventory**: per story, each formula, algorithm, specification point and behavior it needs.
+2. **The records first** (`knowledge search`, `--kind source`, `--kind note`, the rules), then the library (`library_search`). Then, in the background and only when the feature holds them, the `functional-analyst` on its business rules, the `math-expert` on its formulas.
+3. **Read the source itself** through `library_get`, so that it is kept: spec > paper > book > official docs > code (read, never copied) > blog (never alone). An unreadable source is not cited: a derivation (`PAGE-derivations`: statement, steps each citing a read source, cross-check, check table, then `knowledge add derivation -`) or a research request.
+4. **Record**: each source a `REF-*` (`knowledge add source -`, what it says that we use, `[verified] YYYY-MM-DD`); the note (`knowledge add note -`): per story, the sources and what stays open.
+5. **The stories updated** in the records: criteria from the sources' examples, the `@see` targets, the business questions for the Product Owner.
+6. Finished as a story (`/story`, step 6); an epic's refinement into `develop`: `npm run story:finish -- develop …`.
