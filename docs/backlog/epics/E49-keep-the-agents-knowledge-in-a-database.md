@@ -35,9 +35,10 @@ Cut by SP-034 (2026-10-25), in this order, each story of at most 3 tasks; the Pr
 | The backlog in the database | the stories, features, statuses, test cards and log rows written in the database, never as files: no story file, index row nor `done` commit; `worktree-new`, `backlog-status`, `story-finish`, the commit hooks and the shared-files guard reading it; a feature's readable docs updated in one commit at its end (asked by the Product Owner on 2026-10-25) (3) | to refine |
 | The checks freed from the files | the `@see` to stories pointed at the rules; the tests and tools reading finished items; the log rows written into the database (3) | to refine |
 | The move into the database | the finished stories, features and epics; the history, the logs, the retrospectives and the notes; the decisions, the memory and the security rules explained (3) | to refine |
-| The light docs | `shapes.md` and the domain's index as rule and example; `interaction.md` as rule and example; the pages kept, rewritten short; `AGENTS.md` and the agent's pages pointing to the tool, the configuration files the moved docs leave behind cleaned: rules, scripts, the site, tests (4) | to refine |
+| The domain's rules, as rule and example | `shapes.md` and the domain's index; `interaction.md` (2) | to refine |
+| The readable docs and the configuration | the site's pages kept, rewritten short; the repository's own Markdown — `README.md`, `SECURITY.md`, `LICENSE`, `NOTICE`, `THIRD-PARTY-LICENSES.md` — read again and kept up to date by tools where a part derives from the code; `AGENTS.md` and the agent's pages pointing to the tool, the configuration the moved docs leave behind cleaned: rules, scripts, the site, tests (3) | to refine |
 
-Size: 5 features, 16 stories, 20 + 25 × 16 + (45 to 75) × 5 = 645 to 795 active minutes, 10.75 to 13.25 hours, the backlog's feature added after F48 started (note 0034, §1); the domain's two long pages take a story each, and the checks are rewritten before the move so that it breaks nothing.
+Size: 6 features, 17 stories, 20 + 25 × 17 + (45 to 75) × 6 = 715 to 895 active minutes, 12 to 15 hours, the backlog's feature added and the light docs cut in two after F48 started, as the Product Owner's requests grew the scope; measured in F48's run, a story takes 26 to 46 minutes from its start to its merge (note 0034, §1); the domain's two long pages take a story each, and the checks are rewritten before the move so that it breaks nothing.
 
 ## Refinement
 
