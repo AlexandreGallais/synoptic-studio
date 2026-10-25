@@ -1,17 +1,20 @@
-//! What `check:all` decides (RET-002, EN-085, EN-103): its lanes of npm scripts — in order within
-//! a lane, the lanes at the same time, so that the pre-push hook waits for the slowest lane instead
-//! of the sum — the docs lane and the Rust lanes each left out when the branch changed none of their
-//! inputs against its base, a check's report line, and the lines of `.git/config` a lane added or
-//! removed.
+//! What `check:all` decides (RET-002, EN-085, EN-103, ADR-0103): its checks and the command each
+//! runs, its lanes of checks — in order within a lane, the lanes at the same time, so that the
+//! pre-push hook waits for the slowest lane instead of the sum — the docs lane and the Rust lanes
+//! each left out when the branch changed none of their inputs against its base, a check's report
+//! line, and the lines of `.git/config` a lane added or removed.
+//!
+//! The commands live here, not in `package.json` (decided 2026-10-25, ADR-0103): `package.json`
+//! keeps what a person or npm runs, and the CI runs each lane by `check-all --lane <name>`.
 //!
 //! No release binary is written while the lanes run (EN-069's fix): `cargo run` copies its crate's
 //! binary into `target/release/` again even when it is up to date, removing it first, so a lane
 //! starting that binary at the same moment failed with `could not execute process … No such file
 //! or directory`. The release binaries are built once before the lanes ([`BEFORE_LANES`]), and a
-//! lane runs a script that takes the heavy lock without it ([`command_of`]), `check:all` already
-//! holding that lock.
+//! check calls them by their path.
 
 use std::env;
+use std::ffi::OsString;
 use std::io;
 use std::path::Path;
 use std::process::Command;
@@ -20,37 +23,7 @@ use git_repository::stdout_of;
 use stale_binaries::touches;
 pub use stale_binaries::touches_rust;
 
-/// The lane of the documentation site and the playground built into it.
-pub const DOCS_LANE: &[&str] = &["docs:build", "playground:build"];
-
-/// The lane of the Rust workspace's checks: rustfmt, Clippy, its advisories, the check for Windows
-/// and the binaries' freshness (EN-068, EN-069).
-const RUST_CHECKS_LANE: &[&str] = &["check:rust"];
-
-/// The script of the Rust workspace's tests under the coverage floor (EN-130).
-pub const RUST_COVERAGE: &str = "rust:coverage";
-
-/// The lane of the Rust workspace's tests under the coverage floor, beside its checks (EN-130).
-const RUST_COVERAGE_LANE: &[&str] = &[RUST_COVERAGE];
-
-/// The lanes of the Rust workspace, left out when the branch changed none of their inputs.
-pub const RUST_LANES: &[&[&str]] = &[RUST_CHECKS_LANE, RUST_COVERAGE_LANE];
-
-/// Lanes of npm scripts: in order within a lane, the lanes at the same time.
-pub const LANES: &[&[&str]] = &[
-    &["lint"],
-    &["test"],
-    DOCS_LANE,
-    &[
-        "format:check",
-        "lint:secrets",
-        "deps:audit",
-        "deps:unused",
-        "deps:outdated",
-    ],
-    RUST_CHECKS_LANE,
-    RUST_COVERAGE_LANE,
-];
+use crate::check_scope::Check;
 
 /// The check run alone before the lanes: the release binaries every lane's tools run from.
 pub const BEFORE_LANES: &str = "rust:build";
@@ -59,12 +32,181 @@ pub const BEFORE_LANES: &str = "rust:build";
 /// lanes' load slowed past them (REV-008), the test lane leaving them out.
 pub const AFTER_LANES: &str = "test:timings";
 
-/// How a script starts when it takes the heavy lock, which `check:all` holds for its lanes.
-const HEAVY_LOCK: &str = "cargo run --release -q -p heavy-lock -- ";
-
-/// The script of the test lane, which a story branch's push narrows to the tests its change can
+/// The check of the test lane, which a story branch's push narrows to the tests its change can
 /// affect ([`related_tests_command`]).
 pub const TEST_SCRIPT: &str = "test";
+
+/// The check of the Rust workspace's tests under the coverage floor (EN-130).
+pub const RUST_COVERAGE: &str = "rust:coverage";
+
+/// Each check by its name, with the command `sh -c` runs from the repository's root, the programs
+/// npm installs found first ([`search_path`]). The targets of `lint` and `format:check` are those
+/// `fix` gives the same tools in `package.json`.
+pub const CHECKS: &[(&str, &str)] = &[
+    (BEFORE_LANES, "cargo build --release --workspace --locked"),
+    (
+        "lint",
+        concat!(
+            "oxlint --deny-warnings --report-unused-disable-directives-severity=error *.ts docs ",
+            "playground scripts src tests && target/release/lint *.ts *.md .agents .github docs ",
+            "playground scripts src tests"
+        ),
+    ),
+    (TEST_SCRIPT, "vitest run --coverage --tags-filter='!timing'"),
+    (
+        "docs:build",
+        "target/release/api-pages src/index.ts docs/api /api/ editor && vitepress build docs",
+    ),
+    ("playground:build", "vite build --mode playground"),
+    (
+        "format:check",
+        concat!(
+            "target/release/format --check \"*\" .cargo .agents .claude/settings.json .githooks ",
+            ".github docs playground scripts src tests tools"
+        ),
+    ),
+    ("lint:secrets", "target/release/secret-scan"),
+    ("deps:audit", "npm audit --audit-level=low"),
+    ("deps:unused", "target/release/dependencies unused"),
+    ("deps:outdated", "target/release/dependencies outdated"),
+    // rustfmt, Clippy, the RustSec advisories read offline, the check for Windows without linking
+    // and the binaries' freshness (EN-068, EN-069, EN-070); a missing cargo-deny or database fails
+    // aloud.
+    (
+        "check:rust",
+        concat!(
+            "cargo fmt --all --check && cargo clippy --workspace --all-targets --locked --quiet && ",
+            "{ cargo deny --version > /dev/null 2>&1 || { echo 'cargo-deny is missing: run cargo ",
+            "install --locked cargo-deny@0.20.2, then cargo deny fetch db ",
+            "(docs/tooling/commands.md)' >&2; exit 1; }; cargo deny --offline check advisories || ",
+            "{ echo 'A Rust crate has a RustSec advisory, or the advisory database is missing: ",
+            "cargo deny fetch db fetches it (docs/tooling/commands.md)' >&2; exit 1; }; } && ",
+            "cargo check --workspace --all-targets --locked --quiet --target ",
+            "x86_64-pc-windows-msvc && target/release/stale-binaries"
+        ),
+    ),
+    (
+        RUST_COVERAGE,
+        concat!(
+            "cargo llvm-cov --version > /dev/null 2>&1 || { echo 'cargo-llvm-cov is missing: ",
+            "rustup installs llvm-tools from rust-toolchain.toml, then run cargo install --locked ",
+            "cargo-llvm-cov@0.9.1 (docs/tooling/commands.md)' >&2; exit 1; }; cargo llvm-cov ",
+            "--workspace --locked --quiet --summary-only --fail-under-lines 95 ",
+            "--fail-under-functions 95 || { echo 'Rust tests failed, or their coverage fell under ",
+            "the floor of 95 % of lines and 95 % of functions (docs/tooling/commands.md)' >&2; ",
+            "exit 1; }"
+        ),
+    ),
+    (
+        AFTER_LANES,
+        concat!(
+            "vitest run --tags-filter=timing playground/hover/helps-on-any-color.test.ts ",
+            "playground/listeners/remove-listeners.test.ts playground/mount/mount-playground.test.ts ",
+            "src/io/font-face/parse-font-face.test.ts src/math/sequence/scan.test.ts ",
+            "src/model/text-wrap/without-trailing-spaces.test.ts ",
+            "src/model/text-wrap/wrapped-paragraph.test.ts tests/history-timings.test.ts"
+        ),
+    ),
+];
+
+/// The lane of the linters and TypeScript's own errors.
+const LINT_LANE: &[&str] = &["lint"];
+
+/// The lane of the tests.
+const TEST_LANE: &[&str] = &[TEST_SCRIPT];
+
+/// The lane of the documentation site and the playground built into it.
+pub const DOCS_LANE: &[&str] = &["docs:build", "playground:build"];
+
+/// The lane of the formatter, the secret scan and the dependencies.
+const FILES_LANE: &[&str] = &[
+    "format:check",
+    "lint:secrets",
+    "deps:audit",
+    "deps:unused",
+    "deps:outdated",
+];
+
+/// The lane of the Rust workspace's checks: rustfmt, Clippy, its advisories, the check for Windows
+/// and the binaries' freshness (EN-068, EN-069).
+const RUST_CHECKS_LANE: &[&str] = &["check:rust"];
+
+/// The lane of the Rust workspace's tests under the coverage floor, beside its checks (EN-130).
+const RUST_COVERAGE_LANE: &[&str] = &[RUST_COVERAGE];
+
+/// The lanes of the Rust workspace, left out when the branch changed none of their inputs.
+pub const RUST_LANES: &[&[&str]] = &[RUST_CHECKS_LANE, RUST_COVERAGE_LANE];
+
+/// Lanes of checks: in order within a lane, the lanes at the same time.
+pub const LANES: &[&[&str]] = &[
+    LINT_LANE,
+    TEST_LANE,
+    DOCS_LANE,
+    FILES_LANE,
+    RUST_CHECKS_LANE,
+    RUST_COVERAGE_LANE,
+];
+
+/// Each lane by the name `check-all --lane` takes, the CI running one per job, and the timing
+/// tests after the tests in theirs (EN-124, REV-008).
+pub const NAMED_LANES: &[(&str, &[&str])] = &[
+    ("lint", LINT_LANE),
+    ("test", TEST_LANE),
+    ("docs", DOCS_LANE),
+    ("files", FILES_LANE),
+    ("rust", RUST_CHECKS_LANE),
+    ("rust-coverage", RUST_COVERAGE_LANE),
+    ("timings", &[AFTER_LANES]),
+];
+
+/// The checks of a lane, by the name `check-all --lane` takes; `None` for a name no lane has.
+#[must_use]
+pub fn lane_named(name: &str) -> Option<&'static [&'static str]> {
+    NAMED_LANES
+        .iter()
+        .find(|(lane, _)| *lane == name)
+        .map(|(_, checks)| *checks)
+}
+
+/// A check by its name, with its command from [`CHECKS`]; a name without one gets a command that
+/// fails saying so, so that a lane naming a check that has no command fails at its run.
+#[must_use]
+pub fn check_named(name: &str) -> Check {
+    let command = CHECKS.iter().find(|(check, _)| *check == name).map_or_else(
+        || format!("echo 'check-all: no command for the check {name}' >&2; exit 1"),
+        |(_, command)| (*command).to_owned(),
+    );
+
+    Check {
+        name: name.to_owned(),
+        command,
+    }
+}
+
+/// The lines `check-all --list` prints: one per check of each named lane, its lane, its name and
+/// its command separated by tabs, in the lanes' order.
+#[must_use]
+pub fn listed_lines() -> Vec<String> {
+    NAMED_LANES
+        .iter()
+        .flat_map(|(lane, checks)| {
+            checks
+                .iter()
+                .map(move |name| format!("{lane}\t{name}\t{}", check_named(name).command))
+        })
+        .collect()
+}
+
+/// The folders searched for a check's programs: the repository's `node_modules/.bin`, where npm
+/// installs oxlint, Vitest, Vite and `VitePress`, then those of `PATH`, so that a check finds them
+/// whether npm started `check-all` or the CI called it by its path.
+#[must_use]
+pub fn search_path(root: &Path, path: Option<&OsString>) -> OsString {
+    let mut folders = vec![root.join("node_modules").join(".bin")];
+
+    folders.extend(path.map(env::split_paths).into_iter().flatten());
+    env::join_paths(folders).unwrap_or_else(|_| path.cloned().unwrap_or_default())
+}
 
 /// What every test reads beside its imports, so that a change to one runs every test: Vitest's
 /// configuration, the packages, the TypeScript settings, and the global setup with the font file
@@ -237,13 +379,6 @@ pub fn nearest_base(candidates: &[(u64, String)]) -> Option<String> {
         .enumerate()
         .min_by_key(|(rank, (ahead, _))| (*ahead, *rank))
         .map(|(_, (_, remote))| remote.clone())
-}
-
-/// The command a lane runs for a script: the script itself, without the heavy lock `check:all`
-/// already holds, so that no two lanes start `cargo run -p heavy-lock` at once.
-#[must_use]
-pub fn command_of(script: &str) -> &str {
-    script.strip_prefix(HEAVY_LOCK).unwrap_or(script)
 }
 
 /// Seconds with one decimal, rounded half up from whole milliseconds: `23.9` for 23,940 ms.
@@ -620,17 +755,68 @@ mod tests {
     }
 
     #[test]
-    fn runs_a_script_that_takes_the_heavy_lock_without_it() {
+    fn aud052_gives_every_check_of_a_lane_and_around_them_a_command_of_its_own() {
+        let mut names: Vec<&str> = LANES.iter().flat_map(|lane| lane.iter().copied()).collect();
+
+        names.extend([BEFORE_LANES, AFTER_LANES]);
+        // Each name has exactly one command, and every command a check runs.
+        for name in &names {
+            assert_eq!(
+                CHECKS.iter().filter(|(check, _)| check == name).count(),
+                1,
+                "{name}"
+            );
+        }
+        assert_eq!(CHECKS.len(), names.len());
+        // A check runs a release binary by its path, never through `cargo run`, which rewrites it
+        // (EN-069), and takes no heavy lock, `check:all` holding it.
+        for (name, command) in CHECKS {
+            assert!(!command.contains("cargo run"), "{name}");
+            assert!(!command.contains("heavy-lock"), "{name}");
+            assert!(!command.contains("npm run"), "{name}");
+        }
         assert_eq!(
-            command_of("cargo run --release -q -p heavy-lock -- vitest run --coverage"),
-            "vitest run --coverage"
+            check_named(BEFORE_LANES).command,
+            "cargo build --release --workspace --locked"
         );
         assert_eq!(
-            command_of("cargo run --release -q -p heavy-lock -- --lock merge node x.ts"),
-            "--lock merge node x.ts"
+            check_named("odd").command,
+            "echo 'check-all: no command for the check odd' >&2; exit 1"
         );
-        assert_eq!(command_of("tsc --noEmit"), "tsc --noEmit");
-        assert_eq!(command_of(""), "");
+    }
+
+    #[test]
+    fn aud052_names_each_lane_once_for_the_ci_the_timing_tests_after_the_tests() {
+        let named: Vec<&[&str]> = NAMED_LANES.iter().map(|(_, checks)| *checks).collect();
+
+        assert_eq!(named[..LANES.len()], *LANES);
+        assert_eq!(lane_named("timings"), Some(&[AFTER_LANES][..]));
+        assert_eq!(lane_named("docs"), Some(DOCS_LANE));
+        assert_eq!(lane_named("build"), None);
+        // One line per check: its lane, its name and its command.
+        let lines = listed_lines();
+
+        assert_eq!(lines.len(), CHECKS.len() - 1);
+        assert_eq!(
+            lines[2],
+            "docs\tdocs:build\ttarget/release/api-pages src/index.ts docs/api /api/ editor && \
+             vitepress build docs"
+        );
+    }
+
+    #[test]
+    fn aud052_finds_the_programs_npm_installs_first() {
+        let root = Path::new("/repo");
+        let path = OsString::from("/usr/bin:/bin");
+
+        assert_eq!(
+            search_path(root, Some(&path)),
+            OsString::from("/repo/node_modules/.bin:/usr/bin:/bin")
+        );
+        assert_eq!(
+            search_path(root, None),
+            OsString::from("/repo/node_modules/.bin")
+        );
     }
 
     #[test]

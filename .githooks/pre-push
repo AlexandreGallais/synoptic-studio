@@ -9,4 +9,4 @@ tool git-hooks git-hooks branch
 if printf '%s\n' "$refs" | tool git-hooks git-hooks push-deletes-only; then exit 0; fi
 npm run check:all
 # The golden file of a refactor (ADR-0049, EN-055): when one is written, a drift of results fails the push.
-if [ -f "$(git rev-parse --path-format=absolute --git-common-dir)/metrics/golden.json" ]; then npm run golden:check; fi
+if [ -f "$(git rev-parse --path-format=absolute --git-common-dir)/metrics/golden.json" ]; then tool heavy-lock heavy-lock npx vitest run tests/golden-results.test.ts --mode golden-check; fi

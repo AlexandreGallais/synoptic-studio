@@ -13,6 +13,7 @@ import {
   textDrawing,
 } from "../src";
 
+import { CHECK_ALL_LANES } from "./check-all-lanes";
 import { DECORATED_METRICS, HELLO_TEXT } from "./text-fixtures";
 
 import type { EmbeddedFace, Text } from "../src";
@@ -559,9 +560,8 @@ describe("the timing tests (EN-129)", () => {
   });
 
   it("runs alone every file holding a timing test, and no other", () => {
-    const manifest = readFileSync(join(ROOT, "package.json"), "utf8");
-    const script = /"test:timings": "(?<command>[^"]*)"/u.exec(manifest)?.groups?.["command"];
-    const named = (script ?? "").split(" ").filter((word) => word.endsWith(".test.ts"));
+    const script = CHECK_ALL_LANES.find(({ name }) => name === "test:timings")?.command ?? "";
+    const named = script.split(" ").filter((word) => word.endsWith(".test.ts"));
 
     const tagged = timedTestFiles()
       .filter(({ text }) =>

@@ -30,12 +30,12 @@ A worker works one story in its own worktree, in the background, and stops befor
 
 ## Heavy commands
 
-`check:all`, `npm run test`, `golden:check`, `docs:build` and `git push` (its pre-push runs the checks the change needs) take the lock `.git/heavy.lock` themselves, one at a time across the worktrees: run them as they are, never wrapped in a lock; between them, single test files only.
+`check:all`, `npm run test`, the golden check, `mutate` and `git push` (its pre-push runs the checks the change needs) take the lock `.git/heavy.lock` themselves, one at a time across the worktrees: run them as they are, never wrapped in a lock; between them, single test files only.
 
 ## Limits
 
 - **Push once the tasks are done**: `--push` on the last commit, or `git push -u origin HEAD`; `--force-with-lease` only after a `git-sequences sync` moved a pushed branch.
-- **Stop before the pull request**: the main thread runs `story:finish`.
+- **Stop before the pull request**: the main thread runs `story-finish`.
 - **A tool that fails** is worked around, never fixed in the story: the report says how it was used, why it failed and what was done instead.
 - **A business question stops the story**: push what is done, report the question, what was read and the options, without choosing.
 - **One story, then the end**; a worker starts no subagent. A story of more than 3 tasks is reported with a proposed split.

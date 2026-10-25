@@ -36,7 +36,6 @@ npm run dev        # the playground on http://localhost:5173
 npm run docs:dev   # the documentation site
 npm run fix        # format and apply the linters' fixes
 npm run check:all  # every check, as before each push
-npm run build      # the library into dist/
 ```
 
 The other commands: [commands](./docs/commands.md).

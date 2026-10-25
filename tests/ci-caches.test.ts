@@ -3,6 +3,8 @@ import { join } from "node:path";
 
 import { describe, expect, it } from "vitest";
 
+import { CHECK_ALL_LANES } from "./check-all-lanes";
+
 /** Root of the repository. */
 const ROOT = join(import.meta.dirname, "..");
 
@@ -39,18 +41,9 @@ const RELEASE = workflowOf("release.yml");
 /** Text of the site's workflow, whose run on a push to main restores the caches, saving none. */
 const SITE = workflowOf("site.yml");
 
-/** The manifest of the repository, parsed. */
-const MANIFEST: unknown = JSON.parse(readFileSync(join(ROOT, "package.json"), "utf8"));
-
-/** The `scripts` field of the manifest, or nothing when it is not an object. */
-const SCRIPTS_FIELD: unknown =
-  typeof MANIFEST === "object" && MANIFEST !== null ? Reflect.get(MANIFEST, "scripts") : {};
-
-/** The npm scripts of `package.json`, by name. */
-const SCRIPTS: ReadonlyMap<string, string> = new Map(
-  Object.entries(
-    typeof SCRIPTS_FIELD === "object" && SCRIPTS_FIELD !== null ? SCRIPTS_FIELD : {},
-  ).map(([name, command]): [string, string] => [name, String(command)]),
+/** The checks of `check:all`, by name, with their commands (ADR-0103). */
+const CHECKS: ReadonlyMap<string, string> = new Map(
+  CHECK_ALL_LANES.map(({ command, name }): [string, string] => [name, command]),
 );
 
 /**
@@ -167,11 +160,11 @@ describe("the Rust caches of the CI (EN-111)", () => {
 
     // The site and the release key the tools' cache they restore on the same versions.
     for (const workflow of [CI, RUST_CACHES, DEVELOP_CI, RELEASE, SITE]) {
-      expect(SCRIPTS.get("rust:coverage")).toContain(
+      expect(CHECKS.get("rust:coverage")).toContain(
         `cargo-llvm-cov@${environmentOf(workflow, "CARGO_LLVM_COV_VERSION")} `,
       );
 
-      expect(SCRIPTS.get("rust:advisories")).toContain(
+      expect(CHECKS.get("check:rust")).toContain(
         `cargo-deny@${environmentOf(workflow, "CARGO_DENY_VERSION")}, `,
       );
     }
@@ -179,22 +172,20 @@ describe("the Rust caches of the CI (EN-111)", () => {
 
   it("[F21.AC4] [F30.AC1] compiles on main what check:rust compiles, running no test", () => {
     // Same commands and flags, so that the pull request compiles no dependency again.
-    expect(warm).toContain("- run: npm run rust:build\n");
+    expect(warm).toContain("- run: cargo build --release --workspace --locked\n");
 
-    expect(SCRIPTS.get("check:rust")).toContain(
+    expect(CHECKS.get("check:rust")).toContain(
       "cargo clippy --workspace --all-targets --locked --quiet && ",
     );
 
     expect(warm).toContain("- run: cargo clippy --workspace --all-targets --locked --quiet\n");
 
-    expect(SCRIPTS.get("rust:coverage")).toContain(
-      "; cargo llvm-cov --workspace --locked --quiet ",
-    );
+    expect(CHECKS.get("rust:coverage")).toContain("; cargo llvm-cov --workspace --locked --quiet ");
 
     // `--list` is passed to the test binaries, which print their tests' names and run none.
     expect(warm).toContain("- run: cargo llvm-cov --workspace --locked --no-report -- --list\n");
 
-    expect(SCRIPTS.get("check:rust")).toContain(
+    expect(CHECKS.get("check:rust")).toContain(
       "cargo check --workspace --all-targets --locked --quiet --target x86_64-pc-windows-msvc && ",
     );
 
@@ -238,7 +229,7 @@ describe("the Rust caches of the CI (EN-111)", () => {
 
   it("[F30.AC1] runs the Rust checks and tests on Linux in the develop CI, then saves its caches", () => {
     const job = jobOf(DEVELOP_CI, "rust");
-    const coverage = job.indexOf("  run: npm run rust:coverage\n");
+    const coverage = job.indexOf("  run: target/release/check-all --lane rust-coverage\n");
 
     expect(job).toContain("runs-on: ubuntu-latest\n");
 
@@ -253,13 +244,16 @@ describe("the Rust caches of the CI (EN-111)", () => {
     expect(job).toContain("- run: npm ci\n      - run: cargo fetch --locked\n");
 
     expect(job).toContain(
-      "- run: cargo deny fetch db\n      - id: checks\n        run: npm run check:rust\n",
+      "- run: cargo deny fetch db\n      - id: checks\n        run: target/release/check-all --lane rust\n",
     );
 
     // The tests under coverage run even after a failing check, the run not cancelled
     // (REF-GH-EXPRESSIONS), so that a red check still compiles them.
-    expect(job).toContain(`- if: \${{ !cancelled() }}\n        run: npm run rust:coverage\n`);
-    expect(coverage).toBeGreaterThan(job.indexOf("  run: npm run check:rust\n"));
+    expect(job).toContain(
+      `- if: \${{ !cancelled() }}\n        run: target/release/check-all --lane rust-coverage\n`,
+    );
+
+    expect(coverage).toBeGreaterThan(job.indexOf("  run: target/release/check-all --lane rust\n"));
     // Saved after the tests, even when one failed, unless their key was hit (REF-GH-CACHE-SAVE).
     expect(job.indexOf("uses: actions/cache/save@")).toBeGreaterThan(coverage);
   });

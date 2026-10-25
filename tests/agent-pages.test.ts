@@ -6,8 +6,11 @@ import { describe, expect, it } from "vitest";
 /** Root of the repository. */
 const ROOT = join(import.meta.dirname, "..");
 
-/** The pages the agent reads beside `.agents/`'s, from the root. */
-const PAGES = ["AGENTS.md", "CLAUDE.md", "docs/tooling/agent-tools.md"];
+/**
+ * The pages the agent reads beside `.agents/`'s, from the root; the pages of `docs/tooling/` move
+ * into the records.
+ */
+const PAGES = ["AGENTS.md", "CLAUDE.md"];
 
 /** A command `npm run`, its silent flag allowed, and the script it names. */
 const NPM_RUN = /\bnpm run(?: (?:-s|--silent))? (?<script>[a-z][\w:-]*)/gu;
@@ -85,7 +88,7 @@ describe("the agent's pages (ADR-0082)", () => {
     ]);
   });
 
-  it("[F33.AC2] names no binary of target/release/ through npm run in AGENTS.md, CLAUDE.md, .agents/ and agent-tools.md", () => {
+  it("[F33.AC2] names no binary of target/release/ through npm run in AGENTS.md, CLAUDE.md and .agents/", () => {
     const known = scripts();
     const pages = [...PAGES, ...agentPages()];
 

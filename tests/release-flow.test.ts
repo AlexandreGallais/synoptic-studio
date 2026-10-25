@@ -127,7 +127,7 @@ describe("release flow (ADR-0086)", () => {
     // caches are the develop CI's (tests/ci-caches.test.ts).
     expect(job).not.toMatch(/^ {4}if:/mu);
     expect(fetch).toBeGreaterThan(job.indexOf("key: rust-build-"));
-    expect(fetch).toBeLessThan(job.indexOf("- run: npm run rust:build\n"));
+    expect(fetch).toBeLessThan(job.indexOf("- run: cargo build --release --workspace --locked\n"));
   });
 
   it("[F18.AC1] [F22.AC2] only releases on main: no release-please, no personal token, no merge, no commit", () => {
@@ -156,7 +156,6 @@ describe("release flow (ADR-0086)", () => {
     const configurations = [
       ".oxfmtrc.json",
       ".oxlintrc.json",
-      ".secret-scan-ignore",
       ".github/workflows/links.yml",
       "tests/check-targets.test.ts",
     ].filter((path) => readFileSync(join(ROOT, path), "utf8").includes("CHANGELOG.md"));
