@@ -81,14 +81,21 @@ pub fn main_and_origin(cwd: &Path) -> Result<(PathBuf, String), String> {
     Ok((main, origin))
 }
 
-/// The project's records folder for a folder of its repository: `<AGENT_RECORDS_ROOT>/<repo>`,
-/// the root required to exist, so that a mistyped path never makes a new one (ADR-0081).
+/// The records folder of a repository, given its main checkout and its `origin`:
+/// `<AGENT_RECORDS_ROOT>/<repo>`, the root required to exist, so that a mistyped path never makes a
+/// new one (ADR-0081).
 ///
 /// # Errors
-/// When the variable is unset or empty, its folder does not exist, or `cwd` is in no repository.
-pub fn project_records(root: Option<&str>, cwd: &Path) -> Result<PathBuf, String> {
-    let _ = (root, cwd);
-    Err("not written yet".to_owned())
+/// When the variable is unset or empty, or its folder does not exist.
+pub fn project_records(root: Option<&str>, main: &Path, origin: &str) -> Result<PathBuf, String> {
+    let folder = records_folder(root, &project_name(origin, main))?;
+
+    match root {
+        Some(root) if !Path::new(root).is_dir() => Err(format!(
+            "The records' folder {root} does not exist: create it, or correct {ROOT_VARIABLE}."
+        )),
+        _ => Ok(folder),
+    }
 }
 
 #[cfg(test)]

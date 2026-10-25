@@ -10,7 +10,7 @@ use std::env;
 use std::path::Path;
 use std::process::ExitCode;
 
-use knowledge::records::{DATABASE_FILE, ROOT_VARIABLE, project_records};
+use knowledge::records::{DATABASE_FILE, ROOT_VARIABLE, main_and_origin, project_records};
 use knowledge::store::{SCHEMA_VERSION, open_store, schema_version};
 
 /// The usage, printed for an unknown command.
@@ -23,7 +23,8 @@ fn output(command: &str) -> Result<String, String> {
     }
 
     let root = env::var(ROOT_VARIABLE).ok();
-    let file = project_records(root.as_deref(), Path::new("."))?.join(DATABASE_FILE);
+    let (main, origin) = main_and_origin(Path::new("."))?;
+    let file = project_records(root.as_deref(), &main, &origin)?.join(DATABASE_FILE);
 
     if command == "path" {
         return Ok(file.display().to_string());
