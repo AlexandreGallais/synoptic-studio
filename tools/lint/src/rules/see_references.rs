@@ -201,7 +201,7 @@ mod tests {
         for target in [
             "https://example.org",
             "ADR-12",
-            "ADR-00001",
+            "ADR-00000",
             "REF-a",
             "DERIV-A",
             "RULE-Shapes",
@@ -229,7 +229,7 @@ mod tests {
             "DERIV-fit",
             "RULE-shapes-2-corner-radius",
             "ADR-0001",
-            "ADR-9999",
+            "ADR-0000",
             "docs/domain/shapes.md#section",
             "EN-151",
             "US-010",

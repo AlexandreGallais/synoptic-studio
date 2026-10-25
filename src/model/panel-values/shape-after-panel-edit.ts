@@ -19,7 +19,7 @@ import type { Shape } from "../shape";
  * @param side - `width` or `height`, the field typed
  * @param value - its new width or height (`panelValueAfterEdit`)
  * @returns the shape resized
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 function shapeWithSide(shape: Shape, side: "height" | "width", value: number): Shape {
   const size = sizeWithPanelValue(shape, side, value);
@@ -37,7 +37,7 @@ function shapeWithSide(shape: Shape, side: "height" | "width", value: number): S
  * @param shape - a valid shape of the model
  * @param edit - the field, the value typed and the largest size
  * @returns the shape changed
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 export function shapeAfterPanelEdit(shape: Shape, edit: PanelEdit): Shape {
   const { key } = edit;

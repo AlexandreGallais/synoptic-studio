@@ -30,7 +30,7 @@ export const EPIC_17_F18_LINES: readonly ChecklistLine[] = [
   },
   {
     feature: "F18",
-    todo: "Decision to confirm (ADR-0068): git check-attr merge docs/process/journal.md",
+    todo: "Decision to confirm (ADR-0068): git check-attr merge LOG-journal",
     see: "“merge: union”: two branches adding rows merge without conflict; the tables stay padded until F19's formatter",
   },
   {

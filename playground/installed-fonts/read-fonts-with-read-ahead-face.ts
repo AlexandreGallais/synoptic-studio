@@ -9,7 +9,7 @@ import type { FontFace, FontFamily, NamedFontFace } from "../../src";
  * @param faces - the faces of the family kept
  * @param face - the face read ahead
  * @returns those faces; none when no face of that weight and style holds its file
- * @see docs/domain/shapes.md#text
+ * @see RULE-shapes-text
  */
 function readHeldFaces(faces: readonly FontFace[], face: FontFace): readonly FontFace[] {
   return faces
@@ -28,7 +28,7 @@ function readHeldFaces(faces: readonly FontFace[], face: FontFace): readonly Fon
  * @param fonts - the font families kept
  * @param named - the face read ahead, its file held, and its family
  * @returns the families, that of the face holding its metrics; the families given when a face of that weight and style holds its file
- * @see docs/domain/shapes.md#text
+ * @see RULE-shapes-text
  */
 export function readFontsWithReadAheadFace(
   fonts: readonly FontFamily[],

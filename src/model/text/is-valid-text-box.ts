@@ -17,7 +17,7 @@ import type { Text } from "./text";
  * @kind domain
  * @param text - the text to check
  * @returns `true` when every option of its box is allowed
- * @see docs/domain/shapes.md#text
+ * @see RULE-shapes-text
  */
 export function isValidTextBox(text: Text): boolean {
   const { boxSide, lineHeight, maximumLines, opacity } = TEXT_RANGES;

@@ -18,7 +18,7 @@ const ROUNDING = 10;
  * @kind domain
  * @param size - the memory size set, in bytes, a whole number, 0 or more
  * @returns the moves held, a multiple of 10
- * @see docs/domain/interaction.md#_7-navigation-and-history
+ * @see RULE-interaction-7-navigation-and-history
  */
 export function movesWithinSize(size: number): number {
   return integerQuotient(size, MOVE_BYTES * ROUNDING) * ROUNDING;

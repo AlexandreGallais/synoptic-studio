@@ -16,7 +16,7 @@ const NO_SHIFT: Point = { x: 0, y: 0 };
  * @param keys - the keys held, as `KeyboardEvent.key` names them
  * @param isFurther - whether Shift is held, nudging by 10
  * @returns the shift every shape selected goes by
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 export function heldNudgeShift(keys: readonly string[], isFurther: boolean): Point {
   return keys

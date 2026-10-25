@@ -16,7 +16,7 @@ import type { Rectangle } from "./rectangle";
  * @kind domain
  * @param rectangle - width, height and radii to check
  * @returns `true` when every value is allowed
- * @see docs/domain/shapes.md#rectangle
+ * @see RULE-shapes-rectangle
  */
 export function isValidRectangle(rectangle: Rectangle): boolean {
   const { angle, height, radii, width, x, y } = rectangle;

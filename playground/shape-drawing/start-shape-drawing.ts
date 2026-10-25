@@ -14,7 +14,7 @@ import { SHAPE_DRAWINGS } from "./shape-drawings";
  * @kind procedure
  * @param document - page document
  * @param event - the press on the canvas
- * @see docs/domain/interaction.md#_1-tools
+ * @see RULE-interaction-1-tools
  */
 export function startShapeDrawing(document: Document, event: PointerEvent): void {
   const tool = readArmedTool(document);

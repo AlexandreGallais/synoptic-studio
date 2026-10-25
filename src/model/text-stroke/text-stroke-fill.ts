@@ -11,7 +11,7 @@ import type { Text } from "../text";
  * @param text - the text, its color and its strokes' colors
  * @param kind - the underline or the strike-through
  * @returns the stroke's color and opacity
- * @see docs/domain/shapes.md#text
+ * @see RULE-shapes-text
  */
 export function textStrokeFill(text: Text, kind: TextStrokeKind): ColorFill {
   const own =

@@ -10,7 +10,7 @@ import type { KeyModifiers } from "./key-modifiers";
  * @kind domain
  * @param modifiers - the modifiers held with the key
  * @returns true with Ctrl, Cmd or Alt held
- * @see docs/domain/interaction.md#_1-tools
+ * @see RULE-interaction-1-tools
  */
 export function isBrowserKey(modifiers: KeyModifiers): boolean {
   return [modifiers.ctrlKey, modifiers.metaKey, modifiers.altKey].includes(true);

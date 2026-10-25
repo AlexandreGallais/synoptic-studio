@@ -11,7 +11,7 @@ import type { Point } from "../../src";
  * @kind procedure
  * @param document - page document
  * @param point - the point clicked, in the coordinates of the SVG
- * @see docs/domain/interaction.md#_1-tools
+ * @see RULE-interaction-1-tools
  */
 export function writePlacedBox(document: Document, point: Point): void {
   const size = { height: PLACED_SHAPE_SIZE, width: PLACED_SHAPE_SIZE };

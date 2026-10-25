@@ -13,7 +13,7 @@ import type { Point, Size } from "../../src";
  * @kind procedure
  * @param drawing - the drag, its press, its pointer and Shift
  * @returns the box dragged, on integers
- * @see docs/domain/interaction.md#_1-tools
+ * @see RULE-interaction-1-tools
  */
 function readDrawingBox(drawing: ShapeDrawing): Point & Size {
   return draggedBox({ isSquare: drawing.isShift, press: drawing.press, release: drawing.pointer });
@@ -28,7 +28,7 @@ function readDrawingBox(drawing: ShapeDrawing): Point & Size {
  * @param document - page document
  * @param drawing - the drag, its press, its pointer and Shift
  * @param box - the box dragged, on integers
- * @see docs/domain/interaction.md#_1-tools
+ * @see RULE-interaction-1-tools
  */
 function writeDrawingBox(document: Document, drawing: ShapeDrawing, box: Point & Size): void {
   if (!drawing.isDrawn) {
@@ -53,7 +53,7 @@ function writeDrawingBox(document: Document, drawing: ShapeDrawing, box: Point &
  * @param document - page document
  * @param drawing - the drag, its press, its pointer and Shift
  * @returns the drag, its shape drawn or not
- * @see docs/domain/interaction.md#_1-tools
+ * @see RULE-interaction-1-tools
  */
 export function showShapeDrawing(document: Document, drawing: ShapeDrawing): ShapeDrawing {
   const box = readDrawingBox(drawing);

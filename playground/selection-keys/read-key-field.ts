@@ -11,7 +11,7 @@ const FIELDS = 'input, select, textarea, [role="slider"]';
  * @kind procedure
  * @param event - the key pressed
  * @returns the field; undefined when the focus is outside the fields
- * @see docs/domain/interaction.md#_1-tools
+ * @see RULE-interaction-1-tools
  */
 export function readKeyField(event: KeyboardEvent): Element | undefined {
   return event.target instanceof Element ? (event.target.closest(FIELDS) ?? undefined) : undefined;

@@ -10,7 +10,7 @@ import { TYPED_NUMBER_FIELDS } from "./typed-number-fields";
  * @kind procedure
  * @param input - a field of the page
  * @returns the text applied
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 export function readShownText(input: HTMLInputElement): string {
   return TYPED_NUMBER_FIELDS.has(input) ? (SHOWN_TEXTS.get(input) ?? input.value) : input.value;

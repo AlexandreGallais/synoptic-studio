@@ -268,11 +268,16 @@ fn rewrite_bare_paths(text: &str) -> String {
         let path = token.trim_end_matches('.');
         let path_end = start + path.len();
 
-        // A bare path names the docs by their folder, `docs/adr/…`: a word `derivations/` alone
-        // in a sentence is no path.
+        // A bare path names a page of the docs, `docs/adr/0081-….md`: a word `derivations/` alone
+        // in a sentence, or a folder in a format string, is no path.
         let is_docs = MOVED
             .iter()
-            .any(|folder| path.contains(&format!("docs/{folder}")));
+            .any(|folder| path.contains(&format!("docs/{folder}")))
+            && path.split('#').next().is_some_and(|file| {
+                std::path::Path::new(file)
+                    .extension()
+                    .is_some_and(|extension| extension.eq_ignore_ascii_case("md"))
+            });
 
         match target_id(path) {
             Ok(Some(id)) if is_docs => {

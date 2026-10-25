@@ -11,7 +11,7 @@ import { selectionAfterHandleClick } from "./selection-after-handle-click";
  * @param index - index of the shape under the pointer (`shapeAtPoint`), −1 for none
  * @param isShift - whether Shift is held
  * @returns the indices selected after the click, ascending, no repeat
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 export function shapeSelectionAfterClick(
   selected: readonly number[],

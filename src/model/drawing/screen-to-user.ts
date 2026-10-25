@@ -9,7 +9,7 @@
  * @param pixels - the length in screen pixels
  * @param scale - the view's scale, screen pixels per user unit, > 0
  * @returns the length in user units
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 export function screenToUser(pixels: number, scale: number): number {
   return pixels / scale;

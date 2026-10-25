@@ -13,7 +13,7 @@ import type { BoundingBox } from "../../geometry";
  * @kind domain
  * @param areas - what each shape offers the pointer (`shapePickArea`, `textPickArea`)
  * @returns their extreme coordinates; minima `+∞` and maxima `−∞` when none has a corner
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 export function pickAreasBox(areas: readonly PickArea[]): BoundingBox {
   const corners = areas

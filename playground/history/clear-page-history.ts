@@ -10,7 +10,7 @@ import { PAGE_HISTORIES } from "./page-histories";
  *
  * @kind procedure
  * @param document - page document, its history then dropped
- * @see docs/domain/interaction.md#_7-navigation-and-history
+ * @see RULE-interaction-7-navigation-and-history
  */
 export function clearPageHistory(document: Document): void {
   PAGE_HISTORIES.delete(document);

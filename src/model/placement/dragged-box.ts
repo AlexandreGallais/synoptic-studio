@@ -22,7 +22,7 @@ export type ShapeDrag = {
  * @param release - the coordinate released, an integer
  * @param side - the side's length, an integer ≥ 0
  * @returns the smaller end of the side
- * @see docs/domain/interaction.md#_1-tools
+ * @see RULE-interaction-1-tools
  */
 function sideStart(press: number, release: number, side: number): number {
   return release < press ? press - side : press;
@@ -41,7 +41,7 @@ function sideStart(press: number, release: number, side: number): number {
  * @kind domain
  * @param drag - the point pressed, the point released and whether the box stays square
  * @returns the top-left of the box, its width and its height, integers
- * @see docs/domain/interaction.md#_1-tools
+ * @see RULE-interaction-1-tools
  */
 export function draggedBox(drag: ShapeDrag): Point & Size {
   const press = { x: nearestInteger(drag.press.x), y: nearestInteger(drag.press.y) };

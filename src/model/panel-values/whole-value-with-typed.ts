@@ -15,7 +15,7 @@ import type { TypedPanelValue } from "./typed-panel-value";
  * @param own - the value the field showed, or a shape's own in it
  * @param typed - the value typed, or an arrow's step, relative
  * @returns the value, an integer for a fraction typed
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 export function wholeValueWithTyped(own: number, typed: TypedPanelValue): number {
   const value = valueWithTyped(own, typed);

@@ -10,7 +10,7 @@ import type { DrawingShape } from "../../src";
  * @kind procedure
  * @param before - the shape as it was
  * @param after - the shape changed
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 export function writeKeptMetrics(before: DrawingShape, after: DrawingShape): void {
   const metrics = KEPT_TEXT_METRICS.get(JSON.stringify(before));

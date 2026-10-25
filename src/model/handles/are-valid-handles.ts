@@ -9,7 +9,7 @@ import type { Handles } from "../../geometry";
  * @kind domain
  * @param handles - handles to check, read from outside
  * @returns `true` when every value is allowed
- * @see docs/domain/shapes.md
+ * @see RULE-shapes
  */
 export function areValidHandles(handles: Handles): boolean {
   return (

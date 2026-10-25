@@ -12,7 +12,7 @@ import type { Point } from "../../src";
  * @param document - page document
  * @param isShown - whether the outline may be drawn
  * @returns its offset from the canvas's top-left, in CSS pixels; undefined for none
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 function readHoverOffset(document: Document, isShown: boolean): Point | undefined {
   return isShown && readArmedTool(document) === "selector"
@@ -31,7 +31,7 @@ function readHoverOffset(document: Document, isShown: boolean): Point | undefine
  * @param isShown - whether the outline may be drawn: false while a selection rectangle is drawn or
  * shapes are moved
  * @returns the point; undefined for none
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 export function readHoverPoint(document: Document, isShown: boolean): Point | undefined {
   const offset = readHoverOffset(document, isShown);

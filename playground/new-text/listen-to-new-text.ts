@@ -12,7 +12,7 @@ import { stopNewText } from "./stop-new-text";
  * @kind procedure
  * @param document - page document
  * @param step - asks the step of the text
- * @see docs/domain/interaction.md#_1-tools
+ * @see RULE-interaction-1-tools
  */
 export function listenToNewText(document: Document, step: () => void): void {
   selectElement(document, "text-content").addEventListener("focusout", () => {

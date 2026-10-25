@@ -16,7 +16,7 @@ import type { ShapesMove } from "../hover";
  * cancelled
  * @param selected - the shapes selected once it moves, by their indices
  * @returns the drawing, the shapes selected and moved, and their anchor
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 export function readSelectionMove(
   document: Document,

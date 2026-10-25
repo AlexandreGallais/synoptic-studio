@@ -1,6 +1,6 @@
 # The agent's tools
 
-**What the agent writes by hand again and again becomes a tool**, tested, linted and named after what it does (ADR-0050). The model writing a command costs more than the command running: at E14, 1,147 hand-written Python edit scripts took 389 minutes, most of it writing them. A tool also saves round trips: each call avoided saves about 3 s and a context read again ([research note 0024](../research/notes/0024-f20-context-diet.md)). So the agent uses these tools rather than ad-hoc scripts, and a sequence it repeats is a candidate for the next one.
+**What the agent writes by hand again and again becomes a tool**, tested, linted and named after what it does (ADR-0050). The model writing a command costs more than the command running: at E14, 1,147 hand-written Python edit scripts took 389 minutes, most of it writing them. A tool also saves round trips: each call avoided saves about 3 s and a context read again (research note 0024 NOTE-0024). So the agent uses these tools rather than ad-hoc scripts, and a sequence it repeats is a candidate for the next one.
 
 ## Tools
 
@@ -20,7 +20,7 @@ Every binary of `tools/` that takes arguments prints its usage on standard outpu
 | `target/release/run-totals should-stop` | before each story: `go`, exit 0, the week's usage stopping no run since 2026-10-25 (the stop at 90 % dropped by the Product Owner), then the parked stories of the records, or that they cannot be read; exit 2 outside a repository | the parked stories looked for by hand |
 | `target/release/context-size <folder or file>…` | for each subagent of a session's folder: its type, its first request's tokens, the instruction files loaded before it, the size of its skill listing and task; then the median per type, the workspace's one median (`tool_use::median`: the middle value, or the mean of the two middle ones rounded down, as `bench`'s and `metrics`', AUD-035); for each file named, a page a worker would load, its characters and tokens at 2.30 characters per token, the ratio EN-097 measured from its requests' input, then their total (EN-139) (`tools/hooks/`) | first requests counted by hand; a page's tokens estimated from a worker's own transcript |
 | `target/release/bench --runs <count> -- <command> [<argument>…]` | runs the command `count` times from the current folder, its input closed and its output kept, and prints each duration in whole milliseconds, their median and the load average before and after (`sysctl -n vm.loadavg` on macOS, `/proc/loadavg` on Linux); a first run that fails stops it, measuring nothing, its output on standard error; a later failing run is printed with its status and left out of the median; exits with the first failing status, 127 when the command cannot start, 2 on a wrong call. It times the whole command, Vitest's start included: 590 ms for `npx vitest run src/math/sequence/scan.test.ts`, whose test's comment writes `alone: 34 ms`, Vitest's own duration; its own cost, 6 ms with one run of `true` (EN-141, `tools/bench/`) | a command timed by hand, its runs and its median written each time anew (EN-129) |
-| `target/release/page [<file>] <id or heading>` | beside `Read`, for a row or a section: the rows whose first cell is the id, under their table's header line, else each section under that heading down to the next of its level or higher, after `<file>:<line>`; without a file, a `REF-` id's row of `docs/references.md`, or the first section of an ADR's or a derivation's file (`ADR-0069`, `DERIV-fillet-arc`); an id no page holds — a backlog item's since EN-154, `EN-092`, `F21`, `E17` —, the document `knowledge show <id>` prints, if the records hold it ([knowledge](./knowledge.md#the-fallback-of-page), EN-152); nothing found exits 1 naming the file. 3.2 ms against `cat`'s 2.9 ms ([below](#reading-one-row-or-one-section), `tools/page/`) | `Read` of a whole page for one row: `docs/references.md` 121 times in three days |
+| `target/release/page [<file>] <id or heading>` | beside `Read`, for a row or a section: the rows whose first cell is the id, under their table's header line, else each section under that heading down to the next of its level or higher, after `<file>:<line>`; without a file, a `REF-` id's row of `PAGE-references`, or the first section of an ADR's or a derivation's file (`ADR-0069`, `DERIV-fillet-arc`); an id no page holds — a backlog item's since EN-154, `EN-092`, `F21`, `E17` —, the document `knowledge show <id>` prints, if the records hold it ([knowledge](./knowledge.md#the-fallback-of-page), EN-152); nothing found exits 1 naming the file. 3.2 ms against `cat`'s 2.9 ms ([below](#reading-one-row-or-one-section), `tools/page/`) | `Read` of a whole page for one row: `PAGE-references` 121 times in three days |
 | `npx vitest run tests/golden-results.test.ts --mode golden-write` / `npm run golden:check` | about 400 results of the library from shapes drawn with a fixed seed, written before a refactor and compared bit for bit after each change (`NAM`, ADR-0049); `guard-bash` refuses the writing in a worktree, the file being shared; the pre-push runs `golden:check` when the file is written | a probe written for F13 |
 | `target/release/activity` | the calls running, the latest calls of the main agent and each subagent, the end of the background commands' output | reading transcripts |
 | `target/release/epic-check <epic> <first day>` | an epic's full check, at a review, from the day of the last merge into `main`: failed `check:all` runs with their failing checks and tests, branches, pull requests, issues, the CI of the last pull request into `main` (passed, or its failed and running jobs, `<workflow> / <job>`), failed calls (the worktree refusals apart), calls lost at a force-quit, the backlog neither `done` nor `dropped`, records (EN-139) | a dozen commands |
@@ -66,16 +66,16 @@ The agent calls a tool by its release binary, from the root of its checkout, rat
 
 ### Reading one row or one section
 
-`page` (EN-105) answers the agent's most frequent reads: `docs/references.md` was read 121 times in three days for one row each ([research note 0024](../research/notes/0024-f20-context-diet.md)). Measured on 2026-10-18, 20 calls each after one warm-up, interleaved, the release binary run by its path (load average about 3):
+`page` (EN-105) answers the agent's most frequent reads: `PAGE-references` was read 121 times in three days for one row each (research note 0024 NOTE-0024). Measured on 2026-10-18, 20 calls each after one warm-up, interleaved, the release binary run by its path (load average about 3):
 
 | Read | Characters printed | Median | Mean |
 | --- | --- | --- | --- |
-| `cat docs/references.md` | 198,307 | 2.9 ms | 3.0 ms |
+| `cat PAGE-references` | 198,307 | 2.9 ms | 3.0 ms |
 | `page REF-CC-HOOKS`: its row and its table's header | 2,335 (1.2 %) | 3.2 ms | 3.2 ms |
 | `cat docs/tooling/agent.md` | 14,495 | 2.8 ms | 2.9 ms |
 | `page docs/tooling/agent.md Hooks` | 3,741 (26 %) | 3.1 ms | 3.1 ms |
 
-Through `npm run`, a call costs about 160 ms more (median 167 ms): still one call, and the characters are what the context keeps. `docs/process/improvements.md` is one table whose rows start with a date (SP-023): its rows are not found by an id.
+Through `npm run`, a call costs about 160 ms more (median 167 ms): still one call, and the characters are what the context keeps. `LOG-improvements` is one table whose rows start with a date (SP-023): its rows are not found by an id.
 
 ### The backlog and repository tools in Rust
 
@@ -92,7 +92,7 @@ The binaries of `tools/repo-tools/` (EN-103), measured on 2026-10-18 by their pa
 | `records-save`, nothing changed, no transcripts nor library | 16 | 20 |  |
 | `records-save`, the 48 MB library too | 41 | 5 |  |
 
-Through `npm run -s` and `cargo run`, any of them costs about 150 ms more (`backlog-status` without its arguments: 153.5 ms against 3.1 ms by its path), the floor [research note 0025](../research/notes/0025-f21-agent-tools-in-rust.md) measured: so the agent calls them by their path ([above](#the-binaries-the-agent-calls), ADR-0078).
+Through `npm run -s` and `cargo run`, any of them costs about 150 ms more (`backlog-status` without its arguments: 153.5 ms against 3.1 ms by its path), the floor research note 0025 (NOTE-0025) measured: so the agent calls them by their path ([above](#the-binaries-the-agent-calls), ADR-0078).
 
 ## Specifications for later
 

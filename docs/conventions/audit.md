@@ -14,7 +14,7 @@ The procedure is the `/audit` skill. The independent `auditor` subagent reviews 
 
 ## B. Sources
 
-1. Feature: re-open every `@see` target online — still reachable, still saying what is cited; update the `[verified] YYYY-MM-DD` date in `docs/references.md`.
+1. Feature: re-open every `@see` target online — still reachable, still saying what is cited; update the `[verified] YYYY-MM-DD` date in `PAGE-references`.
 2. Project: the weekly link check (`links.yml`) is green — run it on demand if needed; `[unverified]` rows: try again, or keep them uncited.
 3. No `@see` points to an `[unverified]` row (lint guarantees it; check no disable directive bypasses it).
 
@@ -22,7 +22,7 @@ The procedure is the `/audit` skill. The independent `auditor` subagent reviews 
 
 1. Every function is written from its derivation or specification, not from third-party code; its TSDoc formula matches its body.
 2. No comment, identifier pattern or structure taken from a known library; when in doubt, search the distinctive line on GitHub code search.
-3. Licenses: GPL / LGPL code was only read (`docs/research/` §4); no dependency added without its row in `docs/tooling/dependencies.md`.
+3. Licenses: GPL / LGPL code was only read (`PAGE-research` §4); no dependency added without its row in `docs/tooling/dependencies.md`.
 
 ## D. Duplicates
 
@@ -51,7 +51,7 @@ List the sources and questions the next feature will need: they feed its researc
 
 ## H. Light evolvability check
 
-The six questions of the [evolvability review](../process/) in one line each (size, tools, fitness functions, patterns, agent configuration, process). What deserves action goes to the [improvement log](../process/improvements.md), treated at the method's point of the next review, held at each return of the Product Owner (ADR-0086).
+The six questions of the [evolvability review](../process/) in one line each (size, tools, fitness functions, patterns, agent configuration, process). What deserves action goes to the improvement log (LOG-improvements), treated at the method's point of the next review, held at each return of the Product Owner (ADR-0086).
 
 ## Findings table (in the `AUD` story)
 

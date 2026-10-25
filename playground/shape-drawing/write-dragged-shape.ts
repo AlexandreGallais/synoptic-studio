@@ -13,7 +13,7 @@ import type { Point, Size } from "../../src";
  * @param document - page document
  * @param tool - the tool armed: `rectangle`, `polygon`, `round` or `text`
  * @param box - the box dragged, on integers (`draggedBox`)
- * @see docs/domain/interaction.md#_1-tools
+ * @see RULE-interaction-1-tools
  */
 export function writeDraggedShape(document: Document, tool: string, box: Point & Size): void {
   if (tool !== "text") {

@@ -14,7 +14,7 @@ import type { Text } from "./text";
  * @kind domain
  * @param text - the text to check
  * @returns `true` when both colors, both opacities and both switches are allowed
- * @see docs/domain/shapes.md#text
+ * @see RULE-shapes-text
  */
 export function isValidTextDecorations(text: Text): boolean {
   const { opacity } = TEXT_RANGES;

@@ -13,7 +13,7 @@ import type { PickArea, Point } from "../../src";
  * @param areas - what each shape offers the pointer, the first drawn first (`readPickAreas`)
  * @param point - the point, in the coordinates of the drawing's SVG
  * @returns the index of the shape, the topmost reached; −1 for none
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 export function readShapeAt(document: Document, areas: readonly PickArea[], point: Point): number {
   return shapeAtPoint(areas, point, screenToUser(PICK_TOLERANCE, readView(document).scale));

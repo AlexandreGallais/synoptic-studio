@@ -8,7 +8,7 @@
  * @param count - new number of vertices, an integer ≥ 0 (precondition: JavaScript would truncate
  * a fraction and treat a negative count or `NaN` as 0)
  * @returns `count` radii
- * @see docs/domain/shapes.md#_2-corner-radius
+ * @see RULE-shapes-2-corner-radius
  */
 export function resizeRadii(radii: readonly number[], count: number): readonly number[] {
   return Array.from({ length: count }, (unused, index) => radii.at(index) ?? 0);

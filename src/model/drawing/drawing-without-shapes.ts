@@ -7,7 +7,7 @@
  * @param drawing - the shapes in the order drawn, the last on top
  * @param removed - the indices of the shapes removed, in the order drawn
  * @returns a new drawing, the shapes left in the order drawn
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 export function drawingWithoutShapes<T>(
   drawing: readonly T[],

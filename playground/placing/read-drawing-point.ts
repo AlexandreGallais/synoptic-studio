@@ -13,7 +13,7 @@ import type { Point } from "../../src";
  * @param document - page document
  * @param event - the press, the move or the click on the canvas
  * @returns the point, possibly fractional
- * @see docs/domain/interaction.md#_7-navigation-and-history
+ * @see RULE-interaction-7-navigation-and-history
  */
 export function readDrawingPoint(document: Document, event: MouseEvent): Point {
   const { point } = readPointerOffset(selectElement(document, "canvas"), event);

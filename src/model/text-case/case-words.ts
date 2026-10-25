@@ -8,7 +8,7 @@ const CASE_SEPARATORS = /[ _-]+/u;
  * @kind domain
  * @param line - one line of a text
  * @returns its words, in order; none for a line of separators only
- * @see docs/domain/shapes.md#text
+ * @see RULE-shapes-text
  */
 export function caseWords(line: string): readonly string[] {
   return line.split(CASE_SEPARATORS).filter((word) => word !== "");

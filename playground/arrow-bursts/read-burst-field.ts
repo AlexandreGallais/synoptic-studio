@@ -7,7 +7,7 @@ import { ARROW_BURSTS } from "./arrow-bursts";
  * @kind procedure
  * @param document - page document
  * @returns the field; undefined with no burst open
- * @see docs/domain/interaction.md#_7-navigation-and-history
+ * @see RULE-interaction-7-navigation-and-history
  */
 export function readBurstField(document: Document): Element | undefined {
   return ARROW_BURSTS.get(document)?.field;

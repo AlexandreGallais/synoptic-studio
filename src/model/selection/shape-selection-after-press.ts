@@ -11,7 +11,7 @@ import { shapeSelectionAfterBox } from "./shape-selection-after-box";
  * @param index - index of the shape pressed (`shapeAtPoint`); −1 for none, the selection kept
  * @param isShift - whether Shift is held at the press
  * @returns the indices of the shapes moved, ascending, no repeat
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 export function shapeSelectionAfterPress(
   selected: readonly number[],

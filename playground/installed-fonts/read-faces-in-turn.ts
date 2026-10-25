@@ -12,7 +12,7 @@ import type { InstalledFont } from "../fonts";
  * @kind procedure
  * @param read - the read of a face, its file held
  * @returns the same read, its face holding no file; a refusal as it is
- * @see docs/domain/shapes.md#text
+ * @see RULE-shapes-text
  */
 function readWithoutFile(read: InstalledFaceRead): InstalledFaceRead {
   return read.face === undefined

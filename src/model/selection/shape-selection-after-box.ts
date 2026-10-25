@@ -8,7 +8,7 @@
  * @param taken - indices of the shapes the rectangle takes, ascending, no repeat
  * @param isShift - whether Shift is held at the release
  * @returns the indices selected after the rectangle, ascending, no repeat
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 export function shapeSelectionAfterBox(
   selected: readonly number[],

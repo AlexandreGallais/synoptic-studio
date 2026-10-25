@@ -15,7 +15,7 @@ import { PAGE_HISTORIES } from "./page-histories";
  *
  * @kind procedure
  * @param document - page document
- * @see docs/domain/interaction.md#_7-navigation-and-history
+ * @see RULE-interaction-7-navigation-and-history
  */
 export function showHistory(document: Document): void {
   const history = PAGE_HISTORIES.get(document);

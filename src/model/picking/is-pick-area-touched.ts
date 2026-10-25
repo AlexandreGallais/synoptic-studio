@@ -21,7 +21,7 @@ import type { BoundingBox } from "../../geometry";
  * @param area - the shape's contour, corners and whether it is flat (`shapePickArea`, `textPickArea`)
  * @param box - the rectangle, in user units, its sides included
  * @returns true when the rectangle touches the shape
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 export function isPickAreaTouched(area: PickArea, box: BoundingBox): boolean {
   const reach = widenedBox(box, EPSILON);

@@ -15,7 +15,7 @@ import type { Point } from "../../src";
  * @param document - page document
  * @param drawn - the text last drawn
  * @returns the start, exact on each axis left as shown
- * @see docs/domain/shapes.md#scripts-and-turning
+ * @see RULE-shapes-scripts-and-turning
  */
 function readShownStart(document: Document, drawn: DrawnTextRecord): Point {
   const start = readStraightStart(drawn);
@@ -36,7 +36,7 @@ function readShownStart(document: Document, drawn: DrawnTextRecord): Point {
  * @kind procedure
  * @param document - page document
  * @returns where the top-left of its straight box is drawn
- * @see docs/domain/shapes.md#scripts-and-turning
+ * @see RULE-shapes-scripts-and-turning
  */
 export function readTextPosition(document: Document): Point {
   const drawn = readDrawnText(document);

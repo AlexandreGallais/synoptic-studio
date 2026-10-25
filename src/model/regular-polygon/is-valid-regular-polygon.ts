@@ -18,7 +18,7 @@ import type { RegularPolygon } from "./regular-polygon";
  * @kind domain
  * @param polygon - number of corners, width, height, radii and anchor to check
  * @returns `true` when every value is allowed
- * @see docs/domain/shapes.md#regular-polygon
+ * @see RULE-shapes-regular-polygon
  */
 export function isValidRegularPolygon(polygon: RegularPolygon): boolean {
   const sizes = [polygon.width, polygon.height];

@@ -8,7 +8,7 @@ import type { DrawingShape } from "./drawing-shape";
  * @param drawing - the shapes in the order drawn
  * @param shape - the shape added
  * @returns a new drawing, the shape last
- * @see docs/domain/interaction.md#_1-tools
+ * @see RULE-interaction-1-tools
  */
 export function drawingWithShape(drawing: Drawing, shape: DrawingShape): Drawing {
   return [...drawing, shape];

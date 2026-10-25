@@ -14,7 +14,7 @@ import type { Text } from "../../src";
  * @kind procedure
  * @param document - page document
  * @param text - a text of the drawing, clicked
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 export function loadPickedText(document: Document, text: Text): void {
   writeEditedKind(document, "text");

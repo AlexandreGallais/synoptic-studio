@@ -21,7 +21,7 @@ const NO_RANGE: OwnFieldRange = {
  * @param value - the value computed
  * @param range - the field's range
  * @returns the value within the range
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 function readValueInRange(value: number, range: OwnFieldRange): number {
   const { isTurn, minimum, maximum } = range;
@@ -41,7 +41,7 @@ function readValueInRange(value: number, range: OwnFieldRange): number {
  * @param own - the number the field showed before, 0 when it showed none
  * @param typed - the value typed, or an arrow's step, relative
  * @returns the value, before the field's range
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 function readComputedValue(range: OwnFieldRange, own: number, typed: TypedPanelValue): number {
   const value = valueWithTyped(own, typed);
@@ -59,7 +59,7 @@ function readComputedValue(range: OwnFieldRange, own: number, typed: TypedPanelV
  * @param own - the number the field showed before
  * @param typed - the value typed, or an arrow's step, relative
  * @returns the value within its range
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 function readValueFrom(field: HTMLInputElement, own: number, typed: TypedPanelValue): number {
   const range = OWN_FIELD_RANGES.get(field.id) ?? NO_RANGE;
@@ -81,7 +81,7 @@ function readValueFrom(field: HTMLInputElement, own: number, typed: TypedPanelVa
  * @param shown - the number the field showed before; undefined when it showed none
  * @returns the value; undefined for a relative value with no number to start from, a Mixed
  * radius's, which each vertex's own takes (`listenToRadius`)
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 export function readOwnValue(
   field: HTMLInputElement,

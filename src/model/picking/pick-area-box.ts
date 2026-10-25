@@ -11,7 +11,7 @@ import type { BoundingBox } from "../../geometry";
  * @kind domain
  * @param area - the shape's contour, corners and whether it is flat (`shapePickArea`, `textPickArea`)
  * @returns its extreme coordinates
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 export function pickAreaBox(area: PickArea): BoundingBox {
   return area.isFlat ? boundingBox(area.corners) : contourBoundingBox(area.pieces);

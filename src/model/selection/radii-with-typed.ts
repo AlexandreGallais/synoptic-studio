@@ -15,7 +15,7 @@ import type { PanelEdit } from "../panel-values";
  * @param selected - numbers of the vertices the field speaks for, from 0
  * @param edit - the value typed, relative, and the largest size
  * @returns the new radii, as many as before
- * @see docs/domain/shapes.md#_2-corner-radius
+ * @see RULE-shapes-2-corner-radius
  */
 export function radiiWithTyped(
   radii: readonly number[],

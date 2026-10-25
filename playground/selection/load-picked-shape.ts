@@ -15,7 +15,7 @@ import type { KeptShape } from "../kept-shapes";
  * @kind procedure
  * @param document - page document
  * @param kept - the shape clicked, and the kind the panel showed it as
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 export function loadPickedShape(document: Document, kept: KeptShape): void {
   const { kind, shape } = kept;

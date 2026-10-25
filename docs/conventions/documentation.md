@@ -37,14 +37,16 @@ Every `math`, `geometry` and `domain` function cites at least one source it was 
 
 | Form | Resolution | Example |
 | --- | --- | --- |
-| `REF-…` | a row of `docs/references.md` **not marked `[unverified]`** | `@see REF-SVG2-PATHS` |
-| `DERIV-name` | file `docs/derivations/name.md` | `@see DERIV-local-radius-clamp` |
-| `ADR-NNNN` | file `docs/adr/NNNN-*.md` | `@see ADR-0007` |
-| `docs/…/file.md#anchor` | an existing file | `@see docs/domain/shapes.md#_2-corner-radius` |
+| `REF-…` | a row of the records' `sources`, verified (`knowledge show REF-…`) | `@see REF-SVG2-PATHS` |
+| `DERIV-name` | a row of the records' `derivations` | `@see DERIV-local-radius-clamp` |
+| `RULE-page-anchor` | a part of a domain page, a document of the records and its rules in `rules` | `@see RULE-shapes-2-corner-radius` |
+| `ADR-NNNN` | a row of the records' `decisions` | `@see ADR-0007` |
+| backlog id | a row of the records' `stories`, `features` or `epics` | `@see US-010` |
+| `docs/…/file.md#anchor` | an existing file | `@see docs/tooling/knowledge.md` |
 
-- A target that does not exist or is `[unverified]` is a lint error. A source never read is never cited.
-- A non-trivial `math` or `geometry` function cites an external source (`REF-*`) or a derivation (`DERIV-*`), not only the domain page.
-- When no source can be verified, write the derivation in `docs/derivations/` or open a research request ([research protocol](../research/)).
+- The CI reads each id by its form alone (`local/see-references`), having no records; `knowledge check-ids` checks each against the records before a pull request into `develop`. A source never read is never cited, and an unverified one never by `@see`.
+- A non-trivial `math` or `geometry` function cites an external source (`REF-*`) or a derivation (`DERIV-*`), not only the domain's rule.
+- When no source can be verified, write the derivation into the records or open a research request (`knowledge show PAGE-research`).
 
 ## API reference site
 

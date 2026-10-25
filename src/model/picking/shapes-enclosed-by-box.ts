@@ -11,7 +11,7 @@ import type { BoundingBox } from "../../geometry";
  * @param areas - what each shape of the drawing offers the pointer, in the order drawn
  * @param box - the rectangle, in user units, its sides included
  * @returns the indices of the shapes enclosed, in the order drawn
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 export function shapesEnclosedByBox(
   areas: readonly PickArea[],

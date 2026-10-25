@@ -10,7 +10,7 @@ import { selectElement } from "./select-element";
  * @param document - page document
  * @param id - id of the input
  * @returns the number applied
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 export function readNumber(document: Document, id: string): number {
   const input = selectElement(document, id);

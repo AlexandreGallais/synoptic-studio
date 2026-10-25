@@ -16,7 +16,7 @@ import type { TypedPanelValue } from "../../src";
  * @param id - the field's id, without `#`
  * @param apply - gives the value, relative or fixed, `undefined` when the text typed is no
  * number, to what the field sets, then shows it again, `isStep` true for an arrow's step
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 export function listenToNumberField(
   document: Document,

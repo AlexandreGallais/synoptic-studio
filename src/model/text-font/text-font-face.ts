@@ -31,7 +31,7 @@ function namedMatchingFace(
  * @param name - a family's name
  * @param text - its weight and style
  * @returns the face and its family's name, as read; undefined when no family of that name has a face
- * @see docs/domain/shapes.md#text
+ * @see RULE-shapes-text
  */
 function familyFace(
   fonts: readonly FontFamily[],
@@ -52,7 +52,7 @@ function familyFace(
  * @param text - its font, fallback, weight and style
  * @param fonts - the font families whose metrics are known, the default font among them
  * @returns the face and its family's name; undefined when none of the three families is among them
- * @see docs/domain/shapes.md#text
+ * @see RULE-shapes-text
  */
 export function textFontFace(text: Text, fonts: readonly FontFamily[]): NamedFontFace | undefined {
   return (

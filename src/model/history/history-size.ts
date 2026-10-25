@@ -17,7 +17,7 @@ import type { History } from "./history";
  * @template T - type of the shapes, or of what is kept of each, objects never changed once made
  * @param history - the history measured
  * @returns its size in bytes, 0 with nothing past nor to come
- * @see docs/domain/interaction.md#_7-navigation-and-history
+ * @see RULE-interaction-7-navigation-and-history
  */
 export function historySize<T extends WeakKey>(history: History<T>): number {
   const kept = [...history.past, ...history.future];

@@ -7,7 +7,7 @@ import type { TurnedBox } from "../placement";
  * @kind domain
  * @param box - its width and its height
  * @returns true when either is 0
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 export function isFlatBox(box: Pick<TurnedBox, "height" | "width">): boolean {
   return box.width === 0 || box.height === 0;

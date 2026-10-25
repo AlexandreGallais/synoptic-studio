@@ -9,7 +9,7 @@ import { DEGREES_PER_TURN, isInIntegerRange } from "../../math";
  * @kind domain
  * @param angle - number of degrees
  * @returns `true` when it is a safe integer from 0 to 359
- * @see docs/domain/shapes.md#rotation-of-shapes
+ * @see RULE-shapes-rotation-of-shapes
  */
 export function isShapeAngle(angle: number): boolean {
   return isInIntegerRange(angle, 0, DEGREES_PER_TURN - 1);

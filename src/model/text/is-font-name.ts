@@ -10,7 +10,7 @@ const CONTROL_CHARACTER = /\p{Cc}/u;
  * @kind domain
  * @param name - the font's family name, as typed or read
  * @returns `true` for a non-empty trimmed name without a control character
- * @see docs/domain/shapes.md#text
+ * @see RULE-shapes-text
  */
 export function isFontName(name: string): boolean {
   return name !== "" && name.trim() === name && !CONTROL_CHARACTER.test(name);

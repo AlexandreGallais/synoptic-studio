@@ -21,7 +21,7 @@ import { drawPendingRedraw } from "../redraw";
  * @kind procedure
  * @param document - page document
  * @param update - redraws the page
- * @see docs/domain/interaction.md#_7-navigation-and-history
+ * @see RULE-interaction-7-navigation-and-history
  */
 export function listenToCanvasSize(document: Document, update: () => void): void {
   const view = document.defaultView;

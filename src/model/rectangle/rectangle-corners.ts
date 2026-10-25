@@ -12,7 +12,7 @@ import type { Corner } from "../../geometry";
  * @kind domain
  * @param rectangle - width, height and the radius of each corner
  * @returns four corners, clockwise from the top-left vertex (Q11)
- * @see docs/domain/shapes.md#_2-corner-radius
+ * @see RULE-shapes-2-corner-radius
  */
 export function rectangleCorners(rectangle: Rectangle): readonly Corner[] {
   // A rectangle has no handles (EN-024): its corners are plain.

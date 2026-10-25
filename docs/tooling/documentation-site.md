@@ -26,7 +26,7 @@ A section lists its folder's Markdown files, titled by their first `#` heading, 
 
 ## Writing pages
 
-- Link with relative Markdown links (`[ADR-0011](../adr/0011-function-kinds.md)`), so that VitePress checks them.
+- Link with relative Markdown links (`ADR-0011`), so that VitePress checks them.
 - Never write double curly braces, even in inline code: VitePress evaluates them as a Vue expression. Use a fenced code block or `<span v-pre>`.
 
 ## PDF

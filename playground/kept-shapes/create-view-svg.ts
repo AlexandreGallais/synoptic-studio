@@ -9,7 +9,7 @@ import { readCanvasSize, readView } from "../view";
  * @kind procedure
  * @param document - page document
  * @returns the `<svg>`, empty
- * @see docs/domain/interaction.md#_7-navigation-and-history
+ * @see RULE-interaction-7-navigation-and-history
  */
 export function createViewSvg(document: Document): SVGSVGElement {
   return createSvgElement(document, shownViewBox(readView(document), readCanvasSize(document)));

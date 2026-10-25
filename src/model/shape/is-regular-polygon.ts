@@ -7,7 +7,7 @@ import type { RegularPolygon } from "../regular-polygon";
  * @kind domain
  * @param shape - a shape of the model
  * @returns `true` for a regular polygon
- * @see docs/domain/shapes.md#regular-polygon
+ * @see RULE-shapes-regular-polygon
  */
 export function isRegularPolygon(shape: Shape): shape is RegularPolygon {
   return "anchor" in shape;

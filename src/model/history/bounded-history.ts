@@ -31,7 +31,7 @@ type DroppedReach = {
  * @param size - the most bytes it holds
  * @param dropped - how many of the oldest past states are dropped
  * @returns true when its size (`historySize`) is at most the size set
- * @see docs/domain/interaction.md#_7-navigation-and-history
+ * @see RULE-interaction-7-navigation-and-history
  */
 function isWithinSize<T extends WeakKey>(
   history: History<T>,
@@ -52,7 +52,7 @@ function isWithinSize<T extends WeakKey>(
  * @param size - the most bytes it holds
  * @param reach - the count tried, and the most
  * @returns the range to halve (`fewestDropped`)
- * @see docs/domain/interaction.md#_7-navigation-and-history
+ * @see RULE-interaction-7-navigation-and-history
  */
 function doubledRange<T extends WeakKey>(
   history: History<T>,
@@ -79,7 +79,7 @@ function doubledRange<T extends WeakKey>(
  * @param size - the most bytes it holds
  * @param range - the counts still possible
  * @returns how many of the oldest past states to drop
- * @see docs/domain/interaction.md#_7-navigation-and-history
+ * @see RULE-interaction-7-navigation-and-history
  */
 function fewestDropped<T extends WeakKey>(
   history: History<T>,
@@ -114,7 +114,7 @@ function fewestDropped<T extends WeakKey>(
  * @param history - the history after a step, or when the bound changes
  * @param bound - the memory size and the steps kept the designer sets
  * @returns the history given when nothing is dropped, otherwise a new history
- * @see docs/domain/interaction.md#_7-navigation-and-history
+ * @see RULE-interaction-7-navigation-and-history
  */
 export function boundedHistory<T extends WeakKey>(
   history: History<T>,

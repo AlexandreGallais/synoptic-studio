@@ -72,7 +72,7 @@ function readFaceFile(
  * @param font - the face, as the browser lists it
  * @param named - the face read from its file
  * @returns the face read; or why it was left out
- * @see docs/domain/shapes.md#text
+ * @see RULE-shapes-text
  */
 function readUsableFace(font: InstalledFont, named: NamedFontFace): InstalledFaceRead {
   const leftOut = unlistedFaceReason(named.face);

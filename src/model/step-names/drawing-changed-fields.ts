@@ -12,7 +12,7 @@ import type { ShapeFields } from "./shape-fields";
  * @param after - the drawing after it
  * @param fields - reads the fields of a shape
  * @returns the names of the fields changed, sorted; none when no shape is replaced
- * @see docs/domain/interaction.md#_7-navigation-and-history
+ * @see RULE-interaction-7-navigation-and-history
  */
 export function drawingChangedFields<T>(
   before: readonly T[],

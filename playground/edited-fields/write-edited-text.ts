@@ -13,7 +13,7 @@ import type { Text } from "../../src";
  * @kind procedure
  * @param document - page document
  * @param text - the text set, or as it was for a value refused
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 export function writeEditedText(document: Document, text: Text): void {
   writeInputValue(document, "text-box-width", text.boxWidth);

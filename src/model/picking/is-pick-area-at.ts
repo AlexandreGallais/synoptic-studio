@@ -13,7 +13,7 @@ import type { Point } from "../../math";
  * @param point - the point asked, in user units
  * @param tolerance - the reach of a shape without area, in user units (`PICK_TOLERANCE` over the view's scale)
  * @returns true when the point reaches the shape
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 export function isPickAreaAt(area: PickArea, point: Point, tolerance: number): boolean {
   return area.isFlat

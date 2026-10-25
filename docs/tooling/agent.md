@@ -39,7 +39,7 @@ flowchart LR
 
 ## Run's workers
 
-**Each agent carries only what its task needs.** A subagent's first request is read again at each of its requests, about 200 per worker, so every token it starts with is paid some 200 times ([research note 0024](../research/notes/0024-f20-context-diet.md)). Each task kind therefore has its agent type, started with `omitClaudeMd` (no `CLAUDE.md`, `AGENTS.md` nor memory index), its rules preloaded as skills, and only the tools it uses; a `general-purpose` worker would also carry every tool's definition and the skill listing (`REF-CC-SUBAGENTS`), about three times the tokens.
+**Each agent carries only what its task needs.** A subagent's first request is read again at each of its requests, about 200 per worker, so every token it starts with is paid some 200 times (research note 0024 NOTE-0024). Each task kind therefore has its agent type, started with `omitClaudeMd` (no `CLAUDE.md`, `AGENTS.md` nor memory index), its rules preloaded as skills, and only the tools it uses; a `general-purpose` worker would also carry every tool's definition and the skill listing (`REF-CC-SUBAGENTS`), about three times the tokens.
 
 | Agent type | Task kind | Tools | Preloaded |
 | --- | --- | --- | --- |
@@ -125,7 +125,7 @@ The Product Owner may talk to a second session while a run works. Both share the
 3. **Tells the run**: `ListAgents`, then `SendMessage` with what changed, where and what it changes for the run. The run acts on the change once it reaches `develop`, never on the message alone.
 4. **Removes its worktree** once merged (`target/release/branches-clean`).
 
-Before each story the run merges `origin/develop` into the feature branch when `develop` changed `AGENTS.md`, `CLAUDE.md`, `.claude/`, `docs/domain/`, `docs/adr/`, `docs/backlog/` or `docs/conventions/`, in a worktree of that branch (never a force push on a feature branch), and follows the new versions from that story on; a change to the run's scope or stories is a stop.
+Before each story the run merges `origin/develop` into the feature branch when `develop` changed `AGENTS.md`, `CLAUDE.md`, `.claude/`, `docs/domain/`, `PAGE-adr`, `docs/backlog/` or `docs/conventions/`, in a worktree of that branch (never a force push on a feature branch), and follows the new versions from that story on; a change to the run's scope or stories is a stop.
 
 ## Cloud agents and scheduled tasks
 
@@ -133,7 +133,7 @@ Every agent works on the Product Owner's machine, in its repository; cloud agent
 
 ## Searching past conversations
 
-The session journal ([journal](../process/journal.md), ADR-0024) is read first; the transcripts, `~/.claude/projects/<project-path>/*.jsonl` (kept in the private records, ADR-0081), are the full archive:
+The session journal (journal (LOG-journal), ADR-0024) is read first; the transcripts, `~/.claude/projects/<project-path>/*.jsonl` (kept in the private records, ADR-0081), are the full archive:
 
 ```sh
 cd ~/.claude/projects/<project-path>

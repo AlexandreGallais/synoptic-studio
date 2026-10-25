@@ -11,7 +11,7 @@ import type { ShapesMove } from "../hover";
  * @kind procedure
  * @param document - page document
  * @returns the move; undefined with no press on a shape
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 export function readPressedMove(document: Document): ShapesMove | undefined {
   return SELECTION_DRAGS.get(document)?.move;

@@ -24,7 +24,7 @@ import type { Shape, Text } from "../../src";
  * @param document - page document
  * @param text - a text kept, valid when it was drawn
  * @returns its group; nothing for a text never drawn with metrics
- * @see docs/domain/interaction.md#_1-tools
+ * @see RULE-interaction-1-tools
  */
 function createKeptTextElements(document: Document, text: Text): readonly SVGGElement[] {
   const key = JSON.stringify(text);
@@ -64,7 +64,7 @@ function createKeptShapeElement(document: Document, shape: Shape): SVGPathElemen
  * @param document - page document
  * @param key - `DRAWING_KEYS.below` or `DRAWING_KEYS.above`
  * @returns their elements, the first drawn first
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 export function createDrawingElements(document: Document, key: string): readonly SVGElement[] {
   return readStoredDrawing(document, key).flatMap(({ shape }) =>

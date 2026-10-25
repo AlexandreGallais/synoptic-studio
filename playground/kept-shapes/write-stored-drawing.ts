@@ -10,7 +10,7 @@ import type { KeptShape } from "./kept-shape";
  * @param document - page document
  * @param key - `DRAWING_KEYS.below`, `DRAWING_KEYS.edited` or `DRAWING_KEYS.above`
  * @param kept - the shapes in the order drawn
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 export function writeStoredDrawing(
   document: Document,

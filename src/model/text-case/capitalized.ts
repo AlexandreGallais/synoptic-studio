@@ -8,7 +8,7 @@ const FIRST_LETTER = /\p{L}/u;
  * @kind domain
  * @param word - a word or a line
  * @returns it, its first letter in upper case; unchanged without a letter
- * @see docs/domain/shapes.md#text
+ * @see RULE-shapes-text
  */
 export function capitalized(word: string): string {
   return word.replace(FIRST_LETTER, (letter) => letter.toUpperCase());

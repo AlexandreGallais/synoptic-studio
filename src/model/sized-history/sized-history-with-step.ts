@@ -16,7 +16,7 @@ import type { HistoryState } from "../history";
  * @param history - the history before the action
  * @param state - the drawing and the selection once the action finished
  * @returns the history given when nothing changed, otherwise a new history
- * @see docs/domain/interaction.md#_7-navigation-and-history
+ * @see RULE-interaction-7-navigation-and-history
  */
 export function sizedHistoryWithStep<T extends WeakKey>(
   history: SizedHistory<T>,

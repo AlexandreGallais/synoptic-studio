@@ -8,7 +8,7 @@
  * @param first - a list
  * @param second - another list
  * @returns true when both have the same length and each item is the other's, by `===`
- * @see docs/domain/interaction.md#_7-navigation-and-history
+ * @see RULE-interaction-7-navigation-and-history
  */
 export function areSameItems<T>(first: readonly T[], second: readonly T[]): boolean {
   return first.length === second.length && first.every((item, index) => item === second[index]);

@@ -13,7 +13,7 @@ const FIELD_ARROWS: ReadonlySet<string> = new Set(["ArrowDown", "ArrowUp"]);
  * @param key - the key pressed, as `KeyboardEvent.key` names it
  * @param isFurther - whether Shift is held, stepping by 10
  * @returns the step, signed; undefined for a key other than Up or Down
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 export function fieldArrowStep(key: string, isFurther: boolean): number | undefined {
   const shift = FIELD_ARROWS.has(key) ? nudgeShift(key, isFurther) : undefined;

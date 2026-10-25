@@ -108,7 +108,7 @@ fn writes_each_link_and_path_to_a_moved_doc_as_its_id() {
                 [guide](../guide/e01-draw-shapes.md), [notes](../research/notes/)\n\
                 `docs/derivations/text-box.md`, docs/adr/README.md, docs/research/README.md#2 and \
                 docs/process/tool-incidents.md; stays: docs/process/agile.md, derivations/ alone, \
-                [process](../process/README.md), [x](https://example.org/adr/)\n";
+                docs/adr/{{n}}-*.md, [process](../process/README.md), [x](https://example.org/adr/)\n";
 
     assert_eq!(
         with_ids(text),
@@ -117,7 +117,7 @@ fn writes_each_link_and_path_to_a_moved_doc_as_its_id() {
          [E01's](./retrospectives/E01-retrospective.md) record (RETRO-E17), \
          guide (GUIDE-e01-draw-shapes), notes\n\
          `DERIV-text-box`, PAGE-adr, PAGE-research and LOG-tool-incidents; stays: \
-         docs/process/agile.md, derivations/ alone, [process](../process/README.md), \
+         docs/process/agile.md, derivations/ alone, docs/adr/{{n}}-*.md, [process](../process/README.md), \
          [x](https://example.org/adr/)\n"
     );
 }

@@ -9,7 +9,7 @@ import type { Corner, CurveCorner } from "../../geometry";
  * @kind domain
  * @param corner - point and requested radius
  * @returns the same corner with handles off
- * @see docs/domain/shapes.md
+ * @see RULE-shapes
  */
 export function curveCornerOf(corner: Corner): CurveCorner {
   return { handles: NO_HANDLES, point: corner.point, radius: corner.radius };

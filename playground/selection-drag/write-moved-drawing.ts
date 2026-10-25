@@ -14,7 +14,7 @@ import type { KeptShape } from "../kept-shapes";
  * @param document - page document
  * @param drawing - every shape, in the order drawn
  * @param selected - the indices of the shapes to select, ascending
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 export function writeMovedDrawing(
   document: Document,

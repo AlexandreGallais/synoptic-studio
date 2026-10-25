@@ -8,7 +8,7 @@ import type { RefusedFace } from "./refused-face";
  * @param count - what was counted before them
  * @param faces - the faces refused, in the browser's order
  * @returns the count with them, after those counted before
- * @see docs/domain/shapes.md#text
+ * @see RULE-shapes-text
  */
 export function readCountWithRefusedFaces(
   count: ReadAheadCount,

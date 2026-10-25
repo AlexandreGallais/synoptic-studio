@@ -48,7 +48,7 @@ A stored page is asked with `If-None-Match` and `If-Modified-Since`, so an uncha
 
 1. **Search first**: `library_search` with the question's words, then `library_read` on the sections found.
 2. **Fetch through the library**: `library_get <url>` for a page not found, then read only the sections needed. `WebFetch` only for a page the library returns empty (built in the browser by JavaScript), and what it said that is used goes into the research note: its answer is a summary that cannot be cited. The `library-pages` hook refuses any other `WebFetch`, `curl` or `wget` of a page with the `library_get` call to make ([agent](./agent.md#hooks)).
-3. **Cite** a `REF-*` row of `docs/references.md` once the page is read: the library keeps the text, the bibliography what the project uses from it.
+3. **Cite** a `REF-*` row of `PAGE-references` once the page is read: the library keeps the text, the bibliography what the project uses from it.
 4. **Keep the database off every repository** (`~/.local/share/agent-library/library.sqlite`, or the file `AGENT_LIBRARY_FILE` names): the pages are other people's text. The server, the command line and the `library-pages` hook never read `LIBRARY_PATH`: that is the C toolchain's library search path, which Apple's `python3` sets to `/usr/local/lib` for the processes it starts (SP-023, EN-106).
 
 ## Command line

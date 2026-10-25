@@ -10,7 +10,7 @@ import { SHAPE_DRAWINGS } from "../shape-drawing";
  * @kind procedure
  * @param document - page document
  * @returns `move` or `drawing`; undefined with no such press
- * @see docs/domain/interaction.md#_7-navigation-and-history
+ * @see RULE-interaction-7-navigation-and-history
  */
 export function readHeldAction(document: Document): "drawing" | "move" | undefined {
   if (readPressedMove(document) !== undefined) {

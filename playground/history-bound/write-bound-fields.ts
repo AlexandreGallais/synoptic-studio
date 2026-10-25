@@ -11,7 +11,7 @@ import type { HistoryBound } from "../../src";
  * @kind procedure
  * @param document - page document
  * @param bound - the memory size and the steps kept
- * @see docs/domain/interaction.md#_7-navigation-and-history
+ * @see RULE-interaction-7-navigation-and-history
  */
 export function writeBoundFields(document: Document, bound: HistoryBound): void {
   const { size, steps } = HISTORY_BOUND_FIELDS;

@@ -20,7 +20,7 @@ import type { SizedText, Text } from "../../src";
  * @param sized - a valid text, as read from the fields, its position the start X and Y show, and
  * its measured block
  * @returns the text at the position it is drawn at
- * @see docs/domain/shapes.md#scripts-and-turning
+ * @see RULE-shapes-scripts-and-turning
  */
 export function writeTextPosition(document: Document, sized: SizedText): Text {
   const placed = choosePlacement(readDrawnText(document), sized);

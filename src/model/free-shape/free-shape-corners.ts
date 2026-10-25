@@ -21,7 +21,7 @@ import type { CurveCorner } from "../../geometry";
  * @kind domain
  * @param shape - valid free shape (`isValidFreeShape`)
  * @returns one corner per point, in contour order, its handles as drawn
- * @see docs/domain/shapes.md#_2-corner-radius
+ * @see RULE-shapes-2-corner-radius
  */
 export function freeShapeCorners(shape: FreeShape): readonly CurveCorner[] {
   const factors = stretchFactors(curveBoundingBox(shape.corners), shape);
