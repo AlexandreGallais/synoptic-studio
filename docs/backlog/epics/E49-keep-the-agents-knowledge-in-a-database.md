@@ -31,7 +31,7 @@ Cut by SP-034 (2026-10-25), in this order, each story of at most 3 tasks; the Pr
 
 | Feature | Expected stories | Status |
 | --- | --- | --- |
-| [F48](../features/E49-F48-the-knowledge-database.md) — The knowledge database | the tables, opened by two worktrees; add, search, show and list, by branch; a clean snapshot into the synced folder (3) | in-progress |
+| [F48](../features/E49-F48-the-knowledge-database.md) — The knowledge database | the tables, opened by two worktrees; add, search, show and list, by branch; a clean snapshot into the synced folder (3) | done |
 | The backlog in the database | the stories, features, statuses, test cards and log rows written in the database, never as files: no story file, index row nor `done` commit; `worktree-new`, `backlog-status`, `story-finish`, the commit hooks and the shared-files guard reading it; a feature's readable docs updated in one commit at its end (asked by the Product Owner on 2026-10-25) (3) | to refine |
 | The checks freed from the files | the `@see` to stories pointed at the rules; the tests and tools reading finished items; the log rows written into the database (3) | to refine |
 | The move into the database | the finished stories, features and epics; the history, the logs, the retrospectives and the notes; the decisions, the memory and the security rules explained (3) | to refine |

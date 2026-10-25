@@ -3,7 +3,7 @@ id: AUD-050
 epic: E49
 feature: F48
 title: Audit F48
-status: ready
+status: done
 points: 3
 ---
 
@@ -67,18 +67,3 @@ The real tries, with the crate's binary in a repository of the scratch folder, `
 - **A snapshot under a writer**: `sqlite3` holding `BEGIN IMMEDIATE` and an uncommitted row of `turns` for 3 seconds while `knowledge snapshot` ran: written at once, its 30 documents in it and the uncommitted row not, in the `delete` journal mode.
 - **A newer schema**: `user_version` set to 4: `init` prints `schema 4, newer than this binary's 3: read only`, `add` fails with the rebuild message, `list` still reads the 30 rows.
 - **Finding 1, from a file of schema 2**: the file made by the binary of schema 2, ADR-0900 added on `develop` and synced, then opened by this binary, brought up to 3; ADR-0900 added again on `develop`: `story/b` still reads the first text until the next `sync`, the second after. The binary of schema 2 reads that id's two rows' sections mixed, as `knowledge.md` says of schema 3.
-
-## For the main thread
-
-### Improvements
-
-| 2026-10-25 | AUD-050 | Two copies by `VACUUM INTO`: `records-save` copies the library through the `sqlite3` command, read-only, and `knowledge snapshot` through rusqlite; one function of `knowledge::snapshot`, opening its source read-only, would serve both and spare `records-save` the `sqlite3` command, at the cost of rusqlite in `repo-tools` | tool |
-| 2026-10-25 | AUD-050 | `records-save` prints a missing records root's path and `Saved in <records folder>` before `take_snapshot` refuses a records folder inside the synced folder, the path finding 8 kept `knowledge` from printing: refuse first, as `knowledge` does since AUD-050 | tool |
-
-### Incidents
-
-#### 2026-10-25 — mutate, the mutation spot-checks of the knowledge crate
-
-- Used: `npm run mutate -- <the crate's eight source files> -- env CARGO_TARGET_DIR=<scratch>/target cargo test -q -p knowledge`, the target folder given so that the copy builds once.
-- Failed: it counts as caught a mutation that does not compile: `+` swapped to `-` in `text + "\n"` (`tools/knowledge/src/bin/knowledge.rs:61`), a `String`, failed the build, not a test, and was reported `caught`.
-- Instead: one mutation by hand in each function, the build checked apart by `cargo test --no-run` before the tests, each one that failed to compile made again another way; `lines` was caught so.
