@@ -69,7 +69,7 @@ fn check_unused() -> u8 {
         root,
     };
     // The playground's npm project, from its folder (ADR-0104), first: its imports of the library
-    // and of the root's test fixtures count in the root's check (EN-175).
+    // by its name `editor` count in the root's check; nothing else of the root (EN-176).
     let (found, uses) = if playground.root.join("package.json").is_file() {
         unused::check_with_uses(&playground, &unused::PLAYGROUND, &[])
     } else {

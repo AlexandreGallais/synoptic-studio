@@ -428,7 +428,7 @@ fn f21_ac4_the_binary_reports_a_planted_file_in_a_git_checkout() {
 /// `vitest` by its runner configuration, which names its global setup, `@vitest/coverage-v8` by
 /// the coverage's floor and `@types/node` by the types of `tsconfig.spec.json` (EN-176); a test
 /// using a helper of `testing/`, the library by its name `editor` and a fixture of the root's
-/// `tests/` (EN-175); `left-pad`, a file and a helper unused.
+/// `tests/`, which leaves its folder (EN-176); `left-pad`, a file and a helper unused.
 const PLAYGROUND: &[(&str, &str)] = &[
     (
         "playground/package.json",
@@ -515,13 +515,56 @@ fn f50_ac3_the_binary_checks_the_playground_as_a_project_of_its_own() {
     // The playground's findings named from the root: its file, and `left-pad` at line 5, column
     // 6 of its `package.json` (four spaces, the quote, then the name); `rxjs` used through
     // `@angular/core`, `zone.js` not listed; the root's `is-number` beside them. The playground's
-    // helper unused; the root's `SCALE` and `FIXTURE` used by the playground's test, not the
-    // fixture it leaves (line 2, column 14 after `export const `).
+    // helper unused.
     assert_eq!(output.status.code(), Some(1));
-    assert_eq!(
-        String::from_utf8_lossy(&output.stdout),
-        "Unused files (2)\nplayground/src/app/orphan.ts\nplayground/testing/orphan-helper.ts\nUnused dependencies (1)\nleft-pad  playground/package.json:5:6\nUnused devDependencies (1)\nis-number  package.json:12:6\nUnused exports (1)\nUNUSED_FIXTURE  tests/fixture.ts:2:14\n"
+    assert!(
+        String::from_utf8_lossy(&output.stdout).contains(
+            "playground/src/app/orphan.ts\nplayground/testing/orphan-helper.ts\nUnused dependencies (1)\nleft-pad  playground/package.json:5:6\nUnused devDependencies (1)\nis-number  package.json:12:6\n"
+        ),
+        "{}",
+        String::from_utf8_lossy(&output.stdout)
     );
+}
+
+#[test]
+fn f50_ac1_the_playground_imports_nothing_outside_its_folder_but_the_library_by_its_name() {
+    let files: Vec<(&str, &str)> = BASE.iter().chain(PLAYGROUND).copied().collect();
+    let root = plant("playground-alone", &files);
+
+    assert!(
+        test_support::command("git")
+            .args(["init", "--quiet"])
+            .current_dir(&root)
+            .status()
+            .expect("git runs")
+            .success()
+    );
+    let output = test_support::command(env!("CARGO_BIN_EXE_dependencies"))
+        .arg("unused")
+        .current_dir(&root)
+        .output()
+        .expect("the binary runs");
+
+    fs::remove_dir_all(&root).expect("removed");
+    // The playground's test importing the root's `tests/fixture`: unresolved at line 4, column 25
+    // (`import { FIXTURE } from ` is 24 characters), as the playground's install alone runs its
+    // tests (EN-176), and counted for nothing in the root's check: its fixture unused as a whole.
+    // `editor`, a name of its tsconfig's `paths`, neither unlisted nor unresolved: the library's
+    // `SCALE` used through it, its public API (ADR-0104).
+    let report = String::from_utf8_lossy(&output.stdout);
+
+    assert_eq!(output.status.code(), Some(1));
+    assert!(
+        report.starts_with("Unused files (3)\ntests/fixture.ts\n"),
+        "{report}"
+    );
+    assert!(
+        report.ends_with(
+            "Unresolved imports (1)\n../../../tests/fixture  playground/src/app/app.component.test.ts:4:25\n"
+        ),
+        "{report}"
+    );
+    assert!(!report.contains("Unlisted"), "{report}");
 }
 
 #[test]
@@ -641,22 +684,4 @@ fn the_binary_exits_2_outside_a_checkout() {
 
     assert_eq!(output.status.code(), Some(2));
     fs::remove_dir_all(&root).expect("removed");
-}
-
-#[test]
-fn f50_ac3_names_from_the_root_the_file_a_project_imports_outside_its_folder() {
-    // `playground/src/a/b.test.ts` up three folders: the root's `tests/fixture`, its query dropped.
-    assert_eq!(
-        unused::outside(
-            "playground",
-            "src/a/b.test.ts",
-            "../../../tests/fixture?raw"
-        )
-        .as_deref(),
-        Some("tests/fixture")
-    );
-    // Inside the project, from the root's project, or out of the checkout: none.
-    assert_eq!(unused::outside("playground", "src/a/b.ts", "../c"), None);
-    assert_eq!(unused::outside("", "src/a.ts", "../../x"), None);
-    assert_eq!(unused::outside("playground", "a.ts", "../../x"), None);
 }

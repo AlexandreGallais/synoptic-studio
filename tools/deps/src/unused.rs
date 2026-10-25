@@ -29,7 +29,8 @@ pub const PLAYGROUND_FOLDER: &str = "playground";
 /// What the check reads of one npm project, in place of knip's configuration: its entry files
 /// besides its tests, the files whose words name an entry or a binary, the packages a tool's
 /// configuration uses, the packages never reported, and the names its `tsconfig.json`'s `paths`
-/// map to a source file; each path from the project's folder.
+/// map to a source file; each path from the project's folder, which no relative import leaves
+/// (EN-176).
 #[derive(Debug, Clone, Copy)]
 pub struct Config {
     /// The entry files besides the tests (`*.test.ts`).
@@ -40,8 +41,6 @@ pub struct Config {
     pub plugin_uses: &'static [(&'static str, &'static str, &'static str)],
     /// The packages never reported.
     pub ignored: &'static [&'static str],
-    /// Its folder from the checkout's root, `""` for the root's.
-    pub folder: &'static str,
     /// Each bare name imported as a source file through the `paths` of `tsconfig.json`, no
     /// package, with that file from the checkout's root: a [`Use`] of it, neither listed nor
     /// unlisted.
@@ -54,7 +53,6 @@ pub const ROOT: Config = Config {
     script_files: SCRIPT_FILES,
     plugin_uses: PLUGIN_USES,
     ignored: IGNORED,
-    folder: "",
     aliases: &[],
 };
 
@@ -65,7 +63,9 @@ pub const ROOT: Config = Config {
 /// `@angular/build` named by those builders, `sass` by the components' SCSS, `vite` by the
 /// override that pins it, `@vitest/coverage-v8` by the coverage's floor, `@types/node` by the
 /// types of `tsconfig.spec.json`; the library imported by its name `editor` through the tsconfig's
-/// `paths` (ADR-0104). Not reported until their code comes: `@ngrx/signals`, the stores (F55).
+/// `paths` (ADR-0104), the only import leaving its folder: a relative import that leaves it is
+/// unresolved, as the playground's tests run on its install alone (EN-176). Not reported until
+/// their code comes: `@ngrx/signals`, the stores (F55).
 pub const PLAYGROUND: Config = Config {
     entries: &["src/main.ts", "vitest-base.config.ts"],
     script_files: &["package.json", "angular.json", "vitest-base.config.ts"],
@@ -83,7 +83,6 @@ pub const PLAYGROUND: Config = Config {
         ("@types/node", "tsconfig.spec.json", "\"node\""),
     ],
     ignored: &["@ngrx/signals"],
-    folder: PLAYGROUND_FOLDER,
     aliases: &[("editor", "src/index.ts")],
 };
 
@@ -259,31 +258,15 @@ pub fn is_project(path: &str) -> bool {
         })
 }
 
-/// What a project takes of a file outside its folder (ADR-0104): the playground's import of the
-/// library by its name `editor`, or of a fixture of the root's `tests/` by a relative path. The
-/// root's check counts it as an import of that file.
+/// What a project takes of the library through its name (ADR-0104): the playground's import of
+/// `editor`, the library's public API, which the root's check counts as an import of it; a
+/// relative import never leaves a project's folder (EN-176).
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Use {
     /// The path imported, from the checkout's root, without its extension when written without.
     pub path: String,
     /// What the import takes.
     pub taken: Taken,
-}
-
-/// The path from the checkout's root that a relative specifier of a project's file names when it
-/// leaves the project's folder; `None` when it stays inside, for the root's project (folder `""`),
-/// or when it leaves the checkout too.
-#[must_use]
-pub fn outside(folder: &str, from: &str, specifier: &str) -> Option<String> {
-    let parent = Path::new(from).parent().map_or(String::new(), |parent| {
-        parent.to_string_lossy().into_owned()
-    });
-    let path = specifier.split('?').next().unwrap_or(specifier);
-
-    if folder.is_empty() || joined(&parent, path).is_some() {
-        return None;
-    }
-    joined(&format!("{folder}/{parent}"), path)
 }
 
 /// A path joined to a folder, its `.` and `..` resolved, `/`-separated from the root; `None` when
@@ -680,7 +663,8 @@ fn listed(package_json: &str, section: &str) -> Vec<(String, u32)> {
 }
 
 /// Reads the imports of the reached files: marks what they take, and records the packages they
-/// name, the packages listed nowhere and the relative imports that name no file.
+/// name, the packages listed nowhere, the relative imports that name no file of the project, those
+/// leaving its folder among them, and what its aliases take of the library.
 fn read_imports(
     graph: &mut Graph,
     reached: &BTreeSet<String>,
@@ -722,11 +706,6 @@ fn read_imports(
             } else if is_relative(specifier) {
                 if let Some(target) = graph.target(file, specifier) {
                     graph.take(&target, taken);
-                } else if let Some(path) = outside(config.folder, file, specifier) {
-                    uses.push(Use {
-                        path,
-                        taken: taken.clone(),
-                    });
                 } else if resolve(graph.root, file, specifier).is_none()
                     && seen.insert((file.clone(), *offset))
                 {
@@ -846,8 +825,8 @@ pub fn check_project(tree: &Tree, config: &Config) -> Findings {
     check_with_uses(tree, config, &[]).0
 }
 
-/// The findings of a project's tree, read by its configuration, another project's [`Use`]s of its
-/// files counted as imports from outside; with the project's own uses of files outside its folder.
+/// The findings of a project's tree, read by its configuration, another project's [`Use`]s of the
+/// library counted as imports from outside; with the project's own uses of it.
 #[must_use]
 pub fn check_with_uses(tree: &Tree, config: &Config, given: &[Use]) -> (Findings, Vec<Use>) {
     let modules = read_modules(tree);

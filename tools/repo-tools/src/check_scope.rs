@@ -67,7 +67,8 @@ pub const PLAYGROUND_APP_INPUTS: &[&str] = &[
 ];
 
 /// What the playground's tests read: the library it imports by its name `editor` (ADR-0104), its
-/// app, the helpers of its tests, and the settings of its `ng test` (EN-175).
+/// app, the helpers of its tests with their fixtures, global setup and font, never the root's
+/// `tests/` (EN-176), and the settings of its `ng test` (EN-175).
 pub const PLAYGROUND_TEST_INPUTS: &[&str] = &[
     "src/",
     "playground/src/",
@@ -619,6 +620,37 @@ mod tests {
             PLAYGROUND_TIMINGS
                 .ends_with("&& cd playground && ng test --no-watch --configuration timings")
         );
+    }
+
+    #[test]
+    fn f50_ac3_runs_the_playground_s_tests_for_its_own_fixtures_not_the_root_s() {
+        let tests = check(
+            PLAYGROUND_TESTS,
+            PLAYGROUND_TESTS_WITHOUT_COVERAGE.to_owned(),
+        );
+        let runs_them = |path: &str| {
+            scope(&owned(&[path]), &[], &crates(), &[])
+                .lanes
+                .contains(&vec![tests.clone()])
+        };
+
+        // Its copies of the root's fixtures, its global setup and the font it reads (EN-176).
+        for path in [
+            "playground/testing/font-fixtures.ts",
+            "playground/testing/text-fixtures.ts",
+            "playground/testing/font-files.setup.ts",
+            "playground/testing/inter-regular.ttf",
+        ] {
+            assert!(runs_them(path), "{path}");
+        }
+        // The root's fixtures, which it no longer imports.
+        for path in [
+            "tests/font-fixtures.ts",
+            "tests/text-fixtures.ts",
+            "tests/index.ts",
+        ] {
+            assert!(!runs_them(path), "{path}");
+        }
     }
 
     #[test]
