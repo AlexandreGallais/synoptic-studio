@@ -81,7 +81,7 @@ fn projects(home: &Path, repo: &Path) -> PathBuf {
 }
 
 #[test]
-fn f20_ac4_opens_counts_shows_and_ends_a_run() {
+fn opens_counts_shows_and_ends_a_run() {
     let (home, repo) = setup("run");
     let folder = projects(&home, &repo);
 

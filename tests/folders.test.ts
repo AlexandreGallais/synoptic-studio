@@ -5,16 +5,15 @@ import { describe, expect, it } from "vitest";
 
 /** Repository root. */
 const ROOT = join(import.meta.dirname, "..");
-/** The page of the folders' rules. */
-const FILES_PAGE = readFileSync(join(ROOT, "docs", "conventions", "files.md"), "utf8");
+/** The lint's settings, which hold the signal and the folders let past it (`tools/lint`). */
+const SETTINGS = readFileSync(join(ROOT, "tools", "lint", "src", "settings.rs"), "utf8");
 
 /**
- * Most modules a folder holds before it asks for a domain to split it (ADR-0043), read from the
- * page's heading; `local/folder-layout` (tools/lint) keeps the same signal and list, its test
- * checks them against this page.
+ * Most modules a folder holds before it asks for a domain to split it (ADR-0043), read from
+ * `FOLDER_SIGNAL` of the lint's settings, which `local/folder-layout` applies.
  */
 const FOLDER_SIGNAL = Number(
-  /^### Folders past (?<signal>\d+) modules$/mu.exec(FILES_PAGE)?.groups?.["signal"],
+  /^pub const FOLDER_SIGNAL: usize = (?<signal>\d+);$/mu.exec(SETTINGS)?.groups?.["signal"],
 );
 
 /**
@@ -29,17 +28,33 @@ function moduleCount(folder: string): number {
   ).length;
 }
 
-/** Rows of the table of folders past the signal in `docs/conventions/files.md`. */
-const ROWS = (
-  FILES_PAGE.split(`### Folders past ${String(FOLDER_SIGNAL)} modules`, 2)[1]
-    ?.matchAll(/^\| `(?<folder>[^`]+)` +\| (?<count>\d+) +\|(?<reason>[^|]*)\|/gmu)
-    .toArray() ?? []
-).map((match) => match.groups ?? {});
+/**
+ * The folders of `FOLDERS_PAST_SIGNAL`, each with the comment above it, its reason.
+ *
+ * @param settings - the text of the lint's settings
+ * @returns each folder listed and its reason, in their order
+ */
+function listedFolders(settings: string): ReadonlyMap<string, string> {
+  const block = /FOLDERS_PAST_SIGNAL: \[&str; \d+\] = \[\n(?<entries>[\s\S]*?)\n\];/u.exec(settings)
+    ?.groups?.["entries"];
 
-/** Folders listed in `docs/conventions/files.md` as staying whole past the signal, with their count. */
-const LISTED = new Map(
-  ROWS.map((row): [string, number] => [row["folder"] ?? "", Number(row["count"])]),
-);
+  return new Map(
+    (block ?? "")
+      .split(/(?<="),\n/u)
+      .map((entry): [string, string] => [
+        /"(?<folder>[^"]+)"/u.exec(entry)?.groups?.["folder"] ?? "",
+        entry
+          .split("\n")
+          .filter((line) => line.trimStart().startsWith("//"))
+          .map((line) => line.trim().replace(/^\/\/ ?/u, ""))
+          .join(" "),
+      ])
+      .filter(([folder]) => folder !== ""),
+  );
+}
+
+/** Folders the lint lets past the signal, each with its reason. */
+const LISTED = listedFolders(SETTINGS);
 
 /**
  * Folders of `src/` and `playground/` holding more modules than the signal, counted by walking
@@ -87,10 +102,21 @@ function filesBesideFolders(): readonly string[] {
     .map((entry) => relative(ROOT, join(entry.parentPath, entry.name)));
 }
 
-// `local/folder-layout` (tools/lint) checks each folder (ADR-0043) and keeps its list equal to the page.
+// `local/folder-layout` (tools/lint) checks each folder (ADR-0043) against its settings' list.
 describe("folders past the signal (ADR-0043)", () => {
-  it("reads the signal from the page", () => {
+  it("reads the signal and each folder's reason from the lint's settings", () => {
     expect(FOLDER_SIGNAL).toBe(15);
+
+    expect(
+      listedFolders(
+        'pub const FOLDERS_PAST_SIGNAL: [&str; 2] = [\n    // One theme,\n    // two lines.\n    "a/b",\n    "c",\n];',
+      ),
+    ).toEqual(
+      new Map([
+        ["a/b", "One theme, two lines."],
+        ["c", ""],
+      ]),
+    );
   });
 
   it("[F11.AC4] keeps every file of src and playground out of folders that hold folders", () => {
@@ -99,14 +125,14 @@ describe("folders past the signal (ADR-0043)", () => {
 
   it("[F18.AC18] lists every folder of src and playground past the signal, each with its reason", () => {
     expect(foldersPastSignal().filter((folder) => !LISTED.has(folder))).toEqual([]);
-    expect(ROWS.filter((row) => (row["reason"] ?? "").trim() === "")).toEqual([]);
+    expect([...LISTED].filter(([, reason]) => reason.trim() === "")).toEqual([]);
   });
 
-  it("lists only folders still past the signal, each with its true count", () => {
+  it("lists only folders still past the signal", () => {
     expect(
-      [...LISTED].filter(
-        ([folder, count]) => count <= FOLDER_SIGNAL || moduleCount(folder) !== count,
-      ),
+      LISTED.keys()
+        .filter((folder) => moduleCount(folder) <= FOLDER_SIGNAL)
+        .toArray(),
     ).toEqual([]);
   });
 });

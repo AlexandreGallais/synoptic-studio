@@ -1,6 +1,6 @@
 //! `heavy-lock [--lock <name>] <command> [arguments…]`: runs a command under a lock of the Git
-//! common directory, the heavy one by default (ADR-0072, EN-047), `merge` for `story:finish`
-//! (ADR-0065, EN-051; `docs/tooling/commands.md`).
+//! common directory, the heavy one by default (ADR-0072, EN-047), `merge` for `story-finish`
+//! (ADR-0065, EN-051; `the records' conventions, area checks`).
 
 use std::env;
 use std::io;

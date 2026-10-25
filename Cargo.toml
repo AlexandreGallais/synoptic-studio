@@ -17,7 +17,7 @@ unsafe_code = "forbid"
 pedantic = { level = "warn", priority = -1 }
 
 # Exact versions only (`name = "=x.y.z"`), each reviewed as a dev package is: its row in
-# docs/tooling/dependencies.md, its release notes read, at least 7 days old.
+# the records' dependencies (tests/data/dependencies.json), its release notes read, at least 7 days old.
 [workspace.dependencies]
 markdown = "=1.0.0"
 oxc_allocator = "=0.154.0"

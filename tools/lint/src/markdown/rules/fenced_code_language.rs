@@ -1,5 +1,5 @@
 //! `markdown/fenced-code-language`: a fenced code block names its language, so that the site and
-//! GitHub highlight it (docs/conventions/writing.md: "always with a language").
+//! GitHub highlight it (the records' conventions, area writing: "always with a language").
 
 use markdown::mdast::Node;
 

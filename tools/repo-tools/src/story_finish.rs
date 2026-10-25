@@ -17,6 +17,7 @@ use std::process::{Command, Stdio};
 
 use git_repository::story_of_branch as story_of;
 use knowledge::backlog::{merge_branch, missing_ids, set_status};
+use knowledge::data_files::stale_data_files;
 use knowledge::paths::is_test_path;
 use knowledge::project::open_records;
 use knowledge::store::write_or_refuse;
@@ -312,6 +313,15 @@ pub fn missing_cited_ids(base: &str, cwd: &Path) -> Result<Vec<String>, String> 
         }
     }
     Ok(missing)
+}
+
+/// The data files the CI reads that differ from the records (`knowledge export-data --check`),
+/// read in the checkout.
+///
+/// # Errors
+/// When the records cannot be read or lack a table of a data file.
+pub fn stale_data(cwd: &Path) -> Result<Vec<String>, String> {
+    stale_data_files(&open_records(cwd)?, cwd)
 }
 
 /// Once GitHub merged a story's branch: its rows of the records marked merged and its story set

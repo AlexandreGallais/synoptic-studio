@@ -1,4 +1,4 @@
-# The release, by its button alone (docs/tooling/releases.md, ADR-0086, ADR-0088): the Actions
+# The release, by its button alone (the records' conventions, area release, ADR-0086, ADR-0088): the Actions
 # tab's _Run workflow_ (`workflow_dispatch`, `REF-GH-WORKFLOW-DISPATCH`) on main makes the release,
 # its version from the last tag and the commits since, with no commit. `release publish` refuses
 # any other branch. The site is deployed by site.yml, the Rust caches saved by rust-caches.yml.

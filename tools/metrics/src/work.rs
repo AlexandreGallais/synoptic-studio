@@ -1,4 +1,4 @@
-//! Units of work of the metrics report (`docs/tooling/metrics.md`): what the agent's requests and
+//! Units of work of the metrics report (`the records' conventions, area metrics`): what the agent's requests and
 //! tool calls were spent on — a story, a feature branch, a task commit — with active time and
 //! tokens.
 

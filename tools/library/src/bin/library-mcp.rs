@@ -1,4 +1,4 @@
-//! MCP server of the local source library (`docs/tooling/sources.md`, ADR-0039), on `rmcp` over
+//! MCP server of the local source library (`the records' conventions, area library`, ADR-0039), on `rmcp` over
 //! `stdio`, declared in `.mcp.json`. Claude Code starts it in the project's folder;
 //! `CLAUDE_PROJECT_DIR` names that folder when set, and each use records its project (EN-101).
 //! The session is recorded as a use of `library-mcp serve`, and each call as a use of

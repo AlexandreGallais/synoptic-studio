@@ -1,6 +1,6 @@
 //! Writes the API pages of the documentation site (EN-072).
 //!
-//! Usage: `api-pages <entry module> <output folder> <site path> <title>`, as `npm run docs:api`
+//! Usage: `api-pages <entry module> <output folder> <site path> <title>`, as the `docs:build` check of `check-all` runs it
 //! runs it: `api-pages src/index.ts docs/api /api/ editor`. Writes nothing and fails, naming
 //! each, when an export cannot be read or fails a check.
 

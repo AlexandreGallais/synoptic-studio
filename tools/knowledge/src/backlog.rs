@@ -510,7 +510,8 @@ pub fn done_criteria(database: &Connection) -> rusqlite::Result<Vec<Traced>> {
 }
 
 /// A text as a JSON string.
-fn json_string(text: &str) -> String {
+#[must_use]
+pub fn json_string(text: &str) -> String {
     let mut quoted = String::from('"');
 
     for character in text.chars() {

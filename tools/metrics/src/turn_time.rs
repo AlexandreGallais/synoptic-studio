@@ -1,4 +1,4 @@
-//! Where a turn's time goes (RET-002, `docs/tooling/metrics.md`): for the main agent's calls whose
+//! Where a turn's time goes (RET-002, `the records' conventions, area metrics`): for the main agent's calls whose
 //! start the `track-tool-call` hook recorded, the time the tools ran, and the time between one
 //! call's end and the next one's start — the model reading, thinking and writing the next call —
 //! with the characters it wrote. Calls logged before RET-002 have no start and are left out.

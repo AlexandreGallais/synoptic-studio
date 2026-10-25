@@ -1,4 +1,4 @@
-//! The metrics report of the agent's work (`docs/tooling/metrics.md`): sessions, commands by count
+//! The metrics report of the agent's work (`the records' conventions, area metrics`): sessions, commands by count
 //! and by time, the slowest calls, time and tokens per session, feature, story and task, the saved
 //! turns, where the latest turns' time went, the agent's tools, each Rust tool's uses, the rules'
 //! findings per epic, and the library's sources, as `metrics-report.ts` printed it, the findings
@@ -360,7 +360,7 @@ fn turn_sections(inputs: &ReportInputs) -> Vec<String> {
         "Main agent only, calls timed by the hooks since RET-002: the tools running, and the model between two calls (reading, thinking, writing the next one; gaps over 5 minutes left out).".to_owned(),
         time_table(&calls, TURNS_SHOWN),
         "## The agent's tools".to_owned(),
-        "Each tool of `docs/tooling/agent-tools.md` run through npm: how often, how long, how often it failed.".to_owned(),
+        "Each tool of `the records' tools` run through npm: how often, how long, how often it failed.".to_owned(),
         tools_table(&calls),
         "## Tools".to_owned(),
         "Each Rust tool of the workspace, as it records its own uses in `.git/metrics/tool-uses.jsonl`, whoever called it (EN-102): by tool and subcommand, a failure being an exit code other than 0.".to_owned(),

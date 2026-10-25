@@ -158,6 +158,11 @@ impl Lab {
             &["clone", "-q", origin.to_str().expect("path"), "main"],
         );
         fs::write(main.join("README.md"), "# A project\n").expect("readme");
+        // The data files the CI reads, as the records' empty tables give them (AUD-054).
+        fs::create_dir_all(main.join("tests/data")).expect("data");
+        for file in ["lint-exceptions", "dependencies"] {
+            fs::write(main.join(format!("tests/data/{file}.json")), "[]\n").expect("data file");
+        }
         self.git(&main, &["add", "."]);
         self.git(&main, &["commit", "-q", "-m", "start"]);
         self.git(&main, &["push", "-q", "-u", "origin", "HEAD:main"]);
@@ -166,7 +171,9 @@ impl Lab {
         open_store(&self.records())
             .expect("records")
             .execute_batch(&format!(
-                "INSERT INTO features (id, epic, title, status, state) VALUES ('F99', 'E99', 'A feature', 'in-progress', 'merged');
+                "CREATE TABLE lint_exceptions (id INTEGER PRIMARY KEY, file TEXT, item TEXT, rule TEXT, reason TEXT);
+                CREATE TABLE dependencies (name TEXT, kind TEXT, version TEXT);
+                INSERT INTO features (id, epic, title, status, state) VALUES ('F99', 'E99', 'A feature', 'in-progress', 'merged');
                 INSERT INTO stories (id, epic, feature, kind, title, status, topic, branch, state) VALUES
                   ('EN-901', 'E99', 'F99', 'EN', 'First', 'ready', 'first', 'develop', 'merged'),
                   ('EN-902', 'E99', 'F99', 'EN', 'Second', 'ready', 'second', 'develop', 'merged'),
@@ -486,6 +493,35 @@ fn opens_no_pull_request_into_develop_while_the_change_cites_an_id_the_records_l
 }
 
 #[test]
+fn opens_no_pull_request_into_develop_while_a_data_file_differs_from_the_records() {
+    let lab = Lab::new("data");
+    let branch = "docs/rev-907-review";
+
+    lab.backlog();
+
+    let review = lab.develop_story(branch, "rev-907");
+
+    // A dependency in the records the committed file lacks.
+    open_store(&lab.records())
+        .expect("records")
+        .execute(
+            "INSERT INTO dependencies VALUES ('vite', 'npm', '8.3.4')",
+            [],
+        )
+        .expect("row");
+
+    let finished = lab.finish_into(&review, "develop", &[]);
+    let (out, err) = text(&finished);
+
+    assert_eq!(finished.status.code(), Some(1), "{out}\n{err}");
+    assert!(
+        err.ends_with("run target/release/knowledge export-data and commit them:\ntests/data/dependencies.json\n"),
+        "{err}"
+    );
+    assert!(!lab.calls().iter().any(|call| call.contains("pr create")));
+}
+
+#[test]
 fn f18_ac7_goes_straight_to_the_clean_up_of_a_story_already_merged() {
     let lab = Lab::new("merged");
 
@@ -721,6 +757,6 @@ fn stops_without_its_three_arguments() {
     assert_eq!(output.status.code(), Some(1));
     assert_eq!(
         String::from_utf8_lossy(&output.stderr),
-        "usage: npm run story:finish -- <base> <title> <body file>\n"
+        "usage: target/release/heavy-lock --lock merge target/release/story-finish <base> <title> <body file>\n"
     );
 }

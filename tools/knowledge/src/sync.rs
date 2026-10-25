@@ -2,7 +2,7 @@
 //! `draft` rows of a branch merged into `develop` become `merged`, each replacing the merged row of
 //! its id; of two drafts of one id merged at once, the one written last holds. A branch is merged
 //! when a merge commit brought its tip into `develop`, as every merge of the project is one
-//! (`docs/tooling/git-workflow.md`): its tip reachable from `develop` (`git branch --merged`,
+//! (`the records' conventions, area git`): its tip reachable from `develop` (`git branch --merged`,
 //! `REF-GIT-BRANCH`) is not enough, a branch made at `develop`'s tip without a commit of its own
 //! being listed too (AUD-050). `develop`'s own rows are merged by each `sync`.
 

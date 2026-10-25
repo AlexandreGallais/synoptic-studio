@@ -30,7 +30,8 @@ const DIAGRAMS = [
 
 describe("Mermaid diagrams of the docs", () => {
   it("finds the diagrams", () => {
-    expect(DIAGRAMS.length).toBeGreaterThan(3);
+    // Not vacuous: the two diagrams of the person pages, the agent's pages gone to the records.
+    expect(DIAGRAMS.length).toBeGreaterThanOrEqual(2);
   });
 
   it.each(DIAGRAMS)("parses the diagram of %s", async (...[, source]) => {

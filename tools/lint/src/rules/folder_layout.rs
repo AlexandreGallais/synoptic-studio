@@ -53,7 +53,7 @@ fn check(source: &Source, signal: usize, listed: &[&str], rule: &'static str) ->
             rule,
             0,
             format!(
-                "Folder `{path}` holds {modules} modules, past {signal}: split it by domain, or list it with its reason in docs/conventions/files.md."
+                "Folder `{path}` holds {modules} modules, past {signal}: split it by domain, or list it with its reason in FOLDERS_PAST_SIGNAL of tools/lint/src/settings.rs."
             ),
         ));
     }
@@ -166,7 +166,7 @@ mod tests {
         let root = tree();
         let past = |path: &str| {
             format!(
-                "Folder `{path}` holds 3 modules, past 2: split it by domain, or list it with its reason in docs/conventions/files.md."
+                "Folder `{path}` holds 3 modules, past 2: split it by domain, or list it with its reason in FOLDERS_PAST_SIGNAL of tools/lint/src/settings.rs."
             )
         };
 

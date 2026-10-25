@@ -52,7 +52,7 @@ The records are kept true with the work: a rule, a decision, a source, an incide
 
 Hooks refuse most of these; none is worked around.
 
-- a runtime dependency; a dev package or crate younger than 7 days or without its row in `docs/tooling/dependencies.md`, its release notes read;
+- a runtime dependency; a dev package or crate younger than 7 days or without its row in the records' `dependencies` (exported by `knowledge export-data`), its release notes read;
 - ESLint, or a new script, hook or tool in TypeScript: a lint rule oxlint lacks goes into our Rust linter;
 - a lint rule disabled to make code pass;
 - a push to `main` or `develop`, a pull request merged by hand, `--no-verify` (nor `commit -n`, nor a change of `core.hooksPath`), a force push without lease.

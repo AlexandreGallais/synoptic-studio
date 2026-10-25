@@ -17,7 +17,7 @@ pub struct KindLimit {
     pub max_statements: usize,
 }
 
-/// Function kinds and their limits, in pipeline order (ADR-0011, docs/conventions/functions.md);
+/// Function kinds and their limits, in pipeline order (ADR-0011, the records' conventions, area functions);
 /// changed only with an ADR.
 pub const KIND_LIMITS: [KindLimit; 5] = [
     limit("math", 3, 1, 10, 4),
@@ -51,7 +51,7 @@ pub fn kind_names() -> Vec<&'static str> {
 }
 
 /// A layer of the library, by its folder, the kinds its functions may carry and the layers it
-/// may import (docs/conventions/architecture.md; its imports are checked by
+/// may import (the records' conventions, area architecture; its imports are checked by
 /// `import-x/no-restricted-paths`, moved from `eslint/settings/layers.ts` by EN-084).
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct Layer {
@@ -123,7 +123,7 @@ pub const PREDICATE_PREFIXES: [&str; 9] = [
     "should",
 ];
 
-/// Leading words of boolean variables and parameters (`naming-convention`, docs/conventions/naming.md).
+/// Leading words of boolean variables and parameters (`naming-convention`, the records' conventions, area naming).
 pub const BOOLEAN_PREFIXES: [&str; 9] = [
     "are", "can", "did", "does", "has", "is", "should", "was", "will",
 ];
@@ -152,7 +152,7 @@ pub const FORMAT_PREFIXES: [&str; 7] = [
     "decode",
 ];
 
-/// Imperative verbs a `procedure` name may start with (docs/conventions/naming.md): add a verb,
+/// Imperative verbs a `procedure` name may start with (the records' conventions, area naming): add a verb,
 /// sorted, when a new action appears, rather than bending a name.
 pub const PROCEDURE_VERBS: [&str; 51] = [
     "add",
@@ -211,15 +211,20 @@ pub const PROCEDURE_VERBS: [&str; 51] = [
 /// Most modules a folder holds before it asks for a domain to split it (ADR-0043).
 pub const FOLDER_SIGNAL: usize = 15;
 
-/// Folders past the signal, each listed with its reason in `docs/conventions/files.md`.
-pub const FOLDERS_PAST_SIGNAL: [&str; 1] = ["playground/user-actions"];
+/// Folders past the signal, each with its reason above it; `tests/folders.test.ts` counts the
+/// folders on disk against this list (EN-061, `[F11.AC4]`).
+pub const FOLDERS_PAST_SIGNAL: [&str; 1] = [
+    // One theme, what a user does to the page: splitting it into reading, typing and clicking
+    // would split it by kind of code, which ADR-0043 refuses.
+    "playground/user-actions",
+];
 
 /// Folders exempt from a barrel: the root, the site's theme, the repository's tests.
 pub const FOLDERS_WITHOUT_INDEX: [&str; 3] = [".", "docs/.vitepress", "tests"];
 
 #[cfg(test)]
 mod tests {
-    use super::{FOLDER_SIGNAL, FOLDERS_PAST_SIGNAL, LAYERS, PROCEDURE_VERBS, kind_names};
+    use super::{LAYERS, PROCEDURE_VERBS, kind_names};
 
     #[test]
     fn keeps_the_verbs_sorted_and_once_each() {
@@ -236,30 +241,5 @@ mod tests {
                 .iter()
                 .all(|layer| layer.kinds.iter().all(|kind| kinds.contains(kind)))
         );
-    }
-
-    /// The rows of the table of folders past the signal in `docs/conventions/files.md`.
-    fn listed_in_the_page() -> Vec<String> {
-        let page = std::fs::read_to_string(
-            std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
-                .join("../../docs/conventions/files.md"),
-        )
-        .unwrap_or_default();
-        let heading = format!("### Folders past {FOLDER_SIGNAL} modules");
-        let table = page.split(&heading).nth(1).unwrap_or_default();
-
-        table
-            .lines()
-            .skip_while(|line| !line.starts_with('|'))
-            .take_while(|line| line.starts_with('|'))
-            .filter_map(|line| line.strip_prefix("| `"))
-            .filter_map(|line| line.split('`').next())
-            .map(str::to_owned)
-            .collect()
-    }
-
-    #[test]
-    fn f11_ac4_lists_in_the_page_the_folders_the_lint_lets_past_the_signal() {
-        assert_eq!(listed_in_the_page(), FOLDERS_PAST_SIGNAL);
     }
 }

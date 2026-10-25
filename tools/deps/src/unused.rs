@@ -55,7 +55,8 @@ pub const PLUGIN_USES: &[(&str, &str, &str)] = &[
     ("typescript", "tsconfig.json", "\"compilerOptions\""),
 ];
 
-/// The comment that gives a test file Vitest's DOM, `happy-dom` (`docs/tooling/dependencies.md`).
+/// The comment that gives a test file Vitest's DOM, `happy-dom` (its row of the records'
+/// `dependencies`).
 const HAPPY_DOM: &str = "@vitest-environment happy-dom";
 
 /// Dev packages never reported, each with its reason, as `knip.json`'s `ignoreDependencies` held

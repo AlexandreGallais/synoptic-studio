@@ -40,7 +40,7 @@ Start any task with the records: the story (`knowledge show <ID>`), its feature 
 
 ## Code
 
-The details and their reasons are in the records (`knowledge search convention`); the essentials:
+The details and their reasons are rows of the records — `conventions` by area, `lint_rules`, `lint_exceptions`, `dependencies`, `tools`, `method_rules` (`knowledge sql "SELECT * FROM tables_registry"`); the essentials:
 
 - typed integers → model → evaluated geometry → SVG, never reading the DOM back; a pure core (`math` to `io`), effects only in `render`, `interaction` and `playground`; a function never modifies its arguments;
 - in the library (`src/`): one export per file named after it, in the folder of its business domain, no default nor optional parameter; the playground follows its framework's usage;

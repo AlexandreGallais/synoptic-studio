@@ -1,5 +1,5 @@
 //! `local/kind-in-layer`: a function's kind is allowed in its file's layer
-//! (docs/conventions/architecture.md).
+//! (the records' conventions, area architecture).
 
 use crate::finding::Finding;
 use crate::rules::Rule;

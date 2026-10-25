@@ -6,7 +6,7 @@ paths:
 
 # Library and playground
 
-The traps of this code that a check does not catch by itself. The conventions: `docs/conventions/`.
+The traps of this code that a check does not catch by itself. The conventions: the records' `conventions` (areas architecture, files, functions, naming, imports, documentation, typescript, testing) and `lint_rules`.
 
 ## Modules
 
@@ -30,7 +30,7 @@ The traps of this code that a check does not catch by itself. The conventions: `
 
 - Examples with hand-computed values justified in a comment, then properties with `test.prop({ … })` of `@fast-check/vitest`; many columns: `it.each` over objects.
 - `expect.closeTo` inside `toMatchObject` is an `any` for the lint: assert numbers one by one with `toBeCloseTo`.
-- A test refusing a value outside a string union needs a cast, its directive on its own line above: `// oxlint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-type-assertion -- <reason>`.
+- A test refusing a value outside a string union needs a cast, its directive on its own line above: `// oxlint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-type-assertion -- <reason>`, and its row in the records' `lint_exceptions`, written into `tests/data/lint-exceptions.json` by `target/release/knowledge export-data`.
 - A mutation by hand is undone by copying the saved content back, never by `git checkout`.
 - A DOM test starts with `// @vitest-environment happy-dom`; happy-dom's `:checked` follows the attribute, so find radio buttons by their `checked` and `value` properties; a `<select>` moved from a `DOMParser` document loses its selected option.
 - The autofix turns `removeAttribute("data-x")` into `delete el.dataset.x`, which the type check refuses: write `delete el.dataset["x"]`.

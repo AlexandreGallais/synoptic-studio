@@ -485,7 +485,7 @@ fn switch_to_wal(database: &Connection) -> rusqlite::Result<String> {
 }
 
 /// Puts the file in WAL. The switch needs the file alone, and SQLite refused it at once, without
-/// waiting, while another connection wrote, as EN-152 measured (`docs/tooling/knowledge.md`, Two
+/// waiting, while another connection wrote, as EN-152 measured (`the records' conventions, area records`, Two
 /// worktrees at once), the mode it kept returned (`REF-SQLITE-PRAGMA`): that write is waited for,
 /// by a `BEGIN IMMEDIATE` within the busy timeout, and the mode read again, the other connection
 /// having maybe switched the file itself, before one more switch; that one failing, or leaving the

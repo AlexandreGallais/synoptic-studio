@@ -1,5 +1,5 @@
 //! The findings of the project's rules the agent met in its tool results (EN-107), the count
-//! EN-093 made by hand for `docs/conventions/rules.md`: each hook's refusal by its event and
+//! EN-093 made by hand for `the records' lint_rules`: each hook's refusal by its event and
 //! reason; in a shell command's output, each lint rule's finding as `ESLint`, oxlint, the project's
 //! linter and markdownlint report it, each TypeScript error code, each Clippy lint and each check
 //! `check:all` failed. The metrics report counts them per epic, so that the next review of the

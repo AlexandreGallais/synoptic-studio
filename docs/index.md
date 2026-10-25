@@ -26,9 +26,7 @@ features:
   - title: Where it stands
     details: What is done, what is under way.
     link: /where-it-stands
-  - title: Epics
-    details: The order of the work to come.
-    link: /backlog/
+
   - title: The editor
     details: The editors, what one can draw, how one selects, moves and undoes.
     link: /the-editor

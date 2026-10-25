@@ -483,29 +483,19 @@ fn f33_ac1_reads_the_tools_of_each_cargo_install_line() {
 }
 
 #[test]
-fn f33_ac1_reads_the_rows_of_the_rust_tools_table_only() {
-    let page = [
-        "## Packages",
-        "",
-        "| typescript | 7.0.2, 2026-07-08 | the compiler |",
-        "",
-        "## Rust tools",
-        "",
-        "| Tool | Version, released | Why |",
-        "| --- | --- | --- |",
-        "| cargo-llvm-cov | 0.9.1, 2026-09-06 | coverage |",
-        "| cargo-deny | 0.20.2, 2026-07-09 | advisories |",
-        "| llvm-tools, rustup's component | of the pinned Rust | its LLVM |",
-        "",
-        "## Assets",
-        "",
-        "| a-font | 4.1.0, 2026-01-01 | the text |",
-    ]
-    .join("\n");
+fn f33_ac1_reads_the_cargo_tool_rows_of_the_data_file_only() {
+    let data = r#"[
+  { "name": "typescript", "kind": "npm", "version": "7.0.2" },
+  { "name": "cargo-llvm-cov", "kind": "cargo-tool", "version": "0.9.1" },
+  { "name": "cargo-deny", "kind": "cargo-tool", "version": "0.20.2" },
+  { "name": "llvm-tools", "kind": "component", "version": "of the pinned Rust" },
+  { "name": "cargo-nextest", "kind": "cargo-tool", "version": "latest" },
+  { "kind": "cargo-tool", "version": "1.0.0" }
+]"#;
 
-    // The header, the separator and a row without a version are no tool; the other tables none.
+    // Another kind, a version that is no version number and a row without a name are no tool.
     assert_eq!(
-        cargo_tools::row_pins(&page),
+        cargo_tools::row_pins(data),
         [
             tool("cargo-llvm-cov", "0.9.1", DEPENDENCIES_PAGE),
             tool("cargo-deny", "0.20.2", DEPENDENCIES_PAGE),
@@ -515,6 +505,7 @@ fn f33_ac1_reads_the_rows_of_the_rust_tools_table_only() {
         cargo_tools::row_pins("| cargo-deny | 0.20.2, 2026-07-09 |"),
         []
     );
+    assert_eq!(cargo_tools::row_pins("{}"), []);
 }
 
 #[test]
@@ -522,7 +513,7 @@ fn f33_ac1_names_a_tool_at_two_versions_or_without_its_row() {
     let pins = [
         tool("cargo-deny", "0.20.2", ".github/workflows/ci.yml"),
         tool("cargo-deny", "0.20.2", DEPENDENCIES_PAGE),
-        tool("cargo-deny", "0.20.10", "docs/tooling/agent-tools.md"),
+        tool("cargo-deny", "0.20.10", "tools/repo-tools/src/check_all.rs"),
         tool("cargo-deny", "0.20.1", "package.json"),
         tool("cargo-llvm-cov", "0.9.1", ".github/workflows/ci.yml"),
         tool("cargo-nextest", "0.9.0", DEPENDENCIES_PAGE),
@@ -533,8 +524,8 @@ fn f33_ac1_names_a_tool_at_two_versions_or_without_its_row() {
         cargo_tools::disagreements(&pins),
         [
             "tool cargo-deny at 0.20.1 in package.json, at 0.20.2 in .github/workflows/ci.yml, \
-             docs/tooling/dependencies.md, at 0.20.10 in docs/tooling/agent-tools.md",
-            "tool cargo-llvm-cov without its row in docs/tooling/dependencies.md (Rust tools)",
+             tests/data/dependencies.json, at 0.20.10 in tools/repo-tools/src/check_all.rs",
+            "tool cargo-llvm-cov without its row in tests/data/dependencies.json (a cargo-tool row of the records' dependencies)",
         ]
     );
     assert_eq!(cargo_tools::disagreements(&pins[..2]), [] as [String; 0]);
@@ -556,7 +547,7 @@ fn f33_ac1_a_tool_behind_is_listed_once_its_release_is_7_days_old() {
     let lines = |now_ms| outdated::outdated(&pins, &Recorded::new(), now_ms).lines;
     let disagreement = [
         "tool cargo-llvm-cov at 0.9.0 in .github/workflows/ci.yml, at 0.9.1 in package.json",
-        "tool cargo-llvm-cov without its row in docs/tooling/dependencies.md (Rust tools)",
+        "tool cargo-llvm-cov without its row in tests/data/dependencies.json (a cargo-tool row of the records' dependencies)",
     ];
 
     assert_eq!(
@@ -918,7 +909,8 @@ fn checkout(name: &str) -> PathBuf {
     let _ = fs::remove_dir_all(&root);
 
     fs::create_dir_all(root.join(".github/workflows")).expect("a folder");
-    fs::create_dir_all(root.join("docs/tooling")).expect("a folder");
+    fs::create_dir_all(root.join("tools/repo-tools/src")).expect("a folder");
+    fs::create_dir_all(root.join("tests/data")).expect("a folder");
     root
 }
 
@@ -940,12 +932,12 @@ fn reads_the_pins_of_a_checkout() {
             "env:\n  CARGO_DENY_VERSION: 0.20.2\n\njobs:\n    - uses: actions/checkout@v7\n    - run: cargo install --locked cargo-deny@${{ env.CARGO_DENY_VERSION }}\n",
         ),
         (
-            "docs/tooling/agent-tools.md",
-            "then `cargo install --locked cargo-llvm-cov@0.9.1 cargo-deny@0.20.2` and\n",
+            "tools/repo-tools/src/check_all.rs",
+            "\"echo 'missing: run cargo install --locked cargo-llvm-cov@0.9.1 cargo-deny@0.20.2' >&2\",\n",
         ),
         (
-            "docs/tooling/dependencies.md",
-            "## Rust tools\n\n| Tool | Version, released | Why |\n| --- | --- | --- |\n| cargo-llvm-cov | 0.9.1, 2026-09-06 | coverage |\n| cargo-deny | 0.20.2, 2026-07-09 | advisories |\n",
+            "tests/data/dependencies.json",
+            "[\n  { \"name\": \"cargo-deny\", \"kind\": \"cargo-tool\", \"version\": \"0.20.2\" },\n  { \"name\": \"cargo-llvm-cov\", \"kind\": \"cargo-tool\", \"version\": \"0.9.1\" }\n]\n",
         ),
         (".github/workflows/notes.md", "uses: other/action@v1\n"),
         (
@@ -989,11 +981,15 @@ fn reads_the_pins_of_a_checkout() {
             // Sorted by name, version and place; the workflow's `@${{ env.… }}` is no version.
             tools: vec![
                 tool("cargo-deny", "0.20.2", ".github/workflows/a.yml"),
-                tool("cargo-deny", "0.20.2", "docs/tooling/agent-tools.md"),
-                tool("cargo-deny", "0.20.2", DEPENDENCIES_PAGE),
                 tool("cargo-deny", "0.20.2", "package.json"),
-                tool("cargo-llvm-cov", "0.9.1", "docs/tooling/agent-tools.md"),
+                tool("cargo-deny", "0.20.2", DEPENDENCIES_PAGE),
+                tool("cargo-deny", "0.20.2", "tools/repo-tools/src/check_all.rs"),
                 tool("cargo-llvm-cov", "0.9.1", DEPENDENCIES_PAGE),
+                tool(
+                    "cargo-llvm-cov",
+                    "0.9.1",
+                    "tools/repo-tools/src/check_all.rs"
+                ),
             ],
         }
     );

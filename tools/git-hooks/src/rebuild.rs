@@ -14,7 +14,7 @@ use git_repository::stdout_of;
 use stale_binaries::{RELEASE_BUILD, binaries, binary_written, touches_rust};
 
 /// The command a person runs again after a failed rebuild.
-pub const AGAIN: &str = "npm run rust:build";
+pub const AGAIN: &str = "cargo build --release --workspace --locked";
 
 /// What a hook did after a pull.
 #[derive(Clone, Debug, PartialEq, Eq)]

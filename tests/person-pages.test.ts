@@ -9,12 +9,6 @@ const ROOT = join(import.meta.dirname, "..");
 /** The pages a person reads that name the commands to run. */
 const COMMAND_PAGES = ["README.md", "docs/commands.md"];
 
-/** An epic as the tables write it: `E01 — Draw symbol shapes from numbers`. */
-const EPIC = /\| (?:\d+ \| )?(?<epic>E\d+ — [^|]+?) \|(?: (?<status>[a-z-]+) \|)?/gu;
-
-/** An epic and its status, as a table row gives them. */
-type Epic = { readonly epic: string; readonly status: string };
-
 /**
  * A file of the repository.
  *
@@ -23,35 +17,6 @@ type Epic = { readonly epic: string; readonly status: string };
  */
 function read(path: string): string {
   return readFileSync(join(ROOT, path), "utf8");
-}
-
-/**
- * The epics of the table rows of a text, each with its status cell when the row has one.
- *
- * @param text - Markdown holding tables
- * @returns each epic in the order written
- */
-function epicsOf(text: string): readonly Epic[] {
-  return text
-    .matchAll(EPIC)
-    .map((match) => ({
-      epic: match.groups?.["epic"] ?? "",
-      status: match.groups?.["status"] ?? "",
-    }))
-    .toArray();
-}
-
-/**
- * The part of a page under a heading, up to the next heading of its level.
- *
- * @param text - the page
- * @param heading - the heading, as written, `## What was done`
- * @returns the lines under it
- */
-function section(text: string, heading: string): string {
-  const after = text.split(`\n${heading}\n`, 2)[1] ?? "";
-
-  return after.split("\n## ", 1)[0] ?? "";
 }
 
 /**
@@ -78,6 +43,8 @@ function scriptNames(): readonly string[] {
   return typeof scripts === "object" && scripts !== null ? Object.keys(scripts) : [];
 }
 
+// The order of the epics and their statuses live in the records (epics.position), which the CI
+// cannot read: `docs/where-it-stands.md` is kept true to them at each review (AUD-054).
 describe("the pages a person reads, kept true to the repository", () => {
   const scripts = scriptNames();
 
@@ -89,18 +56,5 @@ describe("the pages a person reads, kept true to the repository", () => {
 
     expect(named.length).toBeGreaterThan(3);
     expect(named.filter((script) => !scripts.includes(script))).toEqual([]);
-  });
-
-  it("lists as done, in the order of the epics, every epic the backlog says done", () => {
-    const backlog = epicsOf(read("docs/backlog/README.md"));
-    const page = read("docs/where-it-stands.md");
-
-    expect(epicsOf(section(page, "## What was done")).map((row) => row.epic)).toEqual(
-      backlog.filter((row) => row.status === "done").map((row) => row.epic),
-    );
-
-    expect(epicsOf(section(page, "## Under way")).map((row) => row.epic)).toEqual(
-      backlog.filter((row) => row.status === "in-progress").map((row) => row.epic),
-    );
   });
 });

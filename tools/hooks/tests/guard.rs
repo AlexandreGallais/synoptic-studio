@@ -514,7 +514,7 @@ fn f21_ac1_finds_a_script_missing_from_the_package_json() {
     assert_eq!(scripts_of("{"), None);
     assert_eq!(
         missing_script_reason("git:sync", "chore/en-090-x", "origin/feature/f20-y"),
-        "`npm run git:sync`: no script `git:sync` in the package.json of branch `chore/en-090-x`. A tool of the agent is called by its binary, `target/release/<binary>`, as docs/tooling/agent-tools.md lists them (EN-115). A branch made before a script gets it by a rebase on its base: run `git fetch origin`, then `git rebase origin/feature/f20-y`, one call each."
+        "`npm run git:sync`: no script `git:sync` in the package.json of branch `chore/en-090-x`. A tool of the agent is called by its binary, `target/release/<binary>`, as the records' tools lists them (EN-115). A branch made before a script gets it by a rebase on its base: run `git fetch origin`, then `git rebase origin/feature/f20-y`, one call each."
     );
 }
 

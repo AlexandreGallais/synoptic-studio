@@ -1,4 +1,4 @@
-//! The draft of a release text from its commits (`docs/tooling/releases.md`, What a release
+//! The draft of a release text from its commits (`the records' conventions, area release`, What a release
 //! text holds): the commits a user of the library or the playground sees, a revert and what it
 //! reverts left out, one line per story in the group of its impact, a feature's lines together,
 //! each line marked `[draft]` until the agent rewrites it.

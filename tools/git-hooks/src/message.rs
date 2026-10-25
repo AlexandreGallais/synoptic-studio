@@ -18,7 +18,7 @@ use regex::Regex;
 use crate::case::{Case, is_in_case, starts_with_cased_letter};
 
 /// The project's scopes: one per layer of the library, plus the areas of the project. The one list
-/// the commit-msg hook and the CI check (`docs/tooling/git-workflow.md`, Commit messages).
+/// the commit-msg hook and the CI check (`the records' conventions, area git`, Commit messages).
 pub const SCOPES: [&str; 14] = [
     "adr",
     "backlog",
@@ -670,7 +670,7 @@ pub fn format_report(report: &Report) -> String {
     let _ = write!(
         text,
         "\n{sign}   found {} problems, {} warnings\n\
-         ⓘ   The rules: docs/tooling/git-workflow.md, Commit messages\n",
+         ⓘ   The rules: the records' conventions, area git, topic commit messages\n",
         report.errors.len(),
         report.warnings.len()
     );

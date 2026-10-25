@@ -1,4 +1,4 @@
-//! Turns of work kept for later comparison (`docs/tooling/metrics.md`): each session report of the
+//! Turns of work kept for later comparison (`the records' conventions, area metrics`): each session report of the
 //! current turn is saved as one line of `.git/metrics/turns.jsonl`, and the metrics report lists
 //! them all, so that a retrospective compares the turns of an epic.
 

@@ -10,7 +10,7 @@ A dependency-free TypeScript library to draw **SVG symbols** for **synoptic view
 | --- | --- |
 | **Documentation** | <https://alexandregallais.github.io/synoptic-studio/> — how the project works, the business rules, the API |
 | **Playground** | <https://alexandregallais.github.io/synoptic-studio/playground/> — the library at work, as of the last release |
-| **Status** | [where it stands](./docs/where-it-stands.md), and the [order of the epics](./docs/backlog/README.md) |
+| **Status** | [where it stands](./docs/where-it-stands.md) |
 
 ## How it is built
 

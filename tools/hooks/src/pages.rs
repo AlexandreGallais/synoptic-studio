@@ -1,4 +1,4 @@
-//! Pages read through the library (`docs/tooling/sources.md`, EN-101): a `WebFetch`, or a `curl`
+//! Pages read through the library (`the records' conventions, area library`, EN-101): a `WebFetch`, or a `curl`
 //! or `wget` printing a web page, is refused with the `library_get` call to make instead, unless
 //! the library returned that page empty — stored with fewer than 300 characters, or refused by its
 //! site — which the hook reads from the library's file.
@@ -8,7 +8,7 @@ use std::path::PathBuf;
 use git_repository::records_place::records_of_folder;
 
 /// Characters under which a stored page counts as empty: a page built in the browser by
-/// JavaScript, its shell only (`docs/tooling/sources.md`, Limits). Of 417 pages stored on
+/// JavaScript, its shell only (`the records' conventions, area library`, Limits). Of 417 pages stored on
 /// 2026-10-17, 8 held fewer, from 0 to 235 characters.
 pub const EMPTY_PAGE: usize = 300;
 
@@ -294,12 +294,12 @@ pub fn refusal(url: &str, library: Library) -> Option<String> {
         Library::Failed => None,
         Library::Stored { .. } => Some(format!(
             "The library holds this page: call library_get with url \"{url}\", then library_read \
-             the sections needed (docs/tooling/sources.md, EN-101)."
+             the sections needed (the records' conventions, area library, EN-101)."
         )),
         Library::Missing => Some(format!(
             "Pages are read through the library: call library_get with url \"{url}\" (it fetches \
              and stores the page), then library_read the sections needed. WebFetch only once the \
-             library returns the page empty (docs/tooling/sources.md, EN-101)."
+             library returns the page empty (the records' conventions, area library, EN-101)."
         )),
     }
 }
@@ -322,7 +322,7 @@ pub fn has_library_tools(agent_file: &str) -> bool {
 pub fn refusal_without_library(url: &str) -> String {
     format!(
         "Pages are read through the library, and this agent has no library tools: name \"{url}\" \
-         in your report, for your caller to read through the library (docs/tooling/sources.md, \
+         in your report, for your caller to read through the library (the records' conventions, area library, \
          EN-101)."
     )
 }

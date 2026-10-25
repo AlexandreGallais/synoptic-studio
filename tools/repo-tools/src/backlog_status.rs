@@ -2,7 +2,7 @@
 //! `features` or `stories`, by the form of its id, which every branch reads at once; no file, no
 //! index nor parent's table to write since the backlog moved into the records.
 
-/// The statuses an item may take (`docs/backlog/README.md`, How work is planned).
+/// The statuses an item may take (`the records' story conventions`, How work is planned).
 pub const STATUSES: [&str; 6] = ["draft", "ready", "in-progress", "parked", "done", "dropped"];
 
 /// Why a status is refused, `None` for one of [`STATUSES`].

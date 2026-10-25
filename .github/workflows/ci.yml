@@ -1,4 +1,4 @@
-# Quality gate of the pull requests into main: the only CI run (ADR-0072, docs/tooling/ci.md).
+# Quality gate of the pull requests into main: the only CI run (ADR-0072, the records' workflows).
 # Work branches (stories, features, develop) are checked locally by the Git hooks. Each lane of
 # `check:all` is a job of its own, in parallel, each its own check on the pull request (EN-124).
 # Its trigger is its only condition (ADR-0088): every job runs on every pull request into main,
@@ -17,7 +17,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  # The cargo tools of the Rust checks (EN-069), the versions of docs/tooling/dependencies.md; the
+  # The cargo tools of the Rust checks (EN-069), their rows of the records' dependencies; the
   # same in develop-ci.yml, whose run after each merge into develop saves the caches this workflow
   # restores, and in rust-caches.yml, site.yml and release.yml (EN-111, EN-125, EN-132, EN-135).
   CARGO_LLVM_COV_VERSION: 0.9.1

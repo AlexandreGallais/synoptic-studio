@@ -36,6 +36,7 @@
     "docs/.vitepress/cache",
     "docs/.vitepress/dist",
     "src/model/font/inter-metrics.json",
+    "tests/data",
     ".claude/worktrees",
     ".claude/settings.local.json",
     "docs/.vitepress/.temp",

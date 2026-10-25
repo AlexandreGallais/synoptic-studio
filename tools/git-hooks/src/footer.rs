@@ -1,5 +1,5 @@
 //! The footer a commit on a story branch carries (EN-108): `Refs: <ID>.T<n>`, a task of the
-//! branch's own story, so that `story:finish` and the metrics find each commit's story; a story
+//! branch's own story, so that `story-finish` and the metrics find each commit's story; a story
 //! has no `done` commit since its row moved into the records (EN-154), so `Closes:` is no footer
 //! of it any more (AUD-053). A feature branch, `develop`, `main` and a `docs/` branch are not asked
 //! for one; nor is a message commitlint ignores (a merge, a revert, a `fixup!`).

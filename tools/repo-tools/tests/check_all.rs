@@ -532,23 +532,18 @@ fn job_names(text: &str) -> Vec<String> {
         .collect()
 }
 
-/// The checks `main`'s ruleset requires, as `docs/tooling/ci.md` writes them: the names in code
-/// font after "require status checks" on the ruleset's row.
-fn required_checks(page: &str) -> Vec<String> {
-    let row = page
-        .lines()
-        .find(|line| line.trim_start().starts_with("| `main` | default branch |"))
-        .unwrap_or_default();
-    let checks = row
-        .split_once("require status checks")
-        .map_or("", |(_, rest)| rest);
-
-    checks
-        .split('`')
-        .skip(1)
-        .step_by(2)
-        .map(str::to_owned)
-        .collect()
+/// The checks `main`'s ruleset requires, as `tests/data/required-checks.json` lists them: a JSON
+/// array of names; none when the text is not one.
+fn required_checks(data: &str) -> Vec<String> {
+    hooks::json::parse(data)
+        .map(|value| {
+            value
+                .items()
+                .iter()
+                .map(|item| item.text().to_owned())
+                .collect()
+        })
+        .unwrap_or_default()
 }
 
 #[test]
@@ -591,20 +586,17 @@ fn f24_ac1_reads_the_jobs_of_a_matrix_to_its_end() {
     );
     assert_eq!(job_names(text), ["A", "B", "Other"]);
     assert_eq!(matrix_jobs("jobs:\n"), Vec::<(String, Vec<String>)>::new());
-    assert_eq!(
-        required_checks(
-            "   | `main` | default branch | none | merge method **Merge**, require status checks: `A`, `B` |"
-        ),
-        ["A", "B"]
-    );
+    assert_eq!(required_checks("[\"A\", \"B\"]"), ["A", "B"]);
     assert_eq!(required_checks("| `develop` |"), Vec::<String>::new());
 }
 
 #[test]
 fn f24_ac1_requires_on_main_every_job_of_the_ci_and_codeql_by_its_name() {
     let mut jobs = job_names(&workflow("ci.yml"));
-    let mut required =
-        required_checks(&fs::read_to_string(root().join("docs/tooling/ci.md")).expect("ci.md"));
+    let mut required = required_checks(
+        &fs::read_to_string(root().join("tests/data/required-checks.json"))
+            .expect("required checks"),
+    );
 
     jobs.extend(job_names(&workflow("codeql.yml")));
     jobs.sort();
@@ -691,14 +683,13 @@ fn f29_ac2_reads_cargo_s_inputs_and_the_files_the_crates_tests_read() {
         assert!(touches_rust(&owned(&[path])), "{path}");
     }
     // Read by the crates' tests outside tools/: the scripts, the formatter's oxfmt and settings,
-    // the CI and its required checks, the lint's folders, the hooks' settings and the test files.
+    // the CI and its required checks, the hooks' settings and the test files.
     for path in [
         "package.json",
         "package-lock.json",
         ".oxfmtrc.json",
         ".github/workflows/ci.yml",
-        "docs/tooling/ci.md",
-        "docs/conventions/files.md",
+        "tests/data/required-checks.json",
         ".claude/settings.json",
         "src/math/angle/degrees.test.ts",
         "tests/declarations.test.ts",
@@ -708,8 +699,8 @@ fn f29_ac2_reads_cargo_s_inputs_and_the_files_the_crates_tests_read() {
     // A story of Markdown, of the library's code or of a script: none of them.
     assert!(!touches_rust(&owned(&[
         "playground/checklists/epic-17.ts",
-        "docs/backlog/stories/x.md",
-        "docs/tooling/commands.md",
+        "docs/how-it-works.md",
+        "tests/data/criteria.json",
         "src/math/angle/degrees.ts",
         "playground/main.ts",
         "scripts/default-font-metrics.ts",

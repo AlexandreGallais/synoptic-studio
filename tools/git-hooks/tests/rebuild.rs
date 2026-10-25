@@ -400,7 +400,7 @@ fn f29_ac3_a_failed_build_is_printed_with_the_command_to_run_again() {
     assert_eq!(cargo_calls(&repos), build_call(&repos));
     assert!(
         printed(&output).contains(
-            "git-hooks: the pull is done, but the rebuild of target/release failed; run `npm run rust:build` again:\nerror: it broke\n"
+            "git-hooks: the pull is done, but the rebuild of target/release failed; run `cargo build --release --workspace --locked` again:\nerror: it broke\n"
         ),
         "{}",
         printed(&output)
@@ -418,7 +418,7 @@ fn f29_ac3_exits_0_from_the_binary_after_a_failed_build() {
 
     // Git ignores a post hook's exit code: the binary run by hand, `ORIG_HEAD` still the head
     // before the pull, shows its own (AUD-031, F7). `post-rewrite` reads its standard input.
-    let failure = "git-hooks: the pull is done, but the rebuild of target/release failed; run `npm run rust:build` again:\nerror: it broke\n";
+    let failure = "git-hooks: the pull is done, but the rebuild of target/release failed; run `cargo build --release --workspace --locked` again:\nerror: it broke\n";
 
     for (hook, options, input) in [("post-merge", "0", ""), ("post-rewrite", "rebase", "a b\n")] {
         let mut child = clean(&repos, env!("CARGO_BIN_EXE_git-hooks"), &repos.work)
@@ -553,6 +553,6 @@ fn prints_what_the_hook_did() {
     );
     assert_eq!(
         message(&AfterPull::Failed("error: it broke\n".to_owned())),
-        "git-hooks: the pull is done, but the rebuild of target/release failed; run `npm run rust:build` again:\nerror: it broke\n"
+        "git-hooks: the pull is done, but the rebuild of target/release failed; run `cargo build --release --workspace --locked` again:\nerror: it broke\n"
     );
 }

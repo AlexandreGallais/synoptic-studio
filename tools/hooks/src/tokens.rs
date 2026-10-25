@@ -1,4 +1,4 @@
-//! Exact tokens of the current turn for the status line (`docs/tooling/metrics.md`): from the
+//! Exact tokens of the current turn for the status line (`the records' conventions, area metrics`): from the
 //! person's prompt to the agent's last answer, like the session report, and the background tasks
 //! the agent waits for. Summed from the transcript incrementally, a small cache in the Git folder
 //! keeping the byte offset already read. Rewritten from `.claude/hooks/status-tokens.ts` (EN-104).

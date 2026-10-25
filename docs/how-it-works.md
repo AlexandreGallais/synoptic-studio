@@ -2,7 +2,7 @@
 
 ## What it is
 
-`editor` is a dependency-free TypeScript library that draws SVG symbols for synoptic views, the schematic screens that supervise industrial plants. Four tools will be built on it: the Symbol Editor, the Configurator, the View Editor and its drawing tools ([the editor](./the-editor.md)). Today the library and its playground exist; the editors come later, in the [order of the epics](./backlog/).
+`editor` is a dependency-free TypeScript library that draws SVG symbols for synoptic views, the schematic screens that supervise industrial plants. Four tools will be built on it: the Symbol Editor, the Configurator, the View Editor and its drawing tools ([the editor](./the-editor.md)). Today the library and its playground exist; the editors come later, in the Product Owner's order of the epics.
 
 ## How the library computes
 
@@ -30,7 +30,7 @@ flowchart LR
 - **One story at a time**: each story is worked on its own branch, tests first, then merged into its feature's branch; a feature is audited, then merged into `develop`.
 - **The review**: at each return of the Product Owner, they try on `develop` what changed; the agent renames what reads badly, fixes the tools that failed, refreshes these pages, then merges `develop` into `main` once the review is validated.
 - **The release**: a button on `main` computes the version from the tags and publishes it on GitHub; the library is never published on npm.
-- **The agent's records**: the backlog, the decisions, the research and the history live in a database outside the repository, read by `target/release/knowledge` ([the records](./tooling/knowledge.md)); these pages keep what a person reads.
+- **The agent's records**: the backlog, the decisions, the research and the history live in a database outside the repository, read by `target/release/knowledge`; these pages keep what a person reads.
 
 ## How quality is kept
 

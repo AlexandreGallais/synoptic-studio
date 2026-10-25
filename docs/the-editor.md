@@ -20,7 +20,7 @@ The same symbol can serve several projects: each project's library gives it its 
 - **Text**, measured with the real metrics of its font, in one line or wrapped in a box, ending with "…" when it is too long, its fonts embedded in the exported file.
 - **Colors**, typed in hexadecimal or picked in a color picker, with their opacity.
 
-Every size, position, radius and angle is a whole number typed in the panel; any shape can be turned by any angle. Later come groups, layouts, booleans, strokes, ports, animations and pipes, in the [order of the epics](./backlog/).
+Every size, position, radius and angle is a whole number typed in the panel; any shape can be turned by any angle. Later come groups, layouts, booleans, strokes, ports, animations and pipes, in the Product Owner's order of the epics.
 
 ## How one works on a drawing
 

@@ -1,7 +1,7 @@
 //! The branch name, checked before a push and in the CI (EN-108, in place of validate-branch-name
 //! 1.3.2, `REF-VALIDATE-BRANCH-NAME`): one regular expression, the project's own pattern of
-//! `.validate-branch-namerc.json`, so nothing of the package is ported. `story:finish` and the
-//! auto-merge read a story's id from its branch (`docs/tooling/git-workflow.md`).
+//! `.validate-branch-namerc.json`, so nothing of the package is ported. `story-finish` and the
+//! auto-merge read a story's id from its branch (`the records' conventions, area git`).
 
 use std::sync::LazyLock;
 
@@ -35,7 +35,7 @@ pub fn branch_refusal(name: &str) -> Option<String> {
             "✖   branch name \"{name}\" refused: it must be `main`, `develop`, \
              `feature/f01-<kebab-case-topic>` or `<type>/<story-id>-<kebab-case-topic>` (a fix \
              without a story takes the id of the story it serves) \
-             (docs/tooling/git-workflow.md); pattern {BRANCH_PATTERN}"
+             (the records' conventions, area git); pattern {BRANCH_PATTERN}"
         )
     })
 }

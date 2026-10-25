@@ -1,0 +1,11 @@
+[
+  "Lint and types",
+  "TypeScript tests",
+  "Docs, playground and build",
+  "Format, secrets and dependencies",
+  "Rust",
+  "Rust coverage",
+  "Commit messages and branch name",
+  "Dependency review",
+  "Analyze"
+]

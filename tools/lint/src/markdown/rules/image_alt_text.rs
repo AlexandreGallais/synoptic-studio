@@ -1,5 +1,5 @@
 //! `local/image-alt-text`, a rule of the project (EN-077): an image's text alternative is short
-//! and says what the image shows, as docs/conventions/writing.md asks after Google's guide
+//! and says what the image shows, as the records' conventions, area writing asks after Google's guide
 //! (`REF-GOOGLE-IMAGES`): under 155 characters, never opening with "Image of". Nothing checked it
 //! before; `markdown/require-alt-text` only asks that there be one.
 

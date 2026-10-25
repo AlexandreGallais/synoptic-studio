@@ -1,4 +1,4 @@
-//! `secret-scan [--staged | <files>…]` (EN-110): the secret scan, `npm run lint:secrets` on every
+//! `secret-scan [--staged | <files>…]` (EN-110): the secret scan, the `lint:secrets` check of `check-all` on every
 //! tracked file without an argument, the pre-commit hook's on the staged files with `--staged` or
 //! the paths it gives. It prints `secretlint` 13.0.7's report, every secret masked, and exits as
 //! it does: 0 without a finding, 1 with one, 2 on a fatal error — Git failing, a file that cannot
