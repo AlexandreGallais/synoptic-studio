@@ -2,10 +2,9 @@
 //! row's cells read back, a word checked before it enters a statement, and a script standing for
 //! `knowledge`, so that no test reads the real records.
 
-use std::fs;
 use std::path::Path;
 
-use knowledge_call::{escaped, is_plain, knowledge_beside, rows_by, rows_of, unescaped};
+use knowledge_call::{escaped, is_plain, knowledge_beside, rows_of, unescaped};
 
 #[test]
 fn finds_the_knowledge_binary_beside_another() {
@@ -47,7 +46,11 @@ fn lets_only_an_id_or_a_branch_into_a_statement() {
 #[cfg(unix)]
 #[test]
 fn reads_the_rows_a_knowledge_binary_prints_and_its_error_when_it_fails() {
+    // Unix-only: a script stands for the binary by its execute bit, which Windows lacks.
+    use std::fs;
     use std::os::unix::fs::PermissionsExt;
+
+    use knowledge_call::rows_by;
 
     let folder = std::env::temp_dir().join(format!("knowledge-call-{}", std::process::id()));
     let _ = fs::remove_dir_all(&folder);
