@@ -1,8 +1,9 @@
 //! `check-rule-docs <message file>` (EN-059, F18.AC16): run by the `commit-msg` hook from the
 //! repository's root. For each story the commit closes (`Closes: <ID>`), it gathers the files of the
 //! story's commits (`Refs:` or `Closes:` naming it or its tasks) and the files staged; when they
-//! change a rule in `docs/domain/` without the Q row, the VAL's decisions to confirm and the guide
-//! page, it refuses the commit and names what is missing, unless the message holds the line
+//! change a rule in `docs/domain/` without the Q row and, from F48, the feature's audit naming the
+//! rule to recheck (up to F47, the VAL's decisions to confirm and the guide page), it refuses the
+//! commit and names what is missing, unless the message holds the line
 //! `Rule-docs: none affected, <why>`.
 
 use std::env;
