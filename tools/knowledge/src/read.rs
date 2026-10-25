@@ -2,7 +2,7 @@
 //! `merged` rows and its own `draft` rows, its draft of an id over the merged row of it, the
 //! `dropped` rows with `--all`; searched by FTS5, best first by `bm25()` (`REF-SQLITE-FTS5`).
 
-use library::store::fts_query;
+use library::store::every_word_else_any;
 use page::section::sections;
 use rusqlite::{Connection, ToSql};
 
@@ -197,13 +197,7 @@ pub fn search(
     words: &str,
     filters: &Filters,
 ) -> rusqlite::Result<Vec<Hit>> {
-    let every = matching(database, reader, &fts_query(words, "AND"), filters)?;
-
-    if every.is_empty() {
-        matching(database, reader, &fts_query(words, "OR"), filters)
-    } else {
-        Ok(every)
-    }
+    every_word_else_any(words, |query| matching(database, reader, query, filters))
 }
 
 /// The documents `reader`, a branch, reads, filtered, sorted by id.

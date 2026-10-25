@@ -480,7 +480,7 @@ fn f48_ac1_puts_the_file_in_wal_while_another_connection_writes_it_in_its_old_mo
     let (holding, held) = mpsc::channel();
     let writer_file = file.clone();
     // A connection of the rollback journal holds the write lock; switching to WAL needs the file
-    // alone, which SQLite refuses at once rather than wait (`REF-SQLITE-WAL`, §9).
+    // alone, which SQLite refused at once rather than wait, as EN-152 measured.
     let writer = thread::spawn(move || {
         let database = Connection::open(&writer_file).unwrap();
 

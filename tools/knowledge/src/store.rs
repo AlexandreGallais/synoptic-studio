@@ -260,8 +260,9 @@ fn switch_to_wal(database: &Connection) -> rusqlite::Result<String> {
     database.query_row("PRAGMA journal_mode = WAL", [], |row| row.get(0))
 }
 
-/// Puts the file in WAL. The switch needs the file alone, and SQLite refuses it at once, without
-/// waiting, while another connection writes (`REF-SQLITE-WAL`, §9): that write is then waited for,
+/// Puts the file in WAL. The switch needs the file alone, and SQLite refused it at once, without
+/// waiting, while another connection wrote, as EN-152 measured (`docs/tooling/knowledge.md`, Two
+/// worktrees at once), the mode it kept returned (`REF-SQLITE-PRAGMA`): that write is waited for,
 /// by a `BEGIN IMMEDIATE` within the busy timeout, and the mode read again, the other connection
 /// having maybe switched the file itself, before one more switch; that one failing, or leaving the
 /// file in another mode, fails the opening.
