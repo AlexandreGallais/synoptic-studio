@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 import { shapeSelectionAfterPress } from "./shape-selection-after-press";
 
 // A, B and C drawn in that order: their indices 0, 1 and 2.
-describe("the shapes selected once a press on a shape moves (US-072)", () => {
+describe("the shapes selected once a press on a shape moves", () => {
   it("[F39.AC3] selects A alone, pressed while B is selected", () => {
     expect(shapeSelectionAfterPress([1], 0, false)).toEqual([0]);
     expect(shapeSelectionAfterPress([], 2, false)).toEqual([2]);

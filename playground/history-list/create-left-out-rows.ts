@@ -7,7 +7,6 @@
  * @param count - how many states are left out on that side
  * @param side - `earlier` before the rows, `later` after them
  * @returns the line, or none
- * @see RULE-interaction-7-navigation-and-history
  */
 export function createLeftOutRows(
   document: Document,

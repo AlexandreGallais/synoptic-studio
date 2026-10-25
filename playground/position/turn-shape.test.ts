@@ -31,7 +31,7 @@ function convertSquare(): void {
   clickElement("convert");
 }
 
-describe("turning and moving a shape (US-018)", () => {
+describe("turning and moving a shape", () => {
   beforeEach(() => {
     // Step 1 of the guided test: a 120 × 80 rectangle, radius 10 (F01).
     openPage("?step=1");
@@ -184,7 +184,7 @@ describe("turning and moving a shape (US-018)", () => {
   });
 
   it("[F04.AC1] keeps the view still while the shape turns, so that it turns about its center on screen", () => {
-    // 120 × 80 turned by 90° goes up to y −20: the view does not follow it (VAL-007).
+    // 120 × 80 turned by 90° goes up to y −20: the view does not follow it.
     typeAndEnter("angle", "90");
 
     expect(document.querySelector("#canvas svg")?.getAttribute("viewBox")).toMatch(/^-40 -40 /u);

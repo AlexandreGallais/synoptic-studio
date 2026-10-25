@@ -21,7 +21,6 @@ const DIGITS_PER_BYTE = 2;
  * @kind format
  * @param color - the stored color, already checked (`isColor`)
  * @returns its bytes, integers from 0 to 255
- * @see REF-CSS-COLOR-4
  */
 export function hexToBytes(color: string): ByteRgb {
   return {

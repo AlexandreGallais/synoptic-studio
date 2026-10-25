@@ -86,7 +86,7 @@ describe("editing the points of a free shape", () => {
   it.each([
     // Point 1 of the hexagon converted, at (75, 93.30127): 93.30127 + 1 = 94.30127, rounded to
     // 94, whether by Up or by `+1` typed, where before the fraction was refused, the point left
-    // where it was (AUD-047).
+    // where it was.
     {
       how: "Up",
       step: (): void => {
@@ -174,7 +174,7 @@ describe("editing the points of a free shape", () => {
 
     expect(readText('#points [data-vertex="1"]')).toBe("1 · x 37.5 · y 93.30127 · radius 0");
 
-    // A fraction typed is rounded, a tie up (AUD-046): 12.5 gives 13.
+    // A fraction typed is rounded, a tie up: 12.5 gives 13.
     typeAndEnter("width", "12.5");
 
     expect(readValue("width")).toBe("13");

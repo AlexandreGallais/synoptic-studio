@@ -94,7 +94,7 @@ describe("wrappedParagraph (DERIV-text-box steps 1 to 4)", () => {
 
   it("[F17.AC6] keeps the spaces that open the paragraph, and drops those that end it", () => {
     // "  Hello" 2 × 569 + 4667 = 5805 units, 45.35156 ≤ 50; the last line loses its trailing
-    // spaces as every other line does (US-049).
+    // spaces as every other line does.
     expect(wrappedParagraph(ARIAL_BOX_METRICS, "  Hello World  ", BOXED)).toEqual([
       "  Hello",
       "World",
@@ -143,7 +143,7 @@ describe("wrappedParagraph (DERIV-text-box steps 1 to 4)", () => {
     expect(wrappedParagraph(ARIAL_BOX_METRICS, "Hel", text)).toEqual(["Hel"]);
   });
 
-  // alone: 128 ms, the median of 5 runs of its file (EN-129); 1 s, 7.8 times it, failed at 1139 ms
+  // alone: 128 ms, the median of 5 runs of its file; 1 s, 7.8 times it, failed at 1139 ms
   // in a loaded `check:all`. 3 s is 23 times it, and a wrap measuring each line again at each word
   // takes 16.4 s alone.
   it(

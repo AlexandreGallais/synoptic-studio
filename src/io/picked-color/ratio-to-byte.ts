@@ -13,7 +13,6 @@ import type { IntegerRatio } from "../../math";
  * @kind format
  * @param ratio - the component, from 0 to 1, as a numerator and a denominator
  * @returns the byte, an integer from 0 to 255
- * @see DERIV-color-spaces
  */
 export function ratioToByte(ratio: IntegerRatio): number {
   return ratioOnScale(ratio, BYTE_MAXIMUM);

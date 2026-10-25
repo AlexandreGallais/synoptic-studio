@@ -8,8 +8,8 @@ import { EPSILON } from "../../math";
  * polygon are clamped alike; those of a stretched polygon or of a stretched free shape have
  * different angles and may be clamped differently: there is then no one effective radius, and
  * each is shown per vertex. Radii closer than `EPSILON` are the same: the corners of a regular polygon, clamped alike in
- * exact arithmetic, differ by at most about 1e-10 in doubles up to sizes and radii of 100 000
- * (review of US-021), ten times below. No corner gives `+∞`.
+ * exact arithmetic, differ by at most about 1e-10 in doubles up to sizes and radii of 100 000,
+ * ten times below. No corner gives `+∞`.
  *
  * @kind domain
  * @param radii - the radii each corner is drawn with (`effectiveRadii`, or `drawnRadii` with

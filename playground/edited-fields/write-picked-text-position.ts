@@ -15,7 +15,6 @@ import type { DrawnTextRecord } from "../text-placement";
  * @kind procedure
  * @param document - page document
  * @param text - a text of the drawing
- * @see RULE-interaction-2-selector
  */
 export function writePickedTextPosition(document: Document, text: Text): void {
   const metrics = readTextMetrics(document, text) ?? KEPT_TEXT_METRICS.get(JSON.stringify(text));

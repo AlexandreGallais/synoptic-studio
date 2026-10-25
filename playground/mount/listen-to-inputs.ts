@@ -36,7 +36,6 @@ function listenToShapeChoice(document: Document, update: () => void): void {
  * @kind procedure
  * @param document - page document
  * @param update - redraws the playground
- * @see RULE-interaction-2-selector
  */
 function listenToPanelControls(document: Document, update: () => void): void {
   listenToModes(document, update);

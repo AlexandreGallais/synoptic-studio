@@ -302,7 +302,7 @@ describe("the guided test of F05 (VAL-014): placing and turning", () => {
       return readValue("angle");
     });
 
-    // 370 kept as 10; −90 takes 90 away (US-087), 10 − 90 = −80, kept as 280; 360 as 0.
+    // 370 kept as 10; −90 takes 90 away, 10 − 90 = −80, kept as 280; 360 as 0.
     expect(kept).toEqual(["10", "280", "0"]);
     expect(readTransforms()[0]).toBeNull();
 
@@ -317,17 +317,17 @@ describe("the guided test of F05 (VAL-014): placing and turning", () => {
 
   it("[F05.AC5] the frame turns with the letters, blue as a turned shape's box", () => {
     openStep("The dashed frame");
-    // X 0, Y 0 the top-left of its straight box (AUD-040): the middle half its straight box
+    // X 0, Y 0 the top-left of its straight box: the middle half its straight box
     // in, k = (87.953125, 38.71875): (k.x cos 30° + k.y sin 30°, k.x sin 30° + k.y cos 30°) =
     // (76.16964 + 19.35938, 43.97656 + 33.53142) = (95.52902, 77.50798).
     expect(readTransforms()[1]).toBe("rotate(30 95.52902 77.50798)");
-    // Turned, the frame is drawn as a turned shape's box, thin and blue (US-050).
+    // Turned, the frame is drawn as a turned shape's box, thin and blue.
     expect(document.querySelectorAll("#canvas g.text-frame path.turned-box")).toHaveLength(1);
   });
 
   it("the turn on the group holding the text and its four strokes", () => {
     openStep("Turned as a group (decision)");
-    // The straight box at (0, 0) (AUD-040): turned by 90°, the middle k swapped in, (38.71875,
+    // The straight box at (0, 0): turned by 90°, the middle k swapped in, (38.71875,
     // 87.953125).
     expect(readTransforms()[0]).toBe("rotate(90 38.71875 87.95313)");
     expect(readStrokes()).toHaveLength(4);
@@ -368,8 +368,8 @@ describe("the guided test of F05 (VAL-014): placing and turning", () => {
     // The rectangle straight, 100 × 100 centred on (250, 140); the tool back to the selector.
     expect(["shape-x", "shape-y", "angle"].map((id) => readValue(id))).toEqual(["200", "90", "0"]);
     expect(readPressedState("tool-selector")).toBe("true");
-    // The text kept below, still turned about its middle, its straight box at (100, 50)
-    // (AUD-040): the middle (100 + 38.71875, 50 + 87.953125).
+    // The text kept below, still turned about its middle, its straight box at (100, 50):
+    // the middle (100 + 38.71875, 50 + 87.953125).
     expect(readTransforms()[0]).toBe("rotate(90 138.71875 137.95313)");
   });
 });
@@ -424,7 +424,7 @@ describe("the guided test of F05 (VAL-014): the decisions to confirm", () => {
   it("letter spacing 100 001 taken at 100 000, −100 000 accepted without a frame", () => {
     openStep("Spacing bounds ±100 000 (decision)");
     typeInField("text-letter-spacing", "100001");
-    // Taken at the field's most (AUD-046); −200 000 then takes 200 000 from 100 000: −100 000.
+    // Taken at the field's most; −200 000 then takes 200 000 from 100 000: −100 000.
     expect([readValue("text-letter-spacing"), readText("#status")]).toEqual(["100000", ""]);
     typeInField("text-letter-spacing", "-200000");
     expect([readText("#status"), hasFrame(), readBlock().width]).toEqual(["", false, 0]);
@@ -496,7 +496,7 @@ describe("the guided test of F05 (VAL-014): the browser checks and the end", () 
     openStep("A turned text grows in place (US-038)");
     typeAndEnter("text-letter-spacing", "10");
 
-    // X and Y show its straight box (AUD-040); a growing text keeps its turned top-left corner
+    // X and Y show its straight box; a growing text keeps its turned top-left corner
     // (ADR-0057), the highest point at 23°, so that, its height kept, X and Y stay.
     expect([readValue("shape-x"), readValue("shape-y")]).toEqual(["47", "61"]);
   });

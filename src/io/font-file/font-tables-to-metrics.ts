@@ -18,7 +18,6 @@ import type { FontTables } from "../font-tables";
  * @param tables - where its tables sit
  * @param glyphs - each character the font maps, and its glyph
  * @returns the advances by code point, and the advance of `.notdef`
- * @see REF-OT-HMTX
  */
 function parseCharacterAdvances(
   view: Readonly<DataView>,
@@ -44,7 +43,6 @@ function parseCharacterAdvances(
  * @param tables - where its tables sit
  * @param glyphs - each character the font maps, and its glyph
  * @returns its kerning lookups; undefined when a kerning table read passes its end
- * @see REF-OT-GPOS
  */
 function parseKerningLookups(
   view: Readonly<DataView>,
@@ -67,7 +65,6 @@ function parseKerningLookups(
  * @param glyphs - each character the font maps among those asked, and its glyph
  * @returns its metrics; undefined when a kerning table read passes its end, or when the font cannot
  * measure a text (`parseFixedMetrics`)
- * @see REF-OT-OTFF
  */
 function glyphsToMetrics(
   view: Readonly<DataView>,
@@ -95,7 +92,6 @@ function glyphsToMetrics(
  * @param tables - where its tables sit
  * @param characters - the code points whose advances and kerning are kept
  * @returns its metrics; undefined when the character map or a kerning table passes its end
- * @see REF-OT-CMAP
  */
 export function fontTablesToMetrics(
   view: Readonly<DataView>,

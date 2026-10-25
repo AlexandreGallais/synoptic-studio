@@ -1,8 +1,5 @@
 import { selectElement } from "../page";
 
-/** The story whose page holds the color fields. */
-const STORY = "US-035";
-
 /**
  * Reads a field of a color: its hexadecimal or its opacity, an input of the page.
  *
@@ -16,7 +13,7 @@ export function readColorInput(document: Document, id: string): HTMLInputElement
   const input = selectElement(document, id);
 
   if (!(input instanceof HTMLInputElement)) {
-    throw new TypeError(`Playground page whose #${id} is no input (${STORY}).`);
+    throw new TypeError(`Playground page whose #${id} is no input.`);
   }
 
   return input;

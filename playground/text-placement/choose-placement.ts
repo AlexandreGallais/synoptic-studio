@@ -79,7 +79,6 @@ type AxisStarts = {
  * @kind procedure
  * @param starts - what the field shows, the start kept, the start at the base position
  * @returns the start sought on that axis
- * @see RULE-shapes-scripts-and-turning
  */
 function chooseAxisTarget(starts: AxisStarts): number {
   return starts.shown === starts.kept ? starts.start : starts.shown;
@@ -95,7 +94,6 @@ function chooseAxisTarget(starts: AxisStarts): number {
  * @param shown - the start X and Y show (`readTextPosition`)
  * @param start - where the straight box of the text at its base position starts
  * @returns the start sought
- * @see RULE-shapes-scripts-and-turning
  */
 function chooseTargetStart(drawn: DrawnTextRecord | undefined, shown: Point, start: Point): Point {
   if (drawn === undefined) {
@@ -123,7 +121,6 @@ function chooseTargetStart(drawn: DrawnTextRecord | undefined, shown: Point, sta
  * @param sized - the text read from the fields, its position the start X and Y show, and its
  * measured block
  * @returns the text at the position it is drawn at, the top-left of its frame before it turns
- * @see RULE-shapes-scripts-and-turning
  */
 export function choosePlacement(drawn: DrawnTextRecord | undefined, sized: SizedText): Text {
   const base = { ...sized.text, ...chooseBasePosition(drawn, sized) };

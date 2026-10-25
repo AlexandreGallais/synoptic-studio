@@ -11,7 +11,6 @@ import { updateHistory } from "./update-history";
  *
  * @kind procedure
  * @param document - page document
- * @see RULE-interaction-7-navigation-and-history
  */
 export function schedulePanelStep(document: Document): void {
   DUE_HISTORY_STEPS.add(document);

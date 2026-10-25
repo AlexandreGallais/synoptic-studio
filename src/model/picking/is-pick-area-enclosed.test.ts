@@ -36,7 +36,7 @@ const FLAT: PickArea = {
   pieces: [],
 };
 
-describe("isPickAreaEnclosed (EN-144)", () => {
+describe("isPickAreaEnclosed", () => {
   it("encloses a shape whose contour lies within the rectangle, its sides included", () => {
     // [0, 100]² holds the contour exactly; [1, 100] × [0, 100] leaves out its side x = 0.
     expect(isPickAreaEnclosed(BOX, { maxX: 100, maxY: 100, minX: 0, minY: 0 })).toBe(true);

@@ -29,7 +29,6 @@ export type HorizontalHeader = {
  * @kind format
  * @param hhea - the font's `hhea` table, at least 36 bytes long
  * @returns the header's fields
- * @see REF-OT-HHEA
  */
 export function parseHorizontalHeader(hhea: Readonly<DataView>): HorizontalHeader {
   return {

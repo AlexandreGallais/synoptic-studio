@@ -11,7 +11,6 @@ import type { ShapeDrawing } from "./shape-drawing";
  * @param document - page document
  * @param change - the pointer's place, or whether Shift is held
  * @param update - redraws the page from the values typed
- * @see RULE-interaction-1-tools
  */
 export function updateShapeDrawing(
   document: Document,

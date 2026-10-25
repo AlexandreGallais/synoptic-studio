@@ -20,7 +20,6 @@ type NameDecoder = (name: Readonly<DataView>, record: NameRecord) => string | un
  * @param name - the font's `name` table
  * @param record - the name's record, its string within the table
  * @returns its string
- * @see REF-OT-NAME
  */
 function parseUtf16Name(name: Readonly<DataView>, record: NameRecord): string {
   return String.fromCodePoint(
@@ -38,7 +37,6 @@ function parseUtf16Name(name: Readonly<DataView>, record: NameRecord): string {
  * @param name - the font's `name` table
  * @param record - the name's record, its string within the table
  * @returns its string; undefined when a byte is 128 or more
- * @see REF-APPLE-NAME
  */
 function parseAsciiName(name: Readonly<DataView>, record: NameRecord): string | undefined {
   const bytes = Array.from({ length: record.length }, (unused, index) =>
@@ -74,7 +72,6 @@ const NAME_DECODERS: Readonly<Record<string, NameDecoder>> = {
  * @param name - the font's `name` table
  * @param record - the name's record, its string within the table
  * @returns its string; undefined for an encoding the library does not read
- * @see REF-OT-NAME
  */
 export function parseNameString(name: Readonly<DataView>, record: NameRecord): string | undefined {
   return NAME_DECODERS[`${String(record.platform)}/${String(record.encoding)}`]?.(name, record);

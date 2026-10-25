@@ -100,7 +100,7 @@ function readPath(selector: string): string | undefined {
   return document.querySelector(selector)?.getAttribute("d") ?? undefined;
 }
 
-describe("a shape placed and moved at any zoom (US-078)", () => {
+describe("a shape placed and moved at any zoom", () => {
   beforeEach(() => {
     openServedPage("");
     setElementBox("#canvas", { height: 800, left: 100, top: 50, width: 1200 });
@@ -164,7 +164,7 @@ describe("a shape placed and moved at any zoom (US-078)", () => {
 
     showView({ origin: { x: 0, y: 0 }, scale: 2 });
 
-    // On A's contour, 2 / 2 = 1 unit wide, dashes 4 / 2 = 2 units (US-086).
+    // On A's contour, 2 / 2 = 1 unit wide, dashes 4 / 2 = 2 units.
     const outline = selectPageElement("#overlay svg path.selection");
 
     expect(outline.getAttribute("d")).toBe(contour);
@@ -203,7 +203,7 @@ describe("a shape placed and moved at any zoom (US-078)", () => {
   });
 });
 
-describe("the handles of the points at 200 % (US-078)", () => {
+describe("the handles of the points at 200 %", () => {
   beforeEach(() => {
     // Step 1: the rectangle 120 × 80, radius 10, point 1 at (0, 0); Points mode, point 1 selected.
     openServedPage("?step=1");

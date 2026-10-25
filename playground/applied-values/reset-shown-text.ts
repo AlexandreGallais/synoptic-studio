@@ -9,7 +9,6 @@ import { writeFieldText } from "./write-field-text";
  * @kind procedure
  * @param document - page document
  * @param id - the field's, without `#`
- * @see RULE-interaction-2-selector
  */
 export function resetShownText(document: Document, id: string): void {
   const input = document.querySelector(`#${id}`);

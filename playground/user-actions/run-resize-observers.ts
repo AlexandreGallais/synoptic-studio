@@ -9,7 +9,6 @@ import { WATCHED_ELEMENTS } from "./watched-elements";
  *
  * @kind procedure
  * @param selector - CSS selector of the element, `#canvas`
- * @see REF-RESIZE-OBSERVER-1
  */
 export function runResizeObservers(selector: string): void {
   const target = selectPageElement(selector);

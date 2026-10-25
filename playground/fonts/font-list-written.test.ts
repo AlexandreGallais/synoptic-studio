@@ -16,9 +16,9 @@ import {
 import type { InstalledFont } from "./installed-font";
 
 /**
- * 60 installed faces of 20 families, three faces each, each file read ahead (US-053): the 590 faces
- * of 186 families seen by SP-019 are counted once each by `distinctFamilyNames`' own test; a shorter
- * list keeps this page test fast (EN-054).
+ * 60 installed faces of 20 families, three faces each, each file read ahead: the 590 faces
+ * of 186 families seen by the spike are counted once each by `distinctFamilyNames`' own test; a shorter
+ * list keeps this page test fast.
  */
 const INSTALLED: readonly InstalledFont[] = Array.from({ length: 60 }, (unused, index) => {
   const family = `Family ${String(index % 20)}`;
@@ -50,7 +50,7 @@ function isFontListMarked(): boolean {
   return [...selectChoice("text-font").options].some((option) => option.value === "Mark");
 }
 
-describe("The font list written only when the session's fonts change (US-048)", () => {
+describe("The font list written only when the session's fonts change", () => {
   beforeEach(async () => {
     Object.defineProperty(globalThis, "queryLocalFonts", {
       configurable: true,

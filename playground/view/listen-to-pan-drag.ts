@@ -16,7 +16,6 @@ import { readView } from "./read-view";
  * @kind procedure
  * @param document - page document
  * @param event - the press on the canvas
- * @see RULE-interaction-7-navigation-and-history
  */
 function startPanDrag(document: Document, event: PointerEvent): void {
   PAN_DRAGS.delete(document);
@@ -43,7 +42,6 @@ function startPanDrag(document: Document, event: PointerEvent): void {
  * @param document - page document
  * @param event - the pointer's move on the canvas
  * @param update - redraws the page
- * @see RULE-interaction-7-navigation-and-history
  */
 function movePanDrag(document: Document, event: PointerEvent, update: () => void): void {
   const drag = PAN_DRAGS.get(document);
@@ -69,7 +67,6 @@ function movePanDrag(document: Document, event: PointerEvent, update: () => void
  * @kind procedure
  * @param document - page document
  * @param event - the release, the drag cancelled, or the click after it
- * @see RULE-interaction-7-navigation-and-history
  */
 function stopPanDrag(document: Document, event: Event): void {
   const drag = PAN_DRAGS.get(document);
@@ -97,7 +94,6 @@ function stopPanDrag(document: Document, event: Event): void {
  * @kind procedure
  * @param document - page document
  * @param update - redraws the page
- * @see RULE-interaction-7-navigation-and-history
  */
 export function listenToPanDrag(document: Document, update: () => void): void {
   const canvas = selectElement(document, "canvas");

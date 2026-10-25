@@ -6,7 +6,7 @@ import { EPIC_17_F22_LINES } from "./epic-17-f22-lines";
 
 import type { ChecklistLine } from "./checklist-line";
 
-/** E17's checklist: its features' lines, in the order their validation was prepared (EN-056). */
+/** E17's checklist: its features' lines, in the order their validation was prepared. */
 export const EPIC_17_CHECKLIST: readonly ChecklistLine[] = [
   ...EPIC_17_F18_LINES,
   ...EPIC_17_F19_LINES,

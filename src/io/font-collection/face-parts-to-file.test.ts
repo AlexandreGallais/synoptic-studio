@@ -51,7 +51,7 @@ describe("facePartsToFile (REF-ECMA-262-TYPEDARRAY-SET)", () => {
 
   it(
     "[F18.AC13] writes a part of 200 MB on any machine, the CI's Linux included",
-    // alone: 29 ms, the median of 5 runs of its file (EN-129); 20 s holds a slower machine's
+    // alone: 29 ms, the median of 5 runs of its file; 20 s holds a slower machine's
     // allocation of 200 MB.
     { timeout: 20_000 },
     () => {
@@ -81,7 +81,7 @@ describe("facePartsToFile (REF-ECMA-262-TYPEDARRAY-SET)", () => {
 
   it(
     "[F18.AC13] [F18.AC19] writes the first face of a collection holding a table of 191 134 509 bytes",
-    // alone: 184 ms, the median of 5 runs of its file (EN-129); 20 s is over 100 times it.
+    // alone: 184 ms, the median of 5 runs of its file; 20 s is over 100 times it.
     { timeout: 20_000 },
     () => {
       // The face's parts hold the large table as a view: joined into one buffer, the file has the
@@ -97,7 +97,7 @@ describe("facePartsToFile (REF-ECMA-262-TYPEDARRAY-SET)", () => {
 
   it(
     "[F17.AC14] [F18.AC19] reads the face of that large file, then refuses it: no basic Latin letters",
-    // alone: 14 ms, the median of 5 runs of its file (EN-129); 20 s, as for the file it reads.
+    // alone: 14 ms, the median of 5 runs of its file; 20 s, as for the file it reads.
     { timeout: 20_000 },
     () => {
       // The face maps A, B, C and a alone: read, Test Symbols 400, but lacking 48 of the 52 letters.

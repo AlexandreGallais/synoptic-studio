@@ -17,7 +17,6 @@ const HALO_RADIUS = 13;
  * @param center - point the handle is drawn on
  * @param radius - size of the handle in user units, > 0
  * @returns a closed `d` made of two arcs
- * @see REF-SVG2-PATHS
  */
 function createCirclePathData(center: Point, radius: number): string {
   const left = formatCoordinatePair({ x: center.x - radius, y: center.y });

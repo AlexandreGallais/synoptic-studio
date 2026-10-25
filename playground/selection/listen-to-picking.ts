@@ -11,7 +11,6 @@ import { selectShapeAt } from "./select-shape-at";
  * @kind procedure
  * @param event - the click on the drawing
  * @returns the handle; undefined when the click hit none
- * @see RULE-interaction-3-node-editing
  */
 function readClickedHandle(event: MouseEvent): Element | undefined {
   return event.target instanceof Element
@@ -28,7 +27,6 @@ function readClickedHandle(event: MouseEvent): Element | undefined {
  * @param document - page document
  * @param event - the click on the drawing
  * @returns `points` for a click the points take, `shape` otherwise
- * @see RULE-interaction-3-node-editing
  */
 function readClickTarget(document: Document, event: MouseEvent): "points" | "shape" {
   if (readClickedHandle(event) !== undefined) {
@@ -48,7 +46,6 @@ function readClickTarget(document: Document, event: MouseEvent): "points" | "sha
  * @kind procedure
  * @param document - page document
  * @param update - redraws the page from the values typed
- * @see RULE-interaction-2-selector
  */
 export function listenToPicking(document: Document, update: () => void): void {
   const canvas = selectElement(document, "canvas");

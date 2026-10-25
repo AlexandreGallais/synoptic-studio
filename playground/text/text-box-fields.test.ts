@@ -25,7 +25,7 @@ const BOX_ONLY = [
   "text-vertical-alignment",
 ];
 
-describe("Text tool: the box's fields (US-033)", () => {
+describe("Text tool: the box's fields", () => {
   beforeEach(() => {
     openServedPage("");
     chooseShapeKind("text");
@@ -96,7 +96,7 @@ describe("Text tool: the box's fields (US-033)", () => {
     });
   });
 
-  it("[F44.AC4] takes -500 in the box's Height at 0, the text drawn (AUD-046)", () => {
+  it("[F44.AC4] takes -500 in the box's Height at 0, the text drawn", () => {
     chooseOption("text-fit", "box");
     typeInField("text-box-height", "-500");
 
@@ -108,7 +108,7 @@ describe("Text tool: the box's fields (US-033)", () => {
     { id: "text-box-width", value: "" },
     { id: "text-box-height", value: "abc" },
   ])(
-    "refuses $id = '$value', the field showing its value again, the text drawn (US-085)",
+    "refuses $id = '$value', the field showing its value again, the text drawn",
     ({ id, value }) => {
       chooseOption("text-fit", "box");
 
@@ -124,7 +124,7 @@ describe("Text tool: the box's fields (US-033)", () => {
   );
 
   it.each([
-    // 1.5 rounded to 2, a tie up; 100 001 taken at 100 000 (AUD-046).
+    // 1.5 rounded to 2, a tie up; 100 001 taken at 100 000.
     { expected: "2", id: "text-maximum-lines", value: "1.5" },
     { expected: "100000", id: "text-line-height", value: "100001" },
   ])("[F44.AC4] takes $id = '$value' as $expected, the text drawn", ({ expected, id, value }) => {

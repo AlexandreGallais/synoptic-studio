@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { wholeValueWithTyped } from "./whole-value-with-typed";
 
-describe("wholeValueWithTyped (AUD-046)", () => {
+describe("wholeValueWithTyped", () => {
   it.each([
     // 1.5 → 2, a tie rounded up; 10 + 1.5 = 11.5 → 12; 10 − 2.5 = 7.5 → 8; −0.5 → 0, never −0.
     { expected: 2, own: 120, typed: { isRelative: false, value: 1.5 } },

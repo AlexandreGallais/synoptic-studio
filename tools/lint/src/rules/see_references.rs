@@ -1,19 +1,18 @@
-//! `local/see-references`: every `@see` of a `JSDoc` block cites a reference of a known form — a
-//! `REF-*`, `DERIV-*`, `RULE-*` or `ADR-NNNN` id, the id of a backlog item, `EN-151` or `F48`, or a `docs/…`
-//! page that exists — and every top-level function of a kind that computes or rules has one
-//! (docs/conventions/documentation.md). The ids are read by their form alone: the bibliography,
+//! `local/see-references`: every `@see` of a `JSDoc` block cites an id of a known form — a
+//! `REF-*`, `DERIV-*`, `RULE-*` or `ADR-NNNN` id, the id of a backlog item, `EN-151` or `F48` —
+//! every top-level function of a kind that computes or rules has one, and a function of another
+//! kind, a `format` or a `procedure`, none. The ids are read by their form alone: the bibliography,
 //! the derivations, the decisions and the backlog live in the records, which the CI cannot read,
 //! and `knowledge check-ids` checks each id against them, its source verified, before a pull
 //! request into `develop` (E49). It guards against references of no known form.
 
 use crate::finding::Finding;
-use crate::project::Project;
 use crate::rules::Rule;
 use crate::source::{Source, tag_values};
 
 /// The kinds whose functions cite a source: a calculation, a geometry or a business rule; a
-/// `format` or a `procedure`, the playground's clicks and displays among them, may cite one but
-/// need not (Product Owner, 2026-10-25).
+/// `format` or a `procedure`, the playground's clicks and displays among them, cites none
+/// (Product Owner, 2026-10-25).
 const KINDS_CITING: [&str; 3] = ["math", "geometry", "domain"];
 
 /// The kinds of stories the backlog has held, the prefix of their ids.
@@ -25,10 +24,8 @@ pub struct SeeReferences;
 /// What a `@see` target is.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Status {
-    /// It exists and may be cited.
+    /// An id of a known form, which may be cited.
     Valid,
-    /// Nothing of that name exists.
-    Missing,
     /// It is none of the families a `@see` may cite.
     UnknownFormat,
 }
@@ -58,11 +55,11 @@ fn is_identifier(target: &str, prefix: &str, allowed: fn(char) -> bool) -> bool 
 
 /// The status of a `@see` target: a `REF-`, `DERIV-`, `RULE-` or `ADR-` id and a backlog id by
 /// their form alone, since the bibliography, the derivations, the rules, the decisions and the
-/// backlog live in the
-/// records, which the CI cannot read, and `knowledge check-ids` checks each id cited against
-/// them before a pull request into `develop` (E49); a `docs/` page by the file it names.
+/// backlog live in the records, which the CI cannot read, and `knowledge check-ids` checks each
+/// id cited against them before a pull request into `develop` (E49); a path into the docs is no
+/// reference, the docs being the Product Owner's.
 #[must_use]
-pub fn status(project: &Project, target: &str) -> Status {
+pub fn status(target: &str) -> Status {
     let is_reference = is_identifier(target, "REF-", |letter| {
         letter.is_ascii_uppercase() || letter.is_ascii_digit() || letter == '-'
     });
@@ -76,27 +73,9 @@ pub fn status(project: &Project, target: &str) -> Status {
         && is_identifier(target, "ADR-", |letter| letter.is_ascii_digit());
 
     if is_reference || is_derivation || is_rule || is_decision || is_backlog_id(target) {
-        return Status::Valid;
-    }
-    let path = target.split('#').next().unwrap_or_default();
-    if target.starts_with("docs/")
-        && path
-            .rsplit_once('.')
-            .is_some_and(|(_, extension)| extension == "md")
-        && path.len() > "docs/.md".len()
-        && !target.contains(char::is_whitespace)
-    {
-        return found(project.root.join(path).exists());
-    }
-    Status::UnknownFormat
-}
-
-/// Valid when found, missing otherwise.
-fn found(exists: bool) -> Status {
-    if exists {
         Status::Valid
     } else {
-        Status::Missing
+        Status::UnknownFormat
     }
 }
 
@@ -108,12 +87,19 @@ impl Rule for SeeReferences {
     fn check_file(&self, source: &Source, findings: &mut Vec<Finding>) {
         for function in source.top_level_functions() {
             let kind = source.kind(&function).unwrap_or_default();
-            if KINDS_CITING.contains(&kind) && source.tags(&function, "see").is_empty() {
-                let message = format!(
-                    "`{kind}` function without `@see`: cite a REF-*, DERIV-*, RULE-*, ADR-*, a backlog id or a docs/ page."
-                );
-                findings.push(source.finding(self.name(), Source::name_offset(&function), message));
-            }
+            let cites = !source.tags(&function, "see").is_empty();
+            let message = if KINDS_CITING.contains(&kind) && !cites {
+                format!(
+                    "`{kind}` function without `@see`: cite a REF-*, DERIV-*, RULE-*, ADR-* or a backlog id."
+                )
+            } else if !kind.is_empty() && !KINDS_CITING.contains(&kind) && cites {
+                format!(
+                    "`{kind}` function with `@see`: only a math, geometry or domain function cites a source or a rule."
+                )
+            } else {
+                continue;
+            };
+            findings.push(source.finding(self.name(), Source::name_offset(&function), message));
         }
 
         for comment in source
@@ -123,13 +109,10 @@ impl Rule for SeeReferences {
             .filter(|comment| source.is_jsdoc(comment))
         {
             for target in tag_values(Some(source.comment_value(comment)), "see") {
-                let message = match status(source.project, target) {
+                let message = match status(target) {
                     Status::Valid => continue,
-                    Status::Missing => {
-                        format!("`@see {target}` does not exist in the documentation.")
-                    }
                     Status::UnknownFormat => format!(
-                        "`@see {target}`: expected REF-*, DERIV-*, RULE-*, ADR-NNNN, a backlog id (EN-151, F48) or docs/…/file.md."
+                        "`@see {target}`: expected REF-*, DERIV-*, RULE-*, ADR-NNNN or a backlog id (EN-151, F48)."
                     ),
                 };
                 findings.push(source.finding(self.name(), comment.span.start, message));
@@ -146,7 +129,7 @@ mod tests {
     use super::SeeReferences;
     use crate::testing::{NONE, fixture, lint_at, messages};
 
-    /// A repository with one page of the docs.
+    /// A repository with one page of the docs, which no `@see` may cite.
     fn documentation() -> PathBuf {
         let root = fixture("see-references");
         for folder in ["docs/domain", "src"] {
@@ -171,7 +154,7 @@ mod tests {
         assert_eq!(
             found("/** @kind math */\nfunction f(): void {}"),
             [
-                "`math` function without `@see`: cite a REF-*, DERIV-*, RULE-*, ADR-*, a backlog id or a docs/ page."
+                "`math` function without `@see`: cite a REF-*, DERIV-*, RULE-*, ADR-* or a backlog id."
             ]
         );
         assert_eq!(found("function f(): void {}"), NONE);
@@ -189,11 +172,17 @@ mod tests {
     }
 
     #[test]
-    fn reports_a_page_of_the_docs_that_does_not_exist() {
-        assert_eq!(
-            found(&citing("docs/nope.md")),
-            ["`@see docs/nope.md` does not exist in the documentation."]
-        );
+    fn refuses_a_see_on_a_procedure_or_a_format() {
+        for kind in ["procedure", "format"] {
+            assert_eq!(
+                found(&format!(
+                    "/**\n * Doc.\n *\n * @kind {kind}\n * @see REF-OK\n */\nfunction f(): void {{}}"
+                )),
+                [format!(
+                    "`{kind}` function with `@see`: only a math, geometry or domain function cites a source or a rule."
+                )]
+            );
+        }
     }
 
     #[test]
@@ -206,6 +195,8 @@ mod tests {
             "DERIV-A",
             "RULE-Shapes",
             "docs/a.txt",
+            "docs/nope.md",
+            "docs/domain/shapes.md#section",
             "EN-15",
             "F100",
             "XX-001",
@@ -214,14 +205,14 @@ mod tests {
             assert_eq!(
                 found(&citing(target)),
                 [format!(
-                    "`@see {target}`: expected REF-*, DERIV-*, RULE-*, ADR-NNNN, a backlog id (EN-151, F48) or docs/…/file.md."
+                    "`@see {target}`: expected REF-*, DERIV-*, RULE-*, ADR-NNNN or a backlog id (EN-151, F48)."
                 )]
             );
         }
     }
 
     #[test]
-    fn accepts_the_ids_by_their_form_and_a_page_that_exists() {
+    fn accepts_the_ids_by_their_form() {
         // The ids by their form alone: the CI has no records to read them in (E49).
         for target in [
             "REF-OK",
@@ -230,7 +221,6 @@ mod tests {
             "RULE-shapes-2-corner-radius",
             "ADR-0001",
             "ADR-0000",
-            "docs/domain/shapes.md#section",
             "EN-151",
             "US-010",
             "RET-001",

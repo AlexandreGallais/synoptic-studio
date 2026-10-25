@@ -140,7 +140,7 @@ describe("the guided test of F14 (VAL-015): the box's options", () => {
     openStep("Fit content or Box");
     chooseOption("text-fit", "box");
 
-    // The box takes the text's block rounded up, nothing moving (US-055).
+    // The box takes the text's block rounded up, nothing moving.
     expect([readValue("text-box-width"), readValue("text-box-height"), readContents()]).toEqual([
       "88",
       "20",
@@ -165,7 +165,7 @@ describe("the guided test of F14 (VAL-015): the box's options", () => {
   it("[F17.AC1] a long word kept whole, cut with an ellipsis; no option for it", () => {
     openStep("Long word kept whole");
 
-    // No field and no label for a word too long: the option is removed (US-042).
+    // No field and no label for a word too long: the option is removed.
     expect([
       document.querySelector("#text-long-word") === null,
       document.body.textContent.includes("Long words"),
@@ -286,7 +286,7 @@ describe("the guided test of F14 (VAL-015): the box's options", () => {
 describe("the guided test of F14 (VAL-015): the decisions to confirm", () => {
   it("decision 1: a width of 100 001 refused, 60 drawn", () => {
     openStep("Box from 0 to 100 000 (decision 1)");
-    // Capped at 100 000 as a shape's width, the same rule (US-085).
+    // Capped at 100 000 as a shape's width, the same rule.
     typeAndEnter("text-box-width", "100001");
     expect(readValue("text-box-width")).toBe("100000");
     typeAndEnter("text-box-width", "60");
@@ -314,7 +314,7 @@ describe("the guided test of F14 (VAL-015): the decisions to confirm", () => {
     openStep("One line at least (decision 6)");
     expect(readContents()).toEqual(["Hell…"]);
     typeInField("text-maximum-lines", "100001");
-    // Taken at the field's most (AUD-046), still one line in a box 5 tall.
+    // Taken at the field's most, still one line in a box 5 tall.
     expect([readValue("text-maximum-lines"), readContents()]).toEqual(["100000", ["Hell…"]]);
   });
 
@@ -360,7 +360,7 @@ describe("the guided test of F14 (VAL-015): the decisions to confirm", () => {
     openStep("Automatic wrap only (decisions 13 to 15)");
     expect(readContents()).toEqual(["Pump P-101 is", "running"]);
 
-    // No field and no label for a wrap style: the balanced wrap is removed (US-043).
+    // No field and no label for a wrap style: the balanced wrap is removed.
     expect([
       document.querySelector("#text-wrap") === null,
       document.body.textContent.includes("Balance"),
@@ -433,7 +433,7 @@ describe("the guided test of F14 (VAL-015): the decisions to confirm", () => {
     typeAndEnter("text-letter-spacing", "10");
     expect([readValue("shape-x"), readValue("shape-y")]).toEqual(["47", "61"]);
 
-    // X and Y show its straight box (AUD-040); a width typed keeps its turned top-left corner
+    // X and Y show its straight box; a width typed keeps its turned top-left corner
     // (ADR-0057), the highest point at 23°, so that, its height kept, X and Y stay.
     typeAndEnter("text-box-width", "160");
     expect([readValue("shape-x"), readValue("shape-y")]).toEqual(["47", "61"]);

@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { fieldsStepName } from "./fields-step-name";
 
-describe("fieldsStepName (US-077)", () => {
+describe("fieldsStepName", () => {
   it.each([
     { fields: ["x"], name: "Move" },
     { fields: ["x", "y"], name: "Move" },

@@ -34,7 +34,6 @@ type Group = {
  * @param cmap - the font's `cmap` table
  * @param subtable - where the subtable starts in the table
  * @returns its groups, in order; undefined when its header or its groups pass the table's end
- * @see REF-OT-CMAP
  */
 function parseGroups(cmap: Readonly<DataView>, subtable: number): readonly Group[] | undefined {
   const count = isSpanWithin(subtable, GROUPS_OFFSET, cmap.byteLength)
@@ -65,7 +64,6 @@ function parseGroups(cmap: Readonly<DataView>, subtable: number): readonly Group
  * @param characters - the code points to map
  * @returns each character and its glyph, 0 for a character no group holds; undefined when the
  * subtable passes the table's end
- * @see REF-OT-CMAP
  */
 export function parseSegmentedCoverageGlyphs(
   cmap: Readonly<DataView>,

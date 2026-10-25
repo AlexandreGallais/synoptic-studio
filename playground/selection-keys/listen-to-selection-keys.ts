@@ -18,7 +18,6 @@ type SelectionKey = (document: Document, event: KeyboardEvent) => void;
  * @kind procedure
  * @param document - page document
  * @param event - Ctrl + A, or Cmd + A, pressed
- * @see RULE-interaction-2-selector
  */
 function selectEveryShape(document: Document, event: KeyboardEvent): void {
   if (readMode(document) === "points") {
@@ -34,7 +33,6 @@ function selectEveryShape(document: Document, event: KeyboardEvent): void {
  *
  * @kind procedure
  * @param document - page document
- * @see RULE-interaction-2-selector
  */
 function selectNoShape(document: Document): void {
   if (readOpenSwatch(document) === undefined) {
@@ -49,7 +47,6 @@ function selectNoShape(document: Document): void {
  *
  * @kind procedure
  * @param document - page document
- * @see RULE-interaction-2-selector
  */
 function removeSelection(document: Document): void {
   if (readMode(document) === "points") {
@@ -82,7 +79,6 @@ const PLAIN_KEYS: ReadonlyMap<string, SelectionKey> = new Map([
  * @kind procedure
  * @param event - the key pressed
  * @returns what it does; undefined for a key of no selection
- * @see RULE-interaction-1-tools
  */
 function readSelectionKey(event: KeyboardEvent): SelectionKey | undefined {
   const isCommand = event.ctrlKey || event.metaKey;
@@ -99,7 +95,6 @@ function readSelectionKey(event: KeyboardEvent): SelectionKey | undefined {
  * @param document - page document
  * @param event - the key pressed
  * @param update - redraws the page from the values typed
- * @see RULE-interaction-2-selector
  */
 function applySelectionKey(document: Document, event: KeyboardEvent, update: () => void): void {
   const select = readSelectionKey(event);
@@ -128,7 +123,6 @@ function applySelectionKey(document: Document, event: KeyboardEvent, update: () 
  * @kind procedure
  * @param document - page document
  * @param update - redraws the page from the values typed
- * @see RULE-interaction-1-tools
  */
 export function listenToSelectionKeys(document: Document, update: () => void): void {
   document.addEventListener(

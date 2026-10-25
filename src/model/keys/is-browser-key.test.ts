@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { isBrowserKey } from "./is-browser-key";
 
-describe("isBrowserKey (AUD-045)", () => {
+describe("isBrowserKey", () => {
   it.each([
     { altKey: false, ctrlKey: true, metaKey: false },
     { altKey: false, ctrlKey: false, metaKey: true },

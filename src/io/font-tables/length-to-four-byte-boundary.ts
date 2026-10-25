@@ -13,7 +13,6 @@ const TABLE_ALIGNMENT = 4;
  * @kind format
  * @param length - the table's length, in bytes
  * @returns its length padded, in bytes
- * @see REF-OT-OTFF
  */
 export function lengthToFourByteBoundary(length: number): number {
   return ceiling(length / TABLE_ALIGNMENT) * TABLE_ALIGNMENT;

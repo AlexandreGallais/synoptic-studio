@@ -28,7 +28,7 @@ function changedA(fields: object): KeptRectangle {
   return { ...SHAPE_A, shape: { ...SHAPE_A.shape, ...fields } };
 }
 
-describe("stepName (US-077)", () => {
+describe("stepName", () => {
   it.each([
     // x alone changed, B the same object.
     { after: [A_NUDGED, SHAPE_B], before: [SHAPE_A, SHAPE_B], name: "Move", title: "A nudged" },

@@ -13,7 +13,6 @@ import type { Text } from "../../src";
  * @param document - page document
  * @returns the text, as the panel last drew it; undefined when no new text is being typed, or
  * while it is refused
- * @see RULE-interaction-1-tools
  */
 export function readNewText(document: Document): Text | undefined {
   const texts = readStoredDrawing(document, DRAWING_KEYS.edited)

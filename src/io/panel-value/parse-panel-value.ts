@@ -15,7 +15,6 @@ const PANEL_NUMBER = /^(?<sign>[+-]?)(?:\d+(?:[,.]\d*)?|[,.]\d+)$/u;
  * @kind format
  * @param typed - the text of the field
  * @returns the value and whether it is relative; `undefined` when it is no number
- * @see RULE-interaction-2-selector
  */
 export function parsePanelValue(typed: string): TypedPanelValue | undefined {
   const text = typed.trim();

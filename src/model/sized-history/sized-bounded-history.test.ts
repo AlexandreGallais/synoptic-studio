@@ -35,7 +35,7 @@ function readStates(size: number): readonly number[] {
   return [...new Set(reads)];
 }
 
-describe("sizedBoundedHistory (EN-147)", () => {
+describe("sizedBoundedHistory", () => {
   it("[F41.AC2] drops A and B, the oldest, for 2 000 bytes and 1 step kept: 1 252 bytes left", () => {
     // 2 504 > 2 000; A and B removed: A held by none, not in the present, − 1 228 − 24: 1 252.
     const bounded = sizedBoundedHistory(TWICE, { size: 2000, steps: 1 });

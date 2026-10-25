@@ -13,7 +13,6 @@ import type { FontFace, FontFamily } from "../../src";
  * @kind procedure
  * @param family - the family; undefined when none is kept under its name
  * @returns those faces, in the family's order; none for a family read ahead or not kept
- * @see RULE-shapes-text
  */
 function readFacesWithFile(family: FontFamily | undefined): readonly FontFace[] {
   return family?.faces.filter((face) => face.file !== undefined) ?? [];
@@ -28,7 +27,6 @@ function readFacesWithFile(family: FontFamily | undefined): readonly FontFace[] 
  * @kind procedure
  * @param family - the kept family the text is measured with; undefined when it is not kept
  * @returns those faces; none when no font is available
- * @see RULE-shapes-text
  */
 function readAvailableFaces(family: FontFamily | undefined): readonly FontFace[] {
   return family !== undefined && isSameFamilyName(family.name, DEFAULT_FONT.name)
@@ -43,7 +41,6 @@ function readAvailableFaces(family: FontFamily | undefined): readonly FontFace[]
  * @param document - page document
  * @param name - the family's name, matched without regard to case
  * @returns the family; undefined when none is kept under that name
- * @see RULE-shapes-text
  */
 function readKeptFamily(document: Document, name: string): FontFamily | undefined {
   return readFontSession(document).kept.find((font) => isSameFamilyName(font.name, name));
@@ -56,7 +53,6 @@ function readKeptFamily(document: Document, name: string): FontFamily | undefine
  * @kind procedure
  * @param document - page document
  * @returns the family to choose; undefined when a font is available or none is kept
- * @see RULE-shapes-text
  */
 function readFamilyToChoose(document: Document): FontFamily | undefined {
   const { kept, measured } = readFontSession(document);
@@ -70,7 +66,6 @@ function readFamilyToChoose(document: Document): FontFamily | undefined {
  * @kind procedure
  * @param document - page document
  * @param family - the family's name
- * @see RULE-shapes-text
  */
 function removeKeptFamily(document: Document, family: string): void {
   const session = readFontSession(document);
@@ -90,7 +85,6 @@ function removeKeptFamily(document: Document, family: string): void {
  * @kind procedure
  * @param document - page document
  * @param family - the family's name
- * @see RULE-shapes-text
  */
 function writeChosenFamily(document: Document, family: string): void {
   writeFontSession(document, { ...readFontSession(document), measured: family });
@@ -104,8 +98,7 @@ function writeChosenFamily(document: Document, family: string): void {
 }
 
 /**
- * Chooses a default font once the installed fonts are read while none is available (US-056,
- * US-060): the first family of the list (`readFamilyToChoose`) is chosen as a family chosen by
+ * Chooses a default font once the installed fonts are read while none is available: the first family of the list (`readFamilyToChoose`) is chosen as a family chosen by
  * hand is, its faces' files read again (`readInstalledFamily`) so that it can be embedded, the
  * page saying it reads them, the font list held meanwhile, then that it is chosen; a family none of whose files is read again leaves the list and the next is
  * tried. A font available, Inter drawn or a font imported, is left as it is.
@@ -114,7 +107,6 @@ function writeChosenFamily(document: Document, family: string): void {
  * @param document - page document
  * @param update - redraws the playground
  * @returns once a family is chosen, or none is left
- * @see RULE-shapes-text
  */
 export async function writeDefaultChoice(document: Document, update: () => void): Promise<void> {
   const first = readFamilyToChoose(document);

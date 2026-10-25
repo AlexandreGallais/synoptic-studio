@@ -32,7 +32,6 @@ const RGB_LENGTH = 6;
  * @kind format
  * @param digits - 3, 4, 6 or 8 hexadecimal digits, already checked
  * @returns 6 or 8 digits
- * @see REF-CSS-COLOR-4
  */
 function toFullHexDigits(digits: string): string {
   return digits.length > SHORT_FORM_LENGTH ? digits : digits.replaceAll(EACH_DIGIT, "$&$&");
@@ -45,7 +44,6 @@ function toFullHexDigits(digits: string): string {
  * @kind format
  * @param typed - the text typed or pasted
  * @returns the full digits; empty when the text is no hex color
- * @see REF-CSS-COLOR-4
  */
 function parseHexDigits(typed: string): string {
   const digits = typed.trim().toLowerCase().replace(LEADING_HASH, "");
@@ -63,7 +61,6 @@ function parseHexDigits(typed: string): string {
  * @kind format
  * @param typed - the text typed or pasted
  * @returns the color and its opacity; `undefined` when the text is no hex color
- * @see REF-CSS-COLOR-4
  */
 export function parseHexColor(typed: string): TypedColor | undefined {
   const digits = parseHexDigits(typed);

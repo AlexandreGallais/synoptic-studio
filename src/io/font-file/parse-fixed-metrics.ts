@@ -27,7 +27,6 @@ const MAX_UNITS_PER_EM = 16_384;
  * @param os2 - the font's `OS/2` table, at least 30 bytes long
  * @param unitsPerEm - the font's units per em
  * @returns its cap height, font units, and its `fsType` flags
- * @see REF-OT-OS2
  */
 function parseOs2Metrics(
   os2: Readonly<DataView>,
@@ -51,7 +50,6 @@ function parseOs2Metrics(
  * @param tables - where its tables sit
  * @returns those metrics, font units; undefined for units per em outside 16 to 16 384 or no
  * `hmtx` record
- * @see REF-OT-HHEA
  */
 export function parseFixedMetrics(
   view: Readonly<DataView>,

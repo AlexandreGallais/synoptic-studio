@@ -7,7 +7,6 @@ const UNITS_PER_EM_OFFSET = 18;
  * @kind format
  * @param head - the font's `head` table, at least 20 bytes long
  * @returns the units per em, from 16 to 16 384 in a valid font
- * @see REF-OT-HEAD
  */
 export function parseUnitsPerEm(head: Readonly<DataView>): number {
   return head.getUint16(UNITS_PER_EM_OFFSET);

@@ -21,7 +21,6 @@ const ITALIC_BIT = 0;
  * @kind format
  * @param os2 - the font's `OS/2` table
  * @returns its weight and whether it is italic; undefined for a table shorter than 64 bytes
- * @see REF-OT-OS2
  */
 export function parseFontStyle(
   os2: Readonly<DataView>,

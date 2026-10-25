@@ -11,7 +11,6 @@ import type { BoundingBox, PickArea } from "../../src";
  * @param box - the rectangle, in the coordinates of the drawing's SVG
  * @param isAlt - whether Alt is held
  * @returns their indices in the order drawn
- * @see RULE-interaction-2-selector
  */
 export function readShapesTaken(
   areas: readonly PickArea[],

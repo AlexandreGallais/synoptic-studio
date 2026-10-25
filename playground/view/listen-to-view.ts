@@ -11,8 +11,8 @@ const RESTARTS = ["tool-reset", "guide-previous", "guide-next"];
 
 /**
  * Listens to what changes the view of the drawing (ADR-0098, SP-030's answers 2 and 6), the page
- * mounted at the opening view: the canvas's size, whatever changes it (`listenToCanvasSize`,
- * US-084), the view keeping its scale and origin; the wheel
+ * mounted at the opening view: the canvas's size, whatever changes it (`listenToCanvasSize`),
+ * the view keeping its scale and origin; the wheel
  * and the pinch (`listenToWheel`), a drag that pans (`listenToPanDrag`), wired before the drawing's
  * listeners so that a pan stops them; Reset and the guided test's steps, which bring back the
  * opening view, the zoom asked dropped, the page redrawn by their own listeners.
@@ -20,7 +20,6 @@ const RESTARTS = ["tool-reset", "guide-previous", "guide-next"];
  * @kind procedure
  * @param document - page document
  * @param update - redraws the page
- * @see RULE-interaction-7-navigation-and-history
  */
 export function listenToView(document: Document, update: () => void): void {
   PAGE_VIEWS.delete(document);

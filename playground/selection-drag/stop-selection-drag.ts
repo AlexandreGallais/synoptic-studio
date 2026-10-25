@@ -18,7 +18,6 @@ import type { SelectionDrag } from "../hover";
  * @param event - the release
  * @returns the drag; undefined without one, or when the pointer stayed within 3 pixels of the
  * press, the release then a click
- * @see RULE-interaction-2-selector
  */
 function readReleasedDrag(document: Document, event: PointerEvent): SelectionDrag | undefined {
   moveSelectionDrag(document, event);
@@ -38,7 +37,6 @@ function readReleasedDrag(document: Document, event: PointerEvent): SelectionDra
  * @kind procedure
  * @param document - page document
  * @param drag - the press, the pointer at the release and the move
- * @see RULE-interaction-2-selector
  */
 function moveDraggedShapes(document: Document, drag: SelectionDrag): void {
   const { move } = drag;
@@ -63,7 +61,6 @@ function moveDraggedShapes(document: Document, drag: SelectionDrag): void {
  * @param document - page document
  * @param event - the release
  * @param update - redraws the page from the values typed
- * @see RULE-interaction-2-selector
  */
 export function stopSelectionDrag(
   document: Document,

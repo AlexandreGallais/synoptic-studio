@@ -28,7 +28,6 @@ const MINIMUM_SIZES: Readonly<Record<string, number>> = {
  * @kind format
  * @param directory - the font's table directory
  * @returns the tables long enough, by tag
- * @see REF-OT-OTFF
  */
 function directoryToReadableTables(directory: Directory): Directory {
   return Object.fromEntries(
@@ -42,7 +41,6 @@ function directoryToReadableTables(directory: Directory): Directory {
  * @kind format
  * @param directory - the font's table directory
  * @returns the two tables; undefined when one is missing
- * @see REF-OT-CMAP
  */
 function directoryToCharacterTables(
   directory: Directory,
@@ -58,7 +56,6 @@ function directoryToCharacterTables(
  * @kind format
  * @param directory - the font's table directory
  * @returns the two tables; undefined when one is missing
- * @see REF-OT-HHEA
  */
 function directoryToHorizontalTables(
   directory: Directory,
@@ -75,7 +72,6 @@ function directoryToHorizontalTables(
  * @kind format
  * @param directory - the font's table directory
  * @returns the tables; undefined when `post` or `OS/2` is missing
- * @see REF-OT-OS2
  */
 function directoryToLayoutTables(
   directory: Directory,
@@ -97,7 +93,6 @@ function directoryToLayoutTables(
  * @param start - where the face's table directory starts: 0 in a font file,
  * `tableDirectoryOffsets[i]` in a collection
  * @returns where its tables sit; undefined for another file, or a table missing or too short
- * @see REF-OT-OTFF
  */
 export function parseFontTables(view: Readonly<DataView>, start: number): FontTables | undefined {
   const directory = directoryToReadableTables(parseTableDirectory(view, start));

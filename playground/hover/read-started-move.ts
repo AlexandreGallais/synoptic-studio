@@ -9,7 +9,6 @@ import type { ShapesMove } from "./shapes-move";
  * @kind procedure
  * @param document - page document
  * @returns the move; undefined before it starts, for another press, or for none
- * @see RULE-interaction-2-selector
  */
 export function readStartedMove(document: Document): ShapesMove | undefined {
   const drag = SELECTION_DRAGS.get(document);

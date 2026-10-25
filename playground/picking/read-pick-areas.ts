@@ -13,7 +13,6 @@ import type { PickArea } from "../../src";
  * @kind procedure
  * @param document - page document
  * @returns the areas, the first drawn first
- * @see RULE-interaction-2-selector
  */
 export function readPickAreas(document: Document): readonly PickArea[] {
   return readKeptDrawing(document).map(({ shape }) => readShapePickArea(document, shape));

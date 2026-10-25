@@ -62,7 +62,7 @@ function readCounts(): Record<string, number> {
   };
 }
 
-describe("What a redraw computes again (US-048)", () => {
+describe("What a redraw computes again", () => {
   beforeEach(() => {
     openServedPage("");
     chooseShapeKind("text");

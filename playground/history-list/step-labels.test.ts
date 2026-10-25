@@ -67,7 +67,7 @@ function readPanelLabels(): ReadonlySet<string> {
   );
 }
 
-describe("The steps named by the panel's labels (US-077)", () => {
+describe("The steps named by the panel's labels", () => {
   beforeEach(() => {
     openServedPage("");
     setElementBox("#canvas", { height: 600, left: 100, top: 50, width: 800 });

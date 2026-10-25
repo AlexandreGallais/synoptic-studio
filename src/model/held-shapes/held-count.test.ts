@@ -14,7 +14,7 @@ const TWO_LEVELS: HeldCounts = {
   ],
 };
 
-describe("heldCount (EN-147)", () => {
+describe("heldCount", () => {
   it("[F41.AC2] reads 0 from the counts of no state", () => {
     expect(heldCount(EMPTY_HELD_COUNTS, 5)).toBe(0);
   });

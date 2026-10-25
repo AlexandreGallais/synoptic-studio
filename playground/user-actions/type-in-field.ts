@@ -8,7 +8,6 @@ import { typeValue } from "./type-value";
  * @kind procedure
  * @param input - the field
  * @param key - the key's name
- * @see RULE-interaction-2-selector
  */
 function pressKeyIn(input: HTMLInputElement, key: string): void {
   input.dispatchEvent(new KeyboardEvent("keydown", { bubbles: true, cancelable: true, key }));
@@ -24,7 +23,6 @@ function pressKeyIn(input: HTMLInputElement, key: string): void {
  * @kind procedure
  * @param id - input id
  * @param value - typed text
- * @see RULE-interaction-2-selector
  */
 export function typeInField(id: string, value: string): void {
   const input = selectInput(id);

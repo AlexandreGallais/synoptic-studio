@@ -10,7 +10,6 @@ import { writeSelection } from "./write-selection";
  * @kind procedure
  * @param document - page document
  * @param kind - `rectangle`, `polygon`, `round`, `text` or `none`
- * @see RULE-interaction-2-selector
  */
 export function writeEditedKind(document: Document, kind: string): void {
   const select = selectElement(document, "shape");

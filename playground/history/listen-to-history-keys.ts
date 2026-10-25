@@ -31,7 +31,6 @@ const HISTORY_KEYS: ReadonlyMap<
  * @kind procedure
  * @param event - the key pressed
  * @returns the field; undefined outside the fields, or in a field whose value is applied
- * @see RULE-interaction-1-tools
  */
 function readTypedField(event: KeyboardEvent): Element | undefined {
   const field = readKeyField(event);
@@ -40,7 +39,7 @@ function readTypedField(event: KeyboardEvent): Element | undefined {
 }
 
 /**
- * Reads the move a key asks of the history (`interaction.md` §1): Ctrl + Z undoes, Ctrl + Shift +
+ * Reads the move a key asks of the history (`RULE-interaction-undo-and-redo-in-the-playground-the-keys`): Ctrl + Z undoes, Ctrl + Shift +
  * Z and Ctrl + Y redo, Cmd for Ctrl on macOS (`HISTORY_KEYS`); none when neither Ctrl nor Cmd is
  * held, Alt is, the key is already taken by a listener before this one, its default prevented, or
  * a field typed in keeps it (`readTypedField`).
@@ -48,7 +47,6 @@ function readTypedField(event: KeyboardEvent): Element | undefined {
  * @kind procedure
  * @param event - the key pressed
  * @returns `sizedUndoneHistory` or `sizedRedoneHistory`; undefined for a key the history does not take
- * @see RULE-interaction-1-tools
  */
 function readHistoryMove(
   event: KeyboardEvent,
@@ -71,7 +69,6 @@ function readHistoryMove(
  * @kind procedure
  * @param event - an `input`, a `change` or a `focusout`
  * @param isTyped - true from its `input` on, false once applied or left
- * @see RULE-interaction-1-tools
  */
 function writeTypedField(event: Event, isTyped: boolean): void {
   if (event.target instanceof Element) {
@@ -86,7 +83,6 @@ function writeTypedField(event: Event, isTyped: boolean): void {
  *
  * @kind procedure
  * @param document - page document
- * @see RULE-interaction-1-tools
  */
 function listenToTypedFields(document: Document): void {
   document.addEventListener(
@@ -117,7 +113,6 @@ function listenToTypedFields(document: Document): void {
  * @kind procedure
  * @param document - page document
  * @param update - redraws the page from the values typed
- * @see RULE-interaction-7-navigation-and-history
  */
 function listenToKeyReleases(document: Document, update: () => void): void {
   document.addEventListener(
@@ -140,7 +135,7 @@ function listenToKeyReleases(document: Document, update: () => void): void {
 }
 
 /**
- * Listens to the keys of the history (`interaction.md` §1): Ctrl + Z undoes, Ctrl + Shift + Z
+ * Listens to the keys of the history (`RULE-interaction-undo-and-redo-in-the-playground-the-keys`): Ctrl + Z undoes, Ctrl + Shift + Z
  * and Ctrl + Y redo, Cmd for Ctrl on macOS, their default prevented (`readHistoryMove`,
  * `moveHistory`); a field of the panel typed in since its value was applied keeps them, any other
  * field leaves them to the drawing (SP-029's answer 9). Heard as the key goes down to its target.
@@ -149,7 +144,6 @@ function listenToKeyReleases(document: Document, update: () => void): void {
  * @kind procedure
  * @param document - page document
  * @param update - redraws the page from the values typed
- * @see RULE-interaction-1-tools
  */
 export function listenToHistoryKeys(document: Document, update: () => void): void {
   listenToTypedFields(document);

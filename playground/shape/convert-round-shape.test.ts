@@ -29,7 +29,7 @@ function openRoundShape(width: string): void {
   clickElement("mode-points");
 }
 
-describe("converting a round shape (US-030)", () => {
+describe("converting a round shape", () => {
   it("[F10.AC4] gives its 4 points with their handles, the drawing unchanged", () => {
     openRoundShape("120");
 
@@ -48,7 +48,7 @@ describe("converting a round shape (US-030)", () => {
   });
 
   it("[F10.AC5] offers no conversion to a rounded rectangle", () => {
-    // Removed at VAL-012: an ellipse rounded as its box would change shape.
+    // An ellipse rounded as its box would change shape.
     openRoundShape("120");
 
     const buttons = [...document.querySelectorAll("button")].map((button) => button.textContent);
@@ -104,7 +104,7 @@ describe("converting a round shape (US-030)", () => {
   });
 
   it("hides the handles switch on every point of a round shape", () => {
-    // The switch converts a polygon first (US-028); a round shape's points already have handles.
+    // The switch converts a polygon first; a round shape's points already have handles.
     openRoundShape("120");
 
     const hidden = [1, 2, 3, 4].map((point) => {

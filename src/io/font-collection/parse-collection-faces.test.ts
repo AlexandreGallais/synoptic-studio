@@ -57,7 +57,7 @@ describe("parseCollectionFaces (REF-OT-OTFF)", () => {
     expect(parseCollectionFaces(file)).toEqual([[file]]);
   });
 
-  // About 75 ms alone once the faces are compared by digest (EN-089): Vitest's 5 s holds.
+  // About 75 ms alone once the faces are compared by digest: Vitest's 5 s holds.
   it("[F17.AC10] [F18.AC19] gives each face of a collection sharing Inter's tables as its own file", () => {
     // Inter's tables padded take 411 640 − 284 = 411 356 bytes; its name (1 948) and OS/2 (96)
     // replaced, each face holds 409 312 bytes of shared tables, 96 of OS/2 and its name of 88, 82
@@ -70,7 +70,7 @@ describe("parseCollectionFaces (REF-OT-OTFF)", () => {
     ]);
 
     // Each face's parts read in order hash as the file of its tables: the same bytes, compared
-    // by their SHA-256 rather than byte by byte (EN-089).
+    // by their SHA-256 rather than byte by byte.
     expect(read.map((parts) => partsDigest(parts))).toEqual(
       faces.map((tables) => partsDigest([tablesFile(TRUE_TYPE_VERSION, tables)])),
     );

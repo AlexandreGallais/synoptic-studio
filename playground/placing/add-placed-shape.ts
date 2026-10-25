@@ -14,7 +14,6 @@ import type { ShapePlacement } from "./shape-placement";
  * @kind procedure
  * @param document - page document
  * @param placement - the tool armed and the point clicked
- * @see RULE-interaction-1-tools
  */
 export function addPlacedShape(document: Document, placement: ShapePlacement): void {
   startNewShape(document, placement.tool);

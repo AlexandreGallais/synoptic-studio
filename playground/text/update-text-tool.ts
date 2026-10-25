@@ -77,8 +77,8 @@ function showMeasuredText(document: Document, text: Text, metrics: FontMetrics):
 }
 
 /**
- * Says why a text is not drawn, then clears the drawing: its font without a face, Inter missing
- * (US-053), or a value refused.
+ * Says why a text is not drawn, then clears the drawing: its font without a face, Inter missing,
+ * or a value refused.
  *
  * @kind procedure
  * @param document - page document

@@ -50,7 +50,7 @@ function readWeights(): readonly string[] {
   return [...selectChoice("text-weight").options].map((option) => option.value);
 }
 
-describe("The weight list of the family chosen (US-036)", () => {
+describe("The weight list of the family chosen", () => {
   beforeEach(() => {
     openServedPage("");
     chooseShapeKind("text");

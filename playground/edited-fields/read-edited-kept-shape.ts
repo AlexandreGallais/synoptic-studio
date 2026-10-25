@@ -15,7 +15,6 @@ import type { KeptShape } from "../kept-shapes";
  * @param shape - a shape selected
  * @param edit - the field, the value typed and the largest size (Q20)
  * @returns the shape changed
- * @see RULE-interaction-2-selector
  */
 function readEditedShape(document: Document, shape: DrawingShape, edit: PanelEdit): DrawingShape {
   if (!isDrawnText(shape)) {
@@ -37,7 +36,6 @@ function readEditedShape(document: Document, shape: DrawingShape, edit: PanelEdi
  * @param kept - a shape selected and its kind
  * @param edit - the field, the value typed and the largest size (Q20)
  * @returns the shape changed and its kind
- * @see RULE-interaction-2-selector
  */
 export function readEditedKeptShape(
   document: Document,

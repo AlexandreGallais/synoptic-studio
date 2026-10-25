@@ -88,7 +88,7 @@ describe("rectangle as a free shape", () => {
   });
 
   it("[F09.AC4] keeps the rectangle's width an integer, 2.5 typed rounded to 3 (Q15)", () => {
-    // A fraction typed is rounded once, a tie up (AUD-046): the rectangle stays on integers.
+    // A fraction typed is rounded once, a tie up: the rectangle stays on integers.
     typeAndEnter("width", "2.5");
 
     expect([readValue("width"), readShapeModel().width, readText("#status")]).toEqual(["3", 3, ""]);

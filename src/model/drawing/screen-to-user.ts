@@ -1,7 +1,8 @@
 /**
  * A length in screen pixels, in user units of the drawing: divided by the view's scale, so that a
- * reach or an outline given in screen pixels does not change with the zoom (`interaction.md` §2,
- * as snapping's tolerance, §4).
+ * reach or an outline given in screen pixels does not change with the zoom
+ * (`RULE-interaction-the-outline-screen-pixels`, as snapping's tolerance,
+ * `RULE-interaction-4-snapping-tolerance-in-screen-pixels`).
  *
  * Formula: pixels / scale.
  *

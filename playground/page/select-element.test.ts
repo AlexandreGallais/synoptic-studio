@@ -15,7 +15,7 @@ function documentWith(html: string): Document {
   return parser.parseFromString(html, "text/html");
 }
 
-describe("selectElement, by the document's map of ids (EN-150, REF-HAPPY-DOM-QUERY)", () => {
+describe("selectElement, by the document's map of ids (REF-HAPPY-DOM-QUERY)", () => {
   it("[F43.AC1] returns the element of the id, the first in the page's order", () => {
     const own = documentWith('<p id="a">first</p><p id="a">second</p><span id="b"></span>');
 
@@ -32,8 +32,6 @@ describe("selectElement, by the document's map of ids (EN-150, REF-HAPPY-DOM-QUE
   it("[F43.AC1] throws for an id the page lacks, naming it", () => {
     const own = documentWith('<p id="a"></p>');
 
-    expect(() => selectElement(own, "missing")).toThrow(
-      "Playground page without #missing (US-007).",
-    );
+    expect(() => selectElement(own, "missing")).toThrow("Playground page without #missing.");
   });
 });

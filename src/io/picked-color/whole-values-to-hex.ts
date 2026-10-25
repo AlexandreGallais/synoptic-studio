@@ -22,7 +22,6 @@ const UNITS: Readonly<Record<keyof PickedColor, number>> = {
  * @param exact - the color's exact values
  * @param given - the integers given, one per value
  * @returns the value as an exact fraction
- * @see DERIV-color-spaces
  */
 function toRebuiltValue(
   key: keyof PickedColor,
@@ -50,7 +49,6 @@ function toRebuiltValue(
  * @param given - the hue from 0 to 360, the saturation and lightness or brightness from 0 to 100,
  * integers
  * @returns the color, `#` and six lower-case digits
- * @see DERIV-color-spaces
  */
 export function wholeValuesToHex(exact: ExactColor, model: ColorModel, given: PickedColor): string {
   return exactColorToHex(

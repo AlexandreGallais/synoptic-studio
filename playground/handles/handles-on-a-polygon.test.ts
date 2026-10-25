@@ -13,7 +13,7 @@ import {
   typeAndEnter,
 } from "../user-actions";
 
-describe("handles on a point of a regular polygon (US-028)", () => {
+describe("handles on a point of a regular polygon", () => {
   it("[F12.AC8] converts the hexagon first, unmoved, then switches its point to handles", () => {
     // A hexagon 100 × 100, radius 10; point 1 selected, then Handles.
     openOnStep(1);

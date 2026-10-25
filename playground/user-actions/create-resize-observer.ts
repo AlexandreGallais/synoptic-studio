@@ -7,7 +7,6 @@ import type { WatchedElement } from "./watched-elements";
  *
  * @kind procedure
  * @param isForgotten - whether a watched element is no longer watched
- * @see REF-RESIZE-OBSERVER-1
  */
 function removeWatched(isForgotten: (watched: WatchedElement) => boolean): void {
   const forgotten = [...WATCHED_ELEMENTS].filter((each) => isForgotten(each));
@@ -23,13 +22,11 @@ function removeWatched(isForgotten: (watched: WatchedElement) => boolean): void 
  * (`WATCHED_ELEMENTS`), which the test calls by `runResizeObservers` where the browser would,
  * after a layout that changed the element's size (`REF-RESIZE-OBSERVER-1`, §3.6.1). Unlike the
  * browser's, it does not call back when observing starts (§1), so that a mount draws the page
- * once; the browser's extra draw at a mount's first frame is accepted (`listenToCanvasSize`,
- * AUD-046).
+ * once; the browser's extra draw at a mount's first frame is accepted (`listenToCanvasSize`).
  *
  * @kind procedure
  * @param callback - what the observer calls on a size change
  * @returns the observer: `observe`, `unobserve` and `disconnect`, as the browser's
- * @see REF-RESIZE-OBSERVER-1
  */
 export function createResizeObserver(callback: ResizeObserverCallback): ResizeObserver {
   const observer: ResizeObserver = {

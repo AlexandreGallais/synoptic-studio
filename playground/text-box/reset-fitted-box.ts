@@ -5,8 +5,7 @@ import { readFittedBox } from "./read-fitted-box";
 import type { Text } from "../../src";
 
 /**
- * Puts the box of a text back to the size Fit content measures, rounded up (`readFittedBox`,
- * US-055), when the designer presses **Reset**, shown in Box mode: the box then counts as not
+ * Puts the box of a text back to the size Fit content measures, rounded up (`readFittedBox`), when the designer presses **Reset**, shown in Box mode: the box then counts as not
  * typed (`#text-options`' `data-box-typed` removed), so that the next switch from Fit content to
  * Box measures the text again. A text that cannot be measured leaves the box as it is.
  *

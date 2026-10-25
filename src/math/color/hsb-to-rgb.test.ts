@@ -29,7 +29,7 @@ describe("hsbToRgb (REF-WIKI-HSL-HSV, DERIV-color-spaces steps 6 and 7)", () => 
 
   it(
     "[F16.AC3] gives one color in 31 and every sector edge back from its HSB, unrounded",
-    // alone: 931 ms, the median of 5 runs of its file (EN-129); 20 s is 21 times it.
+    // alone: 931 ms, the median of 5 runs of its file; 20 s is 21 times it.
     { timeout: 20_000 },
     () => {
       expect(changedColorCount((rgb) => hsbToRgb(rgbToHsb(rgb)))).toBe(0);

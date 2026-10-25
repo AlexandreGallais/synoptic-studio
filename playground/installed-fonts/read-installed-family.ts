@@ -14,7 +14,6 @@ import type { NamedFontFace } from "../../src";
  * @kind procedure
  * @param reads - the reads of its faces
  * @returns the reasons, joined; empty when none was refused
- * @see REF-WICG-LOCAL-FONT-ACCESS
  */
 function readRefusals(reads: readonly InstalledFaceRead[]): string {
   const reasons = reads.map((read) => read.refusal);
@@ -31,7 +30,6 @@ function readRefusals(reads: readonly InstalledFaceRead[]): string {
  * @param faces - those of its faces that were read and are fonts
  * @param reads - the reads of its faces
  * @returns such as `Arial: 4 faces read.`
- * @see REF-WICG-LOCAL-FONT-ACCESS
  */
 function readFamilyMessage(
   family: string,
@@ -59,8 +57,8 @@ function readFamilyMessage(
  * collection is read from it (`readInstalledFace`), one face per entry of the browser's list, so
  * that a collection holding faces of several families gives the family chosen only. A family read
  * ahead, its metrics kept without its files, has its files read again; a face refused at
- * that second reading has its metrics read ahead dropped (`readFontsWithoutFacesReadAhead`,
- * US-061), so that it is no longer measured, the refusal said. When no face is
+ * that second reading has its metrics read ahead dropped (`readFontsWithoutFacesReadAhead`), so
+ * that it is no longer measured, the refusal said. When no face is
  * read again, the list stays on the family, whose metrics read ahead are kept: a family is offered
  * only once read ahead.
  *
@@ -69,7 +67,6 @@ function readFamilyMessage(
  * @param family - the installed family chosen
  * @param update - redraws the playground
  * @returns what was read and refused, such as `Arial: 4 faces read.`
- * @see REF-WICG-LOCAL-FONT-ACCESS
  */
 export async function readInstalledFamily(
   document: Document,

@@ -15,7 +15,7 @@ import type { Text } from "../text";
  * the next; a word too long for a line of its own stays whole on it, overflowing; a line ended
  * by a wrap loses its trailing spaces, and so does the last, so that a space typed at the end
  * neither places the line nor lengthens its background (`DERIV-text-box`, steps 1 to 4, step 2 as
- * decided for US-049; `lineWrapWithToken`). Each token is measured once, and the steps are a scan (`scan`), so
+ * decided; `lineWrapWithToken`). Each token is measured once, and the steps are a scan (`scan`), so
  * that wrapping costs about as much as measuring the paragraph.
  *
  * @kind domain

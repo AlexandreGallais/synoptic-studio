@@ -20,7 +20,6 @@ const FALLBACK_CAP_HEIGHT_EM = 0.66;
  * @param em - the length, em
  * @param unitsPerEm - how many font units make the em
  * @returns the length, font units
- * @see REF-OT-HEAD
  */
 function emToFontUnits(em: number, unitsPerEm: number): number {
   return em * unitsPerEm;
@@ -37,7 +36,6 @@ function emToFontUnits(em: number, unitsPerEm: number): number {
  * @param os2 - the font's `OS/2` table, at least 30 bytes long
  * @param unitsPerEm - how many font units make the em
  * @returns the cap height, font units, above 0
- * @see REF-OT-OS2
  */
 export function parseCapHeight(os2: Readonly<DataView>, unitsPerEm: number): number {
   const capHeight =

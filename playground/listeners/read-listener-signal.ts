@@ -8,7 +8,6 @@ import { LISTENER_CONTROLLERS } from "./listener-controllers";
  * @kind procedure
  * @param document - page document
  * @returns the signal of the document's controller
- * @see REF-MDN-ADD-EVENT-LISTENER
  */
 export function readListenerSignal(document: Document): AbortSignal {
   const kept = LISTENER_CONTROLLERS.get(document);

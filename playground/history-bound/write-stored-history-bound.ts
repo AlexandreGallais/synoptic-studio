@@ -12,7 +12,6 @@ import type { HistoryBound } from "../../src";
  * @kind procedure
  * @param document - page document
  * @param bound - the memory size and the steps kept
- * @see RULE-interaction-7-navigation-and-history
  */
 export function writeStoredHistoryBound(document: Document, bound: HistoryBound): void {
   const storage = readBrowserStorage(document);

@@ -11,7 +11,6 @@ const METRIC_RECORD_SIZE = 4;
  * @param hmtx - the font's `hmtx` table
  * @param numberOfHMetrics - number of records, from `hhea`
  * @returns the advance of each record, font units
- * @see REF-OT-HMTX
  */
 export function parseAdvanceWidths(
   hmtx: Readonly<DataView>,

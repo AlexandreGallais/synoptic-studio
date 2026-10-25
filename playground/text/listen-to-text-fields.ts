@@ -36,7 +36,6 @@ function listenToBoxChoice(document: Document): void {
  * @kind procedure
  * @param document - page document
  * @param update - redraws the playground
- * @see RULE-interaction-2-selector
  */
 function listenToOptions(document: Document, update: () => void): void {
   const options = selectElement(document, "text-options");
@@ -51,8 +50,8 @@ function listenToOptions(document: Document, update: () => void): void {
 }
 
 /**
- * Listens to the bold button, which gives 700 and gives back the weight before (`pressBold`,
- * US-037), and to the weight list, a weight chosen forgetting the weight held.
+ * Listens to the bold button, which gives 700 and gives back the weight before (`pressBold`),
+ * and to the weight list, a weight chosen forgetting the weight held.
  *
  * @kind procedure
  * @param document - page document

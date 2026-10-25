@@ -29,7 +29,6 @@ type LoadedFile = {
  * @param bytes - the bytes of a font file or of a collection
  * @returns the faces read, in the file's order; none for a file that is not a font
  * @throws {RangeError} when the engine cannot allocate a face's joined file
- * @see REF-OT-OTFF
  */
 function readFileFaces(bytes: Uint8Array<ArrayBuffer>): readonly NamedFontFace[] {
   return parseCollectionFaces(bytes).flatMap((parts) => {
@@ -47,7 +46,6 @@ function readFileFaces(bytes: Uint8Array<ArrayBuffer>): readonly NamedFontFace[]
  * @param file - the file chosen
  * @param faces - the faces read from it
  * @returns one sentence per face refused; none when every face is kept
- * @see RULE-shapes-text
  */
 function readRefusedFaces(file: File, faces: readonly NamedFontFace[]): readonly string[] {
   return faces.flatMap((named) => {
@@ -96,7 +94,6 @@ function readImportLine(
  * @returns the line said, and the family of the last face kept, empty when none is kept
  * @throws {DOMException} when the browser cannot read the file's bytes
  * @throws {RangeError} when the engine cannot allocate a face's file
- * @see REF-W3C-FILE-API
  */
 async function loadFontFile(
   document: Document,
@@ -121,7 +118,6 @@ async function loadFontFile(
  * @param file - the file chosen
  * @param settled - its read, fulfilled or rejected
  * @returns the line said, and the family kept, empty for a file refused
- * @see REF-W3C-FILE-API
  */
 function readLoadedFile(file: File, settled: PromiseSettledResult<LoadedFile>): LoadedFile {
   return settled.status === "fulfilled"

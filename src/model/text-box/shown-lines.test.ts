@@ -263,7 +263,7 @@ describe("shownLines (DERIV-text-box steps 5 and 6)", () => {
   });
 
   it("[F17.AC1] wraps automatically a text read with a wrap style", () => {
-    // A text saved before US-043 still holds `wrapStyle: "balance"`: the field is no longer read,
+    // A text saved with a wrap style holds `wrapStyle: "balance"`: the field is no longer read,
     // and the lines are not the balanced "Pump P-101" / "is running".
     const read = { ...BOXED, boxWidth: 110, content: PUMP, wrapStyle: "balance" };
 

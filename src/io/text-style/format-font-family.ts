@@ -16,7 +16,6 @@ const LAST_FAMILY = "sans-serif";
  * @param font - the family the text names first
  * @param fallback - the family named after it
  * @returns the list, written for a `font-family` attribute
- * @see REF-CSS-FONTS-4
  */
 export function formatFontFamily(font: string, fallback: string): string {
   const names = firstOfEachClass([font, fallback, LAST_FAMILY], (name) =>
