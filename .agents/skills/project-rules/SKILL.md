@@ -18,12 +18,11 @@ Everything the agent works from lives in the records, one SQLite file outside th
 
 | Need | Command |
 | --- | --- |
-| an item: a story `EN-151`, a rule `RULE-shapes-box`, a decision `ADR-0086`, a source `REF-SQLITE-WAL`, a derivation `DERIV-fillet-setback`, a page `PAGE-research` | `target/release/knowledge show <id> [<heading>]` |
-| what the records know on a subject | `knowledge search <words> [--kind …]` |
+| an item, rendered from its table with its items: a story `EN-151`, a feature `F48`, a rule `RULE-shapes-box`, a decision `ADR-0086`, a source `REF-SQLITE-WAL`, a derivation `DERIV-fillet-setback`, a page `PAGE-research` | `target/release/knowledge show <id> [<heading>]` |
+| what the records know on a subject, every table's text | `knowledge search <words> [--kind story, decision, note, rule, source…]` |
 | the items of a kind, an epic, a status | `knowledge list --kind … --epic … --status …` |
 | any other question | `knowledge sql "<statement>"` |
-| a decision or a note written | `knowledge add <kind> <file or ->` |
-| a journal row, an incident, an improvement written | `knowledge sql "INSERT INTO <table> …"` |
+| any record written — a decision, a note, a source, a derivation, a journal row, an incident, an improvement: its row, then its text one item a row (`decision_items`, `note_findings`, `derivation_steps`…) | `knowledge sql "INSERT INTO <table> …"` |
 | a story's status | `target/release/backlog-status <ID> <status>` |
 | the ids a change cites, checked | `knowledge check-ids <paths>` |
 
@@ -34,7 +33,7 @@ The records are kept true with the work: a rule, a decision, a source, an incide
 - **English** in the repository, the records and the commits; the main thread speaks French to the Product Owner.
 - **Business rules belong to the Product Owner**: each is a row of the records' `rules` (the rule and one example), written with the code that applies it, which cites its id. A rule missing or ambiguous is a stop, never an invention.
 - **Nothing private in the repository**: no quote of the Product Owner, no personal information, nor in a request a tool sends (header, URL, payload); a registry asking for a contact gets the repository's URL.
-- **Never invent a reference**: cite only what was read, a `REF-*` of the records or a page read through the `library` server; otherwise a derivation (`PAGE-derivations`) or a research request.
+- **Never invent a reference**: cite only what was read, a `REF-*` of the records or a page read through the `library` server; otherwise a derivation (a row of `derivations`, its steps in `derivation_steps`, each citing a read source) or a research request.
 - **A rule earns its place**: kept only if it makes the code more correct or more uniform.
 - **Our tools**: each a Rust crate of `tools/`, called by its binary `target/release/<name>`; `replace` or the Edit tool for edits across files, never a Python script; a tool that fails or does not fit is worked around and named in the report, for an incident fixed at the next review.
 - **Figma is read, never edited**: a remark on a design is a comment in Figma.

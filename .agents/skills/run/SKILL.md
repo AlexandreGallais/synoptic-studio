@@ -40,7 +40,7 @@ Scope: $ARGUMENTS. The main thread dispatches, finishes and answers; the chat st
 
 ## The chat
 
-- One line per commit of the worker (a Monitor on its worktree's commits); at each story's end, the epic as a path of its features, each step marked ✅ done, ⏳ now, ⬜ to do, with one progress bar in plain words, no bare ratio.
+- The workers are silent and the main thread terse: no line per commit of a worker, no progress path per story; one short line when a story is merged or parked, the detail on request.
 - Each message of the Product Owner acknowledged at once, saying when it is handled.
 - A tool that fails is worked around and recorded as an incident (`knowledge sql "INSERT INTO incidents …"`), fixed at the next review.
 

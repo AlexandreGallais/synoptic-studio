@@ -14,12 +14,11 @@ Talk to them through `target/release/knowledge`, called from the checkout's root
 
 | Need | Command |
 | --- | --- |
-| an item by its id: a story `EN-151`, a rule `RULE-shapes-box`, a decision `ADR-0086`, a source `REF-SQLITE-WAL`, a page `PAGE-research` | `knowledge show <id> [<heading>]` |
-| what the records know on a subject | `knowledge search <words> [--kind …]` |
+| an item by its id, rendered from its table with its items: a story `EN-151`, a feature `F48`, a rule `RULE-shapes-box`, a decision `ADR-0086`, a source `REF-SQLITE-WAL`, a derivation `DERIV-fillet-setback`, a page `PAGE-research`, a memory `MEMORY-<name>` | `knowledge show <id> [<heading>]` |
+| what the records know on a subject, every table's text (`records_index`) | `knowledge search <words> [--kind story, decision, note, rule, source, conventions…]` |
 | the items of a kind, an epic, a feature, a status | `knowledge list --kind … --epic … --status …` |
 | any question, any shape of your own (tables and indexes may be added, each registered in `tables_registry`) | `knowledge sql "<statement>" [--purpose …]` |
-| a record written: a decision, a note | `knowledge add <kind> <file or ->` |
-| a row written: a journal row, an incident, an improvement | `knowledge sql "INSERT INTO <table> …"` |
+| a record written — a story, a decision, a note, a source, a derivation, a rule, a journal row, an incident, an improvement: its row, then its text one item a row (`story_items`, `decision_items`, `note_findings`, `derivation_steps`…) | `knowledge sql "INSERT INTO <table> …"`; `knowledge add <kind>` names the tables |
 | a story's status | `target/release/backlog-status <ID> <status>` |
 | the ids a change cites, checked against the records | `knowledge check-ids <paths>` |
 

@@ -15,9 +15,8 @@ use std::process::ExitCode;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 use calendar::temporal_instant;
-use git_repository::branch_of;
 use hooks::pages::library_file;
-use knowledge::moved::{Base, Moved};
+use knowledge::moved::Moved;
 use knowledge::private_records::{
     import_library_file, import_memories, import_metrics, import_saves,
 };
@@ -45,14 +44,7 @@ fn run() -> Result<(), String> {
     let home = env::var("HOME").unwrap_or_default();
     let claude = claude_project_folder(&main, Path::new(&home));
     let metrics = main.join(".git").join("metrics");
-    let branch = git_repository::checkout_of(&main)
-        .map(|checkout| branch_of(&checkout))
-        .unwrap_or_default();
     let today = calendar::today();
-    let base = Base {
-        branch: &branch,
-        today: &today,
-    };
     let memory = claude.join("memory");
     // The library of its own file, the variable's or the home's, while one is named.
     let library = library_file(env::var("AGENT_LIBRARY_FILE").ok(), None, Some(home))
@@ -74,7 +66,7 @@ fn run() -> Result<(), String> {
     println!(
         "{}",
         line("memories", &memory, || write(&database, |done| {
-            import_memories(done, &memory, base)
+            import_memories(done, &memory)
         }))
     );
     println!(

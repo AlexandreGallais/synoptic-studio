@@ -11,9 +11,8 @@ use rusqlite::types::Value;
 use rusqlite::{Connection, OpenFlags, OptionalExtension, params, params_from_iter};
 use serde_json::Value as Json;
 
-use crate::add::{Origin, put_merged};
 use crate::front_matter::front_matter;
-use crate::moved::{Base, Moved, markdown_files};
+use crate::moved::{Moved, markdown_files};
 use crate::store::write;
 
 /// The columns of `calls`, the fields of a line of `tool-calls.jsonl` (schema 1).
@@ -101,24 +100,23 @@ pub fn memory_of(file: &str, text: &str) -> Memory {
 }
 
 /// Imports the agent's memories — the Markdown files of Claude Code's memory folder for the
-/// project — into `memories`, private, each also a private document `MEMORY-<name>`. The files are
-/// read, never changed nor removed.
+/// project — into `memories`, private, a memory already held updated in place, so that its
+/// triggers keep `records_index` whole, which a `REPLACE` would not (its delete fires no trigger);
+/// `show MEMORY-<name>` reads it there. The files are read, never changed nor removed.
 ///
 /// # Errors
 /// When SQLite fails.
-pub fn import_memories(
-    database: &Connection,
-    folder: &Path,
-    base: Base<'_>,
-) -> rusqlite::Result<Moved> {
+pub fn import_memories(database: &Connection, folder: &Path) -> rusqlite::Result<Moved> {
     let mut moved = Moved::default();
 
     for (file, text) in markdown_files(folder) {
         let memory = memory_of(&file, &text);
 
         database.execute(
-            "INSERT OR REPLACE INTO memories (name, description, type, private, modified, text)
-            VALUES (?, ?, ?, 1, ?, ?)",
+            "INSERT INTO memories (name, description, type, private, modified, text)
+            VALUES (?, ?, ?, 1, ?, ?)
+            ON CONFLICT (name) DO UPDATE SET description = excluded.description,
+              type = excluded.type, private = 1, modified = excluded.modified, text = excluded.text",
             params![
                 memory.name,
                 memory.description,
@@ -127,20 +125,7 @@ pub fn import_memories(
                 text
             ],
         )?;
-        put_merged(
-            database,
-            &format!("MEMORY-{}", memory.name),
-            &text,
-            Origin {
-                kind: "memory",
-                path: &file,
-                branch: base.branch,
-                today: base.today,
-            },
-            true,
-        )?;
         moved.rows += 1;
-        moved.documents += 1;
     }
     Ok(moved)
 }

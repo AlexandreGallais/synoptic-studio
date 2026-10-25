@@ -13,7 +13,6 @@ use std::path::{Path, PathBuf};
 use std::process::{Command, Output, Stdio};
 use std::time::{Duration, SystemTime};
 
-use knowledge::add::{Origin, add_document};
 use knowledge::snapshot::{
     KEPT, NOT_SET, is_snapshot_name, is_temporary_name, refuse_synced, removed_snapshots,
     snapshot_folder, snapshot_name, temporary_name, unless_gone,
@@ -271,15 +270,10 @@ fn working(place: &Path) -> PathBuf {
 /// Adds a story of an id to a store, committed.
 fn add(database: &Connection, id: &str) {
     write(database, |transaction| {
-        add_document(
-            transaction,
-            &format!("---\nid: {id}\ntitle: A story\n---\n\n# {id}\n\nSome text.\n"),
-            Origin {
-                kind: "story",
-                path: "",
-                branch: "develop",
-                today: "2026-10-25",
-            },
+        transaction.execute(
+            "INSERT INTO stories (id, epic, kind, title, status, summary, branch, state)
+            VALUES (?, 'E49', 'EN', 'A story', 'ready', 'Some text.', 'develop', 'merged')",
+            [id],
         )
     })
     .unwrap();
@@ -316,8 +310,7 @@ fn f48_ac3_snapshots_every_committed_row_while_another_connection_writes() {
     writer.execute_batch("BEGIN IMMEDIATE").unwrap();
     writer
         .execute(
-            "INSERT INTO documents (id, kind, title, epic, feature, status, date, branch, state, private, path)
-            VALUES ('EN-3', 'story', 'Not committed', '', '', '', '2026-10-25', 'develop', 'draft', 0, '')",
+            "INSERT INTO stories (id, epic, kind, title, status) VALUES ('EN-3', 'E49', 'EN', 'Not committed', 'ready')",
             [],
         )
         .unwrap();
@@ -331,7 +324,7 @@ fn f48_ac3_snapshots_every_committed_row_while_another_connection_writes() {
     let files = listed(&synced);
     let copy = Connection::open(synced.join(&day)).unwrap();
     let ids: Vec<String> = copy
-        .prepare("SELECT id FROM documents ORDER BY id")
+        .prepare("SELECT id FROM stories ORDER BY id")
         .unwrap()
         .query_map([], |row| row.get(0))
         .unwrap()
@@ -339,7 +332,7 @@ fn f48_ac3_snapshots_every_committed_row_while_another_connection_writes() {
         .unwrap();
     let sections: i64 = copy
         .query_row(
-            "SELECT count(*) FROM sections_index WHERE sections_index MATCH 'text'",
+            "SELECT count(*) FROM records_index WHERE records_index MATCH 'text'",
             [],
             |row| row.get(0),
         )
@@ -363,7 +356,7 @@ fn f48_ac3_snapshots_every_committed_row_while_another_connection_writes() {
     // The day's file alone: neither the working file, nor its `-wal`, nor the temporary one.
     assert_eq!(files, std::slice::from_ref(&day));
     assert_eq!(ids, ["EN-1", "EN-2"]);
-    // The full-text index came with its sections: each story's one section holds "text".
+    // The full-text index came with its rows: each story's holds "text" in its summary.
     assert_eq!(sections, 2);
     assert_eq!(integrity, "ok");
     assert_eq!(version, SCHEMA_VERSION);
@@ -388,7 +381,7 @@ fn f48_ac3_replaces_the_days_snapshot_when_it_runs_again() {
     let files = listed(&place.join("synced"));
     let count: i64 = Connection::open(place.join("synced").join(&day))
         .unwrap()
-        .query_row("SELECT count(*) FROM documents", [], |row| row.get(0))
+        .query_row("SELECT count(*) FROM stories", [], |row| row.get(0))
         .unwrap();
 
     let _ = fs::remove_dir_all(&place);

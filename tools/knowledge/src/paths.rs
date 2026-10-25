@@ -1,4 +1,4 @@
-//! The text files under the paths given to `check-ids` and `link-ids` (EN-154): a file as it is, a
+//! The text files under the paths given to `check-ids` (EN-154): a file as it is, a
 //! folder walked, its build, dependency and Git folders left out.
 
 use std::fs;
