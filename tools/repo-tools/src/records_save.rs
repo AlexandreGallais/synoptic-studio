@@ -26,41 +26,11 @@ pub struct RecordCopy {
     pub to: &'static str,
 }
 
-/// The variable naming the folder of every project's records.
-pub const ROOT_VARIABLE: &str = "AGENT_RECORDS_ROOT";
+/// Where the records live, found as `knowledge` finds them: one copy for every tool (EN-151).
+pub use knowledge::records::{ROOT_VARIABLE, project_name, records_folder};
 
 /// The file of a project's records holding the instant of its last save.
 pub const LAST_SAVE: &str = "last-save.txt";
-
-/// A project's name: its repository's, the last part of the `origin` remote's address without
-/// `.git`, the same in every clone; without a remote, the main checkout's folder.
-#[must_use]
-pub fn project_name(origin: &str, main: &Path) -> String {
-    let address = origin.trim().trim_end_matches('/');
-    let last = address.rsplit(['/', ':']).next().unwrap_or_default();
-    let name = last.strip_suffix(".git").unwrap_or(last);
-
-    if name.is_empty() {
-        main.file_name()
-            .map(|folder| folder.to_string_lossy().into_owned())
-            .unwrap_or_default()
-    } else {
-        name.to_owned()
-    }
-}
-
-/// A project's records folder, `<AGENT_RECORDS_ROOT>/<project>` (ADR-0081).
-///
-/// # Errors
-/// When the variable is not set or empty: the records are never written to a folder nobody chose.
-pub fn records_folder(root: Option<&str>, project: &str) -> Result<PathBuf, String> {
-    match root {
-        Some(path) if !path.is_empty() => Ok(Path::new(path).join(project)),
-        _ => Err(format!(
-            "{ROOT_VARIABLE} is not set: name the folder of the records in the env of ~/.claude/settings.json."
-        )),
-    }
-}
 
 /// The records to save; a new kind of private file is one more line here. Claude Code names a
 /// project's folder after its path, every character but an ASCII letter or digit a dash.
@@ -151,36 +121,6 @@ pub fn copy_folder(from: &Path, to: &Path) -> io::Result<()> {
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    #[test]
-    fn names_a_project_after_its_repository_else_its_folder() {
-        let main = Path::new("/work/SVG editor");
-
-        for origin in [
-            "https://github.com/owner/synoptic-studio.git",
-            "https://github.com/owner/synoptic-studio/",
-            "git@github.com:owner/synoptic-studio.git",
-            "git@host:synoptic-studio",
-        ] {
-            assert_eq!(project_name(origin, main), "synoptic-studio", "{origin}");
-        }
-        assert_eq!(project_name("", main), "SVG editor");
-        assert_eq!(project_name("\n", main), "SVG editor");
-    }
-
-    #[test]
-    fn puts_each_projects_records_in_its_folder_of_the_chosen_root_never_elsewhere() {
-        assert_eq!(
-            records_folder(Some("/records"), "synoptic-studio"),
-            Ok(PathBuf::from("/records/synoptic-studio"))
-        );
-        for unset in [None, Some("")] {
-            assert!(
-                records_folder(unset, "synoptic-studio")
-                    .is_err_and(|error| error.starts_with("AGENT_RECORDS_ROOT is not set"))
-            );
-        }
-    }
 
     #[test]
     fn saves_the_metrics_the_transcripts_of_this_project_and_the_library() {
