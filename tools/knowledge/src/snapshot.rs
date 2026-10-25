@@ -6,8 +6,15 @@
 //! The synced folder is named by `AGENT_KNOWLEDGE_SNAPSHOT` alone: its path names the user's
 //! account, so no message of this module prints it.
 
+use std::ffi::OsString;
+use std::fmt::Display;
+use std::fs;
+use std::io;
 use std::path::{Path, PathBuf};
 use std::time::Duration;
+
+use crate::records::DATABASE_FILE;
+use crate::store::open_store;
 
 /// The variable naming the synced folder the snapshots go to.
 pub const SNAPSHOT_VARIABLE: &str = "AGENT_KNOWLEDGE_SNAPSHOT";
@@ -23,40 +30,65 @@ pub const LEFTOVER_AGE: Duration = Duration::from_secs(3600);
 /// What the snapshot says when its variable is not set: it copies nothing, and does not fail.
 pub const NOT_SET: &str = "AGENT_KNOWLEDGE_SNAPSHOT is not set: name the synced folder in the env of ~/.claude/settings.json, beside AGENT_RECORDS_ROOT; nothing copied.";
 
+/// What the snapshot says of a synced folder that does not exist.
+const MISSING: &str = "AGENT_KNOWLEDGE_SNAPSHOT names a folder that does not exist: create it, or correct the variable; nothing copied.";
+
+/// Why a working file in the synced folder is refused, and what to do.
+const REFUSED: &str = "which a sync service copies mid-write: move AGENT_RECORDS_ROOT out of it, or name another synced folder.";
+
 /// The name of a day's snapshot, `records-2026-10-25.sqlite`.
 #[must_use]
 pub fn snapshot_name(day: &str) -> String {
-    let _ = day;
-    String::new()
+    format!("records-{day}.sqlite")
+}
+
+/// Whether a text is a date `YYYY-MM-DD`: four digits, a dash, two, a dash, two.
+fn is_date(text: &str) -> bool {
+    text.len() == 10
+        && text.char_indices().all(|(position, character)| {
+            if matches!(position, 4 | 7) {
+                character == '-'
+            } else {
+                character.is_ascii_digit()
+            }
+        })
 }
 
 /// Whether a file's name is a day's snapshot: `records-`, a date `YYYY-MM-DD`, `.sqlite`.
 #[must_use]
 pub fn is_snapshot_name(name: &str) -> bool {
-    let _ = name;
-    false
+    name.strip_prefix("records-")
+        .and_then(|rest| rest.strip_suffix(".sqlite"))
+        .is_some_and(is_date)
 }
 
 /// The name of the temporary file a process copies into, `.records-<pid>.sqlite.tmp`.
 #[must_use]
 pub fn temporary_name(process: u32) -> String {
-    let _ = process;
-    String::new()
+    format!(".records-{process}.sqlite.tmp")
 }
 
 /// Whether a file's name is a snapshot's temporary file, `.records-<digits>.sqlite.tmp`.
 #[must_use]
 pub fn is_temporary_name(name: &str) -> bool {
-    let _ = name;
-    false
+    name.strip_prefix(".records-")
+        .and_then(|rest| rest.strip_suffix(".sqlite.tmp"))
+        .is_some_and(|digits| !digits.is_empty() && digits.chars().all(|c| c.is_ascii_digit()))
 }
 
 /// The snapshots to remove so that the `kept` newest stay: the oldest by their date, which their
 /// names order; a name other than a snapshot's is never among them.
 #[must_use]
 pub fn removed_snapshots(names: &[String], kept: usize) -> Vec<String> {
-    let _ = (names, kept);
-    Vec::new()
+    let mut snapshots: Vec<String> = names
+        .iter()
+        .filter(|name| is_snapshot_name(name))
+        .cloned()
+        .collect();
+
+    snapshots.sort();
+    snapshots.truncate(snapshots.len().saturating_sub(kept));
+    snapshots
 }
 
 /// The synced folder the variable names: `None` when it is unset or empty.
@@ -65,8 +97,37 @@ pub fn removed_snapshots(names: &[String], kept: usize) -> Vec<String> {
 /// When the folder does not exist: it is never made, so that a mistyped path never syncs a new
 /// folder; the message names the variable, not the path.
 pub fn snapshot_folder(setting: Option<&str>) -> Result<Option<PathBuf>, String> {
-    let _ = setting;
-    Ok(None)
+    match setting {
+        None | Some("") => Ok(None),
+        Some(folder) if Path::new(folder).is_dir() => Ok(Some(PathBuf::from(folder))),
+        Some(_) => Err(MISSING.to_owned()),
+    }
+}
+
+/// A path with its links resolved: its longest part that exists read by the file system, the rest
+/// kept as written.
+fn resolved(path: &Path) -> PathBuf {
+    let mut rest: Vec<OsString> = Vec::new();
+    let mut current = path;
+
+    loop {
+        let existing = if current.as_os_str().is_empty() {
+            Path::new(".")
+        } else {
+            current
+        };
+
+        if let Ok(found) = fs::canonicalize(existing) {
+            return rest.iter().rev().fold(found, |path, part| path.join(part));
+        }
+        match (current.parent(), current.file_name()) {
+            (Some(parent), Some(name)) => {
+                rest.push(name.to_owned());
+                current = parent;
+            }
+            _ => return path.to_path_buf(),
+        }
+    }
 }
 
 /// Refuses a working file inside the synced folder, or in that folder itself: a sync service would
@@ -77,18 +138,100 @@ pub fn snapshot_folder(setting: Option<&str>) -> Result<Option<PathBuf>, String>
 /// When the file lies in the synced folder, the message naming the two paths' relation by their
 /// variables, never a path.
 pub fn refuse_synced(file: &Path, folder: &Path) -> Result<(), String> {
-    let _ = (file, folder);
-    Ok(())
+    let (file, folder) = (resolved(file), resolved(folder));
+
+    if file.parent() == Some(folder.as_path()) {
+        Err(format!(
+            "the records database lies in the folder {SNAPSHOT_VARIABLE} names, {REFUSED}"
+        ))
+    } else if file.starts_with(&folder) {
+        Err(format!(
+            "the records database lies in a folder inside the one {SNAPSHOT_VARIABLE} names, {REFUSED}"
+        ))
+    } else {
+        Ok(())
+    }
+}
+
+/// A failure met in the synced folder, its path, as given and resolved, replaced by the variable's
+/// name, so that no message prints it.
+fn hidden(error: &impl Display, folder: &Path) -> String {
+    [folder.to_path_buf(), resolved(folder)]
+        .iter()
+        .map(|path| path.display().to_string())
+        .filter(|path| !path.is_empty())
+        .fold(error.to_string(), |text, path| {
+            text.replace(&path, &format!("${SNAPSHOT_VARIABLE}"))
+        })
+}
+
+/// Removes the snapshots beyond `KEPT` and the temporary files older than `LEFTOVER_AGE`; the
+/// snapshots kept and removed.
+fn prune(folder: &Path) -> io::Result<(usize, usize)> {
+    let mut names = Vec::new();
+
+    for entry in fs::read_dir(folder)? {
+        let entry = entry?;
+        let name = entry.file_name().to_string_lossy().into_owned();
+
+        if is_temporary_name(&name)
+            && entry
+                .metadata()?
+                .modified()?
+                .elapsed()
+                .is_ok_and(|age| age > LEFTOVER_AGE)
+        {
+            fs::remove_file(entry.path())?;
+        } else if is_snapshot_name(&name) {
+            names.push(name);
+        }
+    }
+
+    let removed = removed_snapshots(&names, KEPT);
+
+    for name in &removed {
+        fs::remove_file(folder.join(name))?;
+    }
+    Ok((names.len() - removed.len(), removed.len()))
 }
 
 /// Takes the day's snapshot of the working file into the synced folder: `VACUUM INTO` a temporary
-/// file, put in the rollback journal so that reading it leaves no `-wal` beside it, renamed over the
-/// day's snapshot, the oldest beyond `KEPT` and the leftovers of a killed copy removed. What it
+/// file, renamed over the day's snapshot, the oldest beyond `KEPT` and the leftovers of a killed copy removed. What it
 /// prints, one line naming the file by its name alone.
 ///
 /// # Errors
 /// When the working file lies in the synced folder, or SQLite or the file system fails.
 pub fn take_snapshot(file: &Path, folder: &Path, day: &str) -> Result<String, String> {
-    let _ = (file, folder, day);
-    Ok(String::new())
+    refuse_synced(file, folder)?;
+    if !file.is_file() {
+        return Ok(format!(
+            "no {DATABASE_FILE} in the records folder yet: nothing copied."
+        ));
+    }
+
+    let database = open_store(file)?;
+    let temporary = folder.join(temporary_name(std::process::id()));
+    let name = snapshot_name(day);
+    let failed = |error: &dyn Display| {
+        let _ = fs::remove_file(&temporary);
+        format!("the snapshot {name}: {}", hidden(&error, folder))
+    };
+
+    // `VACUUM INTO` needs a file that does not exist, or is empty (`REF-SQLITE-VACUUM`).
+    match fs::remove_file(&temporary) {
+        Err(error) if error.kind() != io::ErrorKind::NotFound => return Err(failed(&error)),
+        _ => {}
+    }
+    // The copy comes in the rollback journal, the working file's WAL left behind, so that reading
+    // it makes no `-wal` in the synced folder: the tests check its mode.
+    database
+        .execute("VACUUM INTO ?1", [temporary.to_string_lossy()])
+        .map_err(|error| failed(&error))?;
+    fs::rename(&temporary, folder.join(&name)).map_err(|error| failed(&error))?;
+
+    let (kept, removed) = prune(folder).map_err(|error| failed(&error))?;
+
+    Ok(format!(
+        "{name} written into the folder {SNAPSHOT_VARIABLE} names: {kept} kept, {removed} removed"
+    ))
 }
