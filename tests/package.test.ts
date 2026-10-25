@@ -200,3 +200,30 @@ describe("the workflows", () => {
     expect(documented("action")).toEqual(workflowActions());
   });
 });
+
+/**
+ * The playground's `package.json`, an npm project of its own (ADR-0104).
+ *
+ * @returns its dependency fields
+ */
+function playgroundManifest(): PackageManifest {
+  const parsed: unknown = JSON.parse(
+    readFileSync(join(import.meta.dirname, "..", "playground", "package.json"), "utf8"),
+  );
+
+  return typeof parsed === "object" && parsed !== null ? parsed : {};
+}
+
+describe("playground/package.json", () => {
+  it("[F50.AC3] documents every package of the playground, and only those, at its version", () => {
+    const { dependencies, devDependencies } = playgroundManifest();
+    const installed = Object.entries({ ...dependencies, ...devDependencies })
+      .map(([name, version]) => `${name}@${version}`)
+      .toSorted(byText);
+    const rows = DEPENDENCIES.filter((row) => row.project === "playground" && row.kind === "npm")
+      .map((row) => `${row.name}@${row.version}`)
+      .toSorted(byText);
+
+    expect(rows).toEqual(installed);
+  });
+});

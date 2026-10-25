@@ -2,7 +2,8 @@
 //! crate and cargo tool behind its latest version at least 7 days old, each locked crate under 7
 //! days, and each cargo tool written at two versions or without its row, and exits 1 when one is
 //! printed; exits 2, naming the source, when the npm registry, the crates.io index,
-//! GitHub or Node.js's index does not answer. `dependencies unused` (the `deps:unused` check): prints
+//! GitHub or Node.js's index does not answer. `dependencies unused` (the `deps:unused` check), on the
+//! root's project and the playground's (ADR-0104): prints
 //! the unused files, exports and dev packages, the unlisted packages and unresolved imports, and
 //! exits 1 when it prints one. Run from the checkout's root.
 
@@ -59,11 +60,23 @@ fn check_unused() -> u8 {
         eprintln!("dependencies unused: git ls-files failed: run it from a checkout's root");
         return 2;
     };
+    let playground = unused::Tree {
+        files: unused::playground_files(&root, &listed),
+        root: root.join(unused::PLAYGROUND_FOLDER),
+    };
     let tree = unused::Tree {
         files: unused::project_files(&root, &listed),
         root,
     };
-    let findings = unused::check(&tree);
+    let mut findings = unused::check(&tree);
+
+    // The playground's npm project, from its folder (ADR-0104).
+    if playground.root.join("package.json").is_file() {
+        findings.add(
+            unused::check_project(&playground, &unused::PLAYGROUND),
+            unused::PLAYGROUND_FOLDER,
+        );
+    }
 
     print!("{}", findings.report());
     u8::from(!findings.is_empty())

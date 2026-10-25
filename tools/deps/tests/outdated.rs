@@ -155,6 +155,23 @@ fn f21_ac4_npm_falls_back_to_the_greatest_version_7_days_old() {
 }
 
 #[test]
+fn f50_ac3_npm_holds_a_package_under_its_ceiling() {
+    let oxlint = json("npm/oxlint.json");
+    let below = |ceiling: &str, current: &str| {
+        npm::behind_below("oxlint", current, &oxlint, now(), Some(&version(ceiling)))
+            .map(|behind| behind.latest)
+    };
+
+    // Under 1.87.0, the greatest old enough is 1.86.0 (2026-09-28); under 1.86.0, from 1.85.0,
+    // nothing; a ceiling above the latest old enough changes nothing (1.87.0).
+    assert_eq!(below("1.87.0", "1.85.0").as_deref(), Some("1.86.0"));
+    assert_eq!(below("1.86.0", "1.85.0"), None);
+    assert_eq!(below("2.0.0", "1.85.0").as_deref(), Some("1.87.0"));
+    // The playground's `typescript` stays under 6.1, which Angular's compiler refuses.
+    assert_eq!(outdated::PLAYGROUND_CEILINGS, [("typescript", "6.1.0")]);
+}
+
+#[test]
 fn f21_ac4_npm_keeps_a_prerelease_pin_as_ncu_does() {
     let vitepress = json("npm/vitepress.json");
     // The latest tag names 1.6.4, below 2.0.0-alpha.20: no upgrade, no newer alpha either, since
@@ -718,6 +735,11 @@ fn pins() -> Pins {
             ("oxlint".to_owned(), "1.85.0".to_owned()),
             ("vitepress".to_owned(), "2.0.0-alpha.20".to_owned()),
         ],
+        // The playground pins `oxlint` too: its metadata is fetched once for both projects.
+        playground_npm: vec![
+            ("oxlint".to_owned(), "1.86.0".to_owned()),
+            ("vitepress".to_owned(), "2.0.0-alpha.20".to_owned()),
+        ],
         actions: vec![
             ActionUse {
                 repository: "actions/checkout".to_owned(),
@@ -750,6 +772,7 @@ fn f21_ac4_lists_each_version_behind_with_its_date_and_exits_1() {
         Report {
             lines: vec![
                 "npm oxlint 1.85.0 → 1.87.0, 2026-10-05".to_owned(),
+                "npm oxlint 1.86.0 → 1.87.0, 2026-10-05 (playground)".to_owned(),
                 "action actions/checkout v6 → v7 or later (v7.0.0), 2026-06-17".to_owned(),
                 "node .nvmrc 22 → 24 (v24.21.0), 2026-09-07".to_owned(),
                 "crate serde_json 1.0.151 → 1.0.152, 2026-10-10".to_owned(),
@@ -769,6 +792,7 @@ fn f21_ac4_an_action_s_next_major_is_listed_at_exactly_7_days() {
     // millisecond, not 1 ms before (`<` keeps it in its cooldown).
     let only_checkout = Pins {
         npm: Vec::new(),
+        playground_npm: Vec::new(),
         actions: vec![ActionUse {
             repository: "actions/checkout".to_owned(),
             major: 6,
@@ -838,6 +862,7 @@ fn an_answer_that_is_not_json_is_a_failure_too() {
 fn an_up_to_date_tree_lists_nothing_and_exits_0() {
     let pins = Pins {
         npm: vec![("oxlint".to_owned(), "1.87.0".to_owned())],
+        playground_npm: Vec::new(),
         actions: vec![ActionUse {
             repository: "actions/checkout".to_owned(),
             major: 7,
@@ -911,6 +936,7 @@ fn checkout(name: &str) -> PathBuf {
     fs::create_dir_all(root.join(".github/workflows")).expect("a folder");
     fs::create_dir_all(root.join("tools/repo-tools/src")).expect("a folder");
     fs::create_dir_all(root.join("tests/data")).expect("a folder");
+    fs::create_dir_all(root.join("playground")).expect("a folder");
     root
 }
 
@@ -921,6 +947,10 @@ fn reads_the_pins_of_a_checkout() {
         (
             "package.json",
             r#"{ "scripts": { "advisories": "echo 'run cargo install --locked cargo-deny@0.20.2, then cargo deny fetch db'" }, "dependencies": {}, "devDependencies": { "oxlint": "1.87.0", "vitepress": "2.0.0-alpha.20" } }"#,
+        ),
+        (
+            "playground/package.json",
+            r#"{ "dependencies": { "@angular/core": "22.2.3" }, "devDependencies": { "vite": "8.3.4" }, "overrides": { "@angular/build": { "vite": "$vite" } } }"#,
         ),
         (".nvmrc", "24\n"),
         (
@@ -961,6 +991,11 @@ fn reads_the_pins_of_a_checkout() {
             npm: vec![
                 ("oxlint".to_owned(), "1.87.0".to_owned()),
                 ("vitepress".to_owned(), "2.0.0-alpha.20".to_owned()),
+            ],
+            // The playground's packages, its overrides no pin of its own.
+            playground_npm: vec![
+                ("@angular/core".to_owned(), "22.2.3".to_owned()),
+                ("vite".to_owned(), "8.3.4".to_owned()),
             ],
             actions: vec![
                 ActionUse {
