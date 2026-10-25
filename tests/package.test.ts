@@ -201,6 +201,50 @@ describe("the workflows", () => {
   });
 });
 
+/** The root's scripts: ADR-0103's list and the playground's, which ADR-0104 adds. */
+const ROOT_SCRIPTS = ["check:all", "dev", "docs:dev", "fix", "playground", "prepare", "test"];
+
+/**
+ * A manifest's field, read without a type: `workspaces` and `scripts` are checked here alone.
+ *
+ * @param path - the manifest's path from the repository's root
+ * @param key - the field's name
+ * @returns the field's value, or `undefined`
+ */
+function manifestField(path: string, key: string): unknown {
+  const parsed: unknown = JSON.parse(readFileSync(join(import.meta.dirname, "..", path), "utf8"));
+
+  return typeof parsed === "object" && parsed !== null ? Reflect.get(parsed, key) : undefined;
+}
+
+/**
+ * The keys of a manifest's field holding an object.
+ *
+ * @param path - the manifest's path from the repository's root
+ * @param key - the field's name
+ * @returns its keys, sorted, or none when it holds no object
+ */
+function manifestKeys(path: string, key: string): readonly string[] {
+  const field = manifestField(path, key);
+
+  return typeof field === "object" && field !== null ? Object.keys(field).toSorted(byText) : [];
+}
+
+describe("the two npm projects", () => {
+  it("[F50.AC1] keeps the playground a project of its own beside the root's", () => {
+    const installed = manifestKeys("playground/package-lock.json", "packages");
+
+    // Neither manifest is a workspace: the playground has its own lockfile, Angular zoneless.
+    expect(manifestField("package.json", "workspaces")).toBeUndefined();
+    expect(manifestField("playground/package.json", "workspaces")).toBeUndefined();
+    expect(installed).toContain("node_modules/@angular/core");
+    expect(installed.filter((name) => name.endsWith("/zone.js"))).toEqual([]);
+    // The root keeps TypeScript 7.0.2 and gains the script `playground` alone.
+    expect(manifest().devDependencies?.["typescript"]).toBe("7.0.2");
+    expect(manifestKeys("package.json", "scripts")).toEqual(ROOT_SCRIPTS);
+  });
+});
+
 /**
  * The playground's `package.json`, an npm project of its own (ADR-0104).
  *
@@ -215,7 +259,7 @@ function playgroundManifest(): PackageManifest {
 }
 
 describe("playground/package.json", () => {
-  it("[F50.AC3] documents every package of the playground, and only those, at its version", () => {
+  it("[F50.AC1] documents every package of the playground, and only those, at its version", () => {
     const { dependencies, devDependencies } = playgroundManifest();
     const installed = Object.entries({ ...dependencies, ...devDependencies })
       .map(([name, version]) => `${name}@${version}`)

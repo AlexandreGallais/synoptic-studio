@@ -1,6 +1,6 @@
 //! `no-restricted-syntax`: the syntax outside the project's style, as the seven selectors of
 //! `ESLint`'s rule named it (`REF-ESLINT-RESTRICTED-SYNTAX`) — no `enum` but in the playground's
-//! Angular app, which follows Angular's usage (EN-159), no `for…in`, no getter or
+//! Angular app, which follows Angular's usage (EN-159), its utils apart (EN-160), no `for…in`, no getter or
 //! setter, no namespace re-export, no dynamic import, and in the library no default nor optional
 //! parameter (ADR-0016). The eighth selector, a spread in a fold, is oxlint's
 //! `oxc/no-accumulating-spread` now.
@@ -15,7 +15,7 @@ use oxc_span::GetSpan;
 use crate::finding::Finding;
 use crate::glob::matches_any;
 use crate::rules::Rule;
-use crate::scopes::{ANGULAR_APP_FILES, LIBRARY_FILES};
+use crate::scopes::{ANGULAR_APP_FILES, ANGULAR_APP_IGNORES, LIBRARY_FILES};
 use crate::source::Source;
 
 /// The rule.
@@ -104,7 +104,10 @@ impl Rule for NoRestrictedSyntax {
 
     fn check_node(&self, node: &AstNode, source: &Source, findings: &mut Vec<Finding>) {
         let message = match node.kind() {
-            AstKind::TSEnumDeclaration(_) if !matches_any(ANGULAR_APP_FILES, source.path) => {
+            AstKind::TSEnumDeclaration(_)
+                if !matches_any(ANGULAR_APP_FILES, source.path)
+                    || matches_any(ANGULAR_APP_IGNORES, source.path) =>
+            {
                 Some(ENUM)
             }
             AstKind::ForInStatement(_) => Some(FOR_IN),
@@ -208,8 +211,14 @@ mod tests {
             )),
             ["Iterate over Object.keys/values/entries instead."]
         );
+        // The old page's folders, the app's utils, keep the library's rule (EN-160).
         assert_eq!(
-            messages(&lint(&NoRestrictedSyntax, "playground/points/a.ts", code)).len(),
+            messages(&lint(
+                &NoRestrictedSyntax,
+                "playground/src/app/shared/utils/points/show-delete-button.ts",
+                code
+            ))
+            .len(),
             2
         );
     }

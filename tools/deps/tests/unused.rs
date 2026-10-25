@@ -514,6 +514,84 @@ fn f50_ac3_the_binary_checks_the_playground_as_a_project_of_its_own() {
 }
 
 #[test]
+fn f50_ac3_the_binary_checks_the_root_alone_without_the_playground_s_manifest() {
+    let files: Vec<(&str, &str)> = BASE
+        .iter()
+        .chain(PLAYGROUND)
+        .filter(|(path, _)| *path != "playground/package.json")
+        .copied()
+        .collect();
+    let root = plant("no-playground-manifest", &files);
+
+    assert!(
+        test_support::command("git")
+            .args(["init", "--quiet"])
+            .current_dir(&root)
+            .status()
+            .expect("git runs")
+            .success()
+    );
+    let output = test_support::command(env!("CARGO_BIN_EXE_dependencies"))
+        .arg("unused")
+        .current_dir(&root)
+        .output()
+        .expect("the binary runs");
+
+    fs::remove_dir_all(&root).expect("removed");
+    // No playground project: none of its files nor packages is named, and its imports count for
+    // nothing in the root's check: the fixture file unused as a whole, and the library's `SCALE`
+    // (line 1, column 14 after `export const `), beside the root's `is-number`.
+    assert_eq!(output.status.code(), Some(1));
+    assert_eq!(
+        String::from_utf8_lossy(&output.stdout),
+        "Unused files (1)\ntests/fixture.ts\nUnused devDependencies (1)\nis-number  package.json:12:6\nUnused exports (1)\nSCALE  src/math/scale.ts:1:14\n"
+    );
+}
+
+#[test]
+fn f50_ac3_does_not_count_a_package_asked_only_as_an_optional_peer() {
+    // The playground listing `zone.js`, which `@angular/core` asks as an optional peer only.
+    let manifest = "{\n  \"scripts\": { \"start\": \"ng serve\" },\n  \"dependencies\": {\n    \"@angular/core\": \"22.2.3\",\n    \"left-pad\": \"1.3.0\",\n    \"rxjs\": \"7.8.2\",\n    \"zone.js\": \"0.16.0\"\n  },\n  \"devDependencies\": {\n    \"@angular/build\": \"22.2.3\",\n    \"@angular/cli\": \"22.2.3\",\n    \"sass\": \"1.105.2\",\n    \"vitest\": \"5.0.5\"\n  }\n}\n";
+    let files: Vec<(&str, &str)> = BASE
+        .iter()
+        .chain(PLAYGROUND)
+        .map(|&(path, text)| {
+            if path == "playground/package.json" {
+                (path, manifest)
+            } else {
+                (path, text)
+            }
+        })
+        .collect();
+    let root = plant("optional-peer", &files);
+
+    assert!(
+        test_support::command("git")
+            .args(["init", "--quiet"])
+            .current_dir(&root)
+            .status()
+            .expect("git runs")
+            .success()
+    );
+    let output = test_support::command(env!("CARGO_BIN_EXE_dependencies"))
+        .arg("unused")
+        .current_dir(&root)
+        .output()
+        .expect("the binary runs");
+
+    fs::remove_dir_all(&root).expect("removed");
+    // `zone.js` unused at line 7, column 6 of the playground's `package.json` (four spaces, the
+    // quote, then the name), beside `left-pad` at line 5; `rxjs`, a required peer, still used.
+    assert!(
+        String::from_utf8_lossy(&output.stdout).contains(
+            "Unused dependencies (2)\nleft-pad  playground/package.json:5:6\nzone.js  playground/package.json:7:6\n"
+        ),
+        "{}",
+        String::from_utf8_lossy(&output.stdout)
+    );
+}
+
+#[test]
 fn f50_ac3_lists_the_playground_s_files_from_its_folder() {
     let root = plant(
         "playground-files",

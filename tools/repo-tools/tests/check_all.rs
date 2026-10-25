@@ -361,6 +361,57 @@ fn runs_on_a_story_branch_changing_a_checks_input_only_the_tests_related_to_its_
 }
 
 #[test]
+fn f50_ac3_runs_the_playground_s_tests_without_coverage_on_a_story_s_full_run() {
+    let root = scratch("playground-tests");
+    let origin = root.join("origin.git");
+    // Each call of `ng`, run from the playground's folder, appended to `.git/ng-args`.
+    let folder = repository(
+        "playground-tests-work",
+        &[("ng", "echo \"$*\" >> ../.git/ng-args")],
+    );
+    let calls = |folder: &Path| -> Vec<String> {
+        let text = fs::read_to_string(folder.join(".git/ng-args")).expect("args");
+
+        fs::remove_file(folder.join(".git/ng-args")).expect("removed");
+        text.lines()
+            .filter(|line| line.starts_with("test --no-watch") && !line.contains("timings"))
+            .map(str::to_owned)
+            .collect()
+    };
+
+    git(
+        &root,
+        &["init", "-q", "--bare", origin.to_str().expect("path")],
+    );
+    git(&folder, &["add", "package.json"]);
+    git(&folder, &["commit", "-q", "-m", "start"]);
+    git(
+        &folder,
+        &["remote", "add", "origin", origin.to_str().expect("path")],
+    );
+    git(&folder, &["push", "-q", "origin", "HEAD:develop"]);
+    git(&folder, &["fetch", "-q", "origin"]);
+    git(&folder, &["switch", "-q", "-c", "fix/us-001-scan"]);
+    // oxlint's configuration changed: the full run, not the scoped checks (AUD-050).
+    fs::write(folder.join(".oxlintrc.json"), "{}\n").expect("config");
+
+    let story = check_all(&folder, false);
+    let on_story = calls(&folder);
+
+    git(&folder, &["switch", "-q", "-c", "feature/f1-scan"]);
+    let feature = check_all(&folder, false);
+    let on_feature = calls(&folder);
+
+    fs::remove_dir_all(&root).expect("cleaned");
+    fs::remove_dir_all(&folder).expect("cleaned");
+    assert!(story.status.success(), "{}", stdout(&story));
+    assert!(feature.status.success(), "{}", stdout(&feature));
+    // A story's push leaves the coverage floor to its feature branch, as the root's tests do.
+    assert_eq!(on_story, ["test --no-watch"]);
+    assert_eq!(on_feature, ["test --no-watch --coverage"]);
+}
+
+#[test]
 fn aud050_runs_on_a_story_branch_only_the_checks_its_change_needs() {
     let root = scratch("scoped");
     let origin = root.join("origin.git");
