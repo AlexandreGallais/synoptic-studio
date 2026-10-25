@@ -12,7 +12,6 @@ const REPLACEMENT_CHARACTER = 0xff_fd;
  * @kind format
  * @param character - one character; an empty string gives the replacement character's escape
  * @returns its escape
- * @see REF-CSS2-SYNDATA
  */
 export function formatCssEscape(character: string): string {
   const code = character.codePointAt(0) ?? REPLACEMENT_CHARACTER;

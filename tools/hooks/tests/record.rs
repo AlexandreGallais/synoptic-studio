@@ -28,7 +28,6 @@ fn context() -> CallContext {
         branch: "develop".into(),
         snapshot: Value::Null,
         started_at: 0.0,
-        step: String::new(),
         time: 1_791_838_800_000,
     }
 }
@@ -47,7 +46,7 @@ fn records_a_successful_command_with_its_duration() {
     assert_eq!(
         record,
         format!(
-            "{{{NO_MOMENT},\"agent\":\"main\",\"agentId\":\"\",\"branch\":\"develop\",\"description\":\"Run the checks\",\"durationMs\":4187,\"error\":\"\",\"inputChars\":58,\"isBackground\":false,\"isOk\":true,\"outputChars\":0,\"permissionMode\":\"\",\"session\":\"abc123\",\"startedAt\":0,\"step\":\"\",\"summary\":\"npm run check\",\"time\":\"2026-10-12T21:00:00Z\",\"tool\":\"Bash\",\"toolUseId\":\"toolu_01\"}}"
+            "{{{NO_MOMENT},\"agent\":\"main\",\"agentId\":\"\",\"branch\":\"develop\",\"description\":\"Run the checks\",\"durationMs\":4187,\"error\":\"\",\"inputChars\":58,\"isBackground\":false,\"isOk\":true,\"outputChars\":0,\"permissionMode\":\"\",\"session\":\"abc123\",\"startedAt\":0,\"summary\":\"npm run check\",\"time\":\"2026-10-12T21:00:00Z\",\"tool\":\"Bash\",\"toolUseId\":\"toolu_01\"}}"
         )
     );
     assert!(parse(&record).is_some());
@@ -69,7 +68,7 @@ fn copies_the_session_s_state_from_the_status_line_s_snapshot() {
 }
 
 #[test]
-fn records_a_call_in_the_background_its_start_step_result_size_and_subagent_id() {
+fn records_a_call_in_the_background_its_start_result_size_and_subagent_id() {
     let record = tool_call_record(
         &input(
             r#""tool_name": "Agent", "agent_id": "ag1", "permission_mode": "auto",
@@ -77,7 +76,6 @@ fn records_a_call_in_the_background_its_start_step_result_size_and_subagent_id()
         ),
         &CallContext {
             started_at: 7.0,
-            step: "RET-002".into(),
             ..context()
         },
     );
@@ -89,7 +87,8 @@ fn records_a_call_in_the_background_its_start_step_result_size_and_subagent_id()
     assert_eq!(parsed.get("outputChars"), &Value::Number(4.0));
     assert_eq!(parsed.get("permissionMode").text(), "auto");
     assert_eq!(parsed.get("startedAt"), &Value::Number(7.0));
-    assert_eq!(parsed.get("step").text(), "RET-002");
+    // No step: the agent writes no step file any more.
+    assert_eq!(parsed.get("step"), &Value::Null);
     // A monitor and a command sent to the background run there too.
     for (tool, tool_input) in [
         ("Monitor", "{}"),
@@ -339,7 +338,6 @@ fn tracks_a_call_then_logs_it_and_removes_its_running_file() {
 
     assert_eq!(started.get("summary").text(), "ls");
 
-    fs::write(metrics.join("step"), "EN-104 · T2\nmore").expect("step");
     fs::write(metrics.join("now.json"), r#"{"model":"Opus 5.5","time":5}"#).expect("now");
     let end = start.replacen('{', "{\"hook_event_name\":\"PostToolUse\",", 1);
 
@@ -353,7 +351,7 @@ fn tracks_a_call_then_logs_it_and_removes_its_running_file() {
 
     assert!(log.ends_with('\n'));
     assert_eq!(record.get("branch").text(), "chore/en-1-x");
-    assert_eq!(record.get("step").text(), "EN-104 · T2");
+
     assert_eq!(record.get("model").text(), "Opus 5.5");
     assert_eq!(record.get("startedAt"), started.get("start"));
     assert!(!metrics.join("running/toolu_9.json").exists());

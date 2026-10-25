@@ -11,7 +11,6 @@ import { BYTE_MAXIMUM, nearestInteger } from "../../math";
  * @kind format
  * @param fraction - the component, from 0 to 1
  * @returns the byte, an integer from 0 to 255
- * @see REF-CSS-COLOR-4
  */
 export function fractionToByte(fraction: number): number {
   return nearestInteger(BYTE_MAXIMUM * fraction);

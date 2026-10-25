@@ -20,7 +20,6 @@ const SEGMENTED_COVERAGE = 12;
  * @param characters - the code points to map
  * @returns each character and its glyph, 0 for a character the font does not map; undefined when
  * the subtable read passes the table's end
- * @see REF-OT-CMAP
  */
 export function parseCharacterMap(
   cmap: Readonly<DataView>,

@@ -1,16 +1,12 @@
 //! Where a repository's records live (ADR-0081, E49): one SQLite file named after the repository in
 //! the folder `AGENT_RECORDS_ROOT` names, `<root>/<repo>.sqlite`, the project's name read from the
 //! `origin` remote of its main checkout's Git configuration, without starting Git, so that a hook
-//! and the library's server find it as cheaply as `knowledge` does. A file of the former place,
-//! `<root>/<repo>/records.sqlite`, is read as long as it is the only one.
+//! and the library's server find it as cheaply as `knowledge` does.
 
 use std::fs;
 use std::path::{Path, PathBuf};
 
 use crate::checkout_of;
-
-/// The file of the former place, in a folder of the project's name (EN-151 to EN-154).
-pub const LEGACY_FILE: &str = "records.sqlite";
 
 /// The name of a project's file of records, `<project>.sqlite`.
 #[must_use]
@@ -35,18 +31,12 @@ pub fn project_name(origin: &str, main: &Path) -> String {
     }
 }
 
-/// A project's file of records in the root: `<root>/<project>.sqlite`, or the former
-/// `<root>/<project>/records.sqlite` while it alone exists.
+/// A project's file of records in the root: `<root>/<project>.sqlite`. The former place,
+/// `<root>/<project>/records.sqlite`, is no longer read (AUD-053): a test's repository named `repo`
+/// once left such a file in the real root.
 #[must_use]
 pub fn database_in(root: &Path, project: &str) -> PathBuf {
-    let file = root.join(database_name(project));
-    let legacy = root.join(project).join(LEGACY_FILE);
-
-    if !file.exists() && legacy.is_file() {
-        legacy
-    } else {
-        file
-    }
+    root.join(database_name(project))
 }
 
 /// The address of the `origin` remote a Git configuration's text names, empty without one: the
@@ -112,24 +102,17 @@ mod tests {
     }
 
     #[test]
-    fn reads_the_former_file_while_it_alone_exists() {
+    fn names_the_file_after_the_project_never_the_former_place() {
         let root = std::env::temp_dir().join(format!("records-place-{}", std::process::id()));
-        let legacy = root.join("studio").join(LEGACY_FILE);
+        let former = root.join("studio").join("records.sqlite");
 
         let _ = fs::remove_dir_all(&root);
-        fs::create_dir_all(legacy.parent().expect("folder")).expect("folder");
-        let without = database_in(&root, "other");
-
-        fs::write(&legacy, "").expect("legacy");
-        let former = database_in(&root, "studio");
-
-        fs::write(root.join("studio.sqlite"), "").expect("new");
-        let moved = database_in(&root, "studio");
+        fs::create_dir_all(former.parent().expect("folder")).expect("folder");
+        fs::write(&former, "").expect("former");
+        let found = database_in(&root, "studio");
 
         fs::remove_dir_all(&root).expect("cleaned");
-        assert_eq!(without, root.join("other.sqlite"));
-        assert_eq!(former, legacy);
-        assert_eq!(moved, root.join("studio.sqlite"));
+        assert_eq!(found, root.join("studio.sqlite"));
         assert_eq!(records_of_folder(None, Path::new(".")), None);
         assert_eq!(records_of_folder(Some(""), Path::new(".")), None);
     }

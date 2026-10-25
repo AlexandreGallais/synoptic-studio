@@ -14,7 +14,6 @@ import { DRAWING_KEYS } from "./drawing-keys";
  * @param edited - the elements of the shape the panel edits; none while it is refused or none is
  * selected
  * @returns the `<svg>`, every shape of the drawing in it
- * @see RULE-interaction-2-selector
  */
 export function createDrawingSvg(document: Document, edited: readonly SVGElement[]): SVGSVGElement {
   const svg = createViewSvg(document);

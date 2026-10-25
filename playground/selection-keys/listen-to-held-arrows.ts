@@ -13,7 +13,6 @@ import { readKeyField } from "./read-key-field";
  * @kind procedure
  * @param document - page document
  * @param event - the key pressed
- * @see RULE-interaction-2-selector
  */
 function pressHeldArrow(document: Document, event: KeyboardEvent): void {
   const held = readHeldArrows(document);
@@ -39,7 +38,6 @@ function pressHeldArrow(document: Document, event: KeyboardEvent): void {
  * @kind procedure
  * @param document - page document
  * @param event - the key pressed, or the pointer moved or pressed
- * @see RULE-interaction-2-selector
  */
 function removeArrowsUnderCommand(document: Document, event: KeyboardEvent | PointerEvent): void {
   if (event.metaKey) {
@@ -53,7 +51,6 @@ function removeArrowsUnderCommand(document: Document, event: KeyboardEvent | Poi
  * @kind procedure
  * @param document - page document
  * @param event - the key released
- * @see RULE-interaction-2-selector
  */
 function removeReleasedArrow(document: Document, event: KeyboardEvent): void {
   HELD_ARROWS.set(
@@ -73,7 +70,6 @@ function removeReleasedArrow(document: Document, event: KeyboardEvent): void {
  *
  * @kind procedure
  * @param document - page document
- * @see RULE-interaction-2-selector
  */
 export function listenToHeldArrows(document: Document): void {
   HELD_ARROWS.delete(document);

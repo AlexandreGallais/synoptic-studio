@@ -17,7 +17,6 @@ import type { KeptShape } from "../kept-shapes";
  * @param document - page document
  * @param history - the page's history; undefined before its first redraw
  * @returns the list's items, the oldest first; none without a history
- * @see RULE-interaction-7-navigation-and-history
  */
 export function createHistoryRows(
   document: Document,

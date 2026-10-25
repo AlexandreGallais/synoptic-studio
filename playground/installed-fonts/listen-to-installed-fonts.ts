@@ -24,7 +24,6 @@ const UNSUPPORTED =
  * @kind procedure
  * @param view - the page's window
  * @returns the window in Chrome and Edge; undefined in Firefox and Safari
- * @see REF-CHROME-LOCAL-FONTS
  */
 function readLocalFontAccess(view: object): LocalFontAccess | undefined {
   const isAvailable = "queryLocalFonts" in view && typeof view.queryLocalFonts === "function";
@@ -44,7 +43,6 @@ function readLocalFontAccess(view: object): LocalFontAccess | undefined {
  * @param access - the window that lists them
  * @param update - redraws the playground
  * @returns once they are listed
- * @see REF-WICG-LOCAL-FONT-ACCESS
  */
 async function showInstalledFonts(
   document: Document,
@@ -97,7 +95,6 @@ async function showInstalledFonts(
  * @kind procedure
  * @param error - the error the browser gave
  * @returns the line said
- * @see REF-WICG-LOCAL-FONT-ACCESS
  */
 function readListError(error: unknown): string {
   return error instanceof DOMException && error.name === "NotAllowedError"
@@ -115,7 +112,6 @@ function readListError(error: unknown): string {
  * @kind procedure
  * @param document - page document
  * @param update - redraws the playground
- * @see REF-WICG-LOCAL-FONT-ACCESS
  */
 function listenToInstalledChoice(document: Document, update: () => void): void {
   const font = selectElement(document, "text-font");
@@ -150,7 +146,6 @@ function listenToInstalledChoice(document: Document, update: () => void): void {
  * @kind procedure
  * @param document - page document
  * @param update - redraws the playground
- * @see REF-CHROME-LOCAL-FONTS
  */
 export function listenToInstalledFonts(document: Document, update: () => void): void {
   selectElement(document, "installed-fonts").addEventListener("click", () => {

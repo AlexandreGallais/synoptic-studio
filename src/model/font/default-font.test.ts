@@ -60,7 +60,7 @@ describe("DEFAULT_FONT (ADR-0052, REF-INTER-RELEASE)", () => {
     const regular = faceMetrics(400, false);
 
     // Read from Inter-Regular.ttf by the spike's prototype parser, apart from the library; its
-    // cap height, sCapHeight of its OS/2 table of version 4, read by a script at EN-035.
+    // cap height, sCapHeight of its OS/2 table of version 4, read by a script.
     expect(regular).toMatchObject({
       ascender: 1984,
       capHeight: 1490,

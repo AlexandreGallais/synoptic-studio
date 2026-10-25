@@ -8,7 +8,6 @@ const TAG_LENGTH = 4;
  * @param view - the font file
  * @param offset - where the tag starts, in bytes
  * @returns its four characters
- * @see REF-OT-OTFF
  */
 export function parseTag(view: Readonly<DataView>, offset: number): string {
   return String.fromCodePoint(

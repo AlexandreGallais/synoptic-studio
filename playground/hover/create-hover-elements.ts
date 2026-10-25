@@ -12,7 +12,6 @@ import type { Point } from "../../src";
  * @param document - page document
  * @param point - the point of the drawing the pointer is over; undefined for none
  * @returns their `<path>` elements; nothing when no shape is under the point
- * @see RULE-interaction-2-selector
  */
 export function createHoverElements(
   document: Document,

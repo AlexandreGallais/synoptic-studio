@@ -8,7 +8,6 @@ import { readView } from "../view";
  *
  * @kind procedure
  * @param document - page document
- * @see RULE-interaction-7-navigation-and-history
  */
 export function showZoom(document: Document): void {
   const percentage = nearestInteger(percentFromFraction(readView(document).scale));

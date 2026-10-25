@@ -22,7 +22,6 @@ const SFNT_VERSIONS: ReadonlySet<number> = new Set([
  * @param view - the file
  * @param directory - where the table directory starts, in bytes from the file's start
  * @returns the offset of each table record, from the file's start
- * @see REF-OT-OTFF
  */
 export function parseRecordPlaces(view: Readonly<DataView>, directory: number): readonly number[] {
   const { headerSize, numTablesOffset, recordSize } = TABLE_DIRECTORY_LAYOUT;

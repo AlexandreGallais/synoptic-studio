@@ -14,7 +14,7 @@ describe("createSvgElement", () => {
   });
 
   it("writes the view box as `x y width height`, numbers at fixed precision", () => {
-    // Margin of 10 around a 120 × 80 rectangle; a derived 1 / 3 is written 0.33333 (EN-001).
+    // Margin of 10 around a 120 × 80 rectangle; a derived 1 / 3 is written 0.33333.
     expect(
       createSvgElement(document, { height: 100, width: 140, x: -10, y: 1 / 3 }).getAttribute(
         "viewBox",

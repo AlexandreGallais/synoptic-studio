@@ -10,6 +10,7 @@ pub mod seed;
 use std::path::{Path, PathBuf};
 
 use git_hooks::branch::is_valid_branch;
+pub use git_repository::story_of_branch;
 use knowledge_call::{is_plain, rows};
 
 /// Folder of the worktrees, from the main checkout.
@@ -61,17 +62,6 @@ pub fn story_id(text: &str) -> Option<String> {
     let is_number = number.len() == 3 && number.bytes().all(|byte| byte.is_ascii_digit());
 
     (is_kind && is_number).then_some(id)
-}
-
-/// The story id of a story branch, `EN-100` for `chore/en-100-git-sequences`.
-#[must_use]
-pub fn story_of_branch(name: &str) -> Option<String> {
-    let (_, topic) = name.split_once('/')?;
-    let mut words = topic.splitn(3, '-');
-    let kind = words.next()?;
-    let number = words.next()?;
-
-    story_id(&format!("{kind}-{number}"))
 }
 
 /// The story of a row of `stories`, its cells `kind`, `feature` and `topic` in that order, an

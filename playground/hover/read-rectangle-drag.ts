@@ -9,7 +9,6 @@ import type { SelectionDrag } from "./selection-drag";
  * @kind procedure
  * @param document - page document
  * @returns the drag; undefined before it goes that far, for another press, or for none
- * @see RULE-interaction-2-selector
  */
 export function readRectangleDrag(document: Document): SelectionDrag | undefined {
   const drag = SELECTION_DRAGS.get(document);

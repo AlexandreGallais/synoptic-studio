@@ -76,7 +76,7 @@ function readFrame(): string | null {
   return selectPageElement("#canvas g.text-frame path.straight-box").getAttribute("d");
 }
 
-describe("Text tool: a text in a box (US-033)", () => {
+describe("Text tool: a text in a box", () => {
   beforeEach(() => {
     openServedPage("");
     chooseShapeKind("text");

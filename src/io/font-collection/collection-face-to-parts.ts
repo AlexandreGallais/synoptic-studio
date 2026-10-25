@@ -31,7 +31,6 @@ type PlacedTable = {
  * @kind format
  * @param tables - the face's tables, in the order of their records
  * @returns each table and where it starts in the face's file
- * @see REF-OT-OTFF
  */
 function tablesToPlaces(tables: readonly FaceTable[]): readonly PlacedTable[] {
   const { headerSize, recordSize } = TABLE_DIRECTORY_LAYOUT;
@@ -63,7 +62,6 @@ const UINT16_SIZE = 2;
  * @param file - the collection's bytes
  * @param placed - the table and where it starts in the face's file
  * @returns the record's 16 bytes
- * @see REF-OT-OTFF
  */
 function placedTableToRecord(file: Readonly<Uint8Array>, placed: PlacedTable): readonly number[] {
   const { lengthField, offsetField, recordSize } = TABLE_DIRECTORY_LAYOUT;
@@ -85,7 +83,6 @@ function placedTableToRecord(file: Readonly<Uint8Array>, placed: PlacedTable): r
  * @kind format
  * @param length - the table's length, in bytes
  * @returns the bytes of padding after it
- * @see REF-OT-OTFF
  */
 function paddingToFourByteBoundary(length: number): number {
   return lengthToFourByteBoundary(length) - length;
@@ -100,7 +97,6 @@ function paddingToFourByteBoundary(length: number): number {
  * @param file - the collection's bytes
  * @param placed - the table and where it starts and ends in the face's file
  * @returns the table's view, then its padding
- * @see REF-OT-OTFF
  */
 function placedTableToParts<Buffer extends ArrayBufferLike>(
   file: Readonly<Uint8Array<Buffer>>,
@@ -134,7 +130,6 @@ function placedTableToParts<Buffer extends ArrayBufferLike>(
  * @param directory - where the face's table directory starts, `tableDirectoryOffsets[i]`
  * @returns the face's parts, its directory first; a directory's header alone for a directory
  * that is not a font's
- * @see REF-OT-OTFF
  */
 export function collectionFaceToParts<Buffer extends ArrayBufferLike>(
   file: Readonly<Uint8Array<Buffer>>,

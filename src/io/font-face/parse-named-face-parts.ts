@@ -15,7 +15,6 @@ import { parsePostScriptName } from "./parse-post-script-name";
  * @param postScriptName - the PostScript name of the face looked for
  * @returns the face's parts, joined in their order into its file; undefined when a collection of
  * several faces holds none of that name
- * @see REF-OT-OTFF
  */
 export function parseNamedFaceParts<Buffer extends ArrayBufferLike>(
   file: Readonly<Uint8Array<Buffer>>,

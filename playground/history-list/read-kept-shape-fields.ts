@@ -20,7 +20,6 @@ const CORNER_FIELDS: ReadonlyMap<string, string> = new Map([
  * @kind procedure
  * @param kept - a shape as the page keeps it
  * @returns its shape's fields and its kind
- * @see RULE-interaction-7-navigation-and-history
  */
 export function readKeptShapeFields(kept: KeptShape): Readonly<Record<string, unknown>> {
   const field = CORNER_FIELDS.get(kept.kind);

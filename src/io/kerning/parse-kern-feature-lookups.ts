@@ -22,7 +22,6 @@ const LOOKUP_INDICES_OFFSET = 4;
  * @param gpos - the `GPOS` table
  * @param feature - where the Feature table starts in it
  * @returns its lookup indices; undefined when it passes the table's end
- * @see REF-OT-LAYOUT-COMMON
  */
 function parseFeatureLookups(
   gpos: Readonly<DataView>,
@@ -50,7 +49,6 @@ function parseFeatureLookups(
  * @param gpos - the `GPOS` table
  * @param featureList - where the FeatureList table starts in it
  * @returns the offset of each FeatureRecord in the table; undefined when they pass its end
- * @see REF-OT-LAYOUT-COMMON
  */
 function parseFeatureRecords(
   gpos: Readonly<DataView>,
@@ -77,7 +75,6 @@ function parseFeatureRecords(
  * @kind format
  * @param features - the lookup indices of each feature, undefined for one that could not be read
  * @returns the indices; undefined when a feature could not be read
- * @see REF-OT-LAYOUT-COMMON
  */
 function featuresToLookups(
   features: readonly (readonly number[] | undefined)[],
@@ -98,7 +95,6 @@ function featuresToLookups(
  * @param featureList - where the FeatureList table starts in it
  * @returns the indices of the kerning lookups, ascending; undefined when the FeatureList or a
  * `kern` Feature table passes the table's end
- * @see REF-OT-LAYOUT-COMMON
  */
 export function parseKernFeatureLookups(
   gpos: Readonly<DataView>,

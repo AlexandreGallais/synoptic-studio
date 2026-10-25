@@ -10,7 +10,7 @@ use crate::document::{Document, read_document};
 /// on and the day.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Origin<'a> {
-    /// The document's kind: `story`, `note`, `journal`.
+    /// The document's kind: `story`, `note`, `log`.
     pub kind: &'a str,
     /// The file it was read from, empty for the standard input.
     pub path: &'a str,
@@ -29,6 +29,20 @@ pub fn is_kind(kind: &str) -> bool {
         && kind
             .bytes()
             .all(|byte| byte.is_ascii_lowercase() || byte == b'-')
+}
+
+/// The table of a kind whose records are rows with their columns rather than documents: the
+/// journal, the incidents, the improvements and the feedback, read by `knowledge sql` and written
+/// by it, one way to write each; `None` for a kind of documents.
+#[must_use]
+pub fn row_table(kind: &str) -> Option<&'static str> {
+    match kind {
+        "journal" => Some("journal"),
+        "incident" => Some("incidents"),
+        "improvement" => Some("improvements"),
+        "feedback" => Some("feedback"),
+        _ => None,
+    }
 }
 
 /// The id made for a document whose front matter gives none: `<KIND>-<date>-<n>`, `n` one more

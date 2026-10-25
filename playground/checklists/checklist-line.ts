@@ -1,5 +1,5 @@
 /**
- * One line of an epic's checklist (US-051): what to try and what to see, ticked by the Product
+ * One line of an epic's checklist: what to try and what to see, ticked by the Product
  * Owner once seen.
  */
 export type ChecklistLine = {

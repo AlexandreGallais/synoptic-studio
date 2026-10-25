@@ -37,7 +37,7 @@ function sendKey(id: string, type: string, init: KeyboardEventInit): void {
 /**
  * Sends the keys of Up held in a field, its repeats included, as Chromium sends them in a number
  * field: at each key, the value stepped by 1, then `input` and `change` (note 0032, §6); a field
- * acting as a number field, one shape's or several's, steps itself at the key (US-081, US-085).
+ * acting as a number field, one shape's or several's, steps itself at the key.
  * The key is not released.
  *
  * @param id - the field, without `#`
@@ -113,7 +113,7 @@ function readRadii(drawing: readonly KeptShape[]): readonly number[] {
   );
 }
 
-describe("a burst of arrows in a number field, one step (US-081)", () => {
+describe("a burst of arrows in a number field, one step", () => {
   beforeEach(() => {
     vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout"] });
     // The page opens with its rectangle, 120 × 80, selected: made 100 wide, a step of its own.
@@ -158,7 +158,7 @@ describe("a burst of arrows in a number field, one step (US-081)", () => {
 
     vi.advanceTimersByTime(1);
 
-    // 100 + 30 − 1: the page steps W at Down's key too (US-085).
+    // 100 + 30 − 1: the page steps W at Down's key too.
     expect(readPresentWidths()).toEqual([129]);
   });
 
@@ -251,8 +251,8 @@ describe("a burst of arrows in a number field, one step (US-081)", () => {
     holdUp("width", 3);
     openServedPage("");
     setElementBox("#canvas", { height: 600, left: 100, top: 50, width: 800 });
-    // No burst left open, its pause's end finding none (US-087: every field applies its value on
-    // Enter, a step taken at once).
+    // No burst left open, its pause's end finding none (every field applies its value on Enter,
+    // a step taken at once).
     expect(ARROW_BURSTS.has(document)).toBe(false);
 
     typeAndEnter("radius", "20");
@@ -278,7 +278,7 @@ describe("a burst of arrows in a number field, one step (US-081)", () => {
     expect(readPresentWidths()).toEqual([90]);
   });
 
-  it("[F43.AC3] ends a burst at once, its step taken, when Cmd is pressed, no keyup sent (AUD-049)", () => {
+  it("[F43.AC3] ends a burst at once, its step taken, when Cmd is pressed, no keyup sent", () => {
     pressUp("width", 3);
     // Cmd pressed while Up is held, then both released, Cmd's keyup taken by a shortcut: none sent.
     sendKey("width", "keydown", { key: "Meta", metaKey: true });
@@ -292,7 +292,7 @@ describe("a burst of arrows in a number field, one step (US-081)", () => {
     expect(readWidths()).toEqual([100]);
   });
 
-  it("[F43.AC3] ends a burst at once, its step taken, at a pointerdown carrying Cmd (AUD-049)", () => {
+  it("[F43.AC3] ends a burst at once, its step taken, at a pointerdown carrying Cmd", () => {
     pressUp("width", 3);
 
     selectPageElement("#canvas").dispatchEvent(
@@ -321,7 +321,7 @@ describe("a burst of arrows in a number field, one step (US-081)", () => {
   });
 });
 
-describe("a burst of arrows in a field of several shapes, one step (US-081)", () => {
+describe("a burst of arrows in a field of several shapes, one step", () => {
   beforeEach(() => {
     vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout"] });
     openServedPage("");

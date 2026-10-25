@@ -10,7 +10,6 @@ import { SHAPE_DRAWINGS } from "./shape-drawings";
  * @kind procedure
  * @param document - page document
  * @param tool - the tool that drew it
- * @see RULE-interaction-1-tools
  */
 function focusDrawnShape(document: Document, tool: string): void {
   if (tool === "text") {
@@ -28,7 +27,6 @@ function focusDrawnShape(document: Document, tool: string): void {
  *
  * @kind procedure
  * @param document - page document
- * @see RULE-interaction-1-tools
  */
 export function stopShapeDrawing(document: Document): void {
   const drawing = SHAPE_DRAWINGS.get(document);

@@ -13,7 +13,6 @@ import type { KeptShape } from "../kept-shapes";
  * @kind procedure
  * @param document - page document
  * @param history - the page's history; undefined before its first redraw
- * @see RULE-interaction-7-navigation-and-history
  */
 export function showHistoryList(
   document: Document,

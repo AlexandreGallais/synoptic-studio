@@ -13,7 +13,6 @@ import type { Arc } from "../../geometry";
  * @kind format
  * @param arc - fillet arc, drawn from the current point to its end
  * @returns the `A` command, numbers at fixed precision
- * @see REF-SVG2-PATHS
  */
 export function formatArcCommand(arc: Arc): string {
   const radius = formatSvgNumber(arc.radius);

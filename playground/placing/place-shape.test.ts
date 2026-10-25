@@ -55,7 +55,7 @@ function placeShape(tool: string, point: Point): void {
 }
 
 /**
- * Places a text by a click, types its content and leaves its Content field (US-075).
+ * Places a text by a click, types its content and leaves its Content field.
  *
  * @param point - the point of the drawing clicked
  * @param content - what is typed in it
@@ -112,7 +112,7 @@ function readArmedTool(): string {
   return tools.find((tool) => readPressedState(`tool-${tool}`) === "true") ?? "";
 }
 
-describe("a click with a tool adds a shape where it is clicked (US-063)", () => {
+describe("a click with a tool adds a shape where it is clicked", () => {
   beforeEach(() => {
     // The epic's step 1, a rectangle 120 × 80, radius 10, whatever feature is being validated.
     openServedPage("?guide=epic");
@@ -189,7 +189,7 @@ describe("a click with a tool adds a shape where it is clicked (US-063)", () => 
     placeShape("text", { x: 250, y: 140 });
 
     // Empty, shown 1 wide and one line of Inter Regular 32 tall, (1984 + 494) × 32 / 2048 =
-    // 38.71875 (US-075): its top-left (250 − 0.5, 140 − 19.359375) = (249.5, 120.640625),
+    // 38.71875: its top-left (250 − 0.5, 140 − 19.359375) = (249.5, 120.640625),
     // rounded to (250, 121), a tie rounded up.
     expect([readValue("shape-x"), readValue("shape-y")]).toEqual(["250", "121"]);
     expect(readText("#shape-title")).toBe("Text");
@@ -230,7 +230,7 @@ describe("a click with a tool adds a shape where it is clicked (US-063)", () => 
   });
 
   it("[F35.AC1] places a text whose font has no metrics with its top-left on the point", () => {
-    // No font available yet (US-056): the text's size is unknown, its box taken as 0 × 0.
+    // No font available yet: the text's size is unknown, its box taken as 0 × 0.
     writeFontSession(document, { ...readFontSession(document), kept: [] });
     placeShape("text", { x: 250.5, y: 140.6 });
 
@@ -245,8 +245,8 @@ describe("a click with a tool adds a shape where it is clicked (US-063)", () => 
 
     const drawn = document.querySelector("#canvas text")?.outerHTML;
 
-    // A family read ahead whose files could not be read again leaves the session (US-061), Inter
-    // not drawn on this computer (US-056): no family measures the kept text any more.
+    // A family read ahead whose files could not be read again leaves the session, Inter
+    // not drawn on this computer: no family measures the kept text any more.
     writeFontSession(document, { ...readFontSession(document), kept: [] });
     placeShape("round", { x: 500, y: 300 });
 
@@ -330,7 +330,7 @@ describe("a click with a tool adds a shape where it is clicked (US-063)", () => 
   });
 });
 
-describe("what a new shape starts with (SP-026)", () => {
+describe("what a new shape starts with", () => {
   beforeEach(() => {
     openServedPage("?guide=epic");
     setElementBox("#canvas", { height: 600, left: 100, top: 50, width: 800 });
@@ -427,7 +427,7 @@ describe("what a new shape starts with (SP-026)", () => {
     placeText({ x: 250, y: 300 }, "Text");
     chooseOption("text-fit", "box");
 
-    // "Text" 64.65625 wide, its box the block rounded up (US-055): 65.
+    // "Text" 64.65625 wide, its box the block rounded up: 65.
     expect(readValue("text-box-width")).toBe("65");
   });
 

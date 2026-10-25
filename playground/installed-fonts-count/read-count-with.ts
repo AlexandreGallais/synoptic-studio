@@ -10,7 +10,6 @@ import type { ReadAheadCount } from "./read-ahead-count";
  * @param family - its name, as the browser lists it
  * @param outcome - what reading it gave
  * @returns the families left out, it last with its reason when it is left out
- * @see RULE-shapes-text
  */
 function readLeftOutWith(
   leftOut: readonly LeftOutFamily[],
@@ -28,7 +27,6 @@ function readLeftOutWith(
  * @param family - its name, as the browser lists it
  * @param outcome - what reading it gave
  * @returns the count with it
- * @see RULE-shapes-text
  */
 export function readCountWith(
   count: ReadAheadCount,

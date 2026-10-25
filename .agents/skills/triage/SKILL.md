@@ -10,4 +10,4 @@ description: Read the open GitHub issues and present each one to the Product Own
 3. Each issue checked against the records: a rule (`knowledge search`), a backlog item it repeats, a source it cites (read it), the vision.
 4. To the Product Owner, in French, one block per issue: what it asks, what the records say, a recommendation — do now, later, or decline — with the reason and the item it would become.
 5. On their decision only: accepted, a backlog row citing it (`Refs: #n` in commits) and a short reply; declined, a polite reply with the reason, then closed.
-6. A journal row (`knowledge add journal -`).
+6. A journal row (`knowledge sql "INSERT INTO journal …"`).

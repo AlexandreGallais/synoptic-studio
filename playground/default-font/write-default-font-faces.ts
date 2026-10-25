@@ -15,7 +15,6 @@ import { readDrawnDefaultFaces } from "./read-drawn-default-faces";
  *
  * @kind procedure
  * @param document - page document
- * @see RULE-shapes-text
  */
 export function writeDefaultFontFaces(document: Document): void {
   const faces = readDrawnDefaultFaces(document);

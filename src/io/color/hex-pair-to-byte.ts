@@ -10,7 +10,6 @@ const HEXADECIMAL = 16;
  * @kind format
  * @param pair - two hexadecimal digits, already checked
  * @returns the byte, an integer from 0 to 255
- * @see REF-CSS-COLOR-4
  */
 export function hexPairToByte(pair: string): number {
   return Number.parseInt(pair, HEXADECIMAL);

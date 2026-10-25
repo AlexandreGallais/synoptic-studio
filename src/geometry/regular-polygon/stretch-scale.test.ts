@@ -46,7 +46,7 @@ describe("stretchScale (DERIV-stretched-polygon step 5)", () => {
   });
 
   it("reaches the pentagon's highest sound scale, λ = 6.74030, beyond ln λ = 1.9", () => {
-    // Its side corners then turn exactly π/5 (review of EN-017).
+    // Its side corners then turn exactly π/5.
     expect(stretchScale(5, 300 / 100)).toBeCloseTo(6.7403, 4);
   });
 

@@ -17,7 +17,6 @@ import { showHistory } from "./show-history";
  *
  * @kind procedure
  * @param document - page document, just redrawn
- * @see RULE-interaction-7-navigation-and-history
  */
 export function updateHistory(document: Document): void {
   const isDue = [DUE_HISTORY_STEPS.has(document), !PAGE_HISTORIES.has(document)].includes(true);

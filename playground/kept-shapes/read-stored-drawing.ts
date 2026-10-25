@@ -11,7 +11,6 @@ import type { KeptShape } from "./kept-shape";
  * @param document - page document
  * @param key - `DRAWING_KEYS.below`, `DRAWING_KEYS.edited` or `DRAWING_KEYS.above`
  * @returns the shapes in the order drawn; none until some are kept
- * @see RULE-interaction-2-selector
  */
 export function readStoredDrawing(document: Document, key: string): readonly KeptShape[] {
   // oxlint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-type-assertion -- written by writeStoredDrawing only, from shapes drawn valid

@@ -13,7 +13,6 @@ import type { NamedFontFace } from "../../src";
  * @kind procedure
  * @param face - its weight and style
  * @returns its `style` and `weight` descriptors
- * @see REF-CSS-FONT-LOADING
  */
 function readFontFaceDescriptors(
   face: Pick<NamedFontFace["face"], "isItalic" | "weight">,
@@ -34,7 +33,6 @@ function readFontFaceDescriptors(
  * @param view - the page's window
  * @param named - the face read and its family
  * @returns the face; undefined without its file or in a browser without that interface
- * @see REF-CHROMIUM-FONT-FACE-CODE
  */
 function createPageFontFace(
   view: Window & typeof globalThis,
@@ -57,7 +55,6 @@ function createPageFontFace(
  * @param update - redraws the playground
  * @returns once the face is loaded and the page redrawn
  * @throws {DOMException} a `SyntaxError` when the browser cannot parse the face
- * @see REF-CSS-FONT-LOADING
  */
 async function loadFontFace(
   document: Document,
@@ -81,7 +78,6 @@ async function loadFontFace(
  * @param document - page document
  * @param named - the face read and its family
  * @param error - the browser's reason
- * @see REF-CSS-FONT-LOADING
  */
 function writeLoadFailure(document: Document, named: NamedFontFace, error: unknown): void {
   writeText(
@@ -102,7 +98,6 @@ function writeLoadFailure(document: Document, named: NamedFontFace, error: unkno
  * @param document - page document
  * @param named - the face read and its family
  * @param update - redraws the playground
- * @see REF-CSS-FONT-LOADING
  */
 function registerFontFace(document: Document, named: NamedFontFace, update: () => void): void {
   const view = document.defaultView;

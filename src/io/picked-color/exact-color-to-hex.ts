@@ -51,7 +51,6 @@ const MODELS: Readonly<
  * @param color - the hue, the saturation and the lightness or brightness, as exact fractions
  * @param model - the model the values are read in
  * @returns the color, `#` and six lower-case digits
- * @see DERIV-color-spaces
  */
 export function exactColorToHex(color: ExactColor, model: ColorModel): string {
   const { component, components } = MODELS[model];

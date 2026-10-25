@@ -33,7 +33,7 @@ const FRACTIONAL: FreeShape = {
   y: 7,
 };
 
-describe("shapeMovedBy (US-072)", () => {
+describe("shapeMovedBy", () => {
   it("[F39.AC2] moves B by (10.80127, 3.65064), its angle, size and corners kept", () => {
     // Its position (200, 20) goes to (210.80127, 23.65064), its straight box to (205, 2).
     const moved = shapeMovedBy(SHAPE_B, { x: 10.80127, y: 3.65064 });

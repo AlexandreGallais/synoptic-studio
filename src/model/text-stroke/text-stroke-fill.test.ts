@@ -15,7 +15,7 @@ const RED_UNDERLINE = {
   underlineOpacity: 50,
 } as const;
 
-describe("textStrokeFill (US-041)", () => {
+describe("textStrokeFill", () => {
   it("[F16.AC4] draws a chosen underline in its own color, the strike-through in the text's", () => {
     expect(textStrokeFill(RED_UNDERLINE, "underline")).toEqual({ color: "#ff0000", opacity: 50 });
 

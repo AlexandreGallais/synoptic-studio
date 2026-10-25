@@ -61,12 +61,12 @@ function pressTimes(init: KeyboardEventInit, count: number): void {
   pressTimes(init, count - 1);
 }
 
-describe("the listeners of a mount removed at the next one (EN-150, REF-MDN-ADD-EVENT-LISTENER)", () => {
+describe("the listeners of a mount removed at the next one (REF-MDN-ADD-EVENT-LISTENER)", () => {
   it.each([1, 2, 48])(
     "[F43.AC1] redraws the page 14 times for 7 undos by Ctrl + Z after %i mounts, each key heard once",
     // After 48 mounts, alone: 469 ms, the median of 5 runs of its file (451 to 498 ms); over
-    // Vitest's 5 s under the pre-push's load twice on 2026-10-25, so run alone after the lanes
-    // (AUD-050); 2 s is 4.3 times it.
+    // Vitest's 5 s under the pre-push's load twice on 2026-10-25, so run alone after the lanes;
+    // 2 s is 4.3 times it.
     { tags: ["timing"], timeout: 2000 },
     (mounts) => {
       openTimes(mounts);
@@ -83,7 +83,7 @@ describe("the listeners of a mount removed at the next one (EN-150, REF-MDN-ADD-
 
       // Each undo redraws at its key down (`moveHistory`) and asks a step at its key up
       // (`scheduleHistoryStep`), which redraws once more: 2 × 7 = 14, against 49 per key after
-      // 48 mounts when every mount's listeners stayed (SP-031).
+      // 48 mounts when every mount's listeners stayed.
       expect(redraws()).toBe(14);
       // 7 undos for the 7 nudges: the rectangle back where it was.
       expect(Number(readValue("shape-x"))).toBe(x);

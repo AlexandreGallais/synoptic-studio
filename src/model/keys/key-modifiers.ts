@@ -1,4 +1,4 @@
-/** The modifiers held as a key is pressed, as a `KeyboardEvent` holds them (`interaction.md` §1). */
+/** The modifiers held as a key is pressed, as a `KeyboardEvent` holds them (`RULE-interaction-1-tools-ctrl-stands-for-cmd`). */
 export type KeyModifiers = {
   /** Whether Alt, or Option on macOS, is held. */
   readonly altKey: boolean;

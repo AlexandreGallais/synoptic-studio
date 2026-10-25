@@ -24,7 +24,6 @@ const RECORD_FIELDS = { encoding: 2, language: 4, length: 8, nameId: 6, offset: 
  * @kind format
  * @param name - the font's `name` table
  * @returns its number of records
- * @see REF-OT-NAME
  */
 function parseRecordCount(name: Readonly<DataView>): number {
   const count = isSpanWithin(0, NAME_HEADER_SIZE, name.byteLength)
@@ -44,7 +43,6 @@ function parseRecordCount(name: Readonly<DataView>): number {
  * @param name - the font's `name` table, holding the record
  * @param at - where the record starts, in bytes
  * @returns its platform, encoding, language and name ID, and where its string lies
- * @see REF-OT-NAME
  */
 function parseNameRecord(name: Readonly<DataView>, at: number): NameRecord {
   return {
@@ -65,7 +63,6 @@ function parseNameRecord(name: Readonly<DataView>, at: number): NameRecord {
  * @kind format
  * @param name - the font's `name` table
  * @returns its records whose string lies in the table
- * @see REF-OT-NAME
  */
 export function parseNameRecords(name: Readonly<DataView>): readonly NameRecord[] {
   return Array.from({ length: parseRecordCount(name) }, (unused, index) =>

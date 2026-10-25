@@ -17,7 +17,6 @@ import type { FontMetrics } from "../../model";
  * @returns its metrics; undefined for a file that is not a font, lacks a table measuring needs,
  * holds a table too short for what it points to, has units per em outside 16 to 16 384 or no
  * advance record
- * @see REF-OT-OTFF
  */
 export function parseFontMetrics(
   file: Readonly<Uint8Array>,

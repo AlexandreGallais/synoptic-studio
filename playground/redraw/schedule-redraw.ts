@@ -12,7 +12,6 @@ import { PENDING_REDRAWS } from "./pending-redraws";
  * @kind procedure
  * @param document - page document
  * @param draw - redraws the page
- * @see REF-MDN-RAF
  */
 export function scheduleRedraw(document: Document, draw: () => void): void {
   const view = document.defaultView;

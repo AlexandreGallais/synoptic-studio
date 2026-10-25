@@ -362,13 +362,14 @@ fn f31_ac1_refuses_a_worker_s_write_into_the_main_checkout_naming_its_worktree_s
         "/p/.claude/worktrees/en-1",
         "/tmp/scratch/a.md",
         "/p2/a.md",
-        "/p/.git/metrics/step",
         // A relative path is not the tools' and is not read against `/`.
         "docs/a.md",
         "p/docs/a.md",
     ] {
         assert_eq!(misplaced_write(file, "/p", "en-1"), None, "{file}");
     }
+    // The shared Git folder is no worker's to write: no step file is written there any more.
+    assert!(misplaced_write("/p/.git/metrics/step", "/p", "en-1").is_some());
 }
 
 /// A session of one worker: its project with its worktree, and the transcripts Claude Code keeps.

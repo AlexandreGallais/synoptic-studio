@@ -35,7 +35,6 @@ function updateEditedShape(document: Document, isText: boolean): void {
  * @kind procedure
  * @param document - the playground's document
  * @param kind - `none` or `several`
- * @see RULE-interaction-2-selector
  */
 function showNoShapeEdited(document: Document, kind: string): void {
   if (kind === "none") {

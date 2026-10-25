@@ -12,7 +12,6 @@ import { parseCollectionOffsets } from "./parse-collection-offsets";
  * @param file - the bytes of a font file or of a collection
  * @returns the parts of each face, joined in their order into its file; the file itself when it
  * is not a collection
- * @see REF-OT-OTFF
  */
 export function parseCollectionFaces<Buffer extends ArrayBufferLike>(
   file: Readonly<Uint8Array<Buffer>>,

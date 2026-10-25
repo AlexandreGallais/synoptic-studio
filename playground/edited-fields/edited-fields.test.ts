@@ -60,7 +60,7 @@ function readTextModel(): Text {
   return model;
 }
 
-describe("one shape's Width and Height, Up and Down (US-085)", () => {
+describe("one shape's Width and Height, Up and Down", () => {
   beforeEach(() => {
     // The page as it opens: the rectangle 120 × 80 at (0, 0), selected alone.
     openServedPage("");
@@ -105,7 +105,7 @@ describe("one shape's Width and Height, Up and Down (US-085)", () => {
   });
 });
 
-describe("one shape's X and Y, Up and Down (US-085)", () => {
+describe("one shape's X and Y, Up and Down", () => {
   beforeEach(() => {
     openServedPage("");
   });
@@ -158,7 +158,7 @@ describe("one shape's X and Y, Up and Down (US-085)", () => {
   });
 });
 
-describe("an arrow in a turned shape's X or Y, landed on integers (US-089)", () => {
+describe("an arrow in a turned shape's X or Y, landed on integers", () => {
   beforeEach(() => {
     openServedPage("");
     // A sharp 100 × 50 at (10, 20) turned by 30° about its middle (60, 45): its straight box
@@ -210,7 +210,7 @@ describe("an arrow in a turned shape's X or Y, landed on integers (US-089)", () 
   });
 });
 
-describe("a value typed in one shape's fields, relative or fixed (US-085)", () => {
+describe("a value typed in one shape's fields, relative or fixed", () => {
   beforeEach(() => {
     openServedPage("");
   });
@@ -363,7 +363,7 @@ describe("a value typed in one shape's fields, relative or fixed (US-085)", () =
   });
 });
 
-describe("a text's X, Y and box, alone (US-085)", () => {
+describe("a text's X, Y and box, alone", () => {
   beforeEach(() => {
     openServedPage("");
     setElementBox("#canvas", { height: 600, left: 100, top: 50, width: 800 });
@@ -431,7 +431,7 @@ describe("a text's X, Y and box, alone (US-085)", () => {
   });
 });
 
-describe("several shapes' fields, the same rule (US-085)", () => {
+describe("several shapes' fields, the same rule", () => {
   beforeEach(() => {
     openServedPage("");
     setElementBox("#canvas", { height: 600, left: 100, top: 50, width: 800 });

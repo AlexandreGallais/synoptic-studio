@@ -3,7 +3,7 @@ import type { ChecklistLine } from "./checklist-line";
 /**
  * The lines of E17's checklist for F20, A context diet for every agent.
  *
- * Prepared by `val:prepare` from its acceptance criteria (EN-056), then written as what to
+ * Prepared by `val:prepare` from its acceptance criteria, then written as what to
  * try and what to see, at most 12: commands run in a terminal at the repository's root, or what
  * to look at during a run, each tried by VAL-021 on 2026-10-18. Criterion 5, the progress page,
  * was dropped on 2026-10-17, so it has no line.

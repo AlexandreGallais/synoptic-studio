@@ -9,14 +9,11 @@ use std::path::{Path, PathBuf};
 use git_repository::lexical_join;
 use worktree::WORKTREES;
 
-/// The Git folder every worktree shares, written by a worker on purpose (`.git/metrics/step`).
-const GIT_FOLDER: &str = ".git";
-
 /// Why a worker of the worktree `worktree` (its folder's name, `en-119`) may not write `file`, an
 /// absolute path, in the checkout `project`: the path in its worktree to write instead. `None` for
-/// a file of its worktree, outside the project (a scratch folder), in the Git folder every
-/// worktree shares (`.git/metrics/step`), or a relative path, which the tools do not take. A file
-/// of another worktree is named in its own, by its path inside that worktree.
+/// a file of its worktree, outside the project (a scratch folder), or a relative path, which the
+/// tools do not take. A file of another worktree is named in its own, by its path inside that
+/// worktree.
 #[must_use]
 pub fn misplaced_write(file: &str, project: &str, worktree: &str) -> Option<String> {
     if !file.starts_with('/') {
@@ -28,7 +25,7 @@ pub fn misplaced_write(file: &str, project: &str, worktree: &str) -> Option<Stri
     let own = format!("{WORKTREES}/{worktree}");
     let under = |folder: &str| inside == folder || inside.starts_with(&format!("{folder}/"));
 
-    if under(&own) || under(GIT_FOLDER) {
+    if under(&own) {
         return None;
     }
     let relative = inside

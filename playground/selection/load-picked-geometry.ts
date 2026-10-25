@@ -13,7 +13,6 @@ import type { RegularPolygon, Shape } from "../../src";
  * @kind procedure
  * @param document - page document
  * @param radii - the radius of each vertex, in contour order
- * @see RULE-interaction-2-selector
  */
 function writePickedRadii(document: Document, radii: readonly number[]): void {
   selectElement(document, "radius").dataset["radii"] = radii.join(" ");
@@ -26,7 +25,6 @@ function writePickedRadii(document: Document, radii: readonly number[]): void {
  * @kind procedure
  * @param document - page document
  * @param polygon - a regular polygon of the drawing, clicked
- * @see RULE-interaction-2-selector
  */
 function writePickedPolygon(document: Document, polygon: RegularPolygon): void {
   writeInputValue(document, "corners", polygon.corners);
@@ -42,7 +40,6 @@ function writePickedPolygon(document: Document, polygon: RegularPolygon): void {
  * @kind procedure
  * @param document - page document
  * @param shape - a rectangle stored as a free shape, a polygon or a round shape, clicked
- * @see RULE-interaction-2-selector
  */
 function writePickedSettings(document: Document, shape: Shape): void {
   if (isRegularPolygon(shape)) {
@@ -65,7 +62,6 @@ function writePickedSettings(document: Document, shape: Shape): void {
  * @param document - page document
  * @param kind - `rectangle`, `polygon` or `round`
  * @param shape - a rectangle stored as a free shape, a polygon or a round shape, clicked
- * @see RULE-interaction-2-selector
  */
 function loadPickedTool(document: Document, kind: string, shape: Shape): void {
   const { dataset } = selectElement(document, "shape");
@@ -88,7 +84,6 @@ function loadPickedTool(document: Document, kind: string, shape: Shape): void {
  * @param document - page document
  * @param kind - the kind the panel showed it as: `rectangle`, `polygon`, `round` or `free`
  * @param shape - a shape of the drawing, clicked
- * @see RULE-interaction-2-selector
  */
 export function loadPickedGeometry(document: Document, kind: string, shape: Shape): void {
   writeInputValue(document, "angle", shape.angle);

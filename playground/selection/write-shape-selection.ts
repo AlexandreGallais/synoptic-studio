@@ -19,7 +19,6 @@ import type { KeptShape } from "../kept-shapes";
  *
  * @kind procedure
  * @param document - page document
- * @see RULE-interaction-1-tools
  */
 function saveEditedSettings(document: Document): void {
   if (readStoredDrawing(document, DRAWING_KEYS.edited).length > 0) {
@@ -35,7 +34,6 @@ function saveEditedSettings(document: Document): void {
  * @param document - page document
  * @param edited - the shape split around, none for several or none selected
  * @param count - how many shapes are selected
- * @see RULE-interaction-2-selector
  */
 function writeSelectedKind(document: Document, edited: readonly KeptShape[], count: number): void {
   const [picked] = edited;
@@ -58,7 +56,6 @@ function writeSelectedKind(document: Document, edited: readonly KeptShape[], cou
  * @kind procedure
  * @param document - page document
  * @param selected - the indices of the shapes to select, ascending, in the order drawn
- * @see RULE-interaction-2-selector
  */
 export function writeShapeSelection(document: Document, selected: readonly number[]): void {
   saveEditedSettings(document);

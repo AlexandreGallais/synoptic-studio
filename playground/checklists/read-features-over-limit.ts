@@ -2,7 +2,7 @@ import type { ChecklistLine } from "./checklist-line";
 
 /**
  * The features of a checklist holding more lines than a limit, each named with its count
- * (`F05: 14 lines`), in the order they first appear; empty when every feature fits (EN-056).
+ * (`F05: 14 lines`), in the order they first appear; empty when every feature fits.
  *
  * @kind procedure
  * @param lines - the checklist's lines, each with its feature

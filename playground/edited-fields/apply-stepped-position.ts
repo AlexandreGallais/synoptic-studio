@@ -15,7 +15,6 @@ import { applyEditedValue } from "./apply-edited-value";
  * @param document - page document
  * @param axis - the field the arrow is pressed in: `x` or `y`
  * @param step - the field's step: 1 or 10 for Up, −1 or −10 for Down
- * @see RULE-interaction-2-selector
  */
 export function applySteppedPosition(document: Document, axis: "x" | "y", step: number): void {
   const [kept] = readStoredDrawing(document, DRAWING_KEYS.edited);

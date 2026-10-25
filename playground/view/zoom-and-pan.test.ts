@@ -208,7 +208,7 @@ function readShapePath(): string | null | undefined {
   return document.querySelector("#canvas svg > path:not([class])")?.getAttribute("d");
 }
 
-describe("zoom and pan by the wheel, a pinch and a drag (US-078)", () => {
+describe("zoom and pan by the wheel, a pinch and a drag", () => {
   beforeEach(() => {
     openServedPage("");
     setElementBox("#canvas", { height: 800, left: 100, top: 50, width: 1200 });
@@ -457,7 +457,7 @@ describe("zoom and pan by the wheel, a pinch and a drag (US-078)", () => {
     expect(readHoverOutline()).toBeDefined();
   });
 
-  it("[F42.AC3] zooms by + about where a pan drag left the pointer (AUD-044)", () => {
+  it("[F42.AC3] zooms by + about where a pan drag left the pointer", () => {
     showZoomed();
 
     // The pointer over the offset (440, 340), then dragged with Space held to (540, 390).
@@ -516,7 +516,7 @@ function openOnPlatform(platform: string): void {
   showZoomed();
 }
 
-describe("Shift with the wheel, on macOS and elsewhere (US-082)", () => {
+describe("Shift with the wheel, on macOS and elsewhere", () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });

@@ -26,7 +26,6 @@ type GivenFace = {
  * @kind procedure
  * @param font - a face the browser lists
  * @returns its bytes; the refusal, in one line, when the browser cannot give them
- * @see REF-CHROMIUM-FONT-BLOB-CODE
  */
 async function readFaceBytes(font: InstalledFont): Promise<Uint8Array<ArrayBuffer> | string> {
   try {
@@ -52,7 +51,6 @@ async function readFaceBytes(font: InstalledFont): Promise<Uint8Array<ArrayBuffe
  * @param bytes - the bytes the browser gave for it
  * @returns its file; undefined when a collection holds no face of that name
  * @throws {RangeError} when the engine cannot allocate the joined file
- * @see REF-OT-OTFF
  */
 function readFaceFile(
   font: InstalledFont,
@@ -72,7 +70,6 @@ function readFaceFile(
  * @param font - the face, as the browser lists it
  * @param named - the face read from its file
  * @returns the face read; or why it was left out
- * @see RULE-shapes-text
  */
 function readUsableFace(font: InstalledFont, named: NamedFontFace): InstalledFaceRead {
   const leftOut = unlistedFaceReason(named.face);
@@ -90,7 +87,6 @@ function readUsableFace(font: InstalledFont, named: NamedFontFace): InstalledFac
  * @param font - the face, as the browser lists it
  * @param file - the bytes of one face, a font file of its own
  * @returns the face read; or why it was refused, a file that is not a font or a face left out
- * @see REF-OT-OTFF
  */
 function readFaceFromFile(font: InstalledFont, file: Readonly<Uint8Array>): InstalledFaceRead {
   const named = parseFontFace(file);
@@ -108,7 +104,6 @@ function readFaceFromFile(font: InstalledFont, file: Readonly<Uint8Array>): Inst
  * @param given - the face and the bytes the browser gave for it
  * @returns the face read; or why it was refused
  * @throws {RangeError} when the engine cannot allocate the joined file
- * @see REF-WICG-LOCAL-FONT-ACCESS
  */
 function readFaceFromBytes(given: GivenFace): InstalledFaceRead {
   const file = readFaceFile(given.font, given.bytes);
@@ -130,7 +125,6 @@ function readFaceFromBytes(given: GivenFace): InstalledFaceRead {
  * @param font - a face the browser lists
  * @returns the face read; or why it was refused
  * @throws {RangeError} when the engine cannot allocate the joined file
- * @see REF-WICG-LOCAL-FONT-ACCESS
  */
 async function readFaceRead(font: InstalledFont): Promise<InstalledFaceRead> {
   const bytes = await readFaceBytes(font);
@@ -153,7 +147,6 @@ async function readFaceRead(font: InstalledFont): Promise<InstalledFaceRead> {
  * @kind procedure
  * @param font - a face the browser lists
  * @returns the face read; or why it was refused
- * @see REF-WICG-LOCAL-FONT-ACCESS
  */
 export async function readInstalledFace(font: InstalledFont): Promise<InstalledFaceRead> {
   try {

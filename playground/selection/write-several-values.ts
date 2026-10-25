@@ -21,7 +21,6 @@ type ShownValue = {
  * @kind procedure
  * @param document - page document
  * @returns their values, a text never measured left out
- * @see RULE-interaction-2-selector
  */
 function readSelectedValues(document: Document): readonly PanelValues[] {
   const drawing = readKeptDrawing(document);
@@ -41,7 +40,6 @@ function readSelectedValues(document: Document): readonly PanelValues[] {
  * @param value - the value common to the shapes, `undefined` where they differ
  * @param mixed - the placeholder where they differ: `Mixed`, or nothing with no value to show
  * @returns the field's text and placeholder
- * @see RULE-interaction-2-selector
  */
 function createShownValue(value: number | undefined, mixed: string): ShownValue {
   return value === undefined
@@ -56,7 +54,6 @@ function createShownValue(value: number | undefined, mixed: string): ShownValue 
  * @param document - page document
  * @param id - `several-x`, `several-y`, `several-width` or `several-height`
  * @param shown - its text and placeholder (`createShownValue`)
- * @see RULE-interaction-2-selector
  */
 function writeSeveralField(document: Document, id: string, shown: ShownValue): void {
   const field = selectElement(document, id);
@@ -78,7 +75,6 @@ function writeSeveralField(document: Document, id: string, shown: ShownValue): v
  *
  * @kind procedure
  * @param document - page document
- * @see RULE-interaction-2-selector
  */
 export function writeSeveralValues(document: Document): void {
   const values = readSelectedValues(document);

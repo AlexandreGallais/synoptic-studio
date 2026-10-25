@@ -13,7 +13,6 @@ import type { Shape } from "../../src";
  * @kind procedure
  * @param document - page document
  * @param shape - the shape set
- * @see RULE-interaction-2-selector
  */
 function writeStoredSize(document: Document, shape: Shape): void {
   const kept = readStoredFreeShape(document);
@@ -38,7 +37,6 @@ function writeStoredSize(document: Document, shape: Shape): void {
  * @kind procedure
  * @param document - page document
  * @param shape - the shape set, or as it was for a value refused
- * @see RULE-interaction-2-selector
  */
 export function writeEditedGeometry(document: Document, shape: Shape): void {
   const values = shapePanelValues(shape);

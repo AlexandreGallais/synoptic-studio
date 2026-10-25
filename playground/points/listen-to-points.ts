@@ -32,7 +32,6 @@ function readClickedVertex(event: Event): number {
  * @kind procedure
  * @param event - mouse click on a handle or a row
  * @returns Shift, and Ctrl or Cmd (macOS) as the key that adds or removes a vertex
- * @see REF-APPLE-SELECT
  */
 function readClickKeys(event: MouseEvent): ClickKeys {
   return { shift: event.shiftKey, toggle: event.ctrlKey || event.metaKey };

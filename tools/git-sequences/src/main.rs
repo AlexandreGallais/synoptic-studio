@@ -15,7 +15,7 @@ use std::process::{Command, ExitCode, Stdio};
 use git_sequences::{
     Branch, Request, Source, State, Target, USAGE, branch_of, changes_refusal, changes_step,
     commit_refusal, commit_steps, fetch_step, message_refusal, parse, state_base, state_report,
-    state_steps, sync_steps, sync_target,
+    state_steps, sync_steps, sync_target, through_link,
 };
 use stale_binaries::RELEASE_BUILD;
 use worktree::{Story, recorded_story, story_of_branch};
@@ -175,8 +175,8 @@ fn commit(
         let is_commit = step.first().map(String::as_str) == Some("commit");
         let (_, errors) = git_with_errors(&step, is_commit.then_some(text.as_str()))?;
 
-        // What the commit's hooks wrote, the notes of `move-rows --notes` among them, is shown
-        // though the commit succeeded; a push's, `check:all`'s report, only when it fails.
+        // What the commit's hooks wrote is shown though the commit succeeded; a push's,
+        // `check:all`'s report, only when it fails.
         if is_commit && !errors.is_empty() {
             eprintln!("{errors}");
         }
@@ -192,26 +192,54 @@ fn commit(
     Ok(format!("{} on {}{pushed}", head, branch_name(branch)))
 }
 
-/// The paths named, but those gone from the working tree whose deletion is staged already, which
-/// `git add` refuses as matching no file (`git rm -r <folder>` before the commit, REV-009): the
-/// commit takes their staged deletion. A path neither there nor deleted is kept, for Git to name.
+/// A path written through the symbolic links to folders it passes, `.claude/skills/…` as
+/// `.agents/skills/…`: Git refuses a path beyond a symbolic link. A link to a link is followed
+/// too, a few times at most; the path itself, a link, stays as it is.
+fn unlinked(path: &str) -> String {
+    let mut current = path.to_owned();
+
+    for _ in 0..8 {
+        let next = current
+            .match_indices('/')
+            .map(|(end, _)| &current[..end])
+            .filter(|link| {
+                fs::symlink_metadata(link).is_ok_and(|found| found.file_type().is_symlink())
+            })
+            .find_map(|link| {
+                let target = fs::read_link(link).ok()?;
+
+                through_link(&current, link, &target.to_string_lossy())
+            });
+
+        match next {
+            Some(found) => current = found,
+            None => break,
+        }
+    }
+    current
+}
+
+/// The paths named, written through the symbolic links they pass ([`unlinked`]), but those gone
+/// from the working tree whose deletion is staged already, which `git add` refuses as matching no
+/// file (`git rm -r <folder>` before the commit, REV-009): the commit takes their staged
+/// deletion. A path neither there nor deleted is kept, for Git to name.
 fn paths_to_add(paths: &[String]) -> Result<Vec<String>, String> {
     let mut kept = Vec::new();
 
-    for path in paths {
-        let deleted = !Path::new(path).exists()
+    for path in paths.iter().map(|path| unlinked(path)) {
+        let deleted = !Path::new(&path).exists()
             && !git_words(&[
                 "diff",
                 "--cached",
                 "--name-only",
                 "--diff-filter=D",
                 "--",
-                path,
+                &path,
             ])?
             .is_empty();
 
         if !deleted {
-            kept.push(path.clone());
+            kept.push(path);
         }
     }
     Ok(kept)

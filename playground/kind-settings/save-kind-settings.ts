@@ -13,7 +13,6 @@ import type { KindMemory } from "./kind-memory";
  * @kind procedure
  * @param document - page document
  * @param kind - the kind of the shape the panel leaves
- * @see REF-INKSCAPE-TUTORIAL-SHAPES
  */
 export function saveKindSettings(document: Document, kind: string): void {
   const selector = KIND_SETTINGS.get(kind);

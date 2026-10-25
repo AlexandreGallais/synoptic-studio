@@ -15,7 +15,6 @@ import { readShapeKind, writeEditedKind, writeInputValue } from "../page";
  *
  * @kind procedure
  * @param document - page document
- * @see RULE-interaction-1-tools
  */
 function addDrawingBelow(document: Document): void {
   const isEdited = readStoredDrawing(document, DRAWING_KEYS.edited).length > 0;
@@ -40,7 +39,6 @@ function addDrawingBelow(document: Document): void {
  * @kind procedure
  * @param document - page document
  * @param tool - the tool armed: `rectangle`, `polygon`, `round` or `text`
- * @see RULE-interaction-1-tools
  */
 export function startNewShape(document: Document, tool: string): void {
   addDrawingBelow(document);

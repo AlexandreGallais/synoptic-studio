@@ -33,7 +33,6 @@ const UNICODE_PLATFORM = 0;
  * @kind format
  * @param record - a name record of the ID asked
  * @returns its rank, the lowest chosen first
- * @see REF-OT-NAME
  */
 function nameRecordToRank(record: NameRecord): number {
   return (
@@ -49,7 +48,6 @@ function nameRecordToRank(record: NameRecord): number {
  * @param name - the font's `name` table
  * @param nameId - the name ID asked
  * @returns the names of that ID, not empty, in the table's order
- * @see REF-OT-NAME
  */
 function parseNameCandidates(name: Readonly<DataView>, nameId: number): readonly NameCandidate[] {
   return parseNameRecords(name)
@@ -68,7 +66,6 @@ function parseNameCandidates(name: Readonly<DataView>, nameId: number): readonly
  * @param name - the font's `name` table
  * @param nameId - the name ID: 1 family, 5 version, 16 typographic family
  * @returns the name; undefined when the table holds no readable string of that ID
- * @see REF-OT-NAME
  */
 export function parseFontName(name: Readonly<DataView>, nameId: number): string | undefined {
   return parseNameCandidates(name, nameId).reduce<NameCandidate | undefined>(

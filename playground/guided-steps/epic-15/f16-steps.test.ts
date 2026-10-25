@@ -520,7 +520,7 @@ describe("the guided test of F16 (VAL-016): its decisions, each with its example
 
     // 100 · 67 / 200 = 33.5, to the nearest percent: 34.
     pressPointer("#color-opacity", "pointerdown", { buttons: 1, clientX: 67, clientY: 5 });
-    // 400 − 360 = 40, an angle going round (AUD-046); 40 − 10 = 30.
+    // 400 − 360 = 40, an angle going round; 40 − 10 = 30.
     expect([...hues, readValue("text-opacity")]).toEqual(["30", "40", "30", "34"]);
   });
 

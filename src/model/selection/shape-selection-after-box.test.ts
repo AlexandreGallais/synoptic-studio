@@ -15,7 +15,7 @@ function ascending(left: number, right: number): number {
 }
 
 // A, B and C drawn in that order: their indices 0, 1 and 2.
-describe("the shapes selected after a selection rectangle (US-069)", () => {
+describe("the shapes selected after a selection rectangle", () => {
   it("[F37.AC3] selects the shapes taken alone without Shift, those selected before dropped", () => {
     expect(shapeSelectionAfterBox([2], [0, 1], false)).toEqual([0, 1]);
     expect(shapeSelectionAfterBox([0], [1], false)).toEqual([1]);

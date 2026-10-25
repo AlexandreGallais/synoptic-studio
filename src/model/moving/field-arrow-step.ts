@@ -1,6 +1,6 @@
 import { nudgeShift } from "./nudge-shift";
 
-/** The arrows that step a field's value: Up adds, Down takes away (`interaction.md` §2). */
+/** The arrows that step a field's value: Up adds, Down takes away (`RULE-interaction-every-number-field-up-and-down`). */
 const FIELD_ARROWS: ReadonlySet<string> = new Set(["ArrowDown", "ArrowUp"]);
 
 /**

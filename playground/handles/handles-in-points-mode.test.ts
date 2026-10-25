@@ -49,7 +49,7 @@ function options(id: string): readonly string[] {
   );
 }
 
-describe("handles in Points mode (US-022)", () => {
+describe("handles in Points mode", () => {
   beforeEach(() => {
     // Step 1: the rectangle 120 × 80, radius 10, point 1 at (0, 0); Points mode, point 1 selected.
     openOnStep(1);
@@ -208,7 +208,7 @@ describe("handles in Points mode (US-022)", () => {
 
     expect(isHidden("handles-switch")).toBe(true);
 
-    // Step 10: a hexagon; its point's switch converts it first (US-028).
+    // Step 10: a hexagon; its point's switch converts it first.
     openOnStep(10);
     clickElement("mode-points");
     clickPoint(1, false);

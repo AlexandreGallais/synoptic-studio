@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { fieldArrowStep } from "./field-arrow-step";
 
-describe("fieldArrowStep (US-081, AUD-045)", () => {
+describe("fieldArrowStep", () => {
   it.each([
     // W at 100: Up to 101, Down to 99; Shift + Up to 110, Shift + Down to 90.
     { isFurther: false, key: "ArrowUp", step: 1 },

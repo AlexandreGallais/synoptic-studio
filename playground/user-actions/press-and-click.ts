@@ -10,7 +10,6 @@ import type { PointerPress } from "./press-pointer";
  * @kind procedure
  * @param selector - CSS selector of the element
  * @param point - the pointer's x and y in the window, possibly fractional
- * @see RULE-interaction-2-selector
  */
 export function pressAndClick(
   selector: string,

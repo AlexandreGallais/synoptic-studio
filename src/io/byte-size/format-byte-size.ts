@@ -34,7 +34,6 @@ const SMALLER_UNITS: readonly ByteUnit[] = [KILOBYTE, MEGABYTE];
  * @param bytes - the size, a whole number of bytes
  * @param unit - kB, MB or GB
  * @returns the tenths, a whole number
- * @see RULE-interaction-7-navigation-and-history
  */
 function bytesToTenths(bytes: number, unit: ByteUnit): number {
   return nearestInteger((bytes * TENTHS) / unit.bytes);
@@ -50,7 +49,6 @@ function bytesToTenths(bytes: number, unit: ByteUnit): number {
  * @kind format
  * @param bytes - the size, a whole number of bytes, 0 or more
  * @returns its text, the number then the unit
- * @see RULE-interaction-7-navigation-and-history
  */
 export function formatByteSize(bytes: number): string {
   if (bytes < UNIT_STEP) {

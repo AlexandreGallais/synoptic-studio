@@ -45,7 +45,7 @@ function doubleClick(point: Point): void {
   );
 }
 
-describe("the drawing's texts never selected as page text (US-080)", () => {
+describe("the drawing's texts never selected as page text", () => {
   beforeEach(() => {
     // The epic's step 1, a rectangle 120 × 80 at (0, 0), whatever feature is validated.
     openServedPage("?guide=epic");
@@ -72,7 +72,7 @@ describe("the drawing's texts never selected as page text (US-080)", () => {
     dispatchDrawingPointer("click", { x: 200, y: 500 }, NO_KEY);
     expect(readSelectedShapes(document)).toEqual([]);
 
-    // (410, 295) lies in its block, which starts at (400, 281) (US-075).
+    // (410, 295) lies in its block, which starts at (400, 281).
     doubleClick({ x: 410, y: 295 });
 
     expect(readSelectedShapes(document)).toEqual([1]);

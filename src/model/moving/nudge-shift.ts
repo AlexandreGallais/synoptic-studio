@@ -2,10 +2,10 @@ import { scale } from "../../math";
 
 import type { Point } from "../../math";
 
-/** The step of an arrow key, in user units (`interaction.md` §1, nudge). */
+/** The step of an arrow key, in user units (`RULE-interaction-the-arrows-a-nudge`). */
 const NUDGE_STEP = 1;
 
-/** The step of Shift + an arrow key, in user units (`interaction.md` §1, nudge further). */
+/** The step of Shift + an arrow key, in user units (`RULE-interaction-the-arrows-a-nudge`). */
 const FURTHER_STEP = 10;
 
 /** The direction each arrow key moves toward, the y axis pointing down. */
@@ -18,7 +18,7 @@ const ARROW_DIRECTIONS: ReadonlyMap<string, Point> = new Map([
 
 /**
  * How far an arrow key nudges the shapes selected: 1 toward the arrow, or 10 with Shift, as
- * Figma nudges (`interaction.md` §1), the arrow's direction scaled by the step (`scale`), Right
+ * Figma nudges (`RULE-interaction-the-arrows-a-nudge`), the arrow's direction scaled by the step (`scale`), Right
  * adding 1 across, Shift + Up taking 10 down away; the anchor then lands on integers by this
  * nudge as by a drag's offset (`landedNudgeShift`).
  *

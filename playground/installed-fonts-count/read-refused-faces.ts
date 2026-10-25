@@ -9,7 +9,6 @@ import type { InstalledFaceRead } from "../installed-fonts";
  * @param fonts - the family's faces, as the browser lists them
  * @param reads - their reads, in the same order
  * @returns the faces refused, in the browser's order; none when every face was read
- * @see RULE-shapes-text
  */
 export function readRefusedFaces(
   fonts: readonly InstalledFont[],

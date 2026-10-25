@@ -15,7 +15,6 @@ import type { ColorModel, PickedColor } from "../../model";
  * @param model - the model to show it in
  * @param keptHue - the hue the picker holds, an integer, 0 when it opens
  * @returns the hue, the saturation and the lightness or brightness, integers
- * @see DERIV-color-spaces
  */
 export function hexToPickedColor(color: string, model: ColorModel, keptHue: number): PickedColor {
   return toWholeColor(hexToExactColor(color, model, keptHue));

@@ -253,7 +253,7 @@ describe("Text tool", () => {
     expect(paths[0]?.getAttribute("d")).toBe(d);
   });
 
-  it("[F05.AC2] offers no font without metrics: Arial is not in the list until read (US-036)", () => {
+  it("[F05.AC2] offers no font without metrics: Arial is not in the list until read", () => {
     expect(() => {
       chooseOption("text-font", "Arial");
     }).toThrow("#text-font has no option Arial.");

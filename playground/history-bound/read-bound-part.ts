@@ -9,7 +9,6 @@ import type { HistoryBoundField } from "./history-bound-field";
  * @param value - the value typed times the field's unit, or the one kept in the browser
  * @param field - Memory or Steps kept, with the maximum it accepts and its unit
  * @returns the part; undefined when the field refuses it
- * @see RULE-interaction-7-navigation-and-history
  */
 export function readBoundPart(value: unknown, field: HistoryBoundField): number | undefined {
   const count = typeof value === "number" ? value / field.unit : NaN;

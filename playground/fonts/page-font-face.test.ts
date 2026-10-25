@@ -75,7 +75,7 @@ function createFakeFace(family: string, source: Uint8Array, descriptors: object)
   return face;
 }
 
-describe("A font imported drawn by the page, CSS Font Loading's FontFace (US-036)", () => {
+describe("A font imported drawn by the page, CSS Font Loading's FontFace", () => {
   beforeEach(() => {
     openServedPage("");
     chooseShapeKind("text");

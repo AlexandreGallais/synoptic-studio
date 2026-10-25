@@ -88,7 +88,7 @@ function readAnchors(): readonly Point[] {
   });
 }
 
-describe("an arrow in several shapes' X or Y, each landed on integers (AUD-048)", () => {
+describe("an arrow in several shapes' X or Y, each landed on integers", () => {
   beforeEach(() => {
     vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout"] });
     openServedPage("");

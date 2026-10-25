@@ -8,7 +8,6 @@ import type { Point } from "../../math";
  * @kind format
  * @param point - point to write
  * @returns `"x y"` written with `formatSvgNumber`, one space between (`wsp`, §9.3.9)
- * @see REF-SVG2-PATHS
  */
 export function formatCoordinatePair(point: Point): string {
   return `${formatSvgNumber(point.x)} ${formatSvgNumber(point.y)}`;

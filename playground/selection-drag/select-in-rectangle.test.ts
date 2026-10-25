@@ -56,7 +56,7 @@ function dragFrom(from: Point, to: Point, keys: PointerKeys): void {
 }
 
 /**
- * Draws a shape with its tool by a drag, its box from one point to the other (US-064).
+ * Draws a shape with its tool by a drag, its box from one point to the other.
  *
  * @param tool - `rectangle`, `polygon`, `round` or `text`
  * @param from - the point pressed
@@ -100,7 +100,7 @@ function readOverlayPath(name: string): string | undefined {
   return document.querySelector(`#overlay svg path.${name}`)?.getAttribute("d") ?? undefined;
 }
 
-describe("a selection rectangle selects shapes (US-069)", () => {
+describe("a selection rectangle selects shapes", () => {
   beforeEach(() => {
     // The epic's step 1, a rectangle 120 × 80 at (0, 0), radius 10, whatever feature is validated.
     openServedPage("?guide=epic");
@@ -112,7 +112,7 @@ describe("a selection rectangle selects shapes (US-069)", () => {
     pressAndMove({ x: -10, y: -10 }, { x: 200, y: 110 });
 
     // The area from (−10, −10) to (200, 110); its line 1 pixel wide on its sides moved half a
-    // pixel inward, from −10 + 0.5 to 200 − 0.5 (US-086).
+    // pixel inward, from −10 + 0.5 to 200 − 0.5.
     expect(readOverlayPath("selection-area")).toBe("M-10 -10H200V110H-10Z");
     expect(readOverlayPath("selection-rectangle")).toBe("M-9.5 -9.5H199.5V109.5H-9.5Z");
 
@@ -155,7 +155,7 @@ describe("a selection rectangle selects shapes (US-069)", () => {
   it("[F37.AC3] hides the outline of the shape under the pointer while the rectangle is drawn", () => {
     drawThreeShapes();
     // With Alt, the rectangle from (−10, −10) to (50, 50) encloses no shape, so that A under the
-    // pointer is not outlined: only the shapes it takes are (US-080).
+    // pointer is not outlined: only the shapes it takes are.
     dispatchDrawingPointer("pointerdown", { x: -10, y: -10 }, NO_KEY);
     dispatchDrawingPointer("pointermove", { x: 50, y: 50 }, { altKey: true, shiftKey: false });
 
@@ -243,7 +243,7 @@ describe("a selection rectangle selects shapes (US-069)", () => {
     expect(readSelectedShapes(document)).toEqual([]);
   });
 
-  it("[F37.AC3] draws no rectangle from a press on A, which moves A over B (US-072)", () => {
+  it("[F37.AC3] draws no rectangle from a press on A, which moves A over B", () => {
     drawThreeShapes();
     pressAndMove({ x: 50, y: 50 }, { x: 200, y: 50 });
 
@@ -263,7 +263,7 @@ describe("a selection rectangle selects shapes (US-069)", () => {
     dispatchDrawingPointer("pointermove", { x: 50, y: 50 }, NO_KEY);
     release({ x: 50, y: 50 }, NO_KEY);
 
-    // A moved and brought back, selected alone by its move (US-072), where it was: its straight
+    // A moved and brought back, selected alone by its move, where it was: its straight
     // box, its arcs of radius 10 reaching its sides, starts at x −1.8 × 10⁻¹⁵, a rounding error,
     // landed on 0, so that its position goes by that much.
     expect(readSelectedShapes(document)).toEqual([0]);

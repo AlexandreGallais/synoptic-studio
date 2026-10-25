@@ -36,7 +36,7 @@ const FLAT: PickArea = {
   pieces: [],
 };
 
-describe("isPickAreaAt (EN-143)", () => {
+describe("isPickAreaAt", () => {
   it("reaches a shape with an area inside it only, whatever the tolerance", () => {
     // (50, 50) inside; (102, 50) is 2 from its side, beyond it: the tolerance is not used.
     expect(isPickAreaAt(BOX, { x: 50, y: 50 }, 4)).toBe(true);

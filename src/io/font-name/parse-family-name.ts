@@ -14,7 +14,6 @@ const TYPOGRAPHIC_FAMILY_NAME = 16;
  * @kind format
  * @param name - the font's `name` table
  * @returns the family's name; undefined when the table names none
- * @see REF-OT-NAME
  */
 export function parseFamilyName(name: Readonly<DataView>): string | undefined {
   return parseFontName(name, TYPOGRAPHIC_FAMILY_NAME) ?? parseFontName(name, FAMILY_NAME);

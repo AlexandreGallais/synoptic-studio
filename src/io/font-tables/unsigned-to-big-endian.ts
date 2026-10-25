@@ -13,7 +13,6 @@ const BYTE_VALUES = 256;
  * @param value - from 0 to 256^size − 1
  * @param size - its size in bytes: 2 for a `uint16`, 4 for a `uint32` or an `Offset32`
  * @returns its bytes, most significant first
- * @see REF-OT-OTFF
  */
 export function unsignedToBigEndian(value: number, size: number): readonly number[] {
   return Array.from({ length: size }, (unused, index) =>

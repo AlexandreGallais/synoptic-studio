@@ -1,7 +1,7 @@
 import type { ChecklistLine } from "./checklist-line";
 
 /**
- * The lines of E15's checklist on colors, fonts and F17's corrections (US-051): F16's options,
+ * The lines of E15's checklist on colors, fonts and F17's corrections: F16's options,
  * then F15's, then what F17 fixed, with VAL-018's readings to confirm, questions and warning.
  */
 export const EPIC_15_COLOR_AND_FONT_LINES: readonly ChecklistLine[] = [

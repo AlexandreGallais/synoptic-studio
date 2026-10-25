@@ -42,7 +42,7 @@ function readTransforms(): readonly (string | null | undefined)[] {
   ];
 }
 
-describe("Text tool: turning (US-032)", () => {
+describe("Text tool: turning", () => {
   beforeEach(() => {
     openServedPage("");
     chooseShapeKind("text");

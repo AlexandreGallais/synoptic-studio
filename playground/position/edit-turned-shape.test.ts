@@ -11,7 +11,7 @@ import {
   typeAndEnter,
 } from "../user-actions";
 
-describe("editing a turned shape (US-019)", () => {
+describe("editing a turned shape", () => {
   beforeEach(() => {
     // Step 1 of the guided test: a 120 × 80 rectangle (F01), sharp, turned by 90° about (60, 40).
     openPage("?step=1");

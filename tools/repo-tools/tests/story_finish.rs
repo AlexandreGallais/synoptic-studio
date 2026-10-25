@@ -128,7 +128,7 @@ impl Lab {
 
     /// The records of the test's repositories, named after `origin.git`.
     fn records(&self) -> PathBuf {
-        self.root.join("records/origin/records.sqlite")
+        self.root.join("records/origin.sqlite")
     }
 
     /// A query's rows, each row's cells joined by `|`.

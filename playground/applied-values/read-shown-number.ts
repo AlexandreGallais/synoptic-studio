@@ -11,7 +11,6 @@ const SHOWN_NUMBER = /^-?\d+(?:\.\d+)?$/u;
  * @kind procedure
  * @param shown - the text it shows
  * @returns the number; `NaN` for anything else, a value with a sign included
- * @see RULE-interaction-2-selector
  */
 export function readShownNumber(shown: string): number {
   const text = shown.trim();

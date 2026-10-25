@@ -3,7 +3,7 @@ import type { ChecklistLine } from "./checklist-line";
 /**
  * The lines of E17's checklist for F19, Checks on Oxc, TypeScript 7 and Rust.
  *
- * Prepared by `val:prepare` from its acceptance criteria (EN-056), then written as what to
+ * Prepared by `val:prepare` from its acceptance criteria, then written as what to
  * try and what to see, at most 12: commands run in a terminal at the repository's root, each
  * tried by VAL-020 on 2026-10-17. A probe file planted to see a finding is deleted afterwards.
  */

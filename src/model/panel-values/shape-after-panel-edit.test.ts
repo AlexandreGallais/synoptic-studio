@@ -113,7 +113,7 @@ describe("shapeAfterPanelEdit (F38)", () => {
     expect(moved.y).toBeCloseTo(0, 9);
   });
 
-  it("[F38.AC2] sets the width of A turned by 30°, its turned top-left corner kept (US-019)", () => {
+  it("[F38.AC2] sets the width of A turned by 30°, its turned top-left corner kept", () => {
     // Turned clockwise by 30° about (60, 45), the top-left corner (10, 20), (−50, −25) from the
     // middle, goes to (60 − 50 cos 30° + 25 sin 30°, 45 − 50 sin 30° − 25 cos 30°)
     // = (60 − 43.30127 + 12.5, 45 − 25 − 21.65064) = (29.19873, −1.65064).

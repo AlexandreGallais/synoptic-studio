@@ -7,7 +7,6 @@
  * @param ranges - where each range record starts in the table: start glyph, then end glyph
  * @param glyph - the glyph to look for
  * @returns where the range holding it starts; undefined when no range holds it
- * @see REF-OT-LAYOUT-COMMON
  */
 export function parseGlyphRange(
   table: Readonly<DataView>,

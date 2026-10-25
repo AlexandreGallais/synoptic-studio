@@ -11,7 +11,7 @@ const HANDLE = integerPoint(1e3);
 
 describe("mirroredHandle (REF-FIGMA-HANDLE-MIRRORING)", () => {
   it("[F12.AC2] reverses the typed handle in mode angle and length", () => {
-    // −(30, −15) = (−30, 15): the two handles on one line, equidistant (EN-024).
+    // −(30, −15) = (−30, 15): the two handles on one line, equidistant.
     expect(mirroredHandle("angle-and-length", { x: 30, y: -15 }, { x: -1, y: 0 })).toEqual({
       x: -30,
       y: 15,

@@ -337,10 +337,10 @@ fn f48_ac2_adds_a_story_as_a_draft_of_the_branch_and_shows_it_back_as_written() 
 }
 
 #[test]
-fn f48_ac2_adds_a_log_row_read_from_the_standard_input() {
+fn f48_ac2_adds_a_note_read_from_the_standard_input() {
     let place = on_branch("stdin", "chore/en-900-stdin");
     let mut child = knowledge(&place, &place.join("repo"))
-        .args(["add", "journal", "-"])
+        .args(["add", "note", "-"])
         .env("AGENT_RECORDS_ROOT", place.join("records"))
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
@@ -355,7 +355,7 @@ fn f48_ac2_adds_a_log_row_read_from_the_standard_input() {
         .unwrap();
 
     let added = child.wait_with_output().unwrap();
-    let id = format!("JOURNAL-{}-1", calendar::today());
+    let id = format!("NOTE-{}-1", calendar::today());
     let shown = run(&place, &["show", &id]);
 
     let _ = fs::remove_dir_all(&place);
@@ -562,7 +562,9 @@ fn f48_ac2_fails_aloud_on_a_wrong_add_or_an_id_it_reads_nowhere() {
         run(&place, &["add", "story", "missing.md"]),
         run(&place, &["add", "story", "empty.md"]),
         // `output` gives the child an empty standard input.
-        run(&place, &["add", "journal", "-"]),
+        run(&place, &["add", "note", "-"]),
+        // A journal row, an incident, an improvement or a feedback is a row of its table.
+        run(&place, &["add", "incident", "-"]),
         run(&place, &["list", "--colour", "red"]),
         run(&place, &["sync", "--kind", "story"]),
     ]
@@ -601,11 +603,12 @@ fn f48_ac2_fails_aloud_on_a_wrong_add_or_an_id_it_reads_nowhere() {
         [
             "knowledge: EN-999: no document of it read on chore/en-900-wrong".to_owned(),
             "knowledge: EN-999: no document of it read on chore/en-900-wrong".to_owned(),
-            "knowledge: Story: a kind is one word of lower-case letters, as story or journal"
+            "knowledge: Story: a kind is one word of lower-case letters, as story or note"
                 .to_owned(),
             format!("knowledge: missing.md: {missing}"),
             "knowledge: empty.md: nothing to add".to_owned(),
             "knowledge: the standard input: nothing to add".to_owned(),
+            "knowledge: incident: a row of the table incidents, with its columns, not a document: target/release/knowledge sql \"INSERT INTO incidents (…) VALUES (…)\"".to_owned(),
             "knowledge: --colour: no such filter".to_owned(),
             format!("knowledge: {USAGE}"),
         ]

@@ -10,7 +10,7 @@ import {
   typeAndEnter,
 } from "../user-actions";
 
-describe("a corner beside a curved side keeps its radius (US-027)", () => {
+describe("a corner beside a curved side keeps its radius", () => {
   it("[F12.AC7] keeps points 2 and 4 rounded by 20 when point 3 gets handles", () => {
     // The rectangle 120 × 80, radius 20; point 3 (120, 80) in handles mode, its handle after
     // ending at (90, 110), the one before mirrored: the sides 2 → 3 and 3 → 4 are curves.

@@ -15,7 +15,6 @@ const NO_AREA: PickArea = { corners: [], isFlat: false, pieces: [] };
  * @param document - page document
  * @param text - a text of the drawing
  * @returns its area; none for a text never measured, which is not drawn
- * @see RULE-interaction-2-selector
  */
 function readTextPickArea(document: Document, text: Text): PickArea {
   const block = readTextBlock(document, text);
@@ -32,7 +31,6 @@ function readTextPickArea(document: Document, text: Text): PickArea {
  * @param document - page document
  * @param shape - a shape of the drawing
  * @returns its area
- * @see RULE-interaction-2-selector
  */
 export function readShapePickArea(document: Document, shape: DrawingShape): PickArea {
   return isDrawnText(shape) ? readTextPickArea(document, shape) : shapePickArea(shape);

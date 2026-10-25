@@ -3,7 +3,7 @@ import type { ChecklistLine } from "./checklist-line";
 /**
  * The lines of E17's checklist for F22, One story at a time, the release by a button, its CI green.
  *
- * Prepared by `val-prepare` from its acceptance criteria (EN-056), then written as what to
+ * Prepared by `val-prepare` from its acceptance criteria, then written as what to
  * try and what to see, at most 12: commands run in a terminal at the repository's root, each
  * tried by VAL-023 on 2026-10-18, two lines left for the next review, where the CI of `develop` →
  * `main` and the button are first seen on GitHub, and the decisions of F22 to confirm.

@@ -23,8 +23,8 @@ type TextBoxOptions = Pick<
 /**
  * Reads the box's fields of the Text tool: Fit content or Box, its width and height, the maximum
  * number of lines, the ellipsis, the vertical alignment, the wrap
- * style, the line height, the trim and the background, on or off, with its color and opacity
- * (US-034). They are read whichever kind is chosen, so that the text
+ * style, the line height, the trim and the background, on or off, with its color and opacity.
+ * They are read whichever kind is chosen, so that the text
  * keeps them when it changes kind (`RULE-shapes-box`); a number left empty is
  * `NaN`, which the model refuses (`isValidText`). The page opens the box at 200 × 100, a playground
  * starting value, replaced by the text's block rounded up when Box is chosen after Fit content

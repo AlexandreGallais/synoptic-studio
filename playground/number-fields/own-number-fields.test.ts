@@ -96,7 +96,7 @@ function undo(): void {
   body.dispatchEvent(new KeyboardEvent("keyup", init));
 }
 
-describe("every number field, the rule of one shape's (US-087)", () => {
+describe("every number field, the rule of one shape's", () => {
   beforeEach(() => {
     // The page as it opens: the rectangle 120 × 80 at (0, 0), selected alone, its radius 10; the
     // history's bound the browser keeps forgotten, a memory taken at 1 000 MB by a test before.
@@ -209,10 +209,10 @@ describe("every number field, the rule of one shape's (US-087)", () => {
   });
 
   it.each(["text-letter-spacing", "text-word-spacing"])(
-    "steps %s at −5 by 1 and 10, never reading the step again as typed (AUD-047)",
+    "steps %s at −5 by 1 and 10, never reading the step again as typed",
     (id) => {
-      // −5 + 1 = −4, then −4 + 10 = 6; before US-088's fix, `-4` shown was read again as a
-      // relative value, −5 − 4 = −9, then −9 + 10 = 1 read as fixed.
+      // −5 + 1 = −4, then −4 + 10 = 6; `-4` shown read again as a relative value would give
+      // −5 − 4 = −9, then −9 + 10 = 1 read as fixed.
       typeInField(id, "-5");
       pressIn(id, { key: "ArrowUp" });
 
@@ -314,7 +314,7 @@ describe("every number field, the rule of one shape's (US-087)", () => {
   });
 });
 
-describe("a burst of arrows in the radius, one step (US-087)", () => {
+describe("a burst of arrows in the radius, one step", () => {
   beforeEach(() => {
     vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout"] });
     openServedPage("");
@@ -344,7 +344,7 @@ describe("a burst of arrows in the radius, one step (US-087)", () => {
   });
 });
 
-describe("readOwnValue (US-087, AUD-046)", () => {
+describe("readOwnValue", () => {
   it.each([
     // Corners, 3 to 12: 3 kept; 2 at 3; 10 + 3 = 13 at 12; 6 + 1.5 = 7.5 rounded to 8.
     { expected: 3, id: "corners", shown: 6, typed: { isRelative: false, value: 3 } },
@@ -363,7 +363,7 @@ describe("readOwnValue (US-087, AUD-046)", () => {
     // A field the table does not name: whole numbers, no bound.
     { expected: -100_000, id: "", shown: 0, typed: { isRelative: false, value: -100_000 } },
     { expected: 3, id: "", shown: 0, typed: { isRelative: false, value: 2.5 } },
-    // A fraction shown is rounded whatever is typed (AUD-047): 33.54102 + 1 = 34.54102 to 35,
+    // A fraction shown is rounded whatever is typed: 33.54102 + 1 = 34.54102 to 35,
     // 11.83476 + 1 = 12.83476 to 13, 0.5 − 1 = −0.5 to 0, a tie up; an integer fixed is kept.
     { expected: 35, id: "", shown: 33.54102, typed: { isRelative: true, value: 1 } },
     { expected: 13, id: "", shown: 11.83476, typed: { isRelative: true, value: 1 } },

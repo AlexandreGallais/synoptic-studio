@@ -11,7 +11,6 @@ import { WHEEL_ZOOMS } from "./wheel-zooms";
  *
  * @kind procedure
  * @param document - page document
- * @see RULE-interaction-7-navigation-and-history
  */
 export function applyWheelZoom(document: Document): void {
   const zoom = WHEEL_ZOOMS.get(document);

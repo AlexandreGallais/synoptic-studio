@@ -14,7 +14,7 @@ const SQUARE = rectangleAsFreeShape({
   y: 0,
 });
 
-describe("shapePickArea (EN-143)", () => {
+describe("shapePickArea", () => {
   it("gives a rectangle's corners, its four sides and an area", () => {
     const area = shapePickArea(SQUARE);
 

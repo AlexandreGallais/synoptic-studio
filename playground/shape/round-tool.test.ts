@@ -25,7 +25,7 @@ function isHidden(id: string): boolean {
   return document.querySelector<HTMLElement>(`#${id}`)?.hidden === true;
 }
 
-describe("the Round tool (US-029)", () => {
+describe("the Round tool", () => {
   it("[F10.AC1] draws a circle in a box 100 × 100: four cubic sides from its top", () => {
     // DERIV-round-shape-curve: handles 50κ = 27.61424, so 50 + 27.61424 = 77.61424.
     openOnStep(1);
@@ -136,7 +136,7 @@ describe("the Round tool (US-029)", () => {
     expect(readText("#path-data")).toMatch(/^M80 5\.35898 C/u);
   });
 
-  it("[F44.AC4] takes a width below 0 at 0, the round shape 0 wide (AUD-046)", () => {
+  it("[F44.AC4] takes a width below 0 at 0, the round shape 0 wide", () => {
     openOnStep(1);
     chooseShapeKind("round");
     // -200 is relative: 120 − 200 = −80, taken at 0.
