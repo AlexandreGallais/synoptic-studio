@@ -33,11 +33,11 @@ The chat belongs to the Product Owner (2026-10-12), who may write at any time; s
 - **Each comment of the Product Owner acknowledged at once**, saying when it is handled: now, or once a named running agent has finished. A comment about rules or configuration is handled once the running worker has ended, in its own worktree; a comment about a tool, and a tool that fails during the run, become a card in the tool incidents (how it was used, why it failed, what was done instead), worked around and never fixed during a feature's work: the cards are read at the next review, which fixes the tools (ADR-0085, ADR-0086).
 - **One agent at a time** (ADR-0086): one worker per story, an `Agent` call in the background, never two stories, features, researchers or reviews at once, in a worktree made by `target/release/worktree-new <ID>`, of the type its task kind uses (EN-065).
 - **A fresh worker per story**, never one agent chaining stories nor resumed for the next: an agent's cost is its growing context re-read at each call, not its start (EN-122's worker ended near 255,000 tokens, a start costs about 10,600).
-- **Specialists only where their independence pays**: the `auditor`, and the `verifier` when the tests need a second look, at a feature's audit; the `math-expert` and the `functional-analyst` only for a story holding mathematics or business rules to check, never by default. **No agent for small tasks**: the statuses, the journal, the `done` commits and the merges are the main thread's own; the `clerk` is no longer started.
+- **Specialists only where their independence pays**: the `auditor`, and the `verifier` when the tests need a second look, at a feature's audit; the `math-expert` and the `functional-analyst` only for a story holding mathematics or business rules to check, never by default. **No agent for small tasks**: the statuses, the journal, the `done` commits and the merges are the main thread's own.
 
   | Task | Agent type |
   | --- | --- |
-  | a `US` or `EN` story, a `REV`'s naming pass, the fixes of an `AUD`, the preparation of a `VAL` | `story-worker` |
+  | a `US` or `EN` story, a `REV`'s naming pass, the fixes of an `AUD` | `story-worker` |
   | a research spike (`SP`) | `researcher` |
   | a feature's audit | `auditor`, then `verifier` when the tests need a second look |
   | mathematics or business rules to check in a story | `math-expert`, `functional-analyst` |
@@ -110,7 +110,7 @@ A feature ends with its audit; it has no `VAL` of its own (2026-10-23, ADR-0100)
 
 ## Review (at each return of the Product Owner)
 
-A review is held each time the Product Owner comes back, once or twice a day, no longer at an epic's end (ADR-0086).
+A review is held each time the Product Owner comes back, once or twice a day, an epic finished or not (ADR-0086, ADR-0100).
 
 1. **A feature under way is finished first**: tell the Product Owner the run finishes it, then holds the review.
 2. **A `REV` story**, its branch from `develop` (`target/release/worktree-new REV-<nnn>`, no feature branch), holds the review of the features finished since the last merge into `main`, the naming pass over the code changed since then, the tool incident cards fixed, the improvements of the method decided with the Product Owner, and the docs brought up to date. It is finished at the end of its session with the Product Owner, never before, then enters `develop` by a merge commit (`npm run story:finish -- develop …`, labelled `autonomous` and awaited as any story).
