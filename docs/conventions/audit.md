@@ -42,7 +42,7 @@ The procedure is the `/audit` skill. The independent `auditor` subagent reviews 
 
 1. `npm run check:all` green; coverage 100 %; `npm run build` green.
 2. No `.skip` / `.only` in tests; every disable directive (`oxlint-disable`, `lint-disable`, Rust `allow`) has a justification still valid and its row in the [register of exceptions](./exceptions.md).
-3. The feature is demonstrable (playground or tests) for its `VAL` story.
+3. The feature is demonstrable (playground or tests) for the Product Owner's try at the next review.
 4. Agent configuration (`AGENTS.md`, `CLAUDE.md`, `.claude/rules/`, skills, agents) still matches the project; contradictions removed.
 
 ## G. Next feature
