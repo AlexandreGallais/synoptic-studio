@@ -18,7 +18,7 @@
         --radius: 0.6rem;
         --shadow: 0 4px 16px #0003;
       }
-      /* Side by side: the drawing, the checklist when asked, the options, the pipeline when shown;
+      /* Side by side: the drawing, the options, the pipeline when shown;
          a column hidden gives its room to the drawing. */
       body {
         display: flex;
@@ -313,51 +313,6 @@
         flex: 1;
         min-height: 2.5rem;
         font: inherit;
-      }
-      /* The checklist of an epic: a scrolling column right of the drawing, never over it
-        , a box per line. */
-      #checklist {
-        flex: 0 0 24rem;
-        box-sizing: border-box;
-        padding: 0.75rem 1rem;
-        overflow: auto;
-        background: var(--panel);
-        border-left: 4px solid var(--accent);
-      }
-      #checklist h2 {
-        margin: 0 0 0.5rem;
-        font-size: 1rem;
-      }
-      #checklist-lines {
-        padding: 0;
-        margin: 0;
-        list-style: none;
-      }
-      #checklist-lines li + li {
-        border-top: 1px solid var(--line);
-      }
-      #checklist-lines label {
-        display: grid;
-        grid-template-columns: auto auto 1fr;
-        gap: 0.1rem 0.5rem;
-        padding: 0.4rem 0;
-        cursor: pointer;
-      }
-      #checklist-lines input {
-        grid-row: span 2;
-        margin-top: 0.15rem;
-      }
-      .checklist-feature {
-        grid-row: span 2;
-        font-size: 0.8rem;
-        color: var(--muted);
-      }
-      .checklist-see {
-        grid-column: 3;
-        color: var(--muted);
-      }
-      #checklist-lines input:checked ~ span {
-        opacity: 0.55;
       }
       aside {
         flex: 0 0 20rem;
@@ -796,10 +751,6 @@
         </p>
       </section>
     </div>
-    <section id="checklist" aria-labelledby="checklist-heading" hidden>
-      <h2 id="checklist-heading">Checklist of <span id="checklist-name"></span></h2>
-      <ol id="checklist-lines"></ol>
-    </section>
     <aside id="panel" aria-label="Panel">
       <h1 id="shape-title">Rectangle</h1>
       <!-- The kind of the shape the panel edits, kept as the page's state; a placed shape sets it. -->

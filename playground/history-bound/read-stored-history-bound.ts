@@ -1,9 +1,9 @@
 import { DEFAULT_HISTORY_BOUND } from "../../src";
-import { readBrowserStorage } from "../checklist";
 
 import { HISTORY_BOUND_FIELDS } from "./history-bound-fields";
 import { HISTORY_BOUND_KEY } from "./history-bound-key";
 import { readBoundPart } from "./read-bound-part";
+import { readBrowserStorage } from "./read-browser-storage";
 
 import type { HistoryBound } from "../../src";
 

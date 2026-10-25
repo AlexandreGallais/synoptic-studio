@@ -5,6 +5,7 @@ export * from "./history-bound-key";
 export * from "./listen-to-history-bound";
 export * from "./page-history-bounds";
 export * from "./read-bound-part";
+export * from "./read-browser-storage";
 export * from "./read-page-history-bound";
 export * from "./read-stored-history-bound";
 export * from "./write-bound-fields";

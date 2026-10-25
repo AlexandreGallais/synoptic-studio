@@ -196,7 +196,7 @@ afterEach(() => {
 
 describe("the guided test of E15 (VAL-017): F05, F14, F16 and F15 in a row", () => {
   it("ends the epic's guided test, F05's steps first and F15's last; no longer the current one", () => {
-    // E15 is validated on its checklist: the steps stay in `?guide=epic` only.
+    // E15 was validated: the steps stay in `?guide=epic` only.
     expect(CURRENT_GUIDED_STEPS).toEqual([]);
 
     expect(GUIDED_STEPS.slice(-155).map((step) => step.title.slice(0, 3))).toEqual([

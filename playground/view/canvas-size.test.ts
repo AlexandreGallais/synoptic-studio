@@ -21,7 +21,7 @@ import { PAGE_VIEWS } from "./page-views";
 
 // A window of 2 560 × 1 000, the page as it opens: the canvas at the window's top-left, 1 960 ×
 // 1 000, the panel and the pipeline column 300 pixels each beside it; the column hidden gives its
-// 300 to the canvas, 2 260 wide, and the checklist takes 360 from it, 1 600 wide (note 0033, §2).
+// 300 to the canvas, 2 260 wide (note 0033, §2).
 // The page opens at the view 100 %, origin (−40, −40), its rectangle 120 × 80 at (0, 0) selected.
 
 /** The animation frames asked and not run yet, as the browser holds them until its next repaint. */
@@ -101,16 +101,6 @@ describe("the view follows the canvas's size (REF-RESIZE-OBSERVER-1)", () => {
     clickElement("tool-output");
     resizeCanvas(1960, 1000);
     expect(readViewBoxes()).toEqual(["-40 -40 1960 1000", "-40 -40 1960 1000"]);
-  });
-
-  it("[F44.AC1] gives both SVGs the canvas 1 600 wide once the checklist is shown", () => {
-    openServedPage("?checklist=E15");
-    // The checklist shown after the first draw: the canvas 1 960 − 360 = 1 600 wide.
-    resizeCanvas(1600, 1000);
-
-    // At scale 1 the rectangle 120 × 80 at (40, 40) on screen, where the drawing kept at 1 960 was
-    // shrunk to 1 600 / 1 960 = 0.816, 98 × 65 at (33, 124).
-    expect(readViewBoxes()).toEqual(["-40 -40 1600 1000", "-40 -40 1600 1000"]);
   });
 
   it("keeps the view's scale and origin, the canvas showing more to the right", () => {

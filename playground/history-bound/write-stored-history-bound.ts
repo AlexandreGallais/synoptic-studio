@@ -1,6 +1,5 @@
-import { readBrowserStorage } from "../checklist";
-
 import { HISTORY_BOUND_KEY } from "./history-bound-key";
+import { readBrowserStorage } from "./read-browser-storage";
 
 import type { HistoryBound } from "../../src";
 
