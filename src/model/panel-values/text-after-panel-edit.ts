@@ -42,7 +42,7 @@ function textWithBoxSide(text: Text, side: "height" | "width", value: number): T
 }
 
 /**
- * A text once a value is typed for several shapes (F38), its new value given by
+ * A text once a value is typed for several shapes, its new value given by
  * `panelValueAfterEdit` from its own (`textPanelValues`): X or Y moves it so that its straight box
  * starts there (`textStraightBox`, `straightBoxShift`, `shapeMovedOnAxis`); W or H sets the width or height of its box
  * when it sits in one (`textWithBoxSide`), capped at the interface's largest and at a box's own

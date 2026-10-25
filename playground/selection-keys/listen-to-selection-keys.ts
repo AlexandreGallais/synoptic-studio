@@ -12,7 +12,7 @@ import { readPressedMove } from "./read-pressed-move";
 type SelectionKey = (document: Document, event: KeyboardEvent) => void;
 
 /**
- * Selects every shape, in the order drawn (F37), its default, the page's text selected, prevented;
+ * Selects every shape, in the order drawn, its default, the page's text selected, prevented;
  * in Points mode, which edits one shape, the key is left to the browser, as before.
  *
  * @kind procedure
@@ -30,7 +30,7 @@ function selectEveryShape(document: Document, event: KeyboardEvent): void {
 }
 
 /**
- * Selects no shape (F37), unless a color picker is open, which Escape closes alone (F16).
+ * Selects no shape, unless a color picker is open, which Escape closes alone.
  *
  * @kind procedure
  * @param document - page document
@@ -43,8 +43,8 @@ function selectNoShape(document: Document): void {
 }
 
 /**
- * Removes what is selected (F37): in Points mode, which edits one shape, its points selected, as
- * before (F08, `writeDeletedPoints`), never the shape; otherwise the shapes selected
+ * Removes what is selected: in Points mode, which edits one shape, its points selected, as
+ * before (`writeDeletedPoints`), never the shape; otherwise the shapes selected
  * (`removeSelectedShapes`).
  *
  * @kind procedure
@@ -92,7 +92,7 @@ function readSelectionKey(event: KeyboardEvent): SelectionKey | undefined {
 
 /**
  * Applies a key of the selection pressed outside the panel's fields, then redraws; while a press
- * with the Selector moves shapes, none (`readPressedMove`, F39), so that the drag, landing the
+ * with the Selector moves shapes, none (`readPressedMove`), so that the drag, landing the
  * drawing it kept at the press, never undoes a deletion or a selection made meanwhile.
  *
  * @kind procedure
@@ -118,11 +118,11 @@ function applySelectionKey(document: Document, event: KeyboardEvent, update: () 
 }
 
 /**
- * Listens to the keys of the selection (F37), outside the panel's fields, which keep every key
+ * Listens to the keys of the selection, outside the panel's fields, which keep every key
  * they are typed in, the text's Content and the color picker's sliders included, and none while a
- * press with the Selector moves shapes (F39): Ctrl + A, or Cmd + A, selects every shape, in
- * Shape mode; Escape selects none, unless a color picker is open, which Escape closes alone (F16);
- * Delete or Backspace removes the shapes selected, or in Points mode the points selected (F08);
+ * press with the Selector moves shapes: Ctrl + A, or Cmd + A, selects every shape, in
+ * Shape mode; Escape selects none, unless a color picker is open, which Escape closes alone;
+ * Delete or Backspace removes the shapes selected, or in Points mode the points selected;
  * then redraws. Heard as the key goes down to its target, before the picker closes on it.
  *
  * @kind procedure

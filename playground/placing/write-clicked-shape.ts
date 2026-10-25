@@ -4,8 +4,8 @@ import { writePlacedText } from "./write-placed-text";
 import type { ShapePlacement } from "./shape-placement";
 
 /**
- * Writes the box of a new shape placed by a click (F35), or by a drag back on the press's integer
- * point (F36): a text fitting its content, any other shape 100 × 100, centred on the point.
+ * Writes the box of a new shape placed by a click, or by a drag back on the press's integer
+ * point: a text fitting its content, any other shape 100 × 100, centred on the point.
  *
  * @kind procedure
  * @param document - page document

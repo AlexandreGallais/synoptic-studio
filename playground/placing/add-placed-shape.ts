@@ -7,7 +7,7 @@ import { writeClickedShape } from "./write-clicked-shape";
 import type { ShapePlacement } from "./shape-placement";
 
 /**
- * Places a shape by a click (F35): a new shape of the tool's kind (`startNewShape`), 100 × 100 or
+ * Places a shape by a click: a new shape of the tool's kind (`startNewShape`), 100 × 100 or
  * a text fitting its content, centred on the point on integers (`writeClickedShape`), a text's
  * content selected; the selector is armed again, as in Figma.
  *

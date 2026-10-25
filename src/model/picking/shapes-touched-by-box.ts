@@ -5,7 +5,7 @@ import type { BoundingBox } from "../../geometry";
 
 /**
  * The shapes a selection rectangle touches (`isPickAreaTouched`), by their painted area as a
- * click picks them (F37, `DERIV-box-overlap`).
+ * click picks them (`DERIV-box-overlap`).
  *
  * @kind domain
  * @param areas - what each shape of the drawing offers the pointer, in the order drawn

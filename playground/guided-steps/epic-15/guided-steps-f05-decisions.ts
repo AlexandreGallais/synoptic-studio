@@ -6,7 +6,7 @@ import type { GuidedStep } from "../guided-step";
 const HH = { content: "HH", size: 16 } as const;
 
 /**
- * The F05 decisions to confirm (VAL-014), one per step with its example, the questions of
+ * The F05 decisions to confirm, one per step with its example, the questions of
  * AUD-015, two checks in the browser, then back to the rectangle (F05.AC6).
  */
 export const GUIDED_STEPS_F05_DECISIONS: readonly GuidedStep[] = [

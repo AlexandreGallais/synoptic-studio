@@ -2,7 +2,7 @@ import type { StepPlace } from "./step-place";
 import type { HistoryState } from "../history";
 
 /**
- * A row of the list of the history's steps (US-077): the state after a step, the step's name and
+ * A row of the list of the history's steps: the state after a step, the step's name and
  * where it stands against the present.
  *
  * @template T - type of the shapes, or of what is kept of each

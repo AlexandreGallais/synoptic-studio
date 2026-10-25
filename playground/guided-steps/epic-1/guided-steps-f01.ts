@@ -1,6 +1,6 @@
 import type { GuidedStep } from "../guided-step";
 
-/** The nine steps of the Product Owner test card of US-003 (F01, VAL-001), one at a time. */
+/** The nine steps of the Product Owner test card of US-003, one at a time. */
 export const GUIDED_STEPS_F01: readonly GuidedStep[] = [
   {
     explanation:

@@ -5,7 +5,7 @@ import { SHAPE_DRAWINGS } from "./shape-drawings";
 
 /**
  * Leaves the shape a drag drew to the designer: a text's content selected so that typing replaces
- * it (SP-026), and the selector armed again, as after a click.
+ * it, and the selector armed again, as after a click.
  *
  * @kind procedure
  * @param document - page document
@@ -21,8 +21,8 @@ function focusDrawnShape(document: Document, tool: string): void {
 }
 
 /**
- * Ends the drag (F36), its last place already drawn: the shape drawn is kept, a text's content
- * selected so that typing replaces it (SP-026), and the selector armed again, as after a click; a
+ * Ends the drag, its last place already drawn: the shape drawn is kept, a text's content
+ * selected so that typing replaces it, and the selector armed again, as after a click; a
  * press whose pointer stayed within 3 pixels of it leaves the release to the click, which places
  * the shape centred on the point pressed (`CLICKED_PRESSES`, SP-030's answer 8).
  *

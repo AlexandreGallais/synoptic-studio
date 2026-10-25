@@ -12,11 +12,10 @@ const TITLES = new Map([
 
 /**
  * Shows the kind of the shape the panel edits: the panel titled with it, the polygon's options
- * shown for a polygon only. The toolbar shows the tool armed instead (`writeArmedTool`, F35).
+ * shown for a polygon only. The toolbar shows the tool armed instead (`writeArmedTool`).
  *
  * @kind procedure
  * @param document - page document
- * @see US-063
  */
 export function writeShapeKind(document: Document): void {
   const kind = readShapeKind(document);

@@ -4,7 +4,7 @@ import type { HistoryState } from "../../src";
 import type { KeptShape } from "../kept-shapes";
 
 /**
- * Reads the state a click on the list of steps goes back to (US-077): the state kept by the
+ * Reads the state a click on the list of steps goes back to: the state kept by the
  * button clicked, or holding the element clicked (`STEP_BUTTON_STATES`).
  *
  * @kind procedure

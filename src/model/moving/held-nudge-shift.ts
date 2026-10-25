@@ -8,7 +8,7 @@ import type { Point } from "../../math";
 const NO_SHIFT: Point = { x: 0, y: 0 };
 
 /**
- * How far the arrows held nudge the shapes selected at each key (US-081): the sum of each one's
+ * How far the arrows held nudge the shapes selected at each key: the sum of each one's
  * nudge (`nudgeShift`, `add`), so that Up and Right held move by (+1, −1), Left and Right cancel
  * out, and Shift nudges by 10 on both axes; a key other than an arrow adds nothing.
  *

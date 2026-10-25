@@ -64,7 +64,7 @@ function shownStates<T>(
 }
 
 /**
- * The list of the history's steps (US-077): the states around the present the window shows
+ * The list of the history's steps: the states around the present the window shows
  * (`shownHistoryWindow`), the oldest first, each named by the step that led to it from the state
  * before (`stepName`), the oldest state of the history `Start`, with where each stands against the
  * present (`stepPlace`) and how many states are left out on each side (`rowName`,

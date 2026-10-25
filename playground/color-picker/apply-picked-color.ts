@@ -22,14 +22,13 @@ import type { PickedColor } from "../../src";
  * equal to the one read standing for its exact value, each other kept as given
  * (`hexToExactColor`, `wholeValuesToHex`; ADR-0058, decisions 2 and 3), so that a value edited
  * never moves the others; the color written in the hexadecimal field, marked chosen when it
- * followed the text's (`writeColorChosen`, US-041), the page redrawn.
+ * followed the text's (`writeColorChosen`), the page redrawn.
  *
  * @kind procedure
  * @param document - page document
  * @param picked - the hue, the saturation and the lightness or brightness, integers, one or two
  * of them changed
  * @param update - redraws the playground
- * @see US-040
  */
 export function applyPickedColor(
   document: Document,

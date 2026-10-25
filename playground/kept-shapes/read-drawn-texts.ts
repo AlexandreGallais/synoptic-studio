@@ -6,7 +6,7 @@ import type { Text } from "../../src";
 
 /**
  * Reads the texts of the drawing, in the order drawn (`readKeptDrawing`): those below the shape
- * the panel edits, that one when it is a text drawn, then those above it (F35, F36).
+ * the panel edits, that one when it is a text drawn, then those above it.
  *
  * @kind procedure
  * @param document - page document

@@ -6,7 +6,7 @@ import type { GuidedStep } from "../guided-step";
 
 /**
  * The steps of the Product Owner test cards, shown one at a time: E01's, then F12's and F10's
- * (E14), then F05's, F14's, F16's and F15's (E15).
+ * (E14), then F05's, F14's, F16's and F15's.
  */
 export const GUIDED_STEPS: readonly GuidedStep[] = [
   ...GUIDED_STEPS_OF_EPIC_1,

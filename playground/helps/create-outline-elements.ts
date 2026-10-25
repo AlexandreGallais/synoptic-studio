@@ -8,7 +8,7 @@ import type { PickArea } from "../../src";
 const OUTLINE_WIDTH = 2;
 
 /**
- * Creates the outline of a shape in the layer above the drawing (F36, US-086): the dashed line of
+ * Creates the outline of a shape in the layer above the drawing: the dashed line of
  * the helps, 2 screen pixels wide, on its contour as drawn (`contourPiecesToPathData`,
  * `createDashedLineElements`), whatever its size and the part of it the view shows.
  *

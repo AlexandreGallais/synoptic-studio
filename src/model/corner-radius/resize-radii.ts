@@ -1,7 +1,7 @@
 /**
  * Radii of a shape whose number of corners changes: each vertex keeps the radius of its number,
  * the removed vertices take theirs away, and the new vertices are sharp (radius 0) (Product
- * Owner, F03).
+ * Owner).
  *
  * @kind domain
  * @param radii - requested radius of each vertex, in contour order

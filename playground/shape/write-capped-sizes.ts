@@ -11,7 +11,6 @@ const SIZE_INPUTS = ["width", "height", "radius", "point-radius"];
  *
  * @kind procedure
  * @param document - page document
- * @see US-008
  */
 export function writeCappedSizes(document: Document): void {
   const tooLarge = SIZE_INPUTS.filter((id) => readNumber(document, id) > MAX_SIZE);

@@ -1,10 +1,10 @@
 import { selectionAfterHandleClick } from "./selection-after-handle-click";
 
 /**
- * The shapes selected after a click with the Selector (F37): Shift adds the shape under the
+ * The shapes selected after a click with the Selector: Shift adds the shape under the
  * pointer, or takes it out when it is selected, a plain click selects it alone, as a vertex's
  * handle is clicked (`selectionAfterHandleClick`); on the empty drawing, Shift keeps the selection
- * and a plain click selects none. Ctrl is not read: it is kept for picking inside a group (E27).
+ * and a plain click selects none. Ctrl is not read: it is kept for picking inside a group.
  *
  * @kind domain
  * @param selected - indices of the shapes selected, in the order drawn, ascending, no repeat

@@ -2,7 +2,7 @@ import type { ReadAheadCount } from "./read-ahead-count";
 import type { RefusedFace } from "./refused-face";
 
 /**
- * Counts the faces refused in a family read ahead and listed (US-062).
+ * Counts the faces refused in a family read ahead and listed.
  *
  * @kind procedure
  * @param count - what was counted before them

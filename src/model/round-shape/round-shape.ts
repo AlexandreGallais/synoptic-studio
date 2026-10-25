@@ -1,4 +1,4 @@
-/** Round shape of the model (F10, ADR-0048): it fills its box, a circle in a square box and an ellipse otherwise; its points and handles are derived (ADR-0003). */
+/** Round shape of the model (ADR-0048): it fills its box, a circle in a square box and an ellipse otherwise; its points and handles are derived (ADR-0003). */
 export type RoundShape = {
   /** Angle in degrees, an integer from 0 to 359, clockwise on screen, about the center of its box (ADR-0035). */
   readonly angle: number;

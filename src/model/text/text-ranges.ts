@@ -4,7 +4,7 @@
  * `REF-CSS-FONTS-4`), its opacity and its background's from 0 to 100 %; its letter and word
  * spacing from −100 000 to 100 000 user units, the size's bound (2026-10-15, provisional, to
  * confirm at VAL-014); its box's sides, its maximum number of lines and its line height from 0
- * to 100 000, 0 meaning no maximum and the automatic line height (F14, provisional, to confirm at
+ * to 100 000, 0 meaning no maximum and the automatic line height (provisional, to confirm at
  * VAL-015).
  */
 export const TEXT_RANGES: {

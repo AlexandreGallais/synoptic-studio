@@ -11,7 +11,6 @@ import { writeShapeKind } from "../toolbar";
  *
  * @kind procedure
  * @param document - page document
- * @see US-007
  */
 export function updatePlayground(document: Document): void {
   writeCappedSizes(document);
@@ -24,7 +23,7 @@ export function updatePlayground(document: Document): void {
   selectElement(document, "corners-field").hidden = !isPolygon;
   selectElement(document, "stretched-field").hidden = !isPolygon;
   selectElement(document, "anchor-field").hidden = !isPolygon;
-  // A round shape has no radius (F10).
+  // A round shape has no radius.
   selectElement(document, "corners-section").hidden = isRoundShape(reading.model);
   // A stretched polygon fills its box: the anchor has no effect (ADR-0037).
   selectElement(document, "anchor-field").toggleAttribute("disabled", isStretched);

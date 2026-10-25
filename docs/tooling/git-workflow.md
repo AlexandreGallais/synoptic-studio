@@ -53,7 +53,7 @@ gitGraph
 
 ## Logs merged by union
 
-The append-only logs — `LOG-journal`, `improvements.md`, `feedback.md` — carry `merge=union` in `.gitattributes` (ADR-0065): two branches that each add a row merge without conflict markers (`REF-GIT-UNION`). Union fits a file whose lines are independent; never use it for a table kept in order nor a file with front matter, where a merged line can break the whole. A row added twice the same way survives twice: `tests/logs.test.ts` names it, and checks each row's date. Whether GitHub's own merge applies `merge=union` is untried (AUD-020): until a pull request shows it, a conflict on a log at GitHub's merge is resolved by hand, and the first one is logged in the improvement log (LOG-improvements).
+The append-only logs merged by union (ADR-0065) moved into the records with EN-155: a row is written by `target/release/knowledge add`, so no file of the repository carries `merge=union` any more and `.gitattributes` went with them (EN-157). Union fits a file whose lines are independent; never use it for a table kept in order nor a file with front matter, where a merged line can break the whole.
 
 ## Commit messages
 

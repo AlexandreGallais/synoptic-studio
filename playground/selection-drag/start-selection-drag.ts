@@ -27,8 +27,8 @@ function readSelectorPress(document: Document, event: PointerEvent): Point | und
 /**
  * Reads the drag a press with the Selector starts in Shape mode, by what is under it as a click
  * reaches it (`readShapeAt`): from an empty place, a selection
- * rectangle (F37), inside the dashed box of several shapes too; from a shape, a move of the shapes
- * selected (`readShapesMove`, F39). In Points mode, which edits one shape's points, neither.
+ * rectangle, inside the dashed box of several shapes too; from a shape, a move of the shapes
+ * selected (`readShapesMove`). In Points mode, which edits one shape's points, neither.
  *
  * @kind procedure
  * @param document - page document
@@ -70,10 +70,10 @@ function startPointerCapture(document: Document, drag: SelectionDrag, pointerId:
 }
 
 /**
- * Starts a press with the Selector on the drawing (F37) when the main button is pressed, a drag
+ * Starts a press with the Selector on the drawing when the main button is pressed, a drag
  * left before dropped: kept from the press to the release (`SELECTION_DRAGS`), so that a release
  * after the pointer went further than 3 pixels from the press is no click; pressed on an empty place, in Shape mode, it draws a
- * selection rectangle, and on a shape it moves the shapes selected (`readPressedDrag`, F39), the
+ * selection rectangle, and on a shape it moves the shapes selected (`readPressedDrag`), the
  * canvas taking the pointer for either so that the drag goes on beyond its edges.
  *
  * @kind procedure

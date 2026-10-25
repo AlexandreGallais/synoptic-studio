@@ -5,7 +5,6 @@
  * @kind procedure
  * @param document - the playground's document
  * @returns the storage, or none when the browser gives none
- * @see US-051
  */
 export function readBrowserStorage(document: Document): Storage | undefined {
   const view = document.defaultView;

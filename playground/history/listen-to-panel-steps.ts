@@ -19,7 +19,7 @@ const PANEL_ENDS = [
  * Asks a step for an event of the panel that reached an element of a kind, itself or inside it
  * (`schedulePanelStep`); none for an event elsewhere, nor for a value applied in the field of
  * the burst of arrows open (`readBurstField`), whose end takes the step: a value typed there
- * ends the burst first (`listenToArrowBursts`, AUD-045), so that it takes its own.
+ * ends the burst first (`listenToArrowBursts`), so that it takes its own.
  *
  * @kind procedure
  * @param document - page document
@@ -42,7 +42,7 @@ function scheduleStepAt(document: Document, event: Event, selector: string): voi
 }
 
 /**
- * Listens to the ends of the panel's changes (F40, `PANEL_ENDS`): a step asked at each value
+ * Listens to the ends of the panel's changes (`PANEL_ENDS`): a step asked at each value
  * applied or choice made in the panel, `change` fired by Enter, by leaving a field typed in or by
  * a choice (`REF-MDN-CHANGE-EVENT`), at each click on one of its buttons, at each key released on
  * a slider of the color picker and at each release of the pointer on one, or on the plane

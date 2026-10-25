@@ -4,7 +4,6 @@
  * @kind procedure
  * @param document - page document
  * @param anchor - value of the button, horizontal then vertical alignment (`mid max`)
- * @see US-010
  */
 export function writeAnchorValue(document: Document, anchor: string): void {
   for (const button of document.querySelectorAll<HTMLInputElement>('input[name="anchor"]')) {

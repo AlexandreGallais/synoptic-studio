@@ -40,7 +40,7 @@ function readStoredPart(written: object, part: keyof HistoryBound): number {
 }
 
 /**
- * Reads the history's bound kept in this browser (F40, `HISTORY_BOUND_KEY`), each part its
+ * Reads the history's bound kept in this browser (`HISTORY_BOUND_KEY`), each part its
  * field accepts kept (`readBoundPart`), any other back to its default, 100 MB or 5 steps; without
  * the browser's storage, or with a text it did not write, the default (SP-029's answer 6 (i)).
  *

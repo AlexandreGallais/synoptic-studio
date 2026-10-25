@@ -62,8 +62,8 @@ function readRefusedSentence(refused: readonly RefusedFace[]): string {
 
 /**
  * Reads what the page says while the installed fonts are read, then once they are: the families
- * read, those left out counted by reason — not embeddable, no Latin letters, unreadable (US-056)
- * —, then the faces refused in the families read, counted the same way (US-062).
+ * read, those left out counted by reason — not embeddable, no Latin letters, unreadable
+ * —, then the faces refused in the families read, counted the same way.
  *
  * @kind procedure
  * @param count - what was counted

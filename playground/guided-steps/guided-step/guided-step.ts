@@ -16,9 +16,9 @@ export type GuidedStep = {
     readonly radius: number;
     /** Shape chosen: `rectangle` or `polygon`. */
     readonly shape: string;
-    /** Whether the polygon is stretched to its box (F06); unticked when absent. */
+    /** Whether the polygon is stretched to its box; unticked when absent. */
     readonly stretched?: boolean;
-    /** The Text tool's fields, when the step chooses the Text tool (F05); absent for a shape. */
+    /** The Text tool's fields, when the step chooses the Text tool; absent for a shape. */
     readonly text?: GuidedText;
     /** Width typed. */
     readonly width: number;

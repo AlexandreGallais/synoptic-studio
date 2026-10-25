@@ -12,7 +12,7 @@ import type { Shape } from "../shape";
 /**
  * A shape once W or H is typed for several shapes: its width or height set
  * (`sizeWithPanelValue`), a turned shape keeping its turned top-left corner
- * (`positionAfterResize`, US-019).
+ * (`positionAfterResize`).
  *
  * @kind domain
  * @param shape - a valid shape of the model
@@ -28,7 +28,7 @@ function shapeWithSide(shape: Shape, side: "height" | "width", value: number): S
 }
 
 /**
- * A shape a tool makes once a value is typed for several shapes (F38), its new value given by
+ * A shape a tool makes once a value is typed for several shapes, its new value given by
  * `panelValueAfterEdit` from its own (`shapePanelValues`): X or Y moves it so that its straight box
  * starts there, its position going by the difference (`straightBoxShift`, `shapeMovedOnAxis`), as for one shape
  * (ADR-0035); W or H sets its width or height (`shapeWithSide`).

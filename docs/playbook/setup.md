@@ -19,7 +19,7 @@ Setting up a new project the way this one ended E01. In order; each step names t
 | 11 | Backlog with tests: ids, statuses, parents' tables, feature frame | `tests/backlog.test.ts`, `tests/references.test.ts` | ADR-0017, ADR-0020 |
 | 12 | Agent configuration: `AGENTS.md`, `CLAUDE.md`, rules, skills, expert agents, hooks, status line | `AGENTS.md`, `CLAUDE.md`, `.claude/` | ADR-0021 |
 | 13 | Metrics and the source library | `tools/metrics/`, `tools/library/`, `.mcp.json` | `docs/tooling/metrics.md`, ADR-0039 |
-| 14 | Start-of-project interview, then the first epic | [analysis.md](./analysis.md), `docs/domain/README.md` | principle 6 |
+| 14 | Start-of-project interview, then the first epic | [analysis.md](./analysis.md), `RULE-domain` | principle 6 |
 
 ## Rhythm
 

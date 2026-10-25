@@ -5,7 +5,7 @@ import type { SizedHistory } from "./sized-history";
 import type { History } from "../history";
 
 /**
- * The history once undone or redone, its size kept (EN-147): the state that becomes the present
+ * The history once undone or redone, its size kept: the state that becomes the present
  * removed from its side (`measureByState`, −1), the present added to the other (1), then the
  * present changed to it (`measureWithPresent`); the move leaving the history as it is, the history
  * given (ADR-0097).

@@ -7,7 +7,6 @@ import { readShownColor } from "./read-shown-color";
  *
  * @kind procedure
  * @param document - page document
- * @see US-035
  */
 export function writeColorSwatches(document: Document): void {
   for (const swatch of document.querySelectorAll<HTMLElement>(".swatch")) {

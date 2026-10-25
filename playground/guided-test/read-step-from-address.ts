@@ -5,7 +5,6 @@
  * @kind procedure
  * @param document - page document
  * @returns index of the step asked, counted from 0; 0 when the address asks none or no integer
- * @see VAL-003
  */
 export function readStepFromAddress(document: Document): number {
   const query = new URLSearchParams(document.location.search);

@@ -4,7 +4,6 @@
  * @kind procedure
  * @param document - page document
  * @returns the swatch; `undefined` while the picker is closed
- * @see US-035
  */
 export function readOpenSwatch(document: Document): HTMLElement | undefined {
   return document.querySelector<HTMLElement>('.swatch[aria-expanded="true"]') ?? undefined;

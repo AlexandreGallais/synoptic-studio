@@ -1,5 +1,5 @@
 /**
- * What the designer sets to bound the history (F40): its memory size, and the steps kept whatever
+ * What the designer sets to bound the history: its memory size, and the steps kept whatever
  * their size, as GIMP's "Maximum undo memory" and "Minimal number of undo levels" (ADR-0095,
  * `REF-GIMP-PREFS-RESOURCES`).
  */

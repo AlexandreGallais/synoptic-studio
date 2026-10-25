@@ -25,14 +25,13 @@ const VALUE_FIELDS: readonly ValueField[] = [
 /**
  * Reads a number typed in one of the picker's value fields as the picker holds it, as a whole
  * number (`nearestInteger`; ADR-0058): a hue, an angle, from 0 to 359, a hue beyond going round,
- * 370 giving 10 and 360 giving 0 (`degreesInTurn`, AUD-046); a saturation, lightness or
+ * 370 giving 10 and 360 giving 0 (`degreesInTurn`); a saturation, lightness or
  * brightness from 0 to 100, a number beyond an end counting at that end (`clamp`).
  *
  * @kind procedure
  * @param document - page document
  * @param field - the field's id and the value it sets
  * @returns the value; `NaN` for a field left empty
- * @see US-035
  */
 function readTypedValue(document: Document, field: ValueField): number {
   const typed = readNumber(document, field.id);
@@ -50,7 +49,6 @@ function readTypedValue(document: Document, field: ValueField): number {
  * @param document - page document
  * @param field - the field's id and the value it sets
  * @param update - redraws the playground
- * @see US-035
  */
 function applyTypedValue(document: Document, field: ValueField, update: () => void): void {
   const value = readTypedValue(document, field);
@@ -73,7 +71,6 @@ function applyTypedValue(document: Document, field: ValueField, update: () => vo
  * @kind procedure
  * @param document - page document
  * @param update - redraws the playground
- * @see US-035
  */
 export function listenToPickerValues(document: Document, update: () => void): void {
   for (const field of VALUE_FIELDS) {

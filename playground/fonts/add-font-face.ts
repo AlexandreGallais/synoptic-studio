@@ -27,7 +27,7 @@ function readFontFaceDescriptors(
  * argument as it is, never parsed (`REF-CHROMIUM-FONT-FACE-CODE`), so the quotes of
  * `"IBM Plex Sans"` became part of the name, no text's `font-family` matched the face, and the
  * installed family of that name was drawn instead — IBM Plex Sans 450 drawn with its 500 face,
- * 91.922 wide where 91.264 is measured (US-047). Bytes the browser cannot parse still give a face,
+ * 91.922 wide where 91.264 is measured. Bytes the browser cannot parse still give a face,
  * whose status is "error" and whose `load()` rejects with a `SyntaxError` (`REF-CSS-FONT-LOADING`).
  *
  * @kind procedure
@@ -96,7 +96,7 @@ function writeLoadFailure(document: Document, named: NamedFontFace, error: unkno
  * possibly not installed: the face added to the page's fonts (`loadFontFace`), then the page
  * redrawn once it is loaded. A browser without that interface, or that cannot parse the face,
  * draws the text with an installed font of that name, else its fallback: measured all the same;
- * a failed load is said (`writeLoadFailure`), never left unseen (US-047).
+ * a failed load is said (`writeLoadFailure`), never left unseen.
  *
  * @kind procedure
  * @param document - page document
@@ -131,7 +131,6 @@ function registerFontFace(document: Document, named: NamedFontFace, update: () =
  * @param document - page document
  * @param named - the face read, its file held, and its family
  * @param update - redraws the playground once the page can draw the face
- * @see US-036
  */
 export function addFontFace(document: Document, named: NamedFontFace, update: () => void): void {
   const session = readFontSession(document);

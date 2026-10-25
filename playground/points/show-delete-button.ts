@@ -20,7 +20,6 @@ const DELETION_MESSAGES: Readonly<Record<DeletionOutcome | "none", string>> = {
  * @param reading - valid shape
  * @param selection - vertices selected
  * @returns the outcome of the deletion, or `none`
- * @see US-016
  */
 function readDeletionOutcome(
   reading: ShapeReading,
@@ -41,7 +40,6 @@ function readDeletionOutcome(
  * @param document - page document
  * @param reading - valid shape
  * @param selection - vertices selected
- * @see US-016
  */
 export function showDeleteButton(
   document: Document,

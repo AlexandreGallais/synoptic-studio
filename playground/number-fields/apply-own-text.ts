@@ -24,7 +24,7 @@ function stopRefusedText(event: Event, field: HTMLInputElement): void {
 }
 
 /**
- * Applies the text typed in a field of its own (US-087, AUD-046): a number, relative with a sign
+ * Applies the text typed in a field of its own: a number, relative with a sign
  * (`parsePanelValue`), shown as the value it gives within the field's range (`writeOwnValue`),
  * which the field's own listeners then read; a text that is no number refused
  * (`stopRefusedText`).

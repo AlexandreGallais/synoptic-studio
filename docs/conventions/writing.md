@@ -21,7 +21,7 @@ Pages people scan, not read: the point first, one purpose per page, and a table,
 | --- | --- | --- |
 | Concept (explanation) | "Why is it like this?" | `domain/`, ADRs, derivations, `guide/` pages |
 | Task (how-to) | "How do I do X?" | `tooling/`, skills, "Changing a rule" sections |
-| Reference | "What is it, exactly?" | API pages (TSDoc), `references.md`, tables in `conventions/` |
+| Reference | "What is it, exactly?" | API pages (TSDoc), the sources (`REF-…`), tables in `conventions/` |
 | Decision | "What did we choose, and why?" | ADRs, settled questions |
 
 A reference page does not explain: it **links** to the explanation (`REF-DIATAXIS`). Titles say what the page holds, in fewer than 70 characters, never "Overview" or "Introduction" (`REF-GITLAB-TOPICS`).
@@ -93,7 +93,7 @@ No tutorial, no history, no design discussion, no restating of the name (`jsdoc/
 
 ## Word list
 
-The [glossary](../domain/) defines the domain terms; this list fixes the words used to write about them.
+The glossary (`RULE-domain-glossary`) defines the domain terms; this list fixes the words used to write about them.
 
 | Use | Not | Note |
 | --- | --- | --- |
@@ -143,7 +143,7 @@ Markdown pages are linted by the project's linter (`tools/lint`, [lint.md](./lin
 
 | Content | Place |
 | --- | --- |
-| business rule | `docs/domain/` |
+| business rule | a `RULE-…` of the records (`knowledge show RULE-domain`) |
 | structural decision and its alternatives | new ADR |
 | an ADR that no longer holds | its row in the record of ADR-0101, its file removed |
 | code rule | `docs/conventions/` (and the lint rule enforcing it) |

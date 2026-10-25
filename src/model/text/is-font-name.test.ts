@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 
 import { isFontName } from "./is-font-name";
 
-describe("isFontName (docs/domain/shapes.md, Text)", () => {
+describe("isFontName (RULE-shapes-text)", () => {
   it.each(["Inter", "Open Sans", "Hawaii 5-0", "sans-serif"])("accepts '%s'", (name) => {
     expect(isFontName(name)).toBe(true);
   });

@@ -1,5 +1,5 @@
 /**
- * Whether a step moved shapes in the drawing's order (US-077): a shape after it the same object as
+ * Whether a step moved shapes in the drawing's order: a shape after it the same object as
  * a shape before it at another index, so that comparing the shapes index by index compares two
  * shapes.
  *

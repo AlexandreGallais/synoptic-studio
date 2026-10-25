@@ -2,10 +2,10 @@ import { clamp } from "../../math";
 
 import type { SliderRange } from "./slider-range";
 
-/** The step of an arrow key: 1° or 1 % (`docs/domain/interaction.md` §5). */
+/** The step of an arrow key: 1° or 1 % (`RULE-interaction-colors`). */
 const ARROW_STEP = 1;
 
-/** The larger step of Page Up and Page Down: 10° or 10 % (`docs/domain/interaction.md` §5). */
+/** The larger step of Page Up and Page Down: 10° or 10 % (`RULE-interaction-colors`). */
 const PAGE_STEP = 10;
 
 /** What each arrow and page key adds to a slider's value. */

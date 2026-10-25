@@ -23,7 +23,7 @@ function nodeCount(node: HeldNode | undefined, height: number, key: number): num
 }
 
 /**
- * How many states hold the shape of a key (EN-147): the count at the end of its digits' path in
+ * How many states hold the shape of a key: the count at the end of its digits' path in
  * the held counts (`nodeCount`), 0 when the path stops before it or the key is past the counts'
  * depth (ADR-0097).
  *

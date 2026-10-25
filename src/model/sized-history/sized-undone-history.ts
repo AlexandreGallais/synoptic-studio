@@ -5,7 +5,7 @@ import { sizedMovedHistory } from "./sized-moved-history";
 import type { SizedHistory } from "./sized-history";
 
 /**
- * The history once undone, its size kept (EN-147): the undo of `undoneHistory`, its measure
+ * The history once undone, its size kept: the undo of `undoneHistory`, its measure
  * updated around the move (`sizedMovedHistory`): the last past state removed from the past, the
  * present added to the states to come, then the present changed to it; nothing past, the history
  * given (ADR-0097).

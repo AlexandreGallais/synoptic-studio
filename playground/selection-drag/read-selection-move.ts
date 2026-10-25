@@ -5,7 +5,7 @@ import { readPickAreas } from "../picking";
 import type { ShapesMove } from "../hover";
 
 /**
- * Reads the move of the shapes selected (F39): the drawing as it is, the shapes selected before
+ * Reads the move of the shapes selected: the drawing as it is, the shapes selected before
  * and once moved, the shapes moved, a text never measured, which is not drawn, left as it is, and
  * their anchor, the top-left of their dashed box (`pickAreasBox`), for one shape its straight box,
  * the X and Y the panel shows.

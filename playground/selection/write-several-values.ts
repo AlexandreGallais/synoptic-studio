@@ -71,10 +71,10 @@ function writeSeveralField(document: Document, id: string, shown: ShownValue): v
 
 /**
  * Shows the position and size of several shapes selected in the panel's four fields of several
- * shapes (F38): each shape's values (`readSelectedValues`), a text never measured, which is not
+ * shapes: each shape's values (`readSelectedValues`), a text never measured, which is not
  * drawn, left out; a value common to them as one shape's shows it, an empty field reading Mixed
  * where they differ (`commonPanelValues`, `createShownValue`), nor any placeholder with no value left; typed in,
- * they set the shapes (`listenToSeveralFields`, US-071).
+ * they set the shapes (`listenToSeveralFields`).
  *
  * @kind procedure
  * @param document - page document

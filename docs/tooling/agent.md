@@ -55,15 +55,13 @@ flowchart LR
 
 ## Expert agents
 
-Read-only reviewers in a fresh context, each with the documents it reads first (`REF-CC-SUBAGENTS`): the skills start them in the background, one at a time (ADR-0086), and only where their independence pays: the `auditor`, and the `verifier` when the tests need a second look, at a feature's audit; the `math-expert` and the `functional-analyst` only for mathematics or business rules to check, never by default; they report and never edit, so that a review cannot change what it reviews. Those that read sources (`auditor`, `math-expert`, `functional-analyst`) have the library's tools and follow its protocol ([sources](./sources.md)): library first, the web only for a page it cannot read. Each starts like a worker, with `omitClaudeMd` and `project-rules` preloaded.
+Read-only reviewers in a fresh context, each with the documents it reads first (`REF-CC-SUBAGENTS`): the skills start them in the background, one at a time (ADR-0086), and only where their independence pays: the `auditor` at a feature's audit; the `math-expert` and the `functional-analyst` only for mathematics or business rules to check, never by default; they report and never edit, so that a review cannot change what it reviews. Those that read sources (`auditor`, `math-expert`, `functional-analyst`) have the library's tools and follow its protocol ([sources](./sources.md)): library first, the web only for a page it cannot read. Each starts like a worker, with `omitClaudeMd` and `project-rules` preloaded.
 
 | Agent | Expert in | Started by |
 | --- | --- | --- |
 | `auditor` | refuting a feature: formulas, values, sources, copies | `/audit` (ADR-0064: no review per story) |
 | `math-expert` | plane geometry and floating-point numerics | only for a story or an audit holding mathematics to check: `/spike`, `/derivation`, `/run`, `/audit` |
-| `verifier` | tests that would catch a wrong implementation | `/audit`, when the tests need a second look |
 | `functional-analyst` | business rules, domain objects, refinement questions | only for a refinement or a story holding business rules to check |
-| `doc-editor` | pages that scan: structure, words, no quotes | `/audit`, when its pages need it |
 
 Agents to add when their epic comes:
 
@@ -82,10 +80,8 @@ Agents to add when their epic comes:
 | `story-worker` | `opus` | code, hand-computed tests and the docs of its rules; until one story on Sonnet, measured beside one on Opus, shows Sonnet does as well |
 | `researcher` | `opus` | judges what each source states; the feature is built from it |
 | `auditor` | `opus` | re-derives formulas and recomputes values; a weaker reviewer than the worker misses more |
-| `verifier` | `opus` | mutations by thought and recomputed values |
 | `math-expert` | `opus` | formulas, derivations and precision, where the tests' expected values come from |
 | `functional-analyst` | `opus` | finds the two readings of a rule and prepares the Product Owner's decisions |
-| `doc-editor` | `opus` | a rewrite keeps every fact of the page; read-only and short, so its share of the tokens is small |
 
 The model is taken from the first of these that names one (`REF-CC-SUBAGENTS`): the `Agent` call's `model`, the agent file's, `CLAUDE_CODE_SUBAGENT_MODEL`, the main conversation's. A file naming `opus` stays on Opus whatever the main conversation runs on. The session report gives the tokens per model ([metrics](./metrics.md#session-report)).
 
@@ -125,7 +121,7 @@ The Product Owner may talk to a second session while a run works. Both share the
 3. **Tells the run**: `ListAgents`, then `SendMessage` with what changed, where and what it changes for the run. The run acts on the change once it reaches `develop`, never on the message alone.
 4. **Removes its worktree** once merged (`target/release/branches-clean`).
 
-Before each story the run merges `origin/develop` into the feature branch when `develop` changed `AGENTS.md`, `CLAUDE.md`, `.claude/`, `docs/domain/`, `PAGE-adr`, `docs/backlog/` or `docs/conventions/`, in a worktree of that branch (never a force push on a feature branch), and follows the new versions from that story on; a change to the run's scope or stories is a stop.
+Before each story the run merges `origin/develop` into the feature branch when `develop` changed `AGENTS.md`, `CLAUDE.md`, `.claude/`, `PAGE-adr`, `docs/backlog/` or `docs/conventions/`, in a worktree of that branch (never a force push on a feature branch), and follows the new versions from that story on; a change to the run's scope or stories is a stop.
 
 ## Cloud agents and scheduled tasks
 

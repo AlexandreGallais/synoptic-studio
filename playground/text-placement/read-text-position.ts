@@ -8,7 +8,7 @@ import type { Point } from "../../src";
 
 /**
  * Reads where X and Y put the straight box once a text was drawn: on each axis, while the field
- * still shows the start of the text last drawn, at 5 decimals, its exact value (US-038);
+ * still shows the start of the text last drawn, at 5 decimals, its exact value;
  * otherwise the integer typed (`readTypedCoordinate`).
  *
  * @kind procedure
@@ -28,7 +28,7 @@ function readShownStart(document: Document, drawn: DrawnTextRecord): Point {
 }
 
 /**
- * Reads where the text's straight box starts from the X and Y fields (AUD-040): exact on each
+ * Reads where the text's straight box starts from the X and Y fields: exact on each
  * axis left as the text last drawn shows it (`readShownStart`); before a first text, or once
  * typed, the integers typed (`readTypedCoordinate`), a fraction typed refused. At 0° the start is
  * the text's position.

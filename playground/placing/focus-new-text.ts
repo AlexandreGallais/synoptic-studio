@@ -4,7 +4,7 @@ import { writeTextSections } from "../text";
 
 /**
  * Shows the Text tool's fields of a new text and gives its Content field the focus, so that the
- * designer clicks, then types (US-075); the text is then being typed (`NEW_TEXTS`), its placing
+ * designer clicks, then types; the text is then being typed (`NEW_TEXTS`), its placing
  * and what is typed in it one step (SP-029's answer 5).
  *
  * @kind procedure

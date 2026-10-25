@@ -3,7 +3,7 @@ import { integerQuotient } from "../../math";
 import type { HistoryWindow } from "./history-window";
 
 /**
- * How many states the list of the history's steps shows on each side of the present (US-077): the
+ * How many states the list of the history's steps shows on each side of the present: the
  * present always, then the rows left, at most half of them after it, rounded down
  * (`integerQuotient`), the rest before it, the side that holds fewer giving its rows to the other.
  *

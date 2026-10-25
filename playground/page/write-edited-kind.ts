@@ -5,7 +5,7 @@ import { writeSelection } from "./write-selection";
 
 /**
  * Makes the panel edit a shape of a kind, without firing any event: no free shape kept, no point
- * selected; `none` while no shape is selected (F36).
+ * selected; `none` while no shape is selected.
  *
  * @kind procedure
  * @param document - page document

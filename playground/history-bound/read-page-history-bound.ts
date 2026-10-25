@@ -5,7 +5,7 @@ import { PAGE_HISTORY_BOUNDS } from "./page-history-bounds";
 import type { HistoryBound } from "../../src";
 
 /**
- * Reads the bound the page's history is kept within (F40, `PAGE_HISTORY_BOUNDS`): the one the
+ * Reads the bound the page's history is kept within (`PAGE_HISTORY_BOUNDS`): the one the
  * designer set, or the default, 100 MB and 5 steps, before the page is mounted.
  *
  * @kind procedure

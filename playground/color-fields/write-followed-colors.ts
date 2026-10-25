@@ -11,7 +11,6 @@ import { writeKeptColor } from "./write-kept-color";
  * @param document - page document
  * @param id - the field's id
  * @param value - the value written
- * @see US-041
  */
 function writeUnfocusedValue(document: Document, id: string, value: string): void {
   const field = readColorInput(document, id);
@@ -25,13 +24,12 @@ function writeUnfocusedValue(document: Document, id: string, value: string): voi
  * Shows the text's color and opacity in the fields of each color that follows it, the
  * underline's and the strike-through's while their box is ticked (`data-follows`), so that its
  * swatch, its fields and its picker show the color it is drawn in, and a stroke whose box is
- * unticked starts from it (US-041); a field being typed in is left as it is until committed, and
+ * unticked starts from it; a field being typed in is left as it is until committed, and
  * a refused value is followed over once the field is left. The text's color is the one its field
  * stands for (`readShownColor`).
  *
  * @kind procedure
  * @param document - page document
- * @see US-041
  */
 export function writeFollowedColors(document: Document): void {
   const color = readShownColor(document, "text-color");

@@ -7,12 +7,11 @@ import { listenToPickerValues } from "./listen-to-picker-values";
 
 /**
  * Listens to each color's fields and to the color picker: its opening and closing, its hue and opacity sliders, its plane
- * and its values (`docs/domain/interaction.md` §5).
+ * and its values (`RULE-interaction-colors`).
  *
  * @kind procedure
  * @param document - page document
  * @param update - redraws the playground
- * @see US-035
  */
 export function listenToColorPicker(document: Document, update: () => void): void {
   listenToColorFields(document, update);

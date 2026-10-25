@@ -3,7 +3,7 @@ import { nearestInteger } from "../../math";
 import type { Size } from "../../geometry";
 import type { Point } from "../../math";
 
-/** A drag with a shape's tool (F36): where the pointer was pressed and released, and Shift. */
+/** A drag with a shape's tool: where the pointer was pressed and released, and Shift. */
 export type ShapeDrag = {
   /** The point pressed, in the coordinates of the SVG, possibly fractional. */
   readonly press: Point;
@@ -29,11 +29,11 @@ function sideStart(press: number, release: number, side: number): number {
 }
 
 /**
- * Box of a shape drawn by a drag (F36): the press and the release each rounded to the nearest
+ * Box of a shape drawn by a drag: the press and the release each rounded to the nearest
  * integer (`nearestInteger`), the box running from the smaller to the larger of each coordinate,
  * whatever the direction dragged; square, its side is the larger of the two distances, laid from
  * the press toward the release, down or right when the release is level with the press. A release
- * on the press's integer point gives a box 0 × 0 at that point: a click (US-063).
+ * on the press's integer point gives a box 0 × 0 at that point: a click.
  *
  * Formula: a = round(press), b = round(release); w = |bx − ax|, h = |by − ay|, both
  * max(w, h) when square; x = ax − w when bx < ax, else ax; likewise y.

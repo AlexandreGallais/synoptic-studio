@@ -8,7 +8,7 @@ import type { TypedPanelValue } from "../../src";
  * value typed is applied on Enter or when the field is left, never while it is typed, a number,
  * relative with a sign; Up and Down step it at their key by 1, or 10 with Shift, as `+1` or `-10`
  * typed. What the value sets, and how the field shows it again, is the caller's (`apply`), told
- * whether it is an arrow's step, which one shape's X and Y land (F46), kept for the field
+ * whether it is an arrow's step, which one shape's X and Y land, kept for the field
  * (`NUMBER_FIELD_APPLIES`), a mount's replacing the one before.
  *
  * @kind procedure

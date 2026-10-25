@@ -4,9 +4,9 @@ import { POINTER_OFFSETS } from "../view";
 import { showHover } from "./show-hover";
 
 /**
- * Listens to the pointer passing over the drawing (F36): each move keeps its offset on the canvas
+ * Listens to the pointer passing over the drawing: each move keeps its offset on the canvas
  * (`POINTER_OFFSETS`) and outlines the shape under it (`showHover`), read through the view at each
- * redraw (F42); leaving the drawing forgets it and takes the outline away.
+ * redraw; leaving the drawing forgets it and takes the outline away.
  *
  * @kind procedure
  * @param document - page document

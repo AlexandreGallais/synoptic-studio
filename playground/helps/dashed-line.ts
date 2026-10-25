@@ -1,4 +1,4 @@
-/** A help of the layer above the drawing drawn as one line of white and black dashes (US-086). */
+/** A help of the layer above the drawing drawn as one line of white and black dashes. */
 export type DashedLine = {
   /** The path data of the contour or box it follows, in user units. */
   readonly data: string;

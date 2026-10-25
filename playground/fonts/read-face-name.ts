@@ -7,7 +7,6 @@ import type { FontFace } from "../../src";
  * @param family - its family's name
  * @param face - its weight and style
  * @returns such as `Arial 700 italic`
- * @see US-036
  */
 export function readFaceName(family: string, face: Pick<FontFace, "isItalic" | "weight">): string {
   return `${family} ${String(face.weight)}${face.isItalic ? " italic" : ""}`;

@@ -3,7 +3,7 @@ import { landedNudgeShift } from "./landed-nudge-shift";
 import type { Point } from "../../math";
 
 /**
- * How far an arrow in X or Y moves the shape the panel edits alone (F46): as the arrow on the
+ * How far an arrow in X or Y moves the shape the panel edits alone: as the arrow on the
  * drawing along that axis, Up in X as Right and Up in Y as Down, the y axis pointing down, its
  * nudge across or down by the field's step, then landed as the arrow on the drawing lands its
  * anchor (`landedNudgeShift`), so that the straight box's top-left lands on integers on both axes.

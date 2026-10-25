@@ -1,6 +1,6 @@
 import type { GuidedStep } from "../guided-step";
 
-/** The steps of the US-012 and US-013 cards (F03, VAL-004), one at a time; each starts afresh. */
+/** The steps of the US-012 and US-013 cards, one at a time; each starts afresh. */
 export const GUIDED_STEPS_F03: readonly GuidedStep[] = [
   {
     explanation:

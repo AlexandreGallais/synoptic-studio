@@ -11,7 +11,7 @@ import type { SizedText, Text } from "../../src";
 /**
  * Places a text from the start of its straight box X and Y show (`choosePlacement`), then writes
  * in X and Y where its straight box starts as drawn, at 5 decimals (`readStraightStart`), as a
- * shape's (Product Owner, 2026-10-23, AUD-040): a turn or a growing turned text changing them, a
+ * shape's (Product Owner, 2026-10-23): a turn or a growing turned text changing them, a
  * text at 0° its position. The text drawn is then kept, with what X and Y show, for the next
  * change (`readTextPosition`).
  *

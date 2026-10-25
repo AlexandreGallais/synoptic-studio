@@ -1,5 +1,5 @@
 /**
- * The position and size the panel shows for a shape of a drawing (F38): the x and y of its
+ * The position and size the panel shows for a shape of a drawing: the x and y of its
  * straight box, as for one shape (ADR-0035), and its own width and height, a text's those of its
  * frame.
  */

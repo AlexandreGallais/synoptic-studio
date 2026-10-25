@@ -30,7 +30,7 @@ type SeveralValue = {
   readonly typed: TypedPanelValue;
 };
 
-/** The fields an arrow's step moves the shapes in as one shape's, by key (F46). */
+/** The fields an arrow's step moves the shapes in as one shape's, by key. */
 const STEPPED_AXES: ReadonlyMap<keyof PanelValues, "x" | "y"> = new Map([
   ["x", "x"],
   ["y", "y"],
@@ -105,12 +105,12 @@ function readSeveralKept(document: Document, kept: KeptShape, value: SeveralValu
 }
 
 /**
- * Sets the shapes selected by a value of a field of several shapes (F38): typed, a number
- * relative with a sign (`parsePanelValue`), or an arrow's step, relative (US-081), given to each
- * shape (`readSeveralKept`), a size taken within 0 and 100 000 as one shape's (Q20, AUD-046), an
- * arrow in X or Y landing each shape's own straight box on integers as one shape's (F46, AUD-048),
+ * Sets the shapes selected by a value of a field of several shapes: typed, a number
+ * relative with a sign (`parsePanelValue`), or an arrow's step, relative, given to each
+ * shape (`readSeveralKept`), a size taken within 0 and 100 000 as one shape's (Q20), an
+ * arrow in X or Y landing each shape's own straight box on integers as one shape's,
  * the others kept as they are, in the order drawn; a text that is no number changes none. Every
- * shape is kept below while several are selected (F37).
+ * shape is kept below while several are selected.
  *
  * @kind procedure
  * @param document - page document

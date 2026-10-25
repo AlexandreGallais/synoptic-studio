@@ -9,7 +9,6 @@ import type { VertexSelection } from "../../src";
  * @kind procedure
  * @param document - page document
  * @param selection - selection to keep
- * @see US-013
  */
 export function writeSelection(document: Document, selection: VertexSelection): void {
   const list = selectElement(document, "points");

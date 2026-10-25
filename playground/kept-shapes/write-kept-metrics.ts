@@ -5,7 +5,7 @@ import type { DrawingShape } from "../../src";
 /**
  * Keeps for a text changed the metrics it was last drawn with (`KEPT_TEXT_METRICS`), kept by the
  * JSON of the text, so that a text whose font is no longer read is still drawn where it was moved
- * (F38, F39). A shape a tool makes has none.
+ * (F38). A shape a tool makes has none.
  *
  * @kind procedure
  * @param before - the shape as it was

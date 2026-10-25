@@ -15,7 +15,6 @@ import type { PlaneValues } from "../../src";
  * @param document - page document
  * @param values - the saturation and the lightness or brightness picked
  * @param update - redraws the playground
- * @see US-035
  */
 function applyPlaneValues(document: Document, values: PlaneValues, update: () => void): void {
   applyPickedColor(
@@ -37,7 +36,6 @@ function applyPlaneValues(document: Document, values: PlaneValues, update: () =>
  * @kind procedure
  * @param document - page document
  * @param update - redraws the playground
- * @see US-035
  */
 export function listenToColorPlane(document: Document, update: () => void): void {
   const plane = selectElement(document, "color-plane");

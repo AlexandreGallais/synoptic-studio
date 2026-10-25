@@ -12,8 +12,8 @@ const ARIAL_16 = createTextStepValues({ content: "Pump P-101", font: "Arial", si
 const TESTED = "Nothing to try: no file at hand shows it; the tests prove it.";
 
 /**
- * The F15 decisions to confirm (VAL-017), rows 1 to 18 of the story's table, the rules of SP-018,
- * EN-039 and EN-040, one step each with its example; those of the HTML layer removed (US-044).
+ * The F15 decisions to confirm, rows 1 to 18 of the story's table, the rules of SP-018,
+ * EN-039 and EN-040, one step each with its example; those of the HTML layer removed.
  */
 export const GUIDED_STEPS_F15_FIRST_DECISIONS: readonly GuidedStep[] = [
   {

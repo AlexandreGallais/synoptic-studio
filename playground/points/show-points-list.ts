@@ -33,7 +33,6 @@ function createRowText(corner: Corner, vertex: number, effective: number): strin
  * @param document - page document
  * @param reading - valid shape
  * @param selection - vertices selected
- * @see US-013
  */
 export function showPointsList(
   document: Document,

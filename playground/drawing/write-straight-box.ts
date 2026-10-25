@@ -11,7 +11,6 @@ import type { BoundingBox } from "../../src";
  * @param document - page document
  * @param id - id of the field
  * @param value - value to show
- * @see US-018
  */
 function writeUntypedValue(document: Document, id: string, value: number): void {
   if (document.activeElement?.id !== id) {
@@ -20,13 +19,12 @@ function writeUntypedValue(document: Document, id: string, value: number): void 
 }
 
 /**
- * Shows the straight box of the shape (F04): its x and y in the position fields, as in Inkscape,
+ * Shows the straight box of the shape: its x and y in the position fields, as in Inkscape,
  * and its x, y, width and height in a line under them (`writeStraightBoxLine`).
  *
  * @kind procedure
  * @param document - page document
  * @param box - straight box of the drawn shape
- * @see US-018
  */
 export function writeStraightBox(document: Document, box: BoundingBox): void {
   writeUntypedValue(document, "shape-x", box.minX);

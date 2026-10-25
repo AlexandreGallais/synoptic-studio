@@ -7,7 +7,6 @@ import { selectElement } from "./select-element";
  * @param document - page document
  * @param id - id of the target element
  * @param text - text to display
- * @see US-002
  */
 export function writeText(document: Document, id: string, text: string): void {
   selectElement(document, id).textContent = text;

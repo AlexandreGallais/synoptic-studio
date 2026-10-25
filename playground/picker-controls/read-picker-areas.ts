@@ -10,7 +10,6 @@ import { selectElement } from "../page";
  * @kind procedure
  * @param document - page document
  * @returns the picker and its color's fields; none while it is closed
- * @see US-035
  */
 export function readPickerAreas(document: Document): readonly Element[] {
   const swatch = readOpenSwatch(document);

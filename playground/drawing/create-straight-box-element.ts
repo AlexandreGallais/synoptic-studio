@@ -51,7 +51,6 @@ type DashSizes = {
  * @param from - its first coordinate along the side
  * @param sizes - the dashes' length and thickness, in user units
  * @returns the rectangle's path data
- * @see US-018
  */
 function readDash(side: Side, from: number, sizes: DashSizes): string {
   const to = Math.min(from + sizes.length, side.end);
@@ -70,7 +69,6 @@ function readDash(side: Side, from: number, sizes: DashSizes): string {
  * @param side - one of the four sides of the box
  * @param sizes - the dashes' length, period and thickness, in user units
  * @returns the dashes' path data
- * @see US-018
  */
 function readSideDashes(side: Side, sizes: DashSizes): string {
   const count = Math.max(ceiling((side.end - side.start) / sizes.period), 0);
@@ -84,7 +82,7 @@ function readSideDashes(side: Side, sizes: DashSizes): string {
 }
 
 /**
- * Draws the straight box of a turned shape, dashed (F04, as Inkscape's dashed bounding box): the
+ * Draws the straight box of a turned shape, dashed (as Inkscape's dashed bounding box): the
  * dashes are thin filled rectangles inside the box, never a native stroke, 4 screen pixels long
  * every 7, 1 thick, divided by the view's scale so that they keep their size on screen at any zoom
  * (`screenToUser`, ADR-0098, decision 5).
@@ -93,7 +91,6 @@ function readSideDashes(side: Side, sizes: DashSizes): string {
  * @param document - page document
  * @param box - straight box of the drawn shape
  * @returns the dashed frame's `<path>`
- * @see US-018
  */
 export function createStraightBoxElement(document: Document, box: BoundingBox): SVGPathElement {
   const { scale } = readView(document);

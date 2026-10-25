@@ -5,9 +5,9 @@ import { writeShapePosition } from "../position";
 import type { Point, Size } from "../../src";
 
 /**
- * Writes the box of a new shape drawn by a drag (F36): a rectangle's, a polygon's or a round
+ * Writes the box of a new shape drawn by a drag: a rectangle's, a polygon's or a round
  * shape's width, height and position; a new text (`writeNewTextFields`) in a box of that size,
- * the box kept as typed (US-057), its top-left the box's.
+ * the box kept as typed, its top-left the box's.
  *
  * @kind procedure
  * @param document - page document

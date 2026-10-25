@@ -79,7 +79,7 @@ function loadPickedTool(document: Document, kind: string, shape: Shape): void {
 }
 
 /**
- * Loads a shape picked that is not a text into the panel, without firing any event (F36): its
+ * Loads a shape picked that is not a text into the panel, without firing any event: its
  * angle, then a free shape kept as one (`writeStoredFreeShape`), no point selected, or a rectangle
  * as a Rectangle, though stored as a free shape (ADR-0032), a polygon or a round shape as its
  * tool shows it (`loadPickedTool`).

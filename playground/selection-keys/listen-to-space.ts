@@ -26,7 +26,7 @@ function pressSpace(document: Document, event: KeyboardEvent): void {
  * released while Cmd is held sends no `keyup` on macOS (`REF-WEBKIT-CMD-KEYUP`), Cmd + Space is the
  * system's (`REF-APPLE-SHORTCUTS`), which may take Cmd's `keyup` too, while Cmd's own `keydown`
  * carries it (`REF-UIEVENTS-KEYS`), so that Space let go under Cmd no longer makes the next drag
- * pan (US-091); an event without Cmd changes nothing.
+ * pan; an event without Cmd changes nothing.
  *
  * @kind procedure
  * @param document - page document
@@ -66,7 +66,7 @@ function removeHeldSpace(document: Document, event: KeyboardEvent): void {
  * page does not scroll nor a button of the toolbar take it; typed in a field, it is the field's
  * (`interaction.md` §1). Its release ends it wherever the focus is, and so do any key or pointer
  * event carrying Cmd, heard before the canvas's press, a release under Cmd never heard on macOS
- * (US-091), and the window losing the focus, a release in another window never heard (AUD-044).
+ * (US-091), and the window losing the focus, a release in another window never heard.
  *
  * @kind procedure
  * @param document - page document

@@ -7,7 +7,6 @@ import { parseHexColor } from "../../src";
  * @kind procedure
  * @param field - the hexadecimal field
  * @returns the color, `#` and six lower-case digits
- * @see US-035
  */
 export function readKeptColor(field: HTMLInputElement): string {
   return field.dataset["kept"] ?? parseHexColor(field.defaultValue)?.color ?? field.defaultValue;

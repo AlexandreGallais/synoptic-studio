@@ -5,7 +5,7 @@ import { stateSlotBytes } from "./state-slot-bytes";
 import type { History } from "./history";
 
 /**
- * The bytes a history holds beyond its present (F40): each shape a past or future state holds and
+ * The bytes a history holds beyond its present: each shape a past or future state holds and
  * the present does not, counted once, its JSON text's length times 2 (`shapeBytes`), a string
  * being a sequence of 16-bit code units (`REF-ECMA-262-STRING-TYPE`); plus 8 bytes for each
  * reference to a shape and each index of a selection those states hold (`stateSlotBytes`), the

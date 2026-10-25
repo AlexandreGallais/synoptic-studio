@@ -7,7 +7,6 @@ import { selectInput } from "./select-input";
  * @kind procedure
  * @param id - id of the picker, without `#`
  * @param files - the files chosen
- * @see US-036
  */
 export function chooseFiles(id: string, files: readonly File[]): void {
   const picker = selectInput(id);

@@ -5,7 +5,7 @@ import { HISTORY_BOUND_FIELDS } from "./history-bound-fields";
 import type { HistoryBound } from "../../src";
 
 /**
- * Shows a bound in its fields (F40, `HISTORY_BOUND_FIELDS`): the memory size in MB, the steps
+ * Shows a bound in its fields (`HISTORY_BOUND_FIELDS`): the memory size in MB, the steps
  * kept, without firing any event.
  *
  * @kind procedure

@@ -15,7 +15,6 @@ import type { FontSession } from "./font-session";
  * @kind procedure
  * @param session - the session's fonts
  * @returns the families' names, in the list's order
- * @see US-059
  */
 function readFontListNames(session: FontSession): readonly string[] {
   return distinctFamilyNames(session.kept.map((family) => family.name));
@@ -23,7 +22,7 @@ function readFontListNames(session: FontSession): readonly string[] {
 
 /**
  * Reads the family the font list chooses: the one asked when listed; else the family the text is
- * measured with, so that a family left out of the list while it is chosen (US-053) gives the list
+ * measured with, so that a family left out of the list while it is chosen gives the list
  * back to it; else the first, Inter.
  *
  * @kind procedure
@@ -31,7 +30,6 @@ function readFontListNames(session: FontSession): readonly string[] {
  * @param family - the family asked
  * @param measured - the family the text is measured with
  * @returns the name of the family chosen, as listed
- * @see US-036
  */
 function readFontChoice(names: readonly string[], family: string, measured: string): string {
   const [first = ""] = names;
@@ -42,13 +40,12 @@ function readFontChoice(names: readonly string[], family: string, measured: stri
 
 /**
  * Writes the font list: one option per family the editor can measure, Inter first (no
- * name typed, so no font without metrics can be chosen, US-036), the family asked chosen, else the
+ * name typed, so no font without metrics can be chosen), the family asked chosen, else the
  * one chosen before, else Inter.
  *
  * @kind procedure
  * @param document - page document
  * @param family - the family to choose, matched without regard to case; empty to keep the one chosen
- * @see US-036
  */
 export function writeFontOptions(document: Document, family: string): void {
   const session = readFontSession(document);

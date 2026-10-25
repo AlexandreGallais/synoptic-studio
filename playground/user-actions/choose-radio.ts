@@ -6,7 +6,6 @@
  * @param name - `name` of the group
  * @param value - `value` of the button to check
  * @throws {Error} when the group has no button of that value
- * @see EN-021
  */
 export function chooseRadio(name: string, value: string): void {
   const button = [

@@ -1,7 +1,7 @@
 import { ARROW_BURSTS } from "./arrow-bursts";
 
 /**
- * Reads the field of the burst of arrows open on the page (`ARROW_BURSTS`, US-081), whose values
+ * Reads the field of the burst of arrows open on the page (`ARROW_BURSTS`), whose values
  * applied by its arrows take no step, the burst taking it at its end.
  *
  * @kind procedure

@@ -44,9 +44,9 @@ function writeDrawingBox(document: Document, drawing: ShapeDrawing, box: Point &
 }
 
 /**
- * Writes the new shape as the drag stands (F36): nothing while the pointer stays within 3 pixels
+ * Writes the new shape as the drag stands: nothing while the pointer stays within 3 pixels
  * of the press at the view's scale (`isDragged`, SP-030's answer 8), which leaves the release to
- * the click (F35); once it has gone further, the shape started and its box written
+ * the click; once it has gone further, the shape started and its box written
  * (`writeDrawingBox`), placed as a click if the pointer comes back to the press's integer point.
  *
  * @kind procedure

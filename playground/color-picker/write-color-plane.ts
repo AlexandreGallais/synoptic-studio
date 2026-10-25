@@ -19,7 +19,6 @@ const PUREST = { level: PERCENT, saturation: PERCENT };
  * @param document - page document
  * @param picked - the values the picker holds
  * @param model - the model chosen
- * @see US-035
  */
 export function writeColorPlane(document: Document, picked: PickedColor, model: ColorModel): void {
   const plane = selectElement(document, "color-plane");

@@ -45,7 +45,7 @@ async function readFaceBytes(font: InstalledFont): Promise<Uint8Array<ArrayBuffe
  * (`parseNamedFaceParts`): a face alone is its own file; in a whole collection, as a browser may
  * give it, the face of its PostScript name (name ID 6, as `FontData.postscriptName`) is found by
  * reading each face's name in the collection, and only that face is joined from its parts
- * into one buffer (`facePartsToFile`), the other faces never written (US-052, EN-057).
+ * into one buffer (`facePartsToFile`), the other faces never written.
  *
  * @kind procedure
  * @param font - a face the browser lists
@@ -64,7 +64,7 @@ function readFaceFile(
 }
 
 /**
- * Reads what a face read from its file gives (US-056): the face, kept, when the editor can draw,
+ * Reads what a face read from its file gives: the face, kept, when the editor can draw,
  * measure and embed it; else left out, said why (`unlistedFaceReason`): its `fsType` forbids
  * embedding it, or it lacks a letter of the ISO basic Latin alphabet.
  *
@@ -145,10 +145,10 @@ async function readFaceRead(font: InstalledFont): Promise<InstalledFaceRead> {
  * `REF-WICG-LOCAL-FONT-ACCESS`), into a face, the session left as it is; a face whose file
  * the browser cannot give, or that is not a font, is refused, said why in one line, and no error
  * is left uncaught: one thrown while its file is read, joined or added — a file the browser
- * cannot hold among them — refuses the face, named, with the error (US-052). A face whose
+ * cannot hold among them — refuses the face, named, with the error. A face whose
  * `fsType` forbids embedding it, or that lacks a letter of the ISO basic Latin alphabet, is left
- * out too, said why (US-056). The caller keeps the
- * face, with its file when its family is chosen, its metrics alone when read ahead (US-053).
+ * out too, said why. The caller keeps the
+ * face, with its file when its family is chosen, its metrics alone when read ahead.
  *
  * @kind procedure
  * @param font - a face the browser lists

@@ -1,4 +1,4 @@
-/** The settings `saveKindSettings` keeps of the last shape of a kind (SP-026). */
+/** The settings `saveKindSettings` keeps of the last shape of a kind. */
 export type KindMemory = {
   /** The radius of each vertex kept on the radius field (`data-radii`), empty when one is typed. */
   readonly radii: string;

@@ -24,7 +24,6 @@ const WEIGHT_NAMES: Readonly<Record<number, string>> = {
  * @kind procedure
  * @param document - page document
  * @returns the family; undefined for an installed family whose files are not read yet
- * @see US-036
  */
 function readChosenFamily(document: Document): FontFamily | undefined {
   const font = selectElement(document, "text-font");
@@ -39,7 +38,6 @@ function readChosenFamily(document: Document): FontFamily | undefined {
  * @kind procedure
  * @param weight - a face's weight
  * @returns such as `700 Bold`
- * @see US-036
  */
 function readWeightLabel(weight: number): string {
   const name = WEIGHT_NAMES[weight];
@@ -67,14 +65,13 @@ function readMatchingWeight(document: Document, family: FontFamily, weight: numb
 /**
  * Writes the weight list of the family chosen in the font list, its faces' weights only, from the
  * lightest, and chooses the weight of the face that matches the weight asked and the italic
- * button (`readMatchingWeight`, `docs/domain/shapes.md`, Font face): a family of 400 and 700
+ * button (`readMatchingWeight`, `RULE-shapes-font-face-and-measured-block`): a family of 400 and 700
  * gives 700 for 700 and 400 for 300. A family whose files are not read yet, or without faces —
- * Inter when the browser draws none of its faces (US-053) —, keeps the list as it is.
+ * Inter when the browser draws none of its faces —, keeps the list as it is.
  *
  * @kind procedure
  * @param document - page document
  * @param weight - the weight asked, from 100 to 900
- * @see US-036
  */
 export function writeWeightChoice(document: Document, weight: number): void {
   const family = readChosenFamily(document);

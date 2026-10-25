@@ -2,7 +2,7 @@ import type { History } from "./history";
 import type { HistoryBound } from "./history-bound";
 
 /**
- * The most oldest past states a bound may drop (F40): the past states beyond the steps kept, none
+ * The most oldest past states a bound may drop: the past states beyond the steps kept, none
  * when no more are past (ADR-0095, decision 5).
  *
  * @kind domain

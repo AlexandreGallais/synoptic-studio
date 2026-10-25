@@ -1,7 +1,7 @@
 import { memorizedShape } from "./memorized-shape";
 
 /**
- * The length of a shape's JSON text, in 16-bit code units (F40): written once for each shape, then
+ * The length of a shape's JSON text, in 16-bit code units: written once for each shape, then
  * read back (`memorizedShape`, ADR-0096), as `historySize` counts each shape the past and the
  * states to come hold.
  *

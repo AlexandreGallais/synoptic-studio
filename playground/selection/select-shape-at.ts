@@ -7,8 +7,8 @@ import { writeShapeSelection } from "./write-shape-selection";
 import type { Point } from "../../src";
 
 /**
- * Selects by a click the shape under a point of the drawing (`readShapeAt`, F36): alone, or with
- * Shift added to the shapes selected, or taken out of them (`shapeSelectionAfterClick`, F37); on
+ * Selects by a click the shape under a point of the drawing (`readShapeAt`): alone, or with
+ * Shift added to the shapes selected, or taken out of them (`shapeSelectionAfterClick`); on
  * the empty drawing, none, or with Shift the selection kept. The shapes are then selected by their
  * indices (`writeShapeSelection`): one keeps its place and is loaded into the panel, several are
  * kept with every shape, none edited.

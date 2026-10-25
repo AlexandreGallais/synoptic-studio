@@ -3,7 +3,7 @@ import type { Point } from "../vector";
 /**
  * The point at a fraction of a segment, from its start: de Casteljau's step (`REF-WIKI-DE-CASTELJAU`).
  * At ½ it is the midpoint bit for bit for numbers of a drawing; they differ on overflow and
- * among subnormals, so both are kept (F13).
+ * among subnormals, so both are kept.
  *
  * Formula: P = (1 − t) A + t B.
  *

@@ -3,7 +3,7 @@ import { SELECTION_DRAGS } from "./selection-drags";
 import type { ShapesMove } from "./shapes-move";
 
 /**
- * Reads the move of shapes under way (F39): a press on a shape whose pointer has gone further than
+ * Reads the move of shapes under way: a press on a shape whose pointer has gone further than
  * 3 pixels from it, from then to the release, the shapes following the pointer.
  *
  * @kind procedure

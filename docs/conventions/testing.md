@@ -105,7 +105,7 @@ it("[F01.AC3] clamps a 100 × 25 rectangle with radius 100 to an effective radiu
 | --- | --- |
 | Levels | examples computed by hand; properties; criterion tests `[F01.ACn]`; the test cards of the user stories, tried by the Product Owner on `develop` at the review (`REV`, ADR-0100); regression and end-to-end suites once the applications exist (E48, ADR-0020) |
 | Environments | the core in Node.js without a DOM; `render` and the playground with happy-dom; browsers for end-to-end, later |
-| Independence | the `auditor`, `verifier` and `math-expert` agents re-derive, recompute and try mutations; the Product Owner tries the test cards |
+| Independence | the `auditor` and `math-expert` agents re-derive, recompute and try mutations; the Product Owner tries the test cards |
 | Success | every test green, 95 % coverage of `src/`, no `.skip` nor `.only`, on every push and every release |
 | Regression | every test runs before every push and on the pull request into `main`; a done feature's criterion tests are never deleted, only changed by a story citing the criterion |
 | Evidence | each release carries its JUnit report (`test-report.xml`) as a release asset |

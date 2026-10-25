@@ -5,7 +5,7 @@ import type { Point } from "../../math";
 
 /**
  * The shape under a point: the last drawn whose area the point reaches (`isPickAreaAt`), the
- * drawing's shapes being in the order drawn, the last on top (F36, `DERIV-painted-area`).
+ * drawing's shapes being in the order drawn, the last on top (`DERIV-painted-area`).
  *
  * @kind domain
  * @param areas - what each shape of the drawing offers the pointer, in the order drawn

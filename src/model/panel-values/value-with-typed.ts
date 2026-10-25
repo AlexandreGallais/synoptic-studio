@@ -1,7 +1,7 @@
 import type { TypedPanelValue } from "./typed-panel-value";
 
 /**
- * A value once a value is typed in its field (F38, US-087): its own plus the value typed with a
+ * A value once a value is typed in its field: its own plus the value typed with a
  * sign, or the value typed without one, as Figma (`REF-FIGMA-ADJUST`); 100 and `+50` give 150,
  * 30 and `-5` give 25, `460` gives 460, a fraction kept.
  *

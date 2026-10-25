@@ -85,7 +85,7 @@ function nodeWithCount(
 }
 
 /**
- * The held counts once the count of a key is set (EN-147): the trie given a level above its root
+ * The held counts once the count of a key is set: the trie given a level above its root
  * until it holds the key (`keyDepth`, `grownCounts`), then the nodes on the key's path copied,
  * every other node the same object, as path copying copies "it and ancestors"
  * (`REF-MIT-6854-PERSISTENT`); a count of 0 holds no node, and a node left without any is dropped

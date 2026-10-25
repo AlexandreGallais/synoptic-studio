@@ -1,6 +1,6 @@
 import type { Point } from "../../src";
 
-/** A drag with a tool on the drawing (F36), from the press to the pointer. */
+/** A drag with a tool on the drawing, from the press to the pointer. */
 export type ShapeDrawing = {
   /** The point pressed, in the coordinates of the SVG, possibly fractional. */
   readonly press: Point;

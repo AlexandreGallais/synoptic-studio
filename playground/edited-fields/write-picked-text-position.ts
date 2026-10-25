@@ -7,9 +7,9 @@ import type { Text } from "../../src";
 import type { DrawnTextRecord } from "../text-placement";
 
 /**
- * Writes where a text picked, or set by its fields (US-085), is drawn: X and Y show where its
+ * Writes where a text picked, or set by its fields, is drawn: X and Y show where its
  * straight box starts (`readStraightStart`), as a shape's and as with several shapes selected
- * (Product Owner, 2026-10-23, AUD-040), and it is kept as the text last drawn (US-038), so that
+ * (Product Owner, 2026-10-23), and it is kept as the text last drawn, so that
  * the redraw finds it at its own position, exact, a turned text's fractions included.
  *
  * @kind procedure

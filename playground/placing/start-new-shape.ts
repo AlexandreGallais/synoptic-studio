@@ -10,7 +10,7 @@ import { readShapeKind, writeEditedKind, writeInputValue } from "../page";
 
 /**
  * Keeps every shape of the drawing below the new one, in the order drawn (`readKeptDrawing`): the
- * shape the panel edits, unless it was refused, keeping its place among the others (F36), and its
+ * shape the panel edits, unless it was refused, keeping its place among the others, and its
  * settings as the last of its kind (`saveKindSettings`).
  *
  * @kind procedure
@@ -32,10 +32,10 @@ function addDrawingBelow(document: Document): void {
 }
 
 /**
- * Starts a new shape of a tool's kind, by a click (F35) or a drag (F36): every shape of the
+ * Starts a new shape of a tool's kind, by a click or a drag: every shape of the
  * drawing is kept below it, the one the panel edited in its place unless it was refused, so that
  * the new shape goes on top of all; the panel then edits a new shape of the tool's kind, straight,
- * with the settings of the last shape of its kind (SP-026), its box written next.
+ * with the settings of the last shape of its kind, its box written next.
  *
  * @kind procedure
  * @param document - page document

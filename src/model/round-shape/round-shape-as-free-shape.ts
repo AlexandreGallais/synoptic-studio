@@ -13,7 +13,7 @@ import type { FreeShape } from "../free-shape";
  * (ADR-0035, `DERIV-turned-shape` step 5).
  *
  * @kind domain
- * @param shape - valid round shape of width and height > 0: one of size 0 is not converted (F08)
+ * @param shape - valid round shape of width and height > 0: one of size 0 is not converted
  * @returns the free shape drawing that round shape
  * @see DERIV-round-shape-curve
  */

@@ -6,7 +6,7 @@ import { NEW_TEXTS } from "./new-texts";
 import type { Text } from "../../src";
 
 /**
- * Reads the page's new text being typed (`NEW_TEXTS`, F40): placed by the Text tool, its Content
+ * Reads the page's new text being typed (`NEW_TEXTS`): placed by the Text tool, its Content
  * field not yet left with a content typed, nor the panel left.
  *
  * @kind procedure

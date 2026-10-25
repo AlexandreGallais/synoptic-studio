@@ -12,7 +12,7 @@ What went wrong in this project, and the check that now prevents it. Newest firs
 | 2026-10-13 | The agent waited for the CI after every story, at least 40 minutes over E01, while the pre-push hook had already run the same checks | checks run locally; one CI, on the pull request into `main` (ADR-0072, ADR-0088) |
 | 2026-10-13 | A package released 36 seconds before the version check turned `main` red | a 7-day cooldown on versions (`.ncurc.cjs`) |
 | 2026-10-13 | Dependencies were upgraded, a major among them, without reading what changed | the upgrade procedure reads the release notes first (`docs/tooling/versions-and-security.md`) |
-| 2026-10-13 | The Product Owner's spoken words were quoted throughout a public repository | writing rules: decisions in neutral words; the `doc-editor` agent checks |
+| 2026-10-13 | The Product Owner's spoken words were quoted throughout a public repository | writing rules: decisions in neutral words |
 | 2026-10-13 | Choosing a rectangle after a converted free shape left its fractional width and empty radius, and every field turned red | whole fields and one radius on choosing a shape; a test of that path |
 | 2026-10-13 | Nobody knew how long a story took nor how many tokens it used | metrics hooks, `target/release/metrics`, a session report at each session's end |
 | 2026-10-13 | Hooks and scripts run by Node.js lost their `.ts` extensions to the import autofix | a `node-run` lint scope |

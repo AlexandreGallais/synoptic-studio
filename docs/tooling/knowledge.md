@@ -141,7 +141,7 @@ On 2026-10-25 (EN-155) the rest of what the agent reads moved in by the import c
 | `docs/research/` | 40 notes, requests and pages | 40 | 0.13 s |
 | `docs/derivations/` | 25 derivations | 26 | 0.09 s |
 | `docs/references.md` | 595 sources | 596 | 0.13 s |
-| `docs/domain/`, as EN-156 rewrote it (`git archive` of its commit), the pages kept | 537 rules | 85 | 0.08 s |
+| `docs/domain/`, as EN-156 rewrote it (`git archive` of its commit), the pages removed by EN-157 | 537 rules | 85 | 0.08 s |
 | `docs/process/` and its retrospectives | 187 journal entries, 73 improvements, 10 critiques, 4 incidents, 5 retrospectives | 12 | 0.08 s |
 | `docs/guide/` | — | 45 | 0.10 s |
 | the memory folder of Claude Code for the project | 71 memories, private | 71 | 0.10 s |
@@ -155,7 +155,7 @@ The file then held 1,481 documents, 202 MB; `search corner radius clamp` answere
 - **`records-save`** no longer copies: it imports the main checkout's `.git/metrics/`, the transcripts changed since their last reading, the memories, and the library of another file while one is named, then writes the save's instant into `saves` and takes the snapshot. Its lines: `metrics: <n> rows`, `transcripts: …`, `memories: …`, `library: …`, each `missing` without its source.
 - **The library** opens the records file by default (`hooks::pages::library_file`): `AGENT_LIBRARY_FILE`, else `$AGENT_RECORDS_ROOT/<repo>.sqlite`, else the home's data folder.
 - **`epic-check`** reads the last save in `saves`.
-- **The citations**: the code cites a rule by its part's id, `@see RULE-shapes-2-corner-radius`, as `link-ids` writes a `@see` of `docs/domain/<page>.md#<anchor>`; the pages stay for the Product Owner, their links kept.
+- **The citations**: the code cites a rule by its part's id, `@see RULE-shapes-2-corner-radius`, as `link-ids` writes a `@see` of `docs/domain/<page>.md#<anchor>`; the pages were then removed (EN-157), the Product Owner's readable page being `docs/the-editor.md`.
 
 ### A document added
 

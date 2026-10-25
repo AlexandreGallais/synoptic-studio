@@ -12,7 +12,6 @@ import type { GuidedStep } from "../guided-steps";
  * @param document - page document
  * @param steps - steps of the guided test
  * @param update - redraws the page from the values typed
- * @see VAL-001
  */
 export function listenToGuide(
   document: Document,

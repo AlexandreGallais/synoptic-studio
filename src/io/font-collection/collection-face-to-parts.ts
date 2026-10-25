@@ -121,7 +121,7 @@ function placedTableToParts<Buffer extends ArrayBufferLike>(
  * (`parseTableRecords`), a view of the collection's bytes, never copied, followed by the zeros
  * that pad it to a four-byte boundary. Joined in that order, the parts are the face's file; a
  * table of 191 MB stays a view, where an array of its numbers would pass the longest array an
- * engine allows (US-052). Unlike Skia, which computes them again, the checksums and the search
+ * engine allows. Unlike Skia, which computes them again, the checksums and the search
  * fields are copied: each table is copied whole, so its checksum still holds; the search fields
  * are stale when a table is left out, and a parser derives them from `numTables`; the `head`
  * table's `checksumAdjustment` is copied as the collection holds it, "not used for collection

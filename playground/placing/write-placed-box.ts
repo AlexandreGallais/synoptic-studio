@@ -5,7 +5,7 @@ import { writeShapePosition } from "../position";
 import type { Point } from "../../src";
 
 /**
- * Types the box of a rectangle, a polygon or a round shape placed by a click (F35): 100 × 100,
+ * Types the box of a rectangle, a polygon or a round shape placed by a click: 100 × 100,
  * centered on the point on integers (`centeredPosition`).
  *
  * @kind procedure

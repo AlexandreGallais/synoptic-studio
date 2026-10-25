@@ -20,7 +20,7 @@ function readClickedHandle(event: MouseEvent): Element | undefined {
 }
 
 /**
- * Reads what a click on the drawing acts on (F37): in Points mode, a click on a vertex's handle
+ * Reads what a click on the drawing acts on: in Points mode, a click on a vertex's handle
  * selects the vertex, and a click with Shift adds a vertex or takes it out, the mode editing one
  * shape, so that neither changes the shapes selected; any other click acts on the shapes.
  *
@@ -39,9 +39,9 @@ function readClickTarget(document: Document, event: MouseEvent): "points" | "sha
 }
 
 /**
- * Listens to clicks on the drawing with the selector (F36): each press keeps the tool armed then
+ * Listens to clicks on the drawing with the selector: each press keeps the tool armed then
  * (`PRESSED_TOOLS`); a click whose press was made with the selector picks the shape under it, or
- * none on the empty drawing, Shift adding it or taking it out (`selectShapeAt`, F37), then
+ * none on the empty drawing, Shift adding it or taking it out (`selectShapeAt`), then
  * redraws; the click ending a drag or placing a shape with a tool picks nothing, though the
  * selector is armed again by then, nor does a click the points take (`readClickTarget`).
  *

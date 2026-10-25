@@ -9,7 +9,7 @@ import { readSelectionBox } from "./read-selection-box";
 const LINE = 1;
 
 /**
- * Creates the selection rectangle in the layer above the drawing (F37, US-086), while a drag with
+ * Creates the selection rectangle in the layer above the drawing, while a drag with
  * the Selector from an empty place has gone further than 3 pixels from the press
  * (`readRectangleDrag`): its area, a light tint of the outline's color, of class `selection-area`,
  * a fill; then the dashed line of the helps 1 screen pixel wide on its sides moved half a pixel

@@ -2,7 +2,7 @@ import type { Shape } from "./shape";
 import type { RegularPolygon } from "../regular-polygon";
 
 /**
- * Whether a shape is a regular polygon: the only shape with an anchor (F07).
+ * Whether a shape is a regular polygon: the only shape with an anchor.
  *
  * @kind domain
  * @param shape - a shape of the model

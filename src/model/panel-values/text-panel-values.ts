@@ -5,7 +5,7 @@ import type { Size } from "../../geometry";
 import type { Text } from "../text";
 
 /**
- * The position and size the panel shows for a text (F38), by its frame, its block or its box when
+ * The position and size the panel shows for a text, by its frame, its block or its box when
  * it sits in one, as under the pointer: the x and y of its straight box (`textStraightBox`), its
  * frame's width and height (`textFrame`).
  *

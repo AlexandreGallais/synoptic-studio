@@ -5,7 +5,7 @@ import type { History } from "./history";
 import type { HistoryState } from "./history-state";
 
 /**
- * The history once a finished action is recorded (F40): its drawing shared with the present
+ * The history once a finished action is recorded: its drawing shared with the present
  * (`sharedDrawing`); the same drawing makes no step, the present's selection replaced; another
  * pushes the present onto the past, the new state the present and nothing to come (ADR-0095,
  * decisions 1 and 3; `REF-REDUX-UNDO`).

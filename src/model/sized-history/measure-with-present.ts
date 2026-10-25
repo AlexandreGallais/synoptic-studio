@@ -21,7 +21,7 @@ function heldBytes<T extends WeakKey>(measure: HistoryMeasure, shapes: ReadonlyS
 }
 
 /**
- * The measure once the history's present changes its drawing (EN-147): each shape the present
+ * The measure once the history's present changes its drawing: each shape the present
  * leaves that a past or future state holds adds its text's length times 2, each it takes that one
  * holds takes it away (`heldBytes`); the counts unchanged, and a selection replaced alone changes
  * nothing (ADR-0097).

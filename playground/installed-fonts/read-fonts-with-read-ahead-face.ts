@@ -19,7 +19,7 @@ function readHeldFaces(faces: readonly FontFace[], face: FontFace): readonly Fon
 }
 
 /**
- * Reads the font families kept with a face read ahead (US-053): its metrics added without its file
+ * Reads the font families kept with a face read ahead: its metrics added without its file
  * (`fontsWithFace`), replacing a face of the same weight and style whose file is not held — one
  * of Inter's shipped faces —, never one whose file is held, imported or read when its family was
  * chosen, so that no file the page draws and embeds is dropped.

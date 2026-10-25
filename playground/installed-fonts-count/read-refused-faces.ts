@@ -3,7 +3,7 @@ import type { InstalledFont } from "../fonts";
 import type { InstalledFaceRead } from "../installed-fonts";
 
 /**
- * Reads the faces of a family refused at the first reading, each with its reason (US-062).
+ * Reads the faces of a family refused at the first reading, each with its reason.
  *
  * @kind procedure
  * @param fonts - the family's faces, as the browser lists them

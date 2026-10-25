@@ -8,7 +8,6 @@ import type { Alignment, Anchor } from "../../src";
  * @kind procedure
  * @param text - part of the button value, `min`, `mid` or `max` when the page is right
  * @returns `min`, `mid` or `max`
- * @see US-010
  */
 function readAlignment(text: string): Alignment {
   return ALIGNMENTS.find((alignment) => alignment === text) ?? "mid";
@@ -21,7 +20,6 @@ function readAlignment(text: string): Alignment {
  * @kind procedure
  * @param document - page document
  * @returns the anchor, centered when no button is checked
- * @see US-010
  */
 export function readAnchor(document: Document): Anchor {
   const buttons = document.querySelectorAll<HTMLInputElement>('input[name="anchor"]');

@@ -7,7 +7,7 @@ import { TEXT_RANGES } from "./text-ranges";
 import type { Text } from "./text";
 
 /**
- * Whether the options of a text's box (F14) can enter the model: its width and height, its
+ * Whether the options of a text's box can enter the model: its width and height, its
  * maximum number of lines and its line height, integers from 0 to 100 000; its background's color
  * of `#` and six lower-case hexadecimal digits and its opacity, an integer from 0 to 100; its
  * vertical alignment and wrap style among their values; its box, ellipsis, trim and background

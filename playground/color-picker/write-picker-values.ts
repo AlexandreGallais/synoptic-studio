@@ -10,7 +10,6 @@ import type { ColorModel, PickedColor } from "../../src";
  * @param document - page document
  * @param picked - the values the picker holds
  * @param model - the model chosen
- * @see US-035
  */
 export function writePickerValues(
   document: Document,

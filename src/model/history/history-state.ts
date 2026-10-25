@@ -1,5 +1,5 @@
 /**
- * A state of the drawing a history holds (F40): the shapes and the selection, as they were when
+ * A state of the drawing a history holds: the shapes and the selection, as they were when
  * the state was recorded, the selection replaced while it changes alone (ADR-0095).
  *
  * @template T - type of the shapes, or of what is kept of each

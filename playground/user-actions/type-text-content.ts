@@ -2,7 +2,7 @@ import { selectPageElement } from "./select-page-element";
 
 /**
  * Types the content of the Text tool's text, then leaves its Content field, as the designer does
- * after placing a text with no content of its own (US-075): its `input`, its `change`, then its
+ * after placing a text with no content of its own: its `input`, its `change`, then its
  * `focusout`.
  *
  * @kind procedure

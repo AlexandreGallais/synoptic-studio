@@ -6,7 +6,7 @@ import { wholeValueWithTyped } from "./whole-value-with-typed";
 import type { PanelEdit } from "./panel-edit";
 
 /**
- * A shape's value once a value is typed in X, Y, W or H (F38, AUD-046): its own plus the value
+ * A shape's value once a value is typed in X, Y, W or H: its own plus the value
  * typed with a sign, or the value typed without one, as Figma (`REF-FIGMA-ADJUST`), rounded when
  * a fraction is typed (`wholeValueWithTyped`); a width or height taken within 0 and the
  * interface's largest (Q20), so that `-50` on a width of 40 gives 0 and 200 000 gives 100 000.

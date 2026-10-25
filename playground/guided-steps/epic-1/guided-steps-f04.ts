@@ -23,7 +23,7 @@ const TRIANGLE = {
 /** The square of the F04 steps, a polygon of 4 corners in 100 × 100. */
 const SQUARE = { ...TRIANGLE, anchor: "mid mid", corners: 4 } as const;
 
-/** The steps of the US-018 and US-019 cards (F04, VAL-007), one at a time; each starts straight. */
+/** The steps of the US-018 and US-019 cards, one at a time; each starts straight. */
 export const GUIDED_STEPS_F04: readonly GuidedStep[] = [
   {
     explanation:

@@ -4,7 +4,7 @@ import type { Point } from "../../math";
 import type { ShapePlacement } from "../placement";
 
 /**
- * A shape or a text moved by a shift (F39): its position, the top-left of its box before it turns,
+ * A shape or a text moved by a shift: its position, the top-left of its box before it turns,
  * goes by it on each axis (`shapeMovedOnAxis`), its angle, size, points and every setting kept, so
  * that a move never changes the shape itself (ADR-0033, ADR-0035).
  *

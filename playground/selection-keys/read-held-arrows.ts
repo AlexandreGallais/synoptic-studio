@@ -1,7 +1,7 @@
 import { HELD_ARROWS } from "./held-arrows";
 
 /**
- * Reads the arrows held outside the panel's fields (`HELD_ARROWS`, US-081).
+ * Reads the arrows held outside the panel's fields (`HELD_ARROWS`).
  *
  * @kind procedure
  * @param document - page document

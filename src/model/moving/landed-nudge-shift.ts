@@ -19,7 +19,7 @@ function exactNudge(landed: number, nudge: number): number {
 }
 
 /**
- * How far an arrow moves the shapes selected (F46): their anchor moved by the arrow's nudge and
+ * How far an arrow moves the shapes selected: their anchor moved by the arrow's nudge and
  * landed on integers as a drag's release lands it (`landedShift`), so that a turned shape's
  * straight box at 6.65064 goes to 8 with Right; an anchor on integers but for a rounding error,
  * as a rounded rectangle's at 0 starts at −1.8 × 10⁻¹⁵, goes by the nudge exactly
