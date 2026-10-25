@@ -99,11 +99,15 @@ type JoiningLibrary = Readonly<Record<string, unknown>> & {
   readonly facePartsToFile: typeof facePartsToFile;
 };
 
-// The library's join of a face's parts, wrapped in a spy that a test can make refuse.
+// The library's join of a face's parts, wrapped in a spy that a test can make refuse. No object
+// spread: Angular's build lowers it to a helper the hoisted factory cannot reach yet.
 vi.mock("editor", async (importOriginal) => {
   const library = await importOriginal<JoiningLibrary>();
 
-  return { ...library, facePartsToFile: vi.fn(library.facePartsToFile) };
+  return Object.fromEntries([
+    ...Object.entries(library),
+    ["facePartsToFile", vi.fn(library.facePartsToFile)],
+  ]);
 });
 
 /**

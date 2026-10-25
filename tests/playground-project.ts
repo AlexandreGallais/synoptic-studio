@@ -15,6 +15,7 @@ const PLAYGROUND_PROJECT = new Set([
   "tsconfig.json",
   "tsconfig.app.json",
   "tsconfig.spec.json",
+  "vitest-base.config.ts",
   "src",
   "public",
   "node_modules",

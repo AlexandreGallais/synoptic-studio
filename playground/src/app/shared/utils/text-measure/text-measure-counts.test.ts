@@ -36,16 +36,17 @@ function runFrames(): void {
 }
 
 // The library's measuring functions, each wrapped in a spy that counts its calls from the page.
+// No object spread: Angular's build lowers it to a helper the hoisted factory cannot reach yet.
 vi.mock("editor", async (importOriginal) => {
   const library = await importOriginal<MeasuringFunctions>();
 
-  return {
-    ...library,
-    measuredTextDrawing: vi.fn(library.measuredTextDrawing),
-    textDrawing: vi.fn(library.textDrawing),
-    textFontMetrics: vi.fn(library.textFontMetrics),
-    textMeasure: vi.fn(library.textMeasure),
-  };
+  return Object.fromEntries([
+    ...Object.entries(library),
+    ["measuredTextDrawing", vi.fn(library.measuredTextDrawing)],
+    ["textDrawing", vi.fn(library.textDrawing)],
+    ["textFontMetrics", vi.fn(library.textFontMetrics)],
+    ["textMeasure", vi.fn(library.textMeasure)],
+  ]);
 });
 
 /**

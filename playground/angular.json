@@ -69,6 +69,12 @@
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true
+            },
+            "test": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "externalDependencies": ["editor"]
             }
           },
           "defaultConfiguration": "production"
@@ -84,6 +90,24 @@
             }
           },
           "defaultConfiguration": "development"
+        },
+        "test": {
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "buildTarget": "playground:build:test",
+            "include": ["**/*.test.ts", "../testing/**/*.test.ts"],
+            "isolate": true,
+            "runnerConfig": "vitest-base.config.ts",
+            "coverageInclude": ["src/app/**/*.ts"],
+            "coverageExclude": ["**/*.test.ts", "**/index.ts"],
+            "coverageReporters": ["text-summary"],
+            "coverageThresholds": {
+              "branches": 89,
+              "functions": 100,
+              "lines": 98,
+              "statements": 98
+            }
+          }
         }
       }
     }

@@ -20,11 +20,13 @@ const PLAYGROUND_MODE = "playground";
 const CI_REPORTERS = ["default", "github-actions", "junit"];
 
 /**
- * The playground's own npm project (ADR-0104): its Angular app, its packages, Angular's cache and
- * its build, which the root's tests and coverage leave to the playground's lanes (EN-159).
+ * The playground's own npm project (ADR-0104): its Angular app and the helpers of its tests, its
+ * packages, Angular's cache and its build, which the root's tests and coverage leave to the
+ * playground's lanes (EN-159, EN-160).
  */
 const SECOND_PROJECT = [
   "playground/src/**",
+  "playground/testing/**",
   "playground/node_modules/**",
   "playground/.angular/**",
   "playground/dist/**",
@@ -109,7 +111,7 @@ export default defineConfig(({ mode }) => {
     root: join(ROOT, "playground"),
     test: {
       coverage: {
-        exclude: ["**/index.ts", "**/*.test.ts", "playground/testing/**", ...SECOND_PROJECT],
+        exclude: ["**/index.ts", "**/*.test.ts", ...SECOND_PROJECT],
         include: ["src/**/*.ts", "playground/**/*.ts"],
         provider: "v8",
         reporter: ["text-summary"],
