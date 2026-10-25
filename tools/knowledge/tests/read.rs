@@ -404,12 +404,21 @@ fn f48_ac2_keeps_the_draft_written_last_of_two_merged_at_once() {
 }
 
 #[test]
-fn f48_ac2_reads_the_branches_git_lists_as_merged() {
+fn f48_ac2_reads_as_merged_develop_and_the_branches_a_merge_commit_brought_into_it() {
+    // The tips `git branch --merged develop` lists, then the parents of develop's merge commits:
+    // feature/f48-x's tip and chore/en-2's are a merge's second or third parent, chore/en-1's is
+    // reachable but no merge brought it, chore/en-3's is a first parent only, as a branch made at
+    // develop's tip without a commit of its own.
     assert_eq!(
-        merged_branches("develop\n(HEAD detached at 1a2b3c4)\n\n  feature/f48-x  \nchore/en-1\n"),
-        ["develop", "feature/f48-x", "chore/en-1"]
+        merged_branches(
+            "develop 1111\n(HEAD detached at 1a2b3c4) 3333\n\n  feature/f48-x 3333  \nchore/en-1 4444\nchore/en-2 6666\nchore/en-3 0000\n",
+            "0000 3333\n\n5555 7777 6666\n"
+        ),
+        ["develop", "feature/f48-x", "chore/en-2"]
     );
-    assert_eq!(merged_branches(""), Vec::<String>::new());
+    assert_eq!(merged_branches("", ""), Vec::<String>::new());
+    // develop is merged into itself, its rows the next sync's, whatever its merges.
+    assert_eq!(merged_branches("develop 1111\n", ""), ["develop"]);
 }
 
 #[test]
@@ -639,4 +648,62 @@ fn f48_ac2_shows_one_section_of_a_document_as_page_does() {
         Some("ADR-0081:5\n## Decision\n\nWAL.\n\n### Detail\n\nMore.\n")
     );
     assert_eq!(section_of("ADR-0081", text, "Missing"), None);
+}
+
+#[test]
+fn f48_ac2_searches_at_most_eight_sections() {
+    let file = place("limit");
+    let database = open_store(&file).unwrap();
+
+    // Nine stories of one section each holding the word: eight printed, as the library's search.
+    for n in 1..=9 {
+        add(
+            &database,
+            "story",
+            "develop",
+            &story(&format!("EN-91{n}"), "Busy", "Busy."),
+        );
+    }
+
+    let hits = search(&database, "develop", "busy", &Filters::default()).unwrap();
+
+    clean(&file);
+    assert_eq!(hits.len(), 8);
+}
+
+#[test]
+fn f48_ac2_searches_a_branchs_new_draft_and_the_others_its_merged_row_never_both() {
+    let file = place("redraft");
+    let database = open_store(&file).unwrap();
+
+    add(
+        &database,
+        "story",
+        "develop",
+        &story("EN-950", "First", "Busy first."),
+    );
+    write(&database, |transaction| {
+        mark_merged(transaction, &["develop".to_owned()])
+    })
+    .unwrap();
+    add(
+        &database,
+        "story",
+        "develop",
+        &story("EN-950", "Second", "Busy second."),
+    );
+
+    let snippets = |reader: &str| -> Vec<String> {
+        search(&database, reader, "busy", &Filters::default())
+            .unwrap()
+            .into_iter()
+            .map(|hit| hit.snippet.split_whitespace().collect::<Vec<_>>().join(" "))
+            .collect()
+    };
+    let (of_develop, of_other) = (snippets("develop"), snippets("chore/x"));
+
+    clean(&file);
+    // Each reads one row of the id: develop its new draft, another branch the merged row.
+    assert_eq!(of_develop, ["# Second [Busy] second."]);
+    assert_eq!(of_other, ["# First [Busy] first."]);
 }

@@ -10,13 +10,13 @@
 use std::fs;
 use std::os::unix::fs::symlink;
 use std::path::{Path, PathBuf};
-use std::process::{Command, Output};
+use std::process::{Command, Output, Stdio};
 use std::time::{Duration, SystemTime};
 
 use knowledge::add::{Origin, add_document};
 use knowledge::snapshot::{
     KEPT, NOT_SET, is_snapshot_name, is_temporary_name, refuse_synced, removed_snapshots,
-    snapshot_folder, snapshot_name, temporary_name,
+    snapshot_folder, snapshot_name, temporary_name, unless_gone,
 };
 use knowledge::store::{SCHEMA_VERSION, open_store, write};
 use rusqlite::Connection;
@@ -522,19 +522,21 @@ fn f48_ac3_refuses_to_open_a_working_file_inside_the_synced_folder() {
 
     fs::create_dir_all(&root).unwrap();
 
-    let run = |words: &[&str]| {
+    let run = |words: &[&str], root: &Path| {
         knowledge(&place)
             .args(words)
-            .env("AGENT_RECORDS_ROOT", &root)
+            .env("AGENT_RECORDS_ROOT", root)
             .env("AGENT_KNOWLEDGE_SNAPSHOT", &synced)
             .output()
             .unwrap()
     };
-    let opened = run(&["init"]);
-    let listed_rows = run(&["list"]);
-    let snapshot = run(&["snapshot"]);
-    // `path` opens nothing: it still prints where the file is.
-    let path = run(&["path"]);
+    let opened = run(&["init"], &root);
+    let listed_rows = run(&["list"], &root);
+    let snapshot = run(&["snapshot"], &root);
+    // `path` opens nothing, but would print a path inside the synced folder.
+    let path = run(&["path"], &root);
+    // A root mistyped inside the synced folder: refused before the message naming the root.
+    let mistyped = run(&["init"], &synced.join("mistyped"));
     // The project's folder itself synced.
     let project = knowledge(&place)
         .arg("init")
@@ -545,17 +547,68 @@ fn f48_ac3_refuses_to_open_a_working_file_inside_the_synced_folder() {
     let in_synced = listed(&synced);
 
     let _ = fs::remove_dir_all(&place);
-    for output in [opened, listed_rows, snapshot] {
-        let (_, stderr) = text(&output);
+    for output in [opened, listed_rows, snapshot, path, mistyped] {
+        let (stdout, stderr) = text(&output);
 
         assert_eq!(output.status.code(), Some(1));
         assert_eq!(stderr, format!("knowledge: {BELOW_THE_FOLDER}"));
         assert!(!stderr.contains(&place.display().to_string()));
+        assert_eq!(stdout, "");
     }
-    assert!(path.status.success());
     let project = project.unwrap();
     assert_eq!(project.status.code(), Some(1));
     assert_eq!(text(&project).1, format!("knowledge: {IN_THE_FOLDER}"));
     assert!(!made);
     assert_eq!(in_synced, ["records"]);
+}
+
+#[test]
+fn f48_ac3_takes_several_snapshots_at_once_each_pruning_without_failing() {
+    let place = place("at-once");
+    let synced = place.join("synced");
+
+    open_store(&working(&place)).unwrap();
+    // Nine older days: each snapshot finds the two oldest to remove, which another may remove
+    // first.
+    for day in 1..=9 {
+        written(&synced, &format!("records-2000-01-0{day}.sqlite"), 0);
+    }
+
+    let children: Vec<_> = (0..6)
+        .map(|_| {
+            knowledge(&place)
+                .arg("snapshot")
+                .env("AGENT_RECORDS_ROOT", place.join("records"))
+                .env("AGENT_KNOWLEDGE_SNAPSHOT", &synced)
+                .stdout(Stdio::piped())
+                .stderr(Stdio::piped())
+                .spawn()
+                .unwrap()
+        })
+        .collect();
+    let outputs: Vec<Output> = children
+        .into_iter()
+        .map(|child| child.wait_with_output().unwrap())
+        .collect();
+    let files = listed(&synced).len();
+
+    let _ = fs::remove_dir_all(&place);
+    for output in outputs {
+        assert!(output.status.success(), "{}", text(&output).1);
+    }
+    assert_eq!(files, 7);
+}
+
+#[test]
+fn f48_ac3_reads_a_file_already_gone_as_nothing_and_any_other_failure_as_one() {
+    let place = folder("gone");
+    let gone = unless_gone(fs::remove_file(place.join("removed by another snapshot")));
+    // A folder is no file to remove: that failure stays one.
+    let other = unless_gone(fs::remove_file(&place)).map_err(|error| error.kind());
+    let read = unless_gone(fs::read_dir(&place).map(Iterator::count));
+
+    let _ = fs::remove_dir_all(&place);
+    assert!(matches!(gone, Ok(None)), "{gone:?}");
+    assert!(other.is_err_and(|kind| kind != std::io::ErrorKind::NotFound));
+    assert!(matches!(read, Ok(Some(0))), "{read:?}");
 }

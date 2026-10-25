@@ -170,6 +170,7 @@ fn matching(
         "SELECT documents.id, sections.heading, snippet(sections_index, 1, '[', ']', '…', 24)
         FROM sections_index JOIN sections ON sections.id = sections_index.rowid
         JOIN documents ON documents.id = sections.document AND documents.branch = sections.branch
+          AND documents.state = sections.state
         WHERE sections_index MATCH :query AND {READ}
         ORDER BY bm25(sections_index) LIMIT :limit"
     ))?;
@@ -253,23 +254,29 @@ pub fn show(
     parameters.push((":id", &id));
 
     let mut statement = database.prepare_cached(&format!(
-        "SELECT documents.branch FROM documents WHERE documents.id = :id AND {READ}
+        "SELECT documents.branch, documents.state FROM documents
+        WHERE documents.id = :id AND {READ}
         ORDER BY CASE documents.state WHEN 'draft' THEN 0 WHEN 'merged' THEN 1 ELSE 2 END,
           documents.rowid DESC
         LIMIT 1"
     ))?;
-    let Some(branch) = statement
-        .query_map(parameters.as_slice(), |row| row.get::<_, String>(0))?
+    let Some((branch, state)) = statement
+        .query_map(parameters.as_slice(), |row| {
+            Ok((row.get::<_, String>(0)?, row.get::<_, String>(1)?))
+        })?
         .next()
         .transpose()?
     else {
         return Ok(None);
     };
     let mut texts = database.prepare_cached(
-        "SELECT text FROM sections WHERE document = ? AND branch = ? ORDER BY position",
+        "SELECT text FROM sections WHERE document = ? AND branch = ? AND state = ?
+        ORDER BY position",
     )?;
     let text = texts
-        .query_map([id, branch.as_str()], |row| row.get::<_, String>(0))?
+        .query_map([id, branch.as_str(), state.as_str()], |row| {
+            row.get::<_, String>(0)
+        })?
         .collect::<rusqlite::Result<String>>()?;
 
     Ok(Some(text))

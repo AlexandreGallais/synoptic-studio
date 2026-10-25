@@ -14,7 +14,7 @@ use std::path::Path;
 use rusqlite::{Connection, Transaction, TransactionBehavior};
 
 /// The number of the schema this binary writes, `PRAGMA user_version` of the file.
-pub const SCHEMA_VERSION: i64 = 2;
+pub const SCHEMA_VERSION: i64 = 3;
 
 /// The tables of schema 1 (research note 0035, Its tables). A document is any former file or
 /// record, cut into sections at its headings; `sections_index` indexes the sections without a copy
@@ -139,9 +139,83 @@ const SCHEMA_2: &str = "
   END;
 ";
 
+/// Schema 3 keys a document by its id, its branch and its state, so that a branch writes its new
+/// draft of an id while its merged row of it stays, read by every other branch until that draft is
+/// merged (AUD-050): the four tables rebuilt as schema 2 rebuilt them (`REF-SQLITE-ALTER-TABLE`,
+/// §8), each row and each section's rowid kept; the children of a document take its state, and
+/// follow it when it changes, by `ON UPDATE CASCADE` on their composite key
+/// (`REF-SQLITE-FOREIGN-KEYS`, §4.1, §4.3). No column is renamed nor dropped.
+const SCHEMA_3: &str = "
+  CREATE TABLE documents_3 (
+    id TEXT NOT NULL, kind TEXT NOT NULL, title TEXT NOT NULL, epic TEXT NOT NULL,
+    feature TEXT NOT NULL, status TEXT NOT NULL, date TEXT NOT NULL, branch TEXT NOT NULL,
+    state TEXT NOT NULL CHECK (state IN ('draft', 'merged', 'dropped')),
+    private INTEGER NOT NULL CHECK (private IN (0, 1)), path TEXT NOT NULL,
+    PRIMARY KEY (id, branch, state)
+  );
+  INSERT INTO documents_3 (id, kind, title, epic, feature, status, date, branch, state, private, path)
+    SELECT id, kind, title, epic, feature, status, date, branch, state, private, path
+    FROM documents ORDER BY rowid;
+  CREATE TABLE fields_3 (
+    document TEXT NOT NULL, branch TEXT NOT NULL, state TEXT NOT NULL, key TEXT NOT NULL,
+    value TEXT NOT NULL,
+    FOREIGN KEY (document, branch, state) REFERENCES documents (id, branch, state)
+      ON DELETE CASCADE ON UPDATE CASCADE
+  );
+  INSERT INTO fields_3 (document, branch, state, key, value)
+    SELECT fields.document, fields.branch, documents.state, fields.key, fields.value
+    FROM fields JOIN documents
+      ON documents.id = fields.document AND documents.branch = fields.branch
+    ORDER BY fields.rowid;
+  CREATE TABLE sections_3 (
+    id INTEGER PRIMARY KEY, document TEXT NOT NULL, branch TEXT NOT NULL, state TEXT NOT NULL,
+    position INTEGER NOT NULL, heading TEXT NOT NULL, text TEXT NOT NULL,
+    UNIQUE (document, branch, state, position),
+    FOREIGN KEY (document, branch, state) REFERENCES documents (id, branch, state)
+      ON DELETE CASCADE ON UPDATE CASCADE
+  );
+  INSERT INTO sections_3 (id, document, branch, state, position, heading, text)
+    SELECT sections.id, sections.document, sections.branch, documents.state, sections.position,
+      sections.heading, sections.text
+    FROM sections JOIN documents
+      ON documents.id = sections.document AND documents.branch = sections.branch;
+  CREATE TABLE links_3 (
+    \"from\" TEXT NOT NULL, branch TEXT NOT NULL, state TEXT NOT NULL, \"to\" TEXT NOT NULL,
+    PRIMARY KEY (\"from\", branch, state, \"to\"),
+    FOREIGN KEY (\"from\", branch, state) REFERENCES documents (id, branch, state)
+      ON DELETE CASCADE ON UPDATE CASCADE
+  );
+  INSERT INTO links_3 (\"from\", branch, state, \"to\")
+    SELECT links.\"from\", links.branch, documents.state, links.\"to\"
+    FROM links JOIN documents
+      ON documents.id = links.\"from\" AND documents.branch = links.branch;
+  DROP TABLE links;
+  DROP TABLE sections;
+  DROP TABLE fields;
+  DROP TABLE documents;
+  ALTER TABLE documents_3 RENAME TO documents;
+  ALTER TABLE fields_3 RENAME TO fields;
+  ALTER TABLE sections_3 RENAME TO sections;
+  ALTER TABLE links_3 RENAME TO links;
+  CREATE INDEX fields_by_key ON fields (key, value);
+  CREATE INDEX fields_by_document ON fields (document, branch, state);
+  CREATE TRIGGER sections_insert AFTER INSERT ON sections BEGIN
+    INSERT INTO sections_index (rowid, heading, text) VALUES (new.id, new.heading, new.text);
+  END;
+  CREATE TRIGGER sections_delete AFTER DELETE ON sections BEGIN
+    INSERT INTO sections_index (sections_index, rowid, heading, text)
+      VALUES ('delete', old.id, old.heading, old.text);
+  END;
+  CREATE TRIGGER sections_update AFTER UPDATE ON sections BEGIN
+    INSERT INTO sections_index (sections_index, rowid, heading, text)
+      VALUES ('delete', old.id, old.heading, old.text);
+    INSERT INTO sections_index (rowid, heading, text) VALUES (new.id, new.heading, new.text);
+  END;
+";
+
 /// The migrations, the one of index `n` bringing a file of schema `n` up to `n + 1`: a new file
 /// runs them all.
-pub const MIGRATIONS: [&str; 2] = [SCHEMA_1, SCHEMA_2];
+pub const MIGRATIONS: [&str; 3] = [SCHEMA_1, SCHEMA_2, SCHEMA_3];
 
 /// A failure of SQLite on the store's file, named by its path.
 fn on_file(path: &Path, error: &impl std::fmt::Display) -> String {
@@ -180,26 +254,40 @@ fn is_wal(database: &Connection) -> rusqlite::Result<bool> {
     Ok(mode.eq_ignore_ascii_case("wal"))
 }
 
-/// Switches the file to WAL, the mode the switch leaves it in.
-fn switch_to_wal(database: &Connection) -> rusqlite::Result<bool> {
-    let mode: String = database.query_row("PRAGMA journal_mode = WAL", [], |row| row.get(0))?;
-
-    Ok(mode.eq_ignore_ascii_case("wal"))
+/// Switches the file to WAL; the mode the switch leaves it in, `wal`, or the mode it kept when
+/// refused (`REF-SQLITE-PRAGMA`, `journal_mode`).
+fn switch_to_wal(database: &Connection) -> rusqlite::Result<String> {
+    database.query_row("PRAGMA journal_mode = WAL", [], |row| row.get(0))
 }
 
 /// Puts the file in WAL. The switch needs the file alone, and SQLite refuses it at once, without
 /// waiting, while another connection writes (`REF-SQLITE-WAL`, §9): that write is then waited for,
 /// by a `BEGIN IMMEDIATE` within the busy timeout, and the mode read again, the other connection
-/// having maybe switched the file itself, before one more switch, whose failure is the opening's.
+/// having maybe switched the file itself, before one more switch; that one failing, or leaving the
+/// file in another mode, fails the opening.
 fn in_wal(database: &Connection) -> rusqlite::Result<()> {
-    if is_wal(database)? || switch_to_wal(database).unwrap_or(false) {
+    if is_wal(database)?
+        || switch_to_wal(database).is_ok_and(|mode| mode.eq_ignore_ascii_case("wal"))
+    {
         return Ok(());
     }
     database.execute_batch("BEGIN IMMEDIATE; ROLLBACK;")?;
-    if !is_wal(database)? {
-        switch_to_wal(database)?;
+    if is_wal(database)? {
+        return Ok(());
     }
-    Ok(())
+
+    let mode = switch_to_wal(database)?;
+
+    if mode.eq_ignore_ascii_case("wal") {
+        Ok(())
+    } else {
+        Err(rusqlite::Error::SqliteFailure(
+            rusqlite::ffi::Error::new(rusqlite::ffi::SQLITE_ERROR),
+            Some(format!(
+                "the file stays in the {mode} journal mode, WAL refused"
+            )),
+        ))
+    }
 }
 
 /// Sets what a connection needs: WAL, set once on the file and kept by it (`REF-SQLITE-WAL`, §3.3),
@@ -217,7 +305,8 @@ fn prepare(database: &Connection) -> rusqlite::Result<()> {
 /// schema is opened as it is, for reading.
 ///
 /// # Errors
-/// When the folder cannot be made, or SQLite cannot open the file or create the tables.
+/// When the folder cannot be made, or SQLite cannot open the file, put it in WAL or create the
+/// tables.
 pub fn open_store(path: &Path) -> Result<Connection, String> {
     if let Some(folder) = path
         .parent()

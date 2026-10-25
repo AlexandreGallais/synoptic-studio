@@ -99,8 +99,8 @@ fn f48_ac1_keeps_the_index_of_the_sections_on_insert_update_and_delete() {
     add_document(&database, "EN-151").unwrap();
     database
         .execute(
-            "INSERT INTO sections (document, branch, position, heading, text)
-            VALUES (?, 'chore/en-151', 0, 'Tables', ?)",
+            "INSERT INTO sections (document, branch, state, position, heading, text)
+            VALUES (?, 'chore/en-151', 'draft', 0, 'Tables', ?)",
             params!["EN-151", "Two worktrees write at once."],
         )
         .unwrap();
@@ -182,9 +182,9 @@ fn f48_ac1_sets_user_version_to_the_schemas_number_and_keeps_the_rows_when_opene
         .unwrap();
 
     clean(&file);
-    assert_eq!(SCHEMA_VERSION, 2);
-    assert_eq!(version, 2);
-    assert_eq!(pragma, 2);
+    assert_eq!(SCHEMA_VERSION, 3);
+    assert_eq!(version, 3);
+    assert_eq!(pragma, 3);
     assert_eq!(rows, 1);
 }
 
@@ -206,7 +206,7 @@ fn f48_ac1_makes_one_schema_when_four_connections_open_a_new_file_at_once() {
         .collect();
 
     clean(&file);
-    assert_eq!(opened, [Ok(2), Ok(2), Ok(2), Ok(2)]);
+    assert_eq!(opened, [Ok(3), Ok(3), Ok(3), Ok(3)]);
 }
 
 #[test]
@@ -301,11 +301,11 @@ fn f48_ac1_refuses_to_write_to_a_newer_file_and_still_reads_it() {
         .unwrap();
 
     clean(&file);
-    assert_eq!(version, 3);
+    assert_eq!(version, 4);
     assert_eq!(
         refused,
         Err(
-            "the file's schema is 3, newer than this binary's 2: rebuild the tools from your base, target/release/git-sequences sync"
+            "the file's schema is 4, newer than this binary's 3: rebuild the tools from your base, target/release/git-sequences sync"
                 .to_owned()
         )
     );
@@ -355,7 +355,7 @@ fn count(database: &Connection, query: &str) -> i64 {
 }
 
 #[test]
-fn f48_ac1_brings_a_schema_1_file_up_to_2_its_rows_kept_with_their_branch() {
+fn f48_ac1_brings_a_schema_1_file_up_to_3_its_rows_kept_with_their_branch_and_state() {
     let file = place("from-1");
 
     schema_1_file(&file);
@@ -363,10 +363,10 @@ fn f48_ac1_brings_a_schema_1_file_up_to_2_its_rows_kept_with_their_branch() {
     let database = open_store(&file).unwrap();
     let version = schema_version(&database).unwrap();
     let kept = [
-        "SELECT count(*) FROM documents WHERE id = 'EN-151' AND branch = 'chore/en-151'",
-        "SELECT count(*) FROM fields WHERE document = 'EN-151' AND branch = 'chore/en-151'",
-        "SELECT count(*) FROM sections WHERE document = 'EN-151' AND branch = 'chore/en-151'",
-        "SELECT count(*) FROM links WHERE \"from\" = 'EN-151' AND branch = 'chore/en-151'",
+        "SELECT count(*) FROM documents WHERE id = 'EN-151' AND branch = 'chore/en-151' AND state = 'draft'",
+        "SELECT count(*) FROM fields WHERE document = 'EN-151' AND branch = 'chore/en-151' AND state = 'draft'",
+        "SELECT count(*) FROM sections WHERE document = 'EN-151' AND branch = 'chore/en-151' AND state = 'draft'",
+        "SELECT count(*) FROM links WHERE \"from\" = 'EN-151' AND branch = 'chore/en-151' AND state = 'draft'",
     ]
     .map(|query| count(&database, query));
     // The index still finds the section, whose rowid the rebuild kept.
@@ -374,7 +374,7 @@ fn f48_ac1_brings_a_schema_1_file_up_to_2_its_rows_kept_with_their_branch() {
     let triggers = names(&database, "trigger");
 
     clean(&file);
-    assert_eq!(version, 2);
+    assert_eq!(version, 3);
     assert_eq!(kept, [1, 1, 1, 1]);
     assert_eq!(indexed, ["EN-151"]);
     assert_eq!(
@@ -384,36 +384,59 @@ fn f48_ac1_brings_a_schema_1_file_up_to_2_its_rows_kept_with_their_branch() {
 }
 
 #[test]
-fn f48_ac1_keys_a_document_by_its_id_and_its_branch_from_schema_2() {
+fn f48_ac1_keys_a_document_by_its_id_its_branch_and_its_state_from_schema_3() {
     let file = place("key");
 
     schema_1_file(&file);
 
     let database = open_store(&file).unwrap();
-    // The same id on another branch is a row of its own; on the same branch, refused.
-    let other_branch = database.execute(
-        "INSERT INTO documents (id, kind, title, epic, feature, status, date, branch, state, private, path)
-        VALUES ('EN-151', 'story', 'Changed', '', '', '', '', 'chore/en-152', 'draft', 0, '')",
-        [],
-    );
-    let same_branch = add_document(&database, "EN-151");
+    // The same id on another branch is a row of its own, and so is its merged row on the same
+    // branch; the same id, branch and state, refused.
+    let row = |branch: &str, state: &str| {
+        database.execute(
+            "INSERT INTO documents (id, kind, title, epic, feature, status, date, branch, state, private, path)
+            VALUES ('EN-151', 'story', 'Changed', '', '', '', '', ?, ?, 0, '')",
+            [branch, state],
+        )
+    };
+    let other_branch = row("chore/en-152", "draft");
+    let merged = row("chore/en-151", "merged");
+    let same = add_document(&database, "EN-151");
     let section_of_another = database.execute(
-        "INSERT INTO sections (document, branch, position, heading, text)
-        VALUES ('EN-151', 'chore/none', 0, 'A', 'b')",
+        "INSERT INTO sections (document, branch, state, position, heading, text)
+        VALUES ('EN-151', 'chore/en-152', 'merged', 0, 'A', 'b')",
         [],
     );
 
-    // A document deleted takes its own branch's rows with it, never the other branch's.
+    // A document whose state changes takes its rows with it, the index still finding them.
     database
         .execute(
-            "INSERT INTO sections (document, branch, position, heading, text)
-            VALUES ('EN-151', 'chore/en-152', 0, 'Tables', 'Changed.')",
+            "UPDATE documents SET state = 'dropped'
+            WHERE id = 'EN-151' AND branch = 'chore/en-151' AND state = 'draft'",
+            [],
+        )
+        .unwrap();
+
+    let moved = [
+        "SELECT count(*) FROM fields WHERE state = 'dropped'",
+        "SELECT count(*) FROM sections WHERE state = 'dropped'",
+        "SELECT count(*) FROM links WHERE state = 'dropped'",
+    ]
+    .map(|query| count(&database, query));
+    let indexed = found(&database, "worktrees");
+
+    // A document deleted takes its own rows with it, never another branch's nor state's.
+    database
+        .execute(
+            "INSERT INTO sections (document, branch, state, position, heading, text)
+            VALUES ('EN-151', 'chore/en-152', 'draft', 0, 'Tables', 'Changed.')",
             [],
         )
         .unwrap();
     database
         .execute(
-            "DELETE FROM documents WHERE id = 'EN-151' AND branch = 'chore/en-151'",
+            "DELETE FROM documents
+            WHERE id = 'EN-151' AND branch = 'chore/en-151' AND state = 'dropped'",
             [],
         )
         .unwrap();
@@ -427,11 +450,25 @@ fn f48_ac1_keys_a_document_by_its_id_and_its_branch_from_schema_2() {
     .map(|query| count(&database, query));
 
     clean(&file);
-    assert_eq!(other_branch, Ok(1));
-    assert!(same_branch.is_err());
-    // A section of a document no branch holds breaks the foreign key.
+    assert_eq!((other_branch, merged), (Ok(1), Ok(1)));
+    assert!(same.is_err());
+    // A section of a document no row holds breaks the foreign key.
     assert!(section_of_another.is_err());
-    assert_eq!(left, [1, 0, 1, 0]);
+    assert_eq!(moved, [1, 1, 1]);
+    assert_eq!(indexed, ["EN-151"]);
+    assert_eq!(left, [2, 0, 1, 0]);
+}
+
+#[test]
+fn f48_ac1_fails_the_opening_when_the_file_cannot_be_put_in_wal() {
+    // An in-memory database has no WAL: each switch returns its mode, `memory`, unchanged
+    // (`REF-SQLITE-PRAGMA`, journal_mode), the second one's failure the opening's.
+    let opened = open_store(std::path::Path::new(":memory:")).map(|_| ());
+
+    assert_eq!(
+        opened,
+        Err(":memory:: the file stays in the memory journal mode, WAL refused".to_owned())
+    );
 }
 
 #[test]

@@ -53,8 +53,9 @@ pub fn next_id(database: &Connection, kind: &str, date: &str) -> rusqlite::Resul
     Ok(format!("{prefix}{}", highest + 1))
 }
 
-/// Writes a text as a `draft` of its branch, replacing that branch's row of the same id, and
-/// returns its id. Its fields, its sections and its citations go to their tables, its own id left
+/// Writes a text as a `draft` of its branch, replacing that branch's draft of the same id, and
+/// returns its id: its merged row of the id stays, read by the other branches until the new draft
+/// is merged. Its fields, its sections and its citations go to their tables, its own id left
 /// out of its citations.
 ///
 /// # Errors
@@ -72,7 +73,10 @@ pub fn add_document(
     };
     let key = params![id, origin.branch];
 
-    database.execute("DELETE FROM documents WHERE id = ? AND branch = ?", key)?;
+    database.execute(
+        "DELETE FROM documents WHERE id = ? AND branch = ? AND state = 'draft'",
+        key,
+    )?;
     database.execute(
         "INSERT INTO documents (id, kind, title, epic, feature, status, date, branch, state, private, path)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'draft', 0, ?)",
@@ -90,19 +94,20 @@ pub fn add_document(
     )?;
     for (key, value) in &document.fields {
         database.execute(
-            "INSERT INTO fields (document, branch, key, value) VALUES (?, ?, ?, ?)",
+            "INSERT INTO fields (document, branch, state, key, value) VALUES (?, ?, 'draft', ?, ?)",
             params![id, origin.branch, key, value],
         )?;
     }
     for (position, section) in (0_i64..).zip(&document.sections) {
         database.execute(
-            "INSERT INTO sections (document, branch, position, heading, text) VALUES (?, ?, ?, ?, ?)",
+            "INSERT INTO sections (document, branch, state, position, heading, text)
+            VALUES (?, ?, 'draft', ?, ?, ?)",
             params![id, origin.branch, position, section.heading, section.text],
         )?;
     }
     for cited in &document.citations {
         database.execute(
-            "INSERT INTO links (\"from\", branch, \"to\") VALUES (?, ?, ?)",
+            "INSERT INTO links (\"from\", branch, state, \"to\") VALUES (?, ?, 'draft', ?)",
             params![id, origin.branch, cited],
         )?;
     }

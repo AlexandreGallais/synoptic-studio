@@ -50,15 +50,32 @@ fn git(cwd: &Path, words: &[&str]) {
     assert!(status.success(), "git {words:?}");
 }
 
-/// The binary, run in a folder with `HOME` in the place and no records root inherited.
+/// The binary, run in a folder with `HOME` in the place and neither the records root nor the
+/// synced folder inherited.
 fn knowledge(place: &Path, cwd: &Path) -> Command {
     let mut command = test_support::command(env!("CARGO_BIN_EXE_knowledge"));
 
     command
         .current_dir(cwd)
         .env("HOME", place.join("home"))
-        .env_remove("AGENT_RECORDS_ROOT");
+        .env_remove("AGENT_RECORDS_ROOT")
+        .env_remove("AGENT_KNOWLEDGE_SNAPSHOT");
     command
+}
+
+#[test]
+fn f48_ac4_runs_the_binary_without_the_real_records_root_nor_the_real_synced_folder() {
+    let place = place("variables");
+    let command = knowledge(&place, &place.join("repo"));
+    let removed: Vec<String> = command
+        .get_envs()
+        .filter(|(_, value)| value.is_none())
+        .map(|(name, _)| name.to_string_lossy().into_owned())
+        .filter(|name| name.starts_with("AGENT_"))
+        .collect();
+
+    let _ = fs::remove_dir_all(&place);
+    assert_eq!(removed, ["AGENT_KNOWLEDGE_SNAPSHOT", "AGENT_RECORDS_ROOT"]);
 }
 
 /// The output's standard output and error, as text.
@@ -84,7 +101,7 @@ fn f48_ac1_makes_records_sqlite_in_the_folder_named_after_origin() {
     let _ = fs::remove_dir_all(&place);
     assert!(output.status.success());
     assert!(made);
-    assert_eq!(stdout, format!("{}, schema 2", file.display()));
+    assert_eq!(stdout, format!("{}, schema 3", file.display()));
 }
 
 #[test]
@@ -203,7 +220,7 @@ fn f48_ac1_reads_a_newer_file_and_says_it_is_read_only() {
     assert_eq!(
         text(&output).0,
         format!(
-            "{}, schema 3, newer than this binary's 2: read only",
+            "{}, schema 4, newer than this binary's 3: read only",
             file.display()
         )
     );
@@ -381,14 +398,41 @@ fn f48_ac2_searches_lists_and_shows_a_section() {
     );
 }
 
+/// Merges a branch into the one checked out by a merge commit, as a pull request does.
+fn merge(repo: &Path, branch: &str) {
+    git(
+        repo,
+        &[
+            "-c",
+            "user.name=Test",
+            "-c",
+            "user.email=test@example.org",
+            "-c",
+            "commit.gpgsign=false",
+            "merge",
+            "-q",
+            "--no-ff",
+            "-m",
+            "Merge",
+            branch,
+        ],
+    );
+}
+
 #[test]
 fn f48_ac2_marks_merged_the_rows_of_the_branches_merged_into_develop_and_no_other() {
     let place = on_branch("sync", "feature/a");
     let repo = place.join("repo");
 
-    // feature/a's tip is develop's: merged. chore/c is one commit ahead: not merged.
+    // feature/a's tip is develop's, no commit of its own: not merged. chore/c is one commit
+    // ahead: not merged. chore/m's commit is merged into develop by a merge commit: merged.
     git(&repo, &["checkout", "-q", "-b", "chore/c"]);
     commit(&repo, "ahead");
+    git(&repo, &["checkout", "-q", "-b", "chore/m", "develop"]);
+    commit(&repo, "merged");
+    git(&repo, &["checkout", "-q", "develop"]);
+    merge(&repo, "chore/m");
+    git(&repo, &["checkout", "-q", "chore/c"]);
 
     let database = open_store(&records(&place)).unwrap();
 
@@ -396,6 +440,7 @@ fn f48_ac2_marks_merged_the_rows_of_the_branches_merged_into_develop_and_no_othe
         ("EN-901", "feature/a"),
         ("EN-902", "develop"),
         ("EN-903", "chore/c"),
+        ("EN-905", "chore/m"),
     ] {
         write(&database, |transaction| {
             add_document(
@@ -433,26 +478,75 @@ fn f48_ac2_marks_merged_the_rows_of_the_branches_merged_into_develop_and_no_othe
     let one = run(&place, &["sync"]);
 
     let _ = fs::remove_dir_all(&place);
+    // develop's row and chore/m's; feature/a, at develop's start, merged nothing of its own.
     assert_eq!(
         text(&synced).0,
         "2 rows marked merged, of the 2 branches merged into develop"
     );
-    assert_eq!(states, ["EN-901 merged", "EN-902 merged", "EN-903 draft"]);
-    // The row added on develop; develop, feature/a and chore/d, made from develop, merged.
+    assert_eq!(
+        states,
+        [
+            "EN-901 draft",
+            "EN-902 merged",
+            "EN-903 draft",
+            "EN-905 merged"
+        ]
+    );
+    // The row added on develop; develop and chore/m merged, never chore/d, made from develop.
     assert_eq!(
         text(&one).0,
-        "1 row marked merged, of the 3 branches merged into develop"
+        "1 row marked merged, of the 2 branches merged into develop"
     );
     assert_eq!(text(&of_c).0.lines().count(), 3);
-    // chore/d reads the merged rows, never chore/c's draft.
+    // chore/d reads the merged rows, never chore/c's nor feature/a's draft.
     assert_eq!(
         text(&of_d)
             .0
             .lines()
             .map(|line| line.split(' ').next().unwrap_or_default())
             .collect::<Vec<_>>(),
-        ["EN-901", "EN-902"]
+        ["EN-902", "EN-905"]
     );
+}
+
+#[test]
+fn f48_ac2_keeps_a_merged_row_read_by_every_branch_while_its_branch_writes_a_new_draft_of_it() {
+    let place = on_branch("redraft", "story/b");
+    let repo = place.join("repo");
+    let adr = |title: &str| format!("---\nid: ADR-0900\n---\n# {title}\n");
+
+    git(&repo, &["checkout", "-q", "develop"]);
+    fs::write(repo.join("adr.md"), adr("First")).unwrap();
+    run(&place, &["add", "adr", "adr.md"]);
+    run(&place, &["sync"]);
+    fs::write(repo.join("adr.md"), adr("Second")).unwrap();
+    run(&place, &["add", "adr", "adr.md"]);
+
+    let on_develop = run(&place, &["show", "ADR-0900"]);
+
+    git(&repo, &["checkout", "-q", "story/b"]);
+
+    let before = run(&place, &["show", "ADR-0900"]);
+
+    git(&repo, &["checkout", "-q", "develop"]);
+    run(&place, &["sync"]);
+    git(&repo, &["checkout", "-q", "story/b"]);
+
+    let after = run(&place, &["show", "ADR-0900"]);
+    let rows: i64 = open_store(&records(&place))
+        .unwrap()
+        .query_row("SELECT count(*) FROM documents", [], |row| row.get(0))
+        .unwrap();
+
+    let _ = fs::remove_dir_all(&place);
+    // develop reads its new draft; story/b the merged row until that draft is merged.
+    assert_eq!(text(&on_develop).0, "---\nid: ADR-0900\n---\n# Second");
+    assert_eq!(
+        (before.status.code(), text(&before).0),
+        (Some(0), "---\nid: ADR-0900\n---\n# First".to_owned())
+    );
+    assert_eq!(text(&after).0, "---\nid: ADR-0900\n---\n# Second");
+    assert_eq!(rows, 1);
 }
 
 #[test]
@@ -483,6 +577,7 @@ fn f48_ac2_fails_aloud_on_a_wrong_add_or_an_id_it_reads_nowhere() {
         run(&place, &["search"]),
         run(&place, &["search", "--kind", "story"]),
         run(&place, &["show"]),
+        run(&place, &["show", "EN-900", "Tasks", "more"]),
     ]
     .map(|output| (output.status.code(), text(&output).1));
 
@@ -525,7 +620,7 @@ fn f48_ac2_fails_aloud_on_a_wrong_add_or_an_id_it_reads_nowhere() {
     );
     assert_eq!(
         usages,
-        [(); 4].map(|()| (Some(1), format!("knowledge: {USAGE}")))
+        [(); 5].map(|()| (Some(1), format!("knowledge: {USAGE}")))
     );
     assert_eq!(
         (detached.status.code(), text(&detached).1),
@@ -541,9 +636,32 @@ fn f48_ac2_fails_aloud_on_a_wrong_add_or_an_id_it_reads_nowhere() {
     assert_eq!(no_develop.status.code(), Some(1));
     assert!(
         text(&no_develop).1.ends_with(
-            "knowledge: git branch --merged develop --format=%(refname:short) failed in ."
+            "knowledge: git branch --merged develop --format=%(refname:short) %(objectname) failed in ."
         ),
         "{}",
         text(&no_develop).1
+    );
+}
+
+#[test]
+fn f48_ac1_names_the_file_after_the_main_checkouts_folder_without_a_remote() {
+    let place = place("no-remote");
+    let repo = place.join("repo");
+
+    git(&repo, &["remote", "remove", "origin"]);
+
+    let output = knowledge(&place, &repo)
+        .arg("path")
+        .env("AGENT_RECORDS_ROOT", place.join("records"))
+        .output()
+        .unwrap();
+
+    let _ = fs::remove_dir_all(&place);
+    assert_eq!(
+        text(&output).0,
+        place
+            .join("records/repo/records.sqlite")
+            .display()
+            .to_string()
     );
 }

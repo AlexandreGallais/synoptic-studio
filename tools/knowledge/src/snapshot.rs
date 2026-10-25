@@ -165,8 +165,21 @@ fn hidden(error: &impl Display, folder: &Path) -> String {
         })
 }
 
-/// Removes the snapshots beyond `KEPT` and the temporary files older than `LEFTOVER_AGE`; the
-/// snapshots kept and removed.
+/// A result of the file system, a file already gone read as nothing: another snapshot pruning the
+/// same folder at once removed it first.
+///
+/// # Errors
+/// Any failure but a file not found.
+pub fn unless_gone<T>(result: io::Result<T>) -> io::Result<Option<T>> {
+    match result {
+        Ok(value) => Ok(Some(value)),
+        Err(error) if error.kind() == io::ErrorKind::NotFound => Ok(None),
+        Err(error) => Err(error),
+    }
+}
+
+/// Removes the snapshots beyond `KEPT` and the temporary files older than `LEFTOVER_AGE`, a file
+/// another snapshot removed first left alone; the snapshots kept and removed.
 fn prune(folder: &Path) -> io::Result<(usize, usize)> {
     let mut names = Vec::new();
 
@@ -174,14 +187,12 @@ fn prune(folder: &Path) -> io::Result<(usize, usize)> {
         let entry = entry?;
         let name = entry.file_name().to_string_lossy().into_owned();
 
-        if is_temporary_name(&name)
-            && entry
-                .metadata()?
-                .modified()?
-                .elapsed()
-                .is_ok_and(|age| age > LEFTOVER_AGE)
-        {
-            fs::remove_file(entry.path())?;
+        if is_temporary_name(&name) {
+            let modified = unless_gone(entry.metadata().and_then(|metadata| metadata.modified()))?;
+
+            if modified.is_some_and(|time| time.elapsed().is_ok_and(|age| age > LEFTOVER_AGE)) {
+                unless_gone(fs::remove_file(entry.path()))?;
+            }
         } else if is_snapshot_name(&name) {
             names.push(name);
         }
@@ -190,7 +201,7 @@ fn prune(folder: &Path) -> io::Result<(usize, usize)> {
     let removed = removed_snapshots(&names, KEPT);
 
     for name in &removed {
-        fs::remove_file(folder.join(name))?;
+        unless_gone(fs::remove_file(folder.join(name)))?;
     }
     Ok((names.len() - removed.len(), removed.len()))
 }

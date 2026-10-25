@@ -1,19 +1,38 @@
 //! The states of the branches' rows from Git (research note 0035, The rows of a branch): the
-//! `draft` rows of a branch merged into `develop`, as `git branch --merged` lists them
-//! (`REF-GIT-BRANCH`), become `merged`, each replacing the merged row of its id; of two drafts of
-//! one id merged at once, the one written last holds.
+//! `draft` rows of a branch merged into `develop` become `merged`, each replacing the merged row of
+//! its id; of two drafts of one id merged at once, the one written last holds. A branch is merged
+//! when a merge commit brought its tip into `develop`, as every merge of the project is one
+//! (`docs/tooling/git-workflow.md`): its tip reachable from `develop` (`git branch --merged`,
+//! `REF-GIT-BRANCH`) is not enough, a branch made at `develop`'s tip without a commit of its own
+//! being listed too (AUD-050). `develop`'s own rows are merged by each `sync`.
+
+use std::collections::HashSet;
 
 use rusqlite::Connection;
 
-/// The branches of `git branch --merged develop --format=%(refname:short)`'s output, one a line,
-/// the line of a detached `HEAD`, in parentheses, and the empty ones left out.
+/// The branch every other is merged into, whose own drafts each `sync` marks merged.
+pub const TRUNK: &str = "develop";
+
+/// The branches merged into `develop`, given the output of `git branch --merged develop
+/// --format=%(refname:short) %(objectname)`, a branch and its tip a line (`REF-GIT-BRANCH`,
+/// `REF-GIT-FOR-EACH-REF`), and that of `git log --merges --format=%P develop`, the parents of each
+/// of its merge commits a line (`REF-GIT-LOG`): `develop` itself, and each branch whose tip is a
+/// merge commit's parent other than the first, the branch it merged in (`REF-GIT-REV-PARSE`,
+/// `<rev>^-`). The line of a detached `HEAD`, in parentheses, and the empty ones are left out.
 #[must_use]
-pub fn merged_branches(output: &str) -> Vec<String> {
-    output
+pub fn merged_branches(listed: &str, parents: &str) -> Vec<String> {
+    let merged_in: HashSet<&str> = parents
+        .lines()
+        .flat_map(|line| line.split_whitespace().skip(1))
+        .collect();
+
+    listed
         .lines()
         .map(str::trim)
         .filter(|line| !line.is_empty() && !line.starts_with('('))
-        .map(str::to_owned)
+        .filter_map(|line| line.rsplit_once(' '))
+        .filter(|(branch, tip)| *branch == TRUNK || merged_in.contains(tip.trim()))
+        .map(|(branch, _)| branch.trim().to_owned())
         .collect()
 }
 
