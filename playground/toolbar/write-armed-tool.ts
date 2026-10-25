@@ -9,7 +9,7 @@ import { TOOLS } from "./tools";
  * @kind procedure
  * @param document - page document
  * @param tool - `selector`, `rectangle`, `polygon`, `round` or `text`
- * @see docs/backlog/stories/E02-F35-US-063-a-click-adds-a-shape.md
+ * @see US-063
  */
 export function writeArmedTool(document: Document, tool: string): void {
   for (const [id, kind] of TOOLS) {

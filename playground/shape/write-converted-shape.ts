@@ -17,7 +17,7 @@ import type { FreeShape, RegularPolygon, RoundShape } from "../../src";
  * @kind procedure
  * @param document - page document
  * @returns that shape, `undefined` for a free shape or a refused one
- * @see docs/backlog/stories/E01-F08-US-014-convert-and-move.md
+ * @see US-014
  */
 function readConvertibleShape(document: Document): RegularPolygon | RoundShape | undefined {
   const { isValid, model } = readShape(document);
@@ -32,7 +32,7 @@ function readConvertibleShape(document: Document): RegularPolygon | RoundShape |
  * @kind procedure
  * @param shape - valid shape of width and height > 0
  * @returns the free shape drawing it
- * @see docs/backlog/stories/E14-F10-US-030-convert-round-shape.md
+ * @see US-030
  */
 function readFreeShapeOf(shape: RegularPolygon | RoundShape): FreeShape {
   return isRoundShape(shape) ? roundShapeAsFreeShape(shape) : regularPolygonAsFreeShape(shape);
@@ -45,7 +45,7 @@ function readFreeShapeOf(shape: RegularPolygon | RoundShape): FreeShape {
  *
  * @kind procedure
  * @param document - page document
- * @see docs/backlog/stories/E14-F10-US-030-convert-round-shape.md
+ * @see US-030
  */
 export function writeConvertedShape(document: Document): void {
   const shape = readConvertibleShape(document);

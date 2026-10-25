@@ -24,7 +24,7 @@ Nothing looks different in the playground, and that is the point: the rectangle 
 
 ## Try it
 
-Run `npm run dev` and open `http://localhost:5173/?guide=epic&step=34`: the **Guided test** opens on the first step of F09 (steps 34 to 38). The same steps are in the test card of [US-017](../backlog/stories/E01-F09-US-017-rectangle-as-free-shape.md#product-owner-test).
+Run `npm run dev` and open `http://localhost:5173/?guide=epic&step=34`: the **Guided test** opens on the first step of F09 (steps 34 to 38). The same steps are in the test card of US-017.
 
 ## Limits
 

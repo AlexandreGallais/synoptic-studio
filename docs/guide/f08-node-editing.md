@@ -37,7 +37,7 @@ A rectangle can be edited straight away. A regular polygon is first turned into 
 
 ## Try it
 
-Run `npm run dev` and open `http://localhost:5173/?guide=epic&step=39`: the **Guided test** opens on the first step of F08 (steps 39 to 46). **Next** types the shape for you; the clicks on the points are yours, as each step says. The same steps are in the test cards of [US-014](../backlog/stories/E01-F08-US-014-convert-and-move.md#product-owner-test), [US-015](../backlog/stories/E01-F08-US-015-add-middle-point.md#product-owner-test) and [US-016](../backlog/stories/E01-F08-US-016-delete-points.md#product-owner-test).
+Run `npm run dev` and open `http://localhost:5173/?guide=epic&step=39`: the **Guided test** opens on the first step of F08 (steps 39 to 46). **Next** types the shape for you; the clicks on the points are yours, as each step says. The same steps are in the test cards of US-014, US-015 and US-016.
 
 ## Limits
 

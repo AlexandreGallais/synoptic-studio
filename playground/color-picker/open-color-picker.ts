@@ -17,7 +17,7 @@ const GREY_HUE = 0;
  * @kind procedure
  * @param document - page document
  * @param swatch - the swatch clicked
- * @see docs/backlog/stories/E15-F16-US-035-pick-a-color.md
+ * @see US-035
  */
 export function openColorPicker(document: Document, swatch: HTMLElement): void {
   const picker = selectElement(document, "color-picker");

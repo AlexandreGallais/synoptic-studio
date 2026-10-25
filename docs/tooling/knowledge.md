@@ -1,6 +1,6 @@
 # The project's records database
 
-The project's records in one SQLite file, shared by every branch and worktree and kept outside Git (E49, [research note 0035](../research/notes/0035-e49-the-knowledge-database.md)): the knowledge tables first (EN-151); the library's store, the metrics, the saves and the archives join it with the move into the database, the raw transcripts staying files it indexes.
+The project's records in one SQLite file, shared by every branch and worktree and kept outside Git (E49, [research note 0035](../research/notes/0035-e49-the-knowledge-database.md)): the knowledge tables first (EN-151), then the backlog — its epics, features, stories, tasks and criteria — in tables of its own, read and written by free SQL (EN-154); the library's store, the metrics, the saves and the archives join it with the move into the database, the raw transcripts staying files it indexes. The database is the agent's working store, shaped for how it searches rather than as human documents: a table or an index is added when a question needs one, registered with its purpose.
 
 ## Where it lives
 
@@ -10,7 +10,7 @@ The project's records in one SQLite file, shared by every branch and worktree an
 
 ## Its tables
 
-Schema 3, made in one `BEGIN IMMEDIATE` (`tools/knowledge/src/store.rs`):
+Schema 4, made in one `BEGIN IMMEDIATE` (`tools/knowledge/src/store.rs`); `tables_registry` lists every table and what one row holds (`knowledge sql "SELECT * FROM tables_registry"`):
 
 | Table | One row per | Columns |
 | --- | --- | --- |
@@ -21,6 +21,14 @@ Schema 3, made in one `BEGIN IMMEDIATE` (`tools/knowledge/src/store.rs`):
 | `links` | a citation from one document to another | `"from"`, `branch` and `state` (a document), `"to"` (an id, held by a file or a document), the four once |
 | `calls` | a tool call of `tool-calls.jsonl` | its fields under their names ([metrics](./metrics.md#the-record-of-each-call)), `toolUseId` once, a field an older line lacks left null |
 | `turns` | a turn of `turns.jsonl` | `session`, `start` (the pair once), `wallMs`, `activeMs`, `tokens`, `outputTokens`, `calls`, `failures`, `commits` |
+| `tables_registry` | a table of the file | `name` (once), `purpose`, what one row holds |
+| `epics` | an epic | `id` (once), `title`, `status`, `position` (the Product Owner's order, 0 for a dropped one), `topic`, `text` (its former file), `branch`, `state` |
+| `features` | a feature | `id` (once), `epic`, `title`, `status`, `position` (its order in its epic), `topic`, `criteria` (the section), `text`, `branch`, `state`, indexed by epic and position |
+| `stories` | a story | `id` (once), `epic`, `feature` (empty for an epic's own), `kind` (`EN`, `US`, `AUD`…), `title`, `status`, `points`, `position` (its order in its feature), `topic` (its branch's), `criteria`, `tasks`, `test_card`, `question`, `text`, `branch`, `state`, indexed by feature, epic, status and branch |
+| `tasks` | a story's task | `story`, `number` (the pair once), `title`, `done` (0 or 1) |
+| `criteria` | a feature's numbered criterion | `id` (`F48.AC1`, once), `feature`, `number`, `text`, `struck` (struck through, 0 or 1), `retired` (why no test proves it any more, empty otherwise) |
+
+A row of the backlog's tables, or of a table the agent adds with a `branch` and a `state` column, belongs to the branch whose work it is: written without a branch, `knowledge sql` gives it the branch checked out, and its state is `draft` until that branch is merged (`story-finish`, `branches-clean`, `branch-state`), `dropped` when the branch is deleted without its merge. Unlike a document, the row is one per id, read by every branch at once: a status set on a story branch is the status everywhere.
 
 A document deleted takes its fields, sections and links with it, never another branch's row of its id nor its branch's row of another state (`ON DELETE CASCADE` on the three, `PRAGMA foreign_keys` set on each connection), its sections leaving the index by the trigger; its state changed, they follow it (`ON UPDATE CASCADE`, `REF-SQLITE-FOREIGN-KEYS`, §4.3).
 
@@ -32,13 +40,14 @@ A document deleted takes its fields, sections and links with it, never another b
 
 ## The schema's number
 
-`PRAGMA user_version` holds the schema's number (`REF-SQLITE-PRAGMA`), `SCHEMA_VERSION` in the code. A file of an older number is brought up to it at opening, each migration of `MIGRATIONS` from its number on, a new file running them all; changes add a table, a column or a wider key, never rename nor drop a column, so that a worktree whose binary is older still reads a newer file. Such a binary refuses to write to it — `the file's schema is 4, newer than this binary's 3: rebuild the tools from your base, target/release/git-sequences sync` — the number read once the lock is held.
+`PRAGMA user_version` holds the schema's number (`REF-SQLITE-PRAGMA`), `SCHEMA_VERSION` in the code. A file of an older number is brought up to it at opening, each migration of `MIGRATIONS` from its number on, a new file running them all; changes add a table, a column or a wider key, never rename nor drop a column, so that a worktree whose binary is older still reads a newer file. Such a binary refuses to write to it — `the file's schema is 5, newer than this binary's 4: rebuild the tools from your base, target/release/git-sequences sync` — the number read once the lock is held.
 
 | Schema | Story | Change |
 | --- | --- | --- |
 | 1 | EN-151 | the tables of note 0035, a document keyed by its id |
 | 2 | EN-152 | a document keyed by its id and its branch, so that a branch writes its draft of an id another branch holds; its fields, sections and links take its branch. The four tables rebuilt by SQLite's procedure for a changed key, with the foreign keys off: new tables made and filled, the old dropped, the new renamed (`REF-SQLITE-ALTER-TABLE`, §8), each row and each section's rowid kept, so that the index still points at its sections |
 | 3 | AUD-050 | a document keyed by its id, its branch and its state, so that a branch writes a new draft of an id while its merged row of it stays read by every other branch; its fields, sections and links take its state and follow it (`ON UPDATE CASCADE`, `REF-SQLITE-FOREIGN-KEYS`), the four tables rebuilt as for schema 2. A binary of schema 2 still reads the file, but for an id a branch holds both merged and as a draft, whose sections it reads mixed |
+| 4 | EN-154 | the backlog's tables, `epics`, `features`, `stories`, `tasks` and `criteria`, with their indexes, and `tables_registry`, every table listed: tables and indexes added, nothing rebuilt |
 
 ## The commands
 
@@ -46,7 +55,7 @@ Called by the binary from the checkout's root, `target/release/knowledge`, each 
 
 | Command | Does | Example |
 | --- | --- | --- |
-| `init` | opens the file, made or brought up to the schema, and prints its path and schema, `, newer than this binary's 3: read only` after a newer one | `knowledge init` |
+| `init` | opens the file, made or brought up to the schema, and prints its path and schema, `, newer than this binary's 4: read only` after a newer one | `knowledge init` |
 | `path` | prints the file, opening nothing | `knowledge path` |
 | `add <kind> <file or ->` | writes a document or a log row, read from the file or the standard input (`-`), as a `draft` of the branch checked out, and prints `<id> added on <branch>, a draft`; a draft of the same id on that branch is replaced, its merged row kept, read by the other branches until this draft is merged. Refused on a detached head, for a kind other than one word of lower-case letters (`story`, `log-row`) and for an empty text | `knowledge add journal -` |
 | `search <words> [<filters>]` | the 8 best sections, ranked by `bm25()` (`REF-SQLITE-FTS5`): those holding every word, else those holding any, each word quoted, by the library's own search (`library::store::every_word_else_any`); each printed `<id> › <heading>`, then its snippet on one indented line, the words found between `[` and `]` | `knowledge search busy timeout --kind note` |
@@ -54,6 +63,12 @@ Called by the binary from the checkout's root, `target/release/knowledge`, each 
 | `list [<filters>]` | one line per document, by id: `<id> [<kind>, <status>, <date>] <title> — <state> on <branch>`, an empty status left out | `knowledge list --kind story --epic E49` |
 | `sync` | marks `merged` the drafts of `develop` and of every branch a merge commit brought into it ([what a branch reads](#what-a-branch-reads)), and prints `<n> rows marked merged, of the <m> branches merged into develop` | `knowledge sync` |
 | `snapshot` | writes the day's copy of the file into the synced folder, the last seven days kept, and prints `records-<day>.sqlite written into the folder AGENT_KNOWLEDGE_SNAPSHOT names: <n> kept, <m> removed` ([the snapshot](#the-snapshot)) | `knowledge snapshot` |
+| `sql "<statement>" [--purpose "<text>"]` | one statement ([free SQL](#free-sql)): a reading prints its column names, then a row a line, its cells joined by tabs, a tab, a line end and a backslash escaped; a write runs in `BEGIN IMMEDIATE` and prints `<n> rows changed`, a table it creates registered with its purpose | `knowledge sql "SELECT id, status FROM stories WHERE feature = 'F48' ORDER BY position"` |
+| `import-backlog <folder>` | reads the backlog's files — `epics/`, `features/`, `stories/`, the epics' index for their order — into the backlog's tables and each item's text into a merged document, and prints the count of each; run again, each item's rows are replaced, a criterion's `retired` kept | `knowledge import-backlog docs/backlog` |
+| `export-criteria <file or ->` | writes the criteria of the done features but those struck through, one JSON object a line, `{ "id": "F48.AC1" }`, `"retired"` and its reason for one no test needs to prove: the data file `tests/backlog.test.ts` traces to the tests, which the CI reads without the records (ADR-0027; E49, Decisions, Q3) | `knowledge export-criteria tests/data/criteria.json` |
+| `check-ids <paths>` | every id the text files under the paths cite that the records should hold and lack, `<path>:<line>: <id> is not in the records`, exit 1: a backlog id missing from its table, or an id of a kind the records hold documents of; an id of a kind they hold nothing of yet (`REF-`, `ADR-`), a placeholder of zeros (`US-000`, `F00`) and the tests and fixtures are not read. `story-finish` runs it on a change before its pull request into `develop` | `knowledge check-ids docs playground src` |
+| `link-ids <paths>` | writes as its id each link to a backlog file, `[EN-151](…/backlog/stories/E49-F48-EN-151-….md)` becoming `EN-151` (its text kept when it says more: `the audit (AUD-050)`), and each bare path to one; a link to an index or a folder of the backlog keeps its text; reads the id from the file's name, no records needed | `knowledge link-ids docs playground src` |
+| `branch-state <branch> merged\|dropped` | marks the branch's drafts, of the documents and of every table with a `branch` and a `state`, merged or dropped, as `story-finish` and `branches-clean` do | `knowledge branch-state chore/en-160-x dropped` |
 
 The filters, the same for `search`, `show` and `list`, each followed by its value but `--all`:
 
@@ -65,11 +80,29 @@ The filters, the same for `search`, `show` and `list`, each followed by its valu
 | `--state <state>` | the rows of that state, `draft`, `merged` or `dropped`; `dropped` reads them as `--all` does |
 | `--all` | the `dropped` rows too |
 
+### Free SQL
+
+`knowledge sql` runs one statement, for the agent's own questions and its own tables (EN-154). What the statement does is read from SQLite, by the authorizer it calls for each action while it compiles the statement and while it runs, a change of the schema compiling it again (`REF-SQLITE-AUTHORIZER`); never from its text, but for `ALTER TABLE`, whose kind of change the authorizer does not name:
+
+- **Allowed**: any reading; `CREATE TABLE`, `CREATE INDEX`, `CREATE VIEW`, a trigger on the agent's tables; `INSERT`, `UPDATE`, `DELETE` on any table but the documents'; `ALTER TABLE … ADD`, on a core table too; `DROP` of a table, index, view or trigger of the agent's own; a `PRAGMA` that reads.
+- **Refused**, naming why: `DROP` of a core table — `documents`, `fields`, `sections`, `sections_index` and its own tables, `links`, `calls`, `turns`, `tables_registry`, `epics`, `features`, `stories`, `tasks`, `criteria` — or of an index or trigger on one; any other `ALTER TABLE` of a core table; a write to `documents`, `fields`, `sections`, `sections_index` or `links`, which `add`, `import-backlog` and `sync` keep with the full-text index; a trigger on those; a `PRAGMA` that sets; `ATTACH`, `DETACH`, a transaction or a savepoint, each write being its own `BEGIN IMMEDIATE`; more than one statement.
+- **A new table** needs `--purpose`, its row of `tables_registry` written with it, struck when the table is dropped; a row written without a branch takes the branch checked out, in every table with a `branch` and a `state` column.
+
+### The backlog
+
+The backlog's files were imported once by `import-backlog` on 2026-10-25 (EN-154), then removed but `docs/backlog/README.md`, the order of the epics and how work is planned: 50 epics, 48 features, 403 stories, 220 criteria and 989 tasks, in 0.55 s. Since then the records alone hold it:
+
+- **A status**: `target/release/backlog-status <ID> <status>`, one row.
+- **A story's branch**: `worktree-new <ID>` reads its kind, feature and topic; `git-sequences sync` and `state`, and the `check-handback` hook, its feature branch.
+- **A story merged**: `story-finish` marks its branch's rows merged and the story `done`; `branches-clean` marks a deleted branch's rows merged when a branch of `origin` holds its tip, else dropped (AUD-050).
+- **What reads it besides**: `epic-check` (an epic's items neither done nor dropped), `run-totals should-stop` (the parked stories), the `session-state` hook (each feature started), `metrics` (a story's feature and epic), `release notes` (a story's title), `val-prepare` (a feature's criteria).
+- **The CI** reads none of it: the criteria of the done features are exported to `tests/data/criteria.json`; the `@see` of the code cite a backlog id by its form alone (`local/see-references`), and `check-ids` checks the ids before a pull request into `develop`.
+
 ### A document added
 
 - **Its id**: its front matter's `id`; without one, `<KIND>-<date>-<n>`, `n` one more than the highest of that kind and day among every row of the file, whatever its branch or state, so that two branches never make the same id (`JOURNAL-2026-10-25-3`).
 - **Its columns**: its title the front matter's `title`, else its first heading's text, else its first line; its `epic`, `feature` and `status` the front matter's, empty without them; its date the front matter's `date`, else the day it is added; `path` the file given, empty for the standard input; `private` 0.
-- **Its fields**: every `key: value` line of its front matter, read by `backlog-index`'s function.
+- **Its fields**: every `key: value` line of its front matter (`tools/knowledge/src/front_matter.rs`, `backlog-index`'s function before EN-154).
 - **Its sections**: cut before each heading outside a fenced block, by `page`'s functions, the text above the first heading a section of an empty heading; joined, they give the text back, so that `show` prints what was added.
 - **Its citations**, in `links`: each id its text cites once, its own left out — `REF-` and capitals (`REF-GIT-BRANCH`), `DERIV-` and lower case (`DERIV-bit`), an epic or a feature (`E49`, `F48`), or two capitals or more, a dash, three digits or more, then dashed numbers (`EN-152`, `ADR-0081`, `JOURNAL-2026-10-25-3`).
 
@@ -101,4 +134,4 @@ The copy kept in a synced folder (research note 0035, A clean snapshot; E49, Dec
 
 ## Its tests
 
-The crate's tests (`tools/knowledge/tests/`) make every file in a folder of the system's temporary folder, the binary's run with `AGENT_RECORDS_ROOT` and `AGENT_KNOWLEDGE_SNAPSHOT` set to such a folder or removed and `HOME` pointed there: no test reads the real records folder nor writes to the real synced folder, and no check of a pull request needs the database. `page`'s tests run it without `AGENT_RECORDS_ROOT` nor a `GIT_*` variable, its fallback's against a script standing for `knowledge` (`tools/page/tests/binary.rs`).
+The crate's tests (`tools/knowledge/tests/`) make every file in a folder of the system's temporary folder, the binary's run with `AGENT_RECORDS_ROOT` and `AGENT_KNOWLEDGE_SNAPSHOT` set to such a folder or removed and `HOME` pointed there: no test reads the real records folder nor writes to the real synced folder, and no check of a pull request needs the database. `page`'s tests run it without `AGENT_RECORDS_ROOT` nor a `GIT_*` variable, its fallback's against a script standing for `knowledge` (`tools/page/tests/binary.rs`). The tools that read the records through `knowledge sql` (`knowledge-call`, EN-154) are tested the same way: a copy of their binary beside a script standing for `knowledge`, which prints the rows a test needs or fails as records without `AGENT_RECORDS_ROOT` do; `story-finish`, `branches-clean`, `backlog-status` and `epic-check`, which link the crate, against records of the test's own folder.

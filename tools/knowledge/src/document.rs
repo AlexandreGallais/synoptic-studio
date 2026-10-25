@@ -1,9 +1,9 @@
 //! A Markdown text read as a document of the knowledge (research note 0035, Its tables): its
 //! front matter's fields, its sections cut at its headings and the ids it cites. The headings and
-//! the fenced blocks are found by `page`'s functions, the front matter by `backlog-index`'s, so
-//! that the three tools read a page alike.
+//! the fenced blocks are found by `page`'s functions, the front matter by its own module,
+//! so that the tools read a page alike.
 
-use backlog_index::front_matter::front_matter;
+use crate::front_matter::front_matter;
 use page::fence::fenced;
 use page::section::heading;
 

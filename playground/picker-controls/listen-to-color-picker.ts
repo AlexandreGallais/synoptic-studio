@@ -12,7 +12,7 @@ import { listenToPickerValues } from "./listen-to-picker-values";
  * @kind procedure
  * @param document - page document
  * @param update - redraws the playground
- * @see docs/backlog/stories/E15-F16-US-035-pick-a-color.md
+ * @see US-035
  */
 export function listenToColorPicker(document: Document, update: () => void): void {
   listenToColorFields(document, update);

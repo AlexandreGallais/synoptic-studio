@@ -18,7 +18,7 @@ The sidebar and the navigation bar follow one order, `GROUPS` in `docs/.vitepres
 | Group | Sections, in order (folders of `docs/`) |
 | --- | --- |
 | The project | Domain (`domain/`), API (`api/`, generated) |
-| How to work | Conventions (`conventions/`), Process (`process/`, its index and `agile.md`), Backlog (`backlog/`), Epics (`backlog/epics/`), Features (`backlog/features/`), Research (`research/`, the protocol), Playbook (`playbook/`) |
+| How to work | Conventions (`conventions/`), Process (`process/`, its index and `agile.md`), Backlog (`backlog/`, its one page since the backlog moved into the records, EN-154), Research (`research/`, the protocol), Playbook (`playbook/`) |
 | Tooling | Tooling (`tooling/`) |
 | Records | Decisions (`adr/`), Research notes (`research/notes/`), Research requests (`research/requests/`), Derivations (`derivations/`), References (`references.md`), Guide (`guide/`, the pages of past features and epics), Retrospectives (`process/retrospectives/`), Logs (the journal, the improvement and feedback logs, the tool incidents and the history of `process/`) |
 

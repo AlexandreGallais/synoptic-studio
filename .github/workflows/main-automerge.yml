@@ -1,0 +1,59 @@
+# The merge into main once the Product Owner validated the review (decided on 2026-10-25, EN-154):
+# merges, always by a merge commit, the pull request of the owner from `develop` into `main` once
+# it carries the label `po-validated`, which the agent sets when the Product Owner validated the
+# review in the chat. The checks main's ruleset requires still gate it: `--auto` merges once they
+# pass (`REF-GH-CLI-MERGE`). GitHub reads this file from `main`, the default branch, so it acts
+# only once `main` holds it. Removing the label before the merge stops it; the release stays the
+# Product Owner's button (`release.yml`).
+name: Main auto-merge
+
+# The base is chosen by `branches` alone (ADR-0088, decision 2); the triggers of the other
+# auto-merges, for the same reasons (research note 0026, §2).
+on:
+  pull_request:
+    types: [labeled, reopened, ready_for_review]
+    branches: [main]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  auto-merge:
+    name: Merge
+    # A guard on the pull request's label, author and draft state, which no trigger expresses.
+    if: >-
+      contains(github.event.pull_request.labels.*.name, 'po-validated')
+      && github.event.pull_request.author_association == 'OWNER'
+      && !github.event.pull_request.draft
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check the branch is develop, the only one that goes into main
+        env:
+          BRANCH: ${{ github.event.pull_request.head.ref }}
+        run: |
+          if [ "$BRANCH" != develop ]; then
+            echo "Branch $BRANCH into main is not develop: no auto-merge (ADR-0086, EN-154)."
+            exit 1
+          fi
+      - name: Merge (merge commit) once the required checks pass
+        env:
+          # Built-in token: a merge into main starts no release, which is the button's.
+          GH_TOKEN: ${{ github.token }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+        # GitHub computes the mergeability of a new pull request after a few seconds: retry. With
+        # `--auto`, a pull request whose checks still run gets the auto-merge, merged by GitHub
+        # once they pass (`REF-GH-CLI-MERGE`); each attempt reads its state (`REF-GH-CLI-PR-VIEW`).
+        run: |
+          for attempt in 1 2 3 4 5; do
+            gh pr merge "$PR_URL" --auto --merge || echo "Attempt $attempt: gh pr merge failed."
+            state="$(gh pr view "$PR_URL" --json state,autoMergeRequest --jq '.state + " " + (.autoMergeRequest != null | tostring)')"
+            case "$state" in
+              MERGED*) echo "$PR_URL is merged into main."; exit 0 ;;
+              "OPEN true") echo "$PR_URL will be merged by GitHub once main's required checks pass."; exit 0 ;;
+            esac
+            echo "Attempt $attempt: $PR_URL not merged yet ($state)."
+            sleep 10
+          done
+          echo "$PR_URL is neither merged nor set to merge after 5 attempts." >&2
+          exit 1

@@ -26,8 +26,7 @@ jobs:
   # and of the default branch, so the review's, from develop into main, those saved on develop
   # first, and a run on main those saved on main alone (`REF-GH-CACHE`). It fetches every target's
   # crates, as the CI does before its lanes (`REF-CARGO-FETCH`, EN-116), then builds in release
-  # what `check:all` compiles, with the same commands and flags, but the debug build of
-  # backlog-index that tests/backlog.test.ts runs by `cargo run`, and checks nothing: the tests are
+  # what `check:all` compiles, with the same commands and flags, and checks nothing: the tests are
   # compiled and listed, never run (ADR-0072: nothing is re-checked after the merge). Its keys and
   # paths are ci.yml's. Without `restore-keys`, a new key starts from an empty target/, which so
   # never keeps the artifacts of an older Cargo.lock.

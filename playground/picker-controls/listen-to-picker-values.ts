@@ -32,7 +32,7 @@ const VALUE_FIELDS: readonly ValueField[] = [
  * @param document - page document
  * @param field - the field's id and the value it sets
  * @returns the value; `NaN` for a field left empty
- * @see docs/backlog/stories/E15-F16-US-035-pick-a-color.md
+ * @see US-035
  */
 function readTypedValue(document: Document, field: ValueField): number {
   const typed = readNumber(document, field.id);
@@ -50,7 +50,7 @@ function readTypedValue(document: Document, field: ValueField): number {
  * @param document - page document
  * @param field - the field's id and the value it sets
  * @param update - redraws the playground
- * @see docs/backlog/stories/E15-F16-US-035-pick-a-color.md
+ * @see US-035
  */
 function applyTypedValue(document: Document, field: ValueField, update: () => void): void {
   const value = readTypedValue(document, field);
@@ -73,7 +73,7 @@ function applyTypedValue(document: Document, field: ValueField, update: () => vo
  * @kind procedure
  * @param document - page document
  * @param update - redraws the playground
- * @see docs/backlog/stories/E15-F16-US-035-pick-a-color.md
+ * @see US-035
  */
 export function listenToPickerValues(document: Document, update: () => void): void {
   for (const field of VALUE_FIELDS) {

@@ -9,7 +9,7 @@ import { readEditedFreeShape, readShape, writeStoredFreeShape } from "../shape";
  *
  * @kind procedure
  * @param document - page document
- * @see docs/backlog/stories/E01-F08-US-015-add-middle-point.md
+ * @see US-015
  */
 export function writeAddedMidpoint(document: Document): void {
   const shape = readEditedFreeShape(document);

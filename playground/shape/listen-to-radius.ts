@@ -30,7 +30,7 @@ function readMixedTyped(document: Document, id: string): TypedPanelValue | undef
  *
  * @kind procedure
  * @param document - page document
- * @see docs/backlog/stories/E01-F08-VAL-005-validate-node-editing.md
+ * @see VAL-005
  */
 function writePointRadius(document: Document): void {
   const shape = selectElement(document, "radius");
@@ -54,7 +54,7 @@ function writePointRadius(document: Document): void {
  *
  * @kind procedure
  * @param document - page document
- * @see docs/backlog/stories/E01-F03-US-011-radius-field-mixed.md
+ * @see US-011
  */
 function writeShapeRadius(document: Document): void {
   const field = selectElement(document, "radius");
@@ -85,7 +85,7 @@ function writeShapeRadius(document: Document): void {
  * @kind procedure
  * @param document - page document
  * @param update - redraws the playground
- * @see docs/backlog/stories/E01-F03-US-013-points-list-selection.md
+ * @see US-013
  */
 export function listenToRadius(document: Document, update: () => void): void {
   selectElement(document, "radius").addEventListener("change", () => {

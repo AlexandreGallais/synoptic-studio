@@ -112,23 +112,18 @@ fn f18_ac11_epic_check_prints_its_table_and_fails_on_a_finding() {
     );
     let repo = lab.root.join("repo");
 
-    fs::create_dir_all(repo.join("docs/backlog/features")).expect("folder");
-    fs::create_dir_all(repo.join("docs/backlog/stories")).expect("folder");
-    fs::write(
-        repo.join("docs/backlog/stories/E99-F99-EN-1-a.md"),
-        "status: done\n",
-    )
-    .expect("story");
-    fs::write(
-        repo.join("docs/backlog/stories/E99-F99-EN-2-b.md"),
-        "status: ready\n",
-    )
-    .expect("story");
-    fs::write(
-        repo.join("docs/backlog/stories/E99-F99-EN-3-c.md"),
-        "status: dropped\n",
-    )
-    .expect("story");
+    // The epic's backlog in the records of the test's folder, the project named after `repo`.
+    open_store(&lab.root.join("records/repo/records.sqlite"))
+        .expect("records")
+        .execute_batch(
+            "INSERT INTO stories (id, epic, feature, kind, title, status) VALUES
+              ('EN-001', 'E99', 'F99', 'EN', 'a', 'done'),
+              ('EN-002', 'E99', 'F99', 'EN', 'b', 'ready'),
+              ('EN-003', 'E99', 'F99', 'EN', 'c', 'dropped'),
+              ('EN-004', 'E98', 'F98', 'EN', 'd', 'ready');",
+        )
+        .expect("stories");
+    fs::create_dir_all(&repo).expect("repo");
     lab.git(&repo, &["init", "-q"]);
     lab.commit(&repo, "a");
     lab.git(&repo, &["branch", "feat/old"]);
@@ -146,6 +141,7 @@ fn f18_ac11_epic_check_prints_its_table_and_fails_on_a_finding() {
 
     let output = lab
         .command(env!("CARGO_BIN_EXE_epic-check"), &repo)
+        .env("AGENT_RECORDS_ROOT", lab.root.join("records"))
         .args(["E99", "2026-10-13"])
         .output()
         .expect("epic-check");
@@ -179,19 +175,50 @@ fn f18_ac11_epic_check_prints_its_table_and_fails_on_a_finding() {
     );
     // The running call's file was just written: not lost.
     assert!(lines[9].ends_with("| ok | none |"), "{}", lines[9]);
-    // EN-3, dropped, is closed (I110).
-    assert_eq!(
-        lines[10],
-        "| backlog of E99 | **to look at** | E99-F99-EN-2-b |"
-    );
+    // EN-003, dropped, is closed (I110); EN-004 is another epic's.
+    assert_eq!(lines[10], "| backlog of E99 | **to look at** | EN-002 |");
     assert!(
+        lines[11].starts_with("| private records | **to look at** | never saved in "),
+        "{}",
         lines[11]
-            .starts_with("| private records | **to look at** | AGENT_RECORDS_ROOT is not set: ")
     );
     assert_eq!(
         lines[lines.len() - 1],
         "| golden file of refactors | ok | none written yet |"
     );
+}
+
+/// A story pushed then deleted on GitHub without a merge, whose drafts `branches-clean` drops
+/// (AUD-050), and the records of the lab: a draft of each branch, the merged one's, the abandoned
+/// one's and one of a branch not deleted; the records' file.
+fn abandoned_story(lab: &Lab, main: &Path) -> PathBuf {
+    lab.git(
+        main,
+        &["switch", "-q", "-c", "chore/en-904-abandoned", "develop"],
+    );
+    lab.commit(main, "abandoned");
+    lab.git(
+        main,
+        &["push", "-q", "-u", "origin", "chore/en-904-abandoned"],
+    );
+    lab.git(main, &["switch", "-q", "develop"]);
+    lab.git(
+        main,
+        &["push", "-q", "origin", "--delete", "chore/en-904-abandoned"],
+    );
+
+    let records = lab.root.join("records/origin/records.sqlite");
+
+    open_store(&records)
+        .expect("records")
+        .execute_batch(
+            "INSERT INTO stories (id, epic, feature, kind, title, status, branch, state) VALUES
+              ('EN-901', 'E99', 'F99', 'EN', 'a', 'ready', 'feat/us-901-merged', 'draft'),
+              ('EN-904', 'E99', 'F99', 'EN', 'b', 'ready', 'chore/en-904-abandoned', 'draft'),
+              ('EN-905', 'E99', 'F99', 'EN', 'c', 'ready', 'chore/en-905-elsewhere', 'draft');",
+        )
+        .expect("stories");
+    records
 }
 
 #[test]
@@ -234,6 +261,7 @@ fn f18_ac8_branches_clean_deletes_the_merged_and_gone_branches_and_keeps_a_fresh
             "feat/us-901-merged",
         ],
     );
+    let records = abandoned_story(&lab, &main);
     // A story just made from its feature, without a commit.
     let fresh = lab.root.join("en-903");
     lab.git(
@@ -260,17 +288,27 @@ fn f18_ac8_branches_clean_deletes_the_merged_and_gone_branches_and_keeps_a_fresh
 
     let output = lab
         .command(env!("CARGO_BIN_EXE_branches-clean"), &main)
+        .env("AGENT_RECORDS_ROOT", lab.root.join("records"))
         .output()
         .expect("branches-clean");
+    let states = knowledge::sql::read(
+        &open_store(&records).expect("records"),
+        "SELECT id, state FROM stories ORDER BY id",
+    );
 
     assert!(
         output.status.success(),
         "{}",
         String::from_utf8_lossy(&output.stderr)
     );
+    // US-901's draft merged, EN-904's dropped, EN-905's, of a branch not deleted, kept.
     assert_eq!(
         text(&output),
-        "deleted: feat/us-901-merged, feature/f99-x\nworktrees kept: none\nlocal: chore/en-903-fresh, develop, main\non GitHub: origin/develop, origin/feature/f99-x, origin/main\nstashes: 0\nworktrees: 2\n"
+        "deleted: chore/en-904-abandoned, feat/us-901-merged, feature/f99-x\nworktrees kept: none\nlocal: chore/en-903-fresh, develop, main\non GitHub: origin/develop, origin/feature/f99-x, origin/main\nstashes: 0\nworktrees: 2\nrecords: 1 row(s) marked merged, 1 dropped\n"
+    );
+    assert_eq!(
+        states.as_deref(),
+        Ok("id\tstate\nEN-901\tmerged\nEN-904\tdropped\nEN-905\tdraft\n")
     );
     assert!(!merged.exists());
     assert!(fresh.exists());
@@ -412,19 +450,45 @@ fn f48_ac3_records_save_takes_the_snapshot_too() {
 }
 
 #[test]
-fn f21_ac2_backlog_status_names_an_item_it_does_not_find() {
+fn f21_ac2_backlog_status_writes_the_records_and_names_an_item_it_does_not_find() {
     let lab = Lab::new("status", &[]);
-    let output = lab
-        .command(env!("CARGO_BIN_EXE_backlog-status"), &lab.root)
-        .args(["EN-1", "done"])
-        .output()
-        .expect("backlog-status");
+    let repo = lab.root.join("repo");
+    let records = lab.root.join("records/repo/records.sqlite");
 
-    assert_eq!(output.status.code(), Some(1));
-    assert_eq!(
-        String::from_utf8_lossy(&output.stderr),
-        "usage: target/release/backlog-status <ID> <status>; no item EN-1\n"
+    fs::create_dir_all(&repo).expect("repo");
+    lab.git(&repo, &["init", "-q"]);
+    open_store(&records)
+        .expect("records")
+        .execute_batch(
+            "INSERT INTO stories (id, epic, feature, kind, title, status) VALUES ('EN-902', 'E99', 'F99', 'EN', 'b', 'ready');",
+        )
+        .expect("story");
+
+    let status = |words: &[&str]| {
+        lab.command(env!("CARGO_BIN_EXE_backlog-status"), &repo)
+            .env("AGENT_RECORDS_ROOT", lab.root.join("records"))
+            .args(words)
+            .output()
+            .expect("backlog-status")
+    };
+    let set = status(&["EN-902", "in-progress"]);
+    let unknown = status(&["EN-901", "done"]);
+    let wrong = status(&["EN-902", "finished"]);
+    let read = knowledge::sql::read(
+        &open_store(&records).expect("records"),
+        "SELECT status FROM stories WHERE id = 'EN-902'",
     );
+
+    assert!(set.status.success(), "{set:?}");
+    assert_eq!(text(&set), "EN-902 in-progress in the records\n");
+    assert_eq!(read.as_deref(), Ok("status\nin-progress\n"));
+    assert_eq!(unknown.status.code(), Some(1));
+    assert_eq!(
+        String::from_utf8_lossy(&unknown.stderr),
+        "backlog-status: usage: target/release/backlog-status <ID> <status>; no item EN-901 in the records\n"
+    );
+    assert_eq!(wrong.status.code(), Some(1));
+    assert!(String::from_utf8_lossy(&wrong.stderr).contains("`finished` is not a status"));
 }
 
 #[test]

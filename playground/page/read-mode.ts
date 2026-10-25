@@ -7,7 +7,7 @@ import { selectElement } from "./select-element";
  * @kind procedure
  * @param document - page document
  * @returns `points` when the Points button is pressed, `shape` otherwise
- * @see docs/backlog/stories/E01-F03-US-012-points-mode.md
+ * @see US-012
  */
 export function readMode(document: Document): "points" | "shape" {
   return selectElement(document, "mode-points").getAttribute("aria-pressed") === "true"

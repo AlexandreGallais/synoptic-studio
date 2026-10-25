@@ -8,7 +8,7 @@ import type { ChecklistLine } from "./checklist-line";
  * @param lines - the checklist's lines, each with its feature
  * @param limit - the most lines a feature may hold, 12
  * @returns each feature over the limit with its count
- * @see docs/backlog/stories/E17-F18-EN-056-a-short-checklist.md
+ * @see EN-056
  */
 export function readFeaturesOverLimit(
   lines: readonly ChecklistLine[],

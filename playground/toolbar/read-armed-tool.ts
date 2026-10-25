@@ -8,7 +8,7 @@ import { TOOLS } from "./tools";
  * @kind procedure
  * @param document - page document
  * @returns `selector`, `rectangle`, `polygon`, `round` or `text`; the selector when none is pressed
- * @see docs/backlog/stories/E02-F35-US-063-a-click-adds-a-shape.md
+ * @see US-063
  */
 export function readArmedTool(document: Document): string {
   const pressed = TOOLS.find(

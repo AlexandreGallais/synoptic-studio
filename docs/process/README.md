@@ -22,7 +22,7 @@ Each moment has one owner and one output, so that nothing waits on an unnamed pe
 
 ### A run stops only on one of four things (EN-086)
 
-A run keeps working until the first of: the end of the scope the Product Owner set (a time or an end); a blocker no other story can get around; the Product Owner's word; 90 % of the week's usage. Anything else is not a stop: a question parks its own story, with the question written in it, and the run goes on with the independent stories. Reason: a question blocks one story, not the work. A question alone never ends a run; the Product Owner answers the parked questions on return.
+A run keeps working until the first of: the end of the scope the Product Owner set (a time or an end); a blocker no other story can get around; the Product Owner's word. The week's usage stops no run since 2026-10-25, the Product Owner having dropped the stop at 90 % (`run-totals should-stop` says `go`). Anything else is not a stop: a question parks its own story, with the question written in it, and the run goes on with the independent stories. Reason: a question blocks one story, not the work. A question alone never ends a run; the Product Owner answers the parked questions on return.
 
 ## Evolvability review
 

@@ -13,7 +13,7 @@ import type { Size, Text } from "../../src";
  * @param document - page document
  * @param text - its position, its box and its angle
  * @param block - its measured block, from `textDrawing`
- * @see docs/backlog/stories/E15-F14-US-039-straight-box-of-a-turned-text.md
+ * @see US-039
  */
 export function writeTextStraightBox(document: Document, text: Text, block: Size): void {
   const isShown = text.angle !== 0 && hasArea(textFrame(text, block));

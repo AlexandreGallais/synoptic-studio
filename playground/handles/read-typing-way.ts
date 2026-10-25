@@ -10,7 +10,7 @@ import type { HandleWay } from "../../src";
  * @kind procedure
  * @param document - page document
  * @returns the way chosen, `page` for a value the list does not hold
- * @see docs/backlog/stories/E14-F12-US-024-handles-as-angle-and-length.md
+ * @see US-024
  */
 export function readTypingWay(document: Document): HandleWay {
   const list = selectElement(document, "handle-method");

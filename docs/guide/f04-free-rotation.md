@@ -31,7 +31,7 @@ In the playground, the **Angle and position** fields turn the shape you drew by 
 
 ## Try it
 
-Run `npm run dev` and open `http://localhost:5173/?guide=epic&step=47`: the **Guided test** opens on the first step of F04 (steps 47 to 57). **Next** types the shape for you, straight; the angles and the clicks are yours, as each step says. The same steps are in the test cards of [US-018](../backlog/stories/E01-F04-US-018-turn-a-shape.md#product-owner-test) and [US-019](../backlog/stories/E01-F04-US-019-edit-a-turned-shape.md#product-owner-test).
+Run `npm run dev` and open `http://localhost:5173/?guide=epic&step=47`: the **Guided test** opens on the first step of F04 (steps 47 to 57). **Next** types the shape for you, straight; the angles and the clicks are yours, as each step says. The same steps are in the test cards of US-018 and US-019.
 
 ## Limits
 

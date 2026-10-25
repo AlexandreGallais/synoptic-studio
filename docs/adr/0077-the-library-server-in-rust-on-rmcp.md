@@ -32,4 +32,4 @@
 
 ## References
 
-`REF-RMCP`, `REF-RUSQLITE`, `REF-SQLITE-FTS5`, `REF-NODE-SQLITE`, `REF-MCP-TRANSPORTS`, `REF-MCP-TOOLS`, ADR-0039, ADR-0073, [EN-106](../backlog/stories/E17-F21-EN-106-library-server-in-rust.md), [research note 0025](../research/notes/0025-f21-agent-tools-in-rust.md)
+`REF-RMCP`, `REF-RUSQLITE`, `REF-SQLITE-FTS5`, `REF-NODE-SQLITE`, `REF-MCP-TRANSPORTS`, `REF-MCP-TOOLS`, ADR-0039, ADR-0073, EN-106, [research note 0025](../research/notes/0025-f21-agent-tools-in-rust.md)

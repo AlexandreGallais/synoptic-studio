@@ -7,7 +7,7 @@ import { selectInput } from "./select-input";
  * @kind procedure
  * @param id - id of the picker, without `#`
  * @param files - the files chosen
- * @see docs/backlog/stories/E15-F15-US-036-import-choose-and-embed-a-font.md
+ * @see US-036
  */
 export function chooseFiles(id: string, files: readonly File[]): void {
   const picker = selectInput(id);

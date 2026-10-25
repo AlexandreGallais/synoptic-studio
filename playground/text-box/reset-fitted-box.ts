@@ -13,7 +13,7 @@ import type { Text } from "../../src";
  * @kind procedure
  * @param document - page document
  * @param text - the text read from the fields, valid or not
- * @see docs/backlog/stories/E15-F17-US-057-box-size-kept.md
+ * @see US-057
  */
 export function resetFittedBox(document: Document, text: Text): void {
   const box = readFittedBox(document, text);

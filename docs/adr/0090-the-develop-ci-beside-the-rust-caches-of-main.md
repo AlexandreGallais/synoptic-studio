@@ -24,4 +24,4 @@
 
 ## References
 
-ADR-0072, ADR-0088, `REF-GH-CACHE`, [EN-135](../backlog/stories/E17-F30-EN-135-the-develop-ci-started-by-the-auto-merge.md), [AUD-032](../backlog/stories/E17-F30-AUD-032-audit-f30.md), `docs/tooling/ci.md`
+ADR-0072, ADR-0088, `REF-GH-CACHE`, EN-135, AUD-032, `docs/tooling/ci.md`

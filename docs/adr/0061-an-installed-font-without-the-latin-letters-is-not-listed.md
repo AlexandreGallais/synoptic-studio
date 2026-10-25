@@ -27,4 +27,4 @@
 
 ## References
 
-ADR-0060, `REF-WIKI-ISO-BASIC-LATIN`, [US-056](../backlog/stories/E15-F17-US-056-usable-fonts-only.md)
+ADR-0060, `REF-WIKI-ISO-BASIC-LATIN`, US-056

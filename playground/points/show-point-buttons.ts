@@ -16,7 +16,7 @@ import type { ShapeReading } from "../shape";
  * @param document - page document
  * @param reading - valid shape
  * @param selection - vertices selected
- * @see docs/backlog/stories/E01-F08-US-015-add-middle-point.md
+ * @see US-015
  */
 export function showPointButtons(
   document: Document,

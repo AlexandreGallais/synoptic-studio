@@ -8,7 +8,7 @@ import { readNumber } from "../page";
  * @kind procedure
  * @param document - page document
  * @returns the angle kept, in degrees, clockwise on screen
- * @see docs/backlog/stories/E01-F04-US-018-turn-a-shape.md
+ * @see US-018
  */
 export function readAngle(document: Document): number {
   return degreesInTurn(readNumber(document, "angle"));

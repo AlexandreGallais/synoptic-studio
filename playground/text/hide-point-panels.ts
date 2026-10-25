@@ -9,7 +9,7 @@ const POINT_PANELS = ["points", "point-fields", "handle-fields"];
  *
  * @kind procedure
  * @param document - page document
- * @see docs/backlog/stories/E15-F05-US-031-place-a-text.md
+ * @see US-031
  */
 export function hidePointPanels(document: Document): void {
   for (const id of POINT_PANELS) {

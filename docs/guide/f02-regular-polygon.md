@@ -45,7 +45,7 @@ One unit of the drawing is one pixel of the screen. The calculations have no upp
 
 ## Try it
 
-Run `npm run dev` and open `http://localhost:5173/?guide=epic&step=10`: the **Guided test** takes you through the ten steps of F02 (10 to 19), one at a time. **Next** types the values and chooses the shape for you. The same steps are listed in the test cards of [US-007](../backlog/stories/E01-F02-US-007-shape-selector-playground.md#product-owner-test) and [US-008](../backlog/stories/E01-F02-US-008-cap-playground-sizes.md#product-owner-test).
+Run `npm run dev` and open `http://localhost:5173/?guide=epic&step=10`: the **Guided test** takes you through the ten steps of F02 (10 to 19), one at a time. **Next** types the values and chooses the shape for you. The same steps are listed in the test cards of US-007 and US-008.
 
 ## Limits
 

@@ -9,7 +9,7 @@ import { selectElement } from "../page";
  *
  * @kind procedure
  * @param document - page document
- * @see docs/backlog/stories/E15-F14-US-039-straight-box-of-a-turned-text.md
+ * @see US-039
  */
 export function clearTextDrawing(document: Document): void {
   selectElement(document, "canvas").replaceChildren(createDrawingSvg(document, []));

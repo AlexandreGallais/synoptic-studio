@@ -10,6 +10,7 @@ publish.workspace = true
 calendar = { path = "../calendar" }
 git-repository = { path = "../git-repository" }
 hooks = { path = "../hooks" }
+knowledge-call = { path = "../knowledge-call" }
 library = { path = "../library" }
 run-totals = { path = "../run-totals" }
 serde_json.workspace = true

@@ -11,7 +11,7 @@ const POSITION_FIELDS = ["shape-x", "shape-y"];
  * @kind procedure
  * @param document - page document
  * @returns the two values, X first
- * @see docs/backlog/stories/E15-F05-US-038-a-turned-text-grows-in-place.md
+ * @see US-038
  */
 export function readPositionFields(document: Document): readonly string[] {
   return POSITION_FIELDS.map((id) => {

@@ -7,7 +7,7 @@ import { writeStoredFreeShape } from "./write-stored-free-shape";
  *
  * @kind procedure
  * @param document - page document
- * @see docs/backlog/stories/E01-F08-VAL-005-validate-node-editing.md
+ * @see VAL-005
  */
 export function writeChosenFreeShape(document: Document): void {
   const kept = readStoredFreeShape(document);

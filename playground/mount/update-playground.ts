@@ -11,7 +11,7 @@ import { writeShapeKind } from "../toolbar";
  *
  * @kind procedure
  * @param document - page document
- * @see docs/backlog/stories/E01-F02-US-007-shape-selector-playground.md
+ * @see US-007
  */
 export function updatePlayground(document: Document): void {
   writeCappedSizes(document);

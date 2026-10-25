@@ -47,4 +47,4 @@ The backlog is written **while** the questions go on: each answer lands at once 
 | glossary (with the users' words) | `docs/domain/README.md` |
 | rules with examples | `docs/domain/*.md` |
 | open questions, numbered | `docs/domain/README.md` |
-| epics in the Product Owner's order | `docs/backlog/epics/` |
+| epics in the Product Owner's order | `docs/backlog/README.md` |

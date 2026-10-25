@@ -269,7 +269,7 @@ What each working session dealt with, in the agent's words: the Product Owner's 
 - `#tooling` ADR-0041: the metrics, transcripts and source library hold raw messages and local paths; they are saved by `npm run records:save` into a private repository beside this one, with a private GitHub remote. A submodule would have put its URL and a moving commit in the public tree; an ignored folder inside would have to be skipped by every tool.
 - `#tooling` A pass over the hooks and the docs: the Bash guard also denies `git commit -n`, `HUSKY=0`, `core.hooksPath`, `+branch` pushes and `git -C` forms; the session-start hook sees a feature started by a story in progress and removes stale running-call files; the `autonomous` label's description matches ADR-0038.
 - `#docs` The tag `archive/f10-round-shape` was deleted at the restart: note 0010 now points to pull request #139 (`refs/pull/139/head`), also kept as a Git bundle in the private records.
-- `#backlog` F11 refined with the Product Owner: `contourToPathData` leaves the public API (0.2.0), the folder limit comes from SP-010, VAL-010 is a page of figures without a guided test, curves stay out of F11 ([feature](../backlog/features/E14-F11-code-base-ready-for-curves.md)). Stories stay `draft` until the Product Owner sets them `ready`.
+- `#backlog` F11 refined with the Product Owner: `contourToPathData` leaves the public API (0.2.0), the folder limit comes from SP-010, VAL-010 is a page of figures without a guided test, curves stay out of F11 (feature F11). Stories stay `draft` until the Product Owner sets them `ready`.
 
 ## 2026-10-13 — RET-001: the retrospective of E01
 

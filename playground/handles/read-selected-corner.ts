@@ -18,7 +18,7 @@ export type SelectedCorner = {
  * @kind procedure
  * @param document - page document
  * @returns its number, or `undefined`
- * @see docs/backlog/stories/E14-F12-US-022-handles-in-points-mode.md
+ * @see US-022
  */
 function readOnlySelected(document: Document): number | undefined {
   const { selected } = readSelection(document);
@@ -34,7 +34,7 @@ function readOnlySelected(document: Document): number | undefined {
  * @param reading - the shape read from the inputs
  * @param index - number of the point
  * @returns that corner and its number, or `undefined`
- * @see docs/backlog/stories/E14-F12-US-022-handles-in-points-mode.md
+ * @see US-022
  */
 function readFreeCorner(reading: ShapeReading, index: number): SelectedCorner | undefined {
   const corner = reading.corners[index];
@@ -50,7 +50,7 @@ function readFreeCorner(reading: ShapeReading, index: number): SelectedCorner | 
  * @param document - page document
  * @param reading - the shape read from the inputs
  * @returns that corner and its number, or `undefined`
- * @see docs/backlog/stories/E14-F12-US-022-handles-in-points-mode.md
+ * @see US-022
  */
 export function readSelectedCorner(
   document: Document,

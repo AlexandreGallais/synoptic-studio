@@ -23,7 +23,7 @@ const TOP_LEFT: Point = { x: 0, y: 0 };
  * @param drawn - the text last drawn
  * @param sized - the text read from the fields, and its measured block
  * @returns the change of its width and of its height
- * @see docs/backlog/stories/E15-F17-US-054-turned-text-position-shows-its-corner.md
+ * @see US-054
  */
 function readFrameChange(drawn: DrawnTextRecord, sized: SizedText): Vector {
   const before = textFrame(drawn.text, drawn.block);
@@ -44,7 +44,7 @@ function readFrameChange(drawn: DrawnTextRecord, sized: SizedText): Vector {
  * @param sized - the text read from the fields, its position the start X and Y show, and its
  * measured block
  * @returns that position, the top-left of its frame before it turns
- * @see docs/backlog/stories/E15-F05-US-038-a-turned-text-grows-in-place.md
+ * @see US-038
  */
 function chooseBasePosition(drawn: DrawnTextRecord | undefined, sized: SizedText): Point {
   if (drawn === undefined) {

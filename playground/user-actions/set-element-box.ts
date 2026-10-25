@@ -20,7 +20,7 @@ export type LaidOutBox = {
  * @kind procedure
  * @param selector - CSS selector of the element
  * @param box - its left and top edges in the window, its width and its height
- * @see docs/backlog/stories/E15-F16-US-035-pick-a-color.md
+ * @see US-035
  */
 export function setElementBox(selector: string, box: LaidOutBox): void {
   const rectangle = new DOMRect(box.left, box.top, box.width, box.height);

@@ -48,7 +48,7 @@ function createKeptTextElements(document: Document, text: Text): readonly SVGGEl
  * @param document - page document
  * @param shape - a shape kept, valid when it was drawn
  * @returns its path
- * @see docs/backlog/stories/E02-F35-US-063-a-click-adds-a-shape.md
+ * @see US-063
  */
 function createKeptShapeElement(document: Document, shape: Shape): SVGPathElement {
   const pieces = curveContour(shapeCorners(shape));

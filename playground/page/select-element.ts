@@ -1,5 +1,5 @@
 /** Specification of the story demonstrated by the page. */
-const STORY = "docs/backlog/stories/E01-F02-US-007-shape-selector-playground.md";
+const STORY = "US-007";
 
 /**
  * Selects a required element of the page by its id, read from the document's map of ids

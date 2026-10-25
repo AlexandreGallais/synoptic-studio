@@ -11,7 +11,7 @@ import { readNumber, selectElement } from "../page";
  * @param document - page document
  * @param count - number of vertices of the shape, 0 when it is refused
  * @returns `count` radii, possibly invalid (checked with the shape)
- * @see docs/backlog/stories/E01-F03-US-011-radius-field-mixed.md
+ * @see US-011
  */
 export function updateKeptRadii(document: Document, count: number): readonly number[] {
   const field = selectElement(document, "radius");

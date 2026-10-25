@@ -138,59 +138,61 @@ fn f20_ac4_opens_counts_shows_and_ends_a_run() {
 }
 
 #[test]
-fn f20_ac6_should_stop_reads_the_week_and_the_parked_stories() {
+fn f20_ac6_should_stop_goes_on_at_any_usage_and_names_the_parked_stories_of_the_records() {
     let (home, repo) = setup("stop");
-    let stories = repo.join("docs/backlog/stories");
+    let bin = home.join("bin");
+    let tool = bin.join("run-totals");
 
-    // No usage known yet, no story: go.
-    let unknown = totals(&repo, &home, &["should-stop"]);
+    // A copy of the tool beside a `knowledge` script standing for the records (EN-154).
+    fs::create_dir_all(&bin).expect("bin");
+    fs::copy(env!("CARGO_BIN_EXE_run-totals"), &tool).expect("tool copied");
 
-    assert!(unknown.status.success());
-    assert_eq!(stdout(&unknown), "go: week usage unknown\n");
+    let stop = || {
+        clean(tool.to_str().expect("path"), &repo, &home)
+            .arg("should-stop")
+            .output()
+            .expect("runs")
+    };
 
-    fs::create_dir_all(&stories).expect("stories");
-    fs::write(
-        stories.join("E17-F20-US-020-b.md"),
-        "---\nid: US-020\nstatus: parked\n---\n",
-    )
-    .expect("story");
-    fs::write(
-        stories.join("E17-F20-EN-101-a.md"),
-        "---\nid: EN-101\nstatus: parked\n---\n",
-    )
-    .expect("story");
-    fs::write(
-        stories.join("E17-F20-EN-102-c.md"),
-        "---\nid: EN-102\nstatus: ready\n---\n",
-    )
-    .expect("story");
-    fs::create_dir_all(repo.join(".git/metrics")).expect("metrics");
-    // 89.4 rounds to 89, below 90: go, the parked stories sorted.
-    fs::write(
-        repo.join(".git/metrics/usage.json"),
-        "{\"sevenDay\":{\"usedPercent\":89.4,\"resetsAt\":\"x\"},\"time\":1}",
-    )
-    .expect("usage");
+    // No `knowledge` beside it: the run goes on, the parked stories unknown.
+    let unread = stop();
 
-    let below = totals(&repo, &home, &["should-stop"]);
-
-    assert!(below.status.success());
-    assert_eq!(
-        stdout(&below),
-        "go: week 89 % used, the limit is 90 %\nparked: EN-101, US-020\n"
+    assert!(unread.status.success());
+    assert!(
+        stdout(&unread).starts_with(
+            "go: the week's usage stops no run (2026-10-25)\nparked: unknown, the records cannot be read: "
+        ),
+        "{}",
+        stdout(&unread)
     );
 
-    // 89.5 rounds to 90: stop, exit 1.
+    fs::write(
+        bin.join("knowledge"),
+        "#!/bin/sh\nprintf 'id\\nEN-101\\nUS-020\\n'\n",
+    )
+    .expect("script");
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+
+        fs::set_permissions(bin.join("knowledge"), fs::Permissions::from_mode(0o755))
+            .expect("script runs");
+    }
+    fs::create_dir_all(repo.join(".git/metrics")).expect("metrics");
+    // The week all but spent: no stop any more.
     fs::write(
         repo.join(".git/metrics/usage.json"),
-        "{\"sevenDay\":{\"usedPercent\":89.5,\"resetsAt\":\"x\"},\"time\":1}",
+        "{\"sevenDay\":{\"usedPercent\":99.5,\"resetsAt\":\"x\"},\"time\":1}",
     )
     .expect("usage");
 
-    let reached = totals(&repo, &home, &["should-stop"]);
+    let spent = stop();
 
-    assert_eq!(reached.status.code(), Some(1));
-    assert!(stdout(&reached).starts_with("stop: week 90 % used"));
+    assert!(spent.status.success());
+    assert_eq!(
+        stdout(&spent),
+        "go: the week's usage stops no run (2026-10-25)\nparked: EN-101, US-020\n"
+    );
 }
 
 #[test]

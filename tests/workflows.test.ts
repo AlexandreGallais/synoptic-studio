@@ -907,6 +907,7 @@ describe("each workflow's use, as decided on 2026-10-18 (EN-134)", () => {
       DEVELOP_CI,
       "feature-automerge.yml",
       "links.yml",
+      "main-automerge.yml",
       "release.yml",
       "rust-caches.yml",
       "site.yml",

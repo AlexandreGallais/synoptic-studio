@@ -19,7 +19,7 @@ const INPUTS = ["corners", "radius"];
  * @kind procedure
  * @param document - page document
  * @param update - redraws the playground
- * @see docs/backlog/stories/E01-F08-VAL-005-validate-node-editing.md
+ * @see VAL-005
  */
 function listenToShapeChoice(document: Document, update: () => void): void {
   selectElement(document, "shape").addEventListener("change", () => {
@@ -61,7 +61,7 @@ function listenToPanelControls(document: Document, update: () => void): void {
  * @kind procedure
  * @param document - page document
  * @param update - redraws the playground
- * @see docs/backlog/stories/E01-F03-US-011-radius-field-mixed.md
+ * @see US-011
  */
 export function listenToInputs(document: Document, update: () => void): void {
   listenToNumberFields(document);

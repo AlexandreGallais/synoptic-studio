@@ -11,7 +11,7 @@ const SIZE_INPUTS = ["width", "height", "radius", "point-radius"];
  *
  * @kind procedure
  * @param document - page document
- * @see docs/backlog/stories/E01-F02-US-008-cap-playground-sizes.md
+ * @see US-008
  */
 export function writeCappedSizes(document: Document): void {
   const tooLarge = SIZE_INPUTS.filter((id) => readNumber(document, id) > MAX_SIZE);

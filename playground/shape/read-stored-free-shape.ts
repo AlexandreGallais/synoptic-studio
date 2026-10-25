@@ -10,7 +10,7 @@ import type { FreeShape } from "../../src";
  * @kind procedure
  * @param kept - text written by `writeStoredFreeShape`
  * @returns the free shape, `undefined` when it is not valid
- * @see docs/backlog/stories/E01-F08-US-014-convert-and-move.md
+ * @see US-014
  */
 function readKeptText(kept: string): FreeShape | undefined {
   // oxlint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-type-assertion -- written by writeStoredFreeShape only, from a FreeShape; checked just below
@@ -26,7 +26,7 @@ function readKeptText(kept: string): FreeShape | undefined {
  * @kind procedure
  * @param document - page document
  * @returns the free shape kept, `undefined` when there is none or another shape is chosen
- * @see docs/backlog/stories/E01-F08-US-014-convert-and-move.md
+ * @see US-014
  */
 export function readStoredFreeShape(document: Document): FreeShape | undefined {
   const { freeShape } = selectElement(document, "shape").dataset;

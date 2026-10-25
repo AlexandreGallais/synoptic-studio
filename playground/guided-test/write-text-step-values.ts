@@ -14,7 +14,7 @@ import type { GuidedText } from "../guided-steps";
  * @kind procedure
  * @param document - page document
  * @param text - the fields typed
- * @see docs/backlog/stories/E15-F05-VAL-014-validate-f05.md
+ * @see VAL-014
  */
 export function writeTextStepValues(document: Document, text: GuidedText): void {
   const embed = selectElement(document, "embed-fonts");

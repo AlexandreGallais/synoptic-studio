@@ -33,7 +33,7 @@ In the playground, when you draw a **polygon**, a small grid of nine round butto
 
 ## Try it
 
-Run `npm run dev` and open `http://localhost:5173/?guide=epic&step=20`: the **Guided test** opens on step 20, the first of F07, and takes you through the steps one at a time. The address always shows the step on screen, so it can be copied as a link to that step. **Next** types the values, chooses the shape and checks the anchor button for you. The same steps are listed in the test card of [US-010](../backlog/stories/E01-F07-US-010-anchor-picker-playground.md#product-owner-test). Step 26 shows a corner button in a wide box.
+Run `npm run dev` and open `http://localhost:5173/?guide=epic&step=20`: the **Guided test** opens on step 20, the first of F07, and takes you through the steps one at a time. The address always shows the step on screen, so it can be copied as a link to that step. **Next** types the values, chooses the shape and checks the anchor button for you. The same steps are listed in the test card of US-010. Step 26 shows a corner button in a wide box.
 
 ## Limits
 

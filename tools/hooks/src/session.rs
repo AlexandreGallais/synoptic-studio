@@ -1,9 +1,7 @@
 //! What the `session-state` hook prints when a session starts (ADR-0021): the progress of each
-//! feature started, read from the story tables of the feature files, so that a new or compacted
+//! feature started, read from the stories of the records (EN-154), so that a new or compacted
 //! session starts from facts rather than from memory. Rewritten from `.claude/hooks/session-state.ts`
 //! (EN-104).
-
-use crate::guard::is_space;
 
 /// Age after which a running call's file is left over from an interrupted or denied call.
 pub const STALE_MS: u128 = 86_400_000;
@@ -15,7 +13,7 @@ pub fn is_stale(age_ms: u128) -> bool {
     age_ms > STALE_MS
 }
 
-/// A row of a feature's story table.
+/// A story of a feature, as the records hold it.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct StoryRow {
     pub id: String,
@@ -23,49 +21,32 @@ pub struct StoryRow {
     pub title: String,
 }
 
-/// Whether a text is a story id: capitals, a hyphen, three digits (`[A-Z]+-\d{3}`).
-fn is_story_id(text: &str) -> bool {
-    text.split_once('-').is_some_and(|(prefix, digits)| {
-        !prefix.is_empty()
-            && prefix.bytes().all(|byte| byte.is_ascii_uppercase())
-            && digits.len() == 3
-            && digits.bytes().all(|byte| byte.is_ascii_digit())
-    })
-}
+/// The statement `knowledge sql` runs for the hook: each story of a feature, its feature named
+/// `E49-F48-<topic>` as its file was, by epic, feature and order in the feature.
+pub const FEATURE_STORIES: &str = "SELECT features.epic || '-' || features.id || '-' || features.topic, stories.id, stories.status, stories.title FROM stories JOIN features ON features.id = stories.feature ORDER BY features.epic, features.id, stories.position, stories.id";
 
-/// One row `| [ID](…) | type | title | status |`, `None` for any other line:
-/// `^\|\s*\[([A-Z]+-\d{3})\]\([^)]*\)\s*\|[^|]*\|\s*([^|]*?)\s*\|\s*([a-z-]+)\s*\|$`.
-fn story_row(line: &str) -> Option<StoryRow> {
-    let rest = line.strip_prefix('|')?.trim_start_matches(is_space);
-    let (id, rest) = rest.strip_prefix('[')?.split_once("](")?;
-    let (_, rest) = rest.split_once(')')?;
-    let rest = rest.trim_start_matches(is_space).strip_prefix('|')?;
-    let (_, rest) = rest.split_once('|')?;
-    let mut cells = rest.split('|');
-    let title = cells.next()?.trim_matches(is_space);
-    let status = cells.next()?.trim_matches(is_space);
-
-    (is_story_id(id)
-        && !status.is_empty()
-        && status
-            .bytes()
-            .all(|byte| byte.is_ascii_lowercase() || byte == b'-')
-        && cells.next() == Some("")
-        && cells.next().is_none())
-    .then(|| StoryRow {
-        id: id.to_owned(),
-        status: status.to_owned(),
-        title: title.to_owned(),
-    })
-}
-
-/// The story rows of a feature file, in delivery order.
+/// The features and their stories in order, from the rows of [`FEATURE_STORIES`]; a row of another
+/// shape left out.
 #[must_use]
-pub fn story_rows(text: &str) -> Vec<StoryRow> {
-    // `^` and `$` of the `m` flag: at every line terminator, a carriage return included.
-    text.split(['\n', '\r', '\u{2028}', '\u{2029}'])
-        .filter_map(story_row)
-        .collect()
+pub fn feature_stories(rows: &[Vec<String>]) -> Vec<(String, Vec<StoryRow>)> {
+    let mut features: Vec<(String, Vec<StoryRow>)> = Vec::new();
+
+    for row in rows {
+        let [feature, id, status, title] = row.as_slice() else {
+            continue;
+        };
+        let story = StoryRow {
+            id: id.clone(),
+            status: status.clone(),
+            title: title.clone(),
+        };
+
+        match features.last_mut() {
+            Some((name, stories)) if name == feature => stories.push(story),
+            _ => features.push((feature.clone(), vec![story])),
+        }
+    }
+    features
 }
 
 /// Whether a status is a finished story's.
@@ -92,21 +73,6 @@ pub fn feature_line(feature: &str, rows: &[StoryRow]) -> Option<String> {
             next.title
         )
     })
-}
-
-/// Whether a file name is a feature's: `^E\d{2}-F\d{2}-.*\.md$`.
-#[must_use]
-pub fn is_feature_file(name: &str) -> bool {
-    let bytes = name.as_bytes();
-
-    bytes.len() >= 11
-        && bytes[0] == b'E'
-        && bytes[1..3].iter().all(u8::is_ascii_digit)
-        && &bytes[3..5] == b"-F"
-        && bytes[5..7].iter().all(u8::is_ascii_digit)
-        && bytes[7] == b'-'
-        && bytes.ends_with(b".md")
-        && !name[8..].contains(['\n', '\r', '\u{2028}', '\u{2029}'])
 }
 
 /// The text the hook prints: the branch, its uncommitted files and last commit, then each feature

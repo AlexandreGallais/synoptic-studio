@@ -133,7 +133,7 @@ Since 2026-10-16 every new script or tool is written in Rust, and the existing T
 
 ## F19's acceptance criteria and stories (draft)
 
-Superseded on 2026-10-17 by the Product Owner's answers below and by [F19's feature file](../../backlog/features/E17-F19-oxc-and-rust-tools.md).
+Superseded on 2026-10-17 by the Product Owner's answers below and by F19's feature file.
 
 Criteria, to confirm at the refinement:
 
@@ -163,7 +163,7 @@ TypeScript stays at 6.0: TypeDoc 0.28.20, the latest, asks for `typescript` up t
 
 ## The Product Owner's answers (2026-10-17) and the research they asked
 
-The final state of these decisions is the feature file's "Decisions of the Product Owner" ([F19](../../backlog/features/E17-F19-oxc-and-rust-tools.md)); the rounds below record how they were reached, a later round superseding parts of an earlier one. The Product Owner answered the spike's four questions on 2026-10-17 and widened its scope the same day. Each answer below is recorded as understood, with the research it asked for. Measures taken on 2026-10-17 from 08:57, under the heavy lock, on the same machine (load average 7 to 22 from other agents' work); tools tried in the spike's scratch folder, nothing added to `package.json`.
+The final state of these decisions is the feature file's "Decisions of the Product Owner" (F19); the rounds below record how they were reached, a later round superseding parts of an earlier one. The Product Owner answered the spike's four questions on 2026-10-17 and widened its scope the same day. Each answer below is recorded as understood, with the research it asked for. Measures taken on 2026-10-17 from 08:57, under the heavy lock, on the same machine (load average 7 to 22 from other agents' work); tools tried in the spike's scratch folder, nothing added to `package.json`.
 
 ### Decisions
 
@@ -258,7 +258,7 @@ Decisions taken after the answers above, recorded as understood; they supersede,
 
 | Subject | Decision |
 | --- | --- |
-| Split | accepted: F19 holds the checks; the agent tools in Rust, the `library` MCP server and the clean-up of E17 form [F21](../../backlog/features/E17-F21-agent-tools-in-rust.md) |
+| Split | accepted: F19 holds the checks; the agent tools in Rust, the `library` MCP server and the clean-up of E17 form F21 |
 | The 6 rules without types | rewritten in their strict form: `readonly` or `Readonly<…>` written in place, nothing trusted from a type defined elsewhere; nothing kept in ESLint (the 9 s pass is not adopted) |
 | TypeScript | TypeScript 7 only; TypeScript 6 removed, so TypeDoc is replaced |
 | Tools | every tool around the project in Rust or Go — the project's own in Rust, third-party ones rewritten natively; no JavaScript tool of the project's own; Vite, Vitest and VitePress stay |
@@ -302,7 +302,7 @@ Left open by the decision that every tool is Rust or Go, a question for the refi
 
 - **One linter, oxlint.** `tsgolint` is used only if a rule kept truly needs types. It does: the configuration enables 120 typescript-eslint rules, of which **55** are type-aware rules that `tsgolint` runs — among them `no-floating-promises`, `no-misused-promises`, `strict-boolean-expressions`, `no-unnecessary-condition`, `switch-exhaustiveness-check`, `restrict-template-expressions` and the eight `no-unsafe-*` rules (counted on 2026-10-17 from the configuration ESLint prints and `tsgolint`'s rule folder, `REF-TSGOLINT`). Each reads a type the code does not write (a promise returned, a value possibly `any`), so none can be rewritten without a type checker. So `tsgolint` stays, for those 55 only; the 8 rules of the spike's question are handled without types as decided. The type check itself is TypeScript 7's compiler, not oxlint's `--type-check`.
 - **Every rule oxlint lacks is rewritten in the project's Rust linter**: the 265 rules it runs today only as JS plugins of third-party packages — Unicorn 197, JSDoc 43, `eslint-plugin-functional` 12, `@stylistic` 5, Import 4, typescript-eslint without types 2, `unused-imports` 2 (counted from the spike's runs). The question of the second round is closed; how to cut this work into features is left to the refinement.
-- **The dev packages**: each is rewritten in Rust when sensible, kept otherwise with its reason; the table and the stories are in [F21](../../backlog/features/E17-F21-agent-tools-in-rust.md). Rewritten: husky, lint-staged, commitlint, validate-branch-name, secretlint, npm-check-updates, knip. Kept: Vite, Vitest and its coverage, VitePress, TypeScript 7, oxlint, oxfmt and `tsgolint`, `happy-dom`, `fast-check`, `@types/node`, `mermaid`.
+- **The dev packages**: each is rewritten in Rust when sensible, kept otherwise with its reason; the table and the stories are in F21. Rewritten: husky, lint-staged, commitlint, validate-branch-name, secretlint, npm-check-updates, knip. Kept: Vite, Vitest and its coverage, VitePress, TypeScript 7, oxlint, oxfmt and `tsgolint`, `happy-dom`, `fast-check`, `@types/node`, `mermaid`.
 
 ## The Product Owner's fourth round (2026-10-17)
 

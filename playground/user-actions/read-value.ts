@@ -7,7 +7,7 @@ import { selectPageElement } from "./select-page-element";
  * @param id - its id, without `#`
  * @returns the value shown
  * @throws {Error} when the element has no value: neither an input nor a select
- * @see docs/backlog/stories/E14-F11-EN-021-shared-test-helpers.md
+ * @see EN-021
  */
 export function readValue(id: string): string {
   const found = selectPageElement(`#${id}`);

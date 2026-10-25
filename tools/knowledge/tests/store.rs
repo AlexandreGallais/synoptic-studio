@@ -182,9 +182,10 @@ fn f48_ac1_sets_user_version_to_the_schemas_number_and_keeps_the_rows_when_opene
         .unwrap();
 
     clean(&file);
-    assert_eq!(SCHEMA_VERSION, 3);
-    assert_eq!(version, 3);
-    assert_eq!(pragma, 3);
+    // Schema 4 since EN-154, the backlog's tables added.
+    assert_eq!(SCHEMA_VERSION, 4);
+    assert_eq!(version, 4);
+    assert_eq!(pragma, 4);
     assert_eq!(rows, 1);
 }
 
@@ -206,7 +207,7 @@ fn f48_ac1_makes_one_schema_when_four_connections_open_a_new_file_at_once() {
         .collect();
 
     clean(&file);
-    assert_eq!(opened, [Ok(3), Ok(3), Ok(3), Ok(3)]);
+    assert_eq!(opened, vec![Ok(SCHEMA_VERSION); 4]);
 }
 
 #[test]
@@ -301,11 +302,11 @@ fn f48_ac1_refuses_to_write_to_a_newer_file_and_still_reads_it() {
         .unwrap();
 
     clean(&file);
-    assert_eq!(version, 4);
+    assert_eq!(version, 5);
     assert_eq!(
         refused,
         Err(
-            "the file's schema is 4, newer than this binary's 3: rebuild the tools from your base, target/release/git-sequences sync"
+            "the file's schema is 5, newer than this binary's 4: rebuild the tools from your base, target/release/git-sequences sync"
                 .to_owned()
         )
     );
@@ -355,7 +356,7 @@ fn count(database: &Connection, query: &str) -> i64 {
 }
 
 #[test]
-fn f48_ac1_brings_a_schema_1_file_up_to_3_its_rows_kept_with_their_branch_and_state() {
+fn f48_ac1_brings_a_schema_1_file_up_to_the_last_its_rows_kept_with_their_branch_and_state() {
     let file = place("from-1");
 
     schema_1_file(&file);
@@ -374,7 +375,7 @@ fn f48_ac1_brings_a_schema_1_file_up_to_3_its_rows_kept_with_their_branch_and_st
     let triggers = names(&database, "trigger");
 
     clean(&file);
-    assert_eq!(version, 3);
+    assert_eq!(version, SCHEMA_VERSION);
     assert_eq!(kept, [1, 1, 1, 1]);
     assert_eq!(indexed, ["EN-151"]);
     assert_eq!(

@@ -7,7 +7,7 @@ import { typeValue } from "./type-value";
  * @kind procedure
  * @param id - input id
  * @param value - typed text
- * @see docs/backlog/stories/E14-F11-EN-021-shared-test-helpers.md
+ * @see EN-021
  */
 export function typeAndEnter(id: string, value: string): void {
   typeValue(id, value);

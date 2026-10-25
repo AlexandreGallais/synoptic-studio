@@ -100,7 +100,7 @@ The lint already forbids `performance.now()` and `Date.now()` in tests (`.claude
 
 **Open.** With the release pull request merged into `develop`, its merge commit is on `develop`: the step on `main` must look for pull requests merged into `develop` (`target-branch: develop`, `skip-github-pull-request: true`) and tag that commit once `main` holds it. EN-046 checks this on the next release rather than assuming it.
 
-**Answered by EN-046 (2026-10-17).** release-please's source confirms it: the release step lists the pull requests merged into its `target-branch` with the pending label (`REF-RELEASE-PLEASE-SOURCE`), so the step on `main` runs with `target-branch: develop`; while such a pull request waits for its tag, no new release pull request is opened. The tag itself is checked on the next release ([EN-046](../../backlog/stories/E17-F18-EN-046-release-pr-on-develop.md)).
+**Answered by EN-046 (2026-10-17).** release-please's source confirms it: the release step lists the pull requests merged into its `target-branch` with the pending label (`REF-RELEASE-PLEASE-SOURCE`), so the step on `main` runs with `target-branch: develop`; while such a pull request waits for its tag, no new release pull request is opened. The tag itself is checked on the next release (EN-046).
 
 ## The other stories
 

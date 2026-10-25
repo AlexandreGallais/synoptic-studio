@@ -38,7 +38,7 @@ Counts are modules, tests not counted (each test follows its module).
 | `src/model` | 49 | `rectangle/` 6, `regular-polygon/` 7, `free-shape/` 13 (each with its type), `radii/` 5, `placement/` 8, `selection/` 10; the root keeps its barrel only |
 | `src/geometry` | 40 | root: the types (`arc`, `segment`, `contour-piece`, `corner`, `corner-points`, `size`, `bounding-box`, `alignment`, `alignments`, `anchor`) and `cyclic-item`; `rounded-corners/` 11, `box/` 9, `stretched-polygon/` 9 |
 | `playground` | 77 | root: entry, mount, update; `guided-test/` 17, `shape/` (kind, sizes, validity, drawing) about 20, `points/` (list, fields, selection, delete) about 20, `position/` (position, anchor, angle, boxes) about 17 |
-| `src/math`, `src/io`, `src/render` | 17, 6, 4 | math split in EN-022 (`vector/`), see [EN-022](../../backlog/stories/E14-F11-EN-022-folder-layout.md); io and render unchanged |
+| `src/math`, `src/io`, `src/render` | 17, 6, 4 | math split in EN-022 (`vector/`), see EN-022; io and render unchanged |
 
 The exact lists are fixed in EN-022; `import-x/no-cycle` checks that value imports between folders go one way. A folder over the limit is split again by theme, or listed with its reason.
 

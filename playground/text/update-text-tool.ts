@@ -25,7 +25,7 @@ const REFUSED =
  * @kind procedure
  * @param document - page document
  * @param isValid - whether the text can enter the model
- * @see docs/backlog/stories/E15-F05-US-031-place-a-text.md
+ * @see US-031
  */
 function writeTextValidity(document: Document, isValid: boolean): void {
   for (const field of document.querySelectorAll("#text-options input, #placement input")) {
@@ -40,7 +40,7 @@ function writeTextValidity(document: Document, isValid: boolean): void {
  * @kind procedure
  * @param document - page document
  * @param text - the text read from the fields, valid or not
- * @see docs/backlog/stories/E15-F14-US-033-put-a-text-in-a-box.md
+ * @see US-033
  */
 function writeTextBoxFields(document: Document, text: Text): void {
   selectElement(document, "text-box-fields").hidden = !text.isInBox && isValidTextBox(text);
@@ -52,7 +52,7 @@ function writeTextBoxFields(document: Document, text: Text): void {
  * @kind procedure
  * @param document - page document
  * @param weight - the text's weight
- * @see docs/backlog/stories/E15-F05-US-037-bold-gives-back-the-weight-and-no-sentence-case.md
+ * @see US-037
  */
 function writeBoldState(document: Document, weight: number): void {
   const bold = selectElement(document, "text-bold");
@@ -69,7 +69,7 @@ function writeBoldState(document: Document, weight: number): void {
  * @param document - page document
  * @param text - a valid text
  * @param metrics - the metrics of its face
- * @see docs/backlog/stories/E15-F17-US-048-fluid-changes-held-keys.md
+ * @see US-048
  */
 function showMeasuredText(document: Document, text: Text, metrics: FontMetrics): void {
   const measured = readTextMeasure(metrics, text);
@@ -87,7 +87,7 @@ function showMeasuredText(document: Document, text: Text, metrics: FontMetrics):
  * @kind procedure
  * @param document - page document
  * @param isFontMissing - whether the text's font has no face the browser draws
- * @see docs/backlog/stories/E15-F05-US-031-place-a-text.md
+ * @see US-031
  */
 function writeTextRefusal(document: Document, isFontMissing: boolean): void {
   writeText(document, "status", isFontMissing ? DEFAULT_FONT_MISSING : REFUSED);
@@ -113,7 +113,7 @@ function writeTextRefusal(document: Document, isFontMissing: boolean): void {
  *
  * @kind procedure
  * @param document - page document
- * @see docs/backlog/stories/E15-F05-US-031-place-a-text.md
+ * @see US-031
  */
 export function updateTextTool(document: Document): void {
   writeFontFields(document);

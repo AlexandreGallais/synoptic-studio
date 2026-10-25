@@ -26,7 +26,7 @@ import type { DrawnText, Text } from "../../src";
  * @param drawn - its block and its middle, from `textDrawing`
  * @returns the dashed frame of an upright text; the straight box and the turned frame of a turned
  * one; nothing for a frame without area
- * @see docs/backlog/stories/E15-F17-US-050-turned-text-frames-as-shapes.md
+ * @see US-050
  */
 export function createTextFrame(
   document: Document,

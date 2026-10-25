@@ -31,4 +31,4 @@
 
 ## References
 
-ADR-0073, ADR-0074, ADR-0078, [EN-115](../backlog/stories/E17-F21-EN-115-fewer-npm-scripts.md), `docs/tooling/agent-tools.md`, `docs/tooling/commands.md`
+ADR-0073, ADR-0074, ADR-0078, EN-115, `docs/tooling/agent-tools.md`, `docs/tooling/commands.md`

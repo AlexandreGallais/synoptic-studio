@@ -38,7 +38,7 @@ const JSON_INDENT = 2;
  * @param text - a valid text
  * @param measures - the metrics of its face and its lines and block, drawn from once
  * (`measuredTextDrawing`, US-048)
- * @see docs/backlog/stories/E15-F05-US-032-turn-a-text.md
+ * @see US-032
  */
 export function showText(document: Document, text: Text, measures: TextMeasures): void {
   const drawn = measuredTextDrawing(measures.metrics, text, measures.measured);

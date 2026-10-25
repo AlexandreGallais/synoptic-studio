@@ -29,7 +29,7 @@
 
 ## Consequences
 
-- `tools/shared-files` lists `tool-incidents.md` among the logs, lets the `done` commit change the logs, and `move-rows` takes the cards of `### Incidents`; `story-finish` no longer runs `move-rows` and refuses a story file still holding rows; `tests/logs.test.ts` checks the cards' form and their union merge (EN-137, [F23](../backlog/features/E17-F23-the-path-of-a-story.md)).
+- `tools/shared-files` lists `tool-incidents.md` among the logs, lets the `done` commit change the logs, and `move-rows` takes the cards of `### Incidents`; `story-finish` no longer runs `move-rows` and refuses a story file still holding rows; `tests/logs.test.ts` checks the cards' form and their union merge (EN-137, F23).
 - The run skill's `done` commit step, the worker brief's shared files, `AGENTS.md` and `docs/tooling/agent-tools.md` say so.
 - If stories run in parallel again, this decision is reviewed with ADR-0086: two `done` commits writing the logs would meet at their merges, which the union merge resolves for appended lines only.
 

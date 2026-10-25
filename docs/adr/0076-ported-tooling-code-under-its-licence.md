@@ -33,4 +33,4 @@
 
 ## References
 
-`docs/research/README.md` (section 4), ADR-0025, ADR-0073, ADR-0075, [AUD-021](../backlog/stories/E17-F19-AUD-021-audit-f19.md), `NOTICE`, `THIRD-PARTY-LICENSES.md`
+`docs/research/README.md` (section 4), ADR-0025, ADR-0073, ADR-0075, AUD-021, `NOTICE`, `THIRD-PARTY-LICENSES.md`

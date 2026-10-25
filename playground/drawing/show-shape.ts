@@ -31,7 +31,7 @@ const MIXED_EFFECTIVE = "Effective radius: mixed, shown for each point in Points
  * @param document - page document
  * @param radius - requested radius of every corner
  * @param effective - radius drawn at every corner
- * @see docs/backlog/stories/E01-F01-US-003-round-rectangle-corners.md
+ * @see US-003
  */
 function writeOneEffectiveRadius(document: Document, radius: number, effective: number): void {
   const text = isReducedRadius(radius, effective)
@@ -49,7 +49,7 @@ function writeOneEffectiveRadius(document: Document, radius: number, effective: 
  * @kind procedure
  * @param document - page document
  * @param reading - valid shape
- * @see docs/backlog/stories/E01-F06-US-021-stretched-option.md
+ * @see US-021
  */
 function writeEffectiveRadius(document: Document, reading: ShapeReading): void {
   const radius = commonRadius(reading.radii);
@@ -72,7 +72,7 @@ function writeEffectiveRadius(document: Document, reading: ShapeReading): void {
  * @kind procedure
  * @param document - page document
  * @param reading - valid shape to draw
- * @see docs/backlog/stories/E01-F01-US-003-round-rectangle-corners.md
+ * @see US-003
  */
 export function showShape(document: Document, reading: ShapeReading): void {
   const contour = reading.corners.map((corner) => corner.point);

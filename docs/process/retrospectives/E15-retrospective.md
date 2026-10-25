@@ -175,7 +175,7 @@ The feedback log's nine rows are written as habits in [Working with the agent](.
 - [ADR-0064](../../adr/0064-checks-by-level.md): checks by level from E02.
 - [ADR-0065](../../adr/0065-parallel-branches-merged-without-conflicts.md): shared files that merge without conflicts.
 - [ADR-0066](../../adr/0066-a-register-of-exceptions.md): the register of exceptions, the byte buffer written once.
-- [E17](../../backlog/epics/E17-fast-tooling-with-oxc-and-rust.md), before E02: fast tooling with Oxc and Rust; its feature F18 holds the stories of this retrospective, EN-046 (release-please) first.
+- E17, before E02: fast tooling with Oxc and Rust; its feature F18 holds the stories of this retrospective, EN-046 (release-please) first.
 - Rules: the session report at a session's end with `--all`; the chat markers; no force push on a feature branch; side branches named after their story; the agent limit pointing to its check.
 
 ## 7. Playbook updates

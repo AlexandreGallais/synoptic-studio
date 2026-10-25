@@ -13,7 +13,7 @@ const WEIGHTS = { bold: 700, normal: 400 };
  * @kind procedure
  * @param document - page document
  * @param weight - the weight before Bold was pressed
- * @see docs/backlog/stories/E15-F05-US-037-bold-gives-back-the-weight-and-no-sentence-case.md
+ * @see US-037
  */
 function writeHeldWeight(document: Document, weight: string): void {
   if (readFieldValue(document, "text-weight") !== weight) {
@@ -27,7 +27,7 @@ function writeHeldWeight(document: Document, weight: string): void {
  * @kind procedure
  * @param document - page document
  * @param weight - the weight chosen
- * @see docs/backlog/stories/E15-F05-US-037-bold-gives-back-the-weight-and-no-sentence-case.md
+ * @see US-037
  */
 function writeBoldWeight(document: Document, weight: string): void {
   if (Number(weight) === WEIGHTS.bold) {
@@ -49,7 +49,7 @@ function writeBoldWeight(document: Document, weight: string): void {
  *
  * @kind procedure
  * @param document - page document
- * @see docs/backlog/stories/E15-F05-US-037-bold-gives-back-the-weight-and-no-sentence-case.md
+ * @see US-037
  */
 export function pressBold(document: Document): void {
   const bold = selectElement(document, "text-bold");

@@ -18,6 +18,7 @@ use git_sequences::{
     state_steps, sync_steps, sync_target,
 };
 use stale_binaries::RELEASE_BUILD;
+use worktree::{Story, recorded_story, story_of_branch};
 
 /// Runs one Git step, the text given on its standard input; its output, or Git's own message.
 fn git(step: &[String], input: Option<&str>) -> Result<String, String> {
@@ -75,9 +76,17 @@ fn git_words(words: &[&str]) -> Result<String, String> {
     git(&step, None)
 }
 
-/// Names of the story files of the checkout, none when it has no backlog.
-fn story_files(top: &Path) -> Vec<String> {
-    worktree::story_files(top).unwrap_or_default()
+/// The story of a story branch as the records hold it, none when they hold none or cannot be
+/// read: `sync` then asks for `--base`, `state` counts from no base.
+fn stories(top: &Path, branch: &Branch) -> Vec<Story> {
+    let Branch::Story(name) = branch else {
+        return Vec::new();
+    };
+
+    story_of_branch(name)
+        .and_then(|id| recorded_story(top, &id).ok().flatten())
+        .into_iter()
+        .collect()
 }
 
 /// The message of a commit, from its file or the standard input.
@@ -124,7 +133,7 @@ fn sync(branch: &Branch, base: Option<&str>, top: &Path) -> Result<String, Strin
     .lines()
     .map(str::to_owned)
     .collect();
-    let target = sync_target(branch, base, &story_files(top), &remotes)?;
+    let target = sync_target(branch, base, &stories(top, branch), &remotes)?;
 
     if let Some(refusal) =
         changes_refusal(branch_name(branch), &target, &git(&changes_step(), None)?)
@@ -271,7 +280,7 @@ fn state(branch: &Branch, top: &Path, place: String) -> Result<String, String> {
     .map(str::to_owned)
     .collect();
     let upstream = git_words(&["rev-parse", "--abbrev-ref", "@{upstream}"]).ok();
-    let base = state_base(branch, &story_files(top), &remotes, upstream.as_deref());
+    let base = state_base(branch, &stories(top, branch), &remotes, upstream.as_deref());
     let mut parts = Vec::new();
 
     for step in state_steps(base.as_deref()) {

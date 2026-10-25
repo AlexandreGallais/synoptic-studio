@@ -119,15 +119,13 @@ fn draw() -> u8 {
     };
     let folder = checkout.common.join("metrics");
     let root = checkout.top.clone();
+    // The backlog's files, which a checkout holds no more once the backlog moved into the records
+    // (EN-154): the line then names the branch, read once a second without a call to them.
     let backlog = root.join("docs").join("backlog");
-    let (Some(stories), Some(features)) = (
-        names(&backlog.join("stories")),
-        names(&backlog.join("features")),
-    ) else {
-        eprintln!("status-line: the backlog's folders cannot be read");
-        return 1;
-    };
-    let files: Vec<String> = stories.into_iter().chain(features).collect();
+    let files: Vec<String> = ["stories", "features"]
+        .iter()
+        .flat_map(|folder| names(&backlog.join(folder)).unwrap_or_default())
+        .collect();
     let transcript = input.get("transcript_path").text();
     let now = now_ms();
 

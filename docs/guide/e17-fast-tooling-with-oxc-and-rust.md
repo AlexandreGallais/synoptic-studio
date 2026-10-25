@@ -24,7 +24,7 @@ Every tool the project wrote for itself — the Claude Code hooks, the status li
 
 ### After the features: NAM-002, EN-114, EN-115
 
-- **NAM-002, the naming pass and the epic's full audit**: the dates written in nine crates moved into one crate, `tools/calendar`; the Git calls written fifteen times into `tools/git-repository`; the cooldown and the hash functions named after their source. `check:all` went from 106.0 to 83.9 s across the story, most of it from the load, not claimed. Six findings were logged for later, each with its reason ([NAM-002](../backlog/stories/E17-NAM-002-naming-pass-e17.md)).
+- **NAM-002, the naming pass and the epic's full audit**: the dates written in nine crates moved into one crate, `tools/calendar`; the Git calls written fifteen times into `tools/git-repository`; the cooldown and the hash functions named after their source. `check:all` went from 106.0 to 83.9 s across the story, most of it from the load, not claimed. Six findings were logged for later, each with its reason (NAM-002).
 - **EN-114, the records kept on the computer**: GitHub refused the push of the private records, one transcript being 238 MB. They now stay in a local folder you chose, shared by every project, one folder per repository, never sent nor backed up (ADR-0081).
 - **EN-115, fewer npm scripts**: `package.json` went from 52 scripts to 26, those a person runs (`dev`, `build`, `fix`, `check:all`, `test`…) and those something calls by name; the agent calls every other tool by its binary, `target/release/<binary>` (ADR-0082).
 
@@ -108,7 +108,7 @@ A story's life crosses all four features. This review's own story, REV-004, walk
 
 Held with the Product Owner on 2026-10-18 (`REV-004`): the agent ran the checklist again first, then the Product Owner answered the questions it prepared.
 
-**The checklist run again by the agent** on `develop`, line by line in [REV-004](../backlog/stories/E17-REV-004-review-e17.md), section E17's checklist run again: every tool works and every check is green; no tool was changed during the review.
+**The checklist run again by the agent** on `develop`, line by line in REV-004, section E17's checklist run again: every tool works and every check is green; no tool was changed during the review.
 
 | Result | Lines |
 | --- | --- |

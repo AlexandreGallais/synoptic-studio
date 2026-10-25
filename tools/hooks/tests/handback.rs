@@ -86,10 +86,16 @@ fn names_the_story_by_its_branch_then_its_folder() {
 
 #[test]
 fn counts_from_the_feature_branch_or_develop_never_the_whole_history() {
+    // The stories as the records hold them (EN-154).
+    let story = |id: &str, kind: &str, feature: Option<&str>| worktree::Story {
+        id: id.to_owned(),
+        kind: kind.to_owned(),
+        feature: feature.map(str::to_owned),
+        topic: "a-topic".to_owned(),
+    };
     let files = [
-        "README.md".to_owned(),
-        "E17-F20-EN-088-a-hook.md".to_owned(),
-        "E17-REV-009-review-e17.md".to_owned(),
+        story("EN-088", "EN", Some("F20")),
+        story("REV-009", "REV", None),
     ];
     // `f2-b` listed before `f20-a`: the prefix `feature/f20-` keeps them apart.
     let remotes = [
@@ -106,7 +112,7 @@ fn counts_from_the_feature_branch_or_develop_never_the_whole_history() {
         base_of("REV-009", &files, &remotes).as_deref(),
         Some("origin/develop")
     );
-    // No story file, or no feature branch on origin: no base.
+    // No story in the records, or no feature branch on origin: no base.
     assert_eq!(base_of("EN-089", &files, &remotes), None);
     assert_eq!(base_of("EN-088", &files, &remotes[..2]), None);
 }
@@ -289,6 +295,37 @@ fn clean(program: &str) -> Command {
     command
 }
 
+/// A copy of the hook beside a `knowledge` script standing for the records, in a test's folder:
+/// it holds EN-123 of F20 while the file `en-123` is there, so that no test reads the real
+/// records (EN-154).
+fn beside_records(root: &Path) -> String {
+    let folder = root.join("bin");
+    let binary = folder.join("check-handback");
+    let script = folder.join("knowledge");
+
+    fs::create_dir_all(&folder).expect("bin");
+    // Copied once: a binary written again over one just run is killed on macOS, its signature
+    // read from the first copy.
+    if !binary.exists() {
+        fs::copy(env!("CARGO_BIN_EXE_check-handback"), &binary).expect("hook copied");
+    }
+    fs::write(
+        &script,
+        format!(
+            "#!/bin/sh\nprintf 'kind\\tfeature\\ttopic\\n'\ncase \"$2\" in *\"'EN-123'\"*) [ -f '{}' ] && printf 'EN\\tF20\\ta-topic\\n';; esac\nexit 0\n",
+            root.join("en-123").display()
+        ),
+    )
+    .expect("script");
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+
+        fs::set_permissions(&script, fs::Permissions::from_mode(0o755)).expect("script runs");
+    }
+    binary.display().to_string()
+}
+
 /// Runs Git in a folder, panicking on a failure.
 fn git(folder: &Path, arguments: &[&str]) -> String {
     let output = clean("git")
@@ -331,12 +368,8 @@ fn project_in(root: &Path, folder: &str) -> std::path::PathBuf {
     git(&worktree, &["commit", "-q", "--allow-empty", "-m", "start"]);
     git(&worktree, &["push", "-q", "origin", "feature/f20-a-diet"]);
     git(&worktree, &["switch", "-q", "-c", "chore/en-123-a-topic"]);
-    fs::create_dir_all(worktree.join("docs/backlog/stories")).expect("stories");
-    fs::write(
-        worktree.join("docs/backlog/stories/E17-F20-EN-123-a-topic.md"),
-        "",
-    )
-    .expect("story");
+    // EN-123 in the records the `knowledge` script stands for, while this file is there.
+    fs::write(root.join("en-123"), "").expect("story recorded");
     git(
         &worktree,
         &[
@@ -363,7 +396,7 @@ fn hook(root: &Path, agent_type: &str, lines: &[String], message: &str) -> Strin
         quote(&root.join("project").display().to_string()),
         quote(&transcript.display().to_string())
     );
-    let mut child = clean(env!("CARGO_BIN_EXE_check-handback"))
+    let mut child = clean(&beside_records(root))
         .env("CLAUDE_PROJECT_DIR", root.join("project"))
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
@@ -539,8 +572,7 @@ fn the_hook_checks_no_commit_naming_without_a_base() {
     let head = git(&worktree, &["rev-parse", "--short=7", "HEAD"]);
 
     git(&worktree, &["push", "-q", "-u", "origin", "HEAD"]);
-    fs::remove_file(worktree.join("docs/backlog/stories/E17-F20-EN-123-a-topic.md"))
-        .expect("story removed");
+    fs::remove_file(root.join("en-123")).expect("story removed from the records");
     let through = decision_of(&hook(
         &root,
         "general-purpose",
@@ -548,7 +580,7 @@ fn the_hook_checks_no_commit_naming_without_a_base() {
         "Names no commit.",
     ));
 
-    // No story file, so no base: the push alone is checked, never the whole history.
+    // No story in the records, so no base: the push alone is checked, never the whole history.
     assert_eq!(through.get("permissionDecision").text(), "allow");
     assert_eq!(
         through.get("updatedInput").get("message").text(),

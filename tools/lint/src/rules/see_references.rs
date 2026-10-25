@@ -1,7 +1,9 @@
 //! `local/see-references`: every `@see` of a `JSDoc` block points to an existing and verified
-//! reference — `REF-*` in the bibliography, `DERIV-*`, `ADR-NNNN` or a `docs/…` page — and every
-//! top-level function of a kind that computes or rules has one (docs/conventions/documentation.md).
-//! It guards against invented references.
+//! reference — `REF-*` in the bibliography, `DERIV-*`, `ADR-NNNN`, a `docs/…` page, or the id of a
+//! backlog item, `EN-151` or `F48`, by its form alone: the backlog lives in the records, which
+//! the CI cannot read, and `knowledge check-ids` checks the ids before a pull request into
+//! `develop` (EN-154) — and every top-level function of a kind that computes or rules has one
+//! (docs/conventions/documentation.md). It guards against invented references.
 
 use std::path::Path;
 
@@ -14,6 +16,9 @@ use crate::source::{Source, tag_values};
 /// `format` or a `procedure`, the playground's clicks and displays among them, may cite one but
 /// need not (Product Owner, 2026-10-25).
 const KINDS_CITING: [&str; 3] = ["math", "geometry", "domain"];
+
+/// The kinds of stories the backlog has held, the prefix of their ids.
+const STORY_KINDS: [&str; 9] = ["US", "EN", "SP", "CHK", "AUD", "VAL", "NAM", "REV", "RET"];
 
 /// The rule.
 pub struct SeeReferences;
@@ -29,6 +34,22 @@ pub enum Status {
     Unverified,
     /// It is none of the families a `@see` may cite.
     UnknownFormat,
+}
+
+/// Whether a target is the id of a backlog item by its form: `E` or `F` and two digits, or a
+/// story's kind, a dash and three digits.
+#[must_use]
+pub fn is_backlog_id(target: &str) -> bool {
+    let digits = |text: &str, count: usize| {
+        text.len() == count && text.bytes().all(|byte| byte.is_ascii_digit())
+    };
+
+    match target.split_once('-') {
+        Some((kind, number)) => STORY_KINDS.contains(&kind) && digits(number, 3),
+        None => target
+            .split_at_checked(1)
+            .is_some_and(|(letter, number)| matches!(letter, "E" | "F") && digits(number, 2)),
+    }
 }
 
 /// Whether a text is a prefix followed by at least one character of a set.
@@ -69,6 +90,9 @@ pub fn status(project: &Project, target: &str) -> Status {
                 .any(|name| name.starts_with(&prefix)),
         );
     }
+    if is_backlog_id(target) {
+        return Status::Valid;
+    }
     let path = target.split('#').next().unwrap_or_default();
     if target.starts_with("docs/")
         && path
@@ -101,7 +125,7 @@ impl Rule for SeeReferences {
             let kind = source.kind(&function).unwrap_or_default();
             if KINDS_CITING.contains(&kind) && source.tags(&function, "see").is_empty() {
                 let message = format!(
-                    "`{kind}` function without `@see`: cite a REF-*, DERIV-*, ADR-* or docs/ page."
+                    "`{kind}` function without `@see`: cite a REF-*, DERIV-*, ADR-*, a backlog id or a docs/ page."
                 );
                 findings.push(source.finding(self.name(), Source::name_offset(&function), message));
             }
@@ -123,7 +147,7 @@ impl Rule for SeeReferences {
                         "`@see {target}` is marked [unverified] in docs/references.md: verify it before citing it."
                     ),
                     Status::UnknownFormat => format!(
-                        "`@see {target}`: expected REF-*, DERIV-*, ADR-NNNN or docs/…/file.md."
+                        "`@see {target}`: expected REF-*, DERIV-*, ADR-NNNN, a backlog id (EN-151, F48) or docs/…/file.md."
                     ),
                 };
                 findings.push(source.finding(self.name(), comment.span.start, message));
@@ -174,7 +198,9 @@ mod tests {
     fn asks_a_function_of_a_kind_for_a_see() {
         assert_eq!(
             found("/** @kind math */\nfunction f(): void {}"),
-            ["`math` function without `@see`: cite a REF-*, DERIV-*, ADR-* or docs/ page."]
+            [
+                "`math` function without `@see`: cite a REF-*, DERIV-*, ADR-*, a backlog id or a docs/ page."
+            ]
         );
         assert_eq!(found("function f(): void {}"), NONE);
     }
@@ -216,11 +242,15 @@ mod tests {
             "REF-a",
             "DERIV-A",
             "docs/a.txt",
+            "EN-15",
+            "F100",
+            "XX-001",
+            "en-151",
         ] {
             assert_eq!(
                 found(&citing(target)),
                 [format!(
-                    "`@see {target}`: expected REF-*, DERIV-*, ADR-NNNN or docs/…/file.md."
+                    "`@see {target}`: expected REF-*, DERIV-*, ADR-NNNN, a backlog id (EN-151, F48) or docs/…/file.md."
                 )]
             );
         }
@@ -228,11 +258,17 @@ mod tests {
 
     #[test]
     fn accepts_existing_and_verified_targets() {
+        // A backlog id by its form alone: the CI has no records to read it in (EN-154).
         for target in [
             "REF-OK",
             "DERIV-fit",
             "ADR-0001",
             "docs/references.md#section",
+            "EN-151",
+            "US-010",
+            "RET-001",
+            "F48",
+            "E01",
         ] {
             assert_eq!(found(&citing(target)), NONE);
         }

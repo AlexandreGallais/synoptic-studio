@@ -24,7 +24,7 @@ import type { GuidedStep } from "../guided-steps";
  * @kind procedure
  * @param document - page document
  * @param steps - steps of the guided test, possibly none
- * @see docs/backlog/stories/E01-F01-US-002-sharp-rectangle-in-playground.md
+ * @see US-002
  */
 export function mountPlayground(document: Document, steps: readonly GuidedStep[]): void {
   /** Asks a redraw at the next animation frame, the requests before it gathered (US-048). */

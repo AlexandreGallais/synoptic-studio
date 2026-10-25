@@ -11,7 +11,7 @@ import type { Point } from "../../src";
  * @kind procedure
  * @param document - page document
  * @param position - the new position, in the coordinates of the SVG
- * @see docs/backlog/stories/E01-F04-US-019-edit-a-turned-shape.md
+ * @see US-019
  */
 export function writeShapePosition(document: Document, position: Point): void {
   const kept = readStoredFreeShape(document);

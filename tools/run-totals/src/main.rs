@@ -3,9 +3,9 @@
 //! `.git/metrics/run.json`, or adds the session to the run already open; the session is the
 //! argument, else `CLAUDE_CODE_SESSION_ID`. `end` closes it and prints the report. `report` prints
 //! the duration and the tokens by kind of the open or last run. `status` prints the status line's
-//! part while a run is open, nothing otherwise. `should-stop` (EN-086)
-//! prints `stop` and exits 1 once the week's usage reaches 90 %, else `go` and exits 0, then the
-//! parked stories of the working tree's backlog; 2 outside a repository.
+//! part while a run is open, nothing otherwise. `should-stop` (EN-086, EN-154) prints `go`, the
+//! week's usage stopping no run since 2026-10-25, then the parked stories of the records, and
+//! exits 0; 2 outside a repository.
 
 use std::env;
 use std::fs;
@@ -17,7 +17,7 @@ use git_repository::{Checkout, checkout_of};
 use hooks::json::{Value, parse};
 use run_totals::marker::{Run, closed, opened, parse_run, render_run, whole};
 use run_totals::report::{report_table, status_text};
-use run_totals::stop::{parked_story, stop_text};
+use run_totals::stop::{GO, PARKED, parked_of, stop_text};
 use run_totals::tally::Tokens;
 use run_totals::totals::{count_run, projects_dir};
 
@@ -54,26 +54,15 @@ fn top_level() -> Result<PathBuf, String> {
     checkout().map(|found| found.top)
 }
 
-/// The ids of the parked stories of this working tree's backlog, sorted.
-fn parked_stories(root: &Path) -> Vec<String> {
-    let mut parked: Vec<String> = fs::read_dir(root.join("docs/backlog/stories"))
-        .into_iter()
-        .flatten()
-        .flatten()
-        .filter_map(|entry| fs::read_to_string(entry.path()).ok())
-        .filter_map(|text| parked_story(&text))
-        .collect();
+/// `should-stop`: the run goes on, and the parked stories of the records, read by `knowledge sql`
+/// beside this binary; records that cannot be read are said so, the run going on still.
+fn should_stop() -> Result<String, String> {
+    let top = top_level()?;
 
-    parked.sort();
-    parked
-}
-
-/// `should-stop`: whether the run stops, from the week's usage, and the parked stories.
-fn should_stop() -> Result<(bool, String), String> {
-    let metrics = common_dir()?.join("metrics");
-    let parked = parked_stories(&top_level()?);
-
-    Ok(stop_text(week_percent(&metrics), &parked))
+    Ok(match knowledge_call::rows(&top, PARKED) {
+        Ok(rows) => stop_text(&parked_of(&rows)),
+        Err(reason) => format!("{GO}\nparked: unknown, the records cannot be read: {reason}\n"),
+    })
 }
 
 fn run(words: &[String]) -> Result<String, String> {
@@ -160,9 +149,9 @@ fn main() -> ExitCode {
 fn answer(words: &[String]) -> u8 {
     if words.first().map(String::as_str) == Some("should-stop") {
         return match should_stop() {
-            Ok((stops, text)) => {
+            Ok(text) => {
                 print!("{text}");
-                u8::from(stops)
+                0
             }
             Err(message) => {
                 eprintln!("{message}");

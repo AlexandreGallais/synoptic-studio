@@ -10,7 +10,7 @@ import { loadFontFiles } from "./load-font-files";
  * @param files - the files chosen
  * @param update - redraws the playground
  * @returns once the page says it
- * @see docs/backlog/stories/E15-F15-US-036-import-choose-and-embed-a-font.md
+ * @see US-036
  */
 async function showFontFiles(
   document: Document,
@@ -30,7 +30,7 @@ async function showFontFiles(
  * @kind procedure
  * @param document - page document
  * @param update - redraws the playground
- * @see docs/backlog/stories/E15-F15-US-036-import-choose-and-embed-a-font.md
+ * @see US-036
  */
 export function listenToFontImport(document: Document, update: () => void): void {
   const picker = selectElement(document, "font-file");

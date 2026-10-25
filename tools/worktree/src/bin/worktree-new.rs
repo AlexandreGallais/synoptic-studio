@@ -1,8 +1,8 @@
 //! `worktree-new <ID> [--type <type>] [--topic <topic>]` (`target/release/worktree-new US-061`):
 //! `--topic` names a bubble's branch, and starts from `develop` an epic's spike or a review whose
-//! file no branch holds yet (REV-009). It fetches GitHub, adds
-//! `.claude/worktrees/us-061` on `feat/us-061-<topic>` from the story's feature branch — the one of
-//! `origin` holding the story's file when the checkout lacks it (`git ls-tree`, EN-118) — and links
+//! row the records do not hold yet (REV-009). It reads the story's kind, feature and topic in the
+//! records (`knowledge sql`, EN-154), fetches GitHub, adds
+//! `.claude/worktrees/us-061` on `feat/us-061-<topic>` from the story's feature branch, and links
 //! the main checkout's `node_modules` into it, then sets the hooks folder `.githooks` if it is not
 //! yet, relative so that a push runs the worktree's own `.githooks/pre-push` (EN-052, EN-108), and
 //! builds the release binaries of the Rust tools in the new worktree (EN-068), from a copy of the
@@ -16,7 +16,7 @@ use git_hooks::install::install;
 use git_repository::stdout_of;
 use stale_binaries::RELEASE_BUILD;
 use worktree::seed::seed_release;
-use worktree::{Plan, Request, plan};
+use worktree::{Plan, Request, plan, recorded_story, story_id};
 
 /// Output of a Git command, trimmed, or its error output as the reason.
 fn git(arguments: &[&str]) -> Result<String, String> {
@@ -41,31 +41,6 @@ fn arguments(argv: &[String]) -> Result<(&str, Option<&str>, Option<&str>), Stri
         }
     }
     Ok((id, kind, topic))
-}
-
-/// Names of the story files of the checkout the tool runs in.
-fn story_files(top: &Path) -> Result<Vec<String>, String> {
-    worktree::story_files(top)
-        .map_err(|error| format!("{}: {error}", top.join(worktree::STORIES).display()))
-}
-
-/// The story files of each feature branch of `origin`, read by `git ls-tree`: the main checkout,
-/// on `develop`, lacks the stories written on a feature branch (EN-118).
-fn branch_story_files(remote_branches: &[String]) -> Result<Vec<(String, Vec<String>)>, String> {
-    let folder = format!("{}/", worktree::STORIES);
-
-    remote_branches
-        .iter()
-        .map(|branch| {
-            let names = git(&["ls-tree", "--name-only", branch, &folder])?
-                .lines()
-                .filter_map(|path| path.strip_prefix(&folder))
-                .map(str::to_owned)
-                .collect();
-
-            Ok((branch.clone(), names))
-        })
-        .collect()
 }
 
 /// Links a folder at `link` to the folder `target`: a symbolic link (`std::os::unix::fs::symlink`).
@@ -141,7 +116,15 @@ fn run(argv: &[String]) -> Result<Plan, String> {
         .parent()
         .ok_or("the Git common directory has no parent")?
         .to_path_buf();
-    let top = PathBuf::from(git(&["rev-parse", "--show-toplevel"])?);
+    let story = match story_id(id) {
+        // Records that cannot be read stop the tool, but for a story given its topic, which needs
+        // none: an epic's spike or a review not written yet (REV-009).
+        Some(id) => recorded_story(&main, &id).or_else(|reason| match topic {
+            Some(_) => Ok(None),
+            None => Err(reason),
+        })?,
+        None => None,
+    };
 
     git(&["fetch", "--quiet", "origin"])?;
 
@@ -153,15 +136,12 @@ fn run(argv: &[String]) -> Result<Plan, String> {
     .lines()
     .map(str::to_owned)
     .collect();
-    let files = story_files(&top)?;
-    let branch_files = branch_story_files(&remote_branches)?;
     let request = Request {
         id,
         branch_type,
         topic,
-        story_files: &files,
+        story: story.as_ref(),
         remote_branches: &remote_branches,
-        branch_files: &branch_files,
         main: &main,
     };
     let plan = plan(&request, |path| path.symlink_metadata().is_ok())?;

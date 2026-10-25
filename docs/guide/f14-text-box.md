@@ -66,7 +66,7 @@ Install Inter 4.1 first, as for F05. Then `npm run dev` and `http://localhost:51
 
 ## Decided by the agent, to confirm
 
-Each is built as written and shown by its step; the full list, with its examples in Arial 16, is in [VAL-015](../backlog/stories/E15-F14-VAL-015-validate-f14.md#decisions-to-confirm).
+Each is built as written and shown by its step; the full list, with its examples in Arial 16, is in VAL-015.
 
 | # | Question | As built | Step |
 | --- | --- | --- | --- |

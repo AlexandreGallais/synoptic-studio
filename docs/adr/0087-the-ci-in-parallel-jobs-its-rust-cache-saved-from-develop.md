@@ -1,6 +1,6 @@
 # ADR-0087 — The CI in parallel jobs, its Rust cache saved by a push to `develop`
 
-**Status**: Accepted (Product Owner, 2026-10-18, REV-006, F24); decision 2 superseded by ADR-0088 (2026-10-18): the auto-merge's pushes to `develop` start no workflow, so the cache is saved by the `develop` CI it dispatches. Supersedes, in ADR-0072 (The run, decision 1), "no workflow runs on … a push to `develop`" for one job: the Rust cache's, which checks nothing and which no one waits for. The rest of that decision stands: the checks of work branches run locally, and the one CI is the pull request into `main`. Implemented by [EN-124](../backlog/stories/E17-F24-EN-124-the-ci-in-parallel-jobs.md) and [EN-125](../backlog/stories/E17-F24-EN-125-the-rust-cache-from-develop.md).
+**Status**: Accepted (Product Owner, 2026-10-18, REV-006, F24); decision 2 superseded by ADR-0088 (2026-10-18): the auto-merge's pushes to `develop` start no workflow, so the cache is saved by the `develop` CI it dispatches. Supersedes, in ADR-0072 (The run, decision 1), "no workflow runs on … a push to `develop`" for one job: the Rust cache's, which checks nothing and which no one waits for. The rest of that decision stands: the checks of work branches run locally, and the one CI is the pull request into `main`. Implemented by EN-124 and EN-125.
 
 ## Context
 

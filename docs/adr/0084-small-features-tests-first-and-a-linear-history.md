@@ -28,7 +28,7 @@ Changed in place on 2026-10-25 with the Product Owner (ADRs are now edited in pl
 
 ## Consequences
 
-- The guard allows a push with lease on a feature branch only through `git-sequences sync`'s rebase of that branch onto `develop`: a story of E02's first feature, [F23](../backlog/features/E17-F23-the-path-of-a-story.md).
+- The guard allows a push with lease on a feature branch only through `git-sequences sync`'s rebase of that branch onto `develop`: a story of E02's first feature, F23.
 - `AGENTS.md` (Work, Never), the run skill, the worker brief, `docs/process/agile.md` and the backlog's templates say it.
 - The trial of decision 4 is measured at E02's retrospective, which keeps, changes or drops it.
 

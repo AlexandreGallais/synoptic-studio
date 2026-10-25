@@ -19,7 +19,7 @@ import type { ColorField } from "./color-field";
  * @kind procedure
  * @param document - page document
  * @param ids - the color's fields
- * @see docs/backlog/stories/E15-F16-US-035-pick-a-color.md
+ * @see US-035
  */
 export function commitColorField(document: Document, ids: ColorField): void {
   const field = readColorInput(document, ids.color);

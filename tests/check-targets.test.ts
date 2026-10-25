@@ -438,7 +438,6 @@ describe("the Rust tools run as crates of the workspace (EN-068)", () => {
     );
 
     expect(hooks[2]).toMatch(/^tool git-hooks git-hooks commit-msg "\$1"$/mu);
-    expect(hooks[2]).toContain('then tool rule-docs check-rule-docs "$1"; fi');
     // After a pull, the binaries rebuilt when a Rust input changed (EN-131).
     expect(hooks[3]).toMatch(/^tool git-hooks git-hooks post-merge "\$@"$/mu);
     expect(hooks[4]).toMatch(/^tool git-hooks git-hooks post-rewrite "\$@"$/mu);
@@ -449,13 +448,11 @@ describe("the Rust tools run as crates of the workspace (EN-068)", () => {
     );
   });
 
-  it("[F33.AC2] shows at a done commit the notes its story file keeps for the main thread", () => {
+  it("checks no done commit any more: the story's status and rules live in the records (EN-154)", () => {
     const hook = readFileSync(join(ROOT, ".githooks", "commit-msg"), "utf8");
 
-    // `move-rows --notes` names each note with its story and writes nothing (`rows.rs`).
-    expect(hook).toContain(
-      `if grep -q '^Closes:' "$1"; then tool shared-files move-rows --notes "$(git branch --show-current)"; fi`,
-    );
+    // `rule-docs` and `move-rows --notes` ran at a `done` commit, gone with the story files.
+    expect(hook).not.toMatch(/grep -q '\^Closes:'|tool rule-docs|move-rows/u);
   });
 
   it("[F19.AC9] builds the release binaries of the workspace from prepare", () => {

@@ -9,7 +9,7 @@ import type { FreeShape } from "../../src";
  *
  * @kind procedure
  * @param document - page document
- * @see docs/backlog/stories/E01-F08-US-014-convert-and-move.md
+ * @see US-014
  */
 function selectFreeShape(document: Document): void {
   const option = selectElement(document, "shape").querySelector('option[value="free"]');
@@ -31,7 +31,7 @@ function selectFreeShape(document: Document): void {
  * @kind procedure
  * @param document - page document
  * @param shape - free shape to keep
- * @see docs/backlog/stories/E01-F08-US-014-convert-and-move.md
+ * @see US-014
  */
 export function writeStoredFreeShape(document: Document, shape: FreeShape): void {
   // A move that leaves no width or no height is no shape: the one kept stays (AUD-005).

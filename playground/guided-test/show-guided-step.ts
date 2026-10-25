@@ -15,7 +15,7 @@ import type { GuidedStep } from "../guided-steps";
  * @param document - page document
  * @param steps - steps of the guided test, possibly none
  * @param index - step to show, kept within the first and the last step
- * @see docs/backlog/stories/E01-F01-VAL-001-validate-rectangle.md
+ * @see VAL-001
  */
 export function showGuidedStep(
   document: Document,

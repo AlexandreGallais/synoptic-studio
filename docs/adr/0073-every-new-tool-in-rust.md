@@ -6,7 +6,7 @@
 
 - ADR-0050 (RET-002) made the agent's tools repository scripts in TypeScript, and left a project of Rust tools until a tool's own execution, not its writing, was measured as the cost.
 - E17 measured it: the agent runs the repository's tools hundreds of times a session, and a slow tool costs it rounds of waiting and checking again (ADR-0069). Its first Rust tools — the heavy lock, the hooks, the worktree tool, the formatter's table pass, `mutate` — replaced TypeScript scripts or `mkdir` locks.
-- On 2026-10-16 the Product Owner decided that from then on a new script, hook or agent tool is written in Rust, so that no new TypeScript tool has to be rewritten later ([E17](../backlog/epics/E17-fast-tooling-with-oxc-and-rust.md)). The rule was applied by the skills and the worker brief, but no ADR recorded it.
+- On 2026-10-16 the Product Owner decided that from then on a new script, hook or agent tool is written in Rust, so that no new TypeScript tool has to be rewritten later (E17). The rule was applied by the skills and the worker brief, but no ADR recorded it.
 
 ## Decision
 
@@ -27,9 +27,9 @@
 ## Consequences
 
 - `AGENTS.md`, the story skill and the run skill's worker brief state the rule and cite this ADR.
-- F21 rewrites the remaining TypeScript tools and hooks; E17 extends the direction to everything around the library (Product Owner, 2026-10-17, [E17](../backlog/epics/E17-fast-tooling-with-oxc-and-rust.md)).
+- F21 rewrites the remaining TypeScript tools and hooks; E17 extends the direction to everything around the library (Product Owner, 2026-10-17, E17).
 - ADR-0050's decisions 4 and 5 (merged branches deleted by GitHub, the state of the session in each call's record) stand; its decisions 2 and 3 are superseded by ADR-0072.
 
 ## References
 
-ADR-0025, ADR-0050, ADR-0069, ADR-0072, [E17](../backlog/epics/E17-fast-tooling-with-oxc-and-rust.md), `docs/tooling/agent-tools.md`, `docs/tooling/dependencies.md`
+ADR-0025, ADR-0050, ADR-0069, ADR-0072, E17, `docs/tooling/agent-tools.md`, `docs/tooling/dependencies.md`

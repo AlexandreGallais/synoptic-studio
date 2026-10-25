@@ -5,7 +5,7 @@ import { PENDING_TASKS } from "../page";
  *
  * @kind procedure
  * @returns them, in the order they started; none before the first
- * @see docs/backlog/stories/E15-F15-US-036-import-choose-and-embed-a-font.md
+ * @see US-036
  */
 function readPageTasks(): readonly Promise<void>[] {
   return PENDING_TASKS.get(document) ?? [];
@@ -17,7 +17,7 @@ function readPageTasks(): readonly Promise<void>[] {
  *
  * @kind procedure
  * @returns once no task is left running
- * @see docs/backlog/stories/E15-F15-US-036-import-choose-and-embed-a-font.md
+ * @see US-036
  */
 export async function waitForPageTasks(): Promise<void> {
   const tasks = readPageTasks();

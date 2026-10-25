@@ -21,7 +21,7 @@ const EDITOR_MARKS = ".text-frame, .box, .turned-box, .straight-box, .handle, .h
  * @kind procedure
  * @param copy - a copy of the canvas's `<svg>`, changed here
  * @returns its text
- * @see docs/backlog/stories/E15-F15-US-036-import-choose-and-embed-a-font.md
+ * @see US-036
  */
 function readDrawingText(copy: Element): string {
   const serializer = new XMLSerializer();
@@ -47,7 +47,7 @@ function readDrawingText(copy: Element): string {
  * @param document - page document
  * @param texts - the texts of the drawing
  * @returns the SVG file's text; empty when nothing is drawn
- * @see docs/backlog/stories/E15-F17-US-045-fonts-embedded-at-export.md
+ * @see US-045
  */
 export function readExportedSvg(document: Document, texts: readonly Text[]): string {
   const drawing = document.querySelector("#canvas svg")?.cloneNode(true);
