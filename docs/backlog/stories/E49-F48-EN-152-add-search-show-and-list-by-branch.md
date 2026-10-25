@@ -27,3 +27,15 @@ The agent's one call to find a fact: the commands of [note 0035](../../research/
 - [ ] T3 — `page`'s fallback and `docs/tooling/knowledge.md`'s commands (45 min)
 
 One task = one commit, referenced as `EN-152.T1` in the commit footer.
+
+## For the main thread
+
+### Journal
+
+- `#run` EN-152: knowledge add, search, show, list and sync, and page's fallback on knowledge show; schema 2 keys a document by its id and its branch, so that a branch writes its draft of an id another holds, the four tables rebuilt by SQLite's procedure for a changed key (`REF-SQLITE-ALTER-TABLE`, added). Timings, a temporary records root of three documents: 27 to 39 ms a command, page's fallback 28 ms against 3 ms for a page found.
+- `#run` EN-152: four connections opening a new file at once failed 1 run in 25 with `database is locked`: the switch to WAL is refused at once, without the busy timeout, while another connection writes; the opening now waits for that write by a `BEGIN IMMEDIATE` and switches again, a test reproducing it every time.
+
+### Improvements
+
+| 2026-10-25 | EN-152 | A story's rows stay drafts for good once `story:finish` deletes its branch: `git branch --merged develop` no longer lists it when its feature merges into `develop`. `story:finish` should carry the story's rows over to its feature branch, or mark them, as note 0035 plans (The rows of a branch) | tool |
+| 2026-10-25 | EN-152 | `knowledge` is not in the list of the binaries the agent calls nor allowed by `.claude/settings.json`, which a worker may not edit: each call asks until the main thread adds it | tool |

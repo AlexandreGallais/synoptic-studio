@@ -1,11 +1,13 @@
 //! The `page` command in a fixture repository of its own (EN-105): the page named or found from
-//! the id, what it prints and its exit codes. It runs no `git`. `f21_ac8_…` marks a test proving
-//! the feature's criterion.
+//! the id, what it prints and its exit codes, and its fallback on `knowledge show` for an id no
+//! page holds (EN-152). `f21_ac8_…` and `f48_ac2_…` mark a test proving a feature's criterion.
 
 use std::env;
 use std::fs;
 use std::path::{Path, PathBuf};
-use std::process::{Command, Output};
+use std::process::Output;
+
+use page::fallback::{knowledge_beside, shown_by};
 
 /// A fixture repository, removed at the end of the test.
 struct Repo(PathBuf);
@@ -55,9 +57,12 @@ fn repo(name: &str) -> Repo {
     Repo(root)
 }
 
+/// `page` run in a fixture: no `GIT_*` variable nor records root inherited, since an id no page
+/// holds runs `knowledge`, which runs Git and opens the records (EN-152).
 fn page(root: &Path, words: &[&str]) -> Output {
-    Command::new(env!("CARGO_BIN_EXE_page"))
+    test_support::command(env!("CARGO_BIN_EXE_page"))
         .current_dir(root)
+        .env_remove("AGENT_RECORDS_ROOT")
         .args(words)
         .output()
         .expect("page runs")
@@ -252,4 +257,63 @@ fn a_missing_adr_folder_finds_no_file() {
     let output = page(&repo.0, &["ADR-0069"]);
 
     assert_eq!(output.status.code(), Some(1));
+}
+
+/// A copy of `page` in a folder of its own, beside a `knowledge` script that shows `NOTE-0035`
+/// alone and fails on any other id, as the real binary does on an id it reads nowhere.
+#[cfg(unix)]
+fn page_beside_knowledge(repo: &Path) -> PathBuf {
+    use std::os::unix::fs::PermissionsExt as _;
+
+    let folder = repo.join("bin");
+    let page = folder.join("page");
+    let knowledge = folder.join("knowledge");
+
+    fs::create_dir_all(&folder).expect("a folder");
+    fs::copy(env!("CARGO_BIN_EXE_page"), &page).expect("page copied");
+    fs::write(
+        &knowledge,
+        "#!/bin/sh\n[ \"$1 $2\" = 'show NOTE-0035' ] && { printf '# 0035 — Knowledge\\n\\nMoved.\\n'; exit 0; }\necho \"knowledge: $2: no document of it\" >&2\nexit 1\n",
+    )
+    .expect("knowledge written");
+    fs::set_permissions(&knowledge, fs::Permissions::from_mode(0o755)).expect("executable");
+    page
+}
+
+#[cfg(unix)]
+#[test]
+fn f48_ac2_an_id_no_file_holds_falls_back_on_knowledge_show() {
+    let repo = repo("knowledge");
+    let page = page_beside_knowledge(&repo.0);
+    let run = |id: &str| {
+        test_support::command(&page)
+            .current_dir(&repo.0)
+            .env_remove("AGENT_RECORDS_ROOT")
+            .arg(id)
+            .output()
+            .expect("page runs")
+    };
+    let (moved, missing, found) = (run("NOTE-0035"), run("ADR-0001"), run("ADR-0069"));
+
+    // NOTE- is no kind page knows, its document is in the records: knowledge's text, exit 0.
+    assert!(moved.status.success(), "{}", stderr(&moved));
+    assert_eq!(stdout(&moved), "# 0035 — Knowledge\n\nMoved.\n");
+    // Neither a file nor a document: page's own message, knowledge's left out.
+    assert_eq!(missing.status.code(), Some(1));
+    assert_eq!(stderr(&missing), "ADR-0001: no file docs/adr/0001-*.md\n");
+    // A file holds it: knowledge is never asked.
+    assert!(stdout(&found).starts_with("docs/adr/0069-fast.md:1\n# ADR-0069 — Fast"));
+}
+
+#[test]
+fn f48_ac2_finds_knowledge_beside_page() {
+    assert_eq!(
+        knowledge_beside(Path::new("target/release/page")),
+        PathBuf::from(format!(
+            "target/release/knowledge{}",
+            std::env::consts::EXE_SUFFIX
+        ))
+    );
+    // A binary that cannot start shows nothing.
+    assert_eq!(shown_by(Path::new("target/none/knowledge"), "EN-152"), None);
 }

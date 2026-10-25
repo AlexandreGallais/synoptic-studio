@@ -1035,6 +1035,7 @@ dependencies = [
 name = "page"
 version = "0.1.0"
 dependencies = [
+ "test-support",
  "tool-use",
 ]
 
