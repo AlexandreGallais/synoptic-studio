@@ -6,10 +6,8 @@
   "permissions": {
     "allow": [
       "Bash(git switch *)",
-      "Bash(git push origin --delete *)",
       "Bash(gh api -X DELETE repos/AlexandreGallais/synoptic-studio/git/refs/heads/*)",
       "Bash(npm run *)",
-      "Bash(target/release/activity *)",
       "Bash(target/release/backlog-status *)",
       "Bash(target/release/context-size *)",
       "Bash(target/release/dependencies outdated *)",
@@ -18,17 +16,15 @@
       "Bash(target/release/git-sequences commit *)",
       "Bash(target/release/git-sequences sync *)",
       "Bash(target/release/git-sequences state *)",
+      "Bash(target/release/knowledge *)",
       "Bash(target/release/library *)",
       "Bash(target/release/metrics *)",
       "Bash(target/release/page *)",
-      "Bash(target/release/records-save *)",
       "Bash(target/release/release check *)",
       "Bash(target/release/release notes *)",
       "Bash(target/release/replace *)",
       "Bash(target/release/run-totals *)",
-      "Bash(target/release/session-report *)",
       "Bash(target/release/stale-binaries *)",
-      "Bash(target/release/val-prepare *)",
       "Bash(target/release/worktree-new *)",
       "Bash(npx vitest *)",
       "Bash(git status*)",
@@ -153,6 +149,31 @@
         ]
       }
     ],
+    "SessionEnd": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PROJECT_DIR}/target/release/knowledge",
+            "args": ["snapshot"],
+            "timeout": 30
+          },
+          {
+            "type": "command",
+            "command": "${CLAUDE_PROJECT_DIR}/target/release/records-save",
+            "args": [],
+            "timeout": 30
+          },
+          {
+            "type": "command",
+            "command": "${CLAUDE_PROJECT_DIR}/target/release/session-report",
+            "args": [],
+            "timeout": 30
+          }
+        ]
+      }
+    ],
     "PostToolUse": [
       {
         "matcher": "*",
@@ -192,11 +213,6 @@
         ]
       }
     ]
-  },
-  "statusLine": {
-    "type": "command",
-    "command": "\"$(git rev-parse --show-toplevel)/target/release/status-line\"",
-    "refreshInterval": 1
   },
   "enabledMcpjsonServers": ["library"],
   "cleanupPeriodDays": 3650

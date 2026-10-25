@@ -7,7 +7,7 @@ import {
   chooseShapeKind,
   clickElement,
   commitField,
-  openServedPage,
+  openPage,
   pressKey,
   pressPointer,
   readDisplay,
@@ -59,7 +59,7 @@ function readFills(): readonly (string | null | undefined)[] {
 
 describe("US-035 Product Owner test card", () => {
   it("follows the card from step 1 to step 9, one step after the other", () => {
-    openServedPage("");
+    openPage("");
     chooseShapeKind("text");
     chooseOption("text-weight", "400");
     chooseOption("text-fit", "content");
@@ -132,7 +132,7 @@ describe("US-035 Product Owner test card", () => {
   });
 
   it("[F16.AC2] follows US-040's card: whole numbers, one value edited, the hexadecimal kept", () => {
-    openServedPage("");
+    openPage("");
     chooseShapeKind("text");
     chooseOption("text-weight", "400");
     chooseOption("text-fit", "content");

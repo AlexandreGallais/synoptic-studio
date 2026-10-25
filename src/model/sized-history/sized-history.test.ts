@@ -15,7 +15,7 @@ import { measuredHistory } from "./measured-history";
 /** A shape of the properties, as `ANY_HISTORY_STATE` draws them. */
 type Drawn = readonly string[];
 
-describe("SizedHistory (EN-147)", () => {
+describe("SizedHistory", () => {
   test.prop({
     operations: fc.array(ANY_HISTORY_OPERATION, { maxLength: 30 }),
     present: ANY_HISTORY_STATE,

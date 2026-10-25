@@ -1,14 +1,18 @@
-//! `branches-clean` (`target/release/branches-clean`, ADR-0038, AUD-020, EN-103), in the checkout it is
+//! `branches-clean` (`target/release/branches-clean`, ADR-0072, AUD-020, EN-103), in the checkout it is
 //! started from, after each merged feature pull request and each release: stale remote branches
 //! pruned, local branches merged into `develop` or deleted on GitHub removed with their worktrees,
 //! a story just started and a worktree a running process works in kept, then what is left reported.
 
 use std::collections::HashSet;
+use std::env;
 use std::process::{Command, ExitCode, Stdio};
 
 use git_repository::{Failure, stdout_of};
+use knowledge::backlog::{drop_branch, merge_branch};
+use knowledge::project::open_records;
+use knowledge::store::write;
 use repo_tools::branches_clean::{
-    BranchFields, DEVELOP, Left, LocalBranch, base_of, is_in_use, read_branch, report,
+    BranchFields, DEVELOP, Left, LocalBranch, base_of, is_in_use, read_branch, report, rows_state,
     stale_branches, stale_worktrees, working_folders, worktrees_of,
 };
 
@@ -128,6 +132,23 @@ fn clean() -> Result<String, String> {
         .filter(|name| !kept_branches.contains(&name.as_str()))
         .collect();
 
+    // Each branch's rows of the records follow it before it goes, its tip read while it is there.
+    let states: Vec<(&String, &str)> = deleted
+        .iter()
+        .map(|name| {
+            let holders = git(&[
+                "for-each-ref",
+                "--contains",
+                name,
+                "--format=%(refname:short)",
+                "refs/remotes/origin",
+            ])
+            .unwrap_or_default();
+
+            (name, rows_state(name, &holders))
+        })
+        .collect();
+
     for name in &deleted {
         git(&["branch", "-D", name])?;
     }
@@ -139,7 +160,40 @@ fn clean() -> Result<String, String> {
         worktrees: git(&["worktree", "list"])?.len(),
     };
 
-    Ok(report(&deleted, &kept, &left))
+    Ok(report(&deleted, &kept, &left) + &records_line(&states))
+}
+
+/// Marks each deleted branch's drafts merged or dropped in the records (AUD-050, EN-154); the
+/// line saying so, empty when no branch was deleted, or why the records were not written.
+fn records_line(states: &[(&String, &str)]) -> String {
+    if states.is_empty() {
+        return String::new();
+    }
+
+    let written = env::current_dir()
+        .map_err(|error| error.to_string())
+        .and_then(|cwd| open_records(&cwd))
+        .and_then(|database| {
+            write(&database, |transaction| {
+                let mut counts = (0, 0);
+
+                for (name, state) in states {
+                    if *state == "merged" {
+                        counts.0 += merge_branch(transaction, name)?;
+                    } else {
+                        counts.1 += drop_branch(transaction, name)?;
+                    }
+                }
+                Ok(counts)
+            })
+        });
+
+    match written {
+        Ok((merged, dropped)) => {
+            format!("\nrecords: {merged} row(s) marked merged, {dropped} dropped")
+        }
+        Err(error) => format!("\nrecords not written: {error}"),
+    }
 }
 
 fn work() -> u8 {

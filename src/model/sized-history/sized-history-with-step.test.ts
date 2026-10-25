@@ -56,7 +56,7 @@ function readAtStep(bound: HistoryBound): readonly number[] {
   return [...new Set(reads)];
 }
 
-describe("sizedHistoryWithStep (EN-147)", () => {
+describe("sizedHistoryWithStep", () => {
   it("[F41.AC2] keeps A, two references and an index after one nudge: 1 252 bytes", () => {
     // The present added to the past: A and B in the present, 3 × 8 = 24; then A left by the
     // present, held by 1: + 1 228 = 1 252; B shared.

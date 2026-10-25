@@ -5,7 +5,7 @@ import {
   chooseOption,
   clickElement,
   clickPoint,
-  openOnStep,
+  openPage,
   readPointRows,
   readPressedState,
   readText,
@@ -13,10 +13,10 @@ import {
   typeAndEnter,
 } from "../user-actions";
 
-describe("handles on a point of a regular polygon (US-028)", () => {
+describe("handles on a point of a regular polygon", () => {
   it("[F12.AC8] converts the hexagon first, unmoved, then switches its point to handles", () => {
     // A hexagon 100 × 100, radius 10; point 1 selected, then Handles.
-    openOnStep(1);
+    openPage("");
     typeAndEnter("width", "100");
     typeAndEnter("height", "100");
     typeAndEnter("corners", "6");
@@ -53,7 +53,7 @@ describe("handles on a point of a regular polygon (US-028)", () => {
   });
 
   it("hides the switch on a polygon that cannot be converted, of width 0", () => {
-    openOnStep(1);
+    openPage("");
     typeAndEnter("width", "0");
     typeAndEnter("corners", "6");
     chooseOption("shape", "polygon");

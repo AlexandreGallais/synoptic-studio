@@ -9,7 +9,6 @@ import type { FontTableRecord } from "./font-table-record";
  * @param view - the font file
  * @param table - where the table sits, within the file
  * @returns a view of the table alone
- * @see REF-OT-OTFF
  */
 export function tableToView(view: Readonly<DataView>, table: FontTableRecord): DataView {
   return new DataView(view.buffer, view.byteOffset + table.offset, table.length);

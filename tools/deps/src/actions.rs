@@ -1,6 +1,6 @@
 //! The GitHub Actions of the workflows and their next major version, read from the repositories'
 //! tags (`REF-GH-MATCHING-REFS`) and the date of the commit the first tag of that major names
-//! (`REF-GH-COMMIT`), as `scripts/tool-versions.ts` read them, with the 7 days of ADR-0038.
+//! (`REF-GH-COMMIT`), as `scripts/tool-versions.ts` read them, with the 7 days of ADR-0072.
 
 /// An action a workflow uses, with the major version it is pinned to.
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]

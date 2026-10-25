@@ -9,7 +9,6 @@ import { readStoredDrawing } from "./read-stored-drawing";
  * @kind procedure
  * @param document - page document
  * @returns the indices, ascending
- * @see docs/domain/interaction.md#_2-selector
  */
 function readSeveralSelected(document: Document): readonly number[] {
   const kept = selectElement(document, "canvas").dataset[DRAWING_KEYS.selected] ?? "";
@@ -18,14 +17,13 @@ function readSeveralSelected(document: Document): readonly number[] {
 }
 
 /**
- * Reads the shapes selected (F37), by their indices in the drawing in the order drawn
+ * Reads the shapes selected, by their indices in the drawing in the order drawn
  * (`readKeptDrawing`): those kept while several are; the one the panel edits, drawn after the
  * shapes below it; none while none is selected or the one edited is refused.
  *
  * @kind procedure
  * @param document - page document
  * @returns the indices, ascending
- * @see docs/domain/interaction.md#_2-selector
  */
 export function readSelectedShapes(document: Document): readonly number[] {
   if (readShapeKind(document) === "several") {

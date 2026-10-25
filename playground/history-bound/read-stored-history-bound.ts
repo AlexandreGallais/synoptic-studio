@@ -1,9 +1,9 @@
 import { DEFAULT_HISTORY_BOUND } from "../../src";
-import { readBrowserStorage } from "../checklist";
 
 import { HISTORY_BOUND_FIELDS } from "./history-bound-fields";
 import { HISTORY_BOUND_KEY } from "./history-bound-key";
 import { readBoundPart } from "./read-bound-part";
+import { readBrowserStorage } from "./read-browser-storage";
 
 import type { HistoryBound } from "../../src";
 
@@ -13,7 +13,6 @@ import type { HistoryBound } from "../../src";
  * @kind procedure
  * @param written - the text kept in the storage
  * @returns the value it holds, or none
- * @see docs/domain/interaction.md#_7-navigation-and-history
  */
 function readWrittenValue(written: string): unknown {
   try {
@@ -31,7 +30,6 @@ function readWrittenValue(written: string): unknown {
  * @param written - the object kept in the browser
  * @param part - `size` or `steps`
  * @returns the part, in bytes or in steps
- * @see docs/domain/interaction.md#_7-navigation-and-history
  */
 function readStoredPart(written: object, part: keyof HistoryBound): number {
   const value: unknown = Reflect.get(written, part);
@@ -40,14 +38,13 @@ function readStoredPart(written: object, part: keyof HistoryBound): number {
 }
 
 /**
- * Reads the history's bound kept in this browser (F40, `HISTORY_BOUND_KEY`), each part its
+ * Reads the history's bound kept in this browser (`HISTORY_BOUND_KEY`), each part its
  * field accepts kept (`readBoundPart`), any other back to its default, 100 MB or 5 steps; without
  * the browser's storage, or with a text it did not write, the default (SP-029's answer 6 (i)).
  *
  * @kind procedure
  * @param document - page document
  * @returns the memory size and the steps kept
- * @see docs/domain/interaction.md#_7-navigation-and-history
  */
 export function readStoredHistoryBound(document: Document): HistoryBound {
   const text = readBrowserStorage(document)?.getItem(HISTORY_BOUND_KEY) ?? "{}";

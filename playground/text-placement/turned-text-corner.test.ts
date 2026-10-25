@@ -6,7 +6,7 @@ import {
   chooseOption,
   chooseShapeKind,
   clickElement,
-  openServedPage,
+  openPage,
   readText,
   readValue,
   typeAndEnter,
@@ -38,11 +38,11 @@ function readFields(): readonly string[] {
 // A box 100 × 20 at (47, 61): its middle (97, 71). cos 23° = 0.92050485, sin 23° = 0.39073113.
 // Its straight box spans, about the middle, half of w |cos| + h |sin| across and of w |sin| +
 // h |cos| down: (92.05049 + 7.81462) / 2 = 49.93255 and (39.07311 + 18.41010) / 2 = 28.74161,
-// so X and Y show (97 − 49.93255, 71 − 28.74161) = (47.06745, 42.25840) (AUD-040); its turned
+// so X and Y show (97 − 49.93255, 71 − 28.74161) = (47.06745, 42.25840); its turned
 // top-left corner, which a resize keeps, is (54.88207, 42.25840) (ADR-0057).
-describe("Text tool: X and Y of a turned text show its straight box (AUD-040)", () => {
+describe("Text tool: X and Y of a turned text show its straight box", () => {
   beforeEach(() => {
-    openServedPage("");
+    openPage("");
     chooseShapeKind("text");
     chooseOption("text-fit", "box");
     typeAndEnter("text-box-width", "100");

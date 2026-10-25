@@ -11,7 +11,6 @@ import type { Size, Text } from "../../src";
  * @param document - page document
  * @param text - a text of the drawing
  * @returns its block; `undefined` for a text never measured, which is not drawn
- * @see docs/domain/interaction.md#_2-selector
  */
 export function readTextBlock(document: Document, text: Text): Size | undefined {
   const metrics = readTextMetrics(document, text) ?? KEPT_TEXT_METRICS.get(JSON.stringify(text));

@@ -1,4 +1,4 @@
-//! Pages of the local source library (`docs/tooling/sources.md`): a page is read from the library
+//! Pages of the local source library (`the records' conventions, area library`): a page is read from the library
 //! when it is fresh, otherwise fetched online (a conditional request when it is stored) by the
 //! `curl` command, converted to Markdown, split into sections and stored. What the agent reads is
 //! a table of contents, then only the sections it needs.

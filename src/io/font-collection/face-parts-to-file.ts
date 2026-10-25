@@ -16,14 +16,13 @@ type PlacedPart = {
  * (`%TypedArray%.prototype.set`, `REF-ECMA-262-TYPEDARRAY-SET`), so that a table of 191 MB is
  * copied once and never spread into an array of numbers, past the longest array an engine allows.
  * The buffer is written inside this function only, then returned: the one place in `src/` where
- * the functional lint is turned off (ADR-0066, `docs/conventions/exceptions.md`).
+ * the functional lint is turned off (ADR-0066, its row of the records' `lint_exceptions`).
  *
  * Formula: the part i starts at the sum of the lengths before it (a prefix sum, `scan`).
  *
  * @kind format
  * @param parts - the face's parts, its directory first
  * @returns the face's file, in a buffer of its own
- * @see REF-ECMA-262-TYPEDARRAY-SET
  */
 export function facePartsToFile(parts: readonly Readonly<Uint8Array>[]): Uint8Array<ArrayBuffer> {
   const placed = scan<PlacedPart, Readonly<Uint8Array>>(

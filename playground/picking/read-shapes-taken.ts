@@ -3,7 +3,7 @@ import { shapesEnclosedByBox, shapesTouchedByBox } from "../../src";
 import type { BoundingBox, PickArea } from "../../src";
 
 /**
- * Reads the shapes a selection rectangle takes (F37): those whose painted area it touches
+ * Reads the shapes a selection rectangle takes: those whose painted area it touches
  * (`shapesTouchedByBox`), only those it encloses with Alt held (`shapesEnclosedByBox`).
  *
  * @kind procedure
@@ -11,7 +11,6 @@ import type { BoundingBox, PickArea } from "../../src";
  * @param box - the rectangle, in the coordinates of the drawing's SVG
  * @param isAlt - whether Alt is held
  * @returns their indices in the order drawn
- * @see docs/domain/interaction.md#_2-selector
  */
 export function readShapesTaken(
   areas: readonly PickArea[],

@@ -8,7 +8,7 @@ import { readSelection } from "../page";
 import {
   clickAt,
   clickElement,
-  openServedPage,
+  openPage,
   pressAndClick,
   pressKey,
   pressPointer,
@@ -136,8 +136,7 @@ function readSelectionBox(): string | undefined {
 }
 
 /**
- * The outline expected of a shape: the path of its contour as drawn, stroked as the hover's
- * (US-086).
+ * The outline expected of a shape: the path of its contour as drawn, stroked as the hover's.
  *
  * @param shape - the shape outlined
  * @returns the path data of its contour
@@ -175,10 +174,10 @@ function drawThreeRectangles(): {
   return { a: a.model, b: b.model, c: c.model, paths: [a.path, b.path, c.path] };
 }
 
-describe("Shift + click adds or removes a shape (US-068)", () => {
+describe("Shift + click adds or removes a shape", () => {
   beforeEach(() => {
-    // The epic's step 1, a rectangle 120 × 80 at (0, 0), radius 10, whatever feature is validated.
-    openServedPage("?guide=epic");
+    // The page as it opens, a rectangle 120 × 80 at (0, 0), radius 10.
+    openPage("");
     setElementBox("#canvas", { height: 600, left: 100, top: 50, width: 800 });
   });
 
@@ -190,8 +189,7 @@ describe("Shift + click adds or removes a shape (US-068)", () => {
 
     expect(readSelectionOutlines()).toEqual([outlineOf(a), outlineOf(b)]);
 
-    // The box from (0, 0) to (250, 100), its dashed line 1 pixel wide half a pixel inside it
-    // (US-086).
+    // The box from (0, 0) to (250, 100), its dashed line 1 pixel wide half a pixel inside it.
     expect(readSelectionBox()).toBe("M0.5 0.5H249.5V99.5H0.5Z");
     expect(readText("#shape-title")).toBe("2 shapes selected");
     expect(readDisplay("shape-panel")).toBe("none");
@@ -303,9 +301,9 @@ describe("Shift + click adds or removes a shape (US-068)", () => {
   });
 });
 
-describe("Ctrl + A selects every shape and Escape none (US-068)", () => {
+describe("Ctrl + A selects every shape and Escape none", () => {
   beforeEach(() => {
-    openServedPage("?guide=epic");
+    openPage("");
     setElementBox("#canvas", { height: 600, left: 100, top: 50, width: 800 });
   });
 
@@ -348,7 +346,7 @@ describe("Ctrl + A selects every shape and Escape none (US-068)", () => {
 
     expect(pressSelectAll("#width", { ctrlKey: true })).toBe(true);
     expect(pressSelectAll("#text-content", { ctrlKey: true })).toBe(true);
-    // A slider of the color picker counts as a field (2026-10-23, AUD-041).
+    // A slider of the color picker counts as a field.
     expect(pressSelectAll("#color-hue", { ctrlKey: true })).toBe(true);
     expect(readSelectionOutlines()).toHaveLength(1);
     expect(readText("#shape-title")).toBe("Rectangle");
@@ -383,9 +381,9 @@ describe("Ctrl + A selects every shape and Escape none (US-068)", () => {
   });
 });
 
-describe("the shapes' selection in Points mode (US-068)", () => {
+describe("the shapes' selection in Points mode", () => {
   beforeEach(() => {
-    openServedPage("?guide=epic");
+    openPage("");
     setElementBox("#canvas", { height: 600, left: 100, top: 50, width: 800 });
   });
 
@@ -430,9 +428,9 @@ describe("the shapes' selection in Points mode (US-068)", () => {
   });
 });
 
-describe("Delete removes the selected shapes (US-066)", () => {
+describe("Delete removes the selected shapes", () => {
   beforeEach(() => {
-    openServedPage("?guide=epic");
+    openPage("");
     setElementBox("#canvas", { height: 600, left: 100, top: 50, width: 800 });
   });
 
@@ -482,7 +480,7 @@ describe("Delete removes the selected shapes (US-066)", () => {
     { field: "#width", key: "Backspace" },
     { field: "#text-content", key: "Delete" },
     { field: "#text-content", key: "Backspace" },
-    // A slider of the color picker counts as a field (2026-10-23, AUD-041).
+    // A slider of the color picker counts as a field.
     { field: "#color-hue", key: "Delete" },
     { field: "#color-plane", key: "Backspace" },
   ])("[F37.AC1] leaves $key in $field to the field, no shape removed", ({ field, key }) => {

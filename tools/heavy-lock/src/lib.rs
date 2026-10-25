@@ -1,4 +1,4 @@
-//! Lock of the heavy commands (ADR-0063, EN-047): `check:all`, `npm run test`, `golden:check` and
+//! Lock of the heavy commands (ADR-0072, EN-047): `check:all`, `npm run test`, `golden:check` and
 //! `docs:build` run one at a time across every worktree. Each takes `heavy.lock` in the Git common
 //! directory and holds the kernel's advisory lock on it (`flock(2)`, `REF-MACOS-FLOCK`) for the
 //! command's life; another heavy command waits and says who holds it, from the owner written in the
@@ -10,7 +10,7 @@
 //! locks a file checks it is still the one at the lock's path: two commands taking over the same
 //! file left behind never both run (AUD-020, A4).
 //!
-//! `--lock <name>` takes another lock the same way: `story:finish` takes `merge.lock`, so stories
+//! `--lock <name>` takes another lock the same way: `story-finish` takes `merge.lock`, so stories
 //! merge one at a time (ADR-0065, decision 5; EN-051). Each lock names its owner to the commands it
 //! starts in a variable of its own: a command under the merge lock never runs inside the heavy one.
 

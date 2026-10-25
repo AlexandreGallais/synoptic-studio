@@ -1,6 +1,6 @@
 # Third-party licences
 
-The project's tools (`tools/`) port code from, or copy test cases of, the packages below, under the terms of their licences ([ADR-0076](docs/adr/0076-ported-tooling-code-under-its-licence.md)). Each text is the licence file of the package's npm tarball at the version named, read on 2026-10-17. The library (`src/`) holds none of their code.
+The project's tools (`tools/`) port code from, or copy test cases of, the packages below, under the terms of their licences (ADR-0076). Each text is the licence file of the package's npm tarball at the version named, read on 2026-10-17. The library (`src/`) holds none of their code.
 
 | Package | Version | Licence | What the tools take |
 | --- | --- | --- | --- |

@@ -1,29 +1,47 @@
-//! `backlog-status <ID> <status>` (`target/release/backlog-status`, RET-002, EN-103), from the
-//! repository's root: the item's front matter, its folder's index and its parent's table. A story's
-//! index is written again by the `backlog:index` script of `package.json`, run in the shell npm
-//! would run it in, its output shown.
+//! `backlog-status <ID> <status>` (`target/release/backlog-status`, RET-002, EN-103, EN-154), from
+//! any folder of the repository: the item's row in the records, `epics`, `features` or `stories` by
+//! the form of its id, in one `BEGIN IMMEDIATE`; every branch and worktree reads it at once.
 
 use std::env;
 use std::process::ExitCode;
 
-use repo_tools::backlog_status::{item_file, write_status};
+use knowledge::backlog::set_status;
+use knowledge::project::open_records;
+use knowledge::store::write_or_refuse;
+use repo_tools::backlog_status::status_refusal;
+
+/// The usage, printed on `--help` or `-h` (REV-009).
+const USAGE: &str = "usage: target/release/backlog-status <ID> <status>";
+
+/// Sets the status; the line to print, or why it failed.
+fn change(id: &str, status: &str) -> Result<String, String> {
+    if let Some(refusal) = status_refusal(status) {
+        return Err(refusal);
+    }
+
+    let cwd = env::current_dir().map_err(|error| error.to_string())?;
+    let database = open_records(&cwd)?;
+    let found = write_or_refuse(&database, |transaction| set_status(transaction, id, status))?;
+
+    if found {
+        Ok(format!("{id} {status} in the records"))
+    } else {
+        Err(format!("{USAGE}; no item {id} in the records"))
+    }
+}
 
 fn work() -> u8 {
     let arguments: Vec<String> = env::args().skip(1).collect();
-    let id = arguments.first().map_or("", String::as_str);
-    let status = arguments.get(1).map_or("", String::as_str);
-    let root = env::current_dir().unwrap_or_default();
-    let file = item_file(&root, id);
 
-    if file.is_empty() || status.is_empty() {
-        eprintln!("usage: target/release/backlog-status <ID> <status>; no item {id}");
+    let [id, status] = arguments.as_slice() else {
+        eprintln!("{USAGE}");
         return 1;
-    }
+    };
 
-    match write_status(&root, &file, id, status) {
-        Ok(indexed) => {
-            println!("{id} {status}: {file}, its index and its parent");
-            u8::from(!indexed)
+    match change(id, status) {
+        Ok(line) => {
+            println!("{line}");
+            0
         }
         Err(error) => {
             eprintln!("backlog-status: {error}");
@@ -33,5 +51,8 @@ fn work() -> u8 {
 }
 
 fn main() -> ExitCode {
+    if let Some(code) = tool_use::usage(&std::env::args().skip(1).collect::<Vec<_>>(), USAGE) {
+        return code;
+    }
     tool_use::run("backlog-status", "", work)
 }

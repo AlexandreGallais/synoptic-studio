@@ -41,7 +41,6 @@ type Segment = {
  * @param cmap - the font's `cmap` table
  * @param subtable - where the subtable starts in the table
  * @returns its segments, in order; undefined when its header or its arrays pass the table's end
- * @see REF-OT-CMAP
  */
 function parseSegments(cmap: Readonly<DataView>, subtable: number): readonly Segment[] | undefined {
   const arraySize = isSpanWithin(subtable, END_CODES_OFFSET, cmap.byteLength)
@@ -72,7 +71,6 @@ function parseSegments(cmap: Readonly<DataView>, subtable: number): readonly Seg
  * @param segment - the segment holding the character, with a range offset
  * @param codePoint - the character's code
  * @returns its glyph index; undefined when the entry lies outside the table
- * @see REF-OT-CMAP
  */
 function glyphArrayToGlyph(
   cmap: Readonly<DataView>,
@@ -102,7 +100,6 @@ function glyphArrayToGlyph(
  * @param codePoint - the character's code
  * @returns its glyph index, 0 when no segment holds it; undefined when its entry lies outside
  * the table
- * @see REF-OT-CMAP
  */
 function segmentToGlyph(
   cmap: Readonly<DataView>,
@@ -127,7 +124,6 @@ function segmentToGlyph(
  * @param characters - the code points to map
  * @returns each character and its glyph; undefined when a glyph array entry lies outside the
  * table
- * @see REF-OT-CMAP
  */
 function segmentsToGlyphs(
   cmap: Readonly<DataView>,
@@ -158,7 +154,6 @@ function segmentsToGlyphs(
  * @param characters - the code points to map
  * @returns each character and its glyph, 0 for a character the subtable does not map; undefined
  * when the subtable, or a glyph array entry it points to, passes the table's end
- * @see REF-OT-CMAP
  */
 export function parseSegmentMappingGlyphs(
   cmap: Readonly<DataView>,

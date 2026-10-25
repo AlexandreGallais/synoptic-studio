@@ -5,7 +5,7 @@ import {
   chooseOption,
   clickElement,
   clickPoint,
-  openOnStep,
+  openPage,
   readText,
   selectInput,
   typeAndEnter,
@@ -28,11 +28,11 @@ function openAngleFields(): void {
   chooseOption("handle-method", "side");
 }
 
-describe("handles typed as an angle and a length (US-024)", () => {
+describe("handles typed as an angle and a length", () => {
   beforeEach(() => {
     // The rectangle 100 × 80: point 1 (0, 0), point 2 (100, 0), point 3 (100, 80); Points mode.
     // Radius 0: the control points typed are drawn as they are, no fillet cutting a side.
-    openOnStep(1);
+    openPage("");
     typeAndEnter("radius", "0");
     typeAndEnter("width", "100");
     clickElement("mode-points");

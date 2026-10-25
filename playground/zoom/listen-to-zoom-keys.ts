@@ -29,7 +29,6 @@ const SHIFT_CODES: ReadonlyMap<string, ZoomName> = new Map([
  * @kind procedure
  * @param event - the key pressed
  * @returns the zoom; undefined for a key of no zoom
- * @see docs/domain/interaction.md#_1-tools
  */
 function readKeyZoom(event: KeyboardEvent): ZoomName | undefined {
   return (event.shiftKey ? SHIFT_CODES.get(event.code) : undefined) ?? STEP_KEYS.get(event.key);
@@ -43,7 +42,6 @@ function readKeyZoom(event: KeyboardEvent): ZoomName | undefined {
  * @kind procedure
  * @param event - the key pressed
  * @returns the zoom; undefined for a key of no zoom
- * @see docs/domain/interaction.md#_1-tools
  */
 function readZoomKey(event: KeyboardEvent): ZoomName | undefined {
   const isTaken = [
@@ -62,13 +60,12 @@ function readZoomKey(event: KeyboardEvent): ZoomName | undefined {
  * about the canvas's centre, `Shift` + `1` fits the drawing and `Shift` + `2` the selection
  * (`applyZoom`), the digit read by its key's place, whatever the layout sends with `Shift`; their
  * default prevented, then a redraw asked. A key typed in a field is the field's (`readKeyField`,
- * `interaction.md` §1); with `Ctrl`, `Cmd` or `Alt` held, or taken by a listener before this one,
+ * `RULE-interaction-1-tools-a-key-typed-in-a-field-is-the-field-s`); with `Ctrl`, `Cmd` or `Alt` held, or taken by a listener before this one,
  * it is left to the browser (`readZoomKey`).
  *
  * @kind procedure
  * @param document - page document
  * @param update - redraws the page
- * @see docs/domain/interaction.md#_1-tools
  */
 export function listenToZoomKeys(document: Document, update: () => void): void {
   document.addEventListener(

@@ -11,7 +11,6 @@ import type { SelectionDrag, ShapesMove } from "../hover";
  * @kind procedure
  * @param drag - the press, the pointer and whether Shift is held
  * @returns the offset, possibly fractional
- * @see docs/domain/interaction.md#_2-selector
  */
 function readDraggedOffset(drag: SelectionDrag): Point {
   const free = subtract(drag.pointer, drag.press);
@@ -28,7 +27,6 @@ function readDraggedOffset(drag: SelectionDrag): Point {
  * @param drag - the press, the pointer and whether Shift is held
  * @param anchor - the top-left of the straight box of the shapes moved, their dashed box
  * @returns the shift every shape moved goes by
- * @see docs/domain/interaction.md#_2-selector
  */
 function readLandedShift(drag: SelectionDrag, anchor: Point): Point {
   const free = subtract(drag.pointer, drag.press);
@@ -37,7 +35,7 @@ function readLandedShift(drag: SelectionDrag, anchor: Point): Point {
 }
 
 /**
- * Reads how far a move takes the shapes selected (F39): while dragged the pointer's offset, the
+ * Reads how far a move takes the shapes selected: while dragged the pointer's offset, the
  * shapes following it freely (`readDraggedOffset`); at the release, the shift landing their
  * anchor on integers (`readLandedShift`).
  *
@@ -46,7 +44,6 @@ function readLandedShift(drag: SelectionDrag, anchor: Point): Point {
  * @param move - the shapes moved and their anchor
  * @param isLanded - whether the pointer is released
  * @returns the shift every shape moved goes by
- * @see docs/domain/interaction.md#_2-selector
  */
 export function readMoveShift(drag: SelectionDrag, move: ShapesMove, isLanded: boolean): Point {
   return isLanded ? readLandedShift(drag, move.anchor) : readDraggedOffset(drag);

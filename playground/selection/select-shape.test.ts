@@ -7,7 +7,7 @@ import { readDrawnTexts } from "../kept-shapes";
 import {
   clickAt,
   clickElement,
-  openServedPage,
+  openPage,
   pressAndClick,
   pressPointer,
   readDisplay,
@@ -80,8 +80,7 @@ function readSelectionOutline(): string | undefined {
 }
 
 /**
- * The outline expected of a shape: the path of its contour as drawn, stroked as the hover's
- * (US-086).
+ * The outline expected of a shape: the path of its contour as drawn, stroked as the hover's.
  *
  * @param shape - the shape outlined
  * @returns the path data of its contour
@@ -115,10 +114,10 @@ function drawThreeShapes(): {
   return { a: a.model, b: b.model, c: c.model, paths: [a.path, b.path, c.path] };
 }
 
-describe("a click with the selector selects the shape under it (US-067)", () => {
+describe("a click with the selector selects the shape under it", () => {
   beforeEach(() => {
-    // The epic's step 1, a rectangle 120 × 80 at (0, 0), radius 10, whatever feature is validated.
-    openServedPage("?guide=epic");
+    // The page as it opens, a rectangle 120 × 80 at (0, 0), radius 10.
+    openPage("");
     setElementBox("#canvas", { height: 600, left: 100, top: 50, width: 800 });
   });
 

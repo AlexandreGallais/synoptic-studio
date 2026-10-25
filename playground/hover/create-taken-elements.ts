@@ -15,7 +15,6 @@ import { readSelectionBox } from "./read-selection-box";
  * @kind procedure
  * @param document - page document
  * @returns their `<path>` elements; nothing without a selection rectangle drawn
- * @see docs/domain/interaction.md#_2-selector
  */
 export function createTakenElements(document: Document): readonly SVGPathElement[] {
   const drag = readRectangleDrag(document);

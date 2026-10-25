@@ -1,4 +1,4 @@
-//! The clean-up of the local clone after a feature (ADR-0038, AUD-020, EN-103): local branches
+//! The clean-up of the local clone after a feature (ADR-0072, AUD-020, EN-103): local branches
 //! already merged into `develop` or whose branch on GitHub was deleted are removed with their
 //! worktrees, and what is left reported. A branch just made for a story — never pushed, without a
 //! commit beyond the branch it was made from — and a worktree a running process works in are kept.
@@ -85,6 +85,25 @@ pub fn stale_branches(branches: &[LocalBranch], current: &str) -> Vec<String> {
         .filter(|branch| branch.is_gone || (branch.is_merged && !branch.is_fresh))
         .map(|branch| branch.name.clone())
         .collect()
+}
+
+/// What a deleted branch's rows of the records become (AUD-050, EN-154): `merged` when its tip is
+/// in a branch of `origin` other than its own — `develop`, a feature branch it was merged into —
+/// else `dropped`, the drafts of a branch deleted without its merge, which no branch reads any
+/// more but with `--all`. `holders`: the remote branches whose history holds its tip
+/// (`git for-each-ref --contains`).
+#[must_use]
+pub fn rows_state(name: &str, holders: &[String]) -> &'static str {
+    let own = format!("origin/{name}");
+
+    if holders
+        .iter()
+        .any(|holder| *holder != own && holder != "origin/HEAD" && holder != "origin")
+    {
+        "merged"
+    } else {
+        "dropped"
+    }
 }
 
 /// A worktree as `git worktree list --porcelain` reports it.
@@ -334,6 +353,30 @@ mod tests {
             "origin/develop"
         );
         assert_eq!(base_of(&fields("spare", "", "")), "origin/develop");
+    }
+
+    #[test]
+    fn drops_the_rows_of_a_branch_no_other_branch_of_origin_holds() {
+        let holders = |names: &[&str]| owned(names);
+
+        assert_eq!(
+            rows_state("chore/en-1-x", &holders(&["origin/develop"])),
+            "merged"
+        );
+        assert_eq!(
+            rows_state("chore/en-1-x", &holders(&["origin/feature/f99-x"])),
+            "merged"
+        );
+        // Held by its own branch alone, or by none: never merged.
+        assert_eq!(
+            rows_state("chore/en-1-x", &holders(&["origin/chore/en-1-x"])),
+            "dropped"
+        );
+        assert_eq!(
+            rows_state("chore/en-1-x", &holders(&["origin/HEAD", "origin"])),
+            "dropped"
+        );
+        assert_eq!(rows_state("chore/en-1-x", &[]), "dropped");
     }
 
     #[test]

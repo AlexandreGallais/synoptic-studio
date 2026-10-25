@@ -13,7 +13,6 @@ import type { Shape } from "../../src";
  * @kind procedure
  * @param document - page document
  * @param shape - the shape set
- * @see docs/domain/interaction.md#_2-selector
  */
 function writeStoredSize(document: Document, shape: Shape): void {
   const kept = readStoredFreeShape(document);
@@ -30,7 +29,7 @@ function writeStoredSize(document: Document, shape: Shape): void {
 }
 
 /**
- * Writes a shape the panel edits alone, set by its X, Y, Width or Height (US-085), into the page:
+ * Writes a shape the panel edits alone, set by its X, Y, Width or Height, into the page:
  * its size (`writeStoredSize`) and its position, the top-left of its box before it turns
  * (`writeShapePosition`, ADR-0035), then its values in its four fields (`shapePanelValues`), X and
  * Y the start of its straight box, as the redraw shows them, the field typed in included.
@@ -38,7 +37,6 @@ function writeStoredSize(document: Document, shape: Shape): void {
  * @kind procedure
  * @param document - page document
  * @param shape - the shape set, or as it was for a value refused
- * @see docs/domain/interaction.md#_2-selector
  */
 export function writeEditedGeometry(document: Document, shape: Shape): void {
   const values = shapePanelValues(shape);

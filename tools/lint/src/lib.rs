@@ -194,7 +194,7 @@ pub fn run(root: &Path, arguments: &[String]) -> (String, bool) {
         );
     }
 
-    let project = Project::new(root, settings::REFERENCE_SOURCES);
+    let project = Project::new(root);
     let paths = walk::files(root, &targets);
     let mut findings = lint_files(&project, &paths);
     let mut report = String::new();
@@ -234,7 +234,6 @@ mod tests {
     use crate::finding::{Finding, Fix};
     use crate::project::Project;
     use crate::rules::Rule;
-    use crate::settings::REFERENCE_SOURCES;
     use crate::source::Source;
     use crate::testing::{fixture, lint, write_files};
 
@@ -373,7 +372,7 @@ mod tests {
     fn writes_the_fixes_into_their_files() {
         let root = fixture("fix");
         write_files(&root, &["a.ts"]);
-        let project = Project::new(&root, REFERENCE_SOURCES);
+        let project = Project::new(&root);
         let fixable = Finding {
             path: "a.ts".into(),
             line: 1,
@@ -499,7 +498,7 @@ mod tests {
     #[test]
     fn reports_a_file_it_cannot_read() {
         let root = fixture("unreadable");
-        let project = Project::new(&root, REFERENCE_SOURCES);
+        let project = Project::new(&root);
 
         let findings = lint_files(&project, &["src/missing.ts".into()]);
 

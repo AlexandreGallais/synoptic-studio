@@ -25,7 +25,7 @@ import type { Point } from "../../math";
  * @returns the free shape with the point moved, to check with `isValidFreeShape` (points with no
  * width or no height between them are refused); an index out of range moves nothing but rebases the shape on its
  * drawn corners
- * @see docs/domain/interaction.md#_3-node-editing
+ * @see RULE-interaction-3-node-editing
  */
 export function freeShapeWithPoint(shape: FreeShape, index: number, point: Point): FreeShape {
   const center = boxCenter(shape);

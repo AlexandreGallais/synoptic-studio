@@ -18,7 +18,6 @@ export type SelectedCorner = {
  * @kind procedure
  * @param document - page document
  * @returns its number, or `undefined`
- * @see docs/backlog/stories/E14-F12-US-022-handles-in-points-mode.md
  */
 function readOnlySelected(document: Document): number | undefined {
   const { selected } = readSelection(document);
@@ -28,13 +27,12 @@ function readOnlySelected(document: Document): number | undefined {
 
 /**
  * The corner of a point, with its number: a polygon's point too, its handles switch converting
- * it first (US-028), unless the polygon has no width or height and cannot be converted.
+ * it first, unless the polygon has no width or height and cannot be converted.
  *
  * @kind procedure
  * @param reading - the shape read from the inputs
  * @param index - number of the point
  * @returns that corner and its number, or `undefined`
- * @see docs/backlog/stories/E14-F12-US-022-handles-in-points-mode.md
  */
 function readFreeCorner(reading: ShapeReading, index: number): SelectedCorner | undefined {
   const corner = reading.corners[index];
@@ -50,7 +48,6 @@ function readFreeCorner(reading: ShapeReading, index: number): SelectedCorner | 
  * @param document - page document
  * @param reading - the shape read from the inputs
  * @returns that corner and its number, or `undefined`
- * @see docs/backlog/stories/E14-F12-US-022-handles-in-points-mode.md
  */
 export function readSelectedCorner(
   document: Document,
@@ -58,7 +55,7 @@ export function readSelectedCorner(
 ): SelectedCorner | undefined {
   const index = readOnlySelected(document);
 
-  // A round shape's points already have their handles: it is converted first (US-030).
+  // A round shape's points already have their handles: it is converted first.
   return index === undefined || isRoundShape(reading.model)
     ? undefined
     : readFreeCorner(reading, index);

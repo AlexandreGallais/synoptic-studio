@@ -1,8 +1,8 @@
 //! Background tasks of a session, read from its transcript: which tool calls start one — a subagent,
 //! a monitor, a call run in the background, a message that resumes a subagent — and which lines end
 //! one: its notification, an error result when it was refused before it started, or a subagent's
-//! result when it ran in the foreground. Read by the status line and by `limit-agents`; rewritten from
-//! `.claude/hooks/status-tasks.ts` and `withTasks` of `status-tokens.ts` (EN-104), its only version.
+//! result when it ran in the foreground. Read by `limit-agents`; rewritten from
+//! `.claude/hooks/status-tasks.ts` (EN-104), its only version.
 
 use crate::json::{self, Value, write};
 use crate::record::js_prefix;
@@ -23,28 +23,6 @@ pub enum Kind {
     Command,
     /// A message to a subagent whose result is still to come: a subagent if that result resumes one.
     Message,
-}
-
-impl Kind {
-    /// The kind as the status line's cache writes it.
-    #[must_use]
-    pub fn name(self) -> &'static str {
-        match self {
-            Kind::Agent => "agent",
-            Kind::Command => "command",
-            Kind::Message => "message",
-        }
-    }
-
-    /// The kind written in the cache: `agent`, `message`, anything else a command.
-    #[must_use]
-    pub fn read(written: &str) -> Kind {
-        match written {
-            "agent" => Kind::Agent,
-            "message" => Kind::Message,
-            _ => Kind::Command,
-        }
-    }
 }
 
 /// A background task the agent started, still running.
@@ -242,13 +220,11 @@ pub fn resumed_ids(line: &Value) -> Vec<String> {
         .collect()
 }
 
-/// Background tasks still running after one parsed transcript line, and the calls it ends: those
-/// it starts added, those notified as ended or answered with an error removed, a subagent answered
-/// with its result in the foreground removed, those older than `LOST_TASK_MS` at the line's time
-/// dropped; a message to a subagent, once answered, becomes that subagent when its result resumes
-/// it, or is dropped.
-#[must_use]
-pub fn after_parsed_line(pending: Vec<Task>, line: &Value, raw: &str) -> (Vec<Task>, Vec<String>) {
+/// Background tasks still running after one parsed transcript line: those it starts added, those
+/// notified as ended or answered with an error removed, a subagent answered with its result in the
+/// foreground removed, those older than `LOST_TASK_MS` at the line's time dropped; a message to a
+/// subagent, once answered, becomes that subagent when its result resumes it, or is dropped.
+fn after_parsed_line(pending: Vec<Task>, line: &Value, raw: &str) -> Vec<Task> {
     let ended = ended_ids(line, raw);
     let mut notified = if raw.contains("<task-notification>") {
         ended.clone()
@@ -261,7 +237,8 @@ pub fn after_parsed_line(pending: Vec<Task>, line: &Value, raw: &str) -> (Vec<Ta
     let completed = completed_ids(line);
     let resumed = resumed_ids(line);
     let time = epoch_ms(line.get("timestamp").text());
-    let tasks = pending
+
+    pending
         .into_iter()
         .chain(started_tasks(line))
         .filter(|task| {
@@ -280,9 +257,7 @@ pub fn after_parsed_line(pending: Vec<Task>, line: &Value, raw: &str) -> (Vec<Ta
                 None
             }
         })
-        .collect();
-
-    (tasks, ended)
+        .collect()
 }
 
 /// Background tasks still running after one transcript line, as [`after_parsed_line`] gives them.
@@ -294,7 +269,7 @@ pub fn after_line(pending: Vec<Task>, raw: &str) -> Vec<Task> {
     }
 
     match json::parse(raw) {
-        Some(line) => after_parsed_line(pending, &line, raw).0,
+        Some(line) => after_parsed_line(pending, &line, raw),
         None => pending,
     }
 }
@@ -306,43 +281,6 @@ pub fn pending_after(pending: Vec<Task>, lines: &str) -> Vec<Task> {
         .split('\n')
         .filter(|line| line.starts_with('{'))
         .fold(pending, after_line)
-}
-
-/// The tasks kept in the status line's cache (`.git/metrics/status-line-turn.json`) for a
-/// transcript, and the byte offset they were read to; none and 0 for another transcript.
-#[must_use]
-pub fn cached_tasks(cache: &Value, transcript: &str) -> (Vec<Task>, usize) {
-    if cache.get("transcript").text() != transcript {
-        return (Vec::new(), 0);
-    }
-
-    let tally = cache.get("tally");
-    let number = |value: &Value| match value {
-        // Offsets and times are whole numbers written by the status line.
-        #[allow(clippy::cast_possible_truncation)]
-        Value::Number(number) => *number as i64,
-        _ => 0,
-    };
-    let tasks = tally
-        .get("pending")
-        .items()
-        .iter()
-        .map(|task| Task {
-            id: task.get("id").text().to_owned(),
-            kind: match task.get("kind").text() {
-                "agent" => Kind::Agent,
-                "message" => Kind::Message,
-                _ => Kind::Command,
-            },
-            label: task.get("label").text().to_owned(),
-            start: number(task.get("start")),
-        })
-        .collect();
-
-    (
-        tasks,
-        usize::try_from(number(tally.get("offset"))).unwrap_or(0),
-    )
 }
 
 /// The id following `marker` in a text, made of letters and digits, empty when the marker is absent.

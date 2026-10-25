@@ -21,7 +21,7 @@ const A_NUDGED = { width: 100, x: 11, y: 20 };
 /** B at (200, 20). */
 const SHAPE_B = { width: 100, x: 200, y: 20 };
 
-describe("drawingChangedFields (US-077)", () => {
+describe("drawingChangedFields", () => {
   it("[F41.AC1] names x for A nudged, B the same object", () => {
     expect(drawingChangedFields([SHAPE_A, SHAPE_B], [A_NUDGED, SHAPE_B], own)).toEqual(["x"]);
   });

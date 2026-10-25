@@ -1,7 +1,7 @@
 import type { HistoryRow } from "./history-row";
 
 /**
- * The list of the history's steps (US-077): the rows shown around the present, the oldest first,
+ * The list of the history's steps: the rows shown around the present, the oldest first,
  * and how many states are left out before and after them.
  *
  * @template T - type of the shapes, or of what is kept of each

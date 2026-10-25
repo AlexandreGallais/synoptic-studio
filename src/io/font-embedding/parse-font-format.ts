@@ -18,7 +18,6 @@ const OPEN_TYPE: FontFormat = { hint: "opentype", mediaType: "font/otf" };
  * @kind format
  * @param bytes - the font file
  * @returns its media type and its format hint
- * @see REF-CSS-FONTS-4
  */
 export function parseFontFormat(bytes: Readonly<Uint8Array>): FontFormat {
   const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);

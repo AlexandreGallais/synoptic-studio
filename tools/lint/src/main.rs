@@ -5,7 +5,13 @@
 
 use std::process::ExitCode;
 
+/// The usage, printed on `--help` or `-h` (REV-009).
+const USAGE: &str = "usage: lint [--fix] <files or folders…>";
+
 fn main() -> ExitCode {
+    if let Some(code) = tool_use::usage(&std::env::args().skip(1).collect::<Vec<_>>(), USAGE) {
+        return code;
+    }
     let arguments: Vec<String> = std::env::args().skip(1).collect();
     let mode = if arguments.iter().any(|argument| argument == "--fix") {
         "--fix"

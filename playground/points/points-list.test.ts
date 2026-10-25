@@ -5,7 +5,7 @@ import {
   chooseOption,
   clickElement,
   clickWithKeys,
-  openPage,
+  openOnHexagon,
   readText,
   selectInput,
   typeAndEnter,
@@ -33,8 +33,8 @@ function keptRadii(): string | undefined {
 
 describe("list of points and selection", () => {
   beforeEach(() => {
-    // Step 10 of the guided test: a hexagon in 100 × 100, radius 0 (F02); then Points mode.
-    openPage("?step=10");
+    // A hexagon in 100 × 100, radius 0 (F02); then Points mode.
+    openOnHexagon();
     clickWithKeys("#mode-points", {});
   });
 
@@ -135,12 +135,14 @@ describe("list of points and selection", () => {
     expect(keptRadii()).toBe("0 0 0 0 0 9");
   });
 
-  it("[F03.AC5] clears the selection at each step of the guided test and when the shape changes", () => {
+  it("[F03.AC5] clears the selection on Reset and when the shape changes", () => {
     clickWithKeys('#points [data-vertex="2"]', {});
-    clickElement("guide-next");
+    clickElement("tool-reset");
 
     expect(pressedRows()).toEqual([]);
 
+    openOnHexagon();
+    clickWithKeys("#mode-points", {});
     clickWithKeys('#points [data-vertex="2"]', {});
 
     chooseOption("shape", "rectangle");

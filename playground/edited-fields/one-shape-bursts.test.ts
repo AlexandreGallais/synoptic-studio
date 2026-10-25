@@ -7,7 +7,7 @@ import {
   chooseOption,
   clickAt,
   clickElement,
-  openServedPage,
+  openPage,
   readModel,
   readShapeModel,
   readValue,
@@ -37,7 +37,7 @@ function sendKey(id: string, type: string, init: KeyboardEventInit): void {
 
 /**
  * Holds an arrow in a field, its repeats included, then releases it: the page steps the field at
- * each key (US-085), the browser stepping nothing in a text field.
+ * each key, the browser stepping nothing in a text field.
  *
  * @param id - the field, without `#`
  * @param init - the key and the modifiers held
@@ -71,11 +71,11 @@ function readPresent(): readonly DrawingShape[] {
   return (PAGE_HISTORIES.get(document)?.present.drawing ?? []).map(({ shape }) => shape);
 }
 
-describe("a burst of arrows in one shape's fields, one step (US-085)", () => {
+describe("a burst of arrows in one shape's fields, one step", () => {
   beforeEach(() => {
     vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout"] });
     // The page as it opens: the rectangle 120 × 80 at (0, 0), selected alone.
-    openServedPage("");
+    openPage("");
   });
 
   afterEach(() => {
@@ -129,7 +129,7 @@ describe("a burst of arrows in one shape's fields, one step (US-085)", () => {
   it("[F44.AC2] takes two steps for Up released in Width, then 150 typed and Enter", () => {
     holdKey("width", { key: "ArrowUp" }, 1);
     vi.advanceTimersByTime(100);
-    // The first digit typed ends the burst, its step taken (AUD-045).
+    // The first digit typed ends the burst, its step taken.
     sendKey("width", "keydown", { key: "1" });
     typeAndEnter("width", "150");
     vi.advanceTimersByTime(PAUSE);
@@ -143,10 +143,10 @@ describe("a burst of arrows in one shape's fields, one step (US-085)", () => {
   });
 });
 
-describe("a burst of arrows in a text's box, one step (US-085)", () => {
+describe("a burst of arrows in a text's box, one step", () => {
   beforeEach(() => {
     vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout"] });
-    openServedPage("");
+    openPage("");
     setElementBox("#canvas", { height: 600, left: 100, top: 50, width: 800 });
     clickElement("tool-text");
     clickAt("#canvas", { clientX: 400, clientY: 300 });

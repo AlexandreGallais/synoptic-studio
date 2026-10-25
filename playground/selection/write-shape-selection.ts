@@ -19,7 +19,6 @@ import type { KeptShape } from "../kept-shapes";
  *
  * @kind procedure
  * @param document - page document
- * @see docs/domain/interaction.md#_1-tools
  */
 function saveEditedSettings(document: Document): void {
   if (readStoredDrawing(document, DRAWING_KEYS.edited).length > 0) {
@@ -35,7 +34,6 @@ function saveEditedSettings(document: Document): void {
  * @param document - page document
  * @param edited - the shape split around, none for several or none selected
  * @param count - how many shapes are selected
- * @see docs/domain/interaction.md#_2-selector
  */
 function writeSelectedKind(document: Document, edited: readonly KeptShape[], count: number): void {
   const [picked] = edited;
@@ -48,9 +46,9 @@ function writeSelectedKind(document: Document, edited: readonly KeptShape[], cou
 }
 
 /**
- * Selects shapes by their indices in the drawing (F37): the panel leaves the shape it edited,
+ * Selects shapes by their indices in the drawing: the panel leaves the shape it edited,
  * keeping its settings as the last of its kind (`saveEditedSettings`), a new text still empty
- * dropped (`stopNewText`, F40); one shape is split around
+ * dropped (`stopNewText`); one shape is split around
  * and loaded into the panel, as a click loads it (`splitDrawing`, `writeSelectedKind`); several
  * are kept with every shape below, none edited, their indices beside them
  * (`DRAWING_KEYS.selected`), the kind `several`; none leaves every shape below, the kind `none`.
@@ -58,7 +56,6 @@ function writeSelectedKind(document: Document, edited: readonly KeptShape[], cou
  * @kind procedure
  * @param document - page document
  * @param selected - the indices of the shapes to select, ascending, in the order drawn
- * @see docs/domain/interaction.md#_2-selector
  */
 export function writeShapeSelection(document: Document, selected: readonly number[]): void {
   saveEditedSettings(document);

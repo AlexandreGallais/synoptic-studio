@@ -1,11 +1,9 @@
-//! `run-totals start [session] | end | report | status` (by the agent, `session-report --run` and
-//! the status line; EN-092). `start` opens the run's marker
-//! `.git/metrics/run.json`, or adds the session to the run already open; the session is the
-//! argument, else `CLAUDE_CODE_SESSION_ID`. `end` closes it and prints the report. `report` prints
-//! the duration and the tokens by kind of the open or last run. `status` prints the status line's
-//! part while a run is open, nothing otherwise. `should-stop` (EN-086)
-//! prints `stop` and exits 1 once the week's usage reaches 90 %, else `go` and exits 0, then the
-//! parked stories of the working tree's backlog; 2 outside a repository.
+//! `run-totals start [session] | end | report` (by the agent and `session-report --run`; EN-092).
+//! `start` opens the run's marker `.git/metrics/run.json`, or adds the session to the run already
+//! open; the session is the argument, else `CLAUDE_CODE_SESSION_ID`. `end` closes it and prints the
+//! report. `report` prints the duration and the tokens by kind of the open or last run. The status
+//! line's part and `should-stop` went with the status line's run indicator and the stop at 90 % of
+//! the week (AUD-051).
 
 use std::env;
 use std::fs;
@@ -13,23 +11,18 @@ use std::path::{Path, PathBuf};
 use std::process::ExitCode;
 
 use calendar::now_ms;
-use git_repository::{Checkout, checkout_of};
-use hooks::json::{Value, parse};
-use run_totals::marker::{Run, closed, opened, parse_run, render_run, whole};
-use run_totals::report::{report_table, status_text};
-use run_totals::stop::{parked_story, stop_text};
+use git_repository::checkout_of;
+use run_totals::marker::{Run, closed, opened, parse_run, render_run};
+use run_totals::report::report_table;
 use run_totals::tally::Tokens;
 use run_totals::totals::{count_run, projects_dir};
 
-/// The checkout of the current folder, read from the files Git writes rather than by starting Git:
-/// the status line calls `status` once a second during a run (NAM-002).
-fn checkout() -> Result<Checkout, String> {
-    checkout_of(Path::new(".")).ok_or_else(|| "run-totals: not in a Git repository".to_owned())
-}
-
-/// The Git directory shared by every worktree, absolute.
+/// The Git directory shared by every worktree, absolute, read from the files Git writes rather
+/// than by starting Git (NAM-002).
 fn common_dir() -> Result<PathBuf, String> {
-    checkout().map(|found| found.common)
+    checkout_of(Path::new("."))
+        .map(|found| found.common)
+        .ok_or_else(|| "run-totals: not in a Git repository".to_owned())
 }
 
 /// The run's tokens, the cache read before and written after.
@@ -37,43 +30,6 @@ fn counted(run: &Run, metrics: &Path, common: &Path) -> Tokens {
     let home = PathBuf::from(env::var("HOME").unwrap_or_default());
 
     count_run(run, metrics, &projects_dir(&home, common))
-}
-
-/// The week's usage in percent, from `usage.json`, when the status line wrote one.
-fn week_percent(metrics: &Path) -> Option<i64> {
-    let json = parse(&fs::read_to_string(metrics.join("usage.json")).ok()?)?;
-
-    match json.get("sevenDay").get("usedPercent") {
-        Value::Number(percent) => Some(whole(&Value::Number(percent.round()))),
-        _ => None,
-    }
-}
-
-/// The working tree's root, absolute: a worktree's own, so that its branch's stories are read.
-fn top_level() -> Result<PathBuf, String> {
-    checkout().map(|found| found.top)
-}
-
-/// The ids of the parked stories of this working tree's backlog, sorted.
-fn parked_stories(root: &Path) -> Vec<String> {
-    let mut parked: Vec<String> = fs::read_dir(root.join("docs/backlog/stories"))
-        .into_iter()
-        .flatten()
-        .flatten()
-        .filter_map(|entry| fs::read_to_string(entry.path()).ok())
-        .filter_map(|text| parked_story(&text))
-        .collect();
-
-    parked.sort();
-    parked
-}
-
-/// `should-stop`: whether the run stops, from the week's usage, and the parked stories.
-fn should_stop() -> Result<(bool, String), String> {
-    let metrics = common_dir()?.join("metrics");
-    let parked = parked_stories(&top_level()?);
-
-    Ok(stop_text(week_percent(&metrics), &parked))
 }
 
 fn run(words: &[String]) -> Result<String, String> {
@@ -123,47 +79,25 @@ fn run(words: &[String]) -> Result<String, String> {
 
             Ok(report_table(last.duration_ms(now), &tokens, last.is_open()))
         }
-        Some("status") => Ok(match current {
-            Some(open) if open.is_open() => {
-                let tokens = counted(&open, &metrics, &common);
-
-                status_text(open.duration_ms(now), &tokens, week_percent(&metrics))
-            }
-            _ => String::new(),
-        }),
-        _ => Err(
-            "usage: run-totals start [session] | end | report | status | should-stop".to_owned(),
-        ),
+        _ => Err(USAGE.to_owned()),
     }
 }
 
+/// The usage, printed on `--help` or `-h` (REV-009).
+const USAGE: &str = "usage: target/release/run-totals start [session] | end | report";
+
 fn main() -> ExitCode {
+    if let Some(code) = tool_use::usage(&std::env::args().skip(1).collect::<Vec<_>>(), USAGE) {
+        return code;
+    }
     let words: Vec<String> = env::args().skip(1).collect();
     let subcommand = words.first().map_or("", String::as_str);
 
-    tool_use::run_or_poll(
-        "run-totals",
-        subcommand,
-        run_totals::is_poll(subcommand),
-        || answer(&words),
-    )
+    tool_use::run("run-totals", subcommand, || answer(&words))
 }
 
 /// Answers the subcommand; its exit code.
 fn answer(words: &[String]) -> u8 {
-    if words.first().map(String::as_str) == Some("should-stop") {
-        return match should_stop() {
-            Ok((stops, text)) => {
-                print!("{text}");
-                u8::from(stops)
-            }
-            Err(message) => {
-                eprintln!("{message}");
-                2
-            }
-        };
-    }
-
     match run(words) {
         Ok(text) => {
             print!("{text}");

@@ -6,7 +6,7 @@ import {
   chooseOption,
   chooseShapeKind,
   clickElement,
-  openServedPage,
+  openPage,
   readModel,
   readValue,
   selectPageElement,
@@ -71,9 +71,9 @@ function chooseKind(kind: string): void {
   select.dispatchEvent(new Event("change", { bubbles: true }));
 }
 
-describe("Text tool: a text put in a box keeps its fitted size (US-055)", () => {
+describe("Text tool: a text put in a box keeps its fitted size", () => {
   beforeEach(() => {
-    openServedPage("");
+    openPage("");
     chooseShapeKind("text");
     typeAndEnter("text-size", "16");
     chooseOption("text-weight", "400");
@@ -138,7 +138,7 @@ describe("Text tool: a text put in a box keeps its fitted size (US-055)", () => 
     // Its turned top-left corner P = (54.27808, 44.58648) (ADR-0057). In a box 88 × 20,
     // k' = (44, 10), R(k') = (44 cos 23° − 10 sin 23°, 44 sin 23° + 10 cos 23°)
     // = (36.59490, 26.39722); b' = P − k' + R(k') = (46.87298, 60.98369). X and Y show its
-    // straight box, P.y and P.x − h sin 23° (AUD-040): 19.359375 tall, 54.27808 − 7.56432 =
+    // straight box, P.y and P.x − h sin 23°: 19.359375 tall, 54.27808 − 7.56432 =
     // 46.71377; 20 tall, 54.27808 − 7.81462 = 46.46346.
     expect([readValue("shape-x"), readValue("shape-y")]).toEqual(["46.71377", "44.58648"]);
     chooseOption("text-fit", "box");
@@ -159,9 +159,9 @@ describe("Text tool: a text put in a box keeps its fitted size (US-055)", () => 
   });
 });
 
-describe("Text tool: the box typed is kept when the text comes back to Box (US-057)", () => {
+describe("Text tool: the box typed is kept when the text comes back to Box", () => {
   beforeEach(() => {
-    openServedPage("");
+    openPage("");
     chooseShapeKind("text");
     typeAndEnter("text-size", "16");
     chooseOption("text-weight", "400");
@@ -186,7 +186,7 @@ describe("Text tool: the box typed is kept when the text comes back to Box (US-0
     typeContent("Pump P-101\nTank");
     chooseOption("text-fit", "box");
 
-    // Not 88 × 39, the new block rounded up (US-055): the box typed comes back.
+    // Not 88 × 39, the new block rounded up: the box typed comes back.
     expect(readBoxFields()).toEqual(["50", "20"]);
   });
 
@@ -245,7 +245,7 @@ describe("Text tool: the box typed is kept when the text comes back to Box (US-0
   it("[F17.AC15] measures again a dimension whose field was emptied, the other kept as typed", () => {
     typeAndEnter("text-box-width", "50");
     typeAndEnter("text-box-height", "15");
-    // Emptied and not applied (US-085): the field holds no number when the fit is chosen.
+    // Emptied and not applied: the field holds no number when the fit is chosen.
     typeValue("text-box-width", "");
     chooseOption("text-fit", "content");
     chooseOption("text-fit", "box");
@@ -254,7 +254,7 @@ describe("Text tool: the box typed is kept when the text comes back to Box (US-0
     expect(readBoxFields()).toEqual(["88", "15"]);
   });
 
-  it("[F17.AC15] keeps the box typed when an empty width is applied, refused (US-085)", () => {
+  it("[F17.AC15] keeps the box typed when an empty width is applied, refused", () => {
     typeAndEnter("text-box-width", "50");
     typeAndEnter("text-box-height", "15");
     typeAndEnter("text-box-width", "");

@@ -81,7 +81,7 @@ function ellipsedLines(
 }
 
 /**
- * The lines a text shows: a text that fits its content shows all its lines (F05); in a box, the
+ * The lines a text shows: a text that fits its content shows all its lines; in a box, the
  * lines it wraps into (`wrappedLines`), as many as its box and its maximum show
  * (`shownLineCount`), and, with the ellipsis on, when lines other than empty ones were left out,
  * the last line shown holding text ends with an ellipsis and the empty lines shown after it are

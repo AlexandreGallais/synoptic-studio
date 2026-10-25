@@ -20,7 +20,7 @@ import type { Handles } from "../../geometry";
  * @param index - number of the point, from 0
  * @param handles - its new handles, switch and mode included, vectors as drawn on the page
  * @returns the free shape with those handles, its points in place
- * @see docs/domain/shapes.md
+ * @see RULE-shapes
  */
 export function freeShapeWithHandles(shape: FreeShape, index: number, handles: Handles): FreeShape {
   const straight =

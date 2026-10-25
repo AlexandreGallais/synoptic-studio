@@ -5,7 +5,7 @@ import {
   chooseOption,
   clickElement,
   dispatchDrawingPointer,
-  openServedPage,
+  openPage,
   readModel,
   readPressedState,
   readShapeModel,
@@ -74,10 +74,10 @@ function countShapes(): number {
   return document.querySelectorAll("#canvas svg > path:not([class])").length;
 }
 
-describe("a drag with a tool draws the shape's box (US-064)", () => {
+describe("a drag with a tool draws the shape's box", () => {
   beforeEach(() => {
-    // The epic's step 1, a rectangle 120 × 80 at (0, 0), whatever feature is being validated.
-    openServedPage("?guide=epic");
+    // The page as it opens, a rectangle 120 × 80 at (0, 0).
+    openPage("");
     setElementBox("#canvas", { height: 600, left: 100, top: 50, width: 800 });
   });
 
@@ -269,7 +269,7 @@ describe("a drag with a tool draws the shape's box (US-064)", () => {
     fireShift("keydown");
     dispatchDrawingPointer("pointerup", { x: 130, y: 90 }, NO_KEY);
 
-    // No shape drawn: the press on the rectangle 120 × 80 at (0, 0) moves it by (120, 80) (US-072).
+    // No shape drawn: the press on the rectangle 120 × 80 at (0, 0) moves it by (120, 80).
     expect([...readBox(), countShapes()]).toEqual([120, 80, 120, 80, 1]);
   });
 

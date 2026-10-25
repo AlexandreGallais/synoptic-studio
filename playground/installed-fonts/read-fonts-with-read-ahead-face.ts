@@ -9,7 +9,6 @@ import type { FontFace, FontFamily, NamedFontFace } from "../../src";
  * @param faces - the faces of the family kept
  * @param face - the face read ahead
  * @returns those faces; none when no face of that weight and style holds its file
- * @see docs/domain/shapes.md#text
  */
 function readHeldFaces(faces: readonly FontFace[], face: FontFace): readonly FontFace[] {
   return faces
@@ -19,7 +18,7 @@ function readHeldFaces(faces: readonly FontFace[], face: FontFace): readonly Fon
 }
 
 /**
- * Reads the font families kept with a face read ahead (US-053): its metrics added without its file
+ * Reads the font families kept with a face read ahead: its metrics added without its file
  * (`fontsWithFace`), replacing a face of the same weight and style whose file is not held — one
  * of Inter's shipped faces —, never one whose file is held, imported or read when its family was
  * chosen, so that no file the page draws and embeds is dropped.
@@ -28,7 +27,6 @@ function readHeldFaces(faces: readonly FontFace[], face: FontFace): readonly Fon
  * @param fonts - the font families kept
  * @param named - the face read ahead, its file held, and its family
  * @returns the families, that of the face holding its metrics; the families given when a face of that weight and style holds its file
- * @see docs/domain/shapes.md#text
  */
 export function readFontsWithReadAheadFace(
   fonts: readonly FontFamily[],

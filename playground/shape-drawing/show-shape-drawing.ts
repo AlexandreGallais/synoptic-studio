@@ -13,7 +13,6 @@ import type { Point, Size } from "../../src";
  * @kind procedure
  * @param drawing - the drag, its press, its pointer and Shift
  * @returns the box dragged, on integers
- * @see docs/domain/interaction.md#_1-tools
  */
 function readDrawingBox(drawing: ShapeDrawing): Point & Size {
   return draggedBox({ isSquare: drawing.isShift, press: drawing.press, release: drawing.pointer });
@@ -28,7 +27,6 @@ function readDrawingBox(drawing: ShapeDrawing): Point & Size {
  * @param document - page document
  * @param drawing - the drag, its press, its pointer and Shift
  * @param box - the box dragged, on integers
- * @see docs/domain/interaction.md#_1-tools
  */
 function writeDrawingBox(document: Document, drawing: ShapeDrawing, box: Point & Size): void {
   if (!drawing.isDrawn) {
@@ -44,16 +42,15 @@ function writeDrawingBox(document: Document, drawing: ShapeDrawing, box: Point &
 }
 
 /**
- * Writes the new shape as the drag stands (F36): nothing while the pointer stays within 3 pixels
+ * Writes the new shape as the drag stands: nothing while the pointer stays within 3 pixels
  * of the press at the view's scale (`isDragged`, SP-030's answer 8), which leaves the release to
- * the click (F35); once it has gone further, the shape started and its box written
+ * the click; once it has gone further, the shape started and its box written
  * (`writeDrawingBox`), placed as a click if the pointer comes back to the press's integer point.
  *
  * @kind procedure
  * @param document - page document
  * @param drawing - the drag, its press, its pointer and Shift
  * @returns the drag, its shape drawn or not
- * @see docs/domain/interaction.md#_1-tools
  */
 export function showShapeDrawing(document: Document, drawing: ShapeDrawing): ShapeDrawing {
   const box = readDrawingBox(drawing);

@@ -12,7 +12,6 @@ import type { TypedPanelValue } from "../../src";
  * @kind procedure
  * @param field - a field acting as a number field of its own
  * @returns the number; undefined when it showed none
- * @see docs/domain/interaction.md#_2-selector
  */
 function readBeforeNumber(field: HTMLInputElement): number | undefined {
   const shown = readShownNumber(SHOWN_TEXTS.get(field) ?? "");
@@ -26,7 +25,6 @@ function readBeforeNumber(field: HTMLInputElement): number | undefined {
  * @kind procedure
  * @param typed - a value relative, typed or an arrow's step
  * @returns its text
- * @see docs/domain/interaction.md#_2-selector
  */
 function readRelativeText(typed: TypedPanelValue): string {
   return typed.value >= 0 ? `+${String(typed.value)}` : String(typed.value);
@@ -41,7 +39,6 @@ function readRelativeText(typed: TypedPanelValue): string {
  * @kind procedure
  * @param field - a field acting as a number field of its own
  * @param typed - the value typed, or an arrow's step, relative
- * @see docs/domain/interaction.md#_2-selector
  */
 export function writeOwnValue(field: HTMLInputElement, typed: TypedPanelValue): void {
   const value = readOwnValue(field, typed, readBeforeNumber(field));

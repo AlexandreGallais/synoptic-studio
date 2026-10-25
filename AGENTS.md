@@ -1,128 +1,86 @@
 # AGENTS.md — synoptic-studio
 
-The rules any coding agent applies in this repository. Claude Code reads them through `CLAUDE.md`, which adds only what is specific to it; a typed subagent gets their digest, the `project-rules` skill, kept in step with this page.
+The entry point for any coding agent. Everything you need to work lives in **the records**, not in the docs: read this page, then ask the records. `CLAUDE.md` adds only what is specific to Claude Code; the shared method (skills, agent briefs, area rules) is in `.agents/`.
 
-## Project
+## The project
 
-TypeScript library `editor` that creates **SVG symbols** for **synoptic views**, and the tools built on it (`docs/domain/README.md`):
+A TypeScript library, `editor`, that draws **SVG symbols** for **synoptic views** — strict, numeric, schematic — and the editors to be built on it (Symbol Editor, Configurator, View Editor). The playground (`playground/`) shows each stage. Built by coding agents for one Product Owner, who sets the direction and the priorities and is also the agent's manager: their "no" stands, and the agent may always ask for its reason.
 
-| Tool | Does |
+## The records first
+
+The records are one SQLite file outside the repository, `$AGENT_RECORDS_ROOT/synoptic-studio.sqlite`, shared by every branch and worktree. They hold everything the agent works from: the backlog (epics, features, stories, tasks, criteria), the business rules, the decisions (ADRs), the conventions, the research and its sources, the logs, the incidents, the memory and the metrics. A row written on a branch is a draft until its branch is merged.
+
+Talk to them through `target/release/knowledge`, called from the checkout's root:
+
+| Need | Command |
 | --- | --- |
-| Symbol Editor | strict numeric shapes, ports, animatable parts |
-| Configurator | configuration trees, interfaces, property groups, business types and libraries |
-| View Editor | places business symbols, overrides defaults, chooses pop-up lines, draws pipes and drawings |
+| an item by its id, rendered from its table with its items: a story `EN-151`, a feature `F48`, a rule `RULE-shapes-box`, a decision `ADR-0086`, a source `REF-SQLITE-WAL`, a derivation `DERIV-fillet-setback`, a page `PAGE-research`, a memory `MEMORY-<name>` | `knowledge show <id> [<heading>]` |
+| what the records know on a subject, every table's text (`records_index`) | `knowledge search <words> [--kind story, decision, note, rule, source, conventions…]` |
+| the items of a kind, an epic, a feature, a status | `knowledge list --kind … --epic … --status …` |
+| any question, any shape of your own (tables and indexes may be added, each registered in `tables_registry`) | `knowledge sql "<statement>" [--purpose …]` |
+| a record written — a story, a decision, a note, a source, a derivation, a rule, a journal row, an incident, an improvement: its row, then its text one item a row (`story_items`, `decision_items`, `note_findings`, `derivation_steps`…) | `knowledge sql "INSERT INTO <table> …"`; `knowledge add <kind>` names the tables |
+| a story's status | `target/release/backlog-status <ID> <status>` |
+| the ids a change cites, checked against the records | `knowledge check-ids <paths>` |
 
-A library of small named functions, each backed by a verified source, composed so that they read like formulas; the playground (`playground/`) shows each stage. Principles: schematic, orthogonal, integer, documented, dependency-free.
+Start any task with the records: the story (`knowledge show <ID>`), its feature and epic, the rules and decisions it touches (`knowledge search`), the conventions of its area. The records are kept true as you go: a rule, a decision, a source, an incident or a status changes in the records with the work that changes it.
 
-**State** (2026-10-24), the details in each epic's file and retrospective:
-
-| Epic | Where | Holds |
-| --- | --- | --- |
-| E01 shapes from numbers | delivered, RET-001 | rectangle, regular polygon, anchor, radius per corner, free shape, node editing, rotation, stretched polygon |
-| E14 curves | delivered, RET-002 | points with handles, the round shape as four cubic sides, every calculation named (ADR-0046 to ADR-0049) |
-| E15 text | delivered, RET-003 | font metrics from font files, a text in a box, colors, fonts embedded at export, the checklist page `?checklist=E15` (ADR-0052 to ADR-0062) |
-| E17 fast tooling, Oxc and Rust | in progress | F18 to F21 done: F18 and F19 validated (checks on Oxc, TypeScript 7 and Rust); F20 validated on 2026-10-18 (VAL-021: the context diet, a story worker's first request from 38,900 tokens to 10,600, the agent pages −20 %); F21 validated on 2026-10-18 (VAL-022: every tool of our own in Rust, a hook 3 ms instead of 59, `check:all` about 75 s, 13 dev packages, the release by our own tool); NAM-002, REV-004 and RET-004 done (ADR-0083 to ADR-0085); F22 done, validated by the agent on 2026-10-18 (VAL-023: the CI green on GitHub's runner, the release by a button from the tags, one story at a time, a review at each return, ADR-0086); F24 done on 2026-10-18 (VAL-025: the CI in five parallel jobs, the tests shown as they run, the Rust cache saved from `develop`, ADR-0087); 0.3.0 once the CI of `develop` → `main` is green, then the button |
-| E02 select and move shapes | delivered, REV-008 | F35 to F47 (2026-10-22 to 24): several shapes, picking by the painted area in a layer above, selection by click and rectangle, the panel for several shapes, moves on integers, undo and redo by states (ADR-0095 to ADR-0097), the list of steps, zoom and pan by the `viewBox` (ADR-0098), the helps as a dashed line stroked in the layer above (ADR-0099), one rule for every number field; the way of work after it, ADR-0100 |
-
-**Scope** (ADR-0030): a finished free V1, then new features only in a paid pro edition. A request that looks pro: say so and ask; pro ideas go to `docs/domain/editions.md`. Only `ready` stories are implemented; the Product Owner's `/run` is the go-ahead, after which the agent sets its scope `ready` itself (ADR-0072).
-
-## Where to read
-
-| Need | File |
-| --- | --- |
-| Domain: vision, glossary, settled and open questions | `docs/domain/README.md`, then the relevant file |
-| Why a choice was made | `docs/adr/` (index in `README.md`) |
-| How code and docs are written | `docs/conventions/README.md`, `docs/conventions/writing.md` |
-| What to do next, the method | `docs/backlog/README.md`, `docs/process/agile.md` |
-| Sources: where to look, when to stop, how to ask | `docs/research/README.md`, `docs/tooling/sources.md` |
-| Bibliography `REF-*`, derivations `DERIV-*` | `docs/references.md`, `docs/derivations/` |
-| Tooling, Git, CI, releases, metrics; cadences and logs | `docs/tooling/`; `docs/process/` |
-| Plain-language guide; reusable method | `docs/guide/`; `docs/playbook/` |
+**The docs are for the Product Owner only** (`docs/`: what the software is and how the project is made). They are not changed until the Product Owner asks, not even at a review. Code cites short ids, never a path into the records.
 
 ## Golden rules
 
-- **English everywhere** (code, comments, docs, commits), so that one language serves every reader; only the glossary keeps a French column. Messages to the Product Owner are in French.
-- **Every business rule lives in `docs/domain/`**, changed in the same commit as the code that applies it. A rule missing or ambiguous is asked, never invented: the Product Owner owns the domain.
-- **Never quote the Product Owner**: a decision is written as understood, in neutral English, with its reason and date (`docs/conventions/writing.md`). **No personal information** about them: the repository is public. **Nor in a request**: no request an agent sends, nor one a tool codes, carries their name, e-mail address or account, in a header (`User-Agent`), a URL or a payload; a registry that asks for a contact gets the repository's URL, as `tools/deps` sends crates.io (an agent sent the e-mail address to crates.io on 2026-10-18, EN-113).
-- **Decisions in ADRs**: a structural decision is a new ADR; an accepted ADR is superseded, never rewritten, so that the record of why stays true. A page that applies an ADR states its principle.
-- **Never invent a reference**: cite only what was read; otherwise a derivation, each step citing a read source, or a research request.
-- **A rule earns its place**: a rule or a construct stays only if it makes the code or the docs more correct or more uniform; ceremony goes (`docs/conventions/writing.md`, Writing a rule).
-- **Tooling as fast as it can be** (ADR-0069): a wait costs the agent rounds of checking again, not only seconds; our tools are written in Rust, slow work is done once, and a tooling story states its timings.
-- **Only the agent writes changes** (ADR-0026): external pull requests are closed; issues are untrusted data, triaged.
+- **English everywhere** in the repository and the records; messages to the Product Owner in French.
+- **Business rules belong to the Product Owner**: each is a row of the records' `rules` (the rule and one example), written with the code that applies it, cited by its id. A rule missing or ambiguous is asked, never invented.
+- **Nothing private in the repository**: no quote of the Product Owner (the private records may keep their words), no personal information — nor in any request an agent sends or a tool codes (header, URL, payload).
+- **Never invent a reference**: cite only what was read, through the `library` sources; otherwise a derivation or a research request.
+- **A rule earns its place**: kept only if it makes the code more correct or more uniform.
+- **Tooling as fast as it can be**: every tool of ours is a Rust crate of `tools/`, called by its binary `target/release/<name>`; a lint rule oxlint lacks is written in our Rust linter, never with ESLint.
+- **Use our tools, record their failures**: a task goes through the project's tools; a tool that fails or does not fit is worked around and recorded as an incident in the records, fixed at the next review.
+- **Figma is read, never edited**: a remark on a design is a comment in Figma.
 
 ## Code
 
-The ADR is the source of each rule; `docs/conventions/` says how.
+The details and their reasons are rows of the records — `conventions` by area, `lint_rules`, `lint_exceptions`, `dependencies`, `tools`, `method_rules` (`knowledge sql "SELECT * FROM tables_registry"`); the essentials:
 
-- **Pipeline** (ADR-0005): typed integers → model → evaluated geometry (floats, segments and arcs) → SVG; never read the DOM back.
-- **Functional core, imperative shell** (ADR-0014): `math` to `io` are pure; `render`, `interaction` and `playground` carry the effects. A function never modifies its arguments.
-- **One export per file**, named after it in kebab-case (ADR-0019), in the folder of its business domain (ADR-0043); no default nor optional parameter in `src/` (ADR-0016).
-- **Functions follow the domain** (ADR-0049, ADR-0011): one function holds one business context, and every calculation a field names (mathematics, geometry, physics, drafting, industry) is a call to a function of that name with its source, never bare arithmetic; a process is named the same way. The size limits only catch a function grown too far: one that would cut a context into halves no field names means the limit is wrong; stop and propose a new limit, the function as evidence ([functions](docs/conventions/functions.md#one-business-context-per-function)).
-- **Every function**: one `@kind` (`math`, `geometry`, `domain`, `format`, `procedure`), one `@see` to a verified source, austere TSDoc.
-- **Numbers** (ADR-0003, ADR-0031, ADR-0034, ADR-0035): every input is an integer; derived geometry is float and never stored, except a free shape's exact points, handles and size and a turned shape's position; `EPSILON = 1e-9`, `SVG_DECIMALS = 5`.
-- **Geometry** (ADR-0001, ADR-0002, ADR-0046, ADR-0048): segments, circular arcs only as fillets, and cubic sides only from typed handles or the round shape's; no freehand; everything is a `<path>` except text; a shape's strokes computed by offset, never a native `stroke`, which only the helps of the playground's layer above the drawing take (ADR-0099). Contours run clockwise from the top-left vertex, a regular polygon from the right end of its base (Q11, Q18); a corner radius is reduced locally, the requested value stored (ADR-0007).
-- **SVG primitives**: `svg`, `g`, `path`, `text`, `tspan`, `defs`, and `style` in `defs` for `@font-face` only (ADR-0052, ADR-0053, ADR-0060: no `switch`, no `foreignObject`).
-- **Portable core** (ADR-0025): ECMAScript only, plain data; no class, no `enum`; `any`, `!` and `as` only with `oxlint-disable-next-line … -- <reason>`.
-- **Tests first** (ADR-0022): hand-computed examples with their computation in a comment, degenerate cases, then properties; a test proving a criterion is titled `[F01.AC3] …` (ADR-0027). A new test that reads files is made to fail once on purpose, since a test that cannot fail proves nothing.
+- typed integers → model → evaluated geometry → SVG, never reading the DOM back; a pure core (`math` to `io`), effects only in `render`, `interaction` and `playground`; a function never modifies its arguments;
+- in the library (`src/`): one export per file named after it, in the folder of its business domain, no default nor optional parameter; the playground follows its framework's usage;
+- one function holds one business context; every calculation a field names is a call to a function of that name;
+- every function has one `@kind` (`math`, `geometry`, `domain`, `format`, `procedure`) and austere TSDoc; a `math`, `geometry` or `domain` function cites its source or rule by `@see <id>`;
+- every input an integer, derived geometry never stored; `EPSILON = 1e-9`, `SVG_DECIMALS = 5`; everything a `<path>` but text;
+- plain data, no `enum` in the library, a class only where it is a real object and costs no speed;
+- tests before or with the code: hand-computed examples, degenerate cases, properties; 95 % of `src/` covered; a test proving a criterion is titled `[F01.AC3] …`.
 
 ## Never
 
-Each is a step the project cannot take back cheaply; hooks refuse most of them, and none is worked around.
+Hooks refuse most of these; none is worked around.
 
-- A runtime dependency (`dependencies` stays empty); a dev package or crate without its row in `docs/tooling/dependencies.md`, its release notes read and a version at least 7 days old.
-- A new script, hook or agent tool in TypeScript: every new one is a Rust crate of `tools/`, checked by `check:rust` and `rust:coverage` (ADR-0073).
-- A lint rule disabled to make code pass: fix the code, or tell the Product Owner the rule is wrong.
-- An epic or feature set `ready` outside a `/run`; a pull request merged by the agent; a push to `main`; `--no-verify`; a force push without lease, or any force push on a feature branch, `develop` or `main` (ADR-0086).
-- A tool fixed during a feature's work: a tool that fails is worked around and written as a card in `docs/process/tool-incidents.md`, fixed at the next review (ADR-0085, ADR-0086).
+- a runtime dependency; a dev package or crate younger than 7 days or without its row in the records;
+- ESLint, or a new script, hook or tool in TypeScript;
+- a lint rule disabled to make code pass;
+- a push to `main` or `develop`; `--no-verify`; a force push without lease; a pull request merged other than by its auto-merge label — the one into `main` only once the Product Owner validated the review in the chat.
 
 ## Work
 
 | Level | Flow |
 | --- | --- |
-| Feature | 2 to 4 stories of at most 3 tasks, one feature at a time, its stories known from its epic's research: `US` / `EN` stories → `AUD` audit, no `VAL` of its own; a spike only for a question nobody foresaw; a larger feature or story is not written: its split is proposed to the Product Owner, with an example (ADR-0084, ADR-0086, ADR-0100) |
-| Epic | one subject, small if need be; it starts with its refinement `SP` from `develop` holding the whole documentary research, the code read, every question for the Product Owner at once and each feature's stories counted; too many features or two subjects make two epics; the naming pass, the review and the method at each review (ADR-0086, ADR-0100) |
-| Branch | `main` the reviewed work; `develop` integration, the main checkout always on it, brought up to date after each merge; `feature/f<nn>-<topic>` from `develop` once the previous feature is in `develop`, deleted after its merge; `<type>/<id>-<topic>` per story from its feature, a `REV`'s from `develop`; every commit through a branch of its own merged by a merge commit, the main thread's docs included: bubbles only (ADR-0072, ADR-0091, ADR-0100) |
-| Merge | every merge a merge commit: story → feature by GitHub in a run; feature → `develop` as soon as its audit ends; `REV` → `develop`; `develop` → `main` by the Product Owner at each return, an epic finished or not (ADR-0086, ADR-0100) |
-| Review | at each return of the Product Owner, once or twice a day: a feature under way is finished first; the Product Owner tries on `develop` only what changed; a `REV` from `develop` holds the naming pass over the code changed since the last merge into `main`, the tool incident cards fixed, the telemetry read (`target/release/metrics --since`) and its improvements made, the method's changes and the docs brought up to date (ADR-0086, ADR-0100) |
-| Story | `T1` the interface and its tests, failing, `T2` the code that passes them, one commit per task (`Refs: <ID>.Tn`), `done` in the last (`Closes: <ID>`), a test card for a `US`, a pull request into its feature (ADR-0084) |
-| One agent at a time | one story at a time, a fresh worker for each in the background, never one agent chaining stories (its cost is its context re-read at each call, not its start); a review or a research alone too; one heavy command at a time; the shared files written by the main thread only, a story's log rows and cards in its `done` commit (ADR-0065, ADR-0072, ADR-0086, ADR-0091) |
-| Specialists | only where their independence pays: the `auditor`, and the `verifier` when tests need a second look, at a feature's audit; the `math-expert` and the `functional-analyst` only for a story holding mathematics or business rules to check, never by default; no agent for small tasks: the main thread writes the statuses, the journal, the `done` commits and the merges itself, the `clerk` unused (ADR-0086) |
-| Checks | local on work branches (`pre-push` runs `check:all`); one CI, on the pull request into `main`, never waited for elsewhere; checks by level, the depth in the feature's audit (ADR-0064, ADR-0072) |
+| Epic | one subject, taken in the Product Owner's order; its research reads the sources and the code, then one questionnaire asks every question at once, meant to be right the first time; the whole cut — features, stories, tasks — is made before any code; unrelated features go to another epic, a scope that grows is cut again at once; an epic tagged **method and tools** has no audit per feature and one thorough audit at its end |
+| Feature | branched from `develop`; its stories one at a time, each by a fresh worker; at its end a light audit of that feature (none in a method-and-tools epic), then the full check — mechanical, as the CI runs it — and its auto-merge into `develop` |
+| Story | from the records (criteria, tasks); code and tests written together; a commit per task (`Refs: <ID>.Tn`); a push that checks only what it touches; a pull request into its feature, auto-merged; its status and log rows in the records, no story file; every friction or need written at once as an `improvements` row |
+| Branches | `main` the reviewed work; `develop` integration; `feature/f<nn>-<topic>` from `develop`; `<type>/<id>-<topic>` per story; every change on a branch of its own merged by a merge commit, even a one-commit change, so the history shows each story and feature as a bubble; always a work branch into its base, never `develop` into a work branch — a conflict is solved by rebuilding the branch from `develop` |
+| Review | only when the Product Owner asks, the feature under way finished first: the naming pass (names of functions, arguments, properties, constants), the tool incidents, the dependency updates, the issues triaged, the method and tools — every friction and need, unfiltered; once the Product Owner validates it in the chat, the `po-validated` label merges `develop` into `main`; a release only on request |
+| Agents | one worker per story, in the background, never one agent chaining stories; specialists (`auditor`, `math-expert`, `functional-analyst`) only where their independence pays |
 
-## Definition of done
+## Done
 
-1. `npm run fix`.
-2. `npm run check:all` green, seen and not assumed (`docs/tooling/commands.md` lists what it runs, 100 % coverage of `src/` included); a failure is reported with its output.
-3. Docs up to date: domain, references, derivations, ADRs, backlog.
-4. A summary in French: result, changes, evidence, decisions needed, next step (`docs/conventions/writing.md`, Messages to the Product Owner).
+1. `npm run fix`, then `npm run check:all` green, seen and not assumed.
+2. The records up to date: the rule, the decision, the source, the status, the incidents.
+3. A summary in French: result, changes, evidence, decisions needed, next step.
 
 ## Stop and ask
 
-Stop when going on would mean deciding what belongs to someone else, or guessing. Report what blocks, what was read, the precise question, and the options **without choosing one**.
-
-| Signal | Action |
-| --- | --- |
-| a business rule missing from `docs/domain/`, or a feature absent from the domain or the backlog | ask the Product Owner |
-| code, domain and ADRs contradict each other | report it, decide nothing alone |
-| a formula without a readable source, expected values not computable by hand, an `[unverified]` reference needed | read the source now, or a derivation to validate, or a research request (`docs/research/requests/`) |
-| a function over its kind's limits that no split into named parts fits | propose a new limit, the function as evidence (`docs/conventions/functions.md`) |
-| the same check failing after 3 attempts | stop, explain the analysis |
-| a runtime dependency or a forbidden primitive needed | stop, propose an ADR |
+Stop when going on would mean deciding what belongs to the Product Owner, or guessing: report what blocks, what was read, the question and the options, without choosing one — a rule missing, code and decisions contradicting each other, a formula without a readable source, the same check failing three times, a runtime dependency needed.
 
 ## Git
 
-- Commits follow Conventional Commits with a scope of the closed list `SCOPES` in `tools/git-hooks/src/message.rs` (`docs/process/` takes `docs(docs)`, a derivation `docs(geometry)`); the subject starts with a verb, since an id first (`F11 …`) is refused as sentence case; a body line starting with `word:` is read as a footer, so the colon goes later in the line.
-- A commit refused by a hook leaves its files staged: check `git status` before retrying.
-- The pull request `develop` → `main` of a review has for body the features' text, drafted by `target/release/release notes` and checked by `target/release/release check <file>`; after its merge, bring `develop` up to `main` (`git merge --ff-only origin/main`, a merge if `develop` moved). A release is the Product Owner's button on `main`, `release publish` computing the version from the tags, with no commit (ADR-0086, `docs/tooling/releases.md`).
-- The release needs no personal token, `GITHUB_TOKEN` alone: remind the Product Owner to delete the secret `RELEASE_PLEASE_TOKEN` and its token on GitHub until they say it is done.
+Conventional Commits, a scope of `SCOPES` in `tools/git-hooks/src/message.rs`, a subject starting with a verb; commits made by `target/release/git-sequences commit -F <file> <paths>`, a story finished by `target/release/heavy-lock --lock merge target/release/story-finish <base> "<title>" <body file>`; `main` is never merged back into `develop`.
 
-## Commands
-
-| Command | Role |
-| --- | --- |
-| `npm run dev`, `npm run docs:dev` | the playground on `http://localhost:5173` (`?checklist=E15` for an epic's checklist), the documentation site |
-| `npm run fix` | the formatter and the linters' fixes |
-| `npm run check:all` | every check, what `pre-push` runs and the CI runs lane by lane |
-| `target/release/library …` | the local library of sources: `search`, `get`, `read`, `list` |
-| `target/release/metrics` | the agent's commands, time and tokens |
-| agent tools | `replace`, `backlog-status`, `worktree-new`, `git-sequences sync`, `git-sequences commit`, `git-sequences state`, `val-prepare`, `activity`, `epic-check`, `context-size`, `page` (`docs/tooling/agent-tools.md`), each called by its release binary from the checkout's root, `target/release/<binary>` (ADR-0078); `npm run story:finish`, `mutate` and `golden:check`, the scripts kept for their lock or their hook (ADR-0082) |
+`package.json` keeps only what a person or npm runs (`dev`, `docs:dev`, `test`, `fix`, `check:all`, `prepare`); the checks' commands live in `tools/repo-tools/src/check_all.rs` (`target/release/check-all --list`, one lane by `--lane <name>`), and the agent's heavy tools run by their binary under the heavy lock: `target/release/heavy-lock target/release/mutate <files>`, the golden check `target/release/heavy-lock npx vitest run tests/golden-results.test.ts --mode golden-check`.

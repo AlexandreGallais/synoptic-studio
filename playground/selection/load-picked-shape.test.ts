@@ -9,7 +9,7 @@ import {
   chooseRadio,
   clickAt,
   clickElement,
-  openServedPage,
+  openPage,
   pressAndClick,
   readCheckedRadio,
   readModel,
@@ -103,10 +103,10 @@ function readChecked(id: string): boolean {
   return document.querySelector<HTMLInputElement>(`#${id}`)?.checked === true;
 }
 
-describe("the panel loads the shape picked, per kind (US-067)", () => {
+describe("the panel loads the shape picked, per kind", () => {
   beforeEach(() => {
-    // The epic's step 1, a rectangle 120 × 80 at (0, 0), radius 10, whatever feature is validated.
-    openServedPage("?guide=epic");
+    // The page as it opens, a rectangle 120 × 80 at (0, 0), radius 10.
+    openPage("");
     setElementBox("#canvas", { height: 600, left: 100, top: 50, width: 800 });
   });
 
@@ -183,7 +183,7 @@ describe("the panel loads the shape picked, per kind (US-067)", () => {
     pick({ x: 60, y: 40 });
     placeShape("polygon", { x: 550, y: 200 });
 
-    // The triangle left by the click, the last polygon the panel showed (SP-026).
+    // The triangle left by the click, the last polygon the panel showed.
     expect(readValue("corners")).toBe("3");
 
     // A polygon refused, its corners emptied by a script: left by a click, it leaves nothing for
@@ -209,7 +209,7 @@ describe("the panel loads the shape picked, per kind (US-067)", () => {
   });
 
   it("[F36.AC3] gives a turned text picked back its place, its fractions kept", () => {
-    // The text `Text` typed from (200, 281), 64.65625 × 38.71875 in Inter 32 (US-075), then turned
+    // The text `Text` typed from (200, 281), 64.65625 × 38.71875 in Inter 32, then turned
     // about its middle, (232.328125, 300.359375), which stays there.
     placeShape("text", { x: 200, y: 300 });
     typeTextContent("Text");
@@ -236,7 +236,7 @@ describe("the panel loads the shape picked, per kind (US-067)", () => {
 
     const pump = readModel();
 
-    // The next text takes the last text's style (SP-026); it is set back to Inter 400, upright.
+    // The next text takes the last text's style; it is set back to Inter 400, upright.
     placeShape("text", { x: 500, y: 450 });
     chooseOption("text-font", "Inter");
     clickElement("text-italic");

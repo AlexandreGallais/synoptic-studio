@@ -25,7 +25,7 @@ use crate::worktrees::worktree_root;
 pub use crate::heredoc::{heredoc_bodies, without_heredocs};
 
 /// Why a full Vitest run is denied.
-pub const FULL_VITEST: &str = "A full Vitest run takes the heavy lock: run `npm run test`, or name the test files (ADR-0063).";
+pub const FULL_VITEST: &str = "A full Vitest run takes the heavy lock: run `npm run test`, or name the test files (ADR-0072).";
 
 /// Why `gh pr merge` is denied.
 pub const MERGE: &str =
@@ -52,7 +52,7 @@ pub const UNKNOWN_PUSH: &str = "A push naming no destination updates the current
 pub const HAND_LOCK: &str = "`.git/heavy.lock` is taken by the heavy commands themselves (EN-047): run `git push`, `npm run check:all`, `npm run test` or the other heavy command as it is, in the background when it may last; a lock taken by hand makes a `git push` inside it wait forever for its own pre-push.";
 
 /// Why a Python script writing a file is denied in a worktree (EN-119).
-pub const PYTHON_WRITE: &str = "A worktree's files are never written by a Python script (AGENTS.md, Always): edit a file with the Edit tool, several with `target/release/replace` (docs/tooling/agent-tools.md), and write a new one with the Write tool.";
+pub const PYTHON_WRITE: &str = "A worktree's files are never written by a Python script (AGENTS.md, Always): edit a file with the Edit tool, several with `target/release/replace` (the records' tools), and write a new one with the Write tool.";
 
 /// Why writing the golden file is denied in a worktree.
 pub const GOLDEN_WRITE: &str = "Vitest's mode golden-write writes .git/metrics/golden.json, shared by every worktree: only the main thread runs it, in the main checkout.";
@@ -1087,6 +1087,6 @@ pub fn scripts_of(package: &str) -> Option<Vec<String>> {
 #[must_use]
 pub fn missing_script_reason(script: &str, branch: &str, base: &str) -> String {
     format!(
-        "`npm run {script}`: no script `{script}` in the package.json of branch `{branch}`. A tool of the agent is called by its binary, `target/release/<binary>`, as docs/tooling/agent-tools.md lists them (EN-115). A branch made before a script gets it by a rebase on its base: run `git fetch origin`, then `git rebase {base}`, one call each."
+        "`npm run {script}`: no script `{script}` in the package.json of branch `{branch}`. A tool of the agent is called by its binary, `target/release/<binary>`, as the records' tools lists them (EN-115). A branch made before a script gets it by a rebase on its base: run `git fetch origin`, then `git rebase {base}`, one call each."
     )
 }

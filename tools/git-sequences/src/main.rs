@@ -13,11 +13,12 @@ use std::path::{Path, PathBuf};
 use std::process::{Command, ExitCode, Stdio};
 
 use git_sequences::{
-    Branch, Request, Source, State, Target, branch_of, changes_refusal, changes_step,
+    Branch, Request, Source, State, Target, USAGE, branch_of, changes_refusal, changes_step,
     commit_refusal, commit_steps, fetch_step, message_refusal, parse, state_base, state_report,
-    state_steps, sync_steps, sync_target,
+    state_steps, sync_steps, sync_target, through_link,
 };
 use stale_binaries::RELEASE_BUILD;
+use worktree::{Story, recorded_story, story_of_branch};
 
 /// Runs one Git step, the text given on its standard input; its output, or Git's own message.
 fn git(step: &[String], input: Option<&str>) -> Result<String, String> {
@@ -75,9 +76,17 @@ fn git_words(words: &[&str]) -> Result<String, String> {
     git(&step, None)
 }
 
-/// Names of the story files of the checkout, none when it has no backlog.
-fn story_files(top: &Path) -> Vec<String> {
-    worktree::story_files(top).unwrap_or_default()
+/// The story of a story branch as the records hold it, none when they hold none or cannot be
+/// read: `sync` then asks for `--base`, `state` counts from no base.
+fn stories(top: &Path, branch: &Branch) -> Vec<Story> {
+    let Branch::Story(name) = branch else {
+        return Vec::new();
+    };
+
+    story_of_branch(name)
+        .and_then(|id| recorded_story(top, &id).ok().flatten())
+        .into_iter()
+        .collect()
 }
 
 /// The message of a commit, from its file or the standard input.
@@ -124,7 +133,7 @@ fn sync(branch: &Branch, base: Option<&str>, top: &Path) -> Result<String, Strin
     .lines()
     .map(str::to_owned)
     .collect();
-    let target = sync_target(branch, base, &story_files(top), &remotes)?;
+    let target = sync_target(branch, base, &stories(top, branch), &remotes)?;
 
     if let Some(refusal) =
         changes_refusal(branch_name(branch), &target, &git(&changes_step(), None)?)
@@ -160,13 +169,14 @@ fn commit(
     }
 
     let text = read_message(message)?;
+    let paths = paths_to_add(paths)?;
 
-    for step in commit_steps(paths, push) {
+    for step in commit_steps(&paths, push) {
         let is_commit = step.first().map(String::as_str) == Some("commit");
         let (_, errors) = git_with_errors(&step, is_commit.then_some(text.as_str()))?;
 
-        // What the commit's hooks wrote, the notes of `move-rows --notes` among them, is shown
-        // though the commit succeeded; a push's, `check:all`'s report, only when it fails.
+        // What the commit's hooks wrote is shown though the commit succeeded; a push's,
+        // `check:all`'s report, only when it fails.
         if is_commit && !errors.is_empty() {
             eprintln!("{errors}");
         }
@@ -180,6 +190,59 @@ fn commit(
     };
 
     Ok(format!("{} on {}{pushed}", head, branch_name(branch)))
+}
+
+/// A path written through the symbolic links to folders it passes, `.claude/skills/…` as
+/// `.agents/skills/…`: Git refuses a path beyond a symbolic link. A link to a link is followed
+/// too, a few times at most; the path itself, a link, stays as it is.
+fn unlinked(path: &str) -> String {
+    let mut current = path.to_owned();
+
+    for _ in 0..8 {
+        let next = current
+            .match_indices('/')
+            .map(|(end, _)| &current[..end])
+            .filter(|link| {
+                fs::symlink_metadata(link).is_ok_and(|found| found.file_type().is_symlink())
+            })
+            .find_map(|link| {
+                let target = fs::read_link(link).ok()?;
+
+                through_link(&current, link, &target.to_string_lossy())
+            });
+
+        match next {
+            Some(found) => current = found,
+            None => break,
+        }
+    }
+    current
+}
+
+/// The paths named, written through the symbolic links they pass ([`unlinked`]), but those gone
+/// from the working tree whose deletion is staged already, which `git add` refuses as matching no
+/// file (`git rm -r <folder>` before the commit, REV-009): the commit takes their staged
+/// deletion. A path neither there nor deleted is kept, for Git to name.
+fn paths_to_add(paths: &[String]) -> Result<Vec<String>, String> {
+    let mut kept = Vec::new();
+
+    for path in paths.iter().map(|path| unlinked(path)) {
+        let deleted = !Path::new(&path).exists()
+            && !git_words(&[
+                "diff",
+                "--cached",
+                "--name-only",
+                "--diff-filter=D",
+                "--",
+                &path,
+            ])?
+            .is_empty();
+
+        if !deleted {
+            kept.push(path);
+        }
+    }
+    Ok(kept)
 }
 
 /// Rebuilds the checkout's release binaries after a sync brought new sources: its hooks, its Git
@@ -245,7 +308,7 @@ fn state(branch: &Branch, top: &Path, place: String) -> Result<String, String> {
     .map(str::to_owned)
     .collect();
     let upstream = git_words(&["rev-parse", "--abbrev-ref", "@{upstream}"]).ok();
-    let base = state_base(branch, &story_files(top), &remotes, upstream.as_deref());
+    let base = state_base(branch, &stories(top, branch), &remotes, upstream.as_deref());
     let mut parts = Vec::new();
 
     for step in state_steps(base.as_deref()) {
@@ -265,6 +328,9 @@ fn state(branch: &Branch, top: &Path, place: String) -> Result<String, String> {
 }
 
 fn main() -> ExitCode {
+    if let Some(code) = tool_use::usage(&std::env::args().skip(1).collect::<Vec<_>>(), USAGE) {
+        return code;
+    }
     let argv: Vec<String> = env::args().skip(1).collect();
     let subcommand = argv.first().map_or("", String::as_str);
 

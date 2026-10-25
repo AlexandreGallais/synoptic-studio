@@ -3,11 +3,11 @@ import { beforeEach, describe, expect, it } from "vitest";
 
 import { openPage, readShapeModel, readText, readValue, typeAndEnter } from "../user-actions";
 
-describe("moving a shape 0 × 0 alone (US-018, AUD-040)", () => {
+describe("moving a shape 0 × 0 alone", () => {
   beforeEach(() => {
-    // Step 1 of the guided test: a 120 × 80 rectangle (F01), made sharp, put at (10, 20), then
+    // The page as it opens: a 120 × 80 rectangle (F01), made sharp, put at (10, 20), then
     // 0 × 0: its contour has no piece, its four corners lie on (10, 20).
-    openPage("?step=1");
+    openPage("");
     typeAndEnter("radius", "0");
     typeAndEnter("shape-x", "10");
     typeAndEnter("shape-y", "20");

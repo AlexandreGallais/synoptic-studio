@@ -16,14 +16,13 @@ const REGULAR = 400;
 /**
  * Reads the kept family the text may be measured with, shown in the font list: any once the
  * installed fonts are read; while they are, none read ahead — its files not read again —, so that
- * no family read ahead is chosen before the reading ends (US-060), a family imported meanwhile
+ * no family read ahead is chosen before the reading ends, a family imported meanwhile
  * measured with at once.
  *
  * @kind procedure
  * @param session - the session's fonts
  * @param chosen - the family shown in the font list
  * @returns the kept family; undefined when none is kept under that name or it may not be measured with
- * @see docs/backlog/stories/E15-F17-US-060-chosen-font-file-held.md
  */
 function readMeasurableFamily(session: FontSession, chosen: string): FontFamily | undefined {
   const isReadAhead =
@@ -36,11 +35,10 @@ function readMeasurableFamily(session: FontSession, chosen: string): FontFamily 
 /**
  * Keeps the family chosen in the font list as the one the text is measured with, when its metrics
  * are read: an installed family chosen and not read yet leaves the family chosen before it, and
- * so does a family read ahead while the installed fonts are read (`readMeasurableFamily`, US-060).
+ * so does a family read ahead while the installed fonts are read (`readMeasurableFamily`).
  *
  * @kind procedure
  * @param document - page document
- * @see docs/backlog/stories/E15-F15-US-036-import-choose-and-embed-a-font.md
  */
 function writeMeasuredFamily(document: Document): void {
   const font = selectElement(document, "text-font");
@@ -59,7 +57,6 @@ function writeMeasuredFamily(document: Document): void {
  * @kind procedure
  * @param document - page document
  * @returns its value; empty when the list holds none chosen
- * @see docs/backlog/stories/E15-F05-US-037-bold-gives-back-the-weight-and-no-sentence-case.md
  */
 function readChosenWeight(document: Document): string {
   const weight = selectElement(document, "text-weight");
@@ -70,11 +67,10 @@ function readChosenWeight(document: Document): string {
 /**
  * Writes the font list again only when the families it shows changed since it was written: the
  * families kept or the installed fonts of the session, each list replaced whole when it changes;
- * a value of the text changed alone, its size or opacity, leaves it as it is (US-048).
+ * a value of the text changed alone, its size or opacity, leaves it as it is.
  *
  * @kind procedure
  * @param document - page document
- * @see docs/backlog/stories/E15-F17-US-048-fluid-changes-held-keys.md
  */
 function writeChangedFontOptions(document: Document): void {
   const session = readFontSession(document);
@@ -90,11 +86,10 @@ function writeChangedFontOptions(document: Document): void {
  * the families the editor can measure, the one chosen kept and measured with once its metrics are
  * read (`writeMeasuredFamily`); the weights of its faces, the weight chosen kept when the family
  * has it, else the nearest face's (`writeWeightChoice`); a weight so rewritten forgets the weight
- * the bold button held, so that Bold never shows pressed over a weight it did not give (US-037).
+ * the bold button held, so that Bold never shows pressed over a weight it did not give.
  *
  * @kind procedure
  * @param document - page document
- * @see docs/backlog/stories/E15-F15-US-036-import-choose-and-embed-a-font.md
  */
 export function writeFontFields(document: Document): void {
   const chosen = readChosenWeight(document);

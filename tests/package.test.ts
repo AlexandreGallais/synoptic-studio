@@ -11,18 +11,38 @@ type PackageManifest = {
   readonly overrides?: Readonly<Record<string, string>>;
 };
 
-/** docs/tooling/dependencies.md. */
-const DEPENDENCIES_TEXT = readFileSync(
-  join(import.meta.dirname, "..", "docs", "tooling", "dependencies.md"),
-  "utf8",
-);
+/** A dependency of the records' `dependencies`: its name, kind and version. */
+type Dependency = { readonly kind: string; readonly name: string; readonly version: string };
 
-/** Installed-packages part of docs/tooling/dependencies.md (before "Crates"). */
-const DEPENDENCIES_PAGE = DEPENDENCIES_TEXT.split("## Crates", 1)[0] ?? "";
+/**
+ * A field of a parsed row, as text.
+ *
+ * @param row - a parsed row
+ * @param key - the field's name
+ * @returns its text, or an empty text
+ */
+function textField(row: unknown, key: string): string {
+  const value: unknown =
+    typeof row === "object" && row !== null ? Reflect.get(row, key) : undefined;
 
-/** Crates part of docs/tooling/dependencies.md (from "Crates" to "Considered for later"). */
-const CRATES_PAGE =
-  DEPENDENCIES_TEXT.split("## Crates", 2)[1]?.split("## Considered for later", 1)[0] ?? "";
+  return typeof value === "string" ? value : "";
+}
+
+/**
+ * The dependencies of the records, written by `target/release/knowledge export-data` into
+ * `tests/data/dependencies.json`: the CI reads this file, never the records (AUD-054).
+ */
+const DEPENDENCIES: readonly Dependency[] = (() => {
+  const parsed: unknown = JSON.parse(
+    readFileSync(join(import.meta.dirname, "data", "dependencies.json"), "utf8"),
+  );
+
+  return (Array.isArray(parsed) ? parsed : []).map((row: unknown) => ({
+    kind: textField(row, "kind"),
+    name: textField(row, "name"),
+    version: textField(row, "version"),
+  }));
+})();
 
 /** The packages a Rust tool of the workspace replaced in E17 (F21.AC5, EN-108 to EN-113). */
 const REPLACED_PACKAGE =
@@ -59,25 +79,26 @@ function manifest(): PackageManifest {
 }
 
 /**
- * Package names listed in the first column of the documentation tables.
+ * The order of two texts, for a sort.
  *
- * @returns names written as `| \`name\` |` rows
+ * @param first - a text
+ * @param second - another text
+ * @returns negative, zero or positive as `localeCompare` gives it
  */
-function documentedPackages(): string[] {
-  return documentedNames(DEPENDENCIES_PAGE);
+function byText(first: string, second: string): number {
+  return first.localeCompare(second);
 }
 
 /**
- * Names written in the first column of the tables of a part of the page.
+ * The dependencies of a kind, each `name@version`.
  *
- * @param page - part of docs/tooling/dependencies.md
- * @returns names written as `| \`name\` |` rows
+ * @param kind - `npm`, `crate`, `action`…
+ * @returns each row of that kind, sorted
  */
-function documentedNames(page: string): string[] {
-  return page
-    .matchAll(/^\| `(?<name>[^`]+)`\s*\|/gmu)
-    .map((match) => match.groups?.["name"] ?? "")
-    .toArray();
+function documented(kind: string): readonly string[] {
+  return DEPENDENCIES.filter((row) => row.kind === kind)
+    .map((row) => `${row.name}@${row.version}`)
+    .toSorted(byText);
 }
 
 /** Inter's copyright notice and the SIL Open Font License, beside the default font's metrics. */
@@ -86,20 +107,40 @@ const INTER_LICENSE = "src/model/font/inter-license.txt";
 /**
  * Crates of the root Cargo.toml's `[workspace.dependencies]`, each pinned as `name = "=x.y.z"`.
  *
- * @returns their names, in the manifest's order
+ * @returns each `name@x.y.z`, sorted
  */
-function cargoCrates(): string[] {
+function cargoCrates(): readonly string[] {
   const table = CARGO_MANIFEST.split("[workspace.dependencies]", 2)[1]?.split(/^\[/mu, 1)[0] ?? "";
 
   return table
-    .matchAll(/^(?<name>[\w-]+)\s*=/gmu)
-    .map((match) => match.groups?.["name"] ?? "")
-    .toArray();
+    .matchAll(/^(?<name>[\w-]+)\s*=\s*(?:\{\s*version\s*=\s*)?"=(?<version>[^"]+)"/gmu)
+    .map((match) => Object.values(match.groups ?? {}).join("@"))
+    .toArray()
+    .toSorted(byText);
+}
+
+/**
+ * The Actions the workflows use, each `owner/name@major`, a sub-action read as its repository's.
+ *
+ * @returns each once, sorted
+ */
+function workflowActions(): readonly string[] {
+  const workflows = join(import.meta.dirname, "..", ".github", "workflows");
+  const uses = readdirSync(workflows)
+    .flatMap((name) =>
+      readFileSync(join(workflows, name), "utf8")
+        .matchAll(/uses: (?<repository>[\w.-]+\/[\w.-]+)(?:\/[\w./-]+)?@(?<version>\S+)/gu)
+        .map((match) => Object.values(match.groups ?? {}).join("@"))
+        .toArray(),
+    )
+    .toSorted(byText);
+
+  return [...new Set(uses)];
 }
 
 describe("Cargo.toml", () => {
-  it("documents every crate of crates.io, and only those, under Crates", () => {
-    expect(new Set(documentedNames(CRATES_PAGE))).toEqual(new Set(cargoCrates()));
+  it("documents every crate of crates.io, and only those, at its version", () => {
+    expect(documented("crate")).toEqual(cargoCrates());
   });
 
   it("pins every crate to an exact version", () => {
@@ -129,7 +170,7 @@ describe("package.json", () => {
       .join("\n");
     const packages = [
       ...Object.keys(manifest().devDependencies ?? {}),
-      ...documentedPackages(),
+      ...DEPENDENCIES.map((row) => row.name),
     ].filter((name) => REPLACED_PACKAGE.test(name));
     const configurations = REPLACED_CONFIGURATIONS.filter((name) => existsSync(join(root, name)));
 
@@ -138,17 +179,17 @@ describe("package.json", () => {
     expect(REPLACED_PACKAGE.exec(steps) ?? []).toEqual([]);
   });
 
-  it("documents every development dependency in docs/tooling/dependencies.md", () => {
-    const documented = new Set(documentedPackages());
+  it("documents every development dependency, and only those, at its version", () => {
+    const installed = Object.entries(manifest().devDependencies ?? {})
+      .map(([name, version]) => `${name}@${version}`)
+      .toSorted(byText);
 
-    expect(
-      Object.keys(manifest().devDependencies ?? {}).filter((name) => !documented.has(name)),
-    ).toEqual([]);
+    expect(documented("npm")).toEqual(installed);
   });
+});
 
-  it("documents only installed packages and overrides", () => {
-    const installed = new Set(Object.keys(manifest().devDependencies ?? {}));
-
-    expect(documentedPackages().filter((name) => !installed.has(name))).toEqual([]);
+describe("the workflows", () => {
+  it("document every Action they use, and only those, at its major", () => {
+    expect(documented("action")).toEqual(workflowActions());
   });
 });

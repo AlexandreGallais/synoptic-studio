@@ -23,7 +23,6 @@ const FALLBACK = "sans-serif";
  * @param document - page document
  * @param face - the face's weight and style
  * @returns the width the canvas measures (`TextMetrics.width`); NaN without a canvas
- * @see REF-MDN-TEXTMETRICS
  */
 function readDrawnWidth(document: Document, face: Pick<FontFace, "isItalic" | "weight">): number {
   const context = document.createElement("canvas").getContext("2d");
@@ -48,7 +47,6 @@ function readDrawnWidth(document: Document, face: Pick<FontFace, "isItalic" | "w
  * @param document - page document
  * @param face - one of Inter's shipped faces
  * @returns the face, kept, in a list of one; none when the browser draws another face
- * @see REF-MDN-TEXTMETRICS
  */
 function readDrawnFace(document: Document, face: FontFace): readonly FontFace[] {
   const measured = lineWidth(face.metrics, PROBE, {
@@ -62,7 +60,7 @@ function readDrawnFace(document: Document, face: FontFace): readonly FontFace[] 
 
 /**
  * Reads the faces of Inter, the default font, that the browser draws as their shipped metrics
- * measure them (US-053): each face's probe line measured on a canvas, as the drawing names the
+ * measure them: each face's probe line measured on a canvas, as the drawing names the
  * font, and compared with its width from the metrics. Inter missing, the browser draws its
  * fallback, Helvetica on macOS, whose widths differ; a weight Inter lacks is drawn with a nearby
  * face, whose widths differ too. A browser without a canvas cannot be asked.
@@ -70,7 +68,6 @@ function readDrawnFace(document: Document, face: FontFace): readonly FontFace[] 
  * @kind procedure
  * @param document - page document
  * @returns the faces drawn as measured, none when Inter is missing; undefined when the browser cannot measure on a canvas
- * @see REF-MDN-CANVAS-FONT
  */
 export function readDrawnDefaultFaces(document: Document): readonly FontFace[] | undefined {
   return document.createElement("canvas").getContext("2d") === null

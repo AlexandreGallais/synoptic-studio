@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 
 import { parsePanelValue } from "./parse-panel-value";
 
-describe("parsePanelValue (F38, AUD-046)", () => {
+describe("parsePanelValue (F38)", () => {
   it.each([
     { expected: { isRelative: false, value: 460 }, typed: "460" },
     { expected: { isRelative: true, value: 50 }, typed: "+50" },

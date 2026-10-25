@@ -15,7 +15,6 @@ const NO_AREA: PickArea = { corners: [], isFlat: false, pieces: [] };
  * @param document - page document
  * @param text - a text of the drawing
  * @returns its area; none for a text never measured, which is not drawn
- * @see docs/domain/interaction.md#_2-selector
  */
 function readTextPickArea(document: Document, text: Text): PickArea {
   const block = readTextBlock(document, text);
@@ -26,13 +25,12 @@ function readTextPickArea(document: Document, text: Text): PickArea {
 /**
  * Reads what a shape of the drawing offers the pointer (`shapePickArea`, `textPickArea`): a text
  * its frame, from its block measured with its font's metrics or with those it was last drawn with
- * (`KEPT_TEXT_METRICS`); a text never measured, which is not drawn, no area (F35).
+ * (`KEPT_TEXT_METRICS`); a text never measured, which is not drawn, no area.
  *
  * @kind procedure
  * @param document - page document
  * @param shape - a shape of the drawing
  * @returns its area
- * @see docs/domain/interaction.md#_2-selector
  */
 export function readShapePickArea(document: Document, shape: DrawingShape): PickArea {
   return isDrawnText(shape) ? readTextPickArea(document, shape) : shapePickArea(shape);

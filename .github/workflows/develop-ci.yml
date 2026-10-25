@@ -1,4 +1,4 @@
-# The develop CI (docs/tooling/ci.md, ADR-0088, decisions 4 and 5): after each pull request merged
+# The develop CI (the records' workflows, ADR-0088, decisions 4 and 5): after each pull request merged
 # into develop, the Rust checks and tests on Linux, then the Rust caches saved under develop, the
 # scope the review's pull request into main restores first (`REF-GH-CACHE`). A person's merge
 # starts it by its push; the features' auto-merge, whose push by the GITHUB_TOKEN starts no run,
@@ -65,8 +65,8 @@ jobs:
         with:
           node-version-file: .nvmrc
           cache: npm
-      # The npm packages: their `prepare` builds the release binaries `rust:fresh` reads, and the
-      # formatter's tests, run under coverage, run the project's oxfmt.
+      # The npm packages: their `prepare` builds the release binaries `check-all` and the freshness
+      # check read, and the formatter's tests, run under coverage, run the project's oxfmt.
       - run: npm ci
       # Every crate of Cargo.lock for every target, not the host's alone, which the build fetches:
       # `cargo deny --offline` reads them all, and the registry saved holds them (EN-116).
@@ -75,11 +75,11 @@ jobs:
       - run: cargo deny fetch db
       # rustfmt, Clippy, the advisories, the check for Windows and the binaries' freshness.
       - id: checks
-        run: npm run check:rust
+        run: target/release/check-all --lane rust
       # The workspace's tests under the coverage floor, run even after a failing check unless the
       # run is cancelled (`REF-GH-EXPRESSIONS`), so that their build is compiled and saved.
       - if: ${{ !cancelled() }}
-        run: npm run rust:coverage
+        run: target/release/check-all --lane rust-coverage
       # Saved after a failing test too, never after a cancel, nor on a key hit, which already holds
       # a cache (`REF-GH-CACHE-SAVE`). A saved cache never changes (`REF-GH-CACHE`), so nothing half
       # made is saved: the tools only once installed, the build only once the checks passed, which

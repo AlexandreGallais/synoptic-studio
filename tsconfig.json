@@ -1,7 +1,7 @@
 {
   // Policy: the linters (oxlint, the project's Rust linter) carry every rule they can check. Only
   // the options the compiler alone can guarantee (type system, module resolution) are here. See
-  // docs/conventions/typescript.md and ADR-0075.
+  // the records' conventions, area typescript, and ADR-0075.
   "compilerOptions": {
     // Target and modules
     "target": "es2025",
@@ -24,15 +24,9 @@
     "noImplicitOverride": true,
     "noImplicitReturns": true,
     "noPropertyAccessFromIndexSignature": true,
-    "useUnknownInCatchVariables": true,
 
-    // Delegated to oxlint (off here so that they never block the build)
-    // noUnusedLocals / noUnusedParameters -> no-unused-vars
-    // noFallthroughCasesInSwitch          -> no-fallthrough
-    // allowUnreachableCode                -> no-unreachable
-    "noUnusedLocals": false,
-    "noUnusedParameters": false,
-    "noFallthroughCasesInSwitch": false,
+    // Left to oxlint, off by default here: noUnusedLocals and noUnusedParameters (no-unused-vars),
+    // noFallthroughCasesInSwitch (no-fallthrough), allowUnreachableCode (no-unreachable).
 
     // Output: checking only; tools/declarations writes the library's .d.ts (EN-091)
     "noEmit": true,

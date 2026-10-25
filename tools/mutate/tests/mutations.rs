@@ -1,10 +1,15 @@
 //! Tests of the mutations found in a source text (EN-058).
 
-use mutate::{Kind, Mutation, code_mask, mutations, selected};
+use mutate::{Kind, Language, Mutation, code_mask, mutations, selected};
 
-/// Each mutation as `kind: original → replacement`.
+/// Each mutation of a script as `kind: original → replacement`.
 fn found(source: &str) -> Vec<String> {
-    mutations(source)
+    found_in(source, Language::Script)
+}
+
+/// Each mutation of a source in a language as `kind: original → replacement`.
+fn found_in(source: &str, language: Language) -> Vec<String> {
+    mutations(source, language)
         .iter()
         .map(|m| {
             format!(
@@ -46,7 +51,7 @@ fn skips_comments_strings_and_template_literals() {
 
     assert_eq!(found(source), Vec::<String>::new());
     // Byte 3 is in the comment, the `;` closing the line is code.
-    let mask = code_mask(source);
+    let mask = code_mask(source, Language::Script);
 
     assert_eq!((mask[3], mask[source.len() - 1]), (false, true));
 }
@@ -102,7 +107,7 @@ fn applies_a_mutation_and_gives_its_line_and_column() {
 
 #[test]
 fn selects_the_first_of_each_kind_unless_all_are_asked() {
-    let all = mutations("if (a < b) { return 1 + 2; }");
+    let all = mutations("if (a < b) { return 1 + 2; }", Language::Script);
     let kinds: Vec<Kind> = selected(all.clone(), false)
         .iter()
         .map(|m| m.kind)
@@ -121,4 +126,38 @@ fn selects_the_first_of_each_kind_unless_all_are_asked() {
         ]
     );
     assert_eq!(selected(all.clone(), true), all);
+}
+
+#[test]
+fn rev009_reads_a_rust_file_by_its_extension() {
+    assert_eq!(Language::of("tools/worktree/src/lib.rs"), Language::Rust);
+    assert_eq!(Language::of("src/math/clamp.ts"), Language::Script);
+    assert_eq!(Language::of("lib.mjs"), Language::Script);
+}
+
+#[test]
+fn rev009_takes_a_rust_lifetime_for_no_string_and_skips_its_comments() {
+    // Read as a script, `'static` opens a string closed by the comment's `it's`, after which
+    // `025` of `(AUD-025)` reads as code (incident card of 2026-10-19). In Rust, `'static` is a
+    // lifetime, `'x'` and `'\''` are characters, and the comment stays a comment.
+    let source = "fn f(x: &'static str) -> usize {\n    // it's (AUD-025)\n    let c = 'x';\n    let q = '\\'';\n    x.len() + 1\n}\n";
+
+    assert_eq!(
+        found_in(source, Language::Script),
+        ["Constant: 025 → 26", "Arithmetic: + → -", "Constant: 1 → 2"]
+    );
+    assert_eq!(
+        found_in(source, Language::Rust),
+        ["Arithmetic: + → -", "Constant: 1 → 2"]
+    );
+}
+
+#[test]
+fn rev009_replaces_no_rust_return_by_a_script_s_undefined() {
+    // A Rust return has no value that fits every type: `undefined` does not build, a build that
+    // fails was counted as caught (incident card of 2026-10-19).
+    assert_eq!(
+        found_in("fn f() -> u8 { return 1; }", Language::Rust),
+        ["Constant: 1 → 2"]
+    );
 }

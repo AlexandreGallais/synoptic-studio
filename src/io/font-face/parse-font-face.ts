@@ -29,7 +29,6 @@ type ReadFont = {
  * @param font - the file and its tables
  * @param name - its `name` table
  * @returns the file, its version (name ID 5, empty without one) and its permission
- * @see DERIV-font-embedding
  */
 function parseFontFile(font: ReadFont, name: Readonly<DataView>): FontFile {
   const os2 = tableToView(font.view, font.tables.os2);
@@ -51,7 +50,6 @@ function parseFontFile(font: ReadFont, name: Readonly<DataView>): FontFile {
  * @param metrics - its metrics
  * @returns the face and its family; undefined when the file names no family or its `OS/2`
  * table is too short for its style
- * @see REF-OT-OS2
  */
 function parseNamedFace(
   font: ReadFont,
@@ -74,7 +72,6 @@ function parseNamedFace(
  * @param font - the file and its tables
  * @returns the face and its family; undefined when it has no `name` table, gives no metrics,
  * names no family or has an `OS/2` table too short for its style
- * @see REF-OT-OTFF
  */
 function fontTablesToFace(font: ReadFont): NamedFontFace | undefined {
   const metrics = fontTablesToMetrics(font.view, font.tables, blockCharacters(MEASURED_BLOCKS));
@@ -97,7 +94,6 @@ function fontTablesToFace(font: ReadFont): NamedFontFace | undefined {
  * @param file - the bytes of the font file
  * @returns the face and its family; undefined for a file that gives no metrics, names no
  * family, or whose `OS/2` table is shorter than 64 bytes
- * @see REF-OT-OTFF
  */
 export function parseFontFace(file: Readonly<Uint8Array>): NamedFontFace | undefined {
   const view = new DataView(file.buffer, file.byteOffset, file.byteLength);

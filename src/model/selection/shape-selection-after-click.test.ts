@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 import { shapeSelectionAfterClick } from "./shape-selection-after-click";
 
 // A, B and C drawn in that order: their indices 0, 1 and 2; −1 is the empty drawing.
-describe("the shapes selected after a click with the Selector (US-068)", () => {
+describe("the shapes selected after a click with the Selector", () => {
   it("[F37.AC2] adds B to A with Shift, and takes B out again with Shift", () => {
     expect(shapeSelectionAfterClick([0], 1, true)).toEqual([0, 1]);
     expect(shapeSelectionAfterClick([0, 1], 1, true)).toEqual([0]);

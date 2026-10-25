@@ -1,4 +1,4 @@
-//! Chunks and freshness of the local source library (`docs/tooling/sources.md`): a page is split
+//! Chunks and freshness of the local source library (`the records' conventions, area library`): a page is split
 //! at its headings, so that a search returns a section and a reading costs only that section; the
 //! freshness rule says when a stored page is read again online. The cut is the one
 //! `library-chunks.ts` made, lengths counted in UTF-16 code units as JavaScript counts them.

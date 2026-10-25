@@ -8,14 +8,13 @@ import type { Point } from "../../src";
 
 /**
  * Reads where X and Y put the straight box once a text was drawn: on each axis, while the field
- * still shows the start of the text last drawn, at 5 decimals, its exact value (US-038);
+ * still shows the start of the text last drawn, at 5 decimals, its exact value;
  * otherwise the integer typed (`readTypedCoordinate`).
  *
  * @kind procedure
  * @param document - page document
  * @param drawn - the text last drawn
  * @returns the start, exact on each axis left as shown
- * @see docs/domain/shapes.md#scripts-and-turning
  */
 function readShownStart(document: Document, drawn: DrawnTextRecord): Point {
   const start = readStraightStart(drawn);
@@ -28,7 +27,7 @@ function readShownStart(document: Document, drawn: DrawnTextRecord): Point {
 }
 
 /**
- * Reads where the text's straight box starts from the X and Y fields (AUD-040): exact on each
+ * Reads where the text's straight box starts from the X and Y fields: exact on each
  * axis left as the text last drawn shows it (`readShownStart`); before a first text, or once
  * typed, the integers typed (`readTypedCoordinate`), a fraction typed refused. At 0° the start is
  * the text's position.
@@ -36,7 +35,6 @@ function readShownStart(document: Document, drawn: DrawnTextRecord): Point {
  * @kind procedure
  * @param document - page document
  * @returns where the top-left of its straight box is drawn
- * @see docs/domain/shapes.md#scripts-and-turning
  */
 export function readTextPosition(document: Document): Point {
   const drawn = readDrawnText(document);

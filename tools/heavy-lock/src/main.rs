@@ -1,6 +1,6 @@
 //! `heavy-lock [--lock <name>] <command> [arguments…]`: runs a command under a lock of the Git
-//! common directory, the heavy one by default (ADR-0063, EN-047), `merge` for `story:finish`
-//! (ADR-0065, EN-051; `docs/tooling/commands.md`).
+//! common directory, the heavy one by default (ADR-0072, EN-047), `merge` for `story-finish`
+//! (ADR-0065, EN-051; `the records' conventions, area checks`).
 
 use std::env;
 use std::io;
@@ -32,7 +32,13 @@ fn git_common_dir() -> io::Result<PathBuf> {
     }
 }
 
+/// The usage, printed on `--help` or `-h` (REV-009).
+const USAGE: &str = "usage: target/release/heavy-lock [--lock <name>] <command> [arguments…]";
+
 fn main() -> ExitCode {
+    if let Some(code) = tool_use::usage(&std::env::args().skip(1).collect::<Vec<_>>(), USAGE) {
+        return code;
+    }
     let argv: Vec<String> = env::args().skip(1).collect();
     // What it runs: the npm script that started it (`check:all`), else the command's program.
     let script = env::var("npm_lifecycle_event").unwrap_or_default();
@@ -50,7 +56,7 @@ fn main() -> ExitCode {
 /// Runs the command under its lock; its exit code.
 fn lock_and_run(argv: &[String]) -> u8 {
     let Some((name, command)) = lock_and_command(argv) else {
-        eprintln!("usage: heavy-lock [--lock <name>] <command> [arguments…]");
+        eprintln!("usage: target/release/heavy-lock [--lock <name>] <command> [arguments…]");
         return 2;
     };
 

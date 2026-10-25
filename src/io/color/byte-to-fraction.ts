@@ -10,7 +10,6 @@ import { BYTE_MAXIMUM } from "../../math";
  * @kind format
  * @param byte - the component's byte, an integer from 0 to 255
  * @returns the component, from 0 to 1
- * @see REF-CSS-COLOR-4
  */
 export function byteToFraction(byte: number): number {
   return byte / BYTE_MAXIMUM;

@@ -32,7 +32,7 @@ pub const REPORT_ARTIFACT: &str = "test-report";
 pub const REPORT_FILE: &str = "test-report.xml";
 
 /// The start of the head branch of Dependabot's pull requests: a security update merged into
-/// `main` (`docs/tooling/ci.md`), whose body is Dependabot's, not a release text; its change is
+/// `main` (`the records' conventions, area ci`), whose body is Dependabot's, not a release text; its change is
 /// written in the next review's text.
 pub const DEPENDABOT_BRANCH: &str = "dependabot/";
 
@@ -95,7 +95,7 @@ fn texts(run: &mut Run<'_>, numbers: &[u32]) -> Result<Vec<(u32, Text)>, String>
     Ok(read)
 }
 
-/// Checks that the texts agree with the commits (`docs/tooling/releases.md`, The version): a
+/// Checks that the texts agree with the commits (`the records' conventions, area release`, The version): a
 /// change listed only when a commit since the tag changes the library or the playground, and one
 /// listed at least when one does.
 fn agreeing(texts: &[(u32, Text)], user_visible: bool, tag: &str) -> Result<(), String> {
@@ -105,12 +105,12 @@ fn agreeing(texts: &[(u32, Text)], user_visible: bool, tag: &str) -> Result<(), 
         (Some((number, _)), false) => Err(format!(
             "pull request #{number} lists changes, but no commit since {tag} changes the library \
              nor the playground: write the notice of no change in its body \
-             (docs/tooling/releases.md)"
+             (the records' conventions, area release)"
         )),
         (None, true) => Err(format!(
             "commits since {tag} change the library or the playground, but no pull request's \
              body lists a change: write the features' texts in the review's body \
-             (docs/tooling/releases.md)"
+             (the records' conventions, area release)"
         )),
         _ => Ok(()),
     }

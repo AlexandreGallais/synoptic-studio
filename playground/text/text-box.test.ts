@@ -6,7 +6,7 @@ import {
   chooseOption,
   chooseShapeKind,
   clickElement,
-  openServedPage,
+  openPage,
   readText,
   selectPageElement,
   typeAndEnter,
@@ -76,9 +76,9 @@ function readFrame(): string | null {
   return selectPageElement("#canvas g.text-frame path.straight-box").getAttribute("d");
 }
 
-describe("Text tool: a text in a box (US-033)", () => {
+describe("Text tool: a text in a box", () => {
   beforeEach(() => {
-    openServedPage("");
+    openPage("");
     chooseShapeKind("text");
     typeAndEnter("text-size", "16");
     // happy-dom loses the option marked `selected` once the page is moved into its document: the

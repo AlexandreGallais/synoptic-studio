@@ -5,6 +5,7 @@
 pub mod backlog_status;
 pub mod branches_clean;
 pub mod check_all;
+pub mod check_scope;
 pub mod epic_check;
 pub mod records_save;
 pub mod replace;

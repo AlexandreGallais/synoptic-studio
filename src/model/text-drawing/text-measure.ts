@@ -8,7 +8,7 @@ import type { Text } from "../text";
 /**
  * What a text measures: its lines shown (`shownLines`), wrapped in its box and cut at its maximum
  * lines, and the block they take (`textBlock`). Its position, angle, alignments, colors and
- * opacities play no part in it, so that it is kept while only those change (US-048).
+ * opacities play no part in it, so that it is kept while only those change.
  *
  * @kind domain
  * @param metrics - the metrics of the face the text is measured with

@@ -14,7 +14,7 @@ import {
 import {
   clickElement,
   dispatchDrawingPointer,
-  openServedPage,
+  openPage,
   readShapeModel,
   readValue,
   selectPageElement,
@@ -133,9 +133,9 @@ function expectStraightBoxAt(shape: Shape, start: Point): void {
   expect(y).toBeCloseTo(start.y, 5);
 }
 
-describe("the arrows nudge the shapes selected (US-073)", () => {
+describe("the arrows nudge the shapes selected", () => {
   beforeEach(() => {
-    openServedPage("?guide=epic");
+    openPage("");
     setElementBox("#canvas", { height: 600, left: 100, top: 50, width: 800 });
     drawAAndB("0");
   });
@@ -293,9 +293,9 @@ describe("the arrows nudge the shapes selected (US-073)", () => {
   });
 });
 
-describe("the arrows land a turned shape on integers (US-073, US-089)", () => {
+describe("the arrows land a turned shape on integers", () => {
   beforeEach(() => {
-    openServedPage("?guide=epic");
+    openPage("");
     setElementBox("#canvas", { height: 600, left: 100, top: 50, width: 800 });
     drawAAndB("30");
     clickA(NO_KEY);

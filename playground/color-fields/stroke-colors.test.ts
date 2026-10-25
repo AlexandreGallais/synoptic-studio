@@ -7,7 +7,7 @@ import {
   chooseShapeKind,
   clickElement,
   commitField,
-  openServedPage,
+  openPage,
   pressPointer,
   readDisplay,
   readText,
@@ -76,9 +76,9 @@ function isFollowing(id: string): boolean {
   return box instanceof HTMLInputElement && box.checked;
 }
 
-describe("The underline's and the strike-through's colors (US-041)", () => {
+describe("The underline's and the strike-through's colors", () => {
   beforeEach(() => {
-    openServedPage("");
+    openPage("");
     chooseShapeKind("text");
     chooseOption("text-weight", "400");
     chooseOption("text-fit", "content");
@@ -163,7 +163,7 @@ describe("The underline's and the strike-through's colors (US-041)", () => {
     expect(readStrokeFills()).toEqual(["#ff0000 1", "#1e293b 1"]);
   });
 
-  it("[F16.AC1] takes text-underline-opacity = '101' at 100, the color then chosen (AUD-046)", () => {
+  it("[F16.AC1] takes text-underline-opacity = '101' at 100, the color then chosen", () => {
     typeInField("text-underline-opacity", "101");
 
     expect(isFollowing("text-underline-follows")).toBe(false);
@@ -174,7 +174,7 @@ describe("The underline's and the strike-through's colors (US-041)", () => {
     { id: "text-underline-opacity", value: "abc" },
     { id: "text-strike-opacity", value: "" },
   ])(
-    "[F16.AC1] refuses $id = '$value', 100 shown again, the stroke still following (US-087)",
+    "[F16.AC1] refuses $id = '$value', 100 shown again, the stroke still following",
     ({ id, value }) => {
       typeInField(id, value);
 

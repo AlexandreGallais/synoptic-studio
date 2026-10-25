@@ -7,7 +7,6 @@ import type { NamedFontFace } from "../../src";
  * @kind procedure
  * @param reads - the reads of a family's faces
  * @returns the faces kept, in the browser's order
- * @see REF-WICG-LOCAL-FONT-ACCESS
  */
 export function readKeptFaces(reads: readonly InstalledFaceRead[]): readonly NamedFontFace[] {
   return reads.flatMap((read) => (read.face === undefined ? [] : [read.face]));

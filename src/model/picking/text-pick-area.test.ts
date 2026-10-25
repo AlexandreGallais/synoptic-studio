@@ -10,7 +10,7 @@ const TEXT = { ...HELLO_TEXT, angle: 0, isInBox: false, x: 10, y: 20 };
 /** Its measured block. */
 const BLOCK = { height: 40, width: 80 };
 
-describe("textPickArea (EN-143)", () => {
+describe("textPickArea", () => {
   it("gives its block's corners and four sides", () => {
     const area = textPickArea(TEXT, BLOCK);
 

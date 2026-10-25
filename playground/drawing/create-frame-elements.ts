@@ -18,7 +18,6 @@ const LINE = 1;
  * @param box - the box, turned with its angle
  * @param look - the class that colors the frame
  * @returns the frame, or nothing for a box 2 lines wide or high at most
- * @see docs/backlog/stories/E01-F04-US-018-turn-a-shape.md
  */
 export function createFrameElements(
   document: Document,

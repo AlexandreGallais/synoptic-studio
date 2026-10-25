@@ -7,7 +7,7 @@ import {
   chooseShapeKind,
   clickElement,
   commitField,
-  openServedPage,
+  openPage,
   readDisplay,
   readText,
   readValue,
@@ -42,9 +42,9 @@ function readTransforms(): readonly (string | null | undefined)[] {
   ];
 }
 
-describe("Text tool: turning (US-032)", () => {
+describe("Text tool: turning", () => {
   beforeEach(() => {
-    openServedPage("");
+    openPage("");
     chooseShapeKind("text");
     // "H" over "HH" in Inter Regular 16: block 23.78125 × 2 × 19.359375 = 38.71875, its middle
     // (11.890625, 19.359375), written 11.89063 and 19.35938.

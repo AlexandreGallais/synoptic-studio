@@ -15,13 +15,12 @@ import type { KeptShape } from "../kept-shapes";
 /**
  * Writes a shape the panel edits alone into the page, its fields showing its values: a text by
  * `writeEditedText`, a box's width or height applied marking the box as the designer's
- * (`data-box-typed`, US-057); any other by `writeEditedGeometry`.
+ * (`data-box-typed`); any other by `writeEditedGeometry`.
  *
  * @kind procedure
  * @param document - page document
  * @param kept - the shape set, or as it was for a value refused, and its kind
  * @param isBoxTyped - whether a width or height was applied to it
- * @see docs/domain/interaction.md#_2-selector
  */
 function writeEditedShape(document: Document, kept: KeptShape, isBoxTyped: boolean): void {
   const { shape } = kept;
@@ -41,7 +40,7 @@ function writeEditedShape(document: Document, kept: KeptShape, isBoxTyped: boole
 
 /**
  * Writes a value applied in a field of a shape refused, which has no value of its own to start
- * from (AUD-046): a relative value from 0, a size taken within 0 and 100 000
+ * from: a relative value from 0, a size taken within 0 and 100 000
  * (`panelValueAfterEdit`), so that the redraw reads it; a text that is no number puts back the
  * text the field showed before (`resetShownText`).
  *
@@ -49,7 +48,6 @@ function writeEditedShape(document: Document, kept: KeptShape, isBoxTyped: boole
  * @param document - page document
  * @param field - the value it sets and the field's id
  * @param typed - the value, relative or fixed; `undefined` when the text typed is no number
- * @see docs/domain/interaction.md#_2-selector
  */
 function writeRefusedValue(
   document: Document,
@@ -76,7 +74,6 @@ function writeRefusedValue(
  * @param document - page document
  * @param kept - the shape as last drawn, and its kind
  * @param edit - the field, the value applied and the largest size (Q20)
- * @see docs/domain/interaction.md#_2-selector
  */
 function writeAppliedShape(document: Document, kept: KeptShape, edit: PanelEdit): void {
   const shown = readEditedKeptShape(document, kept, edit);
@@ -86,10 +83,10 @@ function writeAppliedShape(document: Document, kept: KeptShape, edit: PanelEdit)
 }
 
 /**
- * Sets the shape the panel edits, alone, by a value of one of its fields (US-085), as each of
+ * Sets the shape the panel edits, alone, by a value of one of its fields, as each of
  * several shapes is set (`readEditedKeptShape`, `shapeAfterPanelEdit`, `textAfterPanelEdit`): typed, a
  * number relative with a sign (`parsePanelValue`), or an arrow's step, relative, from the shape
- * as last drawn, a size taken within 0 and 100 000 (Q20, AUD-046); the shape then kept as the one
+ * as last drawn, a size taken within 0 and 100 000 (Q20); the shape then kept as the one
  * edited, so that the next key starts from it before the redraw, and written into the panel, its
  * fields showing its values again (`writeEditedShape`), a text that is no number putting them
  * back. A shape refused has no value to start from: a relative value starts from 0
@@ -99,7 +96,6 @@ function writeAppliedShape(document: Document, kept: KeptShape, edit: PanelEdit)
  * @param document - page document
  * @param field - the value it sets, `x`, `y`, `width` or `height`, and the field's id
  * @param typed - the value, relative or fixed; `undefined` when the text typed is no number
- * @see docs/domain/interaction.md#_2-selector
  */
 export function applyEditedValue(
   document: Document,

@@ -12,7 +12,6 @@ import type { DrawingShape, PanelValues } from "../../src";
  * @param document - page document
  * @param shape - a shape of the drawing
  * @returns its values; none for a text never measured, which is not drawn
- * @see docs/domain/interaction.md#_2-selector
  */
 export function readPanelValues(document: Document, shape: DrawingShape): readonly PanelValues[] {
   if (!isDrawnText(shape)) {

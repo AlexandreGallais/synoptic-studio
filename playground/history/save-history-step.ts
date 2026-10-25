@@ -21,7 +21,6 @@ import type { KeptShape } from "../kept-shapes";
  * @param present - the drawing and the selection the page shows
  * @param bound - the memory size and the steps kept (`readPageHistoryBound`)
  * @returns the history recorded
- * @see docs/domain/interaction.md#_7-navigation-and-history
  */
 function readSavedHistory(
   history: SizedHistory<KeptShape> | undefined,
@@ -34,14 +33,13 @@ function readSavedHistory(
 }
 
 /**
- * Records the drawing and the selection as the page shows them (F40, `readSavedHistory`), the step
+ * Records the drawing and the selection as the page shows them (`readSavedHistory`), the step
  * due, if any, taken; nothing is recorded while the shape the panel edits is refused
  * (`readRefusedKind`), the drawing then kept without it, the step due dropped.
  *
  * @kind procedure
  * @param document - page document, redrawn from the last action
  * @returns the page's history once recorded
- * @see docs/domain/interaction.md#_7-navigation-and-history
  */
 export function saveHistoryStep(document: Document): SizedHistory<KeptShape> {
   const history = PAGE_HISTORIES.get(document);

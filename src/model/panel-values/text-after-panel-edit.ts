@@ -21,7 +21,7 @@ import type { Text } from "../text";
  * @param side - `width` or `height`, the field typed
  * @param value - the box's new width or height (`panelValueAfterEdit`)
  * @returns the text with its box resized
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 function textWithBoxSide(text: Text, side: "height" | "width", value: number): Text {
   const box = {
@@ -42,7 +42,7 @@ function textWithBoxSide(text: Text, side: "height" | "width", value: number): T
 }
 
 /**
- * A text once a value is typed for several shapes (F38), its new value given by
+ * A text once a value is typed for several shapes, its new value given by
  * `panelValueAfterEdit` from its own (`textPanelValues`): X or Y moves it so that its straight box
  * starts there (`textStraightBox`, `straightBoxShift`, `shapeMovedOnAxis`); W or H sets the width or height of its box
  * when it sits in one (`textWithBoxSide`), capped at the interface's largest and at a box's own
@@ -53,7 +53,7 @@ function textWithBoxSide(text: Text, side: "height" | "width", value: number): T
  * @param block - its measured block (`textBlock`)
  * @param edit - the field, the value typed and the largest size
  * @returns the text changed, or as it is for a size typed while it fits its content
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 export function textAfterPanelEdit(text: Text, block: Size, edit: PanelEdit): Text {
   const { key } = edit;

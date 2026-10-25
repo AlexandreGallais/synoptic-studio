@@ -53,7 +53,7 @@ fn check(source: &Source, signal: usize, listed: &[&str], rule: &'static str) ->
             rule,
             0,
             format!(
-                "Folder `{path}` holds {modules} modules, past {signal}: split it by domain, or list it with its reason in docs/conventions/files.md."
+                "Folder `{path}` holds {modules} modules, past {signal}: split it by domain, or list it with its reason in FOLDERS_PAST_SIGNAL of tools/lint/src/settings.rs."
             ),
         ));
     }
@@ -84,7 +84,6 @@ mod tests {
     use super::{FolderLayout, check};
     use crate::project::Project;
     use crate::rules::Rule;
-    use crate::settings::REFERENCE_SOURCES;
     use crate::source::Source;
     use crate::testing::{NONE, fixture, lint_at, messages, write_files};
 
@@ -137,7 +136,7 @@ mod tests {
         let semantic = oxc_semantic::SemanticBuilder::new()
             .build(&parsed.program)
             .semantic;
-        let project = Project::new(root, REFERENCE_SOURCES);
+        let project = Project::new(root);
         let source = Source::new(path, &parsed.program, &semantic, &[], &project);
 
         messages(&check(
@@ -167,7 +166,7 @@ mod tests {
         let root = tree();
         let past = |path: &str| {
             format!(
-                "Folder `{path}` holds 3 modules, past 2: split it by domain, or list it with its reason in docs/conventions/files.md."
+                "Folder `{path}` holds 3 modules, past 2: split it by domain, or list it with its reason in FOLDERS_PAST_SIGNAL of tools/lint/src/settings.rs."
             )
         };
 

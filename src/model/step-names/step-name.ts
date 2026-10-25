@@ -16,7 +16,7 @@ import type { ShapeFields } from "./shape-fields";
  * @param after - the drawing after it, as many shapes
  * @param fields - reads the fields of a shape
  * @returns `Move`, `Convert`, a field's label or `Change`
- * @see docs/domain/interaction.md#_7-navigation-and-history
+ * @see RULE-interaction-7-navigation-and-history
  */
 function inPlaceStepName<T>(
   before: readonly T[],
@@ -29,7 +29,7 @@ function inPlaceStepName<T>(
 }
 
 /**
- * The name of a step by its action (US-077), read from the drawings before and after it: shapes
+ * The name of a step by its action, read from the drawings before and after it: shapes
  * added, every other kept in order, `Add`; shapes removed, every other kept in order, `Delete`; as
  * many shapes, none moved in the order, named by the fields changed (`inPlaceStepName`); any
  * other step, shapes moved in the order among them, `Change`.
@@ -40,7 +40,7 @@ function inPlaceStepName<T>(
  * @param after - the drawing after it
  * @param fields - reads the fields of a shape
  * @returns `Add`, `Delete`, `Move`, `Convert`, a field's label or `Change`
- * @see docs/domain/interaction.md#_7-navigation-and-history
+ * @see RULE-interaction-7-navigation-and-history
  */
 export function stepName<T>(
   before: readonly T[],

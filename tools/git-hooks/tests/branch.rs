@@ -10,7 +10,7 @@ use git_hooks::branch::{branch_refusal, is_valid_branch};
 fn f21_ac4_passes_every_branch_name_of_the_history() {
     // The names of the pull requests (head and base), the merges and the branches, on 2026-10-18,
     // each with validate-branch-name 1.3.2's verdict on `.validate-branch-namerc.json`: all pass but
-    // release-please's branch, refused since EN-112 removed release-please (ADR-0079), and the six
+    // release-please's branch, refused since EN-112 removed release-please (ADR-0101), and the six
     // branches without the id of a story the auto-merge takes, refused since EN-118 (I50).
     let fixture = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/branch-names.txt");
     let text = fs::read_to_string(fixture).unwrap();
@@ -27,8 +27,8 @@ fn f21_ac4_passes_every_branch_name_of_the_history() {
 
 #[test]
 fn f21_ac4_refuses_what_validate_branch_name_refused() {
-    // Each verdict is the JavaScript pattern's, tried on 2026-10-18; those of `release/…` and
-    // `release-please--…` are the pattern's since EN-112 (ADR-0079).
+    // Each verdict is the JavaScript pattern's, tried on 2026-10-18; those of `release-please--…`
+    // are the pattern's since EN-112, those of `release/…` since REV-009 (ADR-0101).
     for name in [
         "worktree-agent-a13cbef",
         "feat/US-061-topic",
@@ -47,6 +47,8 @@ fn f21_ac4_refuses_what_validate_branch_name_refused() {
         "release/v0.3.0",
         "release/0.03.0",
         "release/0.3.0-rc",
+        "release/0.3.0",
+        "release/10.0.12",
         "develop2",
         "origin/develop",
         "main\nx",
@@ -54,8 +56,6 @@ fn f21_ac4_refuses_what_validate_branch_name_refused() {
         assert!(!is_valid_branch(name), "{name:?}");
     }
     for name in [
-        "release/0.3.0",
-        "release/10.0.12",
         "feat/us-061-topic",
         "docs/val-018-remarks",
         "feature/f21-x",
@@ -102,7 +102,7 @@ fn names_the_branch_and_the_rule_it_breaks() {
     let refusal = branch_refusal("worktree-agent-a13").unwrap();
 
     assert!(refusal.starts_with("✖   branch name \"worktree-agent-a13\" refused: it must be"));
-    assert!(refusal.contains("docs/tooling/git-workflow.md"));
+    assert!(refusal.contains("the records' conventions, area git"));
     assert!(refusal.contains("`<type>/<story-id>-<kebab-case-topic>`"));
     assert_eq!(branch_refusal("develop"), None);
 }

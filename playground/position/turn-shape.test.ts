@@ -31,10 +31,10 @@ function convertSquare(): void {
   clickElement("convert");
 }
 
-describe("turning and moving a shape (US-018)", () => {
+describe("turning and moving a shape", () => {
   beforeEach(() => {
-    // Step 1 of the guided test: a 120 × 80 rectangle, radius 10 (F01).
-    openPage("?step=1");
+    // The page as it opens: a 120 × 80 rectangle, radius 10 (F01).
+    openPage("");
     typeAndEnter("radius", "0");
   });
 
@@ -184,24 +184,19 @@ describe("turning and moving a shape (US-018)", () => {
   });
 
   it("[F04.AC1] keeps the view still while the shape turns, so that it turns about its center on screen", () => {
-    // 120 × 80 turned by 90° goes up to y −20: the view does not follow it (VAL-007).
+    // 120 × 80 turned by 90° goes up to y −20: the view does not follow it.
     typeAndEnter("angle", "90");
 
     expect(document.querySelector("#canvas svg")?.getAttribute("viewBox")).toMatch(/^-40 -40 /u);
   });
 
-  it("[F04.AC5] opens the guided test of F04 at step 47, each step starting straight", () => {
-    openPage("?step=47");
-
-    expect(readText("#guide-title")).toBe("F04 · Turn by 90°");
-
+  it("[F04.AC5] starts straight again on Reset", () => {
     typeAndEnter("angle", "90");
 
     expect(readText("#straight-box")).toBe("Straight box: x 20, y -20, width 80, height 120");
 
-    clickElement("guide-next");
+    clickElement("tool-reset");
 
     expect(readValue("angle")).toBe("0");
-    expect(readText("#guide-title")).toBe("F04 · Tilt by 45°");
   });
 });

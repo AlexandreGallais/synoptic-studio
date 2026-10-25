@@ -1,5 +1,6 @@
-//! Tests of `.claude/settings.json` (EN-104, ADR-0078): every hook and the status line call a
-//! binary of `tools/hooks` by its path in `target/release`, never through `cargo run` nor Node.js.
+//! Tests of `.claude/settings.json` (EN-104, ADR-0078): every hook calls a binary
+//! of `tools/hooks` by its path in `target/release`, never through `cargo run` nor Node.js;
+//! the session's end alone calls `knowledge snapshot` (EN-153); the permissions of the tools in use only (AUD-051).
 
 use std::fs;
 use std::path::Path;
@@ -21,7 +22,7 @@ fn binaries() -> Vec<String> {
 }
 
 #[test]
-fn f21_ac1_every_hook_and_the_status_line_call_a_hooks_binary_by_its_path() {
+fn f21_ac1_every_hook_calls_a_hooks_binary_by_its_path_and_no_status_line_runs() {
     let settings =
         parse(&fs::read_to_string(root().join(".claude/settings.json")).expect("settings"))
             .expect("JSON");
@@ -44,9 +45,20 @@ fn f21_ac1_every_hook_and_the_status_line_call_a_hooks_binary_by_its_path() {
                 .unwrap_or_default()
                 .to_owned();
 
-            // Exec form, its arguments none: the path is one word, spaces and all (`REF-CC-HOOKS`).
-            assert_eq!(handler.get("args"), &Value::Array(Vec::new()), "{name}");
-            assert!(known.contains(&name), "{}", handler.get("command").text());
+            // Exec form, its arguments none but the snapshot's command: the path is one word,
+            // spaces and all (`REF-CC-HOOKS`).
+            // The end-of-session rituals, outside the hooks crate (EN-154).
+            if name == "records-save" || name == "session-report" {
+                assert_eq!(handler.get("args"), &Value::Array(Vec::new()), "{name}");
+            } else if name == "knowledge" {
+                assert_eq!(
+                    handler.get("args"),
+                    &Value::Array(vec![Value::String("snapshot".to_owned())])
+                );
+            } else {
+                assert_eq!(handler.get("args"), &Value::Array(Vec::new()), "{name}");
+                assert!(known.contains(&name), "{}", handler.get("command").text());
+            }
             called.push(name);
         }
     }
@@ -57,17 +69,37 @@ fn f21_ac1_every_hook_and_the_status_line_call_a_hooks_binary_by_its_path() {
         [
             "check-handback",
             "guard-bash",
+            "knowledge",
             "library-pages",
             "limit-agents",
             "log-tool-call",
+            "records-save",
+            "session-report",
             "session-state",
             "track-tool-call"
         ]
     );
-    assert_eq!(
-        settings.get("statusLine").get("command").text(),
-        "\"$(git rev-parse --show-toplevel)/target/release/status-line\""
-    );
+    // No status line: Claude Code shows by itself when the agent works (AUD-056).
+    assert_eq!(settings.get("statusLine"), &Value::Null);
+}
+
+#[test]
+fn aud_051_allows_no_push_without_a_prompt() {
+    let settings =
+        parse(&fs::read_to_string(root().join(".claude/settings.json")).expect("settings"))
+            .expect("JSON");
+    let pushes: Vec<&str> = settings
+        .get("permissions")
+        .get("allow")
+        .items()
+        .iter()
+        .map(Value::text)
+        .filter(|rule| rule.contains("git push"))
+        .collect();
+
+    // `git push --delete` runs the pre-push checks for nothing: a branch is deleted through the
+    // GitHub API, which stays allowed.
+    assert_eq!(pushes, [] as [&str; 0]);
 }
 
 #[test]
@@ -89,12 +121,52 @@ fn f32_ac1_runs_log_tool_call_when_any_subagent_stops() {
     }));
 }
 
+/// The snapshot's budget at a session's end, in seconds: `SessionEnd` gives its hooks 1.5 by
+/// default, a hook's own `timeout` raising it up to 60 (`REF-CC-HOOKS`).
+const SNAPSHOT_TIMEOUT: f64 = 30.0;
+
+#[test]
+fn f48_ac3_takes_the_snapshot_when_a_session_ends_within_its_timeout() {
+    let settings =
+        parse(&fs::read_to_string(root().join(".claude/settings.json")).expect("settings"))
+            .expect("JSON");
+    let handlers: Vec<&Value> = settings
+        .get("hooks")
+        .get("SessionEnd")
+        .items()
+        .iter()
+        .filter(|entry| matches!(entry.get("matcher").text(), "" | "*"))
+        .flat_map(|entry| entry.get("hooks").items())
+        .collect();
+
+    // Every reason a session ends; in the foreground, so that the copy ends before Claude Code.
+    // The snapshot, then the end-of-session rituals, silently (2026-10-25, EN-154).
+    assert_eq!(handlers.len(), 3);
+    assert_eq!(
+        handlers[1].get("command").text(),
+        "${CLAUDE_PROJECT_DIR}/target/release/records-save"
+    );
+    assert_eq!(
+        handlers[2].get("command").text(),
+        "${CLAUDE_PROJECT_DIR}/target/release/session-report"
+    );
+    assert_eq!(
+        handlers[0].get("command").text(),
+        "${CLAUDE_PROJECT_DIR}/target/release/knowledge"
+    );
+    assert_eq!(
+        handlers[0].get("args"),
+        &Value::Array(vec![Value::String("snapshot".to_owned())])
+    );
+    assert_eq!(handlers[0].get("async"), &Value::Null);
+    assert_eq!(handlers[0].get("timeout"), &Value::Number(SNAPSHOT_TIMEOUT));
+}
+
 /// The release binaries allowed without a prompt, each by name and, for a binary that also
 /// publishes or deletes, by its subcommand (AUD-023): `heavy-lock` runs any command given after it,
 /// `branches-clean` deletes branches and worktrees, `git-hooks install` sets the hooks folder and
 /// `release publish` makes a release, so each of them asks.
-const ALLOWED_BINARIES: [&str; 21] = [
-    "activity",
+const ALLOWED_BINARIES: [&str; 18] = [
     "backlog-status",
     "context-size",
     "dependencies outdated",
@@ -103,17 +175,15 @@ const ALLOWED_BINARIES: [&str; 21] = [
     "git-sequences commit",
     "git-sequences state",
     "git-sequences sync",
+    "knowledge",
     "library",
     "metrics",
     "page",
-    "records-save",
     "release check",
     "release notes",
     "replace",
     "run-totals",
-    "session-report",
     "stale-binaries",
-    "val-prepare",
     "worktree-new",
 ];
 

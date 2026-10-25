@@ -7,7 +7,7 @@ import {
   chooseShapeKind,
   clickElement,
   commitField,
-  openServedPage,
+  openPage,
   pressKey,
   pressPointer,
   readText,
@@ -43,9 +43,9 @@ function pressCancellableKey(selector: string, key: string): boolean {
   return event.defaultPrevented;
 }
 
-describe("Color picker: focus, keys, rounding and what it writes (US-035, audit, US-040)", () => {
+describe("Color picker: focus, keys, rounding and what it writes (audit)", () => {
   beforeEach(() => {
-    openServedPage("");
+    openPage("");
     chooseShapeKind("text");
     chooseOption("text-weight", "400");
     chooseOption("text-fit", "content");

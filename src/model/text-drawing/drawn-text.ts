@@ -14,6 +14,6 @@ export type DrawnText = {
   readonly center: Point;
   /** Its lines, in order, one `<tspan>` each. */
   readonly lines: readonly PositionedLine[];
-  /** Its underlines and strike-throughs, line by line, one `<path>` each in its color (US-041). */
+  /** Its underlines and strike-throughs, line by line, one `<path>` each in its color. */
   readonly decorations: readonly DrawnStroke[];
 };

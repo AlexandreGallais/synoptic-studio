@@ -121,3 +121,22 @@ fn f18_ac3_waits_from_a_linked_worktree_for_the_lock_of_the_common_directory() {
     // Its own lock freed: nothing left in the common directory.
     assert!(!path.exists());
 }
+
+#[test]
+fn rev009_prints_its_usage_on_help_and_runs_nothing() {
+    for flag in ["--help", "-h"] {
+        let output = clean(env!("CARGO_BIN_EXE_heavy-lock"))
+            .arg(flag)
+            .current_dir(env::temp_dir())
+            .output()
+            .expect("heavy-lock starts");
+
+        assert_eq!(output.status.code(), Some(0), "{flag}");
+        assert!(
+            String::from_utf8_lossy(&output.stdout).starts_with(
+                "usage: target/release/heavy-lock [--lock <name>] <command> [arguments…]"
+            ),
+            "{flag}: {output:?}"
+        );
+    }
+}

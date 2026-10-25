@@ -5,7 +5,7 @@
 
 use std::fs;
 use std::path::{Path, PathBuf};
-use std::process::{Command, Output};
+use std::process::Output;
 
 /// A temporary output folder, removed when the test ends, even on a failure.
 struct Folder(PathBuf);
@@ -33,7 +33,7 @@ fn fixtures() -> PathBuf {
 
 /// `api-pages` run on an entry module, its pages written into a folder.
 fn run(entry: &Path, out: &Path) -> Output {
-    Command::new(env!("CARGO_BIN_EXE_api-pages"))
+    test_support::command(env!("CARGO_BIN_EXE_api-pages"))
         .arg(entry)
         .arg(out)
         .arg("/api/")
@@ -123,7 +123,7 @@ fn empties_the_folder_first() {
 
 #[test]
 fn refuses_a_wrong_number_of_arguments() {
-    let output = Command::new(env!("CARGO_BIN_EXE_api-pages"))
+    let output = test_support::command(env!("CARGO_BIN_EXE_api-pages"))
         .arg("src/index.ts")
         .output()
         .unwrap();

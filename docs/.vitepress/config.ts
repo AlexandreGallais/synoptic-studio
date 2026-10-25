@@ -1,4 +1,4 @@
-import { existsSync, readFileSync, readdirSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
 import { defineConfig } from "vitepress";
@@ -14,23 +14,68 @@ const DOCS_ROOT = join(import.meta.dirname, "..");
 /** Sidebar written by `tools/api-pages` next to the API pages (EN-072). */
 const API_SIDEBAR_FILE = join(DOCS_ROOT, "api", "api-sidebar.json");
 
-/** Name of a folder's index page in the repository (served as the folder's index). */
-const FOLDER_INDEX = "README.md";
+/** A section of the site: a folder, its index first when it has one, then the pages named. */
+type Section = {
+  readonly collapsed: boolean;
+  readonly folder: string;
+  readonly overview: boolean;
+  readonly pages: readonly string[];
+  readonly title: string;
+};
 
-/** Site sections: title and folder, in reading order. */
-const SECTIONS = [
-  { folder: "guide", title: "Guide" },
-  { folder: "domain", title: "Domain" },
-  { folder: "adr", title: "Decisions" },
-  { folder: "conventions", title: "Conventions" },
-  { folder: "tooling", title: "Tooling" },
-  { folder: "derivations", title: "Derivations" },
-  { folder: "backlog", title: "Backlog" },
-  { folder: "backlog/epics", title: "Epics" },
-  { folder: "research", title: "Research" },
-  { folder: "process", title: "Process" },
-  { folder: "playbook", title: "Playbook" },
+/** A group of sections, a heading of the sidebar and an entry of the navigation bar. */
+type Group = {
+  readonly sections: readonly Section[];
+  readonly title: string;
+};
+
+/**
+ * The site for a person: what the software is and how it is made, then the API. Everything else
+ * the agent reads in its records (AUD-054). A group of one section is one entry of the navigation
+ * bar, a menu otherwise.
+ */
+const GROUPS: readonly Group[] = [
+  {
+    sections: [
+      {
+        collapsed: false,
+        folder: "",
+        overview: false,
+        pages: ["the-software.md", "how-it-is-made.md"],
+        title: "Overview",
+      },
+    ],
+    title: "The project",
+  },
+
+  {
+    sections: [{ collapsed: true, folder: "api", overview: true, pages: [], title: "API" }],
+    title: "API",
+  },
 ];
+
+/**
+ * The navigation bar's entry of a group: a link for a group of one section, a menu otherwise.
+ *
+ * @param group - group of the site
+ * @returns its entry in the navigation bar
+ */
+function navItem(group: Group): DefaultTheme.NavItem {
+  const [only] = group.sections;
+
+  return only !== undefined && group.sections.length === 1
+    ? { link: sectionLink(only), text: group.title }
+    : {
+        items: group.sections.map((section) => ({
+          link: sectionLink(section),
+          text: section.title,
+        })),
+        text: group.title,
+      };
+}
+
+/** The address of the playground, as of the last merge into `main`. */
+const PLAYGROUND = "https://alexandregallais.github.io/synoptic-studio/playground/";
 
 /**
  * Title of a Markdown page: its first level-1 heading, or its file name.
@@ -45,20 +90,35 @@ function pageTitle(path: string): string {
 }
 
 /**
- * Sidebar entries of a section: its index first, then its pages sorted by file name.
+ * The address of a section: its index, or its first page when it has none.
  *
- * @param folder - section folder, relative to the docs root
- * @returns sidebar items linking to every Markdown page of the folder
+ * @param section - section of the site
+ * @returns the link of its first entry
  */
-function sectionItems(folder: string): DefaultTheme.SidebarItem[] {
-  const pages = readdirSync(join(DOCS_ROOT, folder))
-    .filter((name) => name.endsWith(".md") && name !== FOLDER_INDEX && !name.startsWith("_"))
-    .toSorted((left, right) => left.localeCompare(right, "en"));
+function sectionLink(section: Section): string {
+  const prefix = section.folder === "" ? "" : `/${section.folder}`;
 
-  return pages.map((name) => ({
-    link: `/${folder}/${name.slice(0, -".md".length)}`,
-    text: pageTitle(join(DOCS_ROOT, folder, name)),
+  return section.overview
+    ? `${prefix}/`
+    : `${prefix}/${(section.pages[0] ?? "").slice(0, -".md".length)}`;
+}
+
+/**
+ * Sidebar entries of a section: its index first when it has one, then its pages; the API's from
+ * the sidebar `tools/api-pages` writes.
+ *
+ * @param section - section of the site
+ * @returns sidebar items linking to its pages
+ */
+function sectionItems(section: Section): DefaultTheme.SidebarItem[] {
+  const prefix = section.folder === "" ? "" : `/${section.folder}`;
+  const overview = section.overview ? [{ link: `${prefix}/`, text: "Overview" }] : [];
+  const pages = section.pages.map((name) => ({
+    link: `${prefix}/${name.slice(0, -".md".length)}`,
+    text: pageTitle(join(DOCS_ROOT, section.folder, name)),
   }));
+
+  return section.folder === "api" ? [...overview, ...apiItems()] : [...overview, ...pages];
 }
 
 /**
@@ -87,11 +147,7 @@ function apiItems(): DefaultTheme.SidebarItem[] {
   return isSidebar(parsed) ? parsed : [];
 }
 
-/**
- * VitePress configuration of the documentation site.
- *
- * @see docs/tooling/documentation-site.md
- */
+/** VitePress configuration of the documentation site. */
 export default defineConfig({
   base: BASE,
   cleanUrls: true,
@@ -100,30 +156,20 @@ export default defineConfig({
   lastUpdated: false,
   srcExclude: ["**/_*.md"],
   rewrites: {
-    ":section/:subsection/README.md": ":section/:subsection/index.md",
     ":section/README.md": ":section/index.md",
   },
   themeConfig: {
-    nav: [
-      ...SECTIONS.map((section) => ({ link: `/${section.folder}/`, text: section.title })),
-      { link: "/references", text: "References" },
-      { link: "/api/", text: "API" },
-      {
-        link: "https://alexandregallais.github.io/synoptic-studio/playground/",
-        text: "Playground",
-      },
-    ],
+    nav: [...GROUPS.map((group) => navItem(group)), { link: PLAYGROUND, text: "Playground" }],
     outline: "deep",
     search: { provider: "local" },
-    sidebar: [
-      ...SECTIONS.map((section) => ({
-        collapsed: false,
-        items: [{ link: `/${section.folder}/`, text: "Overview" }, ...sectionItems(section.folder)],
+    sidebar: GROUPS.map((group) => ({
+      items: group.sections.map((section) => ({
+        collapsed: section.collapsed,
+        items: sectionItems(section),
         text: section.title,
       })),
-      { items: [{ link: "/references", text: "Bibliography" }], text: "References" },
-      { items: [{ link: "/api/", text: "Overview" }, ...apiItems()], text: "API" },
-    ],
+      text: group.title,
+    })),
   },
   title: "editor",
 });

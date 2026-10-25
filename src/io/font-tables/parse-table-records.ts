@@ -17,7 +17,6 @@ import type { FontTableRecord } from "./font-table-record";
  * @param directory - where the table directory starts: 0 in a font file,
  * `tableDirectoryOffsets[i]` in a collection
  * @returns each record's offset, and its table's offset and length, in the order of the records
- * @see REF-OT-OTFF
  */
 export function parseTableRecords(
   view: Readonly<DataView>,

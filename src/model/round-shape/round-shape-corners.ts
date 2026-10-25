@@ -11,7 +11,7 @@ import type { CurveCorner } from "../../geometry";
  * @kind domain
  * @param shape - valid round shape (`isValidRoundShape`)
  * @returns its 4 corners, clockwise from the top
- * @see docs/domain/shapes.md#round-shape-f10
+ * @see RULE-shapes-round-shape
  */
 export function roundShapeCorners(shape: RoundShape): readonly CurveCorner[] {
   return ellipseCorners(shape).map((corner) => ({

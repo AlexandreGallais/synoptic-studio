@@ -1,12 +1,14 @@
-//! Pages read through the library (`docs/tooling/sources.md`, EN-101): a `WebFetch`, or a `curl`
+//! Pages read through the library (`the records' conventions, area library`, EN-101): a `WebFetch`, or a `curl`
 //! or `wget` printing a web page, is refused with the `library_get` call to make instead, unless
 //! the library returned that page empty — stored with fewer than 300 characters, or refused by its
 //! site — which the hook reads from the library's file.
 
 use std::path::PathBuf;
 
+use git_repository::records_place::records_of_folder;
+
 /// Characters under which a stored page counts as empty: a page built in the browser by
-/// JavaScript, its shell only (`docs/tooling/sources.md`, Limits). Of 417 pages stored on
+/// JavaScript, its shell only (`the records' conventions, area library`, Limits). Of 417 pages stored on
 /// 2026-10-17, 8 held fewer, from 0 to 235 characters.
 pub const EMPTY_PAGE: usize = 300;
 
@@ -292,12 +294,12 @@ pub fn refusal(url: &str, library: Library) -> Option<String> {
         Library::Failed => None,
         Library::Stored { .. } => Some(format!(
             "The library holds this page: call library_get with url \"{url}\", then library_read \
-             the sections needed (docs/tooling/sources.md, EN-101)."
+             the sections needed (the records' conventions, area library, EN-101)."
         )),
         Library::Missing => Some(format!(
             "Pages are read through the library: call library_get with url \"{url}\" (it fetches \
              and stores the page), then library_read the sections needed. WebFetch only once the \
-             library returns the page empty (docs/tooling/sources.md, EN-101)."
+             library returns the page empty (the records' conventions, area library, EN-101)."
         )),
     }
 }
@@ -320,7 +322,7 @@ pub fn has_library_tools(agent_file: &str) -> bool {
 pub fn refusal_without_library(url: &str) -> String {
     format!(
         "Pages are read through the library, and this agent has no library tools: name \"{url}\" \
-         in your report, for your caller to read through the library (docs/tooling/sources.md, \
+         in your report, for your caller to read through the library (the records' conventions, area library, \
          EN-101)."
     )
 }
@@ -330,14 +332,20 @@ pub fn refusal_without_library(url: &str) -> String {
 pub const FILE_VARIABLE: &str = "AGENT_LIBRARY_FILE";
 
 /// The library's file, the one function the hooks, the library's server and its tools open it by
-/// (AUD-023): the value of `AGENT_LIBRARY_FILE`, else a file of the user's data folder; `None`
-/// without either. An empty value counts as none. Never `LIBRARY_PATH`, the C toolchain's search
+/// (AUD-023): the value of `AGENT_LIBRARY_FILE`, else the project's records, which hold the
+/// library's tables beside the knowledge (E49), else a file of the user's data folder; `None`
+/// without any. An empty value counts as none. Never `LIBRARY_PATH`, the C toolchain's search
 /// path (EN-106).
 #[must_use]
-pub fn library_file(variable: Option<String>, home: Option<String>) -> Option<PathBuf> {
+pub fn library_file(
+    variable: Option<String>,
+    records: Option<PathBuf>,
+    home: Option<String>,
+) -> Option<PathBuf> {
     variable
         .filter(|value| !value.is_empty())
         .map(PathBuf::from)
+        .or(records)
         .or_else(|| {
             home.filter(|home| !home.is_empty()).map(|home| {
                 PathBuf::from(home)
@@ -349,12 +357,17 @@ pub fn library_file(variable: Option<String>, home: Option<String>) -> Option<Pa
         })
 }
 
-/// The library's file for this process: `AGENT_LIBRARY_FILE`, else the data folder of the home
-/// `HOME` names, or `USERPROFILE` on Windows.
+/// The library's file for this process: `AGENT_LIBRARY_FILE`, else the records file of the
+/// repository of the working folder, in the folder `AGENT_RECORDS_ROOT` names, else the data folder
+/// of the home `HOME` names, or `USERPROFILE` on Windows.
 #[must_use]
 pub fn library_file_of_process() -> Option<PathBuf> {
     library_file(
         std::env::var(FILE_VARIABLE).ok(),
+        records_of_folder(
+            std::env::var("AGENT_RECORDS_ROOT").ok().as_deref(),
+            std::path::Path::new("."),
+        ),
         std::env::var("HOME")
             .or_else(|_| std::env::var("USERPROFILE"))
             .ok(),

@@ -21,7 +21,6 @@ const FIELD_SIZE = 2;
  * @param record - where the ValueRecord starts in the table
  * @param valueFormat - its ValueFormat flags
  * @returns the adjustment, font units
- * @see REF-OT-GPOS
  */
 export function parseXAdvance(
   view: Readonly<DataView>,

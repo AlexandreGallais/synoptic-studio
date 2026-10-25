@@ -14,7 +14,7 @@ import type { BoundingBox } from "../../geometry";
  * @param area - the shape's contour, corners and whether it is flat (`shapePickArea`, `textPickArea`)
  * @param box - the rectangle, in user units, its sides included
  * @returns true when every point of the shape lies in the rectangle
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 export function isPickAreaEnclosed(area: PickArea, box: BoundingBox): boolean {
   return isBoxWithin(pickAreaBox(area), box);

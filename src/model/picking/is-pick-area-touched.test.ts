@@ -56,7 +56,7 @@ function moved(offset: number): readonly [PickArea, PickArea] {
   ];
 }
 
-describe("isPickAreaTouched (EN-144)", () => {
+describe("isPickAreaTouched", () => {
   it("touches a shape with an area inside it or across its contour", () => {
     // [40, 60]² lies inside, no side meeting it; [90, 110] × [40, 60] crosses x = 100.
     expect(isPickAreaTouched(BOX, { maxX: 60, maxY: 60, minX: 40, minY: 40 })).toBe(true);

@@ -9,7 +9,6 @@ import { readColorInput } from "./read-color-input";
  * @kind procedure
  * @param document - page document
  * @param id - the hexadecimal field's id
- * @see docs/backlog/stories/E15-F16-US-035-pick-a-color.md
  */
 export function writeKeptColor(document: Document, id: string): void {
   const field = readColorInput(document, id);

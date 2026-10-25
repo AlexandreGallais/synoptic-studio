@@ -15,7 +15,6 @@ import type { EmbeddedFace } from "../../model";
  * @kind format
  * @param face - the face and its file
  * @returns the rule, on one line
- * @see REF-CSS-FONTS-4
  */
 export function formatFontFaceRule(face: EmbeddedFace): string {
   const { hint, mediaType } = parseFontFormat(face.file.bytes);

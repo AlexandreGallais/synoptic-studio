@@ -34,14 +34,13 @@ const SMALLER_UNITS: readonly ByteUnit[] = [KILOBYTE, MEGABYTE];
  * @param bytes - the size, a whole number of bytes
  * @param unit - kB, MB or GB
  * @returns the tenths, a whole number
- * @see docs/domain/interaction.md#_7-navigation-and-history
  */
 function bytesToTenths(bytes: number, unit: ByteUnit): number {
   return nearestInteger((bytes * TENTHS) / unit.bytes);
 }
 
 /**
- * Writes a size in bytes as the toolbar shows it (F40): below 1 000, in bytes, `999 B`; above, in
+ * Writes a size in bytes as the toolbar shows it: below 1 000, in bytes, `999 B`; above, in
  * the first of kB, MB and GB, each 1 000 times the one before, that keeps it below 1 000 once
  * rounded, GB the last, to one decimal rounded half up, a decimal of 0 left out, the units the
  * tenths' quotient by 10 (`integerQuotient`) and the decimal their remainder
@@ -50,7 +49,6 @@ function bytesToTenths(bytes: number, unit: ByteUnit): number {
  * @kind format
  * @param bytes - the size, a whole number of bytes, 0 or more
  * @returns its text, the number then the unit
- * @see docs/domain/interaction.md#_7-navigation-and-history
  */
 export function formatByteSize(bytes: number): string {
   if (bytes < UNIT_STEP) {

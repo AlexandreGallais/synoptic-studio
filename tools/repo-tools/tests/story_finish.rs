@@ -1,9 +1,10 @@
-//! `story-finish` run in repositories of its own (EN-103): a bare `origin`, a main checkout on the
-//! feature branch, each story in a linked worktree, as in a run. GitHub's command line and Cargo
-//! are stubs first on `PATH`: `gh pr create` merges by pushing the story onto its base, `cargo`
-//! records its calls, and would move a row if asked to run `move-rows`, which `story-finish` no
-//! longer does (ADR-0091). Every command starts through `test_support::command`, without the
-//! inherited `GIT_*` variables, its Git configuration a test file of its own.
+//! `story-finish` run in repositories of its own (EN-103, EN-154): a bare `origin`, a main
+//! checkout on the feature branch, each story in a linked worktree, as in a run, and records of
+//! the test's own folder holding the feature's stories. GitHub's command line and Cargo are stubs
+//! first on `PATH`: `gh pr create` merges by pushing the story onto its base, `cargo` records its
+//! calls. Every command starts through `test_support::command`, without the inherited `GIT_*`
+//! variables, its Git configuration a test file of its own; `AGENT_RECORDS_ROOT` names the test's
+//! folder, never the real records.
 
 #![cfg(unix)]
 
@@ -13,6 +14,8 @@ use std::os::unix::fs::PermissionsExt;
 use std::path::{Path, PathBuf};
 use std::process::{Command, Output};
 
+use knowledge::sql::read;
+use knowledge::store::open_store;
 use test_support::command;
 
 const BASE: &str = "feature/f99-topic";
@@ -37,20 +40,9 @@ case "$1 $2" in
 esac
 "#;
 
-/// Cargo: `move-rows` writes a row into the journal when `ROWS` is set and prints the file, so that
-/// a test sees a row moved after the merge.
+/// Cargo: it records its calls.
 const CARGO: &str = r#"#!/bin/sh
 echo "$PWD $*" >> "$STUB_LOG"
-case "$*" in
-  *move-rows*) [ -z "$ROWS" ] || { echo "- \`#run\` a row" >> docs/process/journal.md; echo docs/process/journal.md; } ;;
-esac
-"#;
-
-/// The stories index, written from each story's front matter.
-const INDEX: &str = r#"{ echo '# Stories'; echo; echo '| ID | Status |'; echo '| --- | --- |'
-for f in docs/backlog/stories/E99-*.md; do
-  echo "| [$(sed -n 's/^id: //p' "$f")](./${f##*/}) | $(sed -n 's/^status: //p' "$f") |"
-done; } > docs/backlog/stories/README.md
 "#;
 
 /// A test's folder: the repositories, the stubs, the Git configuration.
@@ -100,7 +92,8 @@ impl Lab {
             .env_remove("GH_STATE")
             .env_remove("GH_EXISTING")
             .env_remove("GH_API_FAILS")
-            .env_remove("ROWS");
+            .env("AGENT_RECORDS_ROOT", self.root.join("records"))
+            .env_remove("AGENT_KNOWLEDGE_SNAPSHOT");
         command
     }
 
@@ -133,8 +126,25 @@ impl Lab {
         text.lines().map(str::to_owned).collect()
     }
 
-    /// The remote, the main checkout on the feature branch, its backlog: a feature of two
-    /// stories, both `ready`.
+    /// The records of the test's repositories, named after `origin.git`.
+    fn records(&self) -> PathBuf {
+        self.root.join("records/origin.sqlite")
+    }
+
+    /// A query's rows, each row's cells joined by `|`.
+    fn rows(&self, query: &str) -> Vec<String> {
+        let database = open_store(&self.records()).expect("records");
+
+        read(&database, query)
+            .expect("rows")
+            .lines()
+            .skip(1)
+            .map(|line| line.replace('\t', "|"))
+            .collect()
+    }
+
+    /// The remote, the main checkout on the feature branch, and the records: a feature of two
+    /// stories, both `ready`, and a draft row EN-901's branch wrote.
     fn backlog(&self) {
         let origin = self.root.join("origin.git");
         let main = self.main();
@@ -147,49 +157,33 @@ impl Lab {
             &self.root,
             &["clone", "-q", origin.to_str().expect("path"), "main"],
         );
-        for folder in [
-            "docs/backlog/features",
-            "docs/backlog/stories",
-            "docs/process",
-            "tools",
-        ] {
-            fs::create_dir_all(main.join(folder)).expect("folder");
+        fs::write(main.join("README.md"), "# A project\n").expect("readme");
+        // The data files the CI reads, as the records' empty tables give them (AUD-054).
+        fs::create_dir_all(main.join("tests/data")).expect("data");
+        for file in ["lint-exceptions", "dependencies"] {
+            fs::write(main.join(format!("tests/data/{file}.json")), "[]\n").expect("data file");
         }
-        fs::write(
-            main.join("package.json"),
-            "{\"scripts\": {\"backlog:index\": \"sh tools/index.sh\"}}\n",
-        )
-        .expect("manifest");
-        fs::write(main.join("tools/index.sh"), INDEX).expect("index");
-        fs::write(main.join("docs/process/journal.md"), "# Journal\n").expect("journal");
-        fs::write(
-            main.join("docs/backlog/features/E99-F99-topic.md"),
-            "---\nid: F99\nepic: E99\nstatus: in-progress\n---\n\n# F99\n\n## Stories\n\n| ID | Title | Status |\n| --- | --- | --- |\n| [EN-901](../stories/E99-F99-EN-901-first.md) | First | ready |\n| [EN-902](../stories/E99-F99-EN-902-second.md) | Second | ready |\n\n## Notes\n\nKept.\n",
-        )
-        .expect("feature");
-        for (id, name) in [("EN-901", "first"), ("EN-902", "second")] {
-            fs::write(
-                main.join(format!("docs/backlog/stories/E99-F99-{id}-{name}.md")),
-                format!("---\nid: {id}\nepic: E99\nfeature: F99\nstatus: ready\n---\n\n# {id}\n"),
-            )
-            .expect("story");
-        }
-        let index = self
-            .command("sh", &main)
-            .arg("tools/index.sh")
-            .status()
-            .expect("index");
-
-        assert!(index.success());
         self.git(&main, &["add", "."]);
         self.git(&main, &["commit", "-q", "-m", "start"]);
         self.git(&main, &["push", "-q", "-u", "origin", "HEAD:main"]);
         self.git(&main, &["switch", "-q", "-c", BASE]);
         self.git(&main, &["push", "-q", "-u", "origin", BASE]);
+        open_store(&self.records())
+            .expect("records")
+            .execute_batch(&format!(
+                "CREATE TABLE lint_exceptions (id INTEGER PRIMARY KEY, file TEXT, item TEXT, rule TEXT, reason TEXT);
+                CREATE TABLE dependencies (name TEXT, kind TEXT, version TEXT);
+                INSERT INTO features (id, epic, title, status, state) VALUES ('F99', 'E99', 'A feature', 'in-progress', 'merged');
+                INSERT INTO stories (id, epic, feature, kind, title, status, topic, branch, state) VALUES
+                  ('EN-901', 'E99', 'F99', 'EN', 'First', 'ready', 'first', 'develop', 'merged'),
+                  ('EN-902', 'E99', 'F99', 'EN', 'Second', 'ready', 'second', 'develop', 'merged'),
+                  ('EN-903', 'E99', 'F99', 'EN', 'Written by EN-901', 'draft', 'third', '{FIRST}', 'draft');"
+            ))
+            .expect("records written");
     }
 
-    /// A story's worktree with one task pushed, then its done commit as the main thread makes
-    /// it: `backlog-status <ID> done`, `Closes: <ID>`, pushed.
+    /// A story's worktree with one task pushed: no `done` commit since its status is in the
+    /// records (EN-154).
     fn story(&self, branch: &str, id: &str) -> PathBuf {
         let folder = self.worktree(id);
         let path = folder.to_str().expect("path");
@@ -205,29 +199,7 @@ impl Lab {
             &["commit", "-q", "-m", &format!("feat: work of {id}")],
         );
         self.git(&folder, &["push", "-q", "-u", "origin", branch]);
-        self.done(&folder, &id.to_uppercase());
-        self.git(&folder, &["push", "-q"]);
         folder
-    }
-
-    fn done(&self, folder: &Path, id: &str) {
-        let status = self
-            .command(env!("CARGO_BIN_EXE_backlog-status"), folder)
-            .args([id, "done"])
-            .output()
-            .expect("backlog-status");
-
-        assert!(status.status.success(), "{status:?}");
-        self.git(folder, &["add", "docs/backlog"]);
-        self.git(
-            folder,
-            &[
-                "commit",
-                "-q",
-                "-m",
-                &format!("docs(backlog): set {id} done\n\nCloses: {id}"),
-            ],
-        );
     }
 
     /// A story attached to `develop`, a `REV` or an epic's `SP`: the main checkout on `develop`,
@@ -276,10 +248,6 @@ impl Lab {
             .output()
             .expect("story-finish")
     }
-
-    fn show(&self, revision: &str) -> String {
-        self.git(&self.main(), &["show", revision])
-    }
 }
 
 impl Drop for Lab {
@@ -303,15 +271,15 @@ fn f21_ac2_two_stories_of_one_feature_finish_one_after_the_other_without_a_confl
 
     let first = lab.story(FIRST, "en-901");
     let second = lab.story(SECOND, "en-902");
-    // Both done commits edit the feature's table and the index on adjacent rows.
     let finished = lab.finish(&first, &[]);
     let (out, err) = text(&finished);
 
     assert!(finished.status.success(), "{out}\n{err}");
+    // EN-901's draft row EN-903 merged, EN-901 itself done.
     assert_eq!(
         out,
         format!(
-            "https://github.com/owner/name/pull/1\nmerged; {BASE} up to date, {FIRST} deleted here and on GitHub\n"
+            "https://github.com/owner/name/pull/1\nthe records: 1 row(s) of {FIRST} marked merged, EN-901 done\nmerged; {BASE} up to date, {FIRST} deleted here and on GitHub\n"
         )
     );
     assert!(!first.exists());
@@ -323,42 +291,27 @@ fn f21_ac2_two_stories_of_one_feature_finish_one_after_the_other_without_a_confl
 
     assert!(finished.status.success(), "{out}\n{err}");
     assert!(
-        out.contains(&format!(
-            "{SECOND}: the status rows of docs/backlog/features/E99-F99-topic.md, docs/backlog/stories/README.md left to origin/{BASE}\n"
-        )),
-        "{out}"
-    );
-    assert!(
         out.contains(&format!("{SECOND} rebased on origin/{BASE} and pushed\n")),
         "{out}"
     );
     assert!(out.ends_with(&format!(
         "merged; {BASE} up to date, {SECOND} deleted here and on GitHub\n"
     )));
-
-    // The base holds both stories done, the rest of the feature's file kept.
-    let feature = lab.show(&format!(
-        "origin/{BASE}:docs/backlog/features/E99-F99-topic.md"
-    ));
-    let index = lab.show(&format!("origin/{BASE}:docs/backlog/stories/README.md"));
-
-    assert!(feature.contains("| [EN-901](../stories/E99-F99-EN-901-first.md) | First | done |\n| [EN-902](../stories/E99-F99-EN-902-second.md) | Second | done |\n"), "{feature}");
-    assert!(feature.ends_with("## Notes\n\nKept."), "{feature}");
-    assert!(index.contains("| [EN-901](./E99-F99-EN-901-first.md) | done |\n| [EN-902](./E99-F99-EN-902-second.md) | done |"), "{index}");
-    // The second's done commit is still its own, its status rows in it.
+    // The base holds both stories' work, no status commit between them.
     assert_eq!(
         lab.git(
             &main,
-            &["log", "--format=%s", "-5", &format!("origin/{BASE}")]
+            &["log", "--format=%s", "-3", &format!("origin/{BASE}")]
         ),
-        "docs(backlog): set EN-902 done\nfeat: work of en-902\ndocs(backlog): set EN-901 done\nfeat: work of en-901\nstart"
+        "feat: work of en-902\nfeat: work of en-901\nstart"
     );
-    assert!(
-        lab.git(
-            &main,
-            &["log", "-1", "--format=%B", &format!("origin/{BASE}")]
-        )
-        .contains("Closes: EN-902")
+    assert_eq!(
+        lab.rows("SELECT id, status, state FROM stories ORDER BY id"),
+        [
+            "EN-901|done|merged",
+            "EN-902|done|merged",
+            "EN-903|draft|merged"
+        ]
     );
     assert_eq!(
         lab.git(&main, &["rev-parse", "HEAD"]),
@@ -376,7 +329,7 @@ fn f21_ac2_pushes_with_lease_a_branch_rebased_by_hand_before_its_pull_request() 
 
     let first = lab.story(FIRST, "en-901");
 
-    // The done commit made again by hand, not pushed: GitHub's branch holds the old one.
+    // The last commit made again by hand, not pushed: GitHub's branch holds the old one.
     lab.git(
         &first,
         &[
@@ -384,7 +337,7 @@ fn f21_ac2_pushes_with_lease_a_branch_rebased_by_hand_before_its_pull_request() 
             "-q",
             "--amend",
             "-m",
-            "docs(backlog): set EN-901 done\n\nCloses: EN-901\nRule-docs: none affected, a test",
+            "feat: work of en-901, again",
         ],
     );
 
@@ -406,12 +359,16 @@ fn f21_ac2_pushes_with_lease_a_branch_rebased_by_hand_before_its_pull_request() 
     );
     // Pushed before the pull request was opened.
     assert!(calls.iter().any(|call| call.contains(" pr create --base ")));
-    // Not merged: the worktree and the branch are kept.
+    // Not merged: the worktree, the branch and the records kept.
     assert!(
         err.contains(&format!("CLOSED after 3 min, {FIRST} kept")),
         "{err}"
     );
     assert!(first.exists());
+    assert_eq!(
+        lab.rows("SELECT status, state FROM stories WHERE id IN ('EN-901', 'EN-903') ORDER BY id"),
+        ["ready|merged", "draft|draft"]
+    );
 }
 
 #[test]
@@ -466,56 +423,33 @@ fn f18_ac7_aborts_a_rebase_that_meets_a_conflict_outside_the_status_rows() {
 }
 
 #[test]
-fn f23_ac1_pushes_no_commit_after_the_merge_the_rows_in_the_done_commit() {
+fn f23_ac1_pushes_no_commit_after_the_merge_the_status_in_the_records() {
     let lab = Lab::new("rows");
 
     lab.backlog();
 
     let first = lab.story(FIRST, "en-901");
     let main = lab.main();
-
-    // The main thread moved the story's row into the journal in its done commit.
-    fs::write(
-        first.join("docs/process/journal.md"),
-        "# Journal\n\n- `#run` a row\n",
-    )
-    .expect("journal");
-    lab.git(
-        &first,
-        &[
-            "commit",
-            "-q",
-            "--amend",
-            "--no-edit",
-            "--",
-            "docs/process/journal.md",
-        ],
-    );
-
-    let done = lab.git(&first, &["rev-parse", "HEAD"]);
+    let last = lab.git(&first, &["rev-parse", "HEAD"]);
 
     // The main thread's own work, staged in the main checkout.
     fs::write(main.join("draft.md"), "a draft\n").expect("draft");
     lab.git(&main, &["add", "draft.md"]);
 
-    let finished = lab.finish(&first, &[("ROWS", "1")]);
+    let finished = lab.finish(&first, &[]);
     let (out, err) = text(&finished);
     let calls = lab.calls();
 
     assert!(finished.status.success(), "{out}\n{err}");
-    assert!(!out.contains("rows moved"), "{out}");
-    // [F23.AC1] the base's head is the story's done commit, its row in it: no commit after it.
+    // [F23.AC1] the base's head is the story's last commit: no commit after it, its status
+    // written in the records instead.
     assert_eq!(
         lab.git(&main, &["rev-parse", &format!("origin/{BASE}")]),
-        done
+        last
     );
     assert_eq!(
-        lab.show(&format!("origin/{BASE}:docs/process/journal.md")),
-        "# Journal\n\n- `#run` a row"
-    );
-    assert!(
-        !calls.iter().any(|call| call.contains("move-rows")),
-        "{calls:?}"
+        lab.rows("SELECT status FROM stories WHERE id = 'EN-901'"),
+        ["done"]
     );
     assert_eq!(lab.git(&main, &["status", "--porcelain"]), "A  draft.md");
     // The base's release binaries rebuilt where it is checked out (ADR-0078), the branch deleted
@@ -533,52 +467,58 @@ fn f23_ac1_pushes_no_commit_after_the_merge_the_rows_in_the_done_commit() {
 }
 
 #[test]
-fn f23_ac1_opens_no_pull_request_while_the_story_file_holds_rows() {
-    let lab = Lab::new("left");
+fn opens_no_pull_request_into_develop_while_the_change_cites_an_id_the_records_lack() {
+    let lab = Lab::new("ids");
+    let branch = "docs/rev-906-review";
 
     lab.backlog();
 
-    let first = lab.story(FIRST, "en-901");
-    let file = first.join("docs/backlog/stories/E99-F99-EN-901-first.md");
-    let story = fs::read_to_string(&file).expect("story");
+    let review = lab.develop_story(branch, "rev-906");
 
-    // A done commit made without `move-rows`: the row is still in the story file.
-    fs::write(
-        &file,
-        format!("{story}\n## For the main thread\n\n### Journal\n\n- `#run` a row\n"),
-    )
-    .expect("story");
-    lab.git(
-        &first,
-        &["commit", "-q", "--amend", "--no-edit", "--", "docs"],
-    );
-    // The rows removed from the working tree only: the head, which is pushed, still holds them
-    // (AUD-025).
-    fs::write(&file, &story).expect("story");
+    // A page citing EN-901, in the records, and EN-999, nowhere; a test citing EN-998 is not read.
+    fs::create_dir_all(review.join("docs")).expect("docs");
+    fs::write(review.join("docs/page.md"), "EN-901 then\nEN-999.\n").expect("page");
+    fs::write(review.join("a.test.ts"), "// EN-998\n").expect("test");
+    lab.git(&review, &["add", "."]);
+    lab.git(&review, &["commit", "-q", "-m", "docs: cite"]);
+    lab.git(&review, &["push", "-q"]);
 
-    let head = lab.git(&first, &["rev-parse", "HEAD"]);
-    let finished = lab.finish(&first, &[]);
+    let finished = lab.finish_into(&review, "develop", &[]);
     let (out, err) = text(&finished);
 
-    // [F23.AC1] it stops before pushing or opening anything, and names the command.
+    assert_eq!(finished.status.code(), Some(1), "{out}\n{err}");
+    assert!(err.ends_with(":\ndocs/page.md:2: EN-999\n"), "{err}");
+    assert!(!lab.calls().iter().any(|call| call.contains("pr create")));
+    assert!(review.exists());
+}
+
+#[test]
+fn opens_no_pull_request_into_develop_while_a_data_file_differs_from_the_records() {
+    let lab = Lab::new("data");
+    let branch = "docs/rev-907-review";
+
+    lab.backlog();
+
+    let review = lab.develop_story(branch, "rev-907");
+
+    // A dependency in the records the committed file lacks.
+    open_store(&lab.records())
+        .expect("records")
+        .execute(
+            "INSERT INTO dependencies VALUES ('vite', 'npm', '8.3.4')",
+            [],
+        )
+        .expect("row");
+
+    let finished = lab.finish_into(&review, "develop", &[]);
+    let (out, err) = text(&finished);
+
     assert_eq!(finished.status.code(), Some(1), "{out}\n{err}");
     assert!(
-        err.contains(
-            "docs/backlog/stories/E99-F99-EN-901-first.md still holds lines for the logs (1)"
-        ),
-        "{err}"
-    );
-    assert!(
-        err.contains(&format!("target/release/move-rows {FIRST}")),
+        err.ends_with("run target/release/knowledge export-data and commit them:\ntests/data/dependencies.json\n"),
         "{err}"
     );
     assert!(!lab.calls().iter().any(|call| call.contains("pr create")));
-    assert_eq!(lab.git(&first, &["rev-parse", "HEAD"]), head);
-    assert_ne!(
-        lab.git(&first, &["rev-parse", &format!("origin/{FIRST}")]),
-        head
-    );
-    assert!(first.exists());
 }
 
 #[test]
@@ -600,7 +540,7 @@ fn f18_ac7_goes_straight_to_the_clean_up_of_a_story_already_merged() {
     assert_eq!(
         out,
         format!(
-            "https://github.com/owner/name/pull/1\nmerged; {BASE} up to date, {FIRST} deleted here and on GitHub\n"
+            "https://github.com/owner/name/pull/1\nthe records: 1 row(s) of {FIRST} marked merged, EN-901 done\nmerged; {BASE} up to date, {FIRST} deleted here and on GitHub\n"
         )
     );
     assert!(!calls.iter().any(|call| call.contains("pr create")));
@@ -679,7 +619,7 @@ fn f23_ac2_labels_a_review_into_develop_and_awaits_its_merge() {
     assert_eq!(
         out,
         format!(
-            "https://github.com/owner/name/pull/1\nmerged; develop up to date, {branch} deleted here and on GitHub\n"
+            "https://github.com/owner/name/pull/1\nthe records: 0 row(s) of {branch} marked merged\nmerged; develop up to date, {branch} deleted here and on GitHub\n"
         )
     );
     assert!(
@@ -698,21 +638,57 @@ fn f23_ac2_labels_a_review_into_develop_and_awaits_its_merge() {
 }
 
 #[test]
-fn f23_ac2_leaves_an_epics_spike_to_the_product_owners_merge_without_waiting() {
-    // [F23.AC2] An epic's refinement `SP` into `develop`: opened without the label, which
-    // `feature-automerge.yml` would refuse, and never awaited; run again, it waits no more, and
-    // cleans up once the Product Owner merged it.
+fn f23_ac2_labels_an_epics_spike_into_develop_and_awaits_its_merge() {
+    // [F23.AC2] An epic's refinement `SP` from `develop`, as a `REV` (REV-009): its pull request
+    // labelled `autonomous`, GitHub's merge awaited, then the clean-up.
     let lab = Lab::new("spike");
     let branch = "docs/sp-930-refinement-of-e99";
-    let waits = format!(
-        "{branch} waits for the Product Owner's merge into develop: `feature-automerge.yml` does \
-         not take it (AUD-024); run again once merged, to clean up\n"
-    );
 
     lab.backlog();
 
     let spike = lab.develop_story(branch, "sp-930");
-    let opened = lab.finish_into(&spike, "develop", &[("GH_STATE", "OPEN")]);
+    let finished = lab.finish_into(&spike, "develop", &[]);
+    let (out, err) = text(&finished);
+    let calls = lab.calls();
+
+    assert!(finished.status.success(), "{out}\n{err}");
+    assert_eq!(
+        out,
+        format!(
+            "https://github.com/owner/name/pull/1\nthe records: 0 row(s) of {branch} marked merged\nmerged; develop up to date, {branch} deleted here and on GitHub\n"
+        )
+    );
+    assert!(
+        calls
+            .iter()
+            .any(|call| call.contains(" pr create --base develop --label autonomous ")),
+        "{calls:?}"
+    );
+    assert!(
+        calls
+            .iter()
+            .any(|call| call.contains(" pr view https://github.com/owner/name/pull/1 ")),
+        "{calls:?}"
+    );
+    assert!(!spike.exists());
+}
+
+#[test]
+fn f23_ac2_leaves_to_the_product_owners_merge_a_story_the_auto_merge_refuses() {
+    // [F23.AC2] A story `feature-automerge.yml` refuses into `develop`, an `EN` straight from
+    // it: opened without the label and never awaited; run again, it waits no more, and cleans up
+    // once the Product Owner merged it.
+    let lab = Lab::new("refused");
+    let branch = "chore/en-930-straight-into-develop";
+    let waits = format!(
+        "{branch} waits for the Product Owner's merge into develop: `feature-automerge.yml` does \
+         not take it (EN-118); run again once merged, to clean up\n"
+    );
+
+    lab.backlog();
+
+    let story = lab.develop_story(branch, "en-930");
+    let opened = lab.finish_into(&story, "develop", &[("GH_STATE", "OPEN")]);
     let (out, err) = text(&opened);
     let calls = lab.calls();
 
@@ -732,11 +708,11 @@ fn f23_ac2_leaves_an_epics_spike_to_the_product_owners_merge_without_waiting() {
         !calls.iter().any(|call| call.contains(" pr view https://")),
         "{calls:?}"
     );
-    assert!(spike.exists());
+    assert!(story.exists());
 
     // Run again while it is open: nothing opened, nothing awaited.
     let again = lab.finish_into(
-        &spike,
+        &story,
         "develop",
         &[("GH_STATE", "OPEN"), ("GH_EXISTING", "OPEN")],
     );
@@ -756,9 +732,9 @@ fn f23_ac2_leaves_an_epics_spike_to_the_product_owners_merge_without_waiting() {
     );
 
     // Merged by the Product Owner: the clean-up.
-    lab.git(&spike, &["push", "-q", "origin", "HEAD:develop"]);
+    lab.git(&story, &["push", "-q", "origin", "HEAD:develop"]);
 
-    let merged = lab.finish_into(&spike, "develop", &[("GH_EXISTING", "MERGED")]);
+    let merged = lab.finish_into(&story, "develop", &[("GH_EXISTING", "MERGED")]);
     let (out, err) = text(&merged);
 
     assert!(merged.status.success(), "{out}\n{err}");
@@ -768,7 +744,7 @@ fn f23_ac2_leaves_an_epics_spike_to_the_product_owners_merge_without_waiting() {
         )),
         "{out}"
     );
-    assert!(!spike.exists());
+    assert!(!story.exists());
 }
 
 #[test]
@@ -781,6 +757,6 @@ fn stops_without_its_three_arguments() {
     assert_eq!(output.status.code(), Some(1));
     assert_eq!(
         String::from_utf8_lossy(&output.stderr),
-        "usage: npm run story:finish -- <base> <title> <body file>\n"
+        "usage: target/release/heavy-lock --lock merge target/release/story-finish <base> <title> <body file>\n"
     );
 }

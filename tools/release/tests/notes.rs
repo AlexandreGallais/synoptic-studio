@@ -73,16 +73,24 @@ fn repository(name: &str) -> Repository {
     fs::create_dir_all(&folder).unwrap();
     git(&folder, &["init", "-q", "-b", "main"]);
     write(&folder, "package.json", PACKAGE);
+    // The records, which a `knowledge` script beside a copy of the binary stands for (EN-154).
     write(
         &folder,
-        "docs/backlog/stories/E1-F16-US-041-colors.md",
-        "---\nid: US-041\nepic: E1\nfeature: F16\ntitle: the colors chosen\nstatus: done\n---\n",
+        "bin/knowledge",
+        "#!/bin/sh\nprintf 'id\\ttitle\\tfeature\\nUS-041\\tthe colors chosen\\tF16\\nF16\\tColors\\t\\n'\n",
     );
-    write(
-        &folder,
-        "docs/backlog/features/E1-F16-colors.md",
-        "---\nid: F16\nepic: E1\ntitle: Colors\nstatus: done\n---\n",
-    );
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+
+        fs::set_permissions(
+            folder.join("bin/knowledge"),
+            fs::Permissions::from_mode(0o755),
+        )
+        .unwrap();
+    }
+    fs::copy(env!("CARGO_BIN_EXE_release"), folder.join("bin/release")).unwrap();
+    write(&folder, ".gitignore", "bin/\n");
     git(&folder, &["add", "."]);
     git(&folder, &["commit", "-q", "-m", "chore: start"]);
     git(&folder, &["tag", "v0.2.0"]);
@@ -92,7 +100,7 @@ fn repository(name: &str) -> Repository {
 
 /// Runs the release binary in a folder.
 fn release(folder: &Path, args: &[&str]) -> Output {
-    test_support::command(env!("CARGO_BIN_EXE_release"))
+    test_support::command(folder.join("bin/release").to_str().unwrap())
         .args(args)
         .current_dir(folder)
         .output()
@@ -270,7 +278,7 @@ fn says_how_to_call_it() {
 
         assert_eq!(output.status.code(), Some(2), "{args:?}");
         assert!(
-            stderr(&output).starts_with("usage: release"),
+            stderr(&output).starts_with("usage: target/release/release"),
             "{}",
             stderr(&output)
         );

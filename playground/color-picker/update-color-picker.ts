@@ -13,7 +13,6 @@ import { writePickedColor } from "./write-picked-color";
  *
  * @kind procedure
  * @param document - page document
- * @see docs/backlog/stories/E15-F16-US-035-pick-a-color.md
  */
 export function updateColorPicker(document: Document): void {
   const swatch = readOpenSwatch(document);

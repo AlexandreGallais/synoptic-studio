@@ -9,7 +9,7 @@ import {
   chooseOption,
   chooseShapeKind,
   clickElement,
-  openServedPage,
+  openPage,
   readDisabledState,
   readText,
   readValue,
@@ -212,11 +212,11 @@ function readLeftOut(): readonly (string | null)[] {
  * Opens the page on the Text tool.
  */
 function openTextTool(): void {
-  openServedPage("");
+  openPage("");
   chooseShapeKind("text");
 }
 
-describe("Inter's faces kept only when the browser draws them (US-053)", () => {
+describe("Inter's faces kept only when the browser draws them", () => {
   afterEach(() => {
     Reflect.deleteProperty(globalThis, "queryLocalFonts");
     vi.restoreAllMocks();
@@ -436,7 +436,7 @@ describe("Inter's faces kept only when the browser draws them (US-053)", () => {
   });
 });
 
-describe("The font chosen automatically, its files held (US-060)", () => {
+describe("The font chosen automatically, its files held", () => {
   afterEach(() => {
     Reflect.deleteProperty(globalThis, "queryLocalFonts");
     vi.restoreAllMocks();
@@ -525,7 +525,7 @@ describe("The font chosen automatically, its files held (US-060)", () => {
   });
 });
 
-describe("The font list held while the default font is read again (US-061)", () => {
+describe("The font list held while the default font is read again", () => {
   afterEach(() => {
     Reflect.deleteProperty(globalThis, "queryLocalFonts");
     vi.restoreAllMocks();
@@ -553,7 +553,7 @@ describe("The font list held while the default font is read again (US-061)", () 
     });
 
     // Every family read ahead, Test Sans's file read a second time and not given yet; the page's
-    // redraws run at once in a test (`openServedPage`), so the list read is the one drawn.
+    // redraws run at once in a test (`openPage`), so the list read is the one drawn.
     expect(readDisabledState("text-font")).toBe("true");
     expect(readDisabledState("installed-fonts")).toBe("true");
 
@@ -562,7 +562,7 @@ describe("The font list held while the default font is read again (US-061)", () 
     );
 
     // A choice sent to the list while it is held, as a script or an assistive tool could: kept
-    // out, the default font chosen once read (AUD-020, V11).
+    // out, the default font chosen once read.
     chooseOption("text-font", "Test Serif");
     again.resolve(testFaceBlob("Test Sans"));
     await waitForPageTasks();
@@ -592,7 +592,7 @@ function boldRefusedAtSecondRead(): readonly InstalledFont[] {
   ];
 }
 
-describe("A face refused at the second reading of its family no longer measured (US-061)", () => {
+describe("A face refused at the second reading of its family no longer measured", () => {
   afterEach(() => {
     Reflect.deleteProperty(globalThis, "queryLocalFonts");
     vi.restoreAllMocks();
@@ -634,7 +634,7 @@ describe("A face refused at the second reading of its family no longer measured 
     expect(readWeights()).toEqual(["400"]);
     expect(readValue("text-weight")).toBe("400");
 
-    // The box the drawn text fits: Test Sans 400's measure, not Inter 700's (AUD-020, V11).
+    // The box the drawn text fits: Test Sans 400's measure, not Inter 700's.
     const characters = Array.from(
       OPENING_TEXT.lines.join(""),
       (letter) => letter.codePointAt(0) ?? 0,

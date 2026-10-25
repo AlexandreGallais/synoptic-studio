@@ -1,0 +1,31 @@
+[package]
+name = "knowledge"
+version = "0.1.0"
+edition.workspace = true
+description = "The project's records in one SQLite file: the knowledge, the backlog, free SQL (E49, EN-151 to EN-154)"
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+calendar = { path = "../calendar" }
+knowledge-call = { path = "../knowledge-call" }
+git-repository = { path = "../git-repository" }
+library = { path = "../library" }
+page = { path = "../page" }
+serde_json.workspace = true
+tool-use = { path = "../tool-use" }
+
+# SQLite compiled into the binary, FTS5 included, except for the Windows check of check:rust, whose
+# C toolchain is missing on this machine: there the system's SQLite is linked, as for the library.
+# `hooks` gives the authorizer `knowledge sql` reads a statement's actions with (EN-154).
+[target.'cfg(not(windows))'.dependencies]
+rusqlite = { workspace = true, features = ["bundled", "hooks"] }
+
+[target.'cfg(windows)'.dependencies]
+rusqlite = { workspace = true, features = ["hooks"] }
+
+[dev-dependencies]
+test-support = { path = "../test-support" }
+
+[lints]
+workspace = true

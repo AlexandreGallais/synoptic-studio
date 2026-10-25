@@ -282,7 +282,7 @@ describe("regularPolygonCorners (properties)", () => {
     corners: fc.integer({ max: 12, min: 3 }),
     radius: fc.integer({ max: 2000, min: 0 }),
     width: fc.integer({ max: 1000, min: 1 }),
-  })("gives every corner the same effective radius (AUD-002)", ({ corners, radius, width }) => {
+  })("gives every corner the same effective radius", ({ corners, radius, width }) => {
     const radii = effectiveRadii(
       regularPolygonCorners({
         angle: 0,

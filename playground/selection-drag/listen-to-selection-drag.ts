@@ -7,16 +7,15 @@ import { startSelectionDrag } from "./start-selection-drag";
 import { stopSelectionDrag } from "./stop-selection-drag";
 
 /**
- * Listens to drags on the drawing with the Selector (F37): the press starts one
+ * Listens to drags on the drawing with the Selector: the press starts one
  * (`startSelectionDrag`), each move follows the pointer (`moveSelectionDrag`) and shows its
- * rectangle or the shapes it moves (`showSelectionDrag`, F39), the release selects the shapes its
+ * rectangle or the shapes it moves (`showSelectionDrag`), the release selects the shapes its
  * rectangle takes or lands those it moves (`stopSelectionDrag`), a drag cancelled selects nothing
  * and gives back the shapes it moved (`clearSelectionDrag`).
  *
  * @kind procedure
  * @param document - page document
  * @param update - redraws the page from the values typed
- * @see docs/domain/interaction.md#_2-selector
  */
 export function listenToSelectionDrag(document: Document, update: () => void): void {
   const canvas = selectElement(document, "canvas");

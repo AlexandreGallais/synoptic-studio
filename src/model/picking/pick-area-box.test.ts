@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { pickAreaBox } from "./pick-area-box";
 
-describe("pickAreaBox (AUD-040)", () => {
+describe("pickAreaBox", () => {
   it("is the box of the contour as drawn for a shape with area", () => {
     // A triangle (0, 0), (100, 0), (0, 50): [0, 100] × [0, 50].
     const corners = [

@@ -1,31 +1,30 @@
-//! The end of a story in a run (RET-002, ADR-0045, ADR-0065, EN-051, EN-103): what `story-finish`
-//! decides — where it starts from the story's pull request, when it stops waiting, the clean-up of a
-//! merged story and the same steps to type when it stopped midway — and the Git sequences it runs,
-//! each given its folder: the rebase on the base, whose conflicts in the backlog's status rows only
-//! are left to the base and the rows written again after it, the push with lease of a head that
-//! differs from its remote's. The story's rows for the logs are in its `done` commit (ADR-0091):
-//! a story file still holding some stops it before its pull request, and nothing is committed on
-//! the base after the merge. Who merges, GitHub or the Product Owner, as the auto-merge of its
-//! base, `story-automerge.yml` or `feature-automerge.yml`, takes the branch (EN-118, EN-134).
+//! The end of a story in a run (RET-002, ADR-0072, ADR-0065, EN-051, EN-103, EN-154): what
+//! `story-finish` decides — where it starts from the story's pull request, when it stops waiting,
+//! the clean-up of a merged story and the same steps to type when it stopped midway — and the Git
+//! sequences it runs, each given its folder: the rebase on the base, the push with lease of a head
+//! that differs from its remote's. A story has no `done` commit since its status lives in the
+//! records (EN-154): once GitHub merged its pull request, the branch's rows of the records are
+//! marked merged and the story `done`, and nothing is committed on the base. Before a pull request
+//! into `develop`, every id the change cites is checked against the records (`knowledge
+//! check-ids`), which the CI cannot read. Who merges, GitHub or the Product Owner, as the
+//! auto-merge of its base, `story-automerge.yml` or `feature-automerge.yml`, takes the branch
+//! (EN-118, EN-134).
 
 use std::fs;
 use std::io::{self, Write};
 use std::path::Path;
 use std::process::{Command, Stdio};
 
-use git_repository::stdout_of;
-use shared_files::backlog::{STORIES, file_of};
-use shared_files::rows::take_rows;
-use shared_files::shared::story_of;
+use git_repository::story_of_branch as story_of;
+use knowledge::backlog::{merge_branch, missing_ids, set_status};
+use knowledge::data_files::stale_data_files;
+use knowledge::paths::is_test_path;
+use knowledge::project::open_records;
+use knowledge::store::write_or_refuse;
 use stale_binaries::RELEASE_BUILD;
-
-use crate::backlog_status::{front_field, item_file, write_status};
 
 /// Readings of the pull request's state before giving up: three minutes, one each 10 s.
 pub const POLLS: u32 = 18;
-
-/// The generated stories index: a conflict there is left to the base, then written again.
-const STORIES_INDEX: &str = "docs/backlog/stories/README.md";
 
 /// Where a run starts, from the story's pull request.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -77,20 +76,21 @@ pub fn next_step(state: &str, readings: u32) -> Next {
 pub enum Merger {
     /// The auto-merge of its base, once the pull request is labelled `autonomous`: awaited.
     GitHub,
-    /// The Product Owner: opened without the label, never awaited (AUD-024).
+    /// The Product Owner: opened without the label, never awaited (EN-118).
     ProductOwner,
 }
 
 /// Who merges a story branch into its base, as the auto-merge of that base lets it through: into
-/// a feature branch a `US`, `EN`, `SP`, `CHK`, `AUD` or `VAL`, into `develop` a `REV`; anything else,
-/// an epic's refinement `SP` into `develop` first, is the Product Owner's.
+/// a feature branch a `US`, `EN`, `SP`, `CHK`, `AUD` or `VAL`, into `develop` a `REV` or an epic's
+/// refinement `SP` (REV-009); anything else is the Product Owner's.
 #[must_use]
 pub fn merger(base: &str, branch: &str) -> Merger {
     let kind = story_of(branch)
         .and_then(|id| id.split_once('-').map(|(kind, _)| kind.to_owned()))
         .unwrap_or_default();
     let taken: &[&str] = if base == "develop" {
-        &["REV"]
+        // An epic's final audit merges into `develop` as a review does (E49, 2026-10-25).
+        &["REV", "SP", "AUD"]
     } else if base.starts_with("feature/") {
         &["US", "EN", "SP", "CHK", "AUD", "VAL"]
     } else {
@@ -256,68 +256,99 @@ pub fn clean_up_plan(story: Story, here: &str, checkouts: &[Worktree]) -> CleanU
     }
 }
 
-/// The rows and card lines a story file still holds for the logs, which its `done` commit moves
-/// (`move-rows`, ADR-0091), and the lines `move-rows` leaves under a log's heading, a card at
-/// another level among them (AUD-025): `story-finish` opens no pull request while there are some.
+/// Whether a changed file is one whose citations `check-ids` reads before a pull request into
+/// `develop`: a page of `docs/`, a file of `src/` or `playground/`, a Markdown page at the root;
+/// never a test, whose fixtures cite ids that exist nowhere on purpose.
 #[must_use]
-pub fn rows_left(story: &str) -> usize {
-    let taken = take_rows(story);
-
-    taken
-        .rows
+pub fn is_checked_path(path: &str) -> bool {
+    let is_test = is_test_path(path);
+    let is_markdown = Path::new(path)
+        .extension()
+        .is_some_and(|extension| extension.eq_ignore_ascii_case("md"));
+    let in_folder = ["docs/", "src/", "playground/"]
         .iter()
-        .chain(&taken.left)
-        .map(|(_, lines)| lines.len())
-        .sum()
+        .any(|folder| path.starts_with(folder));
+
+    !is_test && (in_folder || (is_markdown && !path.contains('/')))
 }
 
-/// Why a story cannot be finished yet, from its file's text at the head, or the error reading it:
-/// the rows and lines for the logs it still holds, which its `done` commit, made again, moves;
-/// `None` when it holds none.
+/// Why the pull request into `develop` is not opened: the ids the change cites that the records
+/// lack, one line each, `<path>:<line>: <id>`; `None` when there are none.
 #[must_use]
-pub fn story_refusal(path: &str, branch: &str, story: Result<&str, &str>) -> Option<String> {
-    let text = match story {
-        Ok(text) => text,
-        Err(error) => {
-            return Some(format!(
-                "{path} cannot be read at HEAD ({error}): its rows for the logs are unknown, \
-                 so the story is not finished (ADR-0091)"
-            ));
-        }
-    };
-    let count = rows_left(text);
-
-    (count > 0).then(|| {
+pub fn ids_refusal(missing: &[String]) -> Option<String> {
+    (!missing.is_empty()).then(|| {
         format!(
-            "{path} still holds lines for the logs ({count}) at HEAD: make the done commit again \
-             (ADR-0091): `git reset --soft HEAD~1`, `target/release/move-rows {branch}`, the lines \
-             it names as left written as rows or moved out of their heading by hand, then \
-             `target/release/git-sequences commit -F <message file> --push-with-lease <the files \
-             it printed> docs/backlog`, and run again"
+            "ids cited that the records lack, which no check of the pull request can read: write their rows, or cite another id (`target/release/knowledge check-ids <paths>`):\n{}",
+            missing.join("\n")
         )
     })
 }
 
-/// Why the story cannot be finished yet: its file, read at the head that is pushed (`git show
-/// HEAD:<path>`), still holds rows or lines for the logs, or cannot be read; `None` when it holds
-/// none, or the branch names no story file at the head (AUD-025).
-#[must_use]
-pub fn rows_refusal(branch: &str, cwd: &Path) -> Option<String> {
-    let id = story_of(branch)?;
-    let folder = format!("{STORIES}/");
-    let names: Vec<String> =
-        match run_words("git", &["ls-tree", "--name-only", "HEAD", &folder], cwd) {
-            Ok(listed) => listed
-                .lines()
-                .filter_map(|path| path.strip_prefix(&folder))
-                .map(str::to_owned)
-                .collect(),
-            Err(error) => return story_refusal(STORIES, branch, Err(&error)),
-        };
-    let path = format!("{folder}{}", file_of(&names, &id)?);
-    let story = run_words("git", &["show", &format!("HEAD:{path}")], cwd);
+/// The ids cited by the files a branch changed from its base that the records lack, each
+/// `<path>:<line>: <id>`, read in the checkout.
+///
+/// # Errors
+/// When Git fails or the records cannot be read.
+pub fn missing_cited_ids(base: &str, cwd: &Path) -> Result<Vec<String>, String> {
+    let changed = run_words(
+        "git",
+        &[
+            "diff",
+            "--name-only",
+            "--diff-filter=d",
+            &format!("origin/{base}...HEAD"),
+        ],
+        cwd,
+    )?;
+    let database = open_records(cwd)?;
+    let mut missing = Vec::new();
 
-    story_refusal(&path, branch, story.as_deref().map_err(String::as_str))
+    for path in changed.lines().filter(|path| is_checked_path(path)) {
+        let Ok(text) = fs::read_to_string(cwd.join(path)) else {
+            continue;
+        };
+
+        for (line, id) in missing_ids(&database, &text).map_err(|error| error.to_string())? {
+            missing.push(format!("{path}:{line}: {id}"));
+        }
+    }
+    Ok(missing)
+}
+
+/// The data files the CI reads that differ from the records (`knowledge export-data --check`),
+/// read in the checkout.
+///
+/// # Errors
+/// When the records cannot be read or lack a table of a data file.
+pub fn stale_data(cwd: &Path) -> Result<Vec<String>, String> {
+    stale_data_files(&open_records(cwd)?, cwd)
+}
+
+/// Once GitHub merged a story's branch: its rows of the records marked merged and its story set
+/// `done`, in one write; what to print.
+///
+/// # Errors
+/// When the records cannot be read or written.
+pub fn record_the_merge(branch: &str, cwd: &Path) -> Result<String, String> {
+    let database = open_records(cwd)?;
+    let story = story_of(branch);
+    let (marked, done) = write_or_refuse(&database, |transaction| {
+        let marked = merge_branch(transaction, branch).map_err(|error| error.to_string())?;
+        let done = match &story {
+            Some(id) => set_status(transaction, id, "done")?,
+            None => false,
+        };
+
+        Ok((marked, done))
+    })?;
+    let story = match (&story, done) {
+        (Some(id), true) => format!(", {id} done"),
+        _ => String::new(),
+    };
+
+    Ok(format!(
+        "the records: {marked} row(s) of {branch} marked merged{story}"
+    ))
 }
 
 /// A step written as a command to type: `cd "<folder>" && <command> <arguments>`.
@@ -340,60 +371,6 @@ pub fn manual_steps(plan: &CleanUp) -> String {
         .map(typed)
         .collect::<Vec<_>>()
         .join("\n")
-}
-
-/// Whether a conflicted file is one of the backlog's status rows the done commit writes: an index
-/// or a feature's or an epic's file, never a story file nor anything outside `docs/backlog/`.
-#[must_use]
-pub fn is_status_file(path: &str) -> bool {
-    path == STORIES_INDEX
-        || path.strip_prefix("docs/backlog/").is_some_and(|rest| {
-            rest.strip_prefix("features/")
-                .or_else(|| rest.strip_prefix("epics/"))
-                .is_some_and(|name| {
-                    !name.contains('/')
-                        && Path::new(name)
-                            .extension()
-                            .is_some_and(|extension| extension.eq_ignore_ascii_case("md"))
-                })
-        })
-}
-
-/// A file's conflicts left to the base's side, written as Git leaves them (`<<<<<<<`, an optional
-/// `|||||||` base, `=======`, `>>>>>>>`): the text with the base's lines in each, or `None` when a
-/// conflict holds a line outside a table, or a conflict is not closed.
-#[must_use]
-pub fn resolved_to_base(text: &str) -> Option<String> {
-    let mut kept = Vec::new();
-    let mut lines = text.split('\n');
-
-    while let Some(line) = lines.next() {
-        if !line.starts_with("<<<<<<< ") && line != "<<<<<<<" {
-            kept.push(line);
-            continue;
-        }
-
-        // Ours, in a rebase, is the base the story is replayed on.
-        let mut section = 0;
-
-        loop {
-            let line = lines.next()?;
-
-            if line.starts_with("|||||||") {
-                section = 1;
-            } else if line == "=======" {
-                section = 2;
-            } else if line.starts_with(">>>>>>>") {
-                break;
-            } else if !line.starts_with('|') {
-                return None;
-            } else if section == 0 {
-                kept.push(line);
-            }
-        }
-    }
-
-    Some(kept.join("\n"))
 }
 
 /// The error of a command that failed, as Node.js's `execFileSync` wrote it: `Error: Command failed:
@@ -475,23 +452,9 @@ fn git_succeeds(words: &[&str], cwd: &Path) -> bool {
         .is_ok_and(|status| status.success())
 }
 
-/// How the story's branch met its base.
-#[derive(Clone, Debug, PartialEq, Eq)]
-pub enum Rebase {
-    /// The branch already held the base.
-    UpToDate,
-    /// The branch was rebased; the status files whose conflicts were left to the base.
-    Rebased(Vec<String>),
-}
-
-/// The text of a file at one stage of a conflict (`:2:` ours), `None` when that stage is missing.
-fn stage(path: &str, number: u8, cwd: &Path) -> Option<String> {
-    run_quiet(&["show", &format!(":{number}:{path}")], cwd)
-}
-
 /// A Git command's output, its standard error kept back; `None` when it fails.
 fn run_quiet(words: &[&str], cwd: &Path) -> Option<String> {
-    stdout_of(
+    git_repository::stdout_of(
         Command::new("git")
             .args(words)
             .current_dir(cwd)
@@ -500,42 +463,21 @@ fn run_quiet(words: &[&str], cwd: &Path) -> Option<String> {
     .ok()
 }
 
-/// Leaves the conflicts of the rebase step that stopped to the base, when each conflicted file is
-/// a status file whose conflicts are table rows only: the stories index whole (it is written
-/// again), the rows of a feature or an epic; the files resolved, or `None` to give up.
-fn resolve_status_conflicts(cwd: &Path) -> Option<Vec<String>> {
-    let conflicted: Vec<String> = run_quiet(&["diff", "--name-only", "--diff-filter=U"], cwd)?
-        .lines()
-        .map(str::to_owned)
-        .collect();
-
-    if conflicted.is_empty() || !conflicted.iter().all(|path| is_status_file(path)) {
-        return None;
-    }
-
-    for path in &conflicted {
-        let text = if path == STORIES_INDEX {
-            stage(path, 2, cwd)?
-        } else {
-            resolved_to_base(&fs::read_to_string(cwd.join(path)).ok()?)?
-        };
-
-        fs::write(cwd.join(path), text).ok()?;
-        if !git_succeeds(&["add", "--", path], cwd) {
-            return None;
-        }
-    }
-
-    Some(conflicted)
+/// How the story's branch met its base.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum Rebase {
+    /// The branch already held the base.
+    UpToDate,
+    /// The branch was rebased.
+    Rebased,
 }
 
-/// Brings the story's branch onto its base as the remote holds it now, after another story merged.
-/// A conflict in the status rows only — the next story's done commit beside the first's — is left
-/// to the base, whose rows the story's are written again over ([`write_status_again`]); any other
-/// conflict aborts the rebase, the branch left as it was.
+/// Brings the story's branch onto its base as the remote holds it now, after another story
+/// merged; a conflict aborts the rebase, the branch left as it was. No status row conflicts any
+/// more: the statuses live in the records (EN-154).
 ///
 /// # Errors
-/// On a conflict it does not resolve, or when the fetch fails.
+/// On a conflict, or when the fetch fails.
 pub fn rebase_on_base(base: &str, cwd: &Path) -> Result<Rebase, String> {
     let remote = format!("origin/{base}");
 
@@ -543,98 +485,14 @@ pub fn rebase_on_base(base: &str, cwd: &Path) -> Result<Rebase, String> {
     if git_succeeds(&["merge-base", "--is-ancestor", &remote, "HEAD"], cwd) {
         return Ok(Rebase::UpToDate);
     }
-
-    let conflict = || format!("conflict rebasing on {remote}: rebase by hand, then run again");
-    let mut resolved: Vec<String> = Vec::new();
-    let mut step = git_succeeds(
-        &[
-            "-c",
-            "merge.conflictStyle=merge",
-            "rebase",
-            "--quiet",
-            &remote,
-        ],
-        cwd,
-    );
-
-    while !step {
-        let Some(files) = resolve_status_conflicts(cwd) else {
-            let _ = git_succeeds(&["rebase", "--abort"], cwd);
-            return Err(conflict());
-        };
-
-        for file in files {
-            if !resolved.contains(&file) {
-                resolved.push(file);
-            }
-        }
-        // The message kept as it is: no editor opens, whatever `GIT_EDITOR` says.
-        step = Command::new("git")
-            .args(["-c", "merge.conflictStyle=merge", "rebase", "--continue"])
-            .env("GIT_EDITOR", "true")
-            .current_dir(cwd)
-            .stdin(Stdio::null())
-            .stdout(Stdio::null())
-            .stderr(Stdio::null())
-            .status()
-            .is_ok_and(|status| status.success());
+    if git_succeeds(&["rebase", "--quiet", &remote], cwd) {
+        return Ok(Rebase::Rebased);
     }
 
-    Ok(Rebase::Rebased(resolved))
-}
-
-/// Whether a commit message closes a story (`Closes: <ID>`): the story's `done` commit.
-#[must_use]
-pub fn closes_story(message: &str, story: &str) -> bool {
-    message
-        .lines()
-        .filter_map(|line| line.strip_prefix("Closes:"))
-        .flat_map(|ids| ids.split(','))
-        .any(|id| id.trim() == story)
-}
-
-/// After a rebase, the story's status written again from its front matter — its file, the stories
-/// index generated again, its feature's row — and folded into its `done` commit, so that no status
-/// row is carried through the rebase from the base the story started on. Nothing when the head is
-/// not the story's `done` commit or the rows are already right; else the files written.
-///
-/// # Errors
-/// When a file cannot be written or Git fails.
-pub fn write_status_again(branch: &str, cwd: &Path) -> Result<Vec<String>, String> {
-    let Some(id) = story_of(branch) else {
-        return Ok(Vec::new());
-    };
-    let message = run_words("git", &["log", "-1", "--format=%B"], cwd)?;
-    let file = item_file(cwd, &id);
-
-    if !closes_story(&message, &id) || file.is_empty() {
-        return Ok(Vec::new());
-    }
-
-    let story = fs::read_to_string(cwd.join(STORIES).join(&file))
-        .map_err(|error| format!("{file}: {error}"))?;
-    let status = front_field(&story, "status");
-
-    if !write_status(cwd, &file, &id, &status).map_err(|error| error.to_string())? {
-        return Err("backlog:index failed".to_owned());
-    }
-
-    let changed: Vec<String> = run_words(
-        "git",
-        &["diff", "--name-only", "HEAD", "--", "docs/backlog"],
-        cwd,
-    )?
-    .lines()
-    .map(str::to_owned)
-    .collect();
-
-    if !changed.is_empty() {
-        let mut words = vec!["commit", "--quiet", "--amend", "--no-edit", "--"];
-
-        words.extend(changed.iter().map(String::as_str));
-        run_words("git", &words, cwd)?;
-    }
-    Ok(changed)
+    let _ = git_succeeds(&["rebase", "--abort"], cwd);
+    Err(format!(
+        "conflict rebasing on {remote}: rebase by hand, then run again"
+    ))
 }
 
 /// Whether the story's head differs from its branch on GitHub as last fetched: a rebase, or a done
@@ -726,17 +584,22 @@ mod tests {
 
     #[test]
     fn f23_ac2_leaves_to_the_product_owner_what_the_auto_merge_does_not_take() {
-        // [F23.AC2] A `REV` into `develop` and a story into its feature are merged by GitHub;
-        // an epic's `SP`, or any other story, into `develop` by the Product Owner (AUD-024).
+        // [F23.AC2] A `REV` or an epic's `SP` into `develop` and a story into its feature are
+        // merged by GitHub (REV-009); any other story into `develop` by the Product Owner.
         assert_eq!(merger("develop", "docs/rev-006-review"), Merger::GitHub);
         assert_eq!(
+            merger("develop", "chore/aud-051-the-final-clean-up"),
+            Merger::GitHub
+        );
+        assert_eq!(
             merger("develop", "docs/sp-030-refinement-of-e18"),
-            Merger::ProductOwner
+            Merger::GitHub
         );
         assert_eq!(
             merger("develop", "chore/en-114-a-tool"),
             Merger::ProductOwner
         );
+        assert_eq!(merger("develop", "feat/us-061-x"), Merger::ProductOwner);
         for branch in [
             "feat/us-061-x",
             "chore/en-118-x",
@@ -785,7 +648,8 @@ mod tests {
                 format!("cd \"{here}\" && git fetch --quiet --prune origin"),
                 format!("cd \"/repo\" && git merge --ff-only --quiet origin/{BASE}"),
                 "cd \"/repo\" && cargo build --release --workspace --locked --quiet".to_owned(),
-                // [F23.AC1] no rows moved nor pushed after the merge: they are in the done commit.
+                // [F23.AC1] nothing committed nor pushed after the merge: the status is in the
+                // records (EN-154).
                 format!("cd \"/repo\" && git worktree remove {here}"),
                 format!("cd \"/repo\" && git branch -D {STORY}"),
                 format!("cd \"/repo\" && gh {}", remote_deletion().join(" ")),
@@ -794,50 +658,31 @@ mod tests {
     }
 
     #[test]
-    fn f23_ac1_counts_the_rows_and_card_lines_a_story_file_still_holds() {
-        // Two journal bullets and one card of two lines: 4; a note, a placeholder and a line of
-        // another shape are not rows (`move-rows` leaves them).
-        let story = "# S\n\n## For the main thread\n\nA note.\n\n### Journal\n\n- `#run` a\n- `#open` b\n\n### Feedback\n\n- None.\n\n### Improvements\n\n- Not a row.\n\n### Incidents\n\n#### 2026-10-19 — a card\n\n- Used: c\n";
-
-        assert_eq!(rows_left(story), 5);
-        assert_eq!(rows_left("# S\n\n## For the main thread\n\nA note.\n"), 0);
-        assert_eq!(rows_left("# S\n"), 0);
-        // A card written at the wrong level moves nothing but its two lines are left: 2
-        // (AUD-025).
-        assert_eq!(
-            rows_left(
-                "# S\n\n## For the main thread\n\n### Incidents\n\n### 2026-10-19 — a card\n\n- Used: a\n"
-            ),
-            2
-        );
-    }
-
-    #[test]
-    fn f23_ac1_refuses_a_story_whose_file_holds_lines_or_cannot_be_read() {
-        let path = "docs/backlog/stories/E99-F99-EN-901-first.md";
-        let branch = "chore/en-901-first";
-        let rows = "# S\n\n## For the main thread\n\n### Journal\n\n- `#run` a\n";
-        let refusal = story_refusal(path, branch, Ok(rows)).unwrap_or_default();
-
-        // The done commit made again (ADR-0091): undone, the rows moved, committed and pushed by
-        // `git-sequences`, never amended (AUD-025).
-        for part in [
-            "docs/backlog/stories/E99-F99-EN-901-first.md still holds lines for the logs (1)",
-            "git reset --soft HEAD~1",
-            "target/release/move-rows chore/en-901-first",
-            "target/release/git-sequences commit -F",
-            "--push-with-lease",
+    fn checks_the_ids_of_the_docs_and_the_code_never_of_a_test() {
+        for path in [
+            "docs/tooling/knowledge.md",
+            "src/geometry/a.ts",
+            "playground/page/b.ts",
+            "README.md",
         ] {
-            assert!(refusal.contains(part), "{part}: {refusal}");
+            assert!(is_checked_path(path), "{path}");
         }
-        assert!(!refusal.contains("--amend"), "{refusal}");
-        assert_eq!(story_refusal(path, branch, Ok("# S\n")), None);
-
-        // A story file that cannot be read at the head is a refusal, never a pass.
-        let unread = story_refusal(path, branch, Err("fatal: bad object")).unwrap_or_default();
-
-        assert!(unread.contains(path), "{unread}");
-        assert!(unread.contains("fatal: bad object"), "{unread}");
+        for path in [
+            "tests/backlog.test.ts",
+            "playground/page/b.test.ts",
+            "tools/knowledge/tests/backlog.rs",
+            "tools/lint/tests/fixtures/x.md",
+            "tools/knowledge/src/backlog.rs",
+            ".github/workflows/ci.yml",
+            "docs",
+        ] {
+            assert!(!is_checked_path(path), "{path}");
+        }
+        assert_eq!(ids_refusal(&[]), None);
+        assert!(
+            ids_refusal(&["docs/a.md:3: EN-999".to_owned()])
+                .is_some_and(|refusal| refusal.ends_with(":\ndocs/a.md:3: EN-999"))
+        );
     }
 
     #[test]
@@ -956,60 +801,6 @@ mod tests {
         );
         // No checkout listed: the one it runs in is the main one.
         assert_eq!(clean_up_plan(STORY_OF_BASE, "/repo", &[]).remove.len(), 2);
-    }
-
-    #[test]
-    fn leaves_to_the_base_only_the_status_files_of_the_backlog() {
-        assert!(is_status_file("docs/backlog/stories/README.md"));
-        assert!(is_status_file(
-            "docs/backlog/features/E17-F21-agent-tools-in-rust.md"
-        ));
-        assert!(is_status_file("docs/backlog/features/README.md"));
-        assert!(is_status_file("docs/backlog/epics/E17-fast-tooling.md"));
-        // A story's own file, another page, a file in a sub-folder: never.
-        assert!(!is_status_file("docs/backlog/stories/E17-F21-EN-103-x.md"));
-        assert!(!is_status_file("docs/process/journal.md"));
-        assert!(!is_status_file("docs/backlog/features/old/x.md"));
-        assert!(!is_status_file("docs/backlog/features/x.txt"));
-    }
-
-    #[test]
-    fn f21_ac2_leaves_conflicting_table_rows_to_the_base_and_keeps_the_rest() {
-        let text = "# F\n\n| ID | Status |\n<<<<<<< HEAD\n| [A](a) | done |\n| [B](b) | ready |\n=======\n| [A](a) | ready |\n| [B](b) | done |\n>>>>>>> 1234 (docs(backlog): set B done)\n| [C](c) | draft |\n";
-
-        assert_eq!(
-            resolved_to_base(text).as_deref(),
-            Some(
-                "# F\n\n| ID | Status |\n| [A](a) | done |\n| [B](b) | ready |\n| [C](c) | draft |\n"
-            )
-        );
-        // The base of a diff3 conflict is left out too.
-        assert_eq!(
-            resolved_to_base("<<<<<<< a\n| x |\n||||||| b\n| y |\n=======\n| z |\n>>>>>>> c")
-                .as_deref(),
-            Some("| x |")
-        );
-        // A line outside a table, or a conflict left open: given up.
-        assert_eq!(
-            resolved_to_base("<<<<<<< a\nprose\n=======\n| z |\n>>>>>>> c"),
-            None
-        );
-        assert_eq!(resolved_to_base("<<<<<<< a\n| x |\n"), None);
-        assert_eq!(
-            resolved_to_base("no conflict").as_deref(),
-            Some("no conflict")
-        );
-    }
-
-    #[test]
-    fn finds_the_done_commit_of_a_story() {
-        assert!(closes_story(
-            "docs(backlog): set EN-1 done\n\nCloses: EN-1\n",
-            "EN-1"
-        ));
-        assert!(closes_story("x\n\nCloses: EN-2, EN-1", "EN-1"));
-        assert!(!closes_story("x\n\nRefs: EN-1", "EN-1"));
-        assert!(!closes_story("x\n\nCloses: EN-10", "EN-1"));
     }
 
     #[test]

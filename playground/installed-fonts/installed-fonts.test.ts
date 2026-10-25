@@ -21,7 +21,7 @@ import {
   chooseOption,
   chooseShapeKind,
   clickElement,
-  openServedPage,
+  openPage,
   readDisabledState,
   readText,
   readValue,
@@ -254,9 +254,9 @@ function refuseCollectionJoins(): void {
   });
 }
 
-describe("Installed fonts (US-036)", () => {
+describe("Installed fonts", () => {
   beforeEach(() => {
-    openServedPage("");
+    openPage("");
     chooseShapeKind("text");
     chooseOption("text-weight", "400");
     typeAndEnter("text-size", "100");
@@ -298,7 +298,7 @@ describe("Installed fonts (US-036)", () => {
 
     expect(readOptions("text-font")).toEqual(["Inter", "Test Sans", "Test Serif"]);
     expect(readValue("text-font")).toBe("Inter");
-    // Each face read once ahead (US-053); Test Sans Bold's empty file refused, Test Sans kept.
+    // Each face read once ahead; Test Sans Bold's empty file refused, Test Sans kept.
     expect(bold).toHaveBeenCalledOnce();
 
     expect(readProgress()).toBe(
@@ -320,7 +320,7 @@ describe("Installed fonts (US-036)", () => {
     await waitForPageTasks();
     chooseOption("text-font", "Test Sans");
 
-    // While its files are read again: measured at once with the metrics read ahead (US-053).
+    // While its files are read again: measured at once with the metrics read ahead.
     expect([readValue("text-font"), readText("#font-message")]).toEqual([
       "Test Sans",
       "Reading Test Sans…",
@@ -358,7 +358,7 @@ describe("Installed fonts (US-036)", () => {
     expect(readDisabledState("text-font")).toBe("true");
 
     // The file fails once the page reads it: rejected before, the promise has no handler yet and
-    // Node.js reports an unhandled rejection, which a loaded machine made happen (EN-093).
+    // Node.js reports an unhandled rejection, which a loaded machine made happen.
     await vi.waitFor(() => {
       expect(broken).toHaveBeenCalledOnce();
     });
@@ -415,7 +415,7 @@ describe("Installed fonts (US-036)", () => {
     chooseOption("text-font", "Test Sans");
     await waitForPageTasks();
 
-    // Both refused at the first reading, never read again (US-062).
+    // Both refused at the first reading, never read again.
     expect(broken).toHaveBeenCalledOnce();
     expect(readText("#font-message")).toBe("Test Sans: 1 faces read.");
     expect(readValue("text-font")).toBe("Test Sans");
@@ -456,7 +456,7 @@ describe("Installed fonts (US-036)", () => {
       expect(readProgress()).toBe("Reading the installed fonts: 1 of 2 families…");
     });
 
-    // Test Sans read while Test Serif's file is awaited: Test Serif not offered yet (US-059).
+    // Test Sans read while Test Serif's file is awaited: Test Serif not offered yet.
     expect(readOptions("text-font")).toEqual(["Inter", "Test Sans"]);
     release();
     await waitForPageTasks();
@@ -483,7 +483,7 @@ describe("Installed fonts (US-036)", () => {
       /^The installed fonts could not be read: Error: Playground page without #installed-fonts-progress/u,
     );
 
-    // The reading stopped, the font list can be used again (US-059).
+    // The reading stopped, the font list can be used again.
     expect(readDisabledState("text-font")).toBe("false");
   });
 
@@ -630,7 +630,7 @@ describe("Installed fonts (US-036)", () => {
     expect(readText("#font-message")).toBe("Test Sans: 2 faces read.");
     expect(readValue("text-font")).toBe("Test Sans");
     expect(readOptions("text-weight")).toEqual(["400", "700"]);
-    // Other Serif read ahead too, its metrics kept (US-053).
+    // Other Serif read ahead too, its metrics kept.
     expect(readOptions("text-font")).toEqual(["Inter", "Test Sans", "Other Serif"]);
   });
 
@@ -651,7 +651,7 @@ describe("Installed fonts (US-036)", () => {
     chooseOption("text-font", "Test Sans");
     await waitForPageTasks();
 
-    // Refused at the first reading, counted there, never read again (US-062).
+    // Refused at the first reading, counted there, never read again.
     expect(readProgress()).toBe(
       "Installed fonts read: 1 families. 1 faces of the families read refused: 1 unreadable (TestSans-Bold).",
     );
@@ -660,7 +660,7 @@ describe("Installed fonts (US-036)", () => {
   });
 
   it("[F17.AC4] refuses a face Chrome cannot give (TypeError) in one line, naming it, the others kept", async () => {
-    // Given at the first reading, refused when read again (US-062).
+    // Given at the first reading, refused when read again.
     fakeLocalFonts([
       installedFont("Test Sans", testFaceFile(TEST_SANS)),
       refusedAtSecondRead(
@@ -703,7 +703,7 @@ describe("Installed fonts (US-036)", () => {
     );
 
     expect(readValue("text-font")).toBe("Test Sans");
-    // 700's metrics, read ahead before the joins were refused, are dropped with it (US-061).
+    // 700's metrics, read ahead before the joins were refused, are dropped with it.
     expect(readOptions("text-weight")).toEqual(["400"]);
   });
 
@@ -802,7 +802,7 @@ describe("Installed fonts (US-036)", () => {
 
 /**
  * An installed face whose file the browser gives at the first reading, then refuses, as a font
- * removed between the two readings (US-061, US-062).
+ * removed between the two readings.
  *
  * @param font - the face, its file given once
  * @param error - the error `blob()` rejects with afterwards
@@ -817,9 +817,9 @@ function refusedAtSecondRead(font: InstalledFont, error: Error): InstalledFont {
   };
 }
 
-describe("Installed fonts read whole before they are listed (US-062)", () => {
+describe("Installed fonts read whole before they are listed", () => {
   beforeEach(() => {
-    openServedPage("");
+    openPage("");
     chooseShapeKind("text");
     chooseOption("text-weight", "400");
   });

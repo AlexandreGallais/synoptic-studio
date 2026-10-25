@@ -6,7 +6,7 @@ import {
   chooseOption,
   chooseShapeKind,
   clickElement,
-  openServedPage,
+  openPage,
   readText,
   readValue,
   selectPageElement,
@@ -52,9 +52,9 @@ function readBackground(): readonly (string | null | undefined)[] {
   return ["d", "fill", "fill-opacity"].map((name) => path?.getAttribute(name));
 }
 
-describe("Text tool: a background behind the text (US-034)", () => {
+describe("Text tool: a background behind the text", () => {
   beforeEach(() => {
-    openServedPage("");
+    openPage("");
     chooseShapeKind("text");
     typeAndEnter("text-size", "16");
     // happy-dom loses the option marked `selected` once the page is moved into its document: the
@@ -135,7 +135,7 @@ describe("Text tool: a background behind the text (US-034)", () => {
     expect(readBackground()[0]?.match(/M/gu)).toHaveLength(2);
   });
 
-  it("[F44.AC4] takes text-background-opacity = '101' at 100, the text drawn (AUD-046)", () => {
+  it("[F44.AC4] takes text-background-opacity = '101' at 100, the text drawn", () => {
     clickElement("text-background");
     typeInField("text-background-opacity", "101");
 

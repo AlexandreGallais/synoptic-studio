@@ -15,7 +15,6 @@ import type { ColorModel } from "../../model";
  * @param model - the model to read it in
  * @param keptHue - the hue the picker holds, an integer in degrees, 0 when it opens
  * @returns its hue, saturation and lightness or brightness as exact fractions
- * @see DERIV-color-spaces
  */
 export function hexToExactColor(color: string, model: ColorModel, keptHue: number): ExactColor {
   const bytes = hexToBytes(color);

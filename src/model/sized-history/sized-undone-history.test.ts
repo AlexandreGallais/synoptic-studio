@@ -25,7 +25,7 @@ const TWICE = measuredHistory({
   present: historyState([SHAPE_A_TWICE, SHAPE_B], [0]),
 });
 
-describe("sizedUndoneHistory (EN-147)", () => {
+describe("sizedUndoneHistory", () => {
   it("[F41.AC2] keeps A past and A″ to come once undone: 2 504 bytes", () => {
     // A′ and B removed from the past: A′ held by none, not in the present, − 1 228 − 24: 1 252;
     // A″ and B added to come, A″ in the present, + 24; A″ left by the present, held by 1,

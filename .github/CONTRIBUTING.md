@@ -1,6 +1,6 @@
 # Contributing
 
-Thank you for your interest. This project is built in an unusual way: a coding agent (Claude Code) designs and implements every change, and the Product Owner reviews, tests and merges. How it works is documented on the [site](https://alexandregallais.github.io/synoptic-studio/): [playbook](https://alexandregallais.github.io/synoptic-studio/playbook/), [backlog](https://alexandregallais.github.io/synoptic-studio/backlog/), [conventions](https://alexandregallais.github.io/synoptic-studio/conventions/).
+Thank you for your interest. This project is built in an unusual way: a coding agent (Claude Code) designs and implements every change, and the Product Owner sets the priorities, tries each change and validates each review. How it is made is documented on the [site](https://alexandregallais.github.io/synoptic-studio/how-it-is-made).
 
 ## Ways to help
 

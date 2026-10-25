@@ -1,4 +1,4 @@
-//! Events of the agent's work read from Claude Code's transcripts (`docs/tooling/metrics.md`):
+//! Events of the agent's work read from Claude Code's transcripts (`the records' conventions, area metrics`):
 //! each model request with its tokens, each tool call with its start, end and outcome, and when
 //! the current turn started. Every line of a transcript carries its time, session and Git branch.
 //!

@@ -9,7 +9,7 @@ import {
   clickAt,
   clickElement,
   dispatchDrawingPointer,
-  openServedPage,
+  openPage,
   readShapeModel,
   runResizeObservers,
   selectPageElement,
@@ -175,10 +175,10 @@ function readStyle(name: string, property: string): string {
   );
 }
 
-describe("the helps as one dashed line of white and black (US-086)", () => {
+describe("the helps as one dashed line of white and black", () => {
   beforeEach(() => {
-    // The epic's step 1, a rectangle 120 × 80 at (0, 0), radius 10, whatever feature is validated.
-    openServedPage("?guide=epic");
+    // The page as it opens, a rectangle 120 × 80 at (0, 0), radius 10.
+    openPage("");
     setElementBox("#canvas", { height: 600, left: 100, top: 50, width: 800 });
   });
 
@@ -319,9 +319,9 @@ describe("the helps as one dashed line of white and black (US-086)", () => {
   });
 });
 
-describe("R outlined by its contour's path (US-086)", () => {
+describe("R outlined by its contour's path", () => {
   beforeEach(() => {
-    openServedPage("");
+    openPage("");
     setElementBox("#canvas", { height: 800, left: 100, top: 50, width: 1200 });
     // R, 99 999 × 100 000 of radius 100 000, its radius 0 first so that no large rounded shape is
     // drawn on the way.
@@ -335,8 +335,8 @@ describe("R outlined by its contour's path (US-086)", () => {
   });
 
   it("[F44.AC3] outlines R selected at 100 % by the two strokes of its contour, no band", () => {
-    // Its contour 18 647 units from the area shown at the opening view: its band was empty there
-    // (EN-149), its path is whole.
+    // Its contour 18 647 units from the area shown at the opening view: its band was empty there,
+    // its path is whole.
     const d = contourOf(readShapeModel());
 
     expect(readHelps("selection")).toEqual(dashedLine("selection", d, { dash: "4", width: "2" }));
@@ -382,7 +382,7 @@ describe("R outlined by its contour's path (US-086)", () => {
   it(
     "[F44.AC3] draws the layer above 60 times within a second, R selected",
     // R's band took 156 to 200 ms a redraw (note 0031, §5). alone: 73 ms, the median of 5 runs of
-    // its file (US-086); 960 ms, 60 frames of 16 ms, is 13.2 times it.
+    // its file; 960 ms, 60 frames of 16 ms, is 13.2 times it.
     { tags: ["timing"], timeout: 960 },
     () => {
       // 100 % and 200 % in turn, so that each redraw draws its helps at a new scale.

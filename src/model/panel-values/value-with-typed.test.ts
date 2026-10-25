@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { valueWithTyped } from "./value-with-typed";
 
-describe("valueWithTyped (F38, AUD-046)", () => {
+describe("valueWithTyped (F38)", () => {
   it.each([
     // 100 + 50; 30 − 5; 460 set; 141 + 0.5 kept with its fraction; 7 set whatever the own.
     { expected: 150, own: 100, typed: { isRelative: true, value: 50 } },

@@ -167,7 +167,7 @@ function movedHistory(
   }, start);
 }
 
-describe("boundedHistory, A moved again and again (US-076)", () => {
+describe("boundedHistory, A moved again and again", () => {
   it("[F40.AC4] keeps 10 moves of A alone in 12 440 bytes, 1 244 bytes each", () => {
     // A as it was, 614 characters, 1 228 bytes, its reference 8 and its index 8: 1 244 a move;
     // 10 × 1 244 = 12 440, within the size.
@@ -198,7 +198,7 @@ describe("boundedHistory, A moved again and again (US-076)", () => {
   });
 });
 
-describe("boundedHistory, a size just set smaller (US-076)", () => {
+describe("boundedHistory, a size just set smaller", () => {
   it("[F40.AC4] measures 10 moves of A 7 times to drop 7 for 3 732 bytes", () => {
     // 12 440 > 3 732: 1; doubling, 1, 2 and 4 dropped leave 9, 8 and 6 moves, over, 8 leaves 2,
     // within: 4 more; halving from 4 + 1 = 5 to 8, 6 leaves 4, over, then 7 leaves 3, within:

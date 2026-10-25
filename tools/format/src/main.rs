@@ -1,5 +1,5 @@
 //! `format --write|--check <targets…>` (EN-073): the repository's one formatter, run from its root
-//! by `npm run format:check`, `fix`, `backlog:index` and the pre-commit hook. It runs oxfmt on the targets,
+//! by the `format:check` check of `check-all`, `npm run fix` and the pre-commit hook. It runs oxfmt on the targets,
 //! then writes every Markdown table of their `.md` files without padding (ADR-0068). `--write`
 //! prints nothing when no file changed, and how many changed otherwise (EN-108). `--check` changes
 //! nothing: oxfmt checks the other files, and each Markdown file is formatted in a temporary copy,
@@ -282,7 +282,13 @@ fn run(arguments: &[String]) -> Result<bool, String> {
     .map_err(|error| error.to_string())
 }
 
+/// The usage, printed on `--help` or `-h` (REV-009).
+const USAGE: &str = "usage: format --write|--check <targets…>";
+
 fn main() -> ExitCode {
+    if let Some(code) = tool_use::usage(&std::env::args().skip(1).collect::<Vec<_>>(), USAGE) {
+        return code;
+    }
     let arguments: Vec<String> = env::args().skip(1).collect();
     let mode = arguments.first().map_or("", String::as_str);
 

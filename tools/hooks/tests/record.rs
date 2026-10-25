@@ -8,8 +8,7 @@ use std::process::{Command, Output, Stdio};
 
 use hooks::json::{Value, js_length, number_text, parse, quote, write};
 use hooks::record::{
-    CallContext, is_call_of, js_prefix, relative, running_call, session_moment, tool_call_record,
-    tool_summary,
+    CallContext, is_call_of, js_prefix, relative, running_call, tool_call_record, tool_summary,
 };
 
 /// Fields of a hook input for a shell command that succeeded, as documented by `REF-CC-HOOKS`.
@@ -22,19 +21,14 @@ fn input(fields: &str) -> Value {
     parse(&format!("{{{fields}}}")).expect("JSON")
 }
 
-/// Where and when the call ends: the hook ran at 2026-10-12T21:00:00Z, no snapshot.
+/// Where and when the call ends: the hook ran at 2026-10-12T21:00:00Z.
 fn context() -> CallContext {
     CallContext {
         branch: "develop".into(),
-        snapshot: Value::Null,
         started_at: 0.0,
-        step: String::new(),
         time: 1_791_838_800_000,
     }
 }
-
-/// The session's members of a record without a snapshot.
-const NO_MOMENT: &str = r#""contextPercent":0,"model":"","pendingAgents":0,"pendingCommands":0,"snapshotAgeMs":0,"turnElapsedMs":0,"turnOutputTokens":0,"turnStart":0,"turnTokens":0"#;
 
 #[test]
 fn records_a_successful_command_with_its_duration() {
@@ -46,30 +40,13 @@ fn records_a_successful_command_with_its_duration() {
     // {"command":"npm run check","description":"Run the checks"}: 58 characters.
     assert_eq!(
         record,
-        format!(
-            "{{{NO_MOMENT},\"agent\":\"main\",\"agentId\":\"\",\"branch\":\"develop\",\"description\":\"Run the checks\",\"durationMs\":4187,\"error\":\"\",\"inputChars\":58,\"isBackground\":false,\"isOk\":true,\"outputChars\":0,\"permissionMode\":\"\",\"session\":\"abc123\",\"startedAt\":0,\"step\":\"\",\"summary\":\"npm run check\",\"time\":\"2026-10-12T21:00:00Z\",\"tool\":\"Bash\",\"toolUseId\":\"toolu_01\"}}"
-        )
+        r#"{"agent":"main","agentId":"","branch":"develop","description":"Run the checks","durationMs":4187,"error":"","inputChars":58,"isBackground":false,"isOk":true,"outputChars":0,"permissionMode":"","session":"abc123","startedAt":0,"summary":"npm run check","time":"2026-10-12T21:00:00Z","tool":"Bash","toolUseId":"toolu_01"}"#
     );
     assert!(parse(&record).is_some());
 }
 
 #[test]
-fn copies_the_session_s_state_from_the_status_line_s_snapshot() {
-    let snapshot = parse(
-        r#"{"contextPercent": 42, "model": "Opus 5.5", "pendingAgents": 1, "pendingCommands": 2, "time": 9000, "turnOutputTokens": 300, "turnStart": 4000, "turnTokens": 5000}"#,
-    )
-    .expect("JSON");
-
-    // Its age 10 000 − 9 000 = 1 000; the turn's time 10 000 − 4 000 = 6 000.
-    assert_eq!(
-        session_moment(&snapshot, 10_000),
-        r#""contextPercent":42,"model":"Opus 5.5","pendingAgents":1,"pendingCommands":2,"snapshotAgeMs":1000,"turnElapsedMs":6000,"turnOutputTokens":300,"turnStart":4000,"turnTokens":5000"#
-    );
-    assert_eq!(session_moment(&Value::Null, 10_000), NO_MOMENT);
-}
-
-#[test]
-fn records_a_call_in_the_background_its_start_step_result_size_and_subagent_id() {
+fn records_a_call_in_the_background_its_start_result_size_and_subagent_id() {
     let record = tool_call_record(
         &input(
             r#""tool_name": "Agent", "agent_id": "ag1", "permission_mode": "auto",
@@ -77,7 +54,6 @@ fn records_a_call_in_the_background_its_start_step_result_size_and_subagent_id()
         ),
         &CallContext {
             started_at: 7.0,
-            step: "RET-002".into(),
             ..context()
         },
     );
@@ -89,7 +65,8 @@ fn records_a_call_in_the_background_its_start_step_result_size_and_subagent_id()
     assert_eq!(parsed.get("outputChars"), &Value::Number(4.0));
     assert_eq!(parsed.get("permissionMode").text(), "auto");
     assert_eq!(parsed.get("startedAt"), &Value::Number(7.0));
-    assert_eq!(parsed.get("step").text(), "RET-002");
+    // No step: the agent writes no step file any more.
+    assert_eq!(parsed.get("step"), &Value::Null);
     // A monitor and a command sent to the background run there too.
     for (tool, tool_input) in [
         ("Monitor", "{}"),
@@ -231,7 +208,7 @@ fn writes_numbers_as_javascript_does() {
 }
 
 #[test]
-fn records_a_call_starting_as_the_status_line_reads_it() {
+fn records_a_call_starting_as_the_log_tool_call_hook_reads_it() {
     let start = input(
         r#""tool_name": "Bash", "cwd": "/repo", "tool_input": {"command": "npm run check", "description": "Run the checks"}"#,
     );
@@ -339,8 +316,6 @@ fn tracks_a_call_then_logs_it_and_removes_its_running_file() {
 
     assert_eq!(started.get("summary").text(), "ls");
 
-    fs::write(metrics.join("step"), "EN-104 · T2\nmore").expect("step");
-    fs::write(metrics.join("now.json"), r#"{"model":"Opus 5.5","time":5}"#).expect("now");
     let end = start.replacen('{', "{\"hook_event_name\":\"PostToolUse\",", 1);
 
     assert!(
@@ -353,8 +328,8 @@ fn tracks_a_call_then_logs_it_and_removes_its_running_file() {
 
     assert!(log.ends_with('\n'));
     assert_eq!(record.get("branch").text(), "chore/en-1-x");
-    assert_eq!(record.get("step").text(), "EN-104 · T2");
-    assert_eq!(record.get("model").text(), "Opus 5.5");
+    // No session state: the status line that wrote it is gone (AUD-056).
+    assert_eq!(record.get("model"), &Value::Null);
     assert_eq!(record.get("startedAt"), started.get("start"));
     assert!(!metrics.join("running/toolu_9.json").exists());
     let _ = fs::remove_dir_all(&root);

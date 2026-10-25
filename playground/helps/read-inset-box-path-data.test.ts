@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { readInsetBoxPathData } from "./read-inset-box-path-data";
 
-describe("readInsetBoxPathData (US-086, AUD-046)", () => {
+describe("readInsetBoxPathData", () => {
   it("[F44.AC3] lays the line of the box from (0, 0) to (250, 100) half a pixel inside it", () => {
     // Each side 0.5 inward: (0.5, 0.5) to (249.5, 99.5).
     expect(readInsetBoxPathData({ maxX: 250, maxY: 100, minX: 0, minY: 0 }, 0.5)).toBe(

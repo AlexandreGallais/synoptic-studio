@@ -30,7 +30,6 @@ const SIX_BITS = 64;
  * @param second - b₁, from 0 to 255
  * @param third - b₂, from 0 to 255
  * @returns the four values, each from 0 to 63
- * @see DERIV-font-embedding
  */
 function bytesToSextets(first: number, second: number, third: number): readonly number[] {
   return [
@@ -48,7 +47,6 @@ function bytesToSextets(first: number, second: number, third: number): readonly 
  * @param bytes - the bytes encoded
  * @param index - a place, past the end in a last group
  * @returns the byte; 0 past the end
- * @see REF-RFC-4648
  */
 function indexToByte(bytes: Readonly<Uint8Array>, index: number): number {
   return bytes[index] ?? 0;
@@ -63,7 +61,6 @@ function indexToByte(bytes: Readonly<Uint8Array>, index: number): number {
  * @param bytes - the bytes encoded
  * @param start - the group's first byte, a multiple of 3 within the bytes
  * @returns four characters
- * @see REF-RFC-4648
  */
 function groupToBase64(bytes: Readonly<Uint8Array>, start: number): string {
   const count = Math.min(GROUP_BYTES, bytes.length - start);
@@ -86,7 +83,6 @@ function groupToBase64(bytes: Readonly<Uint8Array>, start: number): string {
  * @kind format
  * @param bytes - the bytes, such as a font file's
  * @returns their base-64 text
- * @see REF-RFC-4648
  */
 export function bytesToBase64(bytes: Readonly<Uint8Array>): string {
   return Array.from({ length: ceiling(bytes.length / GROUP_BYTES) }, (unused, index) =>

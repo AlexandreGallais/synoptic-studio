@@ -77,7 +77,7 @@ const BOX = fc.record({
   y: fc.integer({ max: 100, min: -100 }),
 });
 
-describe("shapeAtPoint (EN-143, DERIV-painted-area)", () => {
+describe("shapeAtPoint (DERIV-painted-area)", () => {
   it("[F36.AC2] gives the top shape holding the point: B, then A, then none", () => {
     // (75, 75) is in both, B drawn last; (25, 25) in A only; (200, 200) in neither.
     const areas = [shapePickArea(SHAPE_A), shapePickArea(SHAPE_B)];

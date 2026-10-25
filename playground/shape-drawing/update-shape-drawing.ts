@@ -4,14 +4,13 @@ import { showShapeDrawing } from "./show-shape-drawing";
 import type { ShapeDrawing } from "./shape-drawing";
 
 /**
- * Redraws the new shape with the drag changed (`showShapeDrawing`, F36), the pointer moved or
+ * Redraws the new shape with the drag changed (`showShapeDrawing`), the pointer moved or
  * Shift pressed or released; nothing without a drag on.
  *
  * @kind procedure
  * @param document - page document
  * @param change - the pointer's place, or whether Shift is held
  * @param update - redraws the page from the values typed
- * @see docs/domain/interaction.md#_1-tools
  */
 export function updateShapeDrawing(
   document: Document,

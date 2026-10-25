@@ -1,4 +1,4 @@
-# The Rust caches of main (docs/tooling/ci.md, ADR-0088): a push to main, a review's merge, saves
+# The Rust caches of main (the records' workflows, ADR-0088): a push to main, a review's merge, saves
 # the toolchain, the cargo tools and the Rust build under main, for the site and the release, which
 # restore them (EN-111, EN-125, AUD-030). It checks nothing: the review's CI checked that code
 # before its merge (ADR-0072). Develop's caches are the develop CI's, saved after its tests
@@ -26,8 +26,7 @@ jobs:
   # and of the default branch, so the review's, from develop into main, those saved on develop
   # first, and a run on main those saved on main alone (`REF-GH-CACHE`). It fetches every target's
   # crates, as the CI does before its lanes (`REF-CARGO-FETCH`, EN-116), then builds in release
-  # what `check:all` compiles, with the same commands and flags, but the debug build of
-  # backlog-index that tests/backlog.test.ts runs by `cargo run`, and checks nothing: the tests are
+  # what `check:all` compiles, with the same commands and flags, and checks nothing: the tests are
   # compiled and listed, never run (ADR-0072: nothing is re-checked after the merge). Its keys and
   # paths are ci.yml's. Without `restore-keys`, a new key starts from an empty target/, which so
   # never keeps the artifacts of an older Cargo.lock.
@@ -60,9 +59,10 @@ jobs:
       # Every crate of Cargo.lock for every target, not the host's alone, which the build fetches:
       # the CI's `cargo metadata --offline` and `cargo deny --offline` read them all (EN-116).
       - run: cargo fetch --locked
-      # The compilations of `rust:build`, `check:rust` and `rust:coverage` (package.json): the release
-      # binaries, Clippy, the tests under coverage, the Windows check.
-      - run: npm run rust:build
+      # The compilations of `check:all`'s release build, `check:rust` and `rust:coverage`
+      # (tools/repo-tools/src/check_all.rs): the release binaries, Clippy, the tests under coverage,
+      # the Windows check.
+      - run: cargo build --release --workspace --locked
       - run: cargo clippy --workspace --all-targets --locked --quiet
       - run: cargo llvm-cov --workspace --locked --no-report -- --list
       - run: cargo check --workspace --all-targets --locked --quiet --target x86_64-pc-windows-msvc

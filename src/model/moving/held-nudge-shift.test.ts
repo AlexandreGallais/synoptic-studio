@@ -7,7 +7,7 @@ import { nudgeShift } from "./nudge-shift";
 /** The four arrow keys, as `KeyboardEvent.key` names them. */
 const ARROWS = ["ArrowDown", "ArrowLeft", "ArrowRight", "ArrowUp"];
 
-describe("heldNudgeShift (US-081)", () => {
+describe("heldNudgeShift", () => {
   it.each([
     // A at (10, 20), Up then Right held: (+1, −1) at each key, (11, 19) after one.
     { keys: ["ArrowUp", "ArrowRight"], shift: { x: 1, y: -1 } },

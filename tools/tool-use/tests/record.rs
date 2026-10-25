@@ -6,7 +6,7 @@
 use std::env;
 use std::fs;
 use std::path::{Path, PathBuf};
-use std::process::{Command, ExitCode};
+use std::process::ExitCode;
 use std::thread;
 use std::time::{Duration, Instant};
 
@@ -258,7 +258,7 @@ fn f21_ac7_two_processes_appending_at_once_never_mix_their_lines() {
     fs::create_dir_all(root.0.join(".git")).expect("Git folder");
     let file = root.0.join(".git/metrics/tool-uses.jsonl");
     let start = || {
-        Command::new(env::current_exe().expect("this test binary"))
+        test_support::command(env::current_exe().expect("this test binary"))
             .args([
                 "--exact",
                 "append_as_a_child_process",

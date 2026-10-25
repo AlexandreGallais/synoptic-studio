@@ -1,7 +1,7 @@
 //! The secret scan (EN-110): the rules of `@secretlint/secretlint-rule-preset-recommend` 13.0.7,
 //! secretlint's recommended preset, carried into Rust with their comment filter, so that the
 //! staged files at each commit and the tracked files in `check:all` are scanned without Node.js
-//! (`docs/tooling/commands.md`, `lint:secrets`). Ported under the preset's MIT licence,
+//! (`the records' conventions, area checks`, `lint:secrets`). Ported under the preset's MIT licence,
 //! Copyright (c) 2020 azu (ADR-0076, `NOTICE`); its cases are the preset's own snapshots, in
 //! `tests/fixtures/preset/`.
 //!

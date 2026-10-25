@@ -19,7 +19,6 @@ const CONTROL_CHARACTER = /\p{Cc}/gu;
  * @kind format
  * @param name - a family name, as the text names it
  * @returns `sans-serif` for that keyword in any case, else the name in double quotes
- * @see REF-CSS-FONTS-4
  */
 export function formatFontFamilyName(name: string): string {
   const escaped = name

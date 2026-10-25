@@ -13,7 +13,6 @@ import type { FontTableRecord } from "./font-table-record";
  * @param view - the file
  * @param directory - where the table directory starts: 0 in a font file
  * @returns each table's offset and length, by tag
- * @see REF-OT-OTFF
  */
 export function parseTableDirectory(
   view: Readonly<DataView>,

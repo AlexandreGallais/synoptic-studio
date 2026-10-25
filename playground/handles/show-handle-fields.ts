@@ -22,7 +22,6 @@ const VALUE_NAMES: Readonly<Record<HandleWay, readonly [string, string]>> = {
  * @kind procedure
  * @param document - page document
  * @param way - the way the handles are typed
- * @see docs/backlog/stories/E14-F12-US-024-handles-as-angle-and-length.md
  */
 function writeAxisLabels(document: Document, way: HandleWay): void {
   for (const [index, label] of document.querySelectorAll("#handle-fields .handle-axis").entries()) {
@@ -49,7 +48,6 @@ type ShownHandle = {
  * @param end - which handle
  * @param shown - its frame, the point selected and the way chosen
  * @returns the two values to write
- * @see docs/backlog/stories/E14-F12-US-024-handles-as-angle-and-length.md
  */
 function readShownValues(
   document: Document,
@@ -70,7 +68,6 @@ function readShownValues(
  * @param document - page document
  * @param reading - the shape read from the inputs, its corners as drawn
  * @param selected - the point selected, in handles mode
- * @see docs/backlog/stories/E14-F12-US-024-handles-as-angle-and-length.md
  */
 function writeHandleValues(
   document: Document,
@@ -103,7 +100,6 @@ function writeHandleValues(
  * @kind procedure
  * @param document - page document
  * @param corner - the corner selected, as drawn, or `undefined` for no switch
- * @see docs/backlog/stories/E14-F12-US-022-handles-in-points-mode.md
  */
 function showHandleSwitch(document: Document, corner: CurveCorner | undefined): void {
   const isOn = corner?.handles.isOn === true;
@@ -123,7 +119,6 @@ function showHandleSwitch(document: Document, corner: CurveCorner | undefined): 
  * @kind procedure
  * @param document - page document
  * @param reading - the shape read from the inputs, its corners as drawn
- * @see docs/backlog/stories/E14-F12-US-022-handles-in-points-mode.md
  */
 export function showHandleFields(document: Document, reading: ShapeReading): void {
   const selected =

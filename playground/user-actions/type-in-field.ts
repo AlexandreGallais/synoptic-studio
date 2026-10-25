@@ -8,23 +8,21 @@ import { typeValue } from "./type-value";
  * @kind procedure
  * @param input - the field
  * @param key - the key's name
- * @see docs/domain/interaction.md#_2-selector
  */
 function pressKeyIn(input: HTMLInputElement, key: string): void {
   input.dispatchEvent(new KeyboardEvent("keydown", { bubbles: true, cancelable: true, key }));
 }
 
 /**
- * Types a value with Enter into a field as a designer does and a browser sends it (AUD-046): the
+ * Types a value with Enter into a field as a designer does and a browser sends it: the
  * field given the focus, its text emptied, then for each character a key pressed before the text
  * changes and its `input`, then Enter and the `change` it applies, so that a field acting as a
  * number field reads the number it showed before at each key, which a relative value starts from
- * and a value refused puts back (US-087).
+ * and a value refused puts back.
  *
  * @kind procedure
  * @param id - input id
  * @param value - typed text
- * @see docs/domain/interaction.md#_2-selector
  */
 export function typeInField(id: string, value: string): void {
   const input = selectInput(id);

@@ -2,7 +2,7 @@
 //! that its story branch is pushed and that the report names its commits. Missing, the hand-back is
 //! refused once, the reason the worker's next instruction; the next one goes through with what is
 //! missing written above the report. Complete, a line above the report names the story, its branch
-//! and `story:finish` for the main thread. The main thread, a read-only agent and an agent without
+//! and `story-finish` for the main thread. The main thread, a read-only agent and an agent without
 //! a worktree are left alone; any failure lets the call through: the hook never blocks by its own
 //! fault.
 
@@ -36,9 +36,13 @@ fn branch(worktree: &Path, folder: &str) -> Option<(String, Branch, Option<Strin
     let refs = read_refs(&listing)?;
     let story = story_of(&refs.name, folder);
     let base = story.as_deref().and_then(|story| {
-        let files = worktree::story_files(worktree).unwrap_or_default();
+        let stories: Vec<_> = worktree::recorded_story(worktree, story)
+            .ok()
+            .flatten()
+            .into_iter()
+            .collect();
 
-        base_of(story, &files, &refs.remote_branches)
+        base_of(story, &stories, &refs.remote_branches)
     });
     let commits = match &base {
         Some(base) => git(

@@ -1,4 +1,4 @@
-//! `secret-scan [--staged | <files>…]` (EN-110): the secret scan, `npm run lint:secrets` on every
+//! `secret-scan [--staged | <files>…]` (EN-110): the secret scan, the `lint:secrets` check of `check-all` on every
 //! tracked file without an argument, the pre-commit hook's on the staged files with `--staged` or
 //! the paths it gives. It prints `secretlint` 13.0.7's report, every secret masked, and exits as
 //! it does: 0 without a finding, 1 with one, 2 on a fatal error — Git failing, a file that cannot
@@ -107,7 +107,13 @@ fn run(arguments: Vec<String>) -> Result<u8, String> {
     Ok(u8::from(!output.is_empty()))
 }
 
+/// The usage, printed on `--help` or `-h` (REV-009).
+const USAGE: &str = "usage: target/release/secret-scan [--staged | <files>…]";
+
 fn main() -> std::process::ExitCode {
+    if let Some(code) = tool_use::usage(&std::env::args().skip(1).collect::<Vec<_>>(), USAGE) {
+        return code;
+    }
     let arguments: Vec<String> = env::args().skip(1).collect();
     let subcommand = if arguments.first().map(String::as_str) == Some("--staged") {
         "--staged"

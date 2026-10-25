@@ -5,10 +5,12 @@ import { join } from "node:path";
 
 import { describe, expect, it } from "vitest";
 
+import { CHECK_ALL_LANES } from "./check-all-lanes";
+
 /** Root of the repository. */
 const ROOT = join(import.meta.dirname, "..");
 
-/** The oxlint that `npm run lint`, `npm run fix` and the pre-commit hook run. */
+/** The oxlint that `check:all`'s lint, `npm run fix` and the pre-commit hook run. */
 const OXLINT = join(ROOT, "node_modules", ".bin", "oxlint");
 
 /** `package.json`, as text. */
@@ -126,9 +128,8 @@ describe("type errors with the lint (EN-091)", () => {
 
   it("runs the type check in every oxlint pass: the lint, the fix, and no script runs tsc", () => {
     // The check comes from `.oxlintrc.json` since EN-121, `[F33.AC1]` in tests/oxlint-config.test.ts.
-    for (const name of ["lint", "fix"]) {
-      expect(scriptOf(name)).toMatch(/(?:^|&& )oxlint --/u);
-    }
+    expect(scriptOf("fix")).toMatch(/(?:^|&& )oxlint --/u);
+    expect(CHECK_ALL_LANES.find(({ name }) => name === "lint")?.command).toMatch(/^oxlint --/u);
 
     // `typecheck` went with EN-115: `npx tsc --noEmit` stays for a person who wants tsc's own run.
     expect(MANIFEST).not.toMatch(/\btsc\b/u);

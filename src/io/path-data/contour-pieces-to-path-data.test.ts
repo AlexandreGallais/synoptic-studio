@@ -44,7 +44,7 @@ describe("contourPiecesToPathData (REF-SVG2-PATHS §9.3.3–9.3.8)", () => {
     expect(contourPiecesToPathData(pieces)).toBe("M0 0 L0 50 Z");
   });
 
-  it("writes derived coordinates with fixed precision (EN-001)", () => {
+  it("writes derived coordinates with fixed precision", () => {
     // Equilateral triangle of side 100: apex height 100 × √3 / 2 = 86.602540378… → 86.60254.
     const height = (100 * Math.sqrt(3)) / 2;
     const pieces = roundedContour([

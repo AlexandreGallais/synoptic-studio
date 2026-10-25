@@ -11,7 +11,8 @@ use std::sync::atomic::{AtomicUsize, Ordering};
 
 const STORY: &str = "chore/en-100-git-sequences";
 const FEATURE: &str = "feature/f20-a-context-diet";
-const STORY_FILE: &str = "docs/backlog/stories/E17-F20-EN-100-git-sequences.md";
+/// What a `knowledge` script standing for the records prints for EN-100, a story of F20 (EN-154).
+const EN_100: &str = "kind\\tfeature\\ttopic\\nEN\\tF20\\tgit-sequences\\n";
 
 static NEXT: AtomicUsize = AtomicUsize::new(0);
 
@@ -39,9 +40,35 @@ fn git(dir: &Path, words: &[&str]) -> String {
     String::from_utf8_lossy(&output.stdout).trim().to_owned()
 }
 
+/// A copy of the tool beside a `knowledge` script standing for the records, in the folder of the
+/// test's repositories: it holds EN-100 alone, so that no test reads the real records.
+fn beside_records(dir: &Path) -> PathBuf {
+    let folder = dir.parent().expect("the repositories' folder").join("bin");
+    let binary = folder.join("git-sequences");
+
+    if !binary.exists() {
+        fs::create_dir_all(&folder).expect("bin made");
+        fs::copy(env!("CARGO_BIN_EXE_git-sequences"), &binary).expect("tool copied");
+        write(
+            &folder,
+            "knowledge",
+            &format!(
+                "#!/bin/sh\ncase \"$2\" in *\"'EN-100'\"*) printf '{EN_100}';; *) printf 'kind\\tfeature\\ttopic\\n';; esac\n"
+            ),
+        );
+        #[cfg(unix)]
+        fs::set_permissions(
+            folder.join("knowledge"),
+            <fs::Permissions as std::os::unix::fs::PermissionsExt>::from_mode(0o755),
+        )
+        .expect("script runs");
+    }
+    binary
+}
+
 /// Runs the tool in `dir`, `input` on its standard input.
 fn tool(dir: &Path, words: &[&str], input: &str) -> Output {
-    let mut child = clean(env!("CARGO_BIN_EXE_git-sequences"), dir)
+    let mut child = clean(beside_records(dir).to_str().expect("a path"), dir)
         .args(words)
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
@@ -117,7 +144,7 @@ fn repos() -> Repos {
         &["remote", "add", "origin", &origin.to_string_lossy()],
     );
     write(&work, "README.md", "one\n");
-    write(&work, STORY_FILE, "# EN-100\n");
+
     git(&work, &["add", "."]);
     git(&work, &["commit", "--quiet", "-m", "first"]);
     git(&work, &["push", "--quiet", "origin", "main"]);
@@ -283,6 +310,67 @@ fn f20_ac7_commits_on_develop_but_never_pushes_it() {
 }
 
 #[test]
+fn rev009_commits_a_path_whose_deletion_is_staged() {
+    // `git add -- old` failed with "pathspec did not match" once `git rm -r old` had removed the
+    // folder (incident card of 2026-10-24); a path neither there nor deleted still fails.
+    let repos = repos();
+    let message = "chore(tooling): drop the old folder\n\nRefs: EN-100.T1\n";
+
+    write(&repos.work, "old/x.md", "x\n");
+    write(&repos.work, "old/y.md", "y\n");
+    git(&repos.work, &["add", "old"]);
+    git(&repos.work, &["commit", "--quiet", "-m", "old"]);
+    git(&repos.work, &["rm", "--quiet", "-r", "old"]);
+    write(&repos.work, "a.md", "a\n");
+
+    let output = tool(&repos.work, &["commit", "-F", "-", "old", "a.md"], message);
+
+    assert!(output.status.success(), "{}", stderr(&output));
+    assert_eq!(
+        git(&repos.work, &["show", "--name-only", "--format=", "HEAD"]),
+        "a.md\nold/x.md\nold/y.md"
+    );
+
+    let missing = tool(&repos.work, &["commit", "-F", "-", "nowhere.md"], message);
+
+    assert!(!missing.status.success());
+    assert!(
+        stderr(&missing).contains("pathspec 'nowhere.md' did not match"),
+        "{}",
+        stderr(&missing)
+    );
+}
+
+#[cfg(unix)]
+#[test]
+fn commits_a_path_given_through_a_symbolic_link_to_a_folder() {
+    // `.claude/skills` links to `../.agents/skills`: Git refused `.claude/skills/run/x.md` as
+    // beyond a symbolic link (incident of 2026-10-25); the tool commits it by its target.
+    let repos = repos();
+    let message = "chore(tooling): change a skill\n\nRefs: EN-100.T1\n";
+
+    write(&repos.work, ".agents/skills/run/x.md", "x\n");
+    fs::create_dir_all(repos.work.join(".claude")).expect("folder");
+    std::os::unix::fs::symlink("../.agents/skills", repos.work.join(".claude/skills"))
+        .expect("link");
+    git(&repos.work, &["add", ".claude/skills"]);
+    git(&repos.work, &["commit", "--quiet", "-m", "link"]);
+    write(&repos.work, ".agents/skills/run/x.md", "changed\n");
+
+    let output = tool(
+        &repos.work,
+        &["commit", "-F", "-", ".claude/skills/run/x.md"],
+        message,
+    );
+
+    assert!(output.status.success(), "{}", stderr(&output));
+    assert_eq!(
+        git(&repos.work, &["show", "--name-only", "--format=", "HEAD"]),
+        ".agents/skills/run/x.md"
+    );
+}
+
+#[test]
 fn commits_the_named_files_with_a_message_of_several_lines_from_stdin() {
     let repos = repos();
     let message = "chore(tooling): add the sequences\n\nA body line.\n\nRefs: EN-100.T1\n";
@@ -385,12 +473,12 @@ fn runs_the_hooks_and_stops_on_their_failure() {
 fn f33_ac2_prints_what_the_hooks_write_when_the_commit_succeeds() {
     let repos = repos();
 
-    // `commit-msg` runs `move-rows --notes`, whose notes go to standard error and pass (EN-140):
-    // they reach the agent, though the commit succeeds (AUD-035, F3).
+    // A `commit-msg` hook's notes go to standard error and pass: they reach the agent, though the
+    // commit succeeds (AUD-035, F3).
     write(
         &repos.work,
         ".git/hooks/commit-msg",
-        "#!/bin/sh\necho \"move-rows: 1 note left in the story file\" >&2\nexit 0\n",
+        "#!/bin/sh\necho \"hook: 1 note\" >&2\nexit 0\n",
     );
     let chmod = clean("chmod", &repos.work)
         .args(["+x", ".git/hooks/commit-msg"])
@@ -402,10 +490,7 @@ fn f33_ac2_prints_what_the_hooks_write_when_the_commit_succeeds() {
     let output = tool(&repos.work, &["commit", "-F", "-", "a.md"], "chore: x\n");
 
     assert!(output.status.success(), "{}", stderr(&output));
-    assert_eq!(
-        stderr(&output),
-        "move-rows: 1 note left in the story file\n"
-    );
+    assert_eq!(stderr(&output), "hook: 1 note\n");
     assert!(stdout(&output).contains("chore: x on chore/en-100"));
 
     // A commit whose hooks write nothing prints nothing on standard error.
@@ -500,12 +585,15 @@ fn sync_with_cargo(repos: &Repos, code: u8) -> (Output, String) {
         stubs.display(),
         env::var("PATH").unwrap_or_default()
     );
-    let output = clean(env!("CARGO_BIN_EXE_git-sequences"), &repos.work)
-        .arg("sync")
-        .env("PATH", path)
-        .stdin(Stdio::null())
-        .output()
-        .expect("the tool runs");
+    let output = clean(
+        beside_records(&repos.work).to_str().expect("a path"),
+        &repos.work,
+    )
+    .arg("sync")
+    .env("PATH", path)
+    .stdin(Stdio::null())
+    .output()
+    .expect("the tool runs");
 
     (output, fs::read_to_string(log).unwrap_or_default())
 }

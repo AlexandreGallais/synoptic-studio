@@ -6,7 +6,7 @@ import { writeShapeSelection } from "../selection";
 import type { BoundingBox } from "../../src";
 
 /**
- * Selects the shapes a selection rectangle takes (F37): those whose painted area it touches, only
+ * Selects the shapes a selection rectangle takes: those whose painted area it touches, only
  * those it encloses with Alt held (`readShapesTaken`); alone, or with Shift added to the shapes
  * selected (`shapeSelectionAfterBox`). They are then selected by their indices
  * (`writeShapeSelection`), one loaded into the panel as a click loads it.
@@ -15,7 +15,6 @@ import type { BoundingBox } from "../../src";
  * @param document - page document
  * @param box - the rectangle, in the coordinates of the drawing's SVG
  * @param event - the release, telling whether Alt and Shift are held
- * @see docs/domain/interaction.md#_2-selector
  */
 export function selectShapesInBox(document: Document, box: BoundingBox, event: MouseEvent): void {
   const taken = readShapesTaken(readPickAreas(document), box, event.altKey);

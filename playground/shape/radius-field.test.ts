@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import {
   clickElement,
   clickPoint,
-  openPage,
+  openOnHexagon,
   pressKey,
   readText,
   selectInput,
@@ -31,8 +31,8 @@ function giveRadii(radii: string): void {
 
 describe("radius field", () => {
   beforeEach(() => {
-    // Step 10 of the guided test: a hexagon in 100 × 100, radius 0 (F02).
-    openPage("?step=10");
+    // A hexagon in 100 × 100, radius 0 (F02).
+    openOnHexagon();
   });
 
   it("[F03.AC2] shows Mixed, empty, when the vertices have different radii", () => {
@@ -86,21 +86,21 @@ describe("radius field", () => {
     expect(selectInput("radius").dataset["radii"]).toBe("10 0 0 0 0 0");
   });
 
-  it("[F03.AC2] types one radius for every vertex at each step of the guided test", () => {
+  it("[F03.AC2] types one radius for every vertex on Reset", () => {
     giveRadii("10 0 0 0 0 6");
-    clickElement("guide-next");
+    clickElement("tool-reset");
 
-    // Step 11 is a triangle with radius 0: three radii, all 0.
-    expect(selectInput("radius").dataset["radii"]).toBe("0 0 0");
+    // The page's rectangle, radius 10: four radii, all 10.
+    expect(selectInput("radius").dataset["radii"]).toBe("10 10 10 10");
     expect(selectInput("radius").placeholder).toBe("");
-    expect(selectInput("radius").value).toBe("0");
+    expect(selectInput("radius").value).toBe("10");
   });
 
   it("[F44.AC4] adds +5 typed over Mixed to each vertex's own radius, Mixed kept", () => {
     giveRadii("10 0 0 0 0 6");
     typeInField("radius", "+5");
 
-    // 10 + 5, 0 + 5 four times, 6 + 5 (AUD-046): each one's own, as several shapes' fields.
+    // 10 + 5, 0 + 5 four times, 6 + 5: each one's own, as several shapes' fields.
     expect(selectInput("radius").dataset["radii"]).toBe("15 5 5 5 5 11");
     expect([selectInput("radius").value, selectInput("radius").placeholder]).toEqual(["", "Mixed"]);
   });

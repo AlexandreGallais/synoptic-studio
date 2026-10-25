@@ -8,7 +8,7 @@ import {
   chooseShapeKind,
   clickElement,
   clickWithKeys,
-  openServedPage,
+  openPage,
   readDisplay,
   readPressedState,
   readText,
@@ -60,7 +60,7 @@ function readLines(): readonly (readonly (string | null)[])[] {
 
 describe("Text tool", () => {
   beforeEach(() => {
-    openServedPage("");
+    openPage("");
     chooseShapeKind("text");
     // "H" over "HH" in Inter Regular 16: H advances 1522 of 2048 units, 11.890625; HH 23.78125.
     typeAndEnter("text-size", "16");
@@ -253,7 +253,7 @@ describe("Text tool", () => {
     expect(paths[0]?.getAttribute("d")).toBe(d);
   });
 
-  it("[F05.AC2] offers no font without metrics: Arial is not in the list until read (US-036)", () => {
+  it("[F05.AC2] offers no font without metrics: Arial is not in the list until read", () => {
     expect(() => {
       chooseOption("text-font", "Arial");
     }).toThrow("#text-font has no option Arial.");

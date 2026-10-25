@@ -15,7 +15,6 @@ import type { PickArea, View } from "../../src";
  * @param document - page document
  * @param isSelection - whether the shapes selected are read, rather than every shape
  * @returns their areas, in the order drawn
- * @see docs/domain/interaction.md#_7-navigation-and-history
  */
 function readFittedAreas(document: Document, isSelection: boolean): readonly PickArea[] {
   const areas = readPickAreas(document);
@@ -32,7 +31,6 @@ function readFittedAreas(document: Document, isSelection: boolean): readonly Pic
  * @param document - page document
  * @param isSelection - whether the shapes selected are fitted, rather than every shape
  * @returns the view; undefined when none of them is drawn
- * @see docs/domain/interaction.md#_7-navigation-and-history
  */
 export function readFittedView(document: Document, isSelection: boolean): View | undefined {
   const box = pickAreasBox(readFittedAreas(document, isSelection));

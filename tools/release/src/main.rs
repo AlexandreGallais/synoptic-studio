@@ -46,7 +46,7 @@ fn print_notes(args: &[String]) -> u8 {
         [] => DEFAULT_BASE,
         [base] => base.as_str(),
         _ => {
-            eprintln!("usage: release notes [<base>]");
+            eprintln!("usage: target/release/release notes [<base>]");
             return 2;
         }
     };
@@ -58,7 +58,7 @@ fn print_notes(args: &[String]) -> u8 {
             eprint!("{}", drafted.hints);
             eprintln!(
                 "{} line(s) drafted from the commits {base} lacks. Rewrite each `[draft]` line in \
-                 the imperative mood (docs/tooling/releases.md), then run `release check` on the \
+                 the imperative mood (the records' conventions, area release), then run `release check` on the \
                  body.",
                 drafted.lines
             );
@@ -74,7 +74,7 @@ fn print_notes(args: &[String]) -> u8 {
 /// `release check`: its exit code.
 fn check_text(args: &[String]) -> u8 {
     let [file] = args else {
-        eprintln!("usage: release check <file>");
+        eprintln!("usage: target/release/release check <file>");
         return 2;
     };
     let body = match fs::read_to_string(file) {
@@ -126,7 +126,13 @@ fn publish_release() -> u8 {
     }
 }
 
+/// The usage, printed on `--help` or `-h` (REV-009).
+const USAGE: &str = "usage: target/release/release <notes [<base>] | check <file> | publish>";
+
 fn main() -> ExitCode {
+    if let Some(code) = tool_use::usage(&std::env::args().skip(1).collect::<Vec<_>>(), USAGE) {
+        return code;
+    }
     let args: Vec<String> = std::env::args().skip(1).collect();
     let subcommand = args.first().cloned().unwrap_or_default();
     let rest = args.get(1..).unwrap_or_default().to_vec();
@@ -136,7 +142,7 @@ fn main() -> ExitCode {
         "check" => check_text(&rest),
         "publish" => publish_release(),
         _ => {
-            eprintln!("usage: release <notes [<base>] | check <file> | publish>");
+            eprintln!("usage: target/release/release <notes [<base>] | check <file> | publish>");
             2
         }
     })

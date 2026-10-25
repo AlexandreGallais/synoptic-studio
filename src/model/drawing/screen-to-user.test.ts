@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { screenToUser } from "./screen-to-user";
 
-describe("screenToUser (interaction.md §2)", () => {
+describe("screenToUser (RULE-interaction-the-outline-screen-pixels)", () => {
   it.each([
     // At scale 1 a pixel is a user unit; zoomed in twice, 4 pixels are 2 units; zoomed out to ½,
     // 2 pixels are 4 units.

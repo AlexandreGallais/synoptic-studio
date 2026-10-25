@@ -6,7 +6,7 @@ import {
   chooseOption,
   clickElement,
   dispatchDrawingPointer,
-  openServedPage,
+  openPage,
   readDisabledState,
   selectPageElement,
   setElementBox,
@@ -133,9 +133,9 @@ function readBoxes(): readonly object[] {
   );
 }
 
-describe("The list of the history's steps (US-077)", () => {
+describe("The list of the history's steps", () => {
   beforeEach(() => {
-    openServedPage("");
+    openPage("");
     setElementBox("#canvas", { height: 600, left: 100, top: 50, width: 800 });
 
     // B placed by a click, then A nudged by Right, B deleted and 150 typed in A's W.
@@ -155,7 +155,7 @@ describe("The list of the history's steps (US-077)", () => {
     expect(readBoxes()).toEqual([{ width: 150, x: 1 }]);
   });
 
-  it("keeps the steps, the memory and the size in the toolbar's History group (AUD-044)", () => {
+  it("keeps the steps, the memory and the size in the toolbar's History group", () => {
     // A `<p>` group was closed by the parser at the `<details>`, the rest left outside it.
     for (const selector of ["#history-steps-box", "#history-memory", "#history-size"]) {
       const group = selectPageElement(selector).closest('[role="group"]');
@@ -233,9 +233,9 @@ describe("The list of the history's steps (US-077)", () => {
   });
 });
 
-describe("The list of a long history (US-077)", () => {
+describe("The list of a long history", () => {
   beforeEach(() => {
-    openServedPage("");
+    openPage("");
     setElementBox("#canvas", { height: 600, left: 100, top: 50, width: 800 });
     clickDrawing(IN_A);
 

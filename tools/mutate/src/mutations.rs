@@ -1,9 +1,36 @@
 //! The mutations of a source file, found in its text (EN-058): no parser, since crates.io
 //! dependencies wait for F19's decision. Comments, strings and template literals are skipped;
 //! binary operators are matched with a space on each side, as Prettier writes them, so a generic
-//! (`Array<number>`) or an arrow (`=>`) is never taken for a comparison.
+//! (`Array<number>`) or an arrow (`=>`) is never taken for a comparison. A Rust file is read with
+//! its own quotes: `'a` is a lifetime, `'x'` a character, and a return is never replaced, since no
+//! value fits every type (REV-009).
 
 use std::fmt;
+use std::path::Path;
+
+/// The language a source is read in, from its file's extension.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum Language {
+    /// TypeScript or JavaScript: `'…'` is a string, a return becomes `undefined`.
+    Script,
+    /// Rust, a `.rs` file: `'` opens a character or names a lifetime; no return mutated.
+    Rust,
+}
+
+impl Language {
+    /// The language of a file: Rust for `.rs`, a script otherwise.
+    #[must_use]
+    pub fn of(file: &str) -> Self {
+        if Path::new(file)
+            .extension()
+            .is_some_and(|extension| extension == "rs")
+        {
+            Self::Rust
+        } else {
+            Self::Script
+        }
+    }
+}
 
 /// What a mutation changes.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
@@ -97,9 +124,10 @@ const OPERATORS: [(&str, &str, Kind); 10] = [
     ("/", "*", Kind::Arithmetic),
 ];
 
-/// For each byte of a source, whether it is code: not in a comment, a string or a template literal.
+/// For each byte of a source, whether it is code: not in a comment, a string, a template literal
+/// or, in Rust, a character.
 #[must_use]
-pub fn code_mask(source: &str) -> Vec<bool> {
+pub fn code_mask(source: &str, language: Language) -> Vec<bool> {
     let bytes = source.as_bytes();
     let mut mask = vec![true; bytes.len()];
     let mut at = 0;
@@ -109,6 +137,14 @@ pub fn code_mask(source: &str) -> Vec<bool> {
             (b'/', Some(b'/')) => find_from(bytes, at, b"\n").unwrap_or(bytes.len()),
             (b'/', Some(b'*')) => {
                 find_from(bytes, at + 2, b"*/").map_or(bytes.len(), |end| end + 2)
+            }
+            (b'\'', _) if language == Language::Rust => {
+                let Some(end) = rust_character_end(source, at) else {
+                    // A lifetime, `'a`: its quote opens nothing.
+                    at += 1;
+                    continue;
+                };
+                end
             }
             (quote @ (b'"' | b'\'' | b'`'), _) => string_end(bytes, at, quote),
             _ => {
@@ -122,6 +158,19 @@ pub fn code_mask(source: &str) -> Vec<bool> {
     }
 
     mask
+}
+
+/// Byte after the Rust character opened at `start`, `'x'` or an escape `'\n'`, `'\''`; `None` for
+/// the quote of a lifetime, `'a`, which no quote closes right after its one character.
+fn rust_character_end(source: &str, start: usize) -> Option<usize> {
+    let bytes = source.as_bytes();
+
+    if bytes.get(start + 1) == Some(&b'\\') {
+        return Some(string_end(bytes, start, b'\''));
+    }
+    let after = start + 1 + source[start + 1..].chars().next()?.len_utf8();
+
+    (bytes.get(after) == Some(&b'\'')).then_some(after + 1)
 }
 
 /// First index of `needle` in `bytes` from `from`.
@@ -166,11 +215,11 @@ fn keyword_at(bytes: &[u8], at: usize, keyword: &[u8]) -> bool {
             .is_none_or(|next| !is_word(*next))
 }
 
-/// Every mutation of a source, in text order.
+/// Every mutation of a source in its language, in text order.
 #[must_use]
-pub fn mutations(source: &str) -> Vec<Mutation> {
+pub fn mutations(source: &str, language: Language) -> Vec<Mutation> {
     let bytes = source.as_bytes();
-    let mask = code_mask(source);
+    let mask = code_mask(source, language);
     let mut found = Vec::new();
 
     for at in 0..bytes.len() {
@@ -180,7 +229,9 @@ pub fn mutations(source: &str) -> Vec<Mutation> {
         found.extend(operator_at(bytes, &mask, at));
         found.extend(constant_at(source, at));
         found.extend(condition_at(source, &mask, at));
-        found.extend(return_at(source, &mask, at));
+        if language == Language::Script {
+            found.extend(return_at(source, &mask, at));
+        }
     }
 
     found

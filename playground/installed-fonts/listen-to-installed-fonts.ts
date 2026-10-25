@@ -24,7 +24,6 @@ const UNSUPPORTED =
  * @kind procedure
  * @param view - the page's window
  * @returns the window in Chrome and Edge; undefined in Firefox and Safari
- * @see REF-CHROME-LOCAL-FONTS
  */
 function readLocalFontAccess(view: object): LocalFontAccess | undefined {
   const isAvailable = "queryLocalFonts" in view && typeof view.queryLocalFonts === "function";
@@ -35,16 +34,15 @@ function readLocalFontAccess(view: object): LocalFontAccess | undefined {
 
 /**
  * Lists the installed fonts, after the browser's permission, then reads their files in the
- * background (`readInstalledFontsAhead`, US-053), the font list offering each family only once it
+ * background (`readInstalledFontsAhead`), the font list offering each family only once it
  * is read and approved and disabled until they all are and the default font's files are read
- * again (US-059, US-061); a reading that fails gives the list back.
+ * again; a reading that fails gives the list back.
  *
  * @kind procedure
  * @param document - page document
  * @param access - the window that lists them
  * @param update - redraws the playground
  * @returns once they are listed
- * @see REF-WICG-LOCAL-FONT-ACCESS
  */
 async function showInstalledFonts(
   document: Document,
@@ -97,7 +95,6 @@ async function showInstalledFonts(
  * @kind procedure
  * @param error - the error the browser gave
  * @returns the line said
- * @see REF-WICG-LOCAL-FONT-ACCESS
  */
 function readListError(error: unknown): string {
   return error instanceof DOMException && error.name === "NotAllowedError"
@@ -109,13 +106,12 @@ function readListError(error: unknown): string {
  * Reads the files of an installed family chosen in the font list (`readInstalledFamily`), says
  * what was read, then redraws; meanwhile the list shows it chosen, "Reading …" is said, and the
  * text keeps the family chosen before it (`FontSession.measured`), never Inter by default, or is
- * measured at once with a family read ahead, its metrics kept (US-053). A family whose files are
+ * measured at once with a family read ahead, its metrics kept. A family whose files are
  * held, imported or read when chosen, is not read again.
  *
  * @kind procedure
  * @param document - page document
  * @param update - redraws the playground
- * @see REF-WICG-LOCAL-FONT-ACCESS
  */
 function listenToInstalledChoice(document: Document, update: () => void): void {
   const font = selectElement(document, "text-font");
@@ -150,7 +146,6 @@ function listenToInstalledChoice(document: Document, update: () => void): void {
  * @kind procedure
  * @param document - page document
  * @param update - redraws the playground
- * @see REF-CHROME-LOCAL-FONTS
  */
 export function listenToInstalledFonts(document: Document, update: () => void): void {
   selectElement(document, "installed-fonts").addEventListener("click", () => {

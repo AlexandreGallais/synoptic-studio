@@ -6,7 +6,8 @@ import {
   chooseOption,
   clickElement,
   clickPoint,
-  openOnStep,
+  openOnHexagon,
+  openPage,
   readPointRows,
   readPressedState,
   readText,
@@ -49,10 +50,10 @@ function options(id: string): readonly string[] {
   );
 }
 
-describe("handles in Points mode (US-022)", () => {
+describe("handles in Points mode", () => {
   beforeEach(() => {
-    // Step 1: the rectangle 120 × 80, radius 10, point 1 at (0, 0); Points mode, point 1 selected.
-    openOnStep(1);
+    // The page as it opens: the rectangle 120 × 80, radius 10, point 1 at (0, 0); Points mode, point 1 selected.
+    openPage("");
     clickElement("mode-points");
     clickPoint(1, false);
   });
@@ -208,8 +209,8 @@ describe("handles in Points mode (US-022)", () => {
 
     expect(isHidden("handles-switch")).toBe(true);
 
-    // Step 10: a hexagon; its point's switch converts it first (US-028).
-    openOnStep(10);
+    // The hexagon: a hexagon; its point's switch converts it first.
+    openOnHexagon();
     clickElement("mode-points");
     clickPoint(1, false);
 

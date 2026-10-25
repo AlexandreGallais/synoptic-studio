@@ -12,14 +12,14 @@ import type { Point } from "../../math";
  * @param landed - the shift landing the anchor on an integer (`landedShift`)
  * @param nudge - the arrow's nudge on that axis
  * @returns the shift on that axis
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 function exactNudge(landed: number, nudge: number): number {
   return isWithinTolerance(landed, nudge, EPSILON) ? nudge : landed;
 }
 
 /**
- * How far an arrow moves the shapes selected (F46): their anchor moved by the arrow's nudge and
+ * How far an arrow moves the shapes selected: their anchor moved by the arrow's nudge and
  * landed on integers as a drag's release lands it (`landedShift`), so that a turned shape's
  * straight box at 6.65064 goes to 8 with Right; an anchor on integers but for a rounding error,
  * as a rounded rectangle's at 0 starts at −1.8 × 10⁻¹⁵, goes by the nudge exactly
@@ -31,7 +31,7 @@ function exactNudge(landed: number, nudge: number): number {
  * @param anchor - the top-left of the straight box of the shapes moved, their dashed box for several
  * @param nudge - the arrow's nudge, the sum of the arrows held (`heldNudgeShift`)
  * @returns the shift every shape moved goes by
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 export function landedNudgeShift(anchor: Point, nudge: Point): Point {
   const landed = landedShift(anchor, nudge);

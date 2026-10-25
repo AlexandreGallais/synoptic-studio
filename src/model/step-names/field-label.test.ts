@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { fieldLabel } from "./field-label";
 
-describe("fieldLabel (US-077)", () => {
+describe("fieldLabel", () => {
   it.each([
     // The panel's labels, where the field's words differ.
     { field: "isItalic", label: "Italic" },

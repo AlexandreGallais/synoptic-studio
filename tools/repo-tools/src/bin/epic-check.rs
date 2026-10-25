@@ -10,16 +10,21 @@
 use std::env;
 use std::fs;
 use std::io::ErrorKind;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 use std::process::{Command, ExitCode};
 use std::time::SystemTime;
 
 use calendar::now_ms;
 use hooks::json::{Value, parse};
+use knowledge::backlog::epic_items;
+use knowledge::private_records::last_save;
+use knowledge::project::open_records;
+use knowledge::records::main_and_origin;
+use knowledge::store::open_store;
 use repo_tools::epic_check::{
     Finding, check_all_finding, failed_calls, left_branches, lost_calls, main_ci, open_items, table,
 };
-use repo_tools::records_save::{LAST_SAVE, ROOT_VARIABLE, project_name, records_folder};
+use repo_tools::records_save::{ROOT_VARIABLE, project_name, records_database};
 
 /// A command's trimmed output and whether it succeeded: its own output when it failed — check:all
 /// names the checks that failed — else the error, as Node.js wrote it.
@@ -86,32 +91,19 @@ fn running_calls(metrics: &Path) -> Vec<(i64, Value)> {
         .collect()
 }
 
-/// The features' and stories' files, with their text.
-fn backlog_files(root: &Path) -> Vec<(String, String)> {
-    ["features", "stories"]
-        .iter()
-        .flat_map(|folder| {
-            let folder = root.join("docs").join("backlog").join(folder);
-            let mut names: Vec<String> = fs::read_dir(&folder)
-                .map(|entries| {
-                    entries
-                        .filter_map(Result::ok)
-                        .map(|entry| entry.file_name().to_string_lossy().into_owned())
-                        .collect()
-                })
-                .unwrap_or_default();
+/// The backlog of an epic, from the records (EN-154): its open items, or the records' error.
+fn backlog_finding(root: &Path, epic: &str) -> Finding {
+    let items = open_records(root)
+        .and_then(|database| epic_items(&database, epic).map_err(|error| error.to_string()));
 
-            names.sort();
-            names
-                .into_iter()
-                .map(|name| {
-                    let text = fs::read_to_string(folder.join(&name)).unwrap_or_default();
-
-                    (name, text)
-                })
-                .collect::<Vec<_>>()
-        })
-        .collect()
+    match items {
+        Ok(items) => open_items(epic, &items),
+        Err(error) => Finding {
+            what: format!("backlog of {epic}"),
+            is_ok: false,
+            detail: format!("the records cannot be read: {error}"),
+        },
+    }
 }
 
 /// What GitHub holds: the pull requests and issues open, the code scanning alerts, the CI of the
@@ -188,26 +180,24 @@ fn github_findings(root: &Path) -> Vec<Finding> {
     ]
 }
 
-/// The private records: their folder and the last save (ADR-0081).
+/// The private records: their file and the last save it holds (ADR-0081, E49).
 fn records_finding(root: &Path) -> Finding {
-    let origin = run(root, "git", &["config", "--get", "remote.origin.url"]).1;
-    let main = Path::new(
-        &run(
-            root,
-            "git",
-            &["rev-parse", "--path-format=absolute", "--git-common-dir"],
+    let folder = main_and_origin(root).and_then(|(main, origin)| {
+        records_database(
+            env::var(ROOT_VARIABLE).ok().as_deref(),
+            &project_name(&origin, &main),
         )
-        .1,
-    )
-    .parent()
-    .map_or_else(PathBuf::new, Path::to_path_buf);
-    let folder = records_folder(
-        env::var(ROOT_VARIABLE).ok().as_deref(),
-        &project_name(&origin, &main),
-    );
-    let last = folder
-        .as_ref()
-        .map(|folder| fs::read_to_string(folder.join(LAST_SAVE)).unwrap_or_default());
+    });
+    let last = folder.as_ref().map(|file| {
+        if file.is_file() {
+            open_store(file)
+                .ok()
+                .and_then(|database| last_save(&database).ok().flatten())
+                .unwrap_or_default()
+        } else {
+            String::new()
+        }
+    });
 
     Finding {
         what: "private records".to_owned(),
@@ -247,7 +237,7 @@ fn work() -> u8 {
     findings.extend([
         failed_calls(&metrics_log(&metrics), since),
         lost_calls(&running),
-        open_items(epic, &backlog_files(&root)),
+        backlog_finding(&root, epic),
         records_finding(&root),
         Finding {
             what: "golden file of refactors".to_owned(),
@@ -264,6 +254,12 @@ fn work() -> u8 {
     u8::from(!findings.iter().all(|finding| finding.is_ok))
 }
 
+/// The usage, printed on `--help` or `-h` (REV-009).
+const USAGE: &str = "usage: target/release/epic-check <epic> <first day>";
+
 fn main() -> ExitCode {
+    if let Some(code) = tool_use::usage(&std::env::args().skip(1).collect::<Vec<_>>(), USAGE) {
+        return code;
+    }
     tool_use::run("epic-check", "", work)
 }

@@ -1,4 +1,4 @@
-//! The metrics report of the agent's work (`docs/tooling/metrics.md`): sessions, commands by count
+//! The metrics report of the agent's work (`the records' conventions, area metrics`): sessions, commands by count
 //! and by time, the slowest calls, time and tokens per session, feature, story and task, the saved
 //! turns, where the latest turns' time went, the agent's tools, each Rust tool's uses, the rules'
 //! findings per epic, and the library's sources, as `metrics-report.ts` printed it, the findings
@@ -45,9 +45,10 @@ pub struct ReportInputs {
     pub turns: Vec<TurnRecord>,
     /// `git log --all --format=%H%x1f%aI%x1f%s%x1f%b%x1e`.
     pub log: String,
-    /// The names of the backlog's story files.
+    /// The names the backlog's story files had, `E01-F04-US-018-<topic>.md`, written by the
+    /// records' [`STORY_NAMES`] since the backlog moved there (EN-154).
     pub stories: Vec<String>,
-    /// The names of the backlog's feature files.
+    /// The names the backlog's feature files had, by [`FEATURE_NAMES`].
     pub features: Vec<String>,
     /// The library's report of its uses.
     pub sources: String,
@@ -99,6 +100,14 @@ pub fn since_start(options: &[String]) -> Result<i64, String> {
     crate::time::day_start_ms(day)
         .ok_or_else(|| format!("metrics: --since {day}: not a day written YYYY-MM-DD"))
 }
+
+/// The statement `knowledge sql` runs for the names each story's file had: its epic, its feature
+/// when it has one, its id and its topic (EN-154).
+pub const STORY_NAMES: &str = "SELECT epic || '-' || CASE WHEN feature <> '' THEN feature || '-' ELSE '' END || id || '-' || topic || '.md' FROM stories ORDER BY 1";
+
+/// The statement for the names each feature's file had: its epic, its id and its topic.
+pub const FEATURE_NAMES: &str =
+    "SELECT epic || '-' || id || '-' || topic || '.md' FROM features ORDER BY 1";
 
 /// The feature of each story, and the epic of each story and feature, from the backlog's file
 /// names: `E01-F04-US-018-….md`, `E17-RET-004-….md`, `E17-F21-….md`.
@@ -351,7 +360,7 @@ fn turn_sections(inputs: &ReportInputs) -> Vec<String> {
         "Main agent only, calls timed by the hooks since RET-002: the tools running, and the model between two calls (reading, thinking, writing the next one; gaps over 5 minutes left out).".to_owned(),
         time_table(&calls, TURNS_SHOWN),
         "## The agent's tools".to_owned(),
-        "Each tool of `docs/tooling/agent-tools.md` run through npm: how often, how long, how often it failed.".to_owned(),
+        "Each tool of `the records' tools` run through npm: how often, how long, how often it failed.".to_owned(),
         tools_table(&calls),
         "## Tools".to_owned(),
         "Each Rust tool of the workspace, as it records its own uses in `.git/metrics/tool-uses.jsonl`, whoever called it (EN-102): by tool and subcommand, a failure being an exit code other than 0.".to_owned(),

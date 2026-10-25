@@ -1,8 +1,8 @@
 //! `PostToolUse` and `PostToolUseFailure` hook on every tool, in the background (RET-001,
-//! `docs/tooling/metrics.md`, EN-104): appends one line per tool call to
+//! `the records' conventions, area metrics`, EN-104): appends one line per tool call to
 //! `.git/metrics/tool-calls.jsonl` — what ran, who ran it, when it started and ended, the size of
-//! what it read and returned, whether it failed, and the session's state at that moment as the
-//! status line last saw it — then removes the call's running file. `target/release/metrics` reads it.
+//! what it read and returned, whether it failed — then removes the call's running file.
+//! `target/release/metrics` reads it.
 //! On `SubagentStop`, of any agent type, it removes the running files the subagent left and logs
 //! nothing (EN-120).
 
@@ -61,12 +61,9 @@ fn hook() -> u8 {
     let running = folder
         .join("running")
         .join(format!("{}.json", input.get("tool_use_id").text()));
-    let step = fs::read_to_string(folder.join("step")).unwrap_or_default();
     let context = CallContext {
         branch: branch_of(&checkout),
-        snapshot: json_of(&folder.join("now.json")),
         started_at: count(&json_of(&running), "start"),
-        step: step.split('\n').next().unwrap_or_default().to_owned(),
         time: now_ms(),
     };
     let line = format!("{}\n", tool_call_record(&input, &context));
@@ -78,7 +75,7 @@ fn hook() -> u8 {
             .write_all(line.as_bytes())
     });
 
-    // The call has ended: the status line no longer shows it (track-tool-call hook).
+    // The call has ended: its start, written by the track-tool-call hook, is no longer needed.
     let _ = fs::remove_file(&running);
     u8::from(appended.is_err())
 }

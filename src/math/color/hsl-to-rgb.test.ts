@@ -30,7 +30,7 @@ describe("hslToRgb (REF-CSS-COLOR-4 §7.1, DERIV-color-spaces steps 6 and 7)", (
 
   it(
     "[F16.AC3] gives one color in 31 and every sector edge back from its HSL, unrounded",
-    // alone: 1006 ms, the median of 5 runs of its file (EN-129); 20 s is 19 times it.
+    // alone: 1006 ms, the median of 5 runs of its file; 20 s is 19 times it.
     { timeout: 20_000 },
     () => {
       expect(changedColorCount((rgb) => hslToRgb(rgbToHsl(rgb)))).toBe(0);

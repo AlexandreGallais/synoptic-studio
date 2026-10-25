@@ -18,24 +18,24 @@
         --radius: 0.6rem;
         --shadow: 0 4px 16px #0003;
       }
-      /* Side by side: the drawing, the checklist when asked, the options, the pipeline when shown;
-         a column hidden gives its room to the drawing (EN-056). */
+      /* Side by side: the drawing, the options, the pipeline when shown;
+         a column hidden gives its room to the drawing. */
       body {
         display: flex;
         height: 100vh;
         margin: 0;
         background: var(--stage);
       }
-      /* The stage: the drawing, with the toolbar and the guided test floating over it. */
+      /* The stage: the drawing, with the toolbar floating over it. */
       #stage {
         position: relative;
         flex: 1 1 0;
         min-width: 0;
         /* Clipped, not hidden: a box clipped is no scroll container, so that no focus on a button
-           of the toolbar beyond the stage scrolls it (US-084, REF-CSS-OVERFLOW-3, §3.1). */
+           of the toolbar beyond the stage scrolls it (REF-CSS-OVERFLOW-3, §3.1). */
         overflow: clip;
       }
-      /* No selection of page text starts on the drawing nor on the layer above it (F43), so that a
+      /* No selection of page text starts on the drawing nor on the layer above it, so that a
          text pressed, dragged across or double-clicked is picked as a shape, its letters never
          highlighted; the prefixed property for Safari (REF-MDN-USER-SELECT). */
       #canvas,
@@ -47,7 +47,7 @@
         height: 100%;
         background: repeating-conic-gradient(#8881 0 25%, transparent 0 50%) 0 0 / 20px 20px;
       }
-      /* A tool armed places a shape where the drawing is clicked (F35). */
+      /* A tool armed places a shape where the drawing is clicked. */
       #stage:has(
           #toolbar
             button[aria-pressed="true"]:is(#tool-rectangle, #tool-polygon, #tool-round, #tool-text)
@@ -60,7 +60,7 @@
         width: 100%;
         height: 100%;
       }
-      /* The layer above the drawing (F36): the outlines of the shapes selected and of the shape
+      /* The layer above the drawing: the outlines of the shapes selected and of the shape
          under the pointer, which the pointer passes through to the drawing; never exported. */
       #overlay {
         position: absolute;
@@ -72,7 +72,7 @@
         width: 100%;
         height: 100%;
       }
-      /* The helps (US-086, ADR-0099): the outlines, the dashed box around several shapes selected
+      /* The helps (ADR-0099): the outlines, the dashed box around several shapes selected
          and the selection rectangle's line, each one line of white and black dashes, seen on
          every color: a white stroke, then black dashes over it, as Inkscape's controls. A native
          stroke in this layer alone, never on a shape; widths and dashes set by the page. */
@@ -90,28 +90,28 @@
         fill: none;
         stroke: #000;
       }
-      /* The selection rectangle's area (F37), a light tint of the outlines' color under its line. */
+      /* The selection rectangle's area, a light tint of the outlines' color under its line. */
       #overlay path.selection-area {
         fill: color-mix(in srgb, var(--accent) 12%, transparent);
       }
-      /* A path without its own fill; a text's strokes carry their own color (US-031, US-041). */
+      /* A path without its own fill; a text's strokes carry their own color. */
       #canvas path:not([fill]) {
         fill: var(--accent);
       }
-      /* The box the shape is placed in, behind it (F07): a fill only, never a native stroke. */
+      /* The box the shape is placed in, behind it: a fill only, never a native stroke. */
       #canvas path.box {
         fill: #8883;
       }
-      /* The turned box of a turned shape (F04): a thin frame, a fill between two contours. */
+      /* The turned box of a turned shape: a thin frame, a fill between two contours. */
       #canvas path.turned-box {
         fill: #2563eb;
         fill-rule: evenodd;
       }
-      /* Its straight box, and a selected text's measured block (US-032), dashed: thin filled rectangles. */
+      /* Its straight box, and a selected text's measured block, dashed: thin filled rectangles. */
       #canvas path.straight-box {
         fill: #555;
       }
-      /* Handles of the vertices in Points mode: vertex 1 red, vertex 2 green (F03). */
+      /* Handles of the vertices in Points mode: vertex 1 red, vertex 2 green. */
       #canvas path.handle {
         cursor: pointer;
         fill: #333;
@@ -125,7 +125,7 @@
       #canvas path.handle.first {
         fill: #d04a4a;
       }
-      /* Handles of a curve (F12): a thin bar from the point to a small square, both filled. */
+      /* Handles of a curve: a thin bar from the point to a small square, both filled. */
       #canvas path.curve-handle {
         fill: #7c3aed;
       }
@@ -171,7 +171,7 @@
         color: #fff;
         background: var(--accent);
       }
-      /* Undo and Redo, disabled while there is nothing to undo or redo (F40). */
+      /* Undo and Redo, disabled while there is nothing to undo or redo. */
       #toolbar button:disabled {
         cursor: default;
         opacity: 0.4;
@@ -184,7 +184,7 @@
         color: var(--muted);
         white-space: nowrap;
       }
-      /* The list of the history's steps, opened under the toolbar (US-077). */
+      /* The list of the history's steps, opened under the toolbar. */
       #history-steps-box {
         position: relative;
         align-self: center;
@@ -223,7 +223,7 @@
         padding: 0.2rem 0.7rem;
         color: var(--muted);
       }
-      /* The zoom's percentage, its menu opened under it (US-079). */
+      /* The zoom's percentage, its menu opened under it. */
       #zoom-box {
         position: relative;
         align-self: center;
@@ -259,7 +259,7 @@
       #zoom-menu label {
         padding: 0.2rem 0.7rem;
       }
-      /* The history's memory size and steps kept, beside Undo and Redo (US-076). */
+      /* The history's memory size and steps kept, beside Undo and Redo. */
       #toolbar label {
         display: flex;
         gap: 0.3rem;
@@ -278,86 +278,6 @@
         width: 1.1rem;
         height: 1.1rem;
         fill: currentcolor;
-      }
-      /* The guided test: a card at the bottom of the stage, shown only when it has steps. */
-      #guide {
-        position: absolute;
-        bottom: 0.75rem;
-        left: 0.75rem;
-        width: min(28rem, calc(100% - 1.5rem));
-        padding: 0.75rem 1rem;
-        background: var(--panel);
-        border-left: 4px solid var(--accent);
-        border-radius: var(--radius);
-        box-shadow: var(--shadow);
-      }
-      #guide h2 {
-        margin: 0;
-        font-size: 0.8rem;
-        font-weight: normal;
-        color: var(--muted);
-      }
-      #guide h3 {
-        margin: 0.2rem 0 0.4rem;
-        font-size: 1rem;
-      }
-      #guide p {
-        margin: 0.3rem 0;
-      }
-      /* Large targets, clicked over and over during a guided test (VAL-003). */
-      #guide-buttons {
-        display: flex;
-        gap: 0.5rem;
-      }
-      #guide-buttons button {
-        flex: 1;
-        min-height: 2.5rem;
-        font: inherit;
-      }
-      /* The checklist of an epic (US-051): a scrolling column right of the drawing, never over it
-         (EN-056), a box per line. */
-      #checklist {
-        flex: 0 0 24rem;
-        box-sizing: border-box;
-        padding: 0.75rem 1rem;
-        overflow: auto;
-        background: var(--panel);
-        border-left: 4px solid var(--accent);
-      }
-      #checklist h2 {
-        margin: 0 0 0.5rem;
-        font-size: 1rem;
-      }
-      #checklist-lines {
-        padding: 0;
-        margin: 0;
-        list-style: none;
-      }
-      #checklist-lines li + li {
-        border-top: 1px solid var(--line);
-      }
-      #checklist-lines label {
-        display: grid;
-        grid-template-columns: auto auto 1fr;
-        gap: 0.1rem 0.5rem;
-        padding: 0.4rem 0;
-        cursor: pointer;
-      }
-      #checklist-lines input {
-        grid-row: span 2;
-        margin-top: 0.15rem;
-      }
-      .checklist-feature {
-        grid-row: span 2;
-        font-size: 0.8rem;
-        color: var(--muted);
-      }
-      .checklist-see {
-        grid-column: 3;
-        color: var(--muted);
-      }
-      #checklist-lines input:checked ~ span {
-        opacity: 0.55;
       }
       aside {
         flex: 0 0 20rem;
@@ -405,7 +325,7 @@
         display: block;
         margin-block: 0.35rem;
       }
-      /* A color: its swatch, which opens the picker, its hexadecimal and its opacity (US-035). */
+      /* A color: its swatch, which opens the picker, its hexadecimal and its opacity. */
       .color-pair {
         grid-template-columns: 2.1rem 1fr 1fr;
         align-items: end;
@@ -418,7 +338,7 @@
         padding: 0;
         cursor: pointer;
       }
-      /* A font imported or installed (US-036): the file picker drawn as a button. */
+      /* A font imported or installed: the file picker drawn as a button. */
       #font-sources {
         display: flex;
         gap: 0.5rem;
@@ -435,7 +355,7 @@
         border: 1px solid var(--line);
         border-radius: 0.35rem;
       }
-      /* The first thing to do in the Text tool (US-056): read the installed fonts. */
+      /* The first thing to do in the Text tool: read the installed fonts. */
       #installed-fonts {
         font-weight: 600;
         color: #fff;
@@ -456,7 +376,7 @@
         font-size: 0.85rem;
         color: var(--muted);
       }
-      /* The faces a drawing does not embed (US-036), one per line. */
+      /* The faces a drawing does not embed, one per line. */
       #font-left-out {
         margin: 0.35rem 0;
         padding-left: 1.1rem;
@@ -466,7 +386,7 @@
         font-size: 0.85rem;
         color: #d04a4a;
       }
-      /* The picker (US-035): HTML elements painted by CSS gradients, outside the SVG drawn. */
+      /* The picker: HTML elements painted by CSS gradients, outside the SVG drawn. */
       #color-picker {
         display: grid;
         gap: 0.5rem;
@@ -611,7 +531,7 @@
         font-size: 0.9rem;
         color: var(--muted);
       }
-      /* The label rule above, and rules by id such as #turn, would override the hidden attribute (US-007 review, US-031). */
+      /* The label rule above, and rules by id such as #turn, would override the hidden attribute. */
       [hidden] {
         display: none !important;
       }
@@ -785,21 +705,7 @@
           </button>
         </p>
       </nav>
-      <section id="guide" aria-label="Guided test" hidden>
-        <h2>Guided test — step <span id="guide-number"></span> / <span id="guide-count"></span></h2>
-        <h3 id="guide-title"></h3>
-        <p id="guide-explanation"></p>
-        <p><strong>Look at:</strong> <span id="guide-look"></span></p>
-        <p id="guide-buttons">
-          <button id="guide-previous" type="button">Previous</button>
-          <button id="guide-next" type="button">Next</button>
-        </p>
-      </section>
     </div>
-    <section id="checklist" aria-labelledby="checklist-heading" hidden>
-      <h2 id="checklist-heading">Checklist of <span id="checklist-name"></span></h2>
-      <ol id="checklist-lines"></ol>
-    </section>
     <aside id="panel" aria-label="Panel">
       <h1 id="shape-title">Rectangle</h1>
       <!-- The kind of the shape the panel edits, kept as the page's state; a placed shape sets it. -->
@@ -812,7 +718,7 @@
         <option value="none" hidden>No shape selected</option>
         <option value="several" hidden>Several shapes selected</option>
       </select>
-      <!-- The fields of the shape edited, hidden while none is selected (F36). -->
+      <!-- The fields of the shape edited, hidden while none is selected. -->
       <div id="shape-panel">
         <section id="polygon-options" aria-labelledby="polygon-heading">
           <h2 id="polygon-heading">Polygon</h2>
@@ -1195,7 +1101,7 @@ Running</textarea>
           </fieldset>
         </section>
         <!-- One shape's position and size: text fields acting as number fields, as several
-             shapes' (US-085), which keep the + of a relative value a number field drops. -->
+             shapes', which keep the + of a relative value a number field drops. -->
         <section id="size-section" aria-labelledby="size-heading">
           <h2 id="size-heading">Size</h2>
           <div class="pair">
@@ -1300,7 +1206,7 @@ Running</textarea>
       </div>
       <!-- The values of several shapes selected, and a value typed for all of them, relative with a
            sign (F38): text fields acting as number fields, which keep the + of a relative value a
-           number field drops (US-085). -->
+           number field drops. -->
       <fieldset id="several-fields" hidden>
         <legend>Position and size</legend>
         <div class="pair">

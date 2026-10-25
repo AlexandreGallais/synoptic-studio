@@ -10,5 +10,8 @@ publish.workspace = true
 calendar = { path = "../calendar" }
 git-repository = { path = "../git-repository" }
 
+[dev-dependencies]
+test-support = { path = "../test-support" }
+
 [lints]
 workspace = true

@@ -9,7 +9,6 @@ import { bytesToBase64 } from "./bytes-to-base64";
  * @param mediaType - its media type, such as `font/ttf`
  * @param bytes - the content of the file
  * @returns the `data:` URL, holding the whole file
- * @see REF-RFC-2397
  */
 export function formatDataUrl(mediaType: string, bytes: Readonly<Uint8Array>): string {
   return `data:${mediaType};base64,${bytesToBase64(bytes)}`;

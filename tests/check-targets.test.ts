@@ -4,6 +4,8 @@ import { join } from "node:path";
 
 import { describe, expect, it } from "vitest";
 
+import { CHECK_ALL_LANES } from "./check-all-lanes";
+
 /** Repository root. */
 const ROOT = join(import.meta.dirname, "..");
 
@@ -13,11 +15,17 @@ const WALK_TIMEOUT = 30_000;
 /** The start of a script run under the heavy lock (EN-047), a crate of the workspace (EN-068). */
 const HEAVY_LOCK = /^cargo run --release -q -p heavy-lock -- /u;
 
-/** The command of the repository's formatter, oxfmt then the tables without padding (EN-073). */
+/** The repository's formatter, oxfmt then the tables without padding (EN-073), as `fix` runs it. */
 const FORMAT = "cargo run --release -q -p format --";
 
-/** The command of the project's linter, run after oxlint (EN-075). */
+/** The formatter as `check:all` runs it, its release binary built before the lanes. */
+const FORMAT_BINARY = "target/release/format";
+
+/** The project's linter, run after oxlint (EN-075), as `fix` runs it. */
 const PROJECT_LINT = "cargo run --release -q -p lint --";
+
+/** The project's linter as `check:all` runs it. */
+const PROJECT_LINT_BINARY = "target/release/lint";
 
 /** oxfmt, as npm installs it. */
 const OXFMT = join(ROOT, "node_modules", ".bin", "oxfmt");
@@ -59,6 +67,24 @@ function readScripts(): ReadonlyMap<string, string> {
 /** Scripts of `package.json`. */
 const SCRIPTS = readScripts();
 
+/** The checks of `check:all`, by name, with their commands. */
+const CHECKS: ReadonlyMap<string, string> = new Map(
+  CHECK_ALL_LANES.map(({ command, name }): [string, string] => [name, command]),
+);
+
+/**
+ * The command of a script of `package.json` or, for a name `check:` given, of a check of
+ * `check:all`.
+ *
+ * @param name - `fix`, or `check:lint`, `check:format:check` for a check
+ * @returns its command, empty when it is missing
+ */
+function commandOf(name: string): string {
+  return name.startsWith("check:") && CHECKS.has(name.slice("check:".length))
+    ? (CHECKS.get(name.slice("check:".length)) ?? "")
+    : (SCRIPTS.get(name) ?? "");
+}
+
 /** Files tracked by Git. */
 const TRACKED = execFileSync("git", ["ls-files"], { cwd: ROOT, encoding: "utf8" })
   .split("\n")
@@ -67,12 +93,12 @@ const TRACKED = execFileSync("git", ["ls-files"], { cwd: ROOT, encoding: "utf8" 
 /**
  * Targets given to a tool in one command of a script: its arguments that are not options.
  *
- * @param script - the npm script's name
+ * @param script - the npm script's name, or `check:<name>` for a check of `check:all`
  * @param tool - the command's start (`oxlint`, the formatter's `cargo run … --`)
  * @returns its paths and globs, unquoted
  */
 function targetsOf(script: string, tool: string): readonly string[] {
-  const command = (SCRIPTS.get(script) ?? "")
+  const command = commandOf(script)
     .split("&&")
     .map((part) => part.trim())
     .find((part) => part.startsWith(`${tool} `));
@@ -171,7 +197,7 @@ function oxfmtCount(targets: readonly string[]): number {
 
 describe("check tools given explicit targets (EN-045)", () => {
   it("[F18.AC20] gives the formatter the same targets in format:check and fix", () => {
-    const targets = targetsOf("format:check", FORMAT);
+    const targets = targetsOf("check:format:check", FORMAT_BINARY);
 
     expect(targets.length).toBeGreaterThan(0);
     expect(targetsOf("fix", FORMAT)).toEqual(targets);
@@ -180,7 +206,7 @@ describe("check tools given explicit targets (EN-045)", () => {
   it("[F19.AC5] formats with the formatter only, staged files included, never Prettier", () => {
     // The pre-commit hook's tasks, `tools/git-hooks/src/staged.rs`, are tested by their crate.
     const staged = readFileSync(join(ROOT, "tools", "git-hooks", "src", "staged.rs"), "utf8");
-    const scripts = SCRIPTS.values().toArray().join("\n");
+    const scripts = [...SCRIPTS.values(), ...CHECKS.values()].join("\n");
 
     expect(staged).toContain('krate: "format"');
     expect(`${staged}\n${scripts}`).not.toMatch(/\bprettier /u);
@@ -188,7 +214,7 @@ describe("check tools given explicit targets (EN-045)", () => {
   });
 
   it("[F19.AC1] gives oxlint the same targets in lint and fix, every tracked TypeScript file", () => {
-    const targets = targetsOf("lint", "oxlint");
+    const targets = targetsOf("check:lint", "oxlint");
     const sources = TRACKED.filter((path) => path.endsWith(".ts"));
 
     expect(targets.length).toBeGreaterThan(0);
@@ -201,18 +227,21 @@ describe("check tools given explicit targets (EN-045)", () => {
   });
 
   it("[F19.AC3] gives the project's linter oxlint's targets in lint and fix, after oxlint", () => {
-    const targets = targetsOf("lint", "oxlint");
+    const targets = targetsOf("check:lint", "oxlint");
+    const expected = targetsOf("check:lint", PROJECT_LINT_BINARY);
 
-    for (const script of ["lint", "fix"]) {
-      const commands = (SCRIPTS.get(script) ?? "").split("&&").map((part) => part.trim());
+    for (const [script, linter] of [
+      ["check:lint", PROJECT_LINT_BINARY],
+      ["fix", PROJECT_LINT],
+    ] as const) {
+      const commands = commandOf(script)
+        .split("&&")
+        .map((part) => part.trim());
 
-      expect(targetsOf(script, PROJECT_LINT)).toEqual(targetsOf("lint", PROJECT_LINT));
+      expect(targetsOf(script, linter)).toEqual(expected);
+      expect(targets.filter((target) => !targetsOf(script, linter).includes(target))).toEqual([]);
 
-      expect(targets.filter((target) => !targetsOf(script, PROJECT_LINT).includes(target))).toEqual(
-        [],
-      );
-
-      expect(commands.findIndex((part) => part.startsWith(PROJECT_LINT))).toBe(
+      expect(commands.findIndex((part) => part.startsWith(linter))).toBe(
         commands.findIndex((part) => part.startsWith("oxlint ")) + 1,
       );
     }
@@ -222,7 +251,7 @@ describe("check tools given explicit targets (EN-045)", () => {
     const pages = TRACKED.filter((path) => path.endsWith(".md"));
 
     expect(pages.length).toBeGreaterThan(0);
-    expect(leftOut(targetsOf("lint", PROJECT_LINT), pages)).toEqual([]);
+    expect(leftOut(targetsOf("check:lint", PROJECT_LINT_BINARY), pages)).toEqual([]);
   });
 
   it(
@@ -231,7 +260,7 @@ describe("check tools given explicit targets (EN-045)", () => {
     // 4.3 s once seen alone (EN-054).
     { timeout: WALK_TIMEOUT },
     () => {
-      const named = oxfmtCount(targetsOf("format:check", FORMAT));
+      const named = oxfmtCount(targetsOf("check:format:check", FORMAT_BINARY));
 
       expect(named).toBeGreaterThan(0);
       expect(named).toBe(oxfmtCount([]));
@@ -239,40 +268,37 @@ describe("check tools given explicit targets (EN-045)", () => {
   );
 
   it("[F18.AC20] runs the secret scan on the tracked files only", () => {
-    expect(SCRIPTS.get("lint:secrets")).toBe("cargo run --release -q -p secret-scan");
+    expect(CHECKS.get("lint:secrets")).toBe("target/release/secret-scan");
   });
 });
 
 describe("heavy commands and Rust tools (AUD-020)", () => {
-  it.each(["test", "test:timings", "check:all", "golden:check", "docs:build", "mutate"])(
-    "[F18.AC3] runs %s through the heavy lock",
-    (script) => {
-      expect(SCRIPTS.get(script)).toMatch(HEAVY_LOCK);
-    },
-  );
+  it.each(["test", "check:all"])("[F18.AC3] runs %s through the heavy lock", (script) => {
+    expect(SCRIPTS.get(script)).toMatch(HEAVY_LOCK);
+  });
 
-  it("[F18.AC7] merges stories one at a time under the merge lock", () => {
-    expect(SCRIPTS.get("story:finish")).toMatch(
-      new RegExp(
-        String.raw`${HEAVY_LOCK.source}--lock merge cargo run --release -q -p repo-tools --bin story-finish --$`,
-        "u",
-      ),
-    );
+  it("[F18.AC3] [F18.AC7] calls the agent's heavy tools under the heavy lock, story-finish under the merge lock", () => {
+    // Their scripts removed (ADR-0103), the agent calls their binaries through the lock's.
+    const agents = readFileSync(join(ROOT, "AGENTS.md"), "utf8");
+
+    expect(agents).toContain("target/release/heavy-lock --lock merge target/release/story-finish");
+
+    expect(agents).toContain("target/release/heavy-lock target/release/mutate");
   });
 
   it("[F19.AC9] [F33.AC1] checks the whole Rust workspace in check:rust and rust:coverage, its binaries built before the lanes", () => {
     // The tests under the coverage floor are a lane of their own since EN-130, `rust:coverage`
     // (`[F29.AC2]` in tools/repo-tools/tests/check_all.rs).
-    expect(SCRIPTS.get("check:rust")?.split(" && ")).toEqual([
+    expect(CHECKS.get("check:rust")?.split(" && ")).toEqual([
       "cargo fmt --all --check",
       "cargo clippy --workspace --all-targets --locked --quiet",
-      "npm run --silent rust:advisories",
+      expect.stringContaining("cargo deny --offline check advisories"),
       "cargo check --workspace --all-targets --locked --quiet --target x86_64-pc-windows-msvc",
       // The release binaries the hooks and the agent call by their path, none older than its sources (ADR-0078).
-      "npm run --silent rust:fresh",
+      "target/release/stale-binaries",
     ]);
 
-    expect(SCRIPTS.get("rust:coverage")).toContain(
+    expect(CHECKS.get("rust:coverage")).toContain(
       "cargo llvm-cov --workspace --locked --quiet --summary-only --fail-under-lines 95 --fail-under-functions 95",
     );
   });
@@ -293,10 +319,10 @@ describe("heavy commands and Rust tools (AUD-020)", () => {
   });
 
   it("[F19.AC9] checks the crates against the RustSec advisories offline, failing aloud without the tool", () => {
-    const advisories = SCRIPTS.get("rust:advisories") ?? "";
+    const advisories = CHECKS.get("check:rust") ?? "";
 
     expect(advisories).toMatch(
-      /^cargo deny --version > \/dev\/null 2>&1 \|\| \{ echo '[^']*cargo install --locked cargo-deny@0\.20\.2[^']*' >&2; exit 1; \}; /u,
+      /\{ cargo deny --version > \/dev\/null 2>&1 \|\| \{ echo '[^']*cargo install --locked cargo-deny@0\.20\.2[^']*' >&2; exit 1; \}; /u,
     );
 
     expect(advisories).toContain(
@@ -310,7 +336,7 @@ describe("heavy commands and Rust tools (AUD-020)", () => {
     // `cargo deny` runs in the Rust lane and in the test lane, by `[F19.AC9]`'s advisories test
     // (EN-126): both fetch the database just before the lane's step.
     expect(workflow).toMatch(
-      /- if: matrix\.cargo-deny\n {8}run: cargo deny fetch db\n(?: {6}#.*\n)* {6}- run: for script in \$SCRIPTS; do npm run "\$script"; done\n/u,
+      /- if: matrix\.cargo-deny\n {8}run: cargo deny fetch db\n(?: {6}#.*\n)* {6}- run: for lane in \$LANES; do target\/release\/check-all --lane "\$lane"; done\n/u,
     );
   });
 
@@ -323,7 +349,7 @@ describe("heavy commands and Rust tools (AUD-020)", () => {
   });
 
   it("[F19.AC9] [F33.AC1] runs the workspace's tests under a floor of lines and functions, failing aloud without the tool", () => {
-    const coverage = SCRIPTS.get("rust:coverage") ?? "";
+    const coverage = CHECKS.get("rust:coverage") ?? "";
 
     expect(coverage).toMatch(
       /^cargo llvm-cov --version > \/dev\/null 2>&1 \|\| \{ echo '[^']*cargo install --locked cargo-llvm-cov@0\.9\.1[^']*' >&2; exit 1; \}; /u,
@@ -334,23 +360,10 @@ describe("heavy commands and Rust tools (AUD-020)", () => {
     );
   });
 
-  it("[F33.AC1] gives the floor of 95 % in the rules and the pages that name it", () => {
+  it("[F33.AC1] gives the floor of 95 % in the rules that name it", () => {
     expect(readFileSync(join(ROOT, ".claude/rules/tooling.md"), "utf8")).toContain(
       "`rust:coverage` (95 % of lines and functions covered)",
     );
-
-    const coverageRow =
-      readFileSync(join(ROOT, "docs/tooling/commands.md"), "utf8")
-        .split("\n")
-        .find((line) => line.startsWith("| `npm run rust:coverage` |")) ?? "";
-    const coverageBullet =
-      readFileSync(join(ROOT, "docs/tooling/agent-tools.md"), "utf8")
-        .split("\n")
-        .find((line) => line.startsWith("- **Coverage**: `npm run rust:coverage`")) ?? "";
-
-    expect(coverageRow).toContain("95 % of lines or of functions");
-    expect(coverageBullet).toContain("fails under 95 % of lines or of functions");
-    expect([coverageRow, coverageBullet].filter((line) => line.includes("93 %"))).toEqual([]);
   });
 });
 
@@ -390,8 +403,8 @@ describe("the Rust workspace at the root (EN-068)", () => {
   });
 
   it("[F19.AC9] leaves the build output target/ to Git, oxlint, the formatter and the secret scan", () => {
+    // The secret scan skips what `.gitignore` names (`tools/secret-scan`), `target/` among them.
     expect(readFileSync(join(ROOT, ".gitignore"), "utf8")).toMatch(/^\/target\/$/mu);
-    expect(readFileSync(join(ROOT, ".secret-scan-ignore"), "utf8")).toMatch(/^target$/mu);
     expect(readFileSync(join(ROOT, ".oxlintrc.json"), "utf8")).toContain('"target/**"');
     expect(readFileSync(join(ROOT, ".oxfmtrc.json"), "utf8")).toMatch(/^ {4}"target",?$/mu);
   });
@@ -427,19 +440,17 @@ describe("the Rust tools run as crates of the workspace (EN-068)", () => {
     // only when the binary is missing, a checkout not built yet (EN-108).
     expect(hooks[0]).toMatch(/^tool git-hooks git-hooks pre-commit$/mu);
 
-    // The pushed refs read once, handed to the shared files' check and to the deletions' (REV-008).
-    expect(hooks[1]).toMatch(
-      /^printf '%s\\n' "\$refs" \| tool shared-files refuse-shared-files$/mu,
-    );
-
     expect(hooks[1]).toMatch(/^tool git-hooks git-hooks branch$/mu);
+
+    // The pushed refs read once, handed to the deletions' check (REV-008); no shared files'
+    // check since ADR-0102.
+    expect(hooks[1]).not.toContain("refuse-shared-files");
 
     expect(hooks[1]).toContain(
       `if printf '%s\\n' "$refs" | tool git-hooks git-hooks push-deletes-only; then exit 0; fi`,
     );
 
     expect(hooks[2]).toMatch(/^tool git-hooks git-hooks commit-msg "\$1"$/mu);
-    expect(hooks[2]).toContain('then tool rule-docs check-rule-docs "$1"; fi');
     // After a pull, the binaries rebuilt when a Rust input changed (EN-131).
     expect(hooks[3]).toMatch(/^tool git-hooks git-hooks post-merge "\$@"$/mu);
     expect(hooks[4]).toMatch(/^tool git-hooks git-hooks post-rewrite "\$@"$/mu);
@@ -450,18 +461,19 @@ describe("the Rust tools run as crates of the workspace (EN-068)", () => {
     );
   });
 
-  it("[F33.AC2] shows at a done commit the notes its story file keeps for the main thread", () => {
+  it("checks no done commit any more: the story's status and rules live in the records (EN-154)", () => {
     const hook = readFileSync(join(ROOT, ".githooks", "commit-msg"), "utf8");
 
-    // `move-rows --notes` names each note with its story and writes nothing (`rows.rs`).
-    expect(hook).toContain(
-      `if grep -q '^Closes:' "$1"; then tool shared-files move-rows --notes "$(git branch --show-current)"; fi`,
-    );
+    // `rule-docs` and `move-rows --notes` ran at a `done` commit, gone with the story files.
+    expect(hook).not.toMatch(/grep -q '\^Closes:'|tool rule-docs|move-rows/u);
   });
 
-  it("[F19.AC9] builds the release binaries of the workspace from prepare", () => {
-    expect(SCRIPTS.get("rust:build")).toBe("cargo build --release --workspace --locked");
-    expect(SCRIPTS.get("prepare")).toBe("npm run rust:build && target/release/git-hooks install");
+  it("[F19.AC9] builds the release binaries of the workspace from prepare and before the lanes", () => {
+    const build = "cargo build --release --workspace --locked";
+
+    expect(SCRIPTS.get("prepare")).toBe(`${build} && target/release/git-hooks install`);
+    expect(CHECKS.has("rust:build")).toBe(false);
+    expect(commandOf("check:lint")).not.toContain("cargo ");
   });
 });
 

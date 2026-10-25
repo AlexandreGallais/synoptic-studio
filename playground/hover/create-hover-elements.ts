@@ -6,13 +6,12 @@ import type { Point } from "../../src";
 /**
  * Creates the outline of the shape under a point as a click reaches it (`readShapeAt`), found on
  * its whole contour: the dashed line of the helps on its contour as drawn (`createOutlineElements`),
- * of classes `hover-light` and `hover` (US-086).
+ * of classes `hover-light` and `hover`.
  *
  * @kind procedure
  * @param document - page document
  * @param point - the point of the drawing the pointer is over; undefined for none
  * @returns their `<path>` elements; nothing when no shape is under the point
- * @see docs/domain/interaction.md#_2-selector
  */
 export function createHoverElements(
   document: Document,

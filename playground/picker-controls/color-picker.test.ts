@@ -7,7 +7,7 @@ import {
   chooseShapeKind,
   clickElement,
   commitField,
-  openServedPage,
+  openPage,
   pressKey,
   pressPointer,
   readDisplay,
@@ -51,9 +51,9 @@ function readAttribute(selector: string, name: string): string | null {
   return selectPageElement(selector).getAttribute(name);
 }
 
-describe("Color picker: opening, sliders and values (US-035)", () => {
+describe("Color picker: opening, sliders and values", () => {
   beforeEach(() => {
-    openServedPage("");
+    openPage("");
     chooseShapeKind("text");
     chooseOption("text-weight", "400");
     chooseOption("text-fit", "content");
@@ -194,7 +194,7 @@ describe("Color picker: opening, sliders and values (US-035)", () => {
   });
 
   it("[F16.AC2] sets a value typed, refused when left empty", () => {
-    // 400 − 360: the hue an angle, going round (AUD-046).
+    // 400 − 360: the hue an angle, going round.
     typeAndLeave("color-hue-value", "400");
     expect(readValue("color-hue-value")).toBe("40");
 

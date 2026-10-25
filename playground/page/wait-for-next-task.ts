@@ -7,7 +7,6 @@
  * @kind procedure
  * @param view - the page's window
  * @returns once the page has run the tasks that were waiting
- * @see REF-WEBDEV-LONG-TASKS
  */
 export async function waitForNextTask(view: Pick<Window, "setTimeout">): Promise<void> {
   await new Promise<void>((resolve) => {

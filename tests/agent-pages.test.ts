@@ -6,22 +6,25 @@ import { describe, expect, it } from "vitest";
 /** Root of the repository. */
 const ROOT = join(import.meta.dirname, "..");
 
-/** The pages the agent reads beside `.claude/`'s, from the root. */
-const PAGES = ["AGENTS.md", "CLAUDE.md", "docs/tooling/agent-tools.md"];
+/**
+ * The pages the agent reads beside `.agents/`'s, from the root; everything else it reads is in
+ * the records (AUD-054).
+ */
+const PAGES = ["AGENTS.md", "CLAUDE.md"];
 
 /** A command `npm run`, its silent flag allowed, and the script it names. */
 const NPM_RUN = /\bnpm run(?: (?:-s|--silent))? (?<script>[a-z][\w:-]*)/gu;
 
 /**
- * The Markdown pages of `.claude/` — its agents, rules and skills — from the root, the worktrees
- * of the main checkout left out.
+ * The Markdown pages of `.agents/` — its agents, rules and skills, which `.claude/` links to — from
+ * the root.
  *
  * @returns each page's path, `/`-separated
  */
-function claudePages(): readonly string[] {
-  return readdirSync(join(ROOT, ".claude"), { recursive: true })
-    .map((path) => `.claude/${String(path).replaceAll("\\", "/")}`)
-    .filter((path) => path.endsWith(".md") && !path.startsWith(".claude/worktrees/"));
+function agentPages(): readonly string[] {
+  return readdirSync(join(ROOT, ".agents"), { recursive: true })
+    .map((path) => `.agents/${String(path).replaceAll("\\", "/")}`)
+    .filter((path) => path.endsWith(".md"));
 }
 
 /**
@@ -85,9 +88,9 @@ describe("the agent's pages (ADR-0082)", () => {
     ]);
   });
 
-  it("[F33.AC2] names no binary of target/release/ through npm run in AGENTS.md, CLAUDE.md, .claude/ and agent-tools.md", () => {
+  it("[F33.AC2] names no binary of target/release/ through npm run in AGENTS.md, CLAUDE.md and .agents/", () => {
     const known = scripts();
-    const pages = [...PAGES, ...claudePages()];
+    const pages = [...PAGES, ...agentPages()];
 
     expect(pages.length).toBeGreaterThan(PAGES.length);
 

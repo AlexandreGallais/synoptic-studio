@@ -5,12 +5,11 @@ import type { BoundingBox } from "../../src";
 
 /**
  * Writes the x, y, width and height of a straight box in the line under the position fields,
- * with at most 5 decimals (Q10): a shape's (F04) and a turned text's (US-039).
+ * with at most 5 decimals (Q10): a shape's and a turned text's.
  *
  * @kind procedure
  * @param document - page document
  * @param box - straight box of the drawn shape or text
- * @see docs/backlog/stories/E15-F14-US-039-straight-box-of-a-turned-text.md
  */
 export function writeStraightBoxLine(document: Document, box: BoundingBox): void {
   const size = boxSize(box);

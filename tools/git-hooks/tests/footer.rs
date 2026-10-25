@@ -32,14 +32,15 @@ fn reads_the_story_of_a_story_branch_only() {
 }
 
 #[test]
-fn f21_ac4_accepts_a_task_or_the_done_footer_of_the_branch_s_story() {
+fn f21_ac4_accepts_a_task_footer_of_the_branch_s_story() {
     assert!(carries_footer("feat: x\n\nRefs: EN-108.T3\n", "EN-108"));
     assert!(carries_footer(
         "feat: x\n\nRefs: ADR-0076, EN-108.T12\n",
         "EN-108"
     ));
-    assert!(carries_footer("docs: x\n\nCloses: EN-108\n", "EN-108"));
-    // Another story, the story without its task, a task in the body's text, a `Closes:` of a task.
+    // A `Closes:` footer, of the done commits a story no longer has (AUD-053), another story, the
+    // story without its task, a task in the body's text, a `Closes:` of a task.
+    assert!(!carries_footer("docs: x\n\nCloses: EN-108\n", "EN-108"));
     assert!(!carries_footer("feat: x\n\nRefs: EN-109.T3\n", "EN-108"));
     assert!(!carries_footer("feat: x\n\nRefs: EN-108\n", "EN-108"));
     assert!(!carries_footer(
@@ -62,7 +63,7 @@ fn f21_ac4_refuses_a_story_commit_without_its_footer_naming_the_one_expected() {
         refusal.as_deref(),
         Some(
             "✖   a commit on the story branch chore/en-108-git-hooks carries the footer \
-             `Refs: EN-108.T<n>` (a task) or `Closes: EN-108` (the done commit) [story-footer]"
+             `Refs: EN-108.T<n>`, a task of its story [story-footer]"
         )
     );
     // Its footer, another branch, or a message commitlint ignores: nothing to refuse.

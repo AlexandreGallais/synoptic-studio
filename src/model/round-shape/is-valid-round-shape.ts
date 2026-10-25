@@ -11,7 +11,7 @@ import type { RoundShape } from "./round-shape";
  * @kind domain
  * @param shape - round shape to check
  * @returns `true` when every value is allowed
- * @see docs/domain/shapes.md#round-shape-f10
+ * @see RULE-shapes-round-shape
  */
 export function isValidRoundShape(shape: RoundShape): boolean {
   return isModelSize(shape.width) && isModelSize(shape.height) && isShapePlacement(shape);

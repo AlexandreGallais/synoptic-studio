@@ -4,7 +4,7 @@ import type { Text } from "../text";
 const AUTOMATIC = 0;
 
 /**
- * Whether a text's line height is automatic, the font's own, written 0 (F14, provisional,
+ * Whether a text's line height is automatic, the font's own, written 0 (provisional,
  * VAL-015), rather than an integer chosen from 1 (`DERIV-text-box`, step 7).
  *
  * @kind domain

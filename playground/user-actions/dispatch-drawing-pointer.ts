@@ -19,7 +19,6 @@ export type PointerKeys = {
  * @kind procedure
  * @param type - `pointerdown`, `pointermove`, `pointerup`, `pointercancel` or `click`
  * @returns 1 for the main button, 0 for none
- * @see docs/domain/interaction.md#_2-selector
  */
 function readHeldButtons(type: string): number {
   return type === "pointerdown" || type === "pointermove" ? 1 : 0;
@@ -34,7 +33,6 @@ function readHeldButtons(type: string): number {
  * @param client - where it is in the window
  * @param keys - the keys held
  * @returns the event, bubbling
- * @see docs/domain/interaction.md#_2-selector
  */
 function createDrawingEvent(type: string, client: Point, keys: PointerKeys): MouseEvent {
   const init = {
@@ -58,7 +56,6 @@ function createDrawingEvent(type: string, client: Point, keys: PointerKeys): Mou
  * @param type - `pointerdown`, `pointermove`, `pointerup`, `pointercancel` or `click`
  * @param point - the point of the drawing, possibly fractional
  * @param keys - the keys held
- * @see docs/domain/interaction.md#_2-selector
  */
 export function dispatchDrawingPointer(type: string, point: Point, keys: PointerKeys): void {
   const canvas = selectPageElement("#canvas");

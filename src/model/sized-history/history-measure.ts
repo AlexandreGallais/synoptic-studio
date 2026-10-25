@@ -1,7 +1,7 @@
 import type { HeldCounts } from "../held-shapes";
 
 /**
- * What a history holds beyond its present, kept from step to step (EN-147): its size, as
+ * What a history holds beyond its present, kept from step to step: its size, as
  * `historySize` counts it, and how many of its past and future states hold each shape, each state
  * counting a shape once (ADR-0097).
  */

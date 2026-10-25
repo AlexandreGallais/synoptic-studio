@@ -11,8 +11,7 @@ import {
   clickPoint,
   commitField,
   dispatchDrawingPointer,
-  openOnStep,
-  openServedPage,
+  openPage,
   pressPointer,
   readDisabledState,
   readModel,
@@ -199,9 +198,9 @@ const DRAWN = [
   { x: 400, y: 20 },
 ];
 
-describe("Undo and Redo, by the keys, what is done on the drawing (US-074)", () => {
+describe("Undo and Redo, by the keys, what is done on the drawing", () => {
   beforeEach(() => {
-    openServedPage("");
+    openPage("");
     setElementBox("#canvas", { height: 600, left: 100, top: 50, width: 800 });
     drawShapes();
   });
@@ -453,7 +452,7 @@ describe("Undo and Redo, by the keys, what is done on the drawing (US-074)", () 
     expect(readValue("width")).toBe("100");
     expect(readShape(0)).toMatchObject({ width: 100 });
 
-    // Typed, not applied (US-085): W keeps Ctrl + Z, the shape still 100 wide.
+    // Typed, not applied: W keeps Ctrl + Z, the shape still 100 wide.
     typeValue("width", "1");
 
     const typed = press("#width", UNDO);
@@ -511,9 +510,9 @@ describe("Undo and Redo, by the keys, what is done on the drawing (US-074)", () 
   });
 });
 
-describe("the Undo and Redo buttons and the history's size (US-074)", () => {
+describe("the Undo and Redo buttons and the history's size", () => {
   beforeEach(() => {
-    openServedPage("");
+    openPage("");
     setElementBox("#canvas", { height: 600, left: 100, top: 50, width: 800 });
   });
 
@@ -619,15 +618,6 @@ describe("the Undo and Redo buttons and the history's size (US-074)", () => {
     expect(readDisabledState("history-undo")).toBe("true");
     expect(readText("#history-size")).toBe("History 0 B of 100 MB");
   });
-
-  it("[F40.AC1] empties the history at a step of the guided test", () => {
-    openServedPage("?guide=epic");
-    holdRight(1);
-    clickElement("guide-next");
-
-    expect(readDisabledState("history-undo")).toBe("true");
-    expect(readDisabledState("history-redo")).toBe("true");
-  });
 });
 
 /**
@@ -722,9 +712,9 @@ function readEditedText(): Text {
   return model;
 }
 
-describe("Undo and Redo what is typed and chosen in the panel (US-075)", () => {
+describe("Undo and Redo what is typed and chosen in the panel", () => {
   beforeEach(() => {
-    openServedPage("");
+    openPage("");
     setElementBox("#canvas", { height: 600, left: 100, top: 50, width: 800 });
     drawShapes();
     clickDrawing(IN_A, NO_KEY);
@@ -734,7 +724,7 @@ describe("Undo and Redo what is typed and chosen in the panel (US-075)", () => {
     for (const typed of ["1", "15", "150"]) {
       typeValue("width", typed);
 
-      // Typed, not applied (US-085): A still 100 wide, drawn 150 wide at Enter only.
+      // Typed, not applied: A still 100 wide, drawn 150 wide at Enter only.
       expect(readShapeModel()).toMatchObject({ width: 100 });
     }
 
@@ -947,10 +937,10 @@ describe("Undo and Redo what is typed and chosen in the panel (US-075)", () => {
   });
 });
 
-describe("Undo and Redo the buttons of the panel (US-075)", () => {
+describe("Undo and Redo the buttons of the panel", () => {
   beforeEach(() => {
     // A rectangle 120 × 80 of radius 10.
-    openOnStep(1);
+    openPage("");
   });
 
   it.each([
@@ -1023,9 +1013,9 @@ describe("Undo and Redo the buttons of the panel (US-075)", () => {
   });
 });
 
-describe("Undo and Redo a text placed and typed (US-075)", () => {
+describe("Undo and Redo a text placed and typed", () => {
   beforeEach(() => {
-    openServedPage("");
+    openPage("");
     setElementBox("#canvas", { height: 600, left: 100, top: 50, width: 800 });
     // A step before the text: the page's rectangle nudged from (0, 0) to (1, 0).
     holdRight(1);

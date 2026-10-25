@@ -1,5 +1,5 @@
 //! `deps outdated`: every version the repository pins against its latest version at least 7 days
-//! old (ADR-0038) — the npm packages of `package.json`, the GitHub Actions of the workflows,
+//! old (ADR-0072) — the npm packages of `package.json`, the GitHub Actions of the workflows,
 //! Node.js's major in `.nvmrc`, the crates of `[workspace.dependencies]`, the cargo tools the Rust
 //! checks install (EN-121) — and every crate of `Cargo.lock` published less than 7 days ago, which
 //! Cargo picks by itself (research note 0025, The crates, checked). One line per finding, with the
@@ -12,7 +12,7 @@ use std::path::Path;
 use std::thread;
 
 use crate::actions::{self, ActionUse};
-use crate::cargo_tools::{self, DEPENDENCIES_PAGE, ToolPin};
+use crate::cargo_tools::{self, CHECKS_SOURCE, DEPENDENCIES_PAGE, ToolPin};
 use crate::crates::Release;
 use crate::fetch::Answer;
 use crate::{Behind, crates, node, npm};
@@ -148,7 +148,7 @@ fn files_of(root: &Path, folder: &str, extension: &str) -> Vec<std::path::PathBu
 }
 
 /// The cargo tools' versions of a checkout: the workflows' `env` and install lines, those of
-/// `package.json` and `docs/tooling/`, and the Rust tools rows; sorted, each once.
+/// `package.json` and the checks' messages, and the tools' rows of the data file; sorted, each once.
 fn tool_pins(root: &Path, workflows: &[std::path::PathBuf]) -> Vec<ToolPin> {
     let place = |path: &Path| {
         path.strip_prefix(root)
@@ -166,7 +166,7 @@ fn tool_pins(root: &Path, workflows: &[std::path::PathBuf]) -> Vec<ToolPin> {
         .iter()
         .cloned()
         .chain([root.join("package.json")])
-        .chain(files_of(root, "docs/tooling", "md"))
+        .chain([root.join(CHECKS_SOURCE)])
     {
         pins.extend(cargo_tools::install_pins(&read(&path), &place(&path)));
     }

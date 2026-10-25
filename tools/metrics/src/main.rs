@@ -1,8 +1,9 @@
 //! `metrics [--since <YYYY-MM-DD>]` (`target/release/metrics`, EN-107): the Markdown report of the
 //! agent's work, from Claude Code's transcripts of the main checkout (read from where the last
 //! report left them, `.git/metrics/transcripts-cache.jsonl`), the hook's log of each call, the
-//! uses each Rust tool records, the saved turns, the Git log, the backlog's file names and the
-//! library's uses; with `--since`, what happened from that day on, 00:00 UTC.
+//! uses each Rust tool records, the saved turns, the Git log, the names the backlog's files had,
+//! read from the records (EN-154), and the library's uses; with `--since`, what happened from that
+//! day on, 00:00 UTC.
 
 use std::env;
 use std::fs;
@@ -15,9 +16,9 @@ use metrics::cache::{CACHE_FILE, read_transcripts};
 use metrics::git::{common_dir, git};
 use metrics::json::json_lines;
 use metrics::report::{
-    ReportInputs, hook_durations, metrics_report, since_start, transcript_files,
+    FEATURE_NAMES, ReportInputs, STORY_NAMES, hook_durations, metrics_report, since_start,
+    transcript_files,
 };
-use metrics::session::names_in;
 use metrics::turns::read_turn;
 use run_totals::totals::projects_dir;
 
@@ -55,8 +56,8 @@ fn report(options: &[String]) -> Result<String, String> {
             .map(read_turn)
             .collect(),
         log: git(&["log", "--all", "--format=%H%x1f%aI%x1f%s%x1f%b%x1e"])?,
-        stories: names_in(&root.join("docs/backlog/stories")),
-        features: names_in(&root.join("docs/backlog/features")),
+        stories: recorded_names(&root, STORY_NAMES),
+        features: recorded_names(&root, FEATURE_NAMES),
         sources: sources(),
         since,
         logged,
@@ -65,7 +66,25 @@ fn report(options: &[String]) -> Result<String, String> {
     Ok(metrics_report(&inputs, &exact))
 }
 
+/// The usage, printed on `--help` or `-h` (REV-009).
+const USAGE: &str = "usage: target/release/metrics [--since <YYYY-MM-DD>]";
+
+/// The names a statement of the records gives, each row's first cell; none when the records
+/// cannot be read: the report then counts no feature nor epic.
+fn recorded_names(root: &Path, statement: &str) -> Vec<String> {
+    knowledge_call::rows(root, statement)
+        .map(|rows| {
+            rows.into_iter()
+                .filter_map(|row| row.into_iter().next())
+                .collect()
+        })
+        .unwrap_or_default()
+}
+
 fn main() -> ExitCode {
+    if let Some(code) = tool_use::usage(&std::env::args().skip(1).collect::<Vec<_>>(), USAGE) {
+        return code;
+    }
     let options: Vec<String> = env::args().skip(1).collect();
     let mode = if options.iter().any(|option| option == "--since") {
         "--since"

@@ -10,7 +10,7 @@ import {
   clickAt,
   clickElement,
   dispatchDrawingPointer,
-  openServedPage,
+  openPage,
   readShapeModel,
   selectPageElement,
   setElementBox,
@@ -63,7 +63,7 @@ function readOutline(): string | undefined {
 }
 
 /**
- * The outline expected of a shape: the path of its contour as drawn, stroked (US-086).
+ * The outline expected of a shape: the path of its contour as drawn, stroked.
  *
  * @param shape - the shape outlined
  * @returns the path data of its contour
@@ -72,10 +72,10 @@ function outlineOf(shape: Shape): string {
   return contourPiecesToPathData(shapePickArea(shape).pieces);
 }
 
-describe("the shape under the pointer outlined in the layer above (US-065)", () => {
+describe("the shape under the pointer outlined in the layer above", () => {
   beforeEach(() => {
-    // The epic's step 1, a rectangle 120 × 80 at (0, 0), radius 10, whatever feature is validated.
-    openServedPage("?guide=epic");
+    // The page as it opens, a rectangle 120 × 80 at (0, 0), radius 10.
+    openPage("");
     setElementBox("#canvas", { height: 600, left: 100, top: 50, width: 800 });
   });
 
@@ -177,7 +177,7 @@ describe("the shape under the pointer outlined in the layer above (US-065)", () 
   it("[F36.AC2] outlines a text anywhere in its block, between its letters too", () => {
     placeShape("text", { x: 400, y: 300 });
     typeTextContent("Text");
-    // The text `Text` from (400, 281), 64.65625 wide in Inter 32 (US-075): (430, 300) is in its
+    // The text `Text` from (400, 281), 64.65625 wide in Inter 32: (430, 300) is in its
     // block, whatever its letters.
     hover({ x: 430, y: 300 });
 
@@ -195,7 +195,7 @@ describe("the shape under the pointer outlined in the layer above (US-065)", () 
 
     const outline = readOutline();
 
-    // No family measures the kept text any more (US-061, US-056): it is drawn with the metrics
+    // No family measures the kept text any more: it is drawn with the metrics
     // it was last drawn with, and outlined with them.
     writeFontSession(document, { ...readFontSession(document), kept: [] });
     placeShape("round", { x: 600, y: 500 });
@@ -221,7 +221,7 @@ describe("the shape under the pointer outlined in the layer above (US-065)", () 
   });
 
   it("[F36.AC2] outlines a shape of width 0 within 4 pixels of it", () => {
-    // A drag straight down from (300, 100) to (300, 180) adds a rectangle 0 × 80 (US-064).
+    // A drag straight down from (300, 100) to (300, 180) adds a rectangle 0 × 80.
     clickElement("tool-rectangle");
     dispatchDrawingPointer("pointerdown", { x: 300, y: 100 }, NO_KEY);
     dispatchDrawingPointer("pointermove", { x: 300, y: 180 }, NO_KEY);

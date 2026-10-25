@@ -6,7 +6,7 @@ import type { FontMetrics } from "../font";
  * Whether a font maps every letter of the ISO basic Latin alphabet, A to Z and a to z
  * (`BASIC_LATIN_LETTERS`), to a glyph of its own: a font that lacks one draws it with the
  * browser's fallback while the editor measures it with `.notdef`, its frame then not matching its
- * letters (US-056: Apple Color Emoji, Al Nile, Apple Braille map none).
+ * letters (Apple Color Emoji, Al Nile, Apple Braille map none).
  *
  * Formula: ∀ c ∈ {0x41 … 0x5A, 0x61 … 0x7A}, c ∈ advances.
  *

@@ -18,7 +18,7 @@ import {
   clickAt,
   clickElement,
   commitField,
-  openServedPage,
+  openPage,
   pressAndClick,
   pressKey,
   pressPointer,
@@ -65,7 +65,7 @@ function placeShape(tool: string, point: Point): void {
 }
 
 /**
- * Places a text by a click, then types `Text` in it and leaves its Content field (US-075).
+ * Places a text by a click, then types `Text` in it and leaves its Content field.
  *
  * @param point - the point of the drawing clicked
  */
@@ -159,7 +159,7 @@ function placeTurnedText(point: Point): void {
 }
 
 /**
- * Presses Ctrl + A outside the fields, which selects every shape (US-068).
+ * Presses Ctrl + A outside the fields, which selects every shape.
  */
 function selectAll(): void {
   selectPageElement("body").dispatchEvent(
@@ -167,10 +167,10 @@ function selectAll(): void {
   );
 }
 
-describe("the panel shows several shapes' position and size (US-070)", () => {
+describe("the panel shows several shapes' position and size", () => {
   beforeEach(() => {
-    // The epic's step 1, a rectangle 120 × 80 at (0, 0), radius 10, whatever feature is validated.
-    openServedPage("?guide=epic");
+    // The page as it opens, a rectangle 120 × 80 at (0, 0), radius 10.
+    openPage("");
     setElementBox("#canvas", { height: 600, left: 100, top: 50, width: 800 });
   });
 
@@ -283,7 +283,7 @@ describe("the panel shows several shapes' position and size (US-070)", () => {
     // ADR-0057's box 100 × 20 at (47, 61), turned by 23° about its middle (97, 71): half spans
     // (100 cos 23° + 20 sin 23°) / 2 = (92.05049 + 7.81462) / 2 = 49.93255 and
     // (100 sin 23° + 20 cos 23°) / 2 = (39.07311 + 18.41010) / 2 = 28.74161, so its straight box
-    // starts at (97 − 49.93255, 71 − 28.74161) = (47.06745, 42.2584), as a shape's (AUD-040).
+    // starts at (97 − 49.93255, 71 − 28.74161) = (47.06745, 42.2584), as a shape's.
     // The rectangle the page opens with, under the text, removed first.
     pick({ x: 60, y: 40 }, false);
     pressKey("body", "Delete");
@@ -351,9 +351,9 @@ function selectAAndB(): void {
   pick({ x: 220, y: 40 }, true);
 }
 
-describe("a value typed for several shapes, relative or fixed (US-071)", () => {
+describe("a value typed for several shapes, relative or fixed", () => {
   beforeEach(() => {
-    openServedPage("?guide=epic");
+    openPage("");
     setElementBox("#canvas", { height: 600, left: 100, top: 50, width: 800 });
   });
 
@@ -452,7 +452,7 @@ describe("a value typed for several shapes, relative or fixed (US-071)", () => {
     selectAAndB();
     typeAndEnter("several-width", "-50");
 
-    // A 100 − 50 = 50; B 40 − 50 = −10, taken at 0 (AUD-046), no longer refused for both.
+    // A 100 − 50 = 50; B 40 − 50 = −10, taken at 0, no longer refused for both.
     expectBoxes([
       [10, 20, 50, 50],
       [200, 20, 0, 40],
@@ -562,7 +562,7 @@ function pressIn(id: string, init: KeyboardEventInit): KeyboardEvent {
   return down;
 }
 
-/** Presses Ctrl + Z outside the fields, which undoes a step (US-074). */
+/** Presses Ctrl + Z outside the fields, which undoes a step. */
 function undo(): void {
   pressIn("canvas", { ctrlKey: true, key: "z" });
 }
@@ -576,9 +576,9 @@ function readPresent(): readonly KeptShape[] {
   return PAGE_HISTORIES.get(document)?.present.drawing ?? [];
 }
 
-describe("the arrows in a field of several shapes (US-081)", () => {
+describe("the arrows in a field of several shapes", () => {
   beforeEach(() => {
-    openServedPage("?guide=epic");
+    openPage("");
     setElementBox("#canvas", { height: 600, left: 100, top: 50, width: 800 });
     selectAAndB();
   });
@@ -588,7 +588,7 @@ describe("the arrows in a field of several shapes (US-081)", () => {
 
     const up = pressIn("several-width", { key: "ArrowUp" });
 
-    // The step taken once no arrow follows within 500 ms (US-081, T2).
+    // The step taken once no arrow follows within 500 ms.
     vi.advanceTimersByTime(500);
     vi.useRealTimers();
 
@@ -681,7 +681,7 @@ describe("the arrows in a field of several shapes (US-081)", () => {
     pick({ x: 50, y: 40 }, true);
     pressIn("several-height", { key: "ArrowDown" });
 
-    // A 50 − 1 = 49; B's 0 − 1 is below 0: taken at 0 (AUD-046), no longer refused for A.
+    // A 50 − 1 = 49; B's 0 − 1 is below 0: taken at 0, no longer refused for A.
     expectBoxes([
       [10, 20, 100, 49],
       [200, 20, 40, 0],
@@ -745,9 +745,9 @@ function applyWidthByClick(point: Point): void {
   clickAt("#canvas", at);
 }
 
-describe("several shapes' width and height, the cases tried (US-082)", () => {
+describe("several shapes' width and height, the cases tried", () => {
   beforeEach(() => {
-    openServedPage("?guide=epic");
+    openPage("");
     setElementBox("#canvas", { height: 600, left: 100, top: 50, width: 800 });
   });
 

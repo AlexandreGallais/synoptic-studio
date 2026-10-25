@@ -5,7 +5,7 @@ import type { Text } from "../text";
 
 /**
  * The most lines whose block fits a box's height: none when even the first line does not, every
- * line wrapped when a line takes no height (a font whose line height is 0, AUD-016).
+ * line wrapped when a line takes no height (a font whose line height is 0).
  *
  * @kind domain
  * @param boxHeight - how tall the box is, in user units

@@ -5,7 +5,7 @@
 //! - `pre-commit [--tasks <file>]`: formats, lints and scans the staged files, the repository's
 //!   tasks or those of the file (`staged::parse_tasks`), and stages the fixes;
 //! - `commit-msg <file>`: checks the message as commitlint did, then, on a story branch, its
-//!   `Refs:` or `Closes:` footer;
+//!   `Refs:` footer;
 //! - `commits --from <commit> --to <commit>`: checks the message of each commit of the range, as
 //!   `commitlint --from --to` did in the CI;
 //! - `branch [--name <name>]`: checks the current branch's name, or the one given (the CI's);
@@ -237,6 +237,9 @@ fn run_after_pull(hook: &str, options: &[String]) -> u8 {
 }
 
 fn main() -> ExitCode {
+    if let Some(code) = tool_use::usage(&std::env::args().skip(1).collect::<Vec<_>>(), USAGE) {
+        return code;
+    }
     let arguments: Vec<String> = env::args().skip(1).collect();
     let command = arguments.first().map_or("", String::as_str);
     let options = arguments.get(1..).unwrap_or_default();

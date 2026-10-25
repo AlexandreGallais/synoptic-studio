@@ -29,7 +29,7 @@ type DroppedMeasure = HistoryMeasure & {
  * @param history - the history bounded, over the size set
  * @param bound - the size set, and the most past states dropped
  * @returns the measure left and how many states are dropped
- * @see docs/domain/interaction.md#_7-navigation-and-history
+ * @see RULE-interaction-7-navigation-and-history
  */
 function droppedMeasure<T extends WeakKey>(
   history: SizedHistory<T>,
@@ -50,7 +50,7 @@ function droppedMeasure<T extends WeakKey>(
 }
 
 /**
- * The history within its bound, its size kept (EN-147): while its size is over the size set and
+ * The history within its bound, its size kept: while its size is over the size set and
  * more past states than the steps kept are left (`mostDroppedStates`), the oldest past state
  * removed (`droppedMeasure`), one by one, each read once; the states to come never dropped. The
  * history is `boundedHistory`'s, found without measuring the history again (ADR-0097).
@@ -60,7 +60,7 @@ function droppedMeasure<T extends WeakKey>(
  * @param history - the history after a step, or when the bound changes
  * @param bound - the memory size and the steps kept the designer sets
  * @returns the history given when nothing is dropped, otherwise a new history
- * @see docs/domain/interaction.md#_7-navigation-and-history
+ * @see RULE-interaction-7-navigation-and-history
  */
 export function sizedBoundedHistory<T extends WeakKey>(
   history: SizedHistory<T>,

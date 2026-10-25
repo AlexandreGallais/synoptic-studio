@@ -8,7 +8,7 @@ import type { PickArea } from "../../src";
 const OUTLINE_WIDTH = 2;
 
 /**
- * Creates the outline of a shape in the layer above the drawing (F36, US-086): the dashed line of
+ * Creates the outline of a shape in the layer above the drawing: the dashed line of
  * the helps, 2 screen pixels wide, on its contour as drawn (`contourPiecesToPathData`,
  * `createDashedLineElements`), whatever its size and the part of it the view shows.
  *
@@ -17,7 +17,6 @@ const OUTLINE_WIDTH = 2;
  * @param area - what the shape offers the pointer, its contour as drawn
  * @param name - its class: `hover` for the shape under the pointer, `selection` for one selected
  * @returns the white line's `<path>`, then the dashes'
- * @see docs/domain/interaction.md#_2-selector
  */
 export function createOutlineElements(
   document: Document,

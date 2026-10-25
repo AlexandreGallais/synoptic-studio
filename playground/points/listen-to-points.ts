@@ -16,7 +16,6 @@ type NextSelection = typeof selectionAfterRowClick;
  * @kind procedure
  * @param event - mouse click on the drawing or the list
  * @returns the vertex number from 0, `NaN` when the click hit no vertex
- * @see docs/backlog/stories/E01-F03-US-013-points-list-selection.md
  */
 function readClickedVertex(event: Event): number {
   const target =
@@ -33,7 +32,6 @@ function readClickedVertex(event: Event): number {
  * @kind procedure
  * @param event - mouse click on a handle or a row
  * @returns Shift, and Ctrl or Cmd (macOS) as the key that adds or removes a vertex
- * @see REF-APPLE-SELECT
  */
 function readClickKeys(event: MouseEvent): ClickKeys {
   return { shift: event.shiftKey, toggle: event.ctrlKey || event.metaKey };
@@ -48,7 +46,6 @@ function readClickKeys(event: MouseEvent): ClickKeys {
  * @param next - how the click changes the selection
  * @param update - redraws the playground
  * @returns a function to register for `click`
- * @see docs/backlog/stories/E01-F03-US-013-points-list-selection.md
  */
 function createClickListener(
   document: Document,
@@ -69,12 +66,11 @@ function createClickListener(
 
 /**
  * Selects vertices when their handle or their row is clicked in Points mode, with Shift and
- * Ctrl (Cmd) as in `docs/domain/interaction.md` §3, then calls back (F03.AC5).
+ * Ctrl (Cmd) as in `RULE-interaction-3-node-editing`, then calls back (F03.AC5).
  *
  * @kind procedure
  * @param document - page document
  * @param update - redraws the playground
- * @see docs/backlog/stories/E01-F03-US-013-points-list-selection.md
  */
 export function listenToPoints(document: Document, update: () => void): void {
   selectElement(document, "canvas").addEventListener(

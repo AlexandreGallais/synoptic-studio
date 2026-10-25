@@ -5,7 +5,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import {
   chooseOption,
   chooseShapeKind,
-  openServedPage,
+  openPage,
   readDisplay,
   readText,
   selectPageElement,
@@ -53,9 +53,9 @@ function typeBox(width: string, height: string): void {
   typeAndEnter("text-box-height", height);
 }
 
-describe("Text tool: the straight box of a turned text (US-039)", () => {
+describe("Text tool: the straight box of a turned text", () => {
   beforeEach(() => {
-    openServedPage("");
+    openPage("");
     chooseShapeKind("text");
     typeAndEnter("text-size", "16");
     // happy-dom loses the option marked `selected` once the page is moved into its document.
@@ -114,7 +114,7 @@ describe("Text tool: the straight box of a turned text (US-039)", () => {
       "Straight box: x -7.46875, y 7.46875, width 38.71875, height 23.78125",
     );
 
-    // X and Y show the top-left of that straight box, as a shape's (AUD-040), not its turned
+    // X and Y show the top-left of that straight box, as a shape's, not its turned
     // top-left corner, the middle plus R(90°) of (−11.890625, −19.359375): (31.25, 7.46875).
     expect(
       [selectPageElement("#shape-x"), selectPageElement("#shape-y")].map((field) =>

@@ -51,7 +51,7 @@ function summary(list: HistoryList<KeptRectangle>): object {
   };
 }
 
-describe("historySteps (US-077)", () => {
+describe("historySteps", () => {
   it("[F41.AC1] names A nudged, B deleted and 150 typed: Move, Delete, Width, the last present", () => {
     const list = historySteps(TAKEN, HISTORY_LIST_ROWS, keptShapeFields);
 

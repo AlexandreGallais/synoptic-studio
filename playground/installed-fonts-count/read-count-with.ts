@@ -3,14 +3,13 @@ import type { LeftOutFamily } from "./left-out-family";
 import type { ReadAheadCount } from "./read-ahead-count";
 
 /**
- * Reads the families left out with one family more, when reading it left it out (US-056).
+ * Reads the families left out with one family more, when reading it left it out.
  *
  * @kind procedure
  * @param leftOut - the families left out before it
  * @param family - its name, as the browser lists it
  * @param outcome - what reading it gave
  * @returns the families left out, it last with its reason when it is left out
- * @see docs/domain/shapes.md#text
  */
 function readLeftOutWith(
   leftOut: readonly LeftOutFamily[],
@@ -28,7 +27,6 @@ function readLeftOutWith(
  * @param family - its name, as the browser lists it
  * @param outcome - what reading it gave
  * @returns the count with it
- * @see docs/domain/shapes.md#text
  */
 export function readCountWith(
   count: ReadAheadCount,

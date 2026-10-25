@@ -20,7 +20,6 @@ type NamedReason = {
  * @param named - the families or faces left out
  * @param reason - the reason and how it is said
  * @returns the part; none when none is left out for that reason
- * @see docs/domain/shapes.md#text
  */
 function readReasonPart(
   named: readonly NamedReason[],
@@ -39,20 +38,17 @@ function readReasonPart(
  * @kind procedure
  * @param named - the families or faces left out
  * @returns the parts, such as `1 not embeddable (Test Locked); 1 unreadable (Test Bad)`
- * @see docs/domain/shapes.md#text
  */
 function readReasonParts(named: readonly NamedReason[]): string {
   return LEFT_OUT_REASONS.flatMap((reason) => readReasonPart(named, reason)).join("; ");
 }
 
 /**
- * Reads the sentence that says the faces refused in the families read, counted by reason
- * (US-062).
+ * Reads the sentence that says the faces refused in the families read, counted by reason.
  *
  * @kind procedure
  * @param refused - the faces refused
  * @returns the sentence after a space, such as ` 1 faces of the families read refused: 1 unreadable (Helvetica Light).`; empty when none was refused
- * @see docs/domain/shapes.md#text
  */
 function readRefusedSentence(refused: readonly RefusedFace[]): string {
   return refused.length === 0
@@ -62,14 +58,13 @@ function readRefusedSentence(refused: readonly RefusedFace[]): string {
 
 /**
  * Reads what the page says while the installed fonts are read, then once they are: the families
- * read, those left out counted by reason — not embeddable, no Latin letters, unreadable (US-056)
- * —, then the faces refused in the families read, counted the same way (US-062).
+ * read, those left out counted by reason — not embeddable, no Latin letters, unreadable
+ * —, then the faces refused in the families read, counted the same way.
  *
  * @kind procedure
  * @param count - what was counted
  * @param isDone - whether every family is done
  * @returns such as `Reading the installed fonts: 12 of 312 families…`
- * @see docs/domain/shapes.md#text
  */
 export function readProgressLine(count: ReadAheadCount, isDone: boolean): string {
   if (!isDone) {

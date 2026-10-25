@@ -1,47 +1,34 @@
-# synoptic-studio
+# Synoptic Studio
 
 [![CodeQL](https://github.com/AlexandreGallais/synoptic-studio/actions/workflows/codeql.yml/badge.svg)](https://github.com/AlexandreGallais/synoptic-studio/actions/workflows/codeql.yml)
 [![Release](https://img.shields.io/github/v/release/AlexandreGallais/synoptic-studio)](https://github.com/AlexandreGallais/synoptic-studio/releases)
 [![License](https://img.shields.io/github/license/AlexandreGallais/synoptic-studio)](./LICENSE)
 
-A dependency-free TypeScript library to draw **SVG symbols** for **synoptic views** — the schematic screens that supervise industrial plants — and the editors built on it. Shapes are typed as whole numbers, every output is a `<path>`, and every function names the source it comes from.
+Editors for drawing the symbols of **synoptic views** — the schematic screens that supervise plants, networks and buildings — where **every shape is defined by numbers**: whole-number sizes, radii and angles, the geometry computed from them, each shape written as one clean SVG `<path>`.
 
-|  |  |
-| --- | --- |
-| **Documentation** | <https://alexandregallais.github.io/synoptic-studio/> — guide, domain, decisions, conventions, API |
-| **Playground** | <https://alexandregallais.github.io/synoptic-studio/playground/> — the library at work, as of the last release |
-| **Status** | E01 "Draw symbol shapes from numbers" done; next, E14 "Draw curves" — see the [backlog](https://alexandregallais.github.io/synoptic-studio/backlog/) |
+- **Documentation**: <https://alexandregallais.github.io/synoptic-studio/> — [the software](./docs/the-software.md), [how it is made](./docs/how-it-is-made.md), the API.
+- **Playground**: <https://alexandregallais.github.io/synoptic-studio/playground/> — the library at work, as of the last release.
 
-## What it does today
+## How it is made
 
-- Rectangles and regular polygons, each corner rounded by its own radius, reduced to fit.
-- A polygon anchored in its box, or stretched to fill it.
-- Free shapes: points moved, added and deleted, decimals kept where nothing was typed.
-- Any shape turned by any angle, edited while turned.
-
-## How it is built
+Built by an AI coding agent for one Product Owner: the Product Owner decides what the software does and in which order, tries each change and validates each review; the agent researches, designs, codes and tests. Every calculation rests on a source that was read, every test is written before or with its code, and the library has no runtime dependency.
 
 ```mermaid
 flowchart LR
-  I[Typed integers] --> M[Model<br/>integers]
-  M --> G[Geometry<br/>segments and arcs]
-  G --> S[SVG path data]
-  S --> P[Playground,<br/>editors]
+  N[Numbers] --> M[Model]
+  M --> G[Geometry<br/>segments, arcs, curves]
+  G --> S[SVG path]
+  S --> E[Playground, editors]
 ```
 
-- **Integer model, exact output**: sizes, radii and angles are whole numbers; geometry is derived, never stored; 5 decimals in the SVG.
-- **Sourced**: each function cites a specification, a paper, a book, or a derivation written from read sources.
-- **Built by an agent, decided by a person**: a coding agent designs, implements, tests and documents; the Product Owner decides, tests and merges. The method is the [playbook](https://alexandregallais.github.io/synoptic-studio/playbook/).
+## Try it
 
-## Develop
+With Node.js 24 and the Rust toolchain of `rust-toolchain.toml`:
 
 ```sh
 npm install
-npm run dev        # playground on http://localhost:5173
-npm run docs:dev   # documentation site
-npm run fix        # oxfmt (tools/format) + oxlint --fix + the project's Rust linter --fix
-npm run check:all  # every check: lint, types, tests (100 % coverage), audit, unused code, docs build
-npm run build      # dist/
+npm run dev        # the playground on http://localhost:5173
+npm run docs:dev   # the documentation site
 ```
 
-[Contributing](./.github/CONTRIBUTING.md) · [Code of conduct](./.github/CODE_OF_CONDUCT.md) · [Security](./SECURITY.md) · License: Apache-2.0 ([LICENSE](./LICENSE), [NOTICE](./NOTICE)) · Agent instructions: [AGENTS.md](./AGENTS.md)
+[Contributing](./.github/CONTRIBUTING.md) · [Security](./SECURITY.md) · License: Apache-2.0 ([LICENSE](./LICENSE), [NOTICE](./NOTICE)) · For coding agents: [AGENTS.md](./AGENTS.md)

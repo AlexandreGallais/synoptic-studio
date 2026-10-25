@@ -22,7 +22,7 @@ const TWO_LEVELS: HeldCounts = {
  */
 const ANY_KEY_COUNT = fc.tuple(fc.nat({ max: 40_000 }), fc.nat({ max: 3 }));
 
-describe("withHeldCount (EN-147)", () => {
+describe("withHeldCount", () => {
   it("[F41.AC2] sets the key 5 in one level, its node the 6th", () => {
     expect(withHeldCount(EMPTY_HELD_COUNTS, 5, 2)).toEqual({
       depth: 1,

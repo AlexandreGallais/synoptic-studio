@@ -11,7 +11,6 @@ import type { Rgb } from "../../math";
  * @kind format
  * @param color - the stored color, already checked (`isColor`)
  * @returns its red, green and blue, from 0 to 1
- * @see DERIV-color-spaces
  */
 export function hexToRgb(color: string): Rgb {
   const bytes = hexToBytes(color);

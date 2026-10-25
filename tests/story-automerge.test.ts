@@ -31,6 +31,9 @@ const STORIES = workflowText("story-automerge.yml");
 /** The features' auto-merge, into `develop`: a feature branch or a review (EN-134). */
 const FEATURES = workflowText("feature-automerge.yml");
 
+/** The merge of `develop` into `main` once the Product Owner validated the review (EN-154). */
+const MAIN = workflowText("main-automerge.yml");
+
 /**
  * The auto-merge a pull request into a base starts, as their triggers' `branches` filters choose
  * it, `[F34.AC1]` below holding each filter: `develop` the features', a feature branch the
@@ -50,11 +53,11 @@ function workflowInto(base: string): string {
 /** The pre-push hook's branch check, `BRANCH_PATTERN` (`tools/git-hooks`). */
 const BRANCH_RS = join(import.meta.dirname, "..", "tools", "git-hooks", "src", "branch.rs");
 
-/** The Git workflow's guidance on the branches. */
-const GIT_WORKFLOW = join(import.meta.dirname, "..", "docs", "tooling", "git-workflow.md");
+/** The tooling rules of the agent, which name the work branches' form. */
+const TOOLING_RULES = join(import.meta.dirname, "..", ".agents", "rules", "tooling.md");
 
-/** The agent's guide, whose parallel sessions make branches too. */
-const AGENT_GUIDE = join(import.meta.dirname, "..", "docs", "tooling", "agent.md");
+/** The entry point of any agent. */
+const AGENTS_PAGE = join(import.meta.dirname, "..", "AGENTS.md");
 
 /** Indentation of a step's script lines under `run: |`. */
 const SCRIPT_INDENT = " ".repeat(10);
@@ -211,6 +214,28 @@ function triggerInto(branches: string): string {
   return `\non:\n  pull_request:\n    types: [labeled, reopened, ready_for_review]\n    branches: ${branches}\n\n`;
 }
 
+describe("the merge into main once the Product Owner validated the review (2026-10-25, EN-154)", () => {
+  it("merges a pull request into main labelled po-validated, of the owner, ready, by a merge commit", () => {
+    expect(MAIN).toContain(triggerInto("[main]"));
+    expect(MAIN).toMatch(/^name: Main auto-merge$/mu);
+
+    expect(MAIN).toContain(
+      "    if: >-\n      contains(github.event.pull_request.labels.*.name, 'po-validated')\n      && github.event.pull_request.author_association == 'OWNER'\n      && !github.event.pull_request.draft\n    runs-on:",
+    );
+
+    expect(MAIN).toContain(`gh pr merge "$PR_URL" --auto --merge`);
+    expect(MAIN).not.toMatch(/--rebase|--squash|--admin/u);
+  });
+
+  it("merges develop alone into main, and starts no release", () => {
+    expect(scriptOf(MAIN, "Check the branch is develop")).toContain(
+      'if [ "$BRANCH" != develop ]; then',
+    );
+
+    expect(MAIN).not.toMatch(/release|workflow run/u);
+  });
+});
+
 describe("the auto-merge per base (ADR-0086, ADR-0088)", () => {
   it("[F22.AC4] [F34.AC1] merges a story into a feature branch, and a feature or a review into develop, by their two workflows", () => {
     expect(STORIES).toContain(triggerInto('["feature/**"]'));
@@ -261,6 +286,7 @@ describe("the auto-merge per base (ADR-0086, ADR-0088)", () => {
     expect(passes(feature, "docs/aud-024-audit-f22")).toBe(true);
     expect(passes("develop", feature)).toBe(true);
     expect(passes("develop", "docs/rev-006-review")).toBe(true);
+    expect(passes("develop", "docs/sp-030-refinement-of-e18")).toBe(true);
   });
 
   it("[F22.AC4] still refuses a branch that is neither a story's nor a feature's", () => {
@@ -478,16 +504,18 @@ describe("one branch form for the pre-push, the auto-merge and the guidance (I50
     expect(pattern.test("fix/en-073-shared-files-table-padding")).toBe(true);
   });
 
-  it("[F23.AC2] leaves an epic's refinement spike into develop to the Product Owner's merge", () => {
-    expect(passes("develop", "docs/sp-030-refinement-of-e18")).toBe(false);
+  it("[F23.AC2] lets an epic's refinement spike into develop, as into its feature (REV-009)", () => {
+    expect(passes("develop", "docs/sp-030-refinement-of-e18")).toBe(true);
     expect(passes(feature, "docs/sp-030-refinement-of-e18")).toBe(true);
+    // Three digits, as every story id: a shorter one is refused into develop too.
+    expect(passes("develop", "docs/sp-30-refinement")).toBe(false);
   });
 
-  it("[F23.AC2] guides a fix without a story id to the id of the story it serves", () => {
-    const workflow = readFileSync(GIT_WORKFLOW, "utf8");
+  it("[F23.AC2] guides a work branch to the id of the story it serves", () => {
+    const rules = readFileSync(TOOLING_RULES, "utf8");
 
-    expect(workflow).toContain("takes the id of the story it serves (`fix/en-073-<topic>`)");
-    expect(workflow).not.toContain("`<type>/<topic>`");
-    expect(readFileSync(AGENT_GUIDE, "utf8")).not.toContain("<type>/<topic>");
+    expect(rules).toContain("`<type>/<id>-<topic>`");
+    expect(rules).not.toContain("<type>/<topic>");
+    expect(readFileSync(AGENTS_PAGE, "utf8")).not.toContain("<type>/<topic>");
   });
 });

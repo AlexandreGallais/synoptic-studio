@@ -7,8 +7,13 @@ import { describe, expect, it } from "vitest";
 /** Root of the repository. */
 const ROOT = join(import.meta.dirname, "..");
 
-/** The register of exceptions (ADR-0066). */
-const REGISTER = readFileSync(join(ROOT, "docs", "conventions", "exceptions.md"), "utf8");
+/**
+ * The register of exceptions (ADR-0066), the records' `lint_exceptions` written by
+ * `target/release/knowledge export-data`: the CI reads this file, never the records (AUD-054).
+ */
+const REGISTER: unknown = JSON.parse(
+  readFileSync(join(ROOT, "tests", "data", "lint-exceptions.json"), "utf8"),
+);
 
 /** A place where the code turns a lint rule off: its file and its rules, sorted and joined. */
 type Exception = {
@@ -64,28 +69,32 @@ function codeExceptions(file: string, code: string): readonly Exception[] {
 }
 
 /**
- * The rows of the register's tables whose first cell is a file.
+ * A field of a row of the data file, as text.
  *
- * @param register - the register's content
- * @returns one row per line
+ * @param row - a parsed row
+ * @param key - the field's name
+ * @returns its text, or an empty text when it is missing or not a text
  */
-function registerRows(register: string): readonly Row[] {
-  return register
-    .split("\n")
-    .filter((line) => /^\|\s*`[^`]+\.[a-z]+`\s*\|/u.test(line))
-    .map((line) => {
-      const [file = "", place = "", rules = "", reason = ""] = line
-        .split(/(?<!\\)\|/u)
-        .slice(1, -1)
-        .map((cell) => cell.trim());
+function textField(row: unknown, key: string): string {
+  const value: unknown =
+    typeof row === "object" && row !== null ? Reflect.get(row, key) : undefined;
 
-      return {
-        file: file.replaceAll("`", ""),
-        function: place.replaceAll("`", ""),
-        reason,
-        rules: sortedRules(rules),
-      };
-    });
+  return typeof value === "string" ? value : "";
+}
+
+/**
+ * The rows of the register's data file.
+ *
+ * @param register - the parsed data file, an array of `{ file, item, rule, reason }`
+ * @returns one row per directive
+ */
+function registerRows(register: unknown): readonly Row[] {
+  return (Array.isArray(register) ? register : []).map((row: unknown) => ({
+    file: textField(row, "file"),
+    function: textField(row, "item"),
+    reason: textField(row, "reason"),
+    rules: sortedRules(textField(row, "rule")),
+  }));
 }
 
 /**
@@ -134,7 +143,7 @@ const CODE = FILES.flatMap(({ code, file }) => codeExceptions(file, code));
 /** The rows of the register. */
 const ROWS = registerRows(REGISTER);
 
-describe("register of exceptions (docs/conventions/exceptions.md, ADR-0066)", () => {
+describe("register of exceptions (tests/data/lint-exceptions.json, ADR-0066)", () => {
   it("[F18.AC13] reads a directive's rules and a row's cells", () => {
     // Two rules, written in any order, give one key; a line or a block comment both count. The
     // comment openers are joined at run time, so that this file holds no directive itself.
@@ -187,9 +196,14 @@ ${COMMENT.block} eslint-disable c-rule -- why */`,
       { file: "a.rs", rules: "dead_code" },
     ]);
 
-    expect(registerRows("| `a.ts` | `f` | `b-rule`, `a-rule` | why |\n| File | x |")).toEqual([
+    expect(
+      registerRows([{ file: "a.ts", item: "f", reason: "why", rule: "b-rule, a-rule" }, 3]),
+    ).toEqual([
       { file: "a.ts", function: "f", reason: "why", rules: "a-rule, b-rule" },
+      { file: "", function: "", reason: "", rules: "" },
     ]);
+
+    expect(registerRows({ file: "a.ts" })).toEqual([]);
   });
 
   it("[F18.AC13] names a directive without its row and a row whose code is gone", () => {

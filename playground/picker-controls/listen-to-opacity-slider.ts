@@ -17,7 +17,6 @@ import { listenToDrag } from "./listen-to-drag";
  * @kind procedure
  * @param document - page document
  * @param update - redraws the playground
- * @see docs/backlog/stories/E15-F16-US-035-pick-a-color.md
  */
 export function listenToOpacitySlider(document: Document, update: () => void): void {
   const slider = selectElement(document, "color-opacity");

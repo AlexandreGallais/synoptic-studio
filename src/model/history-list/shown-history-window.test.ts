@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 
 import { shownHistoryWindow } from "./shown-history-window";
 
-describe("shownHistoryWindow (US-077)", () => {
+describe("shownHistoryWindow", () => {
   it.each([
     // 14 rows beside the present, at most 7 after it: 7 asked, the 3 past states leave 11 after.
     { after: 11, before: 3, future: 20, past: 3, rows: 15 },

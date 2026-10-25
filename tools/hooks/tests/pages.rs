@@ -3,7 +3,7 @@
 use std::fs;
 use std::io::Write;
 use std::path::{Path, PathBuf};
-use std::process::{Command, Stdio};
+use std::process::Stdio;
 
 use hooks::json::{parse, quote};
 use hooks::pages::{
@@ -210,21 +210,34 @@ fn a_page_the_library_returned_empty_may_be_fetched_otherwise() {
 #[test]
 fn the_library_file_is_the_one_the_library_scripts_open() {
     assert_eq!(
-        library_file(Some("/l.sqlite".into()), Some("/home/a".into())),
+        library_file(
+            Some("/l.sqlite".into()),
+            Some(PathBuf::from("/r.sqlite")),
+            Some("/home/a".into())
+        ),
         Some(PathBuf::from("/l.sqlite"))
     );
     assert_eq!(
-        library_file(None, Some("/home/a".into())),
+        library_file(None, None, Some("/home/a".into())),
         Some(PathBuf::from(
             "/home/a/.local/share/agent-library/library.sqlite"
         ))
     );
-    assert_eq!(library_file(None, None), None);
+    // The records, when the project has them, before the home's (E49).
+    assert_eq!(
+        library_file(
+            None,
+            Some(PathBuf::from("/r.sqlite")),
+            Some("/home/a".into())
+        ),
+        Some(PathBuf::from("/r.sqlite"))
+    );
+    assert_eq!(library_file(None, None, None), None);
     // An empty home names no folder, as the library's server reads it (AUD-023: the two copies
     // differed there).
-    assert_eq!(library_file(None, Some(String::new())), None);
+    assert_eq!(library_file(None, None, Some(String::new())), None);
     assert_eq!(
-        library_file(Some(String::new()), Some("/home/a".into())),
+        library_file(Some(String::new()), None, Some("/home/a".into())),
         Some(PathBuf::from(
             "/home/a/.local/share/agent-library/library.sqlite"
         ))
@@ -240,8 +253,9 @@ fn the_hook_never_reads_the_library_at_library_path() {
     let line = r#"{"tool_name":"WebFetch","tool_input":{"url":"https://x.org/app"}}"#;
     // The empty page is in the file `LIBRARY_PATH` names, as Apple's python3 sets that variable;
     // the hook reads the home's library, which has none, and refuses.
-    let mut child = Command::new(env!("CARGO_BIN_EXE_library-pages"))
+    let mut child = test_support::command(env!("CARGO_BIN_EXE_library-pages"))
         .env_remove("AGENT_LIBRARY_FILE")
+        .env_remove("AGENT_RECORDS_ROOT")
         .env("LIBRARY_PATH", &file)
         .env("HOME", folder.join("home"))
         .stdin(Stdio::piped())
@@ -265,7 +279,7 @@ fn the_hook_never_reads_the_library_at_library_path() {
 /// Output of the hook for one tool call, run against a library file.
 fn hook(tool: &str, input: &str, library: &Path) -> String {
     let line = format!(r#"{{"tool_name":{},"tool_input":{input}}}"#, quote(tool));
-    let mut child = Command::new(env!("CARGO_BIN_EXE_library-pages"))
+    let mut child = test_support::command(env!("CARGO_BIN_EXE_library-pages"))
         .env("AGENT_LIBRARY_FILE", library)
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
@@ -295,7 +309,7 @@ fn library(folder: &Path) -> PathBuf {
         INSERT INTO pages VALUES ('https://x.org/app', 'App', 1, 0, '', '', 'Loading');
         INSERT INTO uses VALUES (1, 'get', 'https://x.org/refused', '', 'failed');"
     );
-    let status = Command::new("sqlite3")
+    let status = test_support::command("sqlite3")
         .arg(&file)
         .arg(script)
         .status()
@@ -358,7 +372,7 @@ fn f20_ac7_the_hook_sends_web_fetch_and_curl_to_the_library_unless_the_page_came
 
 #[test]
 fn the_hook_lets_the_call_through_when_it_cannot_read_its_input() {
-    let mut child = Command::new(env!("CARGO_BIN_EXE_library-pages"))
+    let mut child = test_support::command(env!("CARGO_BIN_EXE_library-pages"))
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
         .spawn()
@@ -395,7 +409,7 @@ fn hook_as(agent_type: &str, project: &Path, library: &Path) -> String {
         r#"{{"tool_name":"Bash","tool_input":{{"command":"curl https://x.org/full"}},"agent_type":{}}}"#,
         quote(agent_type)
     );
-    let mut child = Command::new(env!("CARGO_BIN_EXE_library-pages"))
+    let mut child = test_support::command(env!("CARGO_BIN_EXE_library-pages"))
         .env("AGENT_LIBRARY_FILE", library)
         .env("CLAUDE_PROJECT_DIR", project)
         .stdin(Stdio::piped())

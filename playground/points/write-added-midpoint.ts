@@ -9,12 +9,11 @@ import { readEditedFreeShape, readShape, writeStoredFreeShape } from "../shape";
  *
  * @kind procedure
  * @param document - page document
- * @see docs/backlog/stories/E01-F08-US-015-add-middle-point.md
  */
 export function writeAddedMidpoint(document: Document): void {
   const shape = readEditedFreeShape(document);
   const { corners, model } = readShape(document);
-  // No point is added to a shape of width or height 0: it would lie on its one line (AUD-005).
+  // No point is added to a shape of width or height 0: it would lie on its one line.
   const edge = edgeOfSelection(
     readSelection(document).selected,
     corners.length * Number(hasArea(model)),

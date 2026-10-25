@@ -8,7 +8,7 @@ import {
   clickAt,
   clickElement,
   commitField,
-  openServedPage,
+  openPage,
   pressPointer,
   readShapeModel,
   readText,
@@ -59,9 +59,9 @@ function readBlockHeight(): number {
   return (JSON.parse(readText("#contour")) as { readonly height: number }).height;
 }
 
-describe("A redraw per animation frame (US-048, REF-MDN-RAF)", () => {
+describe("A redraw per animation frame (REF-MDN-RAF)", () => {
   beforeEach(() => {
-    openServedPage("");
+    openPage("");
     chooseShapeKind("text");
 
     // Two lines typed, as the page opens with them in a browser, which drops the line break
@@ -149,13 +149,13 @@ function readKeptBoxes(): readonly (readonly number[])[] {
   );
 }
 
-describe("a value typed then the drawing clicked within the same frame (US-082)", () => {
+describe("a value typed then the drawing clicked within the same frame", () => {
   // The canvas sits at (100, 50) in the window and the drawing's origin 40 right of and below its
   // corner at the opening view: the drawing's point (x, y) is the window's (x + 140, y + 90).
   beforeEach(() => {
-    // The epic's step 1, a rectangle 120 × 80 at (0, 0), A; then B placed by a click at
+    // The page as it opens, a rectangle 120 × 80 at (0, 0), A; then B placed by a click at
     // (250, 45), centred: 100 × 100 at (250 − 50, 45 − 50) = (200, −5), edited.
-    openServedPage("?guide=epic");
+    openPage("");
     setElementBox("#canvas", { height: 600, left: 100, top: 50, width: 800 });
     clickElement("tool-rectangle");
     clickAt("#canvas", { clientX: 390, clientY: 135 });
@@ -237,7 +237,7 @@ describe("a value typed then the drawing clicked within the same frame (US-082)"
     "[F43.AC4] draws the redraw at %s before any listener of the canvas or inside it acts",
     (type) => {
       // The drawing's layer, inside the canvas: a listener there hears the event before the
-      // canvas's own listeners, after those the canvas holds in the capture phase (AUD-045).
+      // canvas's own listeners, after those the canvas holds in the capture phase.
       const inside = document.querySelector("#canvas > *");
       const pending: boolean[] = [];
 
@@ -253,7 +253,7 @@ describe("a value typed then the drawing clicked within the same frame (US-082)"
   );
 
   it("[F43.AC4] forgets at a mount the redraw the mount before asked, a redraw then asked anew", () => {
-    openServedPage("?guide=epic");
+    openPage("");
     holdFrames();
 
     // Drawn by the mount itself; the frame the mount before asked then finds nothing to draw.

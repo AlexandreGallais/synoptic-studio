@@ -1,6 +1,6 @@
 /**
- * The panel's label of each field of a shape whose words (`fieldWords`) are not the label
- * (US-077): a text's switches named as their boxes, its box's size as its fields, a polygon's radii
+ * The panel's label of each field of a shape whose words (`fieldWords`) are not the label:
+ * a text's switches named as their boxes, its box's size as its fields, a polygon's radii
  * as Radius; the label's unit or hint in brackets left out, `Max lines (0 none)` written `Max
  * lines`.
  */

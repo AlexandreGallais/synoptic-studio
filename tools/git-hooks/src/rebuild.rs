@@ -1,5 +1,5 @@
-//! The release binaries rebuilt after a pull (EN-131, ADR-0078): the hooks, the status line and
-//! the agent call `target/release/<binary>` by its path, so a pull that brings new Rust sources
+//! The release binaries rebuilt after a pull (EN-131, ADR-0078): the hooks and the
+//! agent call `target/release/<binary>` by its path, so a pull that brings new Rust sources
 //! leaves them running the old code until something rebuilds them. `post-merge` runs after a merge
 //! or a fast-forward, `post-rewrite rebase` after a rebase (`REF-GITHOOKS`); both read the files
 //! changed since `ORIG_HEAD`, the head before the operation (`REF-GIT-REV-PARSE`), and rebuild
@@ -14,7 +14,7 @@ use git_repository::stdout_of;
 use stale_binaries::{RELEASE_BUILD, binaries, binary_written, touches_rust};
 
 /// The command a person runs again after a failed rebuild.
-pub const AGAIN: &str = "npm run rust:build";
+pub const AGAIN: &str = "cargo build --release --workspace --locked";
 
 /// What a hook did after a pull.
 #[derive(Clone, Debug, PartialEq, Eq)]

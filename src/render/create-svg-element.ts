@@ -11,7 +11,6 @@ import type { ViewBox } from "../model";
  * @param document - document owning the element
  * @param viewBox - region shown, written with `formatSvgNumber`
  * @returns the detached `<svg>` element
- * @see REF-MDN-CREATEELEMENTNS
  */
 export function createSvgElement(document: Document, viewBox: ViewBox): SVGSVGElement {
   const svg = document.createElementNS(SVG_NAMESPACE, "svg");

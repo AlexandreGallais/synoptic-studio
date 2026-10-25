@@ -38,7 +38,7 @@ function heldAB(measure: HistoryMeasure): readonly number[] {
   return [heldCount(measure.held, shapeKey(SHAPE_A)), heldCount(measure.held, shapeKey(SHAPE_B))];
 }
 
-describe("measureByState (EN-147)", () => {
+describe("measureByState", () => {
   it("[F41.AC2] adds A, not in the present, and three slots: 1 252 bytes", () => {
     // A 0 → 1, not in the present: 614 × 2 = 1 228; B in the present: 0; 3 × 8 = 24: 1 252.
     expect(ONCE.size).toBe(1252);

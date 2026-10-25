@@ -2,9 +2,6 @@
 set -e
 . "$(dirname "$0")/tool.sh"
 # Conventional Commits as commitlint checked them, then a story branch's `Refs:` or `Closes:`
-# footer (`tools/git-hooks/src/message.rs`, `footer.rs`).
+# footer (`tools/git-hooks/src/message.rs`, `footer.rs`). No `done` commit is checked any more:
+# a story's status and rules live in the records (EN-154).
 tool git-hooks git-hooks commit-msg "$1"
-# A done commit (`Closes:`) of a story that changes a rule brings the docs it touches (EN-059).
-if grep -q '^Closes:' "$1"; then tool rule-docs check-rule-docs "$1"; fi
-# A done commit shows the notes its story file keeps for the main thread, moved by no tool (EN-140).
-if grep -q '^Closes:' "$1"; then tool shared-files move-rows --notes "$(git branch --show-current)"; fi

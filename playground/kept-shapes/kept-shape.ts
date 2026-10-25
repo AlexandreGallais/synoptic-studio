@@ -1,7 +1,7 @@
 import type { DrawingShape } from "../../src";
 
 /**
- * A shape the page keeps in its drawing (F36): the shape as the model holds it, and the kind the
+ * A shape the page keeps in its drawing: the shape as the model holds it, and the kind the
  * panel showed it as, since a rectangle is stored as a free shape (ADR-0032) and is loaded back
  * as a Rectangle when picked.
  */

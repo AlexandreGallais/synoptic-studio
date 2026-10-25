@@ -31,7 +31,6 @@ type TextDocument = {
  * @param document - page document
  * @param measured - the text and its drawing
  * @returns the text's element and the faces left out
- * @see docs/backlog/stories/E15-F17-US-045-fonts-embedded-at-export.md
  */
 export function createTextDocument(document: Document, measured: MeasuredText): TextDocument {
   const { drawn, text } = measured;

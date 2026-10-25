@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import {
   clickAt,
   clickElement,
-  openServedPage,
+  openPage,
   readText,
   readValue,
   runResizeObservers,
@@ -110,9 +110,9 @@ function placeRectangle(at: Point): void {
   typeAndEnter("shape-y", String(at.y));
 }
 
-describe("the zoom's keys, the fits and the percentage shown (US-079)", () => {
+describe("the zoom's keys, the fits and the percentage shown", () => {
   beforeEach(() => {
-    openServedPage("");
+    openPage("");
     setElementBox("#canvas", { height: 800, left: 100, top: 50, width: 1200 });
     // A, 100 × 50 at (10, 20), sharp, selected.
     typeAndEnter("radius", "0");
@@ -341,7 +341,7 @@ describe("the zoom's keys, the fits and the percentage shown (US-079)", () => {
     expectViewBox("557.65625 358.4375 4.6875 3.125");
     expectZoomShown(25_600);
 
-    // 0.5 %, above 0, taken at the lower bound, 1 % (AUD-044): o′ = (560 − 600 / 0.01, 360 − 400 /
+    // 0.5 %, above 0, taken at the lower bound, 1 %: o′ = (560 − 600 / 0.01, 360 − 400 /
     // 0.01) = (−59 440, −39 640); 1 200 / 0.01 = 120 000, 800 / 0.01 = 80 000.
     typeAndEnter("zoom-field", "0.5");
     expectViewBox("-59440 -39640 120000 80000");
@@ -359,7 +359,7 @@ describe("the zoom's keys, the fits and the percentage shown (US-079)", () => {
     expectZoomShown(200);
   });
 
-  it("[F44.AC4] takes 0 typed in the menu's field at 1 % (AUD-046)", () => {
+  it("[F44.AC4] takes 0 typed in the menu's field at 1 %", () => {
     showView(ZOOMED);
     typeInField("zoom-field", "0");
 

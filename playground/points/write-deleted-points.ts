@@ -12,7 +12,6 @@ import type { FreeShape } from "../../src";
  * @param document - page document
  * @param selected - numbers of the points selected, from 0
  * @returns the free shape, `undefined` when nothing may be deleted
- * @see docs/backlog/stories/E01-F08-US-016-delete-points.md
  */
 function readDeletableShape(
   document: Document,
@@ -33,7 +32,6 @@ function readDeletableShape(
  *
  * @kind procedure
  * @param document - page document
- * @see docs/backlog/stories/E01-F08-US-016-delete-points.md
  */
 export function writeDeletedPoints(document: Document): void {
   const { selected } = readSelection(document);

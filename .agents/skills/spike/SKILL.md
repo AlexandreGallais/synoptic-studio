@@ -1,0 +1,19 @@
+---
+name: spike
+description: Run a research spike (SP story) — an epic's refinement from `develop`, or a short spike opening a feature with questions left — sourcing every story before any code. Use when starting an epic or a feature with open questions, or for a story of type SP.
+argument-hint: "[spike id, e.g. SP-001]"
+---
+
+# Research spike
+
+Spike: $ARGUMENTS. The protocol: `knowledge show PAGE-research` (the order of the sources, how many, when to stop); what is written goes into the records, not into the repository.
+
+- **An epic's refinement**: an `SP` from `develop`. The Product Owner's account of the epic, deep research on this epic only, then one questionnaire with every question at once, each with options and a numeric example, aimed right the first time (a second round only if truly needed); then the full cut before any code: its features of 2 to 4 stories, each of at most 3 tasks, written as rows of the records. A feature unrelated to the subject goes to another epic; scope that grows is cut again at once. An epic about the agent's own work is tagged **method and tools**: one audit, at its end.
+- **A feature's spike**, only when the refinement truly left a question: a short `SP`, the first story of its feature branch.
+
+1. **Inventory**: per story, each formula, algorithm, specification point and behavior it needs.
+2. **The records first** (`knowledge search`, `--kind source`, `--kind note`, the rules), then the library (`library_search`). Then, in the background and only when the feature holds them, the `functional-analyst` on its business rules, the `math-expert` on its formulas.
+3. **Read the source itself** through `library_get`, so that it is kept: spec > paper > book > official docs > code (read, never copied) > blog (never alone). An unreadable source is not cited: a derivation (its row in `derivations`, then its steps one a row of `derivation_steps` — Notation, Steps, Checks, Cross-check, Limits — each citing a read source, by `knowledge sql "INSERT INTO …"`) or a research request.
+4. **Record**: each source a `REF-*`, a row of `sources` (what it says that we use, `verified` and its day); the note, a row of `notes` and its findings one a row of `note_findings`, each with the source it cites: per story, the sources and what stays open; all by `knowledge sql "INSERT INTO …"`.
+5. **The stories updated** in the records: criteria from the sources' examples, the `@see` targets, the business questions for the Product Owner.
+6. Finished as a story (`/story`, step 6); an epic's refinement into `develop`: `target/release/heavy-lock --lock merge target/release/story-finish develop …`.

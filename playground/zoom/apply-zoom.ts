@@ -14,7 +14,6 @@ import type { Point } from "../../src";
  * @param name - the zoom asked
  * @param pointer - the pointer's offset on the canvas while it is over the drawing, in CSS pixels;
  * undefined otherwise
- * @see docs/domain/interaction.md#_7-navigation-and-history
  */
 export function applyZoom(document: Document, name: ZoomName, pointer: Point | undefined): void {
   const view = readAskedView(document, name, pointer);

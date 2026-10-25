@@ -3,7 +3,7 @@ import { readView } from "../view";
 
 import type { Point } from "../../src";
 
-/** Radius of a handle, in screen pixels: large enough to be clicked easily (F03). */
+/** Radius of a handle, in screen pixels: large enough to be clicked easily. */
 const HANDLE_RADIUS = 8;
 
 /** Radius of the ring drawn behind a selected handle, in screen pixels. */
@@ -17,7 +17,6 @@ const HALO_RADIUS = 13;
  * @param center - point the handle is drawn on
  * @param radius - size of the handle in user units, > 0
  * @returns a closed `d` made of two arcs
- * @see REF-SVG2-PATHS
  */
 function createCirclePathData(center: Point, radius: number): string {
   const left = formatCoordinatePair({ x: center.x - radius, y: center.y });
@@ -40,7 +39,6 @@ function createCirclePathData(center: Point, radius: number): string {
  * @param vertices - vertices of the contour, in drawing order (Q11)
  * @param selected - numbers of the selected vertices, from 0
  * @returns the rings, then one `<path>` per vertex, vertex 1 last
- * @see docs/backlog/stories/E01-F03-US-012-points-mode.md
  */
 export function createHandleElements(
   document: Document,

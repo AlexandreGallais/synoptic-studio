@@ -14,7 +14,6 @@ import type { KindMemory } from "./kind-memory";
  * @param inputs - the inputs of the kind's settings, in the order the page holds them
  * @param kind - the kind of the new shape
  * @returns the radii and one setting per input, in the same order
- * @see REF-INKSCAPE-TUTORIAL-SHAPES
  */
 function readKindMemory(
   document: Document,
@@ -44,7 +43,6 @@ function readKindMemory(
  * @kind procedure
  * @param document - page document
  * @param radii - the radii, a space between two; empty for none
- * @see REF-INKSCAPE-TUTORIAL-SHAPES
  */
 function writeKeptRadii(document: Document, radii: string): void {
   const { dataset } = selectElement(document, "radius");
@@ -58,13 +56,12 @@ function writeKeptRadii(document: Document, radii: string): void {
 
 /**
  * Gives a new shape the settings of the last shape of its kind, or, before any, the values the
- * page opens with (SP-026), without firing any event: one memory per kind, so that a rectangle's
+ * page opens with, without firing any event: one memory per kind, so that a rectangle's
  * radius never reaches a polygon. A kind without settings changes nothing.
  *
  * @kind procedure
  * @param document - page document
  * @param kind - the kind of the new shape
- * @see REF-INKSCAPE-TUTORIAL-SHAPES
  */
 export function writeKindSettings(document: Document, kind: string): void {
   const selector = KIND_SETTINGS.get(kind);

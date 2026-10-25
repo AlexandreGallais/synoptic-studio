@@ -1,5 +1,5 @@
 /**
- * Creates the line of the steps the list leaves out on one side (US-077), their count with its
+ * Creates the line of the steps the list leaves out on one side, their count with its
  * digits grouped by commas, `6 earlier steps`, `1 later step`; none left out, no line.
  *
  * @kind procedure
@@ -7,7 +7,6 @@
  * @param count - how many states are left out on that side
  * @param side - `earlier` before the rows, `later` after them
  * @returns the line, or none
- * @see docs/domain/interaction.md#_7-navigation-and-history
  */
 export function createLeftOutRows(
   document: Document,

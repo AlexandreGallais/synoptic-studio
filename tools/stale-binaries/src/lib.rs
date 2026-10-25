@@ -1,5 +1,5 @@
-//! The release binaries older than their sources (EN-104, ADR-0078). The hooks, the status line,
-//! the Git hooks and the agent call `target/release/<binary>` by its path, not through `cargo run`,
+//! The release binaries older than their sources (EN-104, ADR-0078). The hooks, the
+//! Git hooks and the agent call `target/release/<binary>` by its path, not through `cargo run`,
 //! which would rebuild it: a binary built before its sources changed runs the old code. A binary is
 //! stale when one of the files Cargo built it from — listed by Cargo in its dep-info,
 //! `target/release/<binary>.d` — was written after it, or when it is missing. Read from the files
@@ -100,7 +100,7 @@ pub fn dep_info_files(text: &str) -> Vec<PathBuf> {
         .collect()
 }
 
-/// Cargo's arguments rebuilding a checkout's release binaries: `npm run rust:build`'s build, quiet,
+/// Cargo's arguments rebuilding a checkout's release binaries: the `rust:build` check's and `prepare`'s build, quiet,
 /// as `git-sequences sync`, `story-finish`, `worktree-new` and the post hooks run it (ADR-0078).
 pub const RELEASE_BUILD: [&str; 5] = ["build", "--release", "--workspace", "--locked", "--quiet"];
 
@@ -190,13 +190,9 @@ pub const RUST_INPUTS: &[&str] = &[
     ".oxfmtrc.json",
     // The CI's matrix and the checks `main` requires, read against `LANES` (`[F24.AC1]`).
     ".github/workflows/",
-    "docs/tooling/ci.md",
-    // The folders past the signal, read against the lint's settings (`lint`).
-    "docs/conventions/files.md",
+    "tests/data/required-checks.json",
     // The hooks' settings, read against their binaries (`hooks`).
     ".claude/settings.json",
-    // The playground's checklists, copied by `val-prepare`'s tests.
-    "playground/checklists/",
     // The test files, read for the binaries they start (`repo-tools`, `[F19.AC9]`).
     "*.test.ts",
 ];

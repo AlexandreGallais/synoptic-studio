@@ -2,7 +2,7 @@
 //! `f21_ac8_…` marks a test proving the feature's criterion.
 
 use page::fence::fenced;
-use page::section::{Section, first_section, heading, sections};
+use page::section::{Section, heading, sections};
 use page::table::{first_cell, rows};
 
 /// Two tables, a fenced block that looks like Markdown, and nested headings.
@@ -166,27 +166,6 @@ fn a_heading_has_one_to_six_hashes_then_a_space() {
     assert_eq!(heading("####### Seven"), None);
     assert_eq!(heading("#hashtag"), None);
     assert_eq!(heading("text # no"), None);
-}
-
-#[test]
-fn the_first_section_ends_at_the_second_heading() {
-    let story = "---\nid: EN-1\n---\n\n# EN-1 — Title\n\nWhy.\n\n## Criteria\n\n- one\n";
-
-    assert_eq!(
-        first_section(story),
-        "---\nid: EN-1\n---\n\n# EN-1 — Title\n\nWhy.\n"
-    );
-}
-
-#[test]
-fn a_page_of_one_heading_or_none_is_its_own_first_section() {
-    assert_eq!(first_section("# Title\n\nAll.\n"), "# Title\n\nAll.\n");
-    assert_eq!(first_section("No heading.\n"), "No heading.\n");
-    assert_eq!(first_section(""), "");
-    // A page of blank lines keeps none of them.
-    assert_eq!(first_section("\n  \n"), "");
-    // A page opening on its second heading's line keeps nothing before it.
-    assert_eq!(first_section("# A\n# B\n"), "# A\n");
 }
 
 #[test]

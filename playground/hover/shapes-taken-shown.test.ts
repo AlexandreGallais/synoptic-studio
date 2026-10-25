@@ -6,7 +6,7 @@ import { readSelectedShapes } from "../kept-shapes";
 import {
   clickElement,
   dispatchDrawingPointer,
-  openServedPage,
+  openPage,
   readShapeModel,
   setElementBox,
   typeAndEnter,
@@ -74,7 +74,7 @@ function readOutlines(name: string): readonly (string | null)[] {
 
 /**
  * The two paths expected of a shape outlined: its white line, then its black dashes, both on its
- * contour as drawn (US-086).
+ * contour as drawn.
  *
  * @param shape - the shape outlined
  * @returns the path data of its white line, then of its dashes
@@ -85,10 +85,10 @@ function bandsOf(shape: Shape): readonly string[] {
   return [contour, contour];
 }
 
-describe("the shapes a selection rectangle takes outlined while it is dragged (US-080)", () => {
+describe("the shapes a selection rectangle takes outlined while it is dragged", () => {
   beforeEach(() => {
-    // The epic's step 1, a rectangle 120 × 80 at (0, 0), radius 10, whatever feature is validated.
-    openServedPage("?guide=epic");
+    // The page as it opens, a rectangle 120 × 80 at (0, 0), radius 10.
+    openPage("");
     setElementBox("#canvas", { height: 600, left: 100, top: 50, width: 800 });
   });
 

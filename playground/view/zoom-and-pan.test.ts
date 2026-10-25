@@ -4,7 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   clickElement,
   dispatchDrawingPointer,
-  openServedPage,
+  openPage,
   readShapeModel,
   readText,
   readValue,
@@ -208,9 +208,9 @@ function readShapePath(): string | null | undefined {
   return document.querySelector("#canvas svg > path:not([class])")?.getAttribute("d");
 }
 
-describe("zoom and pan by the wheel, a pinch and a drag (US-078)", () => {
+describe("zoom and pan by the wheel, a pinch and a drag", () => {
   beforeEach(() => {
-    openServedPage("");
+    openPage("");
     setElementBox("#canvas", { height: 800, left: 100, top: 50, width: 1200 });
     // A, 100 × 50 at (10, 20), sharp, selected.
     typeAndEnter("radius", "0");
@@ -457,7 +457,7 @@ describe("zoom and pan by the wheel, a pinch and a drag (US-078)", () => {
     expect(readHoverOutline()).toBeDefined();
   });
 
-  it("[F42.AC3] zooms by + about where a pan drag left the pointer (AUD-044)", () => {
+  it("[F42.AC3] zooms by + about where a pan drag left the pointer", () => {
     showZoomed();
 
     // The pointer over the offset (440, 340), then dragged with Space held to (540, 390).
@@ -496,9 +496,9 @@ describe("zoom and pan by the wheel, a pinch and a drag (US-078)", () => {
     expectViewBox("180 130 600 400");
   });
 
-  it.each(["tool-reset", "guide-next"])("brings back the opening view by #%s", (id) => {
+  it("brings back the opening view by Reset", () => {
     turnWheel(ZOOM_IN, POINTER);
-    clickElement(id);
+    clickElement("tool-reset");
 
     expectViewBox("-40 -40 1200 800");
   });
@@ -511,12 +511,12 @@ describe("zoom and pan by the wheel, a pinch and a drag (US-078)", () => {
  */
 function openOnPlatform(platform: string): void {
   vi.spyOn(globalThis.navigator, "platform", "get").mockReturnValue(platform);
-  openServedPage("");
+  openPage("");
   setElementBox("#canvas", { height: 800, left: 100, top: 50, width: 1200 });
   showZoomed();
 }
 
-describe("Shift with the wheel, on macOS and elsewhere (US-082)", () => {
+describe("Shift with the wheel, on macOS and elsewhere", () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });

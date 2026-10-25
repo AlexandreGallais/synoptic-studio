@@ -10,7 +10,6 @@ import { SVG_DECIMALS } from "./svg-decimals";
  * @kind format
  * @param value - finite derived coordinate or length, in user units
  * @returns its decimal text, e.g. `86.60254`, `2.5`, `0`
- * @see REF-SVG2-PATHS
  */
 export function formatSvgNumber(value: number): string {
   const rounded = Number(value.toFixed(SVG_DECIMALS));

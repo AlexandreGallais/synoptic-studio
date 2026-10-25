@@ -34,8 +34,8 @@ import type { CurveCorner, FreeShape, HandleFrame, TurnedBox, Vector } from "../
 // The golden file of a refactor (ADR-0049, RET-002): about 400 results of the library — drawings,
 // conversions, handles — from shapes drawn by fast-check with a fixed seed, written before the
 // refactor (`npx vitest run tests/golden-results.test.ts --mode golden-write`) and compared bit
-// for bit after each change (`npm run golden:check`). Kept in the Git directory, never committed;
-// skipped by `npm run test`.
+// for bit after each change (`--mode golden-check` under `target/release/heavy-lock`, as the
+// pre-push hook runs it). Kept in the Git directory, never committed; skipped by `npm run test`.
 
 /** The run's mode: `golden-write`, `golden-check`, or another for the usual test run. */
 const { MODE } = import.meta.env;

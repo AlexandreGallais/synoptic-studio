@@ -1,5 +1,5 @@
 //! Each use of a tool of the workspace, one line of `.git/metrics/tool-uses.jsonl` in the main
-//! checkout's Git folder, a linked worktree's uses included (EN-102, `docs/tooling/metrics.md`):
+//! checkout's Git folder, a linked worktree's uses included (EN-102, `the records' conventions, area metrics`):
 //! the tool, its subcommand, the worktree, its start, its duration and its exit code, so that
 //! `target/release/metrics` lists each tool's calls, failures and times.
 //!
@@ -61,9 +61,9 @@ pub fn run(tool: &str, subcommand: &str, work: impl FnOnce() -> u8) -> ExitCode 
     run_or_poll(tool, subcommand, false, work)
 }
 
-/// Runs a tool's work, its use recorded as [`run`] does unless the call is a poll: a subcommand
-/// another program calls on a timer, such as the status line's `run-totals status` once a second
-/// during a run, whose thousands of lines would say nothing of the tool's use (EN-102).
+/// Runs a tool's work, its use recorded as [`run`] does unless the call is a poll: a program
+/// called on a timer, such as a status line drawn once a second, whose thousands of lines would
+/// say nothing of the tool's use (EN-102).
 pub fn run_or_poll(
     tool: &str,
     subcommand: &str,
@@ -186,4 +186,23 @@ pub fn json_string(text: &str) -> String {
     }
     quoted.push('"');
     quoted
+}
+
+/// Whether a call asks for its tool's usage: `--help` or `-h` as its first argument (REV-009,
+/// the cards of `epic-check --help`, which ran the whole check, and `heavy-lock --help`, which
+/// ran `--help` as a command).
+#[must_use]
+pub fn asks_usage(arguments: &[String]) -> bool {
+    matches!(arguments.first().map(String::as_str), Some("--help" | "-h"))
+}
+
+/// Prints a tool's usage on standard output when its arguments ask for it ([`asks_usage`]) and
+/// returns the success its `main` exits with, before any work and any record; `None` for any
+/// other call, which the tool then works.
+#[must_use]
+pub fn usage(arguments: &[String], text: &str) -> Option<ExitCode> {
+    asks_usage(arguments).then(|| {
+        println!("{}", text.trim_end());
+        ExitCode::SUCCESS
+    })
 }

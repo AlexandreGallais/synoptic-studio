@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { isDrawnText } from "../../src";
 import { PAGE_HISTORIES } from "../history";
 import { readKeptDrawing } from "../kept-shapes";
-import { openServedPage, selectPageElement, setElementBox, typeAndEnter } from "../user-actions";
+import { openPage, selectPageElement, setElementBox, typeAndEnter } from "../user-actions";
 
 import type { Point } from "../../src";
 
@@ -76,7 +76,7 @@ function readPresentA(): Point {
  * as typed values are recorded by a key released outside the fields.
  */
 function openWithA(): void {
-  openServedPage("");
+  openPage("");
   setElementBox("#canvas", { height: 600, left: 100, top: 50, width: 800 });
   typeAndEnter("radius", "0");
   typeAndEnter("width", "100");
@@ -86,7 +86,7 @@ function openWithA(): void {
   sendKey("keyup", "Escape", {});
 }
 
-describe("two arrows held move the selection diagonally (US-081)", () => {
+describe("two arrows held move the selection diagonally", () => {
   beforeEach(() => {
     openWithA();
   });
@@ -209,7 +209,7 @@ describe("two arrows held move the selection diagonally (US-081)", () => {
     expect(readA()).toEqual({ x: 11, y: 17 });
   });
 
-  it("[F43.AC3] releases every arrow at Cmd's keydown, its keyup taken by the system (AUD-049)", () => {
+  it("[F43.AC3] releases every arrow at Cmd's keydown, its keyup taken by the system", () => {
     holdArrow("ArrowUp", 1, false);
     // Up released under Cmd, and Cmd's keyup taken by a shortcut: no keyup at all.
     sendKey("keydown", "Meta", { metaKey: true });
@@ -220,7 +220,7 @@ describe("two arrows held move the selection diagonally (US-081)", () => {
   });
 
   it.each(["pointerdown", "pointermove"])(
-    "[F43.AC3] releases every arrow at a %s carrying Cmd, no keyup sent (AUD-049)",
+    "[F43.AC3] releases every arrow at a %s carrying Cmd, no keyup sent",
     (type) => {
       holdArrow("ArrowUp", 1, false);
 
@@ -235,7 +235,7 @@ describe("two arrows held move the selection diagonally (US-081)", () => {
     },
   );
 
-  it("[F43.AC3] holds an arrow again at its repeat once Cmd is gone from it (AUD-049)", () => {
+  it("[F43.AC3] holds an arrow again at its repeat once Cmd is gone from it", () => {
     holdArrow("ArrowUp", 1, false);
     sendKey("keydown", "Meta", { metaKey: true });
     // Cmd released, its keyup lost, Up still down: its repeat comes without Cmd.

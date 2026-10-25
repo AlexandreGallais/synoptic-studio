@@ -5,7 +5,7 @@ import { PAGE_HISTORIES } from "../history";
 import { readKeptDrawing } from "../kept-shapes";
 import {
   clickElement,
-  openServedPage,
+  openPage,
   readDisabledState,
   readText,
   readValue,
@@ -54,7 +54,7 @@ function readStepCounts(): { readonly past: number; readonly future: number } {
  * Opens the page, the drawing given its box, so that the keys and the buttons reach it.
  */
 function openBoundedPage(): void {
-  openServedPage("");
+  openPage("");
   setElementBox("#canvas", { height: 600, left: 100, top: 50, width: 800 });
 }
 
@@ -66,7 +66,7 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-describe("the history's memory size and steps kept, set by the designer (US-076)", () => {
+describe("the history's memory size and steps kept, set by the designer", () => {
   it("[F40.AC4] opens on 100 MB and 5 steps kept, about 80,380 moves, the fields explained", () => {
     openBoundedPage();
 

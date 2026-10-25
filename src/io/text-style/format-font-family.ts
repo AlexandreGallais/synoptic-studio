@@ -3,7 +3,7 @@ import { caseFoldedFamilyName } from "../../model";
 
 import { formatFontFamilyName } from "./format-font-family-name";
 
-/** The generic family every list ends with, so that a reader without either font still draws the text (F05). */
+/** The generic family every list ends with, so that a reader without either font still draws the text. */
 const LAST_FAMILY = "sans-serif";
 
 /**
@@ -16,7 +16,6 @@ const LAST_FAMILY = "sans-serif";
  * @param font - the family the text names first
  * @param fallback - the family named after it
  * @returns the list, written for a `font-family` attribute
- * @see REF-CSS-FONTS-4
  */
 export function formatFontFamily(font: string, fallback: string): string {
   const names = firstOfEachClass([font, fallback, LAST_FAMILY], (name) =>

@@ -6,7 +6,6 @@ import { selectElement } from "./select-element";
  * @kind procedure
  * @param document - page document
  * @returns `rectangle`, `polygon`, `round`, `free` or `text`
- * @see docs/backlog/stories/E01-F02-US-007-shape-selector-playground.md
  */
 export function readShapeKind(document: Document): string {
   const select = selectElement(document, "shape");

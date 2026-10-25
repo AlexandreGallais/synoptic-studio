@@ -46,7 +46,13 @@ fn start_of(transcript: &Path) -> Option<Start> {
     first_request(&fs::read_to_string(transcript).ok()?, &meta)
 }
 
+/// The usage, printed on `--help` or `-h` (REV-009).
+const USAGE: &str = "usage: target/release/context-size <session or subagents folder, or file>…";
+
 fn main() -> std::process::ExitCode {
+    if let Some(code) = tool_use::usage(&std::env::args().skip(1).collect::<Vec<_>>(), USAGE) {
+        return code;
+    }
     tool_use::run("context-size", "", sizes)
 }
 

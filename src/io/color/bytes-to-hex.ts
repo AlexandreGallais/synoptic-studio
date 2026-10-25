@@ -11,7 +11,6 @@ const DIGITS_PER_BYTE = 2;
  * @kind format
  * @param bytes - the red, green and blue bytes, integers from 0 to 255
  * @returns the color, `#` and six lower-case digits
- * @see REF-CSS-COLOR-4
  */
 export function bytesToHex(bytes: readonly number[]): string {
   const pairs = bytes.map((byte) => byte.toString(HEXADECIMAL).padStart(DIGITS_PER_BYTE, "0"));

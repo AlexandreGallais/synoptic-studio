@@ -13,7 +13,6 @@ import type { NamedFontFace } from "../../src";
  * @kind procedure
  * @param face - its weight and style
  * @returns its `style` and `weight` descriptors
- * @see REF-CSS-FONT-LOADING
  */
 function readFontFaceDescriptors(
   face: Pick<NamedFontFace["face"], "isItalic" | "weight">,
@@ -27,14 +26,13 @@ function readFontFaceDescriptors(
  * argument as it is, never parsed (`REF-CHROMIUM-FONT-FACE-CODE`), so the quotes of
  * `"IBM Plex Sans"` became part of the name, no text's `font-family` matched the face, and the
  * installed family of that name was drawn instead — IBM Plex Sans 450 drawn with its 500 face,
- * 91.922 wide where 91.264 is measured (US-047). Bytes the browser cannot parse still give a face,
+ * 91.922 wide where 91.264 is measured. Bytes the browser cannot parse still give a face,
  * whose status is "error" and whose `load()` rejects with a `SyntaxError` (`REF-CSS-FONT-LOADING`).
  *
  * @kind procedure
  * @param view - the page's window
  * @param named - the face read and its family
  * @returns the face; undefined without its file or in a browser without that interface
- * @see REF-CHROMIUM-FONT-FACE-CODE
  */
 function createPageFontFace(
   view: Window & typeof globalThis,
@@ -57,7 +55,6 @@ function createPageFontFace(
  * @param update - redraws the playground
  * @returns once the face is loaded and the page redrawn
  * @throws {DOMException} a `SyntaxError` when the browser cannot parse the face
- * @see REF-CSS-FONT-LOADING
  */
 async function loadFontFace(
   document: Document,
@@ -81,7 +78,6 @@ async function loadFontFace(
  * @param document - page document
  * @param named - the face read and its family
  * @param error - the browser's reason
- * @see REF-CSS-FONT-LOADING
  */
 function writeLoadFailure(document: Document, named: NamedFontFace, error: unknown): void {
   writeText(
@@ -96,13 +92,12 @@ function writeLoadFailure(document: Document, named: NamedFontFace, error: unkno
  * possibly not installed: the face added to the page's fonts (`loadFontFace`), then the page
  * redrawn once it is loaded. A browser without that interface, or that cannot parse the face,
  * draws the text with an installed font of that name, else its fallback: measured all the same;
- * a failed load is said (`writeLoadFailure`), never left unseen (US-047).
+ * a failed load is said (`writeLoadFailure`), never left unseen.
  *
  * @kind procedure
  * @param document - page document
  * @param named - the face read and its family
  * @param update - redraws the playground
- * @see REF-CSS-FONT-LOADING
  */
 function registerFontFace(document: Document, named: NamedFontFace, update: () => void): void {
   const view = document.defaultView;
@@ -131,7 +126,6 @@ function registerFontFace(document: Document, named: NamedFontFace, update: () =
  * @param document - page document
  * @param named - the face read, its file held, and its family
  * @param update - redraws the playground once the page can draw the face
- * @see docs/backlog/stories/E15-F15-US-036-import-choose-and-embed-a-font.md
  */
 export function addFontFace(document: Document, named: NamedFontFace, update: () => void): void {
   const session = readFontSession(document);

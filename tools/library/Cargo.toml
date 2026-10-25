@@ -9,7 +9,6 @@ publish.workspace = true
 [dependencies]
 calendar = { path = "../calendar" }
 hooks = { path = "../hooks" }
-shared-files = { path = "../shared-files" }
 tool-use = { path = "../tool-use" }
 rmcp.workspace = true
 serde_json.workspace = true

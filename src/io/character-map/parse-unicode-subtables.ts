@@ -41,7 +41,6 @@ const WINDOWS_UNICODE_ENCODINGS: ReadonlySet<number> = new Set([
  * @kind format
  * @param cmap - the font's `cmap` table, at least its 4-byte header
  * @returns each subtable's offset from the start of the table, in the order of the records
- * @see REF-OT-CMAP
  */
 export function parseUnicodeSubtables(cmap: Readonly<DataView>): readonly number[] {
   const count = Math.min(

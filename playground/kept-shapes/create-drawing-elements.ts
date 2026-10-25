@@ -17,14 +17,13 @@ import type { Shape, Text } from "../../src";
 /**
  * Creates the elements of a text kept in the drawing, measured with its font's metrics; when they
  * are no longer read, a family read ahead whose files could not be read again leaving the session
- * (US-061) while Inter is not drawn (US-056), with the metrics it was last drawn with
- * (`KEPT_TEXT_METRICS`), so that it stays in the drawing and the export as it was (F35).
+ * while Inter is not drawn, with the metrics it was last drawn with
+ * (`KEPT_TEXT_METRICS`), so that it stays in the drawing and the export as it was.
  *
  * @kind procedure
  * @param document - page document
  * @param text - a text kept, valid when it was drawn
  * @returns its group; nothing for a text never drawn with metrics
- * @see docs/domain/interaction.md#_1-tools
  */
 function createKeptTextElements(document: Document, text: Text): readonly SVGGElement[] {
   const key = JSON.stringify(text);
@@ -48,7 +47,6 @@ function createKeptTextElements(document: Document, text: Text): readonly SVGGEl
  * @param document - page document
  * @param shape - a shape kept, valid when it was drawn
  * @returns its path
- * @see docs/backlog/stories/E02-F35-US-063-a-click-adds-a-shape.md
  */
 function createKeptShapeElement(document: Document, shape: Shape): SVGPathElement {
   const pieces = curveContour(shapeCorners(shape));
@@ -58,13 +56,12 @@ function createKeptShapeElement(document: Document, shape: Shape): SVGPathElemen
 
 /**
  * Creates the elements of the shapes kept below or above the one the panel edits, in the order
- * drawn, so that each is drawn above those before it (F35, F36).
+ * drawn, so that each is drawn above those before it.
  *
  * @kind procedure
  * @param document - page document
  * @param key - `DRAWING_KEYS.below` or `DRAWING_KEYS.above`
  * @returns their elements, the first drawn first
- * @see docs/domain/interaction.md#_2-selector
  */
 export function createDrawingElements(document: Document, key: string): readonly SVGElement[] {
   return readStoredDrawing(document, key).flatMap(({ shape }) =>

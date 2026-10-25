@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { shapeKey } from "./shape-key";
 
-describe("shapeKey (EN-147)", () => {
+describe("shapeKey", () => {
   it("[F41.AC2] gives a shape the same key at every call", () => {
     const shape = ["a"];
 

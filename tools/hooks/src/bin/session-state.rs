@@ -1,5 +1,6 @@
 //! `SessionStart` hook (ADR-0021, EN-104): prints the project state derived from Git and the
-//! backlog files, so that a new or compacted session starts from facts rather than from memory;
+//! backlog in the records (`knowledge sql`, EN-154), so that a new or compacted session starts
+//! from facts rather than from memory; records that cannot be read leave the features out;
 //! removes the files of calls left running for a day, which an interrupted or denied call leaves.
 
 use std::env;
@@ -10,7 +11,7 @@ use std::time::SystemTime;
 
 use git_repository::{branch_of, checkout_of};
 use hooks::git::git;
-use hooks::session::{feature_line, is_feature_file, is_stale, state_text, story_rows};
+use hooks::session::{FEATURE_STORIES, feature_line, feature_stories, is_stale, state_text};
 
 fn main() -> ExitCode {
     tool_use::run("session-state", "", hook)
@@ -68,29 +69,13 @@ fn hook() -> u8 {
         return 1;
     };
     let changed = status.split('\n').filter(|line| !line.is_empty()).count();
-    let features_folder = root.join("docs").join("backlog").join("features");
-    let Ok(entries) = fs::read_dir(&features_folder) else {
-        eprintln!(
-            "session-state: {} cannot be read",
-            features_folder.display()
-        );
-        return 1;
-    };
-    // Node.js lists a folder sorted by name.
-    let mut files: Vec<String> = entries
-        .flatten()
-        .map(|entry| entry.file_name().to_string_lossy().into_owned())
-        .filter(|name| is_feature_file(name))
-        .collect();
-
-    files.sort();
-    let features: Vec<String> = files
+    let rows = knowledge_call::rows(&root, FEATURE_STORIES).unwrap_or_else(|reason| {
+        eprintln!("session-state: the records cannot be read, the features left out: {reason}");
+        Vec::new()
+    });
+    let features: Vec<String> = feature_stories(&rows)
         .iter()
-        .filter_map(|file| {
-            let text = fs::read_to_string(features_folder.join(file)).unwrap_or_default();
-
-            feature_line(file, &story_rows(&text))
-        })
+        .filter_map(|(feature, stories)| feature_line(feature, stories))
         .collect();
 
     print!(

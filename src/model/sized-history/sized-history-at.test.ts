@@ -26,7 +26,7 @@ const TWICE = measuredHistory({
 /** TWICE undone twice: the first state present, the two others to come. */
 const BACK = sizedUndoneHistory(sizedUndoneHistory(TWICE));
 
-describe("sizedHistoryAt (US-077)", () => {
+describe("sizedHistoryAt", () => {
   it("[F41.AC1] goes back to the first state by two undos, the two after it kept to redo", () => {
     const moved = sizedHistoryAt(TWICE, BACK.present);
 
