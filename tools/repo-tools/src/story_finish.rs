@@ -88,7 +88,8 @@ pub fn merger(base: &str, branch: &str) -> Merger {
         .and_then(|id| id.split_once('-').map(|(kind, _)| kind.to_owned()))
         .unwrap_or_default();
     let taken: &[&str] = if base == "develop" {
-        &["REV", "SP"]
+        // An epic's final audit merges into `develop` as a review does (E49, 2026-10-25).
+        &["REV", "SP", "AUD"]
     } else if base.starts_with("feature/") {
         &["US", "EN", "SP", "CHK", "AUD", "VAL"]
     } else {
@@ -576,6 +577,10 @@ mod tests {
         // [F23.AC2] A `REV` or an epic's `SP` into `develop` and a story into its feature are
         // merged by GitHub (REV-009); any other story into `develop` by the Product Owner.
         assert_eq!(merger("develop", "docs/rev-006-review"), Merger::GitHub);
+        assert_eq!(
+            merger("develop", "chore/aud-051-the-final-clean-up"),
+            Merger::GitHub
+        );
         assert_eq!(
             merger("develop", "docs/sp-030-refinement-of-e18"),
             Merger::GitHub
