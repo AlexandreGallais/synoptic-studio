@@ -15,3 +15,7 @@ test-report.xml
 
 # Build output of the Rust tools, one folder for the workspace (EN-068)
 /target/
+
+# IDE settings: a project run by the agent keeps none in Git.
+.idea/
+.vscode/
