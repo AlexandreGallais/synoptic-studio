@@ -44,7 +44,7 @@ Every test named here carries the criterion's tag, `[F18.ACn]` in TypeScript or 
 
 | Criterion | What you get | Evidence |
 | --- | --- | --- |
-| AC1 release pull request on `develop` | release-please opens its release pull request into `develop`; on `main` it only tags (ADR-0067) | `tests/release-flow.test.ts` |
+| AC1 release pull request on `develop` | release-please opens its release pull request into `develop`; on `main` it only tags (ADR-0067, removed since: ADR-0101) | `tests/release-flow.test.ts` |
 | AC2 a fourth subagent refused | the hook `limit-agents` refuses an `Agent` or `SendMessage` call that would start a fourth | `tools/hooks/tests/limit.rs`, `tasks.rs` |
 | AC3 one heavy command at a time | `tools/heavy-lock/`, the waiting line, a lock left behind taken over | `tools/heavy-lock/tests/lock.rs` |
 | AC4 logs merged by union | `.gitattributes`: `merge=union` on the journal, the improvement and feedback logs | `tests/logs.test.ts` |
@@ -72,7 +72,7 @@ Run `npm run dev` and open `http://localhost:5173/?checklist=E17`: E17's checkli
 | Try | You should see |
 | --- | --- |
 | `npm run test` in two terminals at once | the second: `heavy lock held by process <pid> (npm run test in <folder>, for <n> s): waiting`, then it runs |
-| ask the agent to start four subagents at once | the fourth refused: `At most 3 subagents at once (ADR-0063): 3 running — …` |
+| ask the agent to start four subagents at once | the fourth refused: `At most 3 subagents at once (ADR-0072): 3 running — …` |
 | `target/release/worktree-new VAL-019`, then `target/release/worktree-new US-61` | answered at once: `… val-019 already exists: remove it or name another story`, then `` `US-61` is not a story id such as US-061 `` |
 | `npm run backlog:index`, then `git status` | no file changed |
 | `git check-attr merge docs/process/journal.md` | `merge: union` |
@@ -92,7 +92,7 @@ Answered by the Product Owner on 2026-10-17; each also has its line in the check
 | Decision | Answer |
 | --- | --- |
 | US-061, a refused face | dropped: a face the browser refuses at the second reading is no longer measured; a text asking for it uses the nearest face held |
-| ADR-0067, decision 2 | before each release, the Product Owner merges release-please's release pull request into `develop`, then `develop` → `main` (#259 for 0.3) |
+| ADR-0067, decision 2 (removed since: ADR-0101) | before each release, the Product Owner merges release-please's release pull request into `develop`, then `develop` → `main` (#259 for 0.3) |
 | ADR-0068 | the Markdown tables without padding move to F19's formatter; F18 keeps the logs merged by union |
 | EN-062 | not accepted: font tests on macOS's own fonts only; EN-067 made every font test run on every system |
 

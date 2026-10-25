@@ -43,7 +43,7 @@ Read from the logs of the failed runs of #259 (EN-116); each test now holds on b
 
 ## The release by a button
 
-| Before (ADR-0079, F21) | Now (ADR-0086, EN-117) |
+| Before (ADR-0079, F21, removed: ADR-0101) | Now (ADR-0086, EN-117) |
 | --- | --- |
 | `release prepare` made a branch `release/x.y.z` and a commit of the version and of `CHANGELOG.md` | `release notes` prints the draft of the features' text, no branch nor file |
 | the pull request into `main` held that commit; its merge was the release | the merge into `main` deploys the site; the release waits for your button |

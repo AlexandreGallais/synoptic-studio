@@ -79,11 +79,11 @@ A story's life crosses all four features. This review's own story, REV-004, walk
 
 ## Decisions taken on the way
 
-- **A run** (ADR-0063, superseded by ADR-0072): three helpers and one heavy command at a time, enforced by a hook and a lock; a tooling feature is validated by the agent.
+- **A run** (ADR-0072, after ADR-0063, removed: ADR-0101): three helpers and one heavy command at a time, enforced by a hook and a lock; a tooling feature is validated by the agent.
 - **Checks by level** (ADR-0064): no review per story, one thorough audit per feature, a full audit beside the naming pass.
 - **Shared files** (ADR-0065, ADR-0068): the files every branch writes are written at merge; the logs merge by union; the tables are written without padding.
 - **A register of exceptions** (ADR-0066): every place the code departs from a rule is listed with its reason, and checked.
-- **The release** (ADR-0067, superseded by ADR-0079): now prepared on a branch `release/x.y.z` from `develop` by the project's tool, merged into `main` by you, tagged and published by the tool; release-please removed.
+- **The release** (ADR-0067, then ADR-0079, both removed: ADR-0101): now prepared on a branch `release/x.y.z` from `develop` by the project's tool, merged into `main` by you, tagged and published by the tool; release-please removed.
 - **Fast tools** (ADR-0069): a tool is as fast as it can be, since every second the agent waits costs it rounds of checking again.
 - **Tests without over-testing** (ADR-0070): one claim proven in one place; slow preparation done once.
 - **Type errors with the lint** (ADR-0071): the type errors come listed with the lint; the declarations are written by Oxc.
@@ -115,7 +115,7 @@ Held with the Product Owner on 2026-10-18 (`REV-004`): the agent ran the checkli
 | ok | 26, among them the lint and its probes, the font tests, the heavy lock, the guard's refusals, the dev packages, the secret scan |
 | ok by their tests, needing Chrome or a run | 6 |
 | an npm script EN-115 removed: the binary works, the line names the old command | 14, and one expecting the removed `font:metrics` |
-| obsolete | 1: release-please's pull request, replaced by ADR-0079 |
+| obsolete | 1: release-please's pull request, replaced by ADR-0079, removed since (ADR-0101) |
 
 Also found: `epic-check` takes a dropped story for one to look at; `session-report` writes `1617 min 60 s`; the main checkout's hooks ran binaries built before EN-115's merge; `check:all` took 112.6 s and 105.9 s in this review's runs, the site built and the machine loaded, and 82.3 s at its push.
 
@@ -124,7 +124,7 @@ Also found: `epic-check` takes a dropped story for one to look at; `session-repo
 | Question | Answer (Product Owner, 2026-10-18) |
 | --- | --- |
 | `check:all` against the 70 to 90 s target | met: its median, about 73 s, is within the target; the runs of 106 to 113 s come from the load |
-| the closing release | after RET-004, which weighs the Product Owner's idea of a tag that creates the version without a new commit; 0.3.0 is then published with the flow chosen, and E17 closes at that publication. ADR-0079 stands until then |
+| the closing release | after RET-004, which weighs the Product Owner's idea of a tag that creates the version without a new commit; 0.3.0 is then published with the flow chosen, and E17 closes at that publication. ADR-0079 stands until then, removed since (ADR-0101) |
 | the next epic | E02, editing shapes with precision, after RET-004 |
 | NAM-002's logged tooling items and this review's findings | they wait for the tools point at an epic's end: tools are not fixed during an epic's features |
 | anything built that was not meant | nothing; no remark on the report; the records' private GitHub repository is left for the Product Owner to delete |

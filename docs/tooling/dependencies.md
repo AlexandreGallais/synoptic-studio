@@ -18,7 +18,7 @@ Every dependency is code the project did not write and must trust, so each one i
 | --- | --- | --- |
 | `typescript` | TypeScript 7, the native compiler (`REF-TS7-ANNOUNCEMENT`): its checker runs under oxlint's type check, `typeCheck` in the `options` of `.oxlintrc.json` (EN-121), and as `npx tsc --noEmit`; no tool of the repository imports its API, which 7.0 lacks (ADR-0075) | TypeScript 6's `tsc`: about 4.3 s against 0.9 s on this tree |
 | `@types/node` | Node.js types for the tooling | — |
-| `vite` | development server of the playground and library build (ADR-0009, ADR-0075) | — |
+| `vite` | development server of the playground and library build (ADR-0075) | — |
 | `vitest` | tests, sharing Vite's configuration and transforms | Jest: a separate transform pipeline |
 | `@vitest/coverage-v8` | coverage of `src/` with 100 % thresholds | `@vitest/coverage-istanbul`: slower, instruments the code |
 | `happy-dom` | a DOM for the tests of `src/render/` (`// @vitest-environment happy-dom`), so the shell keeps 100 % coverage | `jsdom`: heavier and slower |
