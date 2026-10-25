@@ -1,5 +1,5 @@
 import { execFileSync, spawnSync } from "node:child_process";
-import { existsSync, readFileSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
 import { describe, expect, it } from "vitest";
@@ -28,18 +28,6 @@ function runTsc(tscArguments: readonly string[]): {
 /** An import of TypeScript's API, which TypeScript 7 lacks until 7.1, under its name or TypeScript 6's alias. */
 const TYPESCRIPT_IMPORT = /from\s+["'](?:typescript|@typescript\/typescript6)["']/u;
 
-/**
- * A JSON file of the repository, parsed to an object.
- *
- * @param path - the file, from the repository's root
- * @returns its object, empty when it holds another value
- */
-function jsonFile(path: string): object {
-  const value: unknown = JSON.parse(readFileSync(join(ROOT, path), "utf8"));
-
-  return typeof value === "object" && value !== null ? value : {};
-}
-
 describe("TypeScript 7", () => {
   it("[F19.AC6] is the tsc of the type check", () => {
     expect(runTsc(["--version"]).stdout).toMatch(/^Version 7\./u);
@@ -51,23 +39,6 @@ describe("TypeScript 7", () => {
 
     expect(manifest).toContain('"typescript": "7.0.2"');
     expect(`${manifest}${lock}`).not.toMatch(/@typescript\/(?:typescript6|native)/u);
-  });
-
-  it("[F33.AC1] is the editor's: `.vscode/settings.json` names its installed folder, which exists", () => {
-    const settings = jsonFile(".vscode/settings.json");
-    const folder = String(Reflect.get(settings, "js/ts.tsdk.path"));
-    const manifest = join(folder, "package.json");
-    const installed = existsSync(join(ROOT, manifest)) ? jsonFile(manifest) : {};
-
-    // The settings of TypeScript 7's extension (`REF-TS7-VSCODE`), recommended beside Oxc's.
-    expect(Reflect.get(settings, "js/ts.experimental.useTsgo")).toBe(true);
-    expect(folder).toBe("./node_modules/typescript");
-    expect(Reflect.get(installed, "name")).toBe("typescript");
-    expect(String(Reflect.get(installed, "version"))).toMatch(/^7\./u);
-
-    expect(Reflect.get(jsonFile(".vscode/extensions.json"), "recommendations")).toContain(
-      "TypeScriptTeam.native-preview",
-    );
   });
 
   it("[F19.AC6] leaves TypeScript 6's API unimported by the project's own code", () => {

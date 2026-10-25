@@ -1,4 +1,4 @@
-import { existsSync, readFileSync, readdirSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
 import { defineConfig } from "vitepress";
@@ -14,18 +14,12 @@ const DOCS_ROOT = join(import.meta.dirname, "..");
 /** Sidebar written by `tools/api-pages` next to the API pages (EN-072). */
 const API_SIDEBAR_FILE = join(DOCS_ROOT, "api", "api-sidebar.json");
 
-/** Name of a folder's index page in the repository (served as the folder's index). */
-const FOLDER_INDEX = "README.md";
-
-/**
- * A section of the site: a folder, its index first when it has one, then its pages, every page of
- * the folder or the ones named, in that order.
- */
+/** A section of the site: a folder, its index first when it has one, then the pages named. */
 type Section = {
   readonly collapsed: boolean;
   readonly folder: string;
   readonly overview: boolean;
-  readonly pages: "all" | readonly string[];
+  readonly pages: readonly string[];
   readonly title: string;
 };
 
@@ -85,23 +79,6 @@ function pageTitle(path: string): string {
 }
 
 /**
- * The pages of a section: every Markdown page of its folder sorted by file name, its index and
- * the templates left out, or the ones it names, in its order.
- *
- * @param section - section of the site
- * @returns the file names of its pages
- */
-function sectionPages(section: Section): readonly string[] {
-  if (section.pages !== "all") {
-    return section.pages;
-  }
-
-  return readdirSync(join(DOCS_ROOT, section.folder))
-    .filter((name) => name.endsWith(".md") && name !== FOLDER_INDEX && !name.startsWith("_"))
-    .toSorted((left, right) => left.localeCompare(right, "en"));
-}
-
-/**
  * The address of a section: its index, or its first page when it has none.
  *
  * @param section - section of the site
@@ -112,7 +89,7 @@ function sectionLink(section: Section): string {
 
   return section.overview
     ? `${prefix}/`
-    : `${prefix}/${(sectionPages(section)[0] ?? "").slice(0, -".md".length)}`;
+    : `${prefix}/${(section.pages[0] ?? "").slice(0, -".md".length)}`;
 }
 
 /**
@@ -125,7 +102,7 @@ function sectionLink(section: Section): string {
 function sectionItems(section: Section): DefaultTheme.SidebarItem[] {
   const prefix = section.folder === "" ? "" : `/${section.folder}`;
   const overview = section.overview ? [{ link: `${prefix}/`, text: "Overview" }] : [];
-  const pages = sectionPages(section).map((name) => ({
+  const pages = section.pages.map((name) => ({
     link: `${prefix}/${name.slice(0, -".md".length)}`,
     text: pageTitle(join(DOCS_ROOT, section.folder, name)),
   }));
@@ -168,7 +145,6 @@ export default defineConfig({
   lastUpdated: false,
   srcExclude: ["**/_*.md"],
   rewrites: {
-    ":section/:subsection/README.md": ":section/:subsection/index.md",
     ":section/README.md": ":section/index.md",
   },
   themeConfig: {

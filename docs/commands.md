@@ -12,7 +12,6 @@ What a person runs in a clone of the repository, with Node.js 24 or later and th
 | `npm run lint` | runs the linters and the type check, changing nothing |
 | `npm run check:all` | runs every check: format, lint, types, tests, the docs build, unused code, secrets, the dependencies' audit; the Git hook runs it before each push |
 | `npm run build` | builds the library into `dist/`: one ES module and its type declarations |
-| `npm run preview` | serves the playground as built |
 | `npm run docs:build` | builds this site |
 | `npm run playground:build` | builds the playground into the site |
 | `npm run deps:outdated` | lists the packages, crates, actions and tools behind their latest version at least 7 days old |

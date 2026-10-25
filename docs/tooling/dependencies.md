@@ -65,9 +65,7 @@ Inter is under the SIL Open Font License 1.1 (`REF-INTER-LICENSE`): it may be bu
 
 An override forces a fixed version of a transitive package until the package that pulls it asks for a fixed one; checked at each retrospective, removed as soon as it is no longer needed.
 
-| Override | Why |
-| --- | --- |
-| `katex` → `^0.19.0` | `mermaid` pulls a version affected by GHSA-238p-pmpm-9mq7 (`>= 0.11.0, < 0.18.2`; math rendering, unused here) |
+None: `katex`'s, for GHSA-238p-pmpm-9mq7 (`>= 0.11.0, < 0.18.2`), was removed on 2026-10-25, `mermaid` 12.2.0 asking `^0.18.0`, which resolves to a fixed 0.18.x.
 
 ## Crates
 
