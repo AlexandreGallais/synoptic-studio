@@ -232,7 +232,7 @@ fn f21_ac9_passes_when_a_lane_only_tracks_a_branch_in_git_config() {
 }
 
 #[test]
-fn f19_ac8_skips_the_docs_lane_for_a_story_that_changed_none_of_its_inputs() {
+fn f19_ac8_skips_the_docs_lane_for_a_feature_that_changed_none_of_its_inputs() {
     let root = scratch("skipped");
     let origin = root.join("origin.git");
     let folder = repository("skipped-work", &[("docs:build", "exit 1")]);
@@ -249,7 +249,7 @@ fn f19_ac8_skips_the_docs_lane_for_a_story_that_changed_none_of_its_inputs() {
     );
     git(&folder, &["push", "-q", "origin", "HEAD:develop"]);
     git(&folder, &["fetch", "-q", "origin"]);
-    git(&folder, &["switch", "-q", "-c", "chore/en-1-tools"]);
+    git(&folder, &["switch", "-q", "-c", "feature/f1-tools"]);
     fs::create_dir_all(folder.join("tools/x")).expect("folder");
     fs::write(folder.join("tools/x/lib.rs"), "\n").expect("file");
 
@@ -273,7 +273,7 @@ fn f19_ac8_skips_the_docs_lane_for_a_story_that_changed_none_of_its_inputs() {
 }
 
 #[test]
-fn runs_on_a_story_branch_only_the_tests_related_to_its_change() {
+fn runs_on_a_story_branch_changing_a_checks_input_only_the_tests_related_to_its_change() {
     let root = scratch("related");
     let origin = root.join("origin.git");
     let folder = repository("related-work", &[("test", "echo all > .git/vitest-args")]);
@@ -295,6 +295,8 @@ fn runs_on_a_story_branch_only_the_tests_related_to_its_change() {
     git(&folder, &["switch", "-q", "-c", "fix/us-1-scan"]);
     fs::create_dir_all(folder.join("src")).expect("folder");
     fs::write(folder.join("src/scan.ts"), "\n").expect("file");
+    // oxlint's configuration changed: the lanes run, not the scoped checks (AUD-050).
+    fs::write(folder.join(".oxlintrc.json"), "{}\n").expect("config");
 
     let output = check_all(&folder, false);
     let text = stdout(&output);
@@ -317,15 +319,90 @@ fn runs_on_a_story_branch_only_the_tests_related_to_its_change() {
     assert!(text.contains(
         "- test: only the tests related to the change against origin/develop, without coverage"
     ));
+    // On a story, the dependency updates wait for the review (AUD-050).
+    assert!(!text.contains("deps:outdated"), "{text}");
+    assert!(text.contains("✓ deps:unused "), "{text}");
     // The change, then the repository's own test, which reads files beside its imports.
     assert_eq!(
         related,
-        "related --run --passWithNoTests --tags-filter=!timing src/scan.ts tests/docs.test.ts\n"
+        "related --run --passWithNoTests --tags-filter=!timing .oxlintrc.json src/scan.ts \
+         tests/docs.test.ts\n"
     );
     assert!(whole.status.success());
     assert!(!stdout(&whole).contains("- test: only"));
     assert_eq!(all, "all\n");
     assert_eq!(feature, "all\n");
+}
+
+#[test]
+fn aud050_runs_on_a_story_branch_only_the_checks_its_change_needs() {
+    let root = scratch("scoped");
+    let origin = root.join("origin.git");
+    // Every script fails: none of them runs on a story's scoped push.
+    let failing: Vec<(&str, &str)> = std::iter::once(BEFORE_LANES)
+        .chain(LANES.iter().flat_map(|lane| lane.iter().copied()))
+        .chain(std::iter::once(AFTER_LANES))
+        .map(|script| (script, "exit 1"))
+        .collect();
+    let folder = repository("scoped-work", &failing);
+
+    git(
+        &root,
+        &["init", "-q", "--bare", origin.to_str().expect("path")],
+    );
+    fs::create_dir_all(folder.join("tests")).expect("folder");
+    fs::write(folder.join("tests/docs.test.ts"), "\n").expect("test");
+    git(&folder, &["add", "package.json", "tests/docs.test.ts"]);
+    git(&folder, &["commit", "-q", "-m", "start"]);
+    git(
+        &folder,
+        &["remote", "add", "origin", origin.to_str().expect("path")],
+    );
+    git(&folder, &["push", "-q", "origin", "HEAD:develop"]);
+    git(&folder, &["fetch", "-q", "origin"]);
+    git(&folder, &["switch", "-q", "-c", "docs/en-1-page"]);
+    // The project's linter, a stub writing its arguments; `target/` left out of the change.
+    fs::create_dir_all(folder.join("target/release")).expect("folder");
+    fs::write(
+        folder.join("target/release/lint"),
+        "#!/bin/sh\necho \"$*\" > .git/lint-args\n",
+    )
+    .expect("stub");
+    fs::set_permissions(
+        folder.join("target/release/lint"),
+        fs::Permissions::from_mode(0o755),
+    )
+    .expect("mode");
+    fs::write(folder.join(".git/info/exclude"), "target/\n").expect("exclude");
+    fs::create_dir_all(folder.join("docs")).expect("folder");
+    fs::write(folder.join("docs/page.md"), "# Page\n").expect("page");
+
+    let output = check_all(&folder, false);
+    let text = stdout(&output);
+    let linted = fs::read_to_string(folder.join(".git/lint-args")).unwrap_or_default();
+    let related = fs::read_to_string(folder.join(".git/vitest-args")).unwrap_or_default();
+
+    fs::remove_dir_all(&root).expect("cleaned");
+    fs::remove_dir_all(&folder).expect("cleaned");
+    assert!(output.status.success(), "{text}");
+    assert!(
+        text.starts_with(
+            "- scoped push: only what the change against origin/develop needs (lint, test); the \
+             full check:all on a feature branch\n"
+        ),
+        "{text}"
+    );
+    assert!(text.contains("✓ lint "), "{text}");
+    assert!(text.contains("✓ test "), "{text}");
+    // No release build, no lane of scripts, no timing tests for Markdown alone.
+    for script in [BEFORE_LANES, "docs:build", "deps:outdated", AFTER_LANES] {
+        assert!(!text.contains(&format!("{script} ")), "{script}: {text}");
+    }
+    assert_eq!(linted, "docs/page.md\n");
+    assert_eq!(
+        related,
+        "related --run --passWithNoTests --tags-filter=!timing docs/page.md tests/docs.test.ts\n"
+    );
 }
 
 #[test]
@@ -901,7 +978,7 @@ fn f29_ac2_runs_every_lane_in_the_ci_even_with_a_base_known() {
 }
 
 #[test]
-fn f29_ac2_skips_the_rust_lanes_for_a_story_that_changed_none_of_their_inputs() {
+fn f29_ac2_skips_the_rust_lanes_for_a_feature_that_changed_none_of_their_inputs() {
     let root = scratch("rust-skipped");
     let origin = root.join("origin.git");
     let folder = repository(
@@ -921,7 +998,7 @@ fn f29_ac2_skips_the_rust_lanes_for_a_story_that_changed_none_of_their_inputs() 
     );
     git(&folder, &["push", "-q", "origin", "HEAD:develop"]);
     git(&folder, &["fetch", "-q", "origin"]);
-    git(&folder, &["switch", "-q", "-c", "chore/en-1-docs"]);
+    git(&folder, &["switch", "-q", "-c", "feature/f1-docs"]);
     fs::create_dir_all(folder.join("docs")).expect("folder");
     fs::write(folder.join("docs/page.md"), "# Page\n").expect("page");
 
