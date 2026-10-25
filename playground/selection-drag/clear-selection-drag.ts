@@ -3,10 +3,10 @@ import { SELECTION_DRAGS, readStartedMove, showHover } from "../hover";
 import { writeMovedDrawing } from "./write-moved-drawing";
 
 /**
- * Drops a press with the Selector the browser cancelled (F37): nothing is selected, and the layer
+ * Drops a press with the Selector the browser cancelled: nothing is selected, and the layer
  * above the drawing is drawn again without its rectangle (`showHover`); a move that had gone further
  * than 3 pixels from the press gives back the drawing and the selection as they were at the press
- * (`writeMovedDrawing`, F39), the page then redrawn.
+ * (`writeMovedDrawing`), the page then redrawn.
  *
  * @kind procedure
  * @param document - page document

@@ -10,7 +10,6 @@ import type { PointerOffset } from "../page";
  * @kind procedure
  * @param element - the slider or the plane
  * @param pick - called back with the pointer's place on the element
- * @see US-035
  */
 export function listenToDrag(element: HTMLElement, pick: (offset: PointerOffset) => void): void {
   element.addEventListener("pointerdown", (event) => {

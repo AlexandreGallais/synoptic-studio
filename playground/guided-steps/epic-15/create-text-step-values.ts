@@ -18,7 +18,6 @@ const RECTANGLE = {
  * @kind procedure
  * @param fields - the fields that differ from the opening text
  * @returns the values Next types
- * @see VAL-014
  */
 export function createTextStepValues(fields: Partial<GuidedText>): GuidedStep["values"] {
   return { ...RECTANGLE, text: { ...OPENING_TEXT, ...fields } };

@@ -1,7 +1,7 @@
 import type { History } from "./history";
 
 /**
- * The history once redone (F40): the first state to come the present, the present the last past;
+ * The history once redone: the first state to come the present, the present the last past;
  * nothing to come, the history given (ADR-0095, decision 1; `REF-REDUX-UNDO`).
  *
  * @kind domain

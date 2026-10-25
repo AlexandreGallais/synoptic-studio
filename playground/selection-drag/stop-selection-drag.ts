@@ -31,7 +31,7 @@ function readReleasedDrag(document: Document, event: PointerEvent): SelectionDra
 }
 
 /**
- * Lands the shapes a drag moved (F39): the drawing at the press, the shapes moved going by the
+ * Lands the shapes a drag moved: the drawing at the press, the shapes moved going by the
  * shift that lands their anchor on integers (`readMoveShift`, `readMovedDrawing`), written back
  * with the shapes selected once moved (`writeMovedDrawing`).
  *
@@ -53,10 +53,10 @@ function moveDraggedShapes(document: Document, drag: SelectionDrag): void {
 }
 
 /**
- * Ends a press with the Selector (F37) at the release: a drag that went further than 3 pixels from
+ * Ends a press with the Selector at the release: a drag that went further than 3 pixels from
  * the press is no click, so that the click following it picks nothing (`PRESSED_TOOLS`); its selection
  * rectangle, if it draws one, selects the shapes it takes (`selectShapesInBox`), and a move lands
- * the shapes it moves on integers (`moveDraggedShapes`, F39); the page is then redrawn, the
+ * the shapes it moves on integers (`moveDraggedShapes`); the page is then redrawn, the
  * rectangle taken away.
  *
  * @kind procedure

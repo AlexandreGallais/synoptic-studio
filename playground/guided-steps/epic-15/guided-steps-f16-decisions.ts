@@ -13,7 +13,7 @@ const ORANGE = createColorStepValues({ color: "#ff8000" });
 const STEEL_BLUE = createColorStepValues({ color: "#336699" });
 
 /**
- * The F16 decisions to confirm (VAL-016), one per row of the story's table with its example, then
+ * The F16 decisions to confirm, one per row of the story's table with its example, then
  * back to F14 and F05 and to the rectangle (F16.AC4).
  */
 export const GUIDED_STEPS_F16_DECISIONS: readonly GuidedStep[] = [

@@ -4,7 +4,7 @@ import { readStoredDrawing } from "./read-stored-drawing";
 import type { KeptShape } from "./kept-shape";
 
 /**
- * Reads the whole drawing in the order drawn (F36): the shapes below the one the panel edits,
+ * Reads the whole drawing in the order drawn: the shapes below the one the panel edits,
  * that one, then the shapes above it.
  *
  * @kind procedure

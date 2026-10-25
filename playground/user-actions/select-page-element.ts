@@ -6,7 +6,6 @@
  * @param selector - CSS selector
  * @returns the first element matching it
  * @throws {Error} when the page has none
- * @see EN-021
  */
 export function selectPageElement(selector: string): HTMLElement {
   const found = document.querySelector<HTMLElement>(selector);

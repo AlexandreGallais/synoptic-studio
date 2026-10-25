@@ -23,7 +23,6 @@ const SLIDER_LENGTH_PERCENT = PERCENT;
  * @kind procedure
  * @param document - page document
  * @param slider - the slider and its value
- * @see US-035
  */
 export function writeSliderThumb(document: Document, slider: ShownSlider): void {
   const element = selectElement(document, slider.id);

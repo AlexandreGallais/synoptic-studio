@@ -13,7 +13,6 @@ import type { FontSession } from "./font-session";
  * @kind procedure
  * @param document - page document
  * @returns the session's fonts
- * @see US-036
  */
 export function readFontSession(document: Document): FontSession {
   return (

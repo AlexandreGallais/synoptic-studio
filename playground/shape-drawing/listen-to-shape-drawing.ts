@@ -7,7 +7,7 @@ import { stopShapeDrawing } from "./stop-shape-drawing";
 import { updateShapeDrawing } from "./update-shape-drawing";
 
 /**
- * Listens to Shift pressed or released during a drag (F36): the shape changes at once.
+ * Listens to Shift pressed or released during a drag: the shape changes at once.
  *
  * @kind procedure
  * @param document - page document
@@ -37,7 +37,7 @@ function listenToShift(document: Document, update: () => void): void {
 }
 
 /**
- * Listens to drags on the drawing with a tool armed (F36): the press starts a drag
+ * Listens to drags on the drawing with a tool armed: the press starts a drag
  * (`startShapeDrawing`); each move and each press or release of Shift redraws the new shape
  * (`updateShapeDrawing`); the release, or a drag cancelled, keeps it (`stopShapeDrawing`).
  *

@@ -1,7 +1,7 @@
 import type { PanelValues } from "./panel-values";
 
 /**
- * Whether a field of several shapes holds a size, W or H, rather than a position, X or Y (F38).
+ * Whether a field of several shapes holds a size, W or H, rather than a position, X or Y.
  *
  * @kind domain
  * @param key - the field

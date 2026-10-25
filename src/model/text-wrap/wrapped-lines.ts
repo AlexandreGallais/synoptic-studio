@@ -8,7 +8,7 @@ import type { Text } from "../text";
 
 /**
  * The lines of a text: its content written in its case and cut into paragraphs at each line break
- * typed; a text that fits its content keeps them as its lines (F05), a text in a box wraps each
+ * typed; a text that fits its content keeps them as its lines, a text in a box wraps each
  * paragraph on its own (`wrappedParagraph`; `DERIV-text-box`, steps 1 and 3).
  *
  * @kind domain

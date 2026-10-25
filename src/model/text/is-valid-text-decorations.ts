@@ -6,7 +6,7 @@ import { TEXT_RANGES } from "./text-ranges";
 import type { Text } from "./text";
 
 /**
- * Whether the colors of a text's underline and strike-through can enter the model (US-041): each
+ * Whether the colors of a text's underline and strike-through can enter the model: each
  * color of `#` and six lower-case hexadecimal digits (`isColor`), each opacity an integer from 0
  * to 100, and whether each was chosen true or false, as read from outside. They are checked
  * whether chosen or not, so that a text keeps valid colors when one is chosen again.

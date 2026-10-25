@@ -16,7 +16,6 @@ import { writeSliderThumb } from "./write-slider-thumb";
  *
  * @kind procedure
  * @param document - page document
- * @see US-035
  */
 export function showColorPicker(document: Document): void {
   const swatch = readOpenSwatch(document);

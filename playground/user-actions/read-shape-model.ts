@@ -10,7 +10,6 @@ import type { Shape } from "../../src";
  * @kind procedure
  * @returns the model, a shape
  * @throws {TypeError} when the panel edits a text
- * @see EN-021
  */
 export function readShapeModel(): Shape {
   const model = readModel();

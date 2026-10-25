@@ -14,7 +14,6 @@ import { updatePlayground } from "./update-playground";
  * @kind procedure
  * @param document - the playground's document, its fields read
  * @param isText - whether the shape edited is a text
- * @see US-002
  */
 function updateEditedShape(document: Document, isText: boolean): void {
   selectElement(document, "shape-panel").hidden = false;
@@ -30,8 +29,8 @@ function updateEditedShape(document: Document, isText: boolean): void {
 }
 
 /**
- * Redraws the drawing alone, no shape edited: none selected (`showNoSelection`, F36), or several
- * (`showSeveralSelection`, F37).
+ * Redraws the drawing alone, no shape edited: none selected (`showNoSelection`), or several
+ * (`showSeveralSelection`).
  *
  * @kind procedure
  * @param document - the playground's document
@@ -48,15 +47,14 @@ function showNoShapeEdited(document: Document, kind: string): void {
 
 /**
  * Redraws the page from its inputs, the view first zoomed by the wheel's deltas gathered since the
- * last frame (`applyWheelZoom`, F42), its percentage shown in the toolbar (`showZoom`): the Text tool, the shapes, or the drawing alone while none or
- * several shapes are selected (`showNoShapeEdited`, F36, F37), the Points button disabled and the
- * fields of several shapes shown while several are (F38), Points mode editing one shape; then the
+ * last frame (`applyWheelZoom`), its percentage shown in the toolbar (`showZoom`): the Text tool, the shapes, or the drawing alone while none or
+ * several shapes are selected (`showNoShapeEdited`), the Points button disabled and the
+ * fields of several shapes shown while several are, Points mode editing one shape; then the
  * layer above the drawing, so that the
- * outlines follow a shape changed under a pointer standing still (F36).
+ * outlines follow a shape changed under a pointer standing still.
  *
  * @kind procedure
  * @param document - the playground's document, its fields read
- * @see US-002
  */
 export function updatePage(document: Document): void {
   applyWheelZoom(document);

@@ -5,7 +5,6 @@ import { PENDING_TASKS } from "../page";
  *
  * @kind procedure
  * @returns them, in the order they started; none before the first
- * @see US-036
  */
 function readPageTasks(): readonly Promise<void>[] {
   return PENDING_TASKS.get(document) ?? [];
@@ -13,11 +12,10 @@ function readPageTasks(): readonly Promise<void>[] {
 
 /**
  * Waits, as a user waits for the page, until every task it started is done, those the tasks
- * started included (`PENDING_TASKS`, US-036).
+ * started included (`PENDING_TASKS`).
  *
  * @kind procedure
  * @returns once no task is left running
- * @see US-036
  */
 export async function waitForPageTasks(): Promise<void> {
   const tasks = readPageTasks();

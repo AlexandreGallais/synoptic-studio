@@ -3,14 +3,14 @@
 ^https?://localhost
 # Backlog templates (docs/backlog/_*.md) link as if copied into stories/: excluded by path in links.yml.
 # Standards publishers that refuse automated clients such as lychee and WebFetch (HTTP 403,
-# 2026-10-09); their pages are cited with that qualifier in docs/references.md.
+# 2026-10-09); their pages are cited with that qualifier in the records' sources (REF-…).
 ^https://library\.iec\.ch/
 ^https://webstore\.ansi\.org/
 ^https://www\.iso\.org/
 # GitLab merge request pages refuse automated clients (HTTP 403, 2026-10-11); the merge request
-# exists (GitLab API, HTTP 200). Cited in docs/references.md (REF-INKSCAPE-SNAP).
+# exists (GitLab API, HTTP 200). Cited as REF-INKSCAPE-SNAP.
 ^https://gitlab\.com/inkscape/inkscape/-/merge_requests/
 # Adobe's live shapes tutorial answered HTTP 403 to lychee (2026-10-15), to the library's reader
-# and to curl (2026-10-19); its text, read on 2026-10-12, is cited in docs/references.md
-# (REF-ADOBE-LIVE-SHAPES). Adobe's help page on live shapes answers but lacks the text cited.
+# and to curl (2026-10-19); its text, read on 2026-10-12, is cited as
+# REF-ADOBE-LIVE-SHAPES. Adobe's help page on live shapes answers but lacks the text cited.
 ^https://www\.adobe\.com/learn/illustrator/web/live-shapes$

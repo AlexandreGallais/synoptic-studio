@@ -27,7 +27,7 @@ src/math/vector/
 
 ## Folders
 
-Folders are named after the business domains of `docs/domain/`, and a domain keeps the same name in every layer where it has code: `src/geometry/corner-radius/` and `src/model/corner-radius/`. A folder is never named after a kind of code such as `utils` or `helpers` (ADR-0043, `id-denylist`): a domain name tells where a module belongs, a kind does not. To place a new module, list the layer's folders and pick its domain. A new domain gets its folder with its first module.
+Folders are named after the business domains of the rules (`RULE-…`), and a domain keeps the same name in every layer where it has code: `src/geometry/corner-radius/` and `src/model/corner-radius/`. A folder is never named after a kind of code such as `utils` or `helpers` (ADR-0043, `id-denylist`): a domain name tells where a module belongs, a kind does not. To place a new module, list the layer's folders and pick its domain. A new domain gets its folder with its first module.
 
 - Every code folder has an `index.ts` barrel ([imports](./imports.md)).
 - A folder holds modules or domain folders, never both. Beside folders sits only the barrel, and the playground's entry. `local/folder-layout` reports a TypeScript file beside folders, and `tests/folders.test.ts` checks every other file.

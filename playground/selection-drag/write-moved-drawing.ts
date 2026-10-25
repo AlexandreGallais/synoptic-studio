@@ -4,7 +4,7 @@ import { writeShapeSelection } from "../selection";
 import type { KeptShape } from "../kept-shapes";
 
 /**
- * Writes the drawing back once its shapes moved (F39), then selects them by their indices as a
+ * Writes the drawing back once its shapes moved, then selects them by their indices as a
  * click does (`writeShapeSelection`): the panel first leaves the shape it edited, which keeps its
  * settings as the last of its kind, every shape kept below; the drawing moved takes their place;
  * then one shape is split around and loaded into the panel at its new place, or several are kept

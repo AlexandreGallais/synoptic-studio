@@ -37,7 +37,7 @@ function face(metrics: FontFace["metrics"], held: FontFile | undefined): FontFac
   return { file: held, isItalic: false, metrics, weight: 400 };
 }
 
-describe("unlistedFaceReason (docs/domain/shapes.md, Installed fonts)", () => {
+describe("unlistedFaceReason (RULE-shapes-installed-fonts)", () => {
   it.each([
     // Helvetica: fsType 0, every letter mapped.
     {

@@ -16,12 +16,11 @@ const EDITOR_MARKS = ".text-frame, .box, .turned-box, .straight-box, .handle, .h
 
 /**
  * Reads a copy of the drawing as a file's text, without what the editor draws over its shapes:
- * the dashed frames and boxes of the selection and the handles of its points (F35).
+ * the dashed frames and boxes of the selection and the handles of its points.
  *
  * @kind procedure
  * @param copy - a copy of the canvas's `<svg>`, changed here
  * @returns its text
- * @see US-036
  */
 function readDrawingText(copy: Element): string {
   const serializer = new XMLSerializer();
@@ -35,19 +34,18 @@ function readDrawingText(copy: Element): string {
 
 /**
  * Reads the drawing as it is exported: the canvas's `<svg>` and its text, every shape in the order
- * drawn (F35), in an `<svg>` of the opening view's frame whatever the view shown, so that the file
+ * drawn, in an `<svg>` of the opening view's frame whatever the view shown, so that the file
  * is the same at any zoom (`OPENING_VIEW`, ADR-0098, decision 4), without the frames, boxes and
  * handles of the selection, which are the editor's and not the drawing's; with Embed fonts on, the
  * faces
  * its texts are measured with embedded first, in a `<defs>` (`documentFontEmbedding`,
  * `createEmbeddedFontsElements`), which only a file written holds, never the drawing on screen
- * (ADR-0060, US-045).
+ * (ADR-0060).
  *
  * @kind procedure
  * @param document - page document
  * @param texts - the texts of the drawing
  * @returns the SVG file's text; empty when nothing is drawn
- * @see US-045
  */
 export function readExportedSvg(document: Document, texts: readonly Text[]): string {
   const drawing = document.querySelector("#canvas svg")?.cloneNode(true);

@@ -6,7 +6,7 @@ import type { Point } from "../../math";
  * Vertices of a regular polygon on the unit circle centered at the origin, with a horizontal
  * bottom edge (a flat base), in the SVG frame (y pointing down).
  *
- * The vertices run clockwise on screen from the right end of the flat base (Q18, F08): the
+ * The vertices run clockwise on screen from the right end of the flat base (Q18): the
  * `j`-th is at the angle `βⱼ = −π/2 + (1 − 2j) π / n` of the mathematical frame, so that the
  * base is always vertices 1 and 2 (indexes 0 and 1),
  * written `(cos βⱼ, −sin βⱼ)` once the y axis is flipped. The start is chosen by its index,

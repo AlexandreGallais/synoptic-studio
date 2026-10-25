@@ -3,7 +3,7 @@ import { readCanvasSize, readView } from "../view";
 
 /**
  * Creates an empty `<svg>` of the drawing's view, as large as the canvas, its `viewBox` the
- * view's (`shownViewBox`, ADR-0098): the drawing and the layer above it (F36) both, so that they
+ * view's (`shownViewBox`, ADR-0098): the drawing and the layer above it both, so that they
  * match at any zoom; the shapes' paths never changed by it.
  *
  * @kind procedure

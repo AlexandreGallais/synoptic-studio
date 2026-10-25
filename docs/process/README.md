@@ -55,7 +55,7 @@ The V-model is not this project's lifecycle (requirements grow feature by featur
 
 | V-model document | Here |
 | --- | --- |
-| system specification | [domain](../domain/), epics |
+| system specification | the domain's rules (`RULE-…`), epics |
 | software requirements | feature acceptance criteria `F01.ACn` |
 | interface description | public API reference (`tools/api-pages`), ADRs |
 | design description | ADRs, [conventions](../conventions/), derivations |

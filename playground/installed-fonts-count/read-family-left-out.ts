@@ -4,7 +4,7 @@ import type { InstalledFaceLeftOut } from "./installed-face-left-out";
 import type { InstalledFaceRead } from "../installed-fonts";
 
 /**
- * Reads why a family none of whose faces is listed is left out (US-056): the first reason one of
+ * Reads why a family none of whose faces is listed is left out: the first reason one of
  * its faces has, in the one order of `LEFT_OUT_REASONS` — not embeddable, no Latin letters,
  * unreadable.
  *

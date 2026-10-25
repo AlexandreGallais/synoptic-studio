@@ -19,7 +19,6 @@ const FALLBACK = "sans-serif";
  * @kind procedure
  * @param document - page document
  * @returns whether each is on
- * @see US-031
  */
 function readTextSwitches(
   document: Document,
@@ -31,7 +30,7 @@ function readTextSwitches(
   };
 }
 
-/** The colors of a text's underline and strike-through the Text tool reads (US-041). */
+/** The colors of a text's underline and strike-through the Text tool reads. */
 type TextStrokeColors = Pick<
   Text,
   | "hasStrikeThroughColor"
@@ -51,7 +50,6 @@ type TextStrokeColors = Pick<
  * @kind procedure
  * @param document - page document
  * @returns the strokes' colors, valid or not
- * @see US-041
  */
 function readTextStrokeColors(document: Document): TextStrokeColors {
   return {
@@ -67,14 +65,13 @@ function readTextStrokeColors(document: Document): TextStrokeColors {
 }
 
 /**
- * Reads the text typed in the Text tool's fields, its font the family measured with (US-036), its box's among them (`readTextBoxOptions`), its underline's and strike-through's colors (`readTextStrokeColors`, US-041), its colors in their stored form (`toStoredColors`); its position and its angle are the shape's X, Y
- * and angle, its position the start of its straight box X and Y show, exact while they show the one last drawn (`readTextPosition`, AUD-040), placed once measured (`writeTextPosition`), the angle kept from 0 to 359 (`readAngle`). The choices are read as the page offers them, so they hold one
+ * Reads the text typed in the Text tool's fields, its font the family measured with, its box's among them (`readTextBoxOptions`), its underline's and strike-through's colors (`readTextStrokeColors`), its colors in their stored form (`toStoredColors`); its position and its angle are the shape's X, Y
+ * and angle, its position the start of its straight box X and Y show, exact while they show the one last drawn (`readTextPosition`), placed once measured (`writeTextPosition`), the angle kept from 0 to 359 (`readAngle`). The choices are read as the page offers them, so they hold one
  * of their values.
  *
  * @kind procedure
  * @param document - page document
  * @returns the text, valid or not
- * @see US-031
  */
 export function readTextModel(document: Document): Text {
   // oxlint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-type-assertion -- the page offers only the values of this type

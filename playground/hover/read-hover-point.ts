@@ -22,7 +22,7 @@ function readHoverOffset(document: Document, isShown: boolean): Point | undefine
 
 /**
  * Reads the point whose shape is outlined as under the pointer: its offset on the canvas
- * (`POINTER_OFFSETS`) through the view as it is now (`pointUnderPointer`, F42), so that a zoom or a
+ * (`POINTER_OFFSETS`) through the view as it is now (`pointUnderPointer`), so that a zoom or a
  * pan outlines the shape under the pointer still; with the selector armed only, a click then
  * picking a shape, and none while a selection rectangle is drawn.
  *

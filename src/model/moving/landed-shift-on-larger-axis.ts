@@ -4,7 +4,7 @@ import { offsetOnLargerAxis } from "./offset-on-larger-axis";
 import type { Point } from "../../math";
 
 /**
- * How far the shapes selected move at the release of a drag with Shift held (F39): the pointer's
+ * How far the shapes selected move at the release of a drag with Shift held: the pointer's
  * offset kept on the axis of the larger displacement (`offsetOnLargerAxis`), that axis landing
  * their anchor on integers (`landedShift`), the other axis kept still, never landed, as Penpot
  * leaves unrounded an axis Shift keeps (Product Owner, 2026-10-23).

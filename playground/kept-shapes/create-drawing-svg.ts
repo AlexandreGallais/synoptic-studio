@@ -3,11 +3,11 @@ import { createViewSvg } from "./create-view-svg";
 import { DRAWING_KEYS } from "./drawing-keys";
 
 /**
- * Creates the drawing's `<svg>` at a fixed scale, 1 user unit to 1 CSS pixel (US-004), as large as
+ * Creates the drawing's `<svg>` at a fixed scale, 1 user unit to 1 CSS pixel, as large as
  * the canvas, its origin a margin from the top-left (`createViewSvg`), holding the shapes in the
  * order drawn: those below the one the panel edits, that one's elements, then those above it, so
- * that a shape picked from the middle keeps its place (F35, F36); the view stays put, so that a
- * turned shape turns about its center on screen and may leave the canvas (Product Owner, VAL-007).
+ * that a shape picked from the middle keeps its place; the view stays put, so that a
+ * turned shape turns about its center on screen and may leave the canvas (Product Owner).
  *
  * @kind procedure
  * @param document - page document

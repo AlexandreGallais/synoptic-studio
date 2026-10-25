@@ -3,7 +3,7 @@ import { changedFields } from "./changed-fields";
 import type { ShapeFields } from "./shape-fields";
 
 /**
- * The fields a step changed in a drawing (US-077): for each index both drawings hold, the shape
+ * The fields a step changed in a drawing: for each index both drawings hold, the shape
  * replaced by another object, the fields they differ by (`changedFields`), each named once.
  *
  * @kind domain

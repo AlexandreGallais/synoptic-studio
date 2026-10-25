@@ -4,9 +4,9 @@ import { readView } from "../view";
 import type { PickArea, Point } from "../../src";
 
 /**
- * Reads the shape under a point of the drawing as a click reaches it (`shapeAtPoint`, F36): the
+ * Reads the shape under a point of the drawing as a click reaches it (`shapeAtPoint`): the
  * reach of a shape without area `PICK_TOLERANCE` screen pixels, in user units at the view's scale
- * (`screenToUser`, F42), so that a line is reached as far on screen at any zoom.
+ * (`screenToUser`), so that a line is reached as far on screen at any zoom.
  *
  * @kind procedure
  * @param document - page document

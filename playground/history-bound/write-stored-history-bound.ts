@@ -5,7 +5,7 @@ import { HISTORY_BOUND_KEY } from "./history-bound-key";
 import type { HistoryBound } from "../../src";
 
 /**
- * Keeps the history's bound in this browser for the next session (F40, `HISTORY_BOUND_KEY`);
+ * Keeps the history's bound in this browser for the next session (`HISTORY_BOUND_KEY`);
  * without the browser's storage, or with a storage full, nothing is kept and the page goes on,
  * the bound kept until the page is closed.
  *

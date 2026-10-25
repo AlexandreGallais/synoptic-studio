@@ -1,7 +1,7 @@
 import { memorizedShape } from "../shape-memo";
 
 /**
- * The key of a shape in the held counts (EN-147): given once for each shape, the next of the keys
+ * The key of a shape in the held counts: given once for each shape, the next of the keys
  * given, from 0, then read back (`memorizedShape`), so that the held counts find a shape by an
  * integer, ECMAScript giving an object no hash; two shapes of equal texts, two objects, have two
  * keys, as `historySize` counts them (ADR-0097).

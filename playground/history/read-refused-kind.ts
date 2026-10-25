@@ -5,7 +5,7 @@ import { readShapeKind } from "../page";
 const NO_SHAPE_EDITED = new Set(["none", "several"]);
 
 /**
- * Reads the kind of the shape the panel edits when it is refused (F40): a value out of its range,
+ * Reads the kind of the shape the panel edits when it is refused: a value out of its range,
  * a text not drawn, so that the page keeps no shape edited while the panel still shows one; no
  * step is taken meanwhile, the drawing kept without it being no change the designer made.
  *

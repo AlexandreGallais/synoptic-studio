@@ -7,7 +7,7 @@ import type { FontFace, FontFamily } from "../font";
 
 /**
  * A family's faces with one face more: a face of the same weight and style (`faceStyleKey`) is
- * replaced, the last file read winning (`docs/domain/shapes.md`, Fonts from files).
+ * replaced, the last file read winning (`RULE-shapes-fonts-from-files`).
  *
  * @kind domain
  * @param faces - the family's faces

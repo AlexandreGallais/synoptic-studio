@@ -3,7 +3,7 @@ import { selectElement } from "../page";
 import type { KeptShape } from "./kept-shape";
 
 /**
- * Keeps shapes on the page's canvas as text (F35), each with the kind the panel showed it as
+ * Keeps shapes on the page's canvas as text, each with the kind the panel showed it as
  * (F36), read back by `readStoredDrawing`.
  *
  * @kind procedure

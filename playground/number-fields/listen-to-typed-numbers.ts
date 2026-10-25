@@ -56,7 +56,7 @@ function clearTypedField(event: Event): void {
  * Stops a `change` of a field acting as a number field whose text is the one it showed
  * (`SHOWN_TEXTS`), no listener applying it, as a browser sends none for a field left unchanged
  * (`REF-MDN-CHANGE-EVENT`): the 5 decimals of a turned text's X typed again keep its exact
- * position, where rounding them would move it (AUD-046).
+ * position, where rounding them would move it.
  *
  * @kind procedure
  * @param event - a value applied, `change`, heard before any other listener of the document
@@ -86,7 +86,7 @@ function writeFocusedText(event: Event): void {
 
 /**
  * Keeps, for every field acting as a number field (`NUMBER_FIELDS`), the value applied apart from
- * a text typed and not applied (AUD-046): the text it shows read at the focus and at each key
+ * a text typed and not applied: the text it shows read at the focus and at each key
  * while no text typed waits in it (`writeShownText`), never at a key typing in it, the field
  * marked typed at its `input` until a value is applied or the page writes one, so that a relative
  * value starts from the value applied and a redraw meanwhile reads it (`readShownText`). Heard on

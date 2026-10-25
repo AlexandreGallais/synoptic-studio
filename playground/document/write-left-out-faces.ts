@@ -3,7 +3,7 @@ import { selectElement } from "../page";
 
 import type { LeftOutFace, LeftOutReason } from "../../src";
 
-/** Why a face is not embedded, as the page says it (`docs/domain/shapes.md`, Embedded fonts). */
+/** Why a face is not embedded, as the page says it (`RULE-shapes-embedded-fonts`). */
 const REASONS: Readonly<Record<LeftOutReason, string>> = {
   "family-incomplete": "another face of its family used may not be embedded",
   "generic-name": "its family is named like a generic family",
@@ -20,7 +20,6 @@ const REASONS: Readonly<Record<LeftOutReason, string>> = {
  * @kind procedure
  * @param document - page document
  * @param faces - the faces left out, from `documentFontEmbedding`
- * @see US-036
  */
 export function writeLeftOutFaces(document: Document, faces: readonly LeftOutFace[]): void {
   const list = selectElement(document, "font-left-out");

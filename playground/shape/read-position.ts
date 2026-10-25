@@ -9,7 +9,6 @@ import type { Point } from "../../src";
  * @kind procedure
  * @param document - page document
  * @returns the position, in the coordinates of the SVG
- * @see US-018
  */
 export function readPosition(document: Document): Point {
   const { x = "0", y = "0" } = selectElement(document, "shape").dataset;

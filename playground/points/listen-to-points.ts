@@ -16,7 +16,6 @@ type NextSelection = typeof selectionAfterRowClick;
  * @kind procedure
  * @param event - mouse click on the drawing or the list
  * @returns the vertex number from 0, `NaN` when the click hit no vertex
- * @see US-013
  */
 function readClickedVertex(event: Event): number {
   const target =
@@ -48,7 +47,6 @@ function readClickKeys(event: MouseEvent): ClickKeys {
  * @param next - how the click changes the selection
  * @param update - redraws the playground
  * @returns a function to register for `click`
- * @see US-013
  */
 function createClickListener(
   document: Document,
@@ -69,12 +67,11 @@ function createClickListener(
 
 /**
  * Selects vertices when their handle or their row is clicked in Points mode, with Shift and
- * Ctrl (Cmd) as in `docs/domain/interaction.md` §3, then calls back (F03.AC5).
+ * Ctrl (Cmd) as in `RULE-interaction-3-node-editing`, then calls back (F03.AC5).
  *
  * @kind procedure
  * @param document - page document
  * @param update - redraws the playground
- * @see US-013
  */
 export function listenToPoints(document: Document, update: () => void): void {
   selectElement(document, "canvas").addEventListener(

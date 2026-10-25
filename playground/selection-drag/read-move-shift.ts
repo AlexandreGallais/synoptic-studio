@@ -37,7 +37,7 @@ function readLandedShift(drag: SelectionDrag, anchor: Point): Point {
 }
 
 /**
- * Reads how far a move takes the shapes selected (F39): while dragged the pointer's offset, the
+ * Reads how far a move takes the shapes selected: while dragged the pointer's offset, the
  * shapes following it freely (`readDraggedOffset`); at the release, the shift landing their
  * anchor on integers (`readLandedShift`).
  *

@@ -18,7 +18,7 @@ function readSeveralSelected(document: Document): readonly number[] {
 }
 
 /**
- * Reads the shapes selected (F37), by their indices in the drawing in the order drawn
+ * Reads the shapes selected, by their indices in the drawing in the order drawn
  * (`readKeptDrawing`): those kept while several are; the one the panel edits, drawn after the
  * shapes below it; none while none is selected or the one edited is refused.
  *

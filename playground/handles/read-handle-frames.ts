@@ -20,7 +20,6 @@ export type HandleFrames = {
  * @param reading - the shape read from the inputs, its corners as drawn
  * @param selected - the point selected and its number
  * @returns the frames of its handles after and before
- * @see US-024
  */
 export function readHandleFrames(reading: ShapeReading, selected: SelectedCorner): HandleFrames {
   const { point } = selected.corner;

@@ -3,7 +3,7 @@ import type { LeftOutFamily } from "./left-out-family";
 import type { ReadAheadCount } from "./read-ahead-count";
 
 /**
- * Reads the families left out with one family more, when reading it left it out (US-056).
+ * Reads the families left out with one family more, when reading it left it out.
  *
  * @kind procedure
  * @param leftOut - the families left out before it

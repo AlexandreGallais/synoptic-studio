@@ -9,7 +9,6 @@ import { selectElement } from "../page";
  * @param end - which handle
  * @param owner - the point's number and the way chosen, as `2 side`
  * @returns the angle kept, or 0
- * @see US-024
  */
 export function readKeptAngle(document: Document, end: "after" | "before", owner: string): number {
   const [kept = "", angle] = (

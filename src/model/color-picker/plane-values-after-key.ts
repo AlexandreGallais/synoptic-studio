@@ -10,7 +10,7 @@ const LEVEL_KEYS = new Set(["ArrowDown", "ArrowUp"]);
  * A picker's plane after a key, each axis answering as a WAI-ARIA slider (`valueAfterSliderKey`):
  * Up and Down change the lightness or brightness by 1 %; Left and Right change the saturation by
  * 1 %, Page Up and Page Down by 10 %, Home and End take it to 0 and 100 %
- * (`docs/domain/interaction.md` §5; `REF-WAI-APG-SLIDER`, which has no two-dimensional pattern).
+ * (`RULE-interaction-colors`; `REF-WAI-APG-SLIDER`, which has no two-dimensional pattern).
  *
  * @kind domain
  * @param key - the key pressed, as `KeyboardEvent.key` names it

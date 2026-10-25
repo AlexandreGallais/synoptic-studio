@@ -15,7 +15,6 @@ const FILE_NAME = "drawing.svg";
  * @kind procedure
  * @param document - page document
  * @param readTexts - reads the texts of the drawing, as the page holds them
- * @see US-036
  */
 export function listenToExport(document: Document, readTexts: () => readonly Text[]): void {
   selectElement(document, "export-svg").addEventListener("click", () => {

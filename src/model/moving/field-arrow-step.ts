@@ -4,7 +4,7 @@ import { nudgeShift } from "./nudge-shift";
 const FIELD_ARROWS: ReadonlySet<string> = new Set(["ArrowDown", "ArrowUp"]);
 
 /**
- * How far an arrow pressed in a field of the panel steps its value (US-081): Up adds 1, Down takes
+ * How far an arrow pressed in a field of the panel steps its value: Up adds 1, Down takes
  * 1 away, 10 with Shift, the arrow's nudge on the drawing (`nudgeShift`) read up the field, its y
  * taken the other way, since the drawing's y axis points down where a number field's Up adds 1;
  * Left and Right move the caret and step nothing.

@@ -20,7 +20,7 @@ const RECTANGLE = {
   width: 120,
 } as const;
 
-/** The steps of the US-014, US-015 and US-016 cards (F08, VAL-005), one at a time. */
+/** The steps of the US-014, US-015 and US-016 cards, one at a time. */
 export const GUIDED_STEPS_F08: readonly GuidedStep[] = [
   {
     explanation:

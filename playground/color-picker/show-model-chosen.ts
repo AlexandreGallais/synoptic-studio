@@ -14,7 +14,6 @@ import { writePickedColor } from "./write-picked-color";
  *
  * @kind procedure
  * @param document - page document
- * @see US-035
  */
 export function showModelChosen(document: Document): void {
   const swatch = readOpenSwatch(document);

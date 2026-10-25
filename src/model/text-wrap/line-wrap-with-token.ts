@@ -28,7 +28,7 @@ function endedLine(wrap: LineWrap): readonly string[] {
  * long for a line of its own stays whole, overflowing (`DERIV-text-box`, steps 2 to 4). The
  * line's measure grows by the token's, measured once (`joinedLineMeasure`). A line still empty
  * takes the token without measuring the join, which would give the same line whether it fits or
- * not (AUD-016).
+ * not.
  *
  * @kind domain
  * @param wrap - the step before, its line being filled

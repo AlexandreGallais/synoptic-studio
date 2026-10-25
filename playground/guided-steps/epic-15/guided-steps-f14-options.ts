@@ -12,7 +12,7 @@ const PUMP_110 = { ...PUMP_50, boxWidth: 110 } as const;
 const TWO_LINES = { content: "Pump P-101\nRunning" } as const;
 
 /**
- * The F14 options to try (VAL-015), one per step: Fit content or Box, the box's size, a long word
+ * The F14 options to try, one per step: Fit content or Box, the box's size, a long word
  * kept whole, the maximum number of lines, the ellipsis, the vertical alignment, the line height,
  * the trim, the background, the turn about the box, values refused and back to F05.
  */

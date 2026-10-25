@@ -7,7 +7,7 @@ import type { Vector } from "../../math";
 
 /**
  * A handle from an angle and a length typed from its side: the angle brought into 0 to 359 as a
- * shape's (F04), the handle before's mirrored (`DERIV-handle-angle` steps 1 to 3); refused for a
+ * shape's, the handle before's mirrored (`DERIV-handle-angle` steps 1 to 3); refused for a
  * negative length or a side of length 0, which has no direction.
  *
  * @kind domain

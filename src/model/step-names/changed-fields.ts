@@ -1,5 +1,5 @@
 /**
- * The fields two versions of a shape differ by (US-077): each field either holds whose JSON texts
+ * The fields two versions of a shape differ by: each field either holds whose JSON texts
  * differ, a field one holds alone included, in the order of their names.
  *
  * @kind domain

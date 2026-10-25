@@ -3,7 +3,7 @@ import type { TextCase } from "./text-case";
 import type { TextDirection } from "./text-direction";
 import type { TextVerticalAlignment } from "./text-vertical-alignment";
 
-/** The values a text's choices may take, so that a text read from outside is checked against them (F05, Q36, F14). */
+/** The values a text's choices may take, so that a text read from outside is checked against them (Q36). */
 export const TEXT_OPTIONS: {
   /** Alignments of its lines. */
   readonly alignments: readonly TextAlignment[];

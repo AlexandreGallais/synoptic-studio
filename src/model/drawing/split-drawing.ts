@@ -1,7 +1,7 @@
 import type { DrawingSplit } from "./drawing-split";
 
 /**
- * The drawing split around a shape picked (F36): the shapes before it below, the shape edited, the
+ * The drawing split around a shape picked: the shapes before it below, the shape edited, the
  * shapes after it above, so that it keeps its place in the order drawn; no shape picked, an index
  * outside the drawing, leaves every shape below and none edited.
  *

@@ -11,7 +11,6 @@ const STORY = "US-035";
  * @param id - its `id` attribute, without `#`
  * @returns the input element itself
  * @throws {TypeError} when the page's element is no input
- * @see US-035
  */
 export function readColorInput(document: Document, id: string): HTMLInputElement {
   const input = selectElement(document, id);

@@ -1,5 +1,5 @@
 /**
- * A drawing sharing the shapes it did not change (F40): each shape whose JSON text is the
+ * A drawing sharing the shapes it did not change: each shape whose JSON text is the
  * present's shape's at the same index is replaced by that object, any other whose text is a shape's
  * of the present by the present's object, so that a state holds new objects only for the shapes
  * its action changed, and a drawing read again unchanged is the present's, shapes of equal texts

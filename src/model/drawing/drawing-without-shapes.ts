@@ -1,5 +1,5 @@
 /**
- * The drawing without the shapes selected (F37), removed by Delete: the others keep their order,
+ * The drawing without the shapes selected, removed by Delete: the others keep their order,
  * each unchanged; an index outside the drawing removes nothing.
  *
  * @kind domain

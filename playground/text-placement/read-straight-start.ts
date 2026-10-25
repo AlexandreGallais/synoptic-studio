@@ -5,7 +5,7 @@ import type { Point, SizedText } from "../../src";
 /**
  * Reads where a text's straight box starts: the top-left of the smallest upright box around its
  * frame as drawn, turned by its angle (`textStraightBox`), what X and Y show, as a shape's
- * (Product Owner, 2026-10-23, AUD-040). At 0° it is the text's position, bit for bit.
+ * (Product Owner, 2026-10-23). At 0° it is the text's position, bit for bit.
  *
  * @kind procedure
  * @param sized - a text and its measured block

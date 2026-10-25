@@ -4,7 +4,7 @@ import type { SelectionDrag } from "./selection-drag";
 import type { BoundingBox } from "../../src";
 
 /**
- * Reads the selection rectangle of a drag with the Selector (F37): from the point pressed to the
+ * Reads the selection rectangle of a drag with the Selector: from the point pressed to the
  * pointer, each rounded to the nearest integer as a tool's drag rounds them (`draggedBox`), in any
  * direction.
  *

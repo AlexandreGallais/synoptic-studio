@@ -9,7 +9,6 @@ import type { DocumentOptions } from "../../src";
  * @kind procedure
  * @param document - page document
  * @returns whether its fonts are embedded
- * @see US-036
  */
 export function readDocumentOptions(document: Document): DocumentOptions {
   const embed = selectElement(document, "embed-fonts");

@@ -5,7 +5,7 @@ import { readPanelValues } from "../picking";
 import { applyEditedValue } from "./apply-edited-value";
 
 /**
- * Moves the shape the panel edits alone by an arrow in its X or Y (F46): as the arrow on the
+ * Moves the shape the panel edits alone by an arrow in its X or Y: as the arrow on the
  * drawing along that axis, landed on integers as a drag's release (`fieldArrowShift`), from its
  * straight box as last drawn (`readPanelValues`), its X and Y then set to the landed values as
  * whole numbers typed (`applyEditedValue`); a shape refused, or a text never measured, which has

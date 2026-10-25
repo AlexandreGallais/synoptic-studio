@@ -30,7 +30,7 @@ function writeStoredSize(document: Document, shape: Shape): void {
 }
 
 /**
- * Writes a shape the panel edits alone, set by its X, Y, Width or Height (US-085), into the page:
+ * Writes a shape the panel edits alone, set by its X, Y, Width or Height, into the page:
  * its size (`writeStoredSize`) and its position, the top-left of its box before it turns
  * (`writeShapePosition`, ADR-0035), then its values in its four fields (`shapePanelValues`), X and
  * Y the start of its straight box, as the redraw shows them, the field typed in included.

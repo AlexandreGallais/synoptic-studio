@@ -13,7 +13,7 @@ Pause between the geometry and the rendering stories of F00: bring documentation
 
 ## Acceptance criteria
 
-- Given the stories merged since the spike, when the checkpoint runs, then `docs/domain/`, derivations, references, conventions, `AGENTS.md`, `CLAUDE.md` and `.claude/rules/` describe the code as it is.
+- Given the stories merged since the spike, when the checkpoint runs, then the rules (`RULE-…`), derivations, references, conventions, `AGENTS.md`, `CLAUDE.md` and `.claude/rules/` describe the code as it is.
 - Given the light evolvability check, when it runs, then each of its six questions has a one-line answer and anything worth acting on is in the improvement log.
 - Given the user stories merged so far, when the checkpoint ends, then their Product Owner test cards are listed for the next stop.
 

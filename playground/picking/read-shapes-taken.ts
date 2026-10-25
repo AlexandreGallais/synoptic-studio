@@ -3,7 +3,7 @@ import { shapesEnclosedByBox, shapesTouchedByBox } from "../../src";
 import type { BoundingBox, PickArea } from "../../src";
 
 /**
- * Reads the shapes a selection rectangle takes (F37): those whose painted area it touches
+ * Reads the shapes a selection rectangle takes: those whose painted area it touches
  * (`shapesTouchedByBox`), only those it encloses with Alt held (`shapesEnclosedByBox`).
  *
  * @kind procedure

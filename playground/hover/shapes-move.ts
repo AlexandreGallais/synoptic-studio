@@ -1,7 +1,7 @@
 import type { Point } from "../../src";
 import type { KeptShape } from "../kept-shapes";
 
-/** A move of the shapes selected by a press on one of them with the Selector (F39). */
+/** A move of the shapes selected by a press on one of them with the Selector. */
 export type ShapesMove = {
   /** The drawing at the press, every shape where it was, in the order drawn. */
   readonly drawing: readonly KeptShape[];

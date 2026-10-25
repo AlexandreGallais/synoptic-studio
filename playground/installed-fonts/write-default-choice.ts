@@ -8,7 +8,7 @@ import type { FontFace, FontFamily } from "../../src";
 
 /**
  * Reads the faces of a kept family that hold their file, imported or read again when the family
- * was chosen, so that the page can embed them (US-060).
+ * was chosen, so that the page can embed them.
  *
  * @kind procedure
  * @param family - the family; undefined when none is kept under its name
@@ -23,7 +23,7 @@ function readFacesWithFile(family: FontFamily | undefined): readonly FontFace[] 
  * Reads the faces of the family the text is measured with that make a font available once the
  * installed fonts are read: Inter's, drawn by the browser; any other family's that hold their
  * file, imported or read again when chosen (`readFacesWithFile`). A family read ahead the text was
- * measured with only because the font list showed it first has none, its files not held (US-060).
+ * measured with only because the font list showed it first has none, its files not held.
  *
  * @kind procedure
  * @param family - the kept family the text is measured with; undefined when it is not kept
@@ -107,7 +107,7 @@ function writeChosenFamily(document: Document, family: string): void {
  * Chooses a default font once the installed fonts are read while none is available (US-056,
  * US-060): the first family of the list (`readFamilyToChoose`) is chosen as a family chosen by
  * hand is, its faces' files read again (`readInstalledFamily`) so that it can be embedded, the
- * page saying it reads them, the font list held meanwhile (US-061), then that it is chosen; a family none of whose files is read again leaves the list and the next is
+ * page saying it reads them, the font list held meanwhile, then that it is chosen; a family none of whose files is read again leaves the list and the next is
  * tried. A font available, Inter drawn or a font imported, is left as it is.
  *
  * @kind procedure

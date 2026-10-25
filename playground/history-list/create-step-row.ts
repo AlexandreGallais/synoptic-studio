@@ -4,7 +4,7 @@ import type { HistoryRow } from "../../src";
 import type { KeptShape } from "../kept-shapes";
 
 /**
- * Creates the row of a step of the list (US-077): a button named by the step's action, its place
+ * Creates the row of a step of the list: a button named by the step's action, its place
  * against the present in `data-place`, the present's marked as the current step
  * (`aria-current`), the state it goes back to kept by the button (`STEP_BUTTON_STATES`).
  *

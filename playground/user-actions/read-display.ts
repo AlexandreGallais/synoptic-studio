@@ -7,7 +7,6 @@ import { selectPageElement } from "./select-page-element";
  * @kind procedure
  * @param id - id of the element, without `#`
  * @returns its computed `display`
- * @see EN-021
  */
 export function readDisplay(id: string): string {
   return getComputedStyle(selectPageElement(`#${id}`)).display;

@@ -6,7 +6,6 @@ import { selectPageElement } from "./select-page-element";
  * @kind procedure
  * @param selector - CSS selector of the element, `body` for the page itself
  * @param key - key pressed, `Delete`, `Backspace`
- * @see EN-021
  */
 export function pressKey(selector: string, key: string): void {
   selectPageElement(selector).dispatchEvent(new KeyboardEvent("keydown", { bubbles: true, key }));

@@ -29,7 +29,7 @@ function readEditedShape(document: Document, shape: DrawingShape, edit: PanelEdi
 
 /**
  * Reads a shape kept once a value is typed in its X, Y, Width or Height (`readEditedShape`), one
- * of several shapes selected (F38) or the one the panel edits alone (US-085), with the kind the
+ * of several shapes selected or the one the panel edits alone, with the kind the
  * panel showed it as, a text keeping its metrics (`writeKeptMetrics`).
  *
  * @kind procedure

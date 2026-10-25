@@ -52,17 +52,17 @@ function readFamilyMessage(
 
 /**
  * Reads the files of an installed family chosen in the font list, each face on its own: a file
- * read as an imported one is (EN-039), the family then kept with its metrics and files, so that
+ * read as an imported one is, the family then kept with its metrics and files, so that
  * the page draws it with its own outlines and can embed it, no longer listed as installed, and
  * chosen under the name its files give; a face whose file the browser cannot give, or that is not
  * a TrueType or OpenType font, is refused and counted, the others kept. A face held in a
  * collection is read from it (`readInstalledFace`), one face per entry of the browser's list, so
  * that a collection holding faces of several families gives the family chosen only. A family read
- * ahead, its metrics kept without its files, has its files read again (US-053); a face refused at
+ * ahead, its metrics kept without its files, has its files read again; a face refused at
  * that second reading has its metrics read ahead dropped (`readFontsWithoutFacesReadAhead`,
  * US-061), so that it is no longer measured, the refusal said. When no face is
  * read again, the list stays on the family, whose metrics read ahead are kept: a family is offered
- * only once read ahead (US-059).
+ * only once read ahead.
  *
  * @kind procedure
  * @param document - page document

@@ -101,7 +101,7 @@ function fewestDropped<T extends WeakKey>(
 }
 
 /**
- * The history within its bound (F40): the fewest oldest past states dropped for its size
+ * The history within its bound: the fewest oldest past states dropped for its size
  * (`historySize`) to be at most the size set, never leaving fewer past states than the steps
  * kept (`mostDroppedStates`); the states to come counted, never dropped (ADR-0095, decision 5;
  * `REF-GIMP-PREFS-RESOURCES`). A history within its size, as after most steps, is measured once,

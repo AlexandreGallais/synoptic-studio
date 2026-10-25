@@ -111,7 +111,7 @@ function listenToTypedFields(document: Document): void {
 /**
  * Asks a step of the history at each key released outside the panel's fields
  * (`scheduleHistoryStep`), so that a key held is one step from its press to its release (SP-029's
- * answer 3), arrows held together from the first press to the last release (US-081); and when
+ * answer 3), arrows held together from the first press to the last release; and when
  * the window loses the focus, which releases the arrows held, their releases never heard.
  *
  * @kind procedure
@@ -140,7 +140,7 @@ function listenToKeyReleases(document: Document, update: () => void): void {
 }
 
 /**
- * Listens to the keys of the history (F40, `interaction.md` §1): Ctrl + Z undoes, Ctrl + Shift + Z
+ * Listens to the keys of the history (`interaction.md` §1): Ctrl + Z undoes, Ctrl + Shift + Z
  * and Ctrl + Y redo, Cmd for Ctrl on macOS, their default prevented (`readHistoryMove`,
  * `moveHistory`); a field of the panel typed in since its value was applied keeps them, any other
  * field leaves them to the drawing (SP-029's answer 9). Heard as the key goes down to its target.

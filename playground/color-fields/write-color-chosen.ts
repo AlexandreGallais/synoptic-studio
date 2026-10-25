@@ -5,13 +5,12 @@ import type { ColorField } from "./color-field";
 /**
  * Marks a color as chosen by the designer when its hexadecimal or its opacity is typed or picked:
  * a color that follows the text's, an underline's or a strike-through's, stops following it, its
- * check box unticked, and keeps what was typed or picked from then on (US-041); a color that
+ * check box unticked, and keeps what was typed or picked from then on; a color that
  * follows none is left as it is.
  *
  * @kind procedure
  * @param document - page document
  * @param ids - the color's fields
- * @see US-041
  */
 export function writeColorChosen(document: Document, ids: ColorField): void {
   if (ids.follows !== "") {

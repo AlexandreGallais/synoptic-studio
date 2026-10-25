@@ -8,10 +8,10 @@ import { writeSeveralValues } from "./write-several-values";
 const SEVERAL_SELECTED = "Shift + click a shape to add it or take it out, or click one to edit it.";
 
 /**
- * Shows the drawing with several shapes selected (F37): every shape drawn, in the order drawn,
+ * Shows the drawing with several shapes selected: every shape drawn, in the order drawn,
  * none edited, as with none selected (`showNoSelection`); the panel's title saying how many are
  * selected, its status how to add or take one out, and their position and size in the fields of
- * several shapes (`writeSeveralValues`, F38).
+ * several shapes (`writeSeveralValues`).
  *
  * @kind procedure
  * @param document - page document

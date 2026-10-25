@@ -4,7 +4,7 @@ import { straightBoxShift } from "../placement";
 import type { Point } from "../../math";
 
 /**
- * How far the shapes selected move at the release of a drag (F39): on each axis, their anchor
+ * How far the shapes selected move at the release of a drag: on each axis, their anchor
  * moved by the pointer's offset and rounded to the nearest integer, a tie rounded up, as a click
  * places a shape (`nearestInteger`, Q45), less the anchor (`straightBoxShift`), so that the anchor
  * lands on integers while the shapes keep their own fractions.

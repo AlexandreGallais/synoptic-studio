@@ -10,7 +10,7 @@ import type { PickArea } from "../../src";
 const LINE = 1;
 
 /**
- * Creates the dashed box around several shapes selected (F37, US-086): the smallest upright box
+ * Creates the dashed box around several shapes selected: the smallest upright box
  * holding each one's contour as drawn, or its corners for a shape without area, a shape 0 × 0 its
  * point (`pickAreasBox`); the dashed line of the helps 1 screen pixel wide on its sides moved half
  * a pixel inward (`readInsetBoxPathData`, `createDashedLineElements`), of classes
@@ -38,7 +38,7 @@ function createSelectionBox(
 }
 
 /**
- * Creates the outlines of the shapes selected (F36, F37), in the layer above the drawing: each
+ * Creates the outlines of the shapes selected, in the layer above the drawing: each
  * the dashed line on its contour as drawn, as the hover's (`createOutlineElements`), of classes
  * `selection-light` and `selection`; with several selected, a dashed box around them all
  * (`createSelectionBox`); shown whichever tool is armed.

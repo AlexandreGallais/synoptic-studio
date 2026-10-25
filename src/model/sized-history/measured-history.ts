@@ -6,7 +6,7 @@ import type { SizedHistory } from "./sized-history";
 import type { History } from "../history";
 
 /**
- * A history with its size counted once, from its states (EN-147): each past and future state
+ * A history with its size counted once, from its states: each past and future state
  * added to an empty measure (`measureByState`), so that the size is `historySize`'s; the page's
  * history starts from it, nothing past nor to come (ADR-0097).
  *

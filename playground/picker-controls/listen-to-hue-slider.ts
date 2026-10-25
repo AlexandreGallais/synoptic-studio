@@ -18,7 +18,6 @@ import { listenToDrag } from "./listen-to-drag";
  * @kind procedure
  * @param document - page document
  * @param update - redraws the playground
- * @see US-035
  */
 export function listenToHueSlider(document: Document, update: () => void): void {
   const slider = selectElement(document, "color-hue");

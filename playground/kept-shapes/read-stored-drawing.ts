@@ -3,8 +3,8 @@ import { selectElement } from "../page";
 import type { KeptShape } from "./kept-shape";
 
 /**
- * Reads shapes the page keeps on its canvas as text (F35), each with the kind the panel showed it
- * as (F36): the shapes below the one the panel edits, that one as last drawn, or the shapes above
+ * Reads shapes the page keeps on its canvas as text, each with the kind the panel showed it
+ * as: the shapes below the one the panel edits, that one as last drawn, or the shapes above
  * it (`DRAWING_KEYS`).
  *
  * @kind procedure

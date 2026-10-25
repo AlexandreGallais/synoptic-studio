@@ -2,7 +2,7 @@ import type { Shape } from "./shape";
 import type { FreeShape } from "../free-shape";
 
 /**
- * Whether a shape is a free shape, whose points can be typed, added and deleted (F08): not a
+ * Whether a shape is a free shape, whose points can be typed, added and deleted: not a
  * regular polygon, whose number of corners is a count, nor a round shape, which has none; both
  * are converted first.
  *

@@ -6,14 +6,13 @@ import type { Size, Text } from "../../src";
 
 /**
  * Shows the x, y, width and height of a turned text's straight box under the position fields, as
- * for a shape (`writeStraightBoxLine`), the position fields showing its start (AUD-040). A text
- * at 0°, or a frame without area, shows no line, as before (US-039).
+ * for a shape (`writeStraightBoxLine`), the position fields showing its start. A text
+ * at 0°, or a frame without area, shows no line, as before.
  *
  * @kind procedure
  * @param document - page document
  * @param text - its position, its box and its angle
  * @param block - its measured block, from `textDrawing`
- * @see US-039
  */
 export function writeTextStraightBox(document: Document, text: Text, block: Size): void {
   const isShown = text.angle !== 0 && hasArea(textFrame(text, block));

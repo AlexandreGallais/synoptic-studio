@@ -30,7 +30,7 @@ describe("isValidTextBox (F14)", () => {
   });
 
   it("[F14.AC6] gives a text of F05 the defaults: fits its content, automatic line height, no trim, no background, ellipsis on", () => {
-    // The others, read only in a box (provisional, VAL-015): docs/domain/shapes.md, Box.
+    // The others, read only in a box (provisional, VAL-015): RULE-shapes-box.
     expect(TEXT_BOX_DEFAULTS).toEqual({
       backgroundColor: "#ffff00",
       backgroundOpacity: 100,

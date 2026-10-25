@@ -5,7 +5,7 @@ import type { SizedHistory } from "./sized-history";
 import type { HistoryState } from "../history";
 
 /**
- * The history whose present is a state it holds, its size kept (US-077): a past state reached by
+ * The history whose present is a state it holds, its size kept: a past state reached by
  * as many undos as states after it are past (`sizedUndoneHistory`), a state to come by as many
  * redos as states come before it and itself (`sizedRedoneHistory`), so that the steps after it
  * are kept to redo; the present, or a state the history no longer holds, the history given.

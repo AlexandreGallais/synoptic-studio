@@ -10,7 +10,7 @@ const RECTANGLE = {
   width: 120,
 } as const;
 
-/** The F12 options to try (VAL-011), one per step: a short list, examples only where typing is hard. */
+/** The F12 options to try, one per step: a short list, examples only where typing is hard. */
 export const GUIDED_STEPS_F12: readonly GuidedStep[] = [
   {
     explanation: "Points, point 2, Handles; then Handles again.",

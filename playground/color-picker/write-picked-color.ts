@@ -13,7 +13,6 @@ import type { PickedColor } from "../../src";
  * @param picked - the hue, the saturation and the lightness or brightness, integers
  * @param readColor - the color the values were read from, when the picker opened, a hexadecimal
  * was typed or another model chosen
- * @see US-040
  */
 export function writePickedColor(document: Document, picked: PickedColor, readColor: string): void {
   const { dataset } = selectElement(document, "color-picker");

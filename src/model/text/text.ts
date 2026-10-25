@@ -3,7 +3,7 @@ import type { TextCase } from "./text-case";
 import type { TextDirection } from "./text-direction";
 import type { TextVerticalAlignment } from "./text-vertical-alignment";
 
-/** A text of the model (F05, ADR-0052): its content, the options of its characters and those of its box (F14), every number an integer (ADR-0003); its lines and its block are measured from its font's metrics (`DERIV-text-width`, `DERIV-text-box`). */
+/** A text of the model (ADR-0052): its content, the options of its characters and those of its box, every number an integer (ADR-0003); its lines and its block are measured from its font's metrics (`DERIV-text-width`, `DERIV-text-box`). */
 export type Text = {
   /** How its lines are aligned in its block, or across its box. */
   readonly alignment: TextAlignment;
@@ -33,15 +33,15 @@ export type Text = {
   readonly hasBackground: boolean;
   /** Whether a text cut by its box ends with an ellipsis; on by default. */
   readonly hasEllipsis: boolean;
-  /** Whether it sits in a box of `boxWidth` × `boxHeight`, its lines wrapped; otherwise it fits its content (F05). */
+  /** Whether it sits in a box of `boxWidth` × `boxHeight`, its lines wrapped; otherwise it fits its content. */
   readonly isInBox: boolean;
   /** Whether it is italic. */
   readonly isItalic: boolean;
   /** Whether a line is drawn through it. */
   readonly isStruckThrough: boolean;
-  /** Whether its strike-through has a color of its own, `strikeThroughColor`; otherwise it follows the text's color (US-041). */
+  /** Whether its strike-through has a color of its own, `strikeThroughColor`; otherwise it follows the text's color. */
   readonly hasStrikeThroughColor: boolean;
-  /** Whether its underline has a color of its own, `underlineColor`; otherwise it follows the text's color (US-041). */
+  /** Whether its underline has a color of its own, `underlineColor`; otherwise it follows the text's color. */
   readonly hasUnderlineColor: boolean;
   /** Whether its block runs from the cap height of its first line to the baseline of its last. */
   readonly isTrimmed: boolean;

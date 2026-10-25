@@ -5,7 +5,7 @@ import { writeStoredHistoryBound } from "./write-stored-history-bound";
 import type { HistoryBound } from "../../src";
 
 /**
- * Applies a bound the designer set (F40): kept for the page (`PAGE_HISTORY_BOUNDS`) and in the
+ * Applies a bound the designer set: kept for the page (`PAGE_HISTORY_BOUNDS`) and in the
  * browser for the next session (`writeStoredHistoryBound`), its fields showing it
  * (`writeBoundFields`).
  *

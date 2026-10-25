@@ -2,7 +2,7 @@ import { FIELD_LABELS } from "./field-labels";
 import { fieldWords } from "./field-words";
 
 /**
- * The name of a step that changed one field (US-077): the panel's label of the field
+ * The name of a step that changed one field: the panel's label of the field
  * (`FIELD_LABELS`), `isItalic` written `Italic` as its button; any other field, its words
  * (`fieldWords`), `width` written `Width`, `letterSpacing` `Letter spacing`, as the panel writes
  * them.

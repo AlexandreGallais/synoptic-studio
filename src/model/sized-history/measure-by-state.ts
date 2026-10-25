@@ -45,7 +45,7 @@ function measureByShape<T extends WeakKey>(
 }
 
 /**
- * The measure once a state joins or leaves the past or the states to come (EN-147): each shape it
+ * The measure once a state joins or leaves the past or the states to come: each shape it
  * holds held by one state more as it joins, one less as it leaves, counted once; a shape going
  * from no state to one, or from one to none, that the present does not hold adds or takes away
  * its text's length times 2 (`measureByShape`); and 8 bytes for each of its references and

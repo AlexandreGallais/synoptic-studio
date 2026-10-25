@@ -3,7 +3,7 @@ import { caseFoldedFamilyName } from "../../model";
 
 import { formatFontFamilyName } from "./format-font-family-name";
 
-/** The generic family every list ends with, so that a reader without either font still draws the text (F05). */
+/** The generic family every list ends with, so that a reader without either font still draws the text. */
 const LAST_FAMILY = "sans-serif";
 
 /**

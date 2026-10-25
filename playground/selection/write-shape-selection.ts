@@ -48,9 +48,9 @@ function writeSelectedKind(document: Document, edited: readonly KeptShape[], cou
 }
 
 /**
- * Selects shapes by their indices in the drawing (F37): the panel leaves the shape it edited,
+ * Selects shapes by their indices in the drawing: the panel leaves the shape it edited,
  * keeping its settings as the last of its kind (`saveEditedSettings`), a new text still empty
- * dropped (`stopNewText`, F40); one shape is split around
+ * dropped (`stopNewText`); one shape is split around
  * and loaded into the panel, as a click loads it (`splitDrawing`, `writeSelectedKind`); several
  * are kept with every shape below, none edited, their indices beside them
  * (`DRAWING_KEYS.selected`), the kind `several`; none leaves every shape below, the kind `none`.

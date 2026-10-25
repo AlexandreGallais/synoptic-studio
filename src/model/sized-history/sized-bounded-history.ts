@@ -50,7 +50,7 @@ function droppedMeasure<T extends WeakKey>(
 }
 
 /**
- * The history within its bound, its size kept (EN-147): while its size is over the size set and
+ * The history within its bound, its size kept: while its size is over the size set and
  * more past states than the steps kept are left (`mostDroppedStates`), the oldest past state
  * removed (`droppedMeasure`), one by one, each read once; the states to come never dropped. The
  * history is `boundedHistory`'s, found without measuring the history again (ADR-0097).

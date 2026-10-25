@@ -12,7 +12,6 @@ import { writeTickedLines } from "./write-ticked-lines";
  *
  * @kind procedure
  * @param document - the playground's document
- * @see US-051
  */
 export function mountChecklist(document: Document): void {
   const query = new URLSearchParams(document.location.search);

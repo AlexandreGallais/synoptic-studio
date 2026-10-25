@@ -15,7 +15,7 @@ import type { KeptShape } from "../kept-shapes";
 /**
  * Writes a shape the panel edits alone into the page, its fields showing its values: a text by
  * `writeEditedText`, a box's width or height applied marking the box as the designer's
- * (`data-box-typed`, US-057); any other by `writeEditedGeometry`.
+ * (`data-box-typed`); any other by `writeEditedGeometry`.
  *
  * @kind procedure
  * @param document - page document
@@ -41,7 +41,7 @@ function writeEditedShape(document: Document, kept: KeptShape, isBoxTyped: boole
 
 /**
  * Writes a value applied in a field of a shape refused, which has no value of its own to start
- * from (AUD-046): a relative value from 0, a size taken within 0 and 100 000
+ * from: a relative value from 0, a size taken within 0 and 100 000
  * (`panelValueAfterEdit`), so that the redraw reads it; a text that is no number puts back the
  * text the field showed before (`resetShownText`).
  *
@@ -86,10 +86,10 @@ function writeAppliedShape(document: Document, kept: KeptShape, edit: PanelEdit)
 }
 
 /**
- * Sets the shape the panel edits, alone, by a value of one of its fields (US-085), as each of
+ * Sets the shape the panel edits, alone, by a value of one of its fields, as each of
  * several shapes is set (`readEditedKeptShape`, `shapeAfterPanelEdit`, `textAfterPanelEdit`): typed, a
  * number relative with a sign (`parsePanelValue`), or an arrow's step, relative, from the shape
- * as last drawn, a size taken within 0 and 100 000 (Q20, AUD-046); the shape then kept as the one
+ * as last drawn, a size taken within 0 and 100 000 (Q20); the shape then kept as the one
  * edited, so that the next key starts from it before the redraw, and written into the panel, its
  * fields showing its values again (`writeEditedShape`), a text that is no number putting them
  * back. A shape refused has no value to start from: a relative value starts from 0

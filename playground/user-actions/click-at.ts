@@ -9,7 +9,6 @@ import type { PointerPress } from "./press-pointer";
  * @kind procedure
  * @param selector - CSS selector of the element
  * @param point - the pointer's x and y in the window, possibly fractional
- * @see US-063
  */
 export function clickAt(selector: string, point: Pick<PointerPress, "clientX" | "clientY">): void {
   selectPageElement(selector).dispatchEvent(new MouseEvent("click", { ...point, bubbles: true }));

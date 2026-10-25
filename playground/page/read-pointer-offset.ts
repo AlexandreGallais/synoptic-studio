@@ -18,7 +18,6 @@ export type PointerOffset = {
  * @param element - the element under the pointer
  * @param event - the press, the move or the click of the pointer
  * @returns the pointer from the element's corner, and the element's size
- * @see US-035
  */
 export function readPointerOffset(element: HTMLElement, event: MouseEvent): PointerOffset {
   const box = element.getBoundingClientRect();

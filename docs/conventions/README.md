@@ -1,6 +1,6 @@
 # Code conventions
 
-How code is written here. What the code does lives in the [domain](../domain/), and why a choice was made lives in the ADRs (PAGE-adr). Most rules are checked by a linter, and each page names the check. When a page and the configuration disagree, the configuration wins and the page is fixed.
+How code is written here. What the code does lives in the domain's rules (`RULE-domain`, readable in [the editor](../the-editor.md)), and why a choice was made lives in the ADRs (PAGE-adr). Most rules are checked by a linter, and each page names the check. When a page and the configuration disagree, the configuration wins and the page is fixed.
 
 ## Pages to apply
 

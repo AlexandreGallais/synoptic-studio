@@ -9,7 +9,6 @@ import { selectElement } from "../page";
  * @param document - page document
  * @param end - which handle
  * @param keptAngle - the point's number, then "|", then the angle typed, as `2 side|330`
- * @see US-024
  */
 export function writeKeptAngle(
   document: Document,

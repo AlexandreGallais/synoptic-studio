@@ -4,7 +4,7 @@ import { showShapeDrawing } from "./show-shape-drawing";
 import type { ShapeDrawing } from "./shape-drawing";
 
 /**
- * Redraws the new shape with the drag changed (`showShapeDrawing`, F36), the pointer moved or
+ * Redraws the new shape with the drag changed (`showShapeDrawing`), the pointer moved or
  * Shift pressed or released; nothing without a drag on.
  *
  * @kind procedure

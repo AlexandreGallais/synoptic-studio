@@ -33,8 +33,8 @@ The procedure is the `/audit` skill. The independent `auditor` subagent reviews 
 
 ## E. Consistency
 
-1. Code ↔ TSDoc ↔ derivation ↔ `docs/domain/` ↔ ADRs say the same thing.
-2. Open questions of `docs/domain/README.md`: still open, or answered by the feature.
+1. Code ↔ TSDoc ↔ derivation ↔ the rules (`RULE-…`) ↔ ADRs say the same thing.
+2. Open questions of `RULE-domain-open-questions`: still open, or answered by the feature.
 3. `AGENTS.md`, `CLAUDE.md`, `docs/conventions/`, `docs/tooling/` describe what the project really does.
 4. Backlog: statuses, feature plan, epic table up to date.
 

@@ -7,7 +7,7 @@ import type { SizedHistory } from "../../src";
 import type { KeptShape } from "../kept-shapes";
 
 /**
- * Shows the list of the history's steps (US-077), unless it shows that history already
+ * Shows the list of the history's steps, unless it shows that history already
  * (`SHOWN_HISTORIES`): its rows written again (`createHistoryRows`); no history, no row.
  *
  * @kind procedure

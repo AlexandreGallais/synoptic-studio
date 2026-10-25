@@ -2,7 +2,7 @@ import type { Drawing } from "./drawing";
 import type { DrawingShape } from "./drawing-shape";
 
 /**
- * The drawing with one more shape, drawn above the others, which do not change (F35).
+ * The drawing with one more shape, drawn above the others, which do not change.
  *
  * @kind domain
  * @param drawing - the shapes in the order drawn

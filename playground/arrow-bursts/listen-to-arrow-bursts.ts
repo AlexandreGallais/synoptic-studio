@@ -9,7 +9,7 @@ import { ARROW_BURSTS } from "./arrow-bursts";
 /**
  * The fields of the panel whose arrows step a value, a burst of them one step: the fields acting
  * as number fields, several shapes', one shape's X, Y, Width and Height and every other, which
- * the page steps (`NUMBER_FIELDS`, US-085, US-087).
+ * the page steps (`NUMBER_FIELDS`).
  */
 const BURST_FIELDS = NUMBER_FIELDS;
 
@@ -74,7 +74,7 @@ function readArrowField(event: KeyboardEvent): Element | undefined {
 }
 
 /**
- * Ends the burst open in the field a key is typed in, its step taken (`stopArrowBurst`, AUD-045):
+ * Ends the burst open in the field a key is typed in, its step taken (`stopArrowBurst`):
  * a key other than an arrow or a modifier, which types the value that then takes a step of its
  * own, after the burst's.
  *
@@ -171,7 +171,7 @@ function startBurstPause(document: Document, event: KeyboardEvent, step: () => v
  * Ends the burst open at any key or pointer event that carries Cmd, its step taken
  * (`stopArrowBurst`): macOS sends no `keyup` for an arrow released while Cmd is held
  * (`REF-WEBKIT-CMD-KEYUP`, `REF-MOZILLA-CMD-KEYUP`), and a system shortcut may take Cmd's own
- * `keyup`, while Cmd's `keydown` carries it (`REF-UIEVENTS-KEYS`, AUD-049); an event without Cmd
+ * `keyup`, while Cmd's `keydown` carries it (`REF-UIEVENTS-KEYS`); an event without Cmd
  * changes nothing.
  *
  * @kind procedure
@@ -191,7 +191,7 @@ function closeBurstAtCommand(
 }
 
 /**
- * Listens to the bursts of arrows in the panel's fields (US-081, SP-031's answer 5): Up or Down
+ * Listens to the bursts of arrows in the panel's fields (SP-031's answer 5): Up or Down
  * pressed in a number field or a field of several shapes opens a burst (`startArrowBurst`), its
  * release starts a pause of 500 ms (`startBurstPause`), and the burst's step is taken at the
  * pause's end, unless an arrow pressed meanwhile joins the burst; another key typed in its field,

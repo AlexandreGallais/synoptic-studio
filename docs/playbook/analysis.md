@@ -43,8 +43,8 @@ The backlog is written **while** the questions go on: each answer lands at once 
 
 | Output | Where |
 | --- | --- |
-| vision, users, editions | `docs/domain/README.md`, `editions.md` |
-| glossary (with the users' words) | `docs/domain/README.md` |
-| rules with examples | `docs/domain/*.md` |
-| open questions, numbered | `docs/domain/README.md` |
+| vision, users, editions | `RULE-domain-vision`, `RULE-editions` |
+| glossary (with the users' words) | `RULE-domain-glossary` |
+| rules with examples | the records' `RULE-…` documents |
+| open questions, numbered | `RULE-domain-open-questions` |
 | epics in the Product Owner's order | `docs/backlog/README.md` |

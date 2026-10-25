@@ -5,7 +5,7 @@ import type { Size } from "../../geometry";
 import type { Point } from "../../math";
 
 /**
- * Position of a box centered on a point, on integers (F35): the top-left of the box, half its size
+ * Position of a box centered on a point, on integers: the top-left of the box, half its size
  * up and left of the point, each coordinate rounded to the nearest integer, a tie rounded up
  * (`nearestInteger`), so that a point clicked between two integers places the box on integers.
  *

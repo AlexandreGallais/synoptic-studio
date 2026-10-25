@@ -2,7 +2,7 @@ import type { DrawingShape } from "./drawing-shape";
 import type { Text } from "../text";
 
 /**
- * Whether a shape of a drawing is a text: the only one with a content (F35).
+ * Whether a shape of a drawing is a text: the only one with a content.
  *
  * @kind domain
  * @param shape - a shape of a drawing

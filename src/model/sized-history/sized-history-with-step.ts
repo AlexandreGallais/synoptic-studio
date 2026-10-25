@@ -7,7 +7,7 @@ import type { SizedHistory } from "./sized-history";
 import type { HistoryState } from "../history";
 
 /**
- * The history once a finished action is recorded, its size kept (EN-147): the step of
+ * The history once a finished action is recorded, its size kept: the step of
  * `historyWithStep`; when it takes one, the present added to the past and each state to come removed
  * (`measureByState`), then the present changed (`measureWithPresent`); a selection replaced alone keeps the measure (ADR-0097).
  *

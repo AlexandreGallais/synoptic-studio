@@ -9,7 +9,6 @@ import { readPickerAreas } from "./read-picker-areas";
  * @kind procedure
  * @param document - page document
  * @param key - the key pressed, as `KeyboardEvent.key` names it
- * @see US-035
  */
 function closePickerOnEscape(document: Document, key: string): void {
   const swatch = readOpenSwatch(document);
@@ -28,7 +27,6 @@ function closePickerOnEscape(document: Document, key: string): void {
  * @kind procedure
  * @param document - page document
  * @param path - the element clicked and those holding it, up to the window
- * @see US-035
  */
 function closePickerOutside(document: Document, path: readonly EventTarget[]): void {
   if (readPickerAreas(document).every((area) => !path.includes(area))) {
@@ -39,11 +37,10 @@ function closePickerOutside(document: Document, path: readonly EventTarget[]): v
 /**
  * Listens to what opens and closes the picker: a click on a swatch opens it, a second click
  * closes it, as Escape does, and a click outside it and its color's fields
- * (`docs/domain/interaction.md` §5).
+ * (`RULE-interaction-colors`).
  *
  * @kind procedure
  * @param document - page document
- * @see US-035
  */
 export function listenToPickerClosing(document: Document): void {
   for (const swatch of document.querySelectorAll<HTMLElement>(".swatch")) {

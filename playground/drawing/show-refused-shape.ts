@@ -8,7 +8,6 @@ import { selectElement, writeText } from "../page";
  *
  * @kind procedure
  * @param document - page document
- * @see US-013
  */
 export function showRefusedShape(document: Document): void {
   const list = selectElement(document, "points");
@@ -22,7 +21,7 @@ export function showRefusedShape(document: Document): void {
     mark.remove();
   }
 
-  // A refused shape is not kept when another is placed (F35).
+  // A refused shape is not kept when another is placed.
   writeStoredDrawing(document, DRAWING_KEYS.edited, []);
 
   // Nothing to convert nor to move on a refused shape.

@@ -4,7 +4,7 @@ import { fieldLabel } from "./field-label";
 const POSITION_FIELDS: ReadonlySet<string> = new Set(["x", "y"]);
 
 /**
- * The name of a step that changed shapes in place, by the fields it changed (US-077): `kind`
+ * The name of a step that changed shapes in place, by the fields it changed: `kind`
  * among them, `Convert`; only `x` and `y`, `Move`; one other field beside them, its label
  * (`fieldLabel`), so that a width typed with the anchor moving the shape is `Width`; none, or
  * several others, `Change`.

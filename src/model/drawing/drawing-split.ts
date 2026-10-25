@@ -1,5 +1,5 @@
 /**
- * A drawing split around the shape the panel edits (F36), each part in the order drawn, so that a
+ * A drawing split around the shape the panel edits, each part in the order drawn, so that a
  * shape picked from the middle of the drawing keeps its place.
  *
  * @template T - type of the shapes, or of what is kept of each

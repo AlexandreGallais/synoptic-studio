@@ -10,7 +10,6 @@ import type { FontSession } from "./font-session";
  * @kind procedure
  * @param document - page document
  * @param session - the families kept and the installed fonts listed
- * @see US-036
  */
 export function writeFontSession(document: Document, session: FontSession): void {
   FONT_SESSIONS.set(selectElement(document, "text-font"), session);

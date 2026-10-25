@@ -12,7 +12,7 @@ const PUMP = { content: "Pump P-101 is running", isInBox: true } as const;
 const BANDS = { content: "Hello\nWorld", hasBackground: true } as const;
 
 /**
- * The F14 decisions to confirm (VAL-015), one per row of the story's table with its example, in
+ * The F14 decisions to confirm, one per row of the story's table with its example, in
  * Inter 16 as the playground measures it, then back to the rectangle (F14.AC6).
  */
 export const GUIDED_STEPS_F14_DECISIONS: readonly GuidedStep[] = [

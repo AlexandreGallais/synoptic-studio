@@ -2,7 +2,7 @@ import type { Shape } from "./shape";
 import type { RoundShape } from "../round-shape";
 
 /**
- * Whether a shape is a round shape (F10): the only shape with a kind.
+ * Whether a shape is a round shape: the only shape with a kind.
  *
  * @kind domain
  * @param shape - a shape of the model

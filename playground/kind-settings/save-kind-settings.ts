@@ -5,7 +5,7 @@ import { KIND_SETTINGS } from "./kind-settings";
 import type { KindMemory } from "./kind-memory";
 
 /**
- * Keeps the settings of the shape the panel leaves, as the last shape of its kind (SP-026): each
+ * Keeps the settings of the shape the panel leaves, as the last shape of its kind: each
  * input of `KIND_SETTINGS` for that kind, its value and whether it is ticked, and the radius of
  * each vertex when they differ, kept as JSON on the toolbar under the key `<kind>Settings`. A kind
  * without settings, or the free shape, keeps nothing.

@@ -29,7 +29,7 @@ function inPlaceStepName<T>(
 }
 
 /**
- * The name of a step by its action (US-077), read from the drawings before and after it: shapes
+ * The name of a step by its action, read from the drawings before and after it: shapes
  * added, every other kept in order, `Add`; shapes removed, every other kept in order, `Delete`; as
  * many shapes, none moved in the order, named by the fields changed (`inPlaceStepName`); any
  * other step, shapes moved in the order among them, `Change`.

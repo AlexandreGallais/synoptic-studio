@@ -25,7 +25,6 @@ type SelectChoice = {
  * @kind procedure
  * @param document - page document
  * @param choice - the choice's id, its options and the value chosen
- * @see US-036
  */
 export function writeSelectOptions(document: Document, choice: SelectChoice): void {
   const select = selectElement(document, choice.id);

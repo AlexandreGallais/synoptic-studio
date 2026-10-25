@@ -1,5 +1,5 @@
 /**
- * Whether every item of a list is in another, in the same order (US-077): the shapes a step kept,
+ * Whether every item of a list is in another, in the same order: the shapes a step kept,
  * the same objects, among those it added or before those it deleted.
  *
  * @kind domain

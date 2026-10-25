@@ -1,4 +1,4 @@
-/** A burst of arrows open in a field of the panel (US-081): the field, and the pause it waits in. */
+/** A burst of arrows open in a field of the panel: the field, and the pause it waits in. */
 export type ArrowBurst = {
   /** The field the burst's arrows step. */
   readonly field: Element;

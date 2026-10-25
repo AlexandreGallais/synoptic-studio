@@ -3,7 +3,7 @@ import { SELECTION_DRAGS } from "./selection-drags";
 import type { SelectionDrag } from "./selection-drag";
 
 /**
- * Reads the drag drawing a selection rectangle (F37): a press with the Selector on an empty place
+ * Reads the drag drawing a selection rectangle: a press with the Selector on an empty place
  * whose pointer has gone further than 3 pixels from it, from then to the release.
  *
  * @kind procedure

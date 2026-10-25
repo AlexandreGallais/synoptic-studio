@@ -23,7 +23,6 @@ const TOP_LEFT: Point = { x: 0, y: 0 };
  * @param drawn - the text last drawn
  * @param sized - the text read from the fields, and its measured block
  * @returns the change of its width and of its height
- * @see US-054
  */
 function readFrameChange(drawn: DrawnTextRecord, sized: SizedText): Vector {
   const before = textFrame(drawn.text, drawn.block);
@@ -36,7 +35,7 @@ function readFrameChange(drawn: DrawnTextRecord, sized: SizedText): Vector {
  * Chooses where a text is drawn before X and Y move it: a first text at the point typed; a frame
  * that changed size at the same angle at the position keeping the turned top-left corner of the
  * text last drawn (`positionKeepingPoint`, `DERIV-turned-shape` step 5), so that a turned text
- * that grows keeps its corner (US-038, ADR-0057); otherwise, an angle changed included, at the
+ * that grows keeps its corner (ADR-0057); otherwise, an angle changed included, at the
  * position of the text last drawn, so that a text turns about its middle (ADR-0055).
  *
  * @kind procedure
@@ -44,7 +43,6 @@ function readFrameChange(drawn: DrawnTextRecord, sized: SizedText): Vector {
  * @param sized - the text read from the fields, its position the start X and Y show, and its
  * measured block
  * @returns that position, the top-left of its frame before it turns
- * @see US-038
  */
 function chooseBasePosition(drawn: DrawnTextRecord | undefined, sized: SizedText): Point {
   if (drawn === undefined) {
@@ -114,7 +112,7 @@ function chooseTargetStart(drawn: DrawnTextRecord | undefined, shown: Point, sta
 
 /**
  * Chooses where a text is drawn from the start of its straight box X and Y show, as a shape's
- * (Product Owner, 2026-10-23, AUD-040): from its base position (`chooseBasePosition`), a growing
+ * (Product Owner, 2026-10-23): from its base position (`chooseBasePosition`), a growing
  * turned text keeping its turned top-left corner (ADR-0057) and a turn keeping its middle
  * (ADR-0055), it moves by how far its straight box starts from the value typed
  * (`chooseTargetStart`, `straightBoxShift`), its position, the top-left of its frame before it

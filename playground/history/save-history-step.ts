@@ -34,7 +34,7 @@ function readSavedHistory(
 }
 
 /**
- * Records the drawing and the selection as the page shows them (F40, `readSavedHistory`), the step
+ * Records the drawing and the selection as the page shows them (`readSavedHistory`), the step
  * due, if any, taken; nothing is recorded while the shape the panel edits is refused
  * (`readRefusedKind`), the drawing then kept without it, the step due dropped.
  *
