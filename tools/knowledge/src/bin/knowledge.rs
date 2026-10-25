@@ -10,10 +10,13 @@
 //!   `target/release/knowledge list`                  the documents, one line each
 //!   `target/release/knowledge sync`                  the drafts of the branches merged into
 //!                                                    `develop` marked merged
+//!   `target/release/knowledge snapshot`              the day's copy into the synced folder
+//!                                                    `AGENT_KNOWLEDGE_SNAPSHOT` names, seven kept
 //!
 //! `search`, `show` and `list` read the merged rows and the current branch's drafts, filtered by
 //! `--kind`, `--epic`, `--feature`, `--status`, `--since`, `--branch` and `--state`; `--all` adds
-//! the dropped rows. An error is printed on the error output, exit 1.
+//! the dropped rows. Every command but `path` refuses a working file inside the synced folder. An
+//! error is printed on the error output, exit 1.
 
 use std::env;
 use std::fs;
@@ -27,17 +30,20 @@ use knowledge::read::{
     Filters, hit_lines, list, listed_line, parse_filters, search, section_of, show,
 };
 use knowledge::records::{DATABASE_FILE, ROOT_VARIABLE, git, main_and_origin, project_records};
+use knowledge::snapshot::{
+    NOT_SET, SNAPSHOT_VARIABLE, refuse_synced, snapshot_folder, take_snapshot,
+};
 use knowledge::store::{SCHEMA_VERSION, open_store, schema_version, write};
 use knowledge::sync::{mark_merged, merged_branches};
 use rusqlite::Connection;
 
 /// The usage, printed for an unknown command or a wrong call.
-const USAGE: &str = "Usage: target/release/knowledge init | path | add <kind> <file or -> | search <words> [<filters>] | show <id> [<heading>] [<filters>] | list [<filters>] | sync; the filters: --kind, --epic, --feature, --status, --since, --branch, --state <value>, --all";
+const USAGE: &str = "Usage: target/release/knowledge init | path | add <kind> <file or -> | search <words> [<filters>] | show <id> [<heading>] [<filters>] | list [<filters>] | sync | snapshot; the filters: --kind, --epic, --feature, --status, --since, --branch, --state <value>, --all";
 
 /// Whether a command is called with the number of words it takes, and filters only where it reads.
 fn is_called_right(command: &str, words: &[String], filters: &Filters) -> bool {
     let shaped = match command {
-        "init" | "path" | "sync" | "list" => words.is_empty(),
+        "init" | "path" | "sync" | "list" | "snapshot" => words.is_empty(),
         "add" => words.len() == 2,
         "search" => !words.is_empty(),
         "show" => matches!(words.len(), 1 | 2),
@@ -177,11 +183,30 @@ fn output(arguments: &[String]) -> Result<String, String> {
         return Err(USAGE.to_owned());
     }
 
+    let setting = env::var(SNAPSHOT_VARIABLE).ok();
+    // Without the synced folder the snapshot copies nothing and does not fail, whatever the rest.
+    let snapshot_into = if command == "snapshot" {
+        match snapshot_folder(setting.as_deref())? {
+            None => return Ok(format!("{NOT_SET}\n")),
+            folder => folder,
+        }
+    } else {
+        None
+    };
     let cwd = Path::new(".");
     let root = env::var(ROOT_VARIABLE).ok();
     let (main, origin) = main_and_origin(cwd)?;
     let file = project_records(root.as_deref(), &main, &origin)?.join(DATABASE_FILE);
 
+    // A synced folder named but not made yet is refused around the file too.
+    if let Some(named) = setting.as_deref().filter(|named| !named.is_empty())
+        && command != "path"
+    {
+        refuse_synced(&file, Path::new(named))?;
+    }
+    if let Some(folder) = snapshot_into {
+        return take_snapshot(&file, &folder, &calendar::today()).map(|line| line + "\n");
+    }
     match command {
         "path" => return Ok(format!("{}\n", file.display())),
         "init" => return init(&file),

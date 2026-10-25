@@ -3,7 +3,7 @@ id: EN-153
 epic: E49
 feature: F48
 title: A clean snapshot into the synced folder
-status: ready
+status: done
 points: 3
 ---
 

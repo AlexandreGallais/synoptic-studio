@@ -2,7 +2,9 @@
 //! every retrospective: the metrics logs, this project's transcripts and the source library copied
 //! into `<AGENT_RECORDS_ROOT>/<project>`, a local folder outside the repository, never sent
 //! anywhere. A missing source is skipped; the library is copied consistently by SQLite's `VACUUM
-//! INTO`, even while the library server holds it open.
+//! INTO`, even while the library server holds it open. Then it takes the day's snapshot of the
+//! records into the synced folder `AGENT_KNOWLEDGE_SNAPSHOT` names, as `knowledge snapshot` does
+//! (EN-153), saying so and failing nothing when the variable is not set.
 
 use std::env;
 use std::fs;
@@ -12,7 +14,8 @@ use std::time::{SystemTime, UNIX_EPOCH};
 
 use calendar::temporal_instant;
 use hooks::pages::library_file;
-use knowledge::records::{main_and_origin, project_records};
+use knowledge::records::{DATABASE_FILE, main_and_origin, project_records};
+use knowledge::snapshot::{NOT_SET, SNAPSHOT_VARIABLE, snapshot_folder, take_snapshot};
 use repo_tools::records_save::{
     Kind, LAST_SAVE, ROOT_VARIABLE, RecordCopy, copy_file, copy_folder, record_copies,
 };
@@ -86,6 +89,13 @@ fn run() -> Result<(), String> {
 
     fs::write(folder.join(LAST_SAVE), format!("{instant}\n"))
         .map_err(|error| format!("{}: {error}", folder.join(LAST_SAVE).display()))?;
+
+    let snapshot = match snapshot_folder(env::var(SNAPSHOT_VARIABLE).ok().as_deref())? {
+        Some(synced) => take_snapshot(&folder.join(DATABASE_FILE), &synced, &calendar::today())?,
+        None => NOT_SET.to_owned(),
+    };
+
+    println!("{snapshot}");
     println!("Saved in {}.", folder.display());
     Ok(())
 }

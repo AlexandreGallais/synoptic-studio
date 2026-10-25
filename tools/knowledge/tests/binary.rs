@@ -14,7 +14,7 @@ use knowledge::add::{Origin, add_document};
 use knowledge::store::{SCHEMA_VERSION, open_store, write};
 
 /// The usage the binary prints for a wrong call.
-const USAGE: &str = "Usage: target/release/knowledge init | path | add <kind> <file or -> | search <words> [<filters>] | show <id> [<heading>] [<filters>] | list [<filters>] | sync; the filters: --kind, --epic, --feature, --status, --since, --branch, --state <value>, --all";
+const USAGE: &str = "Usage: target/release/knowledge init | path | add <kind> <file or -> | search <words> [<filters>] | show <id> [<heading>] [<filters>] | list [<filters>] | sync | snapshot; the filters: --kind, --epic, --feature, --status, --since, --branch, --state <value>, --all";
 
 /// A folder of its own: `records/` for the root, `repo/` a repository whose `origin` names
 /// `some-project`, `home/` for `HOME`.
