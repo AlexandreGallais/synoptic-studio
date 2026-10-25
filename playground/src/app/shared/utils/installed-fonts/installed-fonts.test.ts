@@ -7,33 +7,31 @@ import {
   APPLE_TRUE_TYPE_VERSION,
   LARGE_TABLE_LENGTH,
   TRUE_TYPE_VERSION,
-  fileTables,
-  fontCollection,
-  lettersMissingFaceFile,
-  postScriptFaceFile,
-  tablesFile,
-  testFaceFile,
-  uint32,
-} from "../../../../../../tests";
-import {
   chooseFiles,
   chooseOption,
   chooseShapeKind,
   clickElement,
+  fileTables,
+  fontCollection,
+  lettersMissingFaceFile,
   openPage,
+  postScriptFaceFile,
   readDisabledState,
   readText,
   readValue,
   selectChoice,
   selectPageElement,
+  tablesFile,
+  testFaceFile,
   typeAndEnter,
+  uint32,
   waitForPageTasks,
 } from "../../../../../testing";
 import { readFontSession } from "../fonts";
 
 import { readFacesInTurn } from "./read-faces-in-turn";
 
-import type { TestFace } from "../../../../../../tests";
+import type { TestFace } from "../../../../../testing";
 import type { InstalledFont } from "../fonts";
 
 /** The test font named Test Sans, regular, installable. */

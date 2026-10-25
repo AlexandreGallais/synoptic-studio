@@ -7,6 +7,8 @@
   { "project": "playground", "name": "@angular/core", "kind": "npm", "version": "22.2.3" },
   { "project": "playground", "name": "@angular/platform-browser", "kind": "npm", "version": "22.2.3" },
   { "project": "playground", "name": "@ngrx/signals", "kind": "npm", "version": "22.0.1" },
+  { "project": "playground", "name": "@types/node", "kind": "npm", "version": "26.6.5" },
+  { "project": "playground", "name": "@vitest/coverage-v8", "kind": "npm", "version": "5.0.5" },
   { "project": "playground", "name": "happy-dom", "kind": "npm", "version": "21.0.4" },
   { "project": "playground", "name": "rxjs", "kind": "npm", "version": "7.8.2" },
   { "project": "playground", "name": "sass", "kind": "npm", "version": "1.105.2" },

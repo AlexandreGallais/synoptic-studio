@@ -2,8 +2,8 @@ import { contourPiecesToPathData, shapePickArea } from "editor";
 // @vitest-environment happy-dom
 import { beforeEach, describe, expect, it } from "vitest";
 
-import { HELLO_TEXT } from "../../../../../../tests";
 import {
+  HELLO_TEXT,
   clickAt,
   clickElement,
   dispatchDrawingPointer,

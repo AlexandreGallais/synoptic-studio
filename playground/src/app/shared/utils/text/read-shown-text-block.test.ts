@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { ARIAL_METRICS, HELLO_TEXT } from "../../../../../../tests";
+import { ARIAL_METRICS, HELLO_TEXT } from "../../../../../testing";
 
 import { readShownTextBlock } from "./read-shown-text-block";
 

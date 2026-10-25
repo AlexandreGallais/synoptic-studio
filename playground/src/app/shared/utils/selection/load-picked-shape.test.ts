@@ -2,8 +2,8 @@ import { DEFAULT_FONT } from "editor";
 // @vitest-environment happy-dom
 import { beforeEach, describe, expect, it } from "vitest";
 
-import { ARIAL_METRICS } from "../../../../../../tests";
 import {
+  ARIAL_METRICS,
   chooseOption,
   chooseRadio,
   clickAt,
