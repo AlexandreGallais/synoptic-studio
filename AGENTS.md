@@ -18,7 +18,8 @@ Talk to them through `target/release/knowledge`, called from the checkout's root
 | what the records know on a subject | `knowledge search <words> [--kind …]` |
 | the items of a kind, an epic, a feature, a status | `knowledge list --kind … --epic … --status …` |
 | any question, any shape of your own (tables and indexes may be added, each registered in `tables_registry`) | `knowledge sql "<statement>" [--purpose …]` |
-| a record written: a decision, a log row, an incident, a note | `knowledge add <kind> <file or ->` |
+| a record written: a decision, a note | `knowledge add <kind> <file or ->` |
+| a row written: a journal row, an incident, an improvement | `knowledge sql "INSERT INTO <table> …"` |
 | a story's status | `target/release/backlog-status <ID> <status>` |
 | the ids a change cites, checked against the records | `knowledge check-ids <paths>` |
 

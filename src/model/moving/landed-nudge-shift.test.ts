@@ -16,7 +16,7 @@ function expectShift(shift: Point, expected: Point): void {
   expect(shift.y).toBeCloseTo(expected.y, 9);
 }
 
-describe("landedNudgeShift (US-089)", () => {
+describe("landedNudgeShift", () => {
   it("[F46.AC1] lands the sharp turned by 30° at (6.65064, −2.5) on (8, −2) for Right", () => {
     // 6.65064 + 1 = 7.65064 rounds to 8, a shift of 1.34936; −2.5 rounds up to −2, a tie, 0.5.
     expectShift(landedNudgeShift({ x: 6.65064, y: -2.5 }, { x: 1, y: 0 }), { x: 1.34936, y: 0.5 });

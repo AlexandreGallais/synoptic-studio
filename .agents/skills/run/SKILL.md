@@ -18,7 +18,7 @@ Scope: $ARGUMENTS. The main thread dispatches, finishes and answers; the chat st
 
 1. Set the feature `in-progress` and its stories `ready` (`target/release/backlog-status <ID> <status>`); `target/release/run-totals start`.
 2. The feature branch, once the previous feature is in `develop`: `git fetch origin`, then `git push origin origin/develop:refs/heads/feature/f<nn>-<topic>`. The main checkout stays on `develop`; `develop` enters a feature branch by a merge, never a rebase.
-3. A journal row (`knowledge add journal -`): the scope, the date, the request in neutral words.
+3. A journal row (`knowledge sql "INSERT INTO journal …"`): the scope, the date, the request in neutral words.
 
 ## For each story
 
@@ -43,7 +43,7 @@ Scope: $ARGUMENTS. The main thread dispatches, finishes and answers; the chat st
 
 - One line per commit of the worker (a Monitor on its worktree's commits); at each story's end, the epic as a path of its features, each step marked ✅ done, ⏳ now, ⬜ to do, with one progress bar in plain words, no bare ratio.
 - Each message of the Product Owner acknowledged at once, saying when it is handled.
-- A tool that fails is worked around and recorded as an incident (`knowledge add incident -`), fixed at the next review.
+- A tool that fails is worked around and recorded as an incident (`knowledge sql "INSERT INTO incidents …"`), fixed at the next review.
 
 ## A question parks its story
 

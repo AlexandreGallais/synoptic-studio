@@ -292,6 +292,34 @@ pub fn commit_steps(paths: &[String], push: Push) -> Vec<Vec<String>> {
     steps
 }
 
+/// A path written through a symbolic link to a folder of the checkout, given the link's path and
+/// the target it holds, both as Git sees them from the checkout's root: `.claude/skills/run/x.md`,
+/// `.claude/skills` holding `../.agents/skills`, gives `.agents/skills/run/x.md`, since `git add`
+/// refuses a path beyond a symbolic link. `None` when the path is not below the link, or when the
+/// target is absolute or climbs above the root.
+#[must_use]
+pub fn through_link(path: &str, link: &str, target: &str) -> Option<String> {
+    let rest = path.strip_prefix(link)?.strip_prefix('/')?;
+
+    if target.starts_with('/') {
+        return None;
+    }
+    let mut folders: Vec<&str> = link.split('/').collect();
+
+    folders.pop();
+    for part in target.split('/') {
+        match part {
+            "" | "." => {}
+            ".." => {
+                folders.pop()?;
+            }
+            folder => folders.push(folder),
+        }
+    }
+    folders.push(rest);
+    Some(folders.join("/"))
+}
+
 fn owned(words: &[&str]) -> Vec<String> {
     words.iter().map(|&word| word.to_owned()).collect()
 }

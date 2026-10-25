@@ -129,8 +129,8 @@ describe("parseFontMetrics (REF-OT-OTFF)", () => {
 
   it(
     "[F18.AC19] reads Inter Regular of the test fixtures as inter-metrics.json holds it",
-    // Inter's tables read for every measured block. alone: 765 ms, the median of 5 runs of its file
-    // (EN-129); 1.6 s with coverage, over 5 s in a loaded `check:all` (EN-116); 20 s, 26 times it,
+    // Inter's tables read for every measured block. alone: 765 ms, the median of 5 runs of its file;
+    // 1.6 s with coverage, over 5 s in a loaded `check:all`; 20 s, 26 times it,
     // holds it, as for the other tests reading Inter.
     { timeout: 20_000 },
     () => {

@@ -23,7 +23,6 @@ const COLLECTION_HEADER = {
  * @param view - the file
  * @returns the offset of each face's table directory; none for a file that is not a collection,
  * or whose offsets do not fit in it
- * @see REF-OT-OTFF
  */
 export function parseCollectionOffsets(view: Readonly<DataView>): readonly number[] {
   const { numFontsOffset, offsetSize, offsetsStart } = COLLECTION_HEADER;

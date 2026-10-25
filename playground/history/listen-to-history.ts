@@ -20,7 +20,6 @@ const RESTARTS = ["tool-reset", "guide-previous", "guide-next"];
  * @kind procedure
  * @param document - page document
  * @param update - redraws the page from the values typed
- * @see RULE-interaction-7-navigation-and-history
  */
 function listenToActionEnds(document: Document, update: () => void): void {
   for (const type of ["click", "pointerup", "pointercancel"]) {
@@ -38,7 +37,6 @@ function listenToActionEnds(document: Document, update: () => void): void {
  * @kind procedure
  * @param document - page document
  * @param update - redraws the page from the values typed
- * @see RULE-interaction-7-navigation-and-history
  */
 function listenToHistoryMoves(document: Document, update: () => void): void {
   for (const [id, move] of [
@@ -73,7 +71,6 @@ function listenToHistoryMoves(document: Document, update: () => void): void {
  * @kind procedure
  * @param document - page document
  * @param update - redraws the page from the values typed
- * @see RULE-interaction-7-navigation-and-history
  */
 export function listenToHistory(document: Document, update: () => void): void {
   clearPageHistory(document);

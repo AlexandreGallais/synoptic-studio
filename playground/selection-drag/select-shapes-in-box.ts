@@ -15,7 +15,6 @@ import type { BoundingBox } from "../../src";
  * @param document - page document
  * @param box - the rectangle, in the coordinates of the drawing's SVG
  * @param event - the release, telling whether Alt and Shift are held
- * @see RULE-interaction-2-selector
  */
 export function selectShapesInBox(document: Document, box: BoundingBox, event: MouseEvent): void {
   const taken = readShapesTaken(readPickAreas(document), box, event.altKey);

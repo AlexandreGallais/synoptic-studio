@@ -71,7 +71,7 @@ describe("exactColorToHex (DERIV-color-spaces steps 11 and 12)", () => {
   // 731 000 colors, where a property's random colors would seldom fall on an edge.
   it.each(["hsb", "hsl"] as const)(
     "[F16.AC2] gives one color in 31 and every sector edge back from its exact %s values",
-    // alone: 1655 ms, the median of 5 runs of its file for HSB, 1653 ms for HSL (EN-129); 30 s
+    // alone: 1655 ms, the median of 5 runs of its file for HSB, 1653 ms for HSL; 30 s
     // is 18 times it. Four times it is over Vitest's 5 s: the sample keeps its size.
     { timeout: 30_000 },
     (model) => {

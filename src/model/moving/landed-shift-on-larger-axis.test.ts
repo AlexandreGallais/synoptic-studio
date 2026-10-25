@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 
 import { landedShiftOnLargerAxis } from "./landed-shift-on-larger-axis";
 
-describe("landedShiftOnLargerAxis (AUD-041)", () => {
+describe("landedShiftOnLargerAxis", () => {
   it("[F39.AC2] lands A at (10, 20), dragged by (30.6, 19.4) with Shift, on (41, 20)", () => {
     // Across, the larger: 10 + 30.6 = 40.6 rounds to 41, a shift of 31; down kept still, 0.
     expect(landedShiftOnLargerAxis({ x: 10, y: 20 }, { x: 30.6, y: 19.4 })).toEqual({

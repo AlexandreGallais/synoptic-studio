@@ -12,7 +12,6 @@ import type { Rgb } from "../../math";
  * @kind format
  * @param rgb - the color's components, from 0 to 1
  * @returns the color, `#` and six lower-case digits
- * @see REF-CSS-COLOR-4
  */
 export function rgbToHex(rgb: Rgb): string {
   return bytesToHex([rgb.red, rgb.green, rgb.blue].map((component) => fractionToByte(component)));

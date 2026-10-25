@@ -5,7 +5,7 @@
 //! - `pre-commit [--tasks <file>]`: formats, lints and scans the staged files, the repository's
 //!   tasks or those of the file (`staged::parse_tasks`), and stages the fixes;
 //! - `commit-msg <file>`: checks the message as commitlint did, then, on a story branch, its
-//!   `Refs:` or `Closes:` footer;
+//!   `Refs:` footer;
 //! - `commits --from <commit> --to <commit>`: checks the message of each commit of the range, as
 //!   `commitlint --from --to` did in the CI;
 //! - `branch [--name <name>]`: checks the current branch's name, or the one given (the CI's);

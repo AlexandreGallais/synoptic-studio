@@ -11,7 +11,6 @@ import type { Point } from "../../math";
  * @param angle - degrees, an integer from 0 to 359
  * @param center - the point turned about, in the SVG
  * @returns the `transform` attribute's value
- * @see REF-SVG11-TRANSFORM
  */
 export function formatRotation(angle: number, center: Point): string {
   return `rotate(${formatSvgNumber(angle)} ${formatCoordinatePair(center)})`;

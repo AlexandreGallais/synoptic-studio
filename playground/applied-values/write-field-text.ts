@@ -10,7 +10,6 @@ import { TYPED_NUMBER_FIELDS } from "./typed-number-fields";
  * @param document - page document
  * @param id - the field's, without `#`
  * @param text - the text it shows
- * @see RULE-interaction-2-selector
  */
 export function writeFieldText(document: Document, id: string, text: string): void {
   const input = document.querySelector(`#${id}`);

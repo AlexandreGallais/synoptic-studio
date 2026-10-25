@@ -14,7 +14,6 @@ import type { KerningLookup } from "../../model";
  * @param glyphs - the glyphs asked, first and second
  * @returns its kerning lookups, in the order they apply; undefined when a table read passes its
  * end
- * @see REF-CSS-FONTS-4
  */
 export function parseFontKerning(
   gpos: Readonly<DataView> | undefined,

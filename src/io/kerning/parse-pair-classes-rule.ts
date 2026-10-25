@@ -33,7 +33,6 @@ const FIELDS = {
  * @param subtable - where the subtable starts in it, its header within the table
  * @returns the kerning by first class, then second class; undefined when the records pass the
  * table's end
- * @see REF-OT-GPOS
  */
 function parseClassValues(gpos: GposTable, subtable: number): readonly KerningRow[] | undefined {
   const firstFormat = gpos.getUint16(subtable + FIELDS.valueFormat1);
@@ -67,7 +66,6 @@ function parseClassValues(gpos: GposTable, subtable: number): readonly KerningRo
  * @param glyphs - the glyphs asked
  * @returns the class of each covered first glyph, by glyph; undefined when the coverage or the
  * class definition passes the table's end
- * @see REF-OT-GPOS
  */
 function parseFirstClasses(
   gpos: GposTable,
@@ -99,7 +97,6 @@ function parseFirstClasses(
  * @param subtable - where the subtable starts in it, its header within the table
  * @param glyphs - the glyphs asked, first and second
  * @returns the rule by classes; undefined when a part passes the table's end
- * @see REF-OT-GPOS
  */
 function parseClassParts(
   gpos: GposTable,
@@ -128,7 +125,6 @@ function parseClassParts(
  * @param subtable - where the subtable starts in it
  * @param glyphs - the glyphs asked, first and second
  * @returns the rule by classes; undefined when a part of it passes the table's end
- * @see REF-OT-GPOS
  */
 export function parsePairClassesRule(
   gpos: GposTable,

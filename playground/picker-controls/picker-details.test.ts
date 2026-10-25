@@ -43,7 +43,7 @@ function pressCancellableKey(selector: string, key: string): boolean {
   return event.defaultPrevented;
 }
 
-describe("Color picker: focus, keys, rounding and what it writes (US-035, audit, US-040)", () => {
+describe("Color picker: focus, keys, rounding and what it writes (audit)", () => {
   beforeEach(() => {
     openServedPage("");
     chooseShapeKind("text");

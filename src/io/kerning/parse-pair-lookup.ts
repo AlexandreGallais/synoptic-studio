@@ -52,7 +52,6 @@ type Subtable = {
  * @param type - the lookup's type
  * @param subtable - where the subtable starts in the table
  * @returns its effective type and offset; undefined for an extension passing the table's end
- * @see REF-OT-GPOS
  */
 function parseEffectiveSubtable(
   gpos: GposTable,
@@ -79,7 +78,6 @@ function parseEffectiveSubtable(
  * @param lookup - where the Lookup table starts in the table
  * @returns its subtables, in order; undefined when the lookup or an extension passes the
  * table's end
- * @see REF-OT-LAYOUT-COMMON
  */
 function parseLookupSubtables(gpos: GposTable, lookup: number): readonly Subtable[] | undefined {
   const count = isSpanWithin(lookup, LOOKUP_HEADER_SIZE, gpos.byteLength)
@@ -109,7 +107,6 @@ function parseLookupSubtables(gpos: GposTable, lookup: number): readonly Subtabl
  * @kind format
  * @param rule - the rule read, if any
  * @returns the rule alone in a list; undefined when it could not be read
- * @see REF-OT-GPOS
  */
 function ruleToList(rule: KerningRule | undefined): readonly KerningRule[] | undefined {
   return rule === undefined ? undefined : [rule];
@@ -124,7 +121,6 @@ function ruleToList(rule: KerningRule | undefined): readonly KerningRule[] | und
  * @param subtable - where the subtable starts in the table
  * @param glyphs - the glyphs asked, first and second
  * @returns its rule, or none; undefined when it passes the table's end
- * @see REF-OT-GPOS
  */
 function subtableToRules(
   gpos: GposTable,
@@ -159,7 +155,6 @@ function subtableToRules(
  * @param subtables - the lookup's subtables, with their effective types
  * @param glyphs - the glyphs asked, first and second
  * @returns the rules, in subtable order; undefined when one passes the table's end
- * @see REF-OT-GPOS
  */
 function subtablesToLookup(
   gpos: GposTable,
@@ -184,7 +179,6 @@ function subtablesToLookup(
  * @param lookup - where the Lookup table starts in the table
  * @param glyphs - the glyphs asked, first and second
  * @returns its rules, in subtable order; undefined when a part passes the table's end
- * @see REF-OT-LAYOUT-COMMON
  */
 export function parsePairLookup(
   gpos: GposTable,

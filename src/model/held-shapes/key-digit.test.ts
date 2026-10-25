@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { keyDigit } from "./key-digit";
 
-describe("keyDigit (EN-147)", () => {
+describe("keyDigit", () => {
   it.each([
     // 33 = 1 × 32 + 1.
     { digit: 1, key: 33, level: 0 },

@@ -100,7 +100,7 @@ describe("radius field", () => {
     giveRadii("10 0 0 0 0 6");
     typeInField("radius", "+5");
 
-    // 10 + 5, 0 + 5 four times, 6 + 5 (AUD-046): each one's own, as several shapes' fields.
+    // 10 + 5, 0 + 5 four times, 6 + 5: each one's own, as several shapes' fields.
     expect(selectInput("radius").dataset["radii"]).toBe("15 5 5 5 5 11");
     expect([selectInput("radius").value, selectInput("radius").placeholder]).toEqual(["", "Mixed"]);
   });

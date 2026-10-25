@@ -25,7 +25,6 @@ const PANEL_ENDS = [
  * @param document - page document
  * @param event - an event of the panel
  * @param selector - CSS selector of the kind
- * @see RULE-interaction-7-navigation-and-history
  */
 function scheduleStepAt(document: Document, event: Event, selector: string): void {
   const isAt = event.target instanceof Element && event.target.closest(selector) !== null;
@@ -56,7 +55,6 @@ function scheduleStepAt(document: Document, event: Event, selector: string): voi
  *
  * @kind procedure
  * @param document - page document
- * @see RULE-interaction-7-navigation-and-history
  */
 export function listenToPanelSteps(document: Document): void {
   const panel = selectElement(document, "panel");

@@ -77,7 +77,7 @@ type StepCase = {
   readonly field: (typeof HANDLE_FIELDS)[number];
 };
 
-describe("a handle's fields stepped by the arrows (US-088)", () => {
+describe("a handle's fields stepped by the arrows", () => {
   beforeEach(() => {
     // The rectangle 120 × 80, radius 0, so that no fillet cuts a side: point 1 at (0, 0), its
     // after side towards point 2 (120, 0), its before side towards point 4 (0, 80). Point 1
@@ -259,7 +259,7 @@ describe("a handle's fields stepped by the arrows (US-088)", () => {
     },
   );
 
-  it("rounds Up on a handle showing a fraction, mirroring the angle (AUD-047)", () => {
+  it("rounds Up on a handle showing a fraction, mirroring the angle", () => {
     // Up in Before x: before (−11, −5), after mirrored at (11.83476, 5.37944), as above. Up in
     // After x: 11.83476 + 1 = 12.83476, rounded to 13, the handle drawn at (13, 5.37944), where
     // before the fix the fraction was refused and the handle left unmoved. Before kept at its
@@ -274,7 +274,7 @@ describe("a handle's fields stepped by the arrows (US-088)", () => {
     expect(readText("#path-data")).toMatch(/^M0 0 C13 5.37944 /u);
   });
 
-  it("rounds Up on an angle from the side showing a fraction (AUD-047)", () => {
+  it("rounds Up on an angle from the side showing a fraction", () => {
     // After (12, 5) seen from its side going right: angle atan(5 / 12) = 22.61986°, length 13,
     // before mirrored at 270 − 22.61986 = 247.38014°. Up: 22.61986 + 1 = 23.61986, rounded to
     // 24; before at 270 − 24 = 246°, length 13.
@@ -287,7 +287,7 @@ describe("a handle's fields stepped by the arrows (US-088)", () => {
     expect(readHandleFields()).toEqual(["246", "13", "24", "13"]);
   });
 
-  it("rounds +1 typed on an angle from the side showing a fraction (AUD-047)", () => {
+  it("rounds +1 typed on an angle from the side showing a fraction", () => {
     // Before at 247.38014°: `+1` gives 248.38014, rounded to 248; after at 270 − 248 = 22°.
     chooseOption("handle-method", "side");
     typeInField("handle-before-x", "+1");

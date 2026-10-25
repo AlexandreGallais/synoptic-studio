@@ -20,7 +20,6 @@ import type { Vector } from "../../src";
  * @param keys.isShift - whether `Shift` is held
  * @param keys.isMacOS - whether the page runs on macOS
  * @returns the pan, in pixels
- * @see REF-PENPOT-VIEWPORT-ACTIONS
  */
 function readWheelPan(
   delta: Vector,
@@ -38,7 +37,6 @@ function readWheelPan(
  * @param document - page document
  * @param event - the wheel's turn on the canvas
  * @param delta - its vertical delta, in pixels
- * @see REF-PENPOT-VIEWPORT-ACTIONS
  */
 function addWheelZoom(document: Document, event: WheelEvent, delta: number): void {
   const { point } = readPointerOffset(selectElement(document, "canvas"), event);
@@ -56,7 +54,6 @@ function addWheelZoom(document: Document, event: WheelEvent, delta: number): voi
  * @param document - page document
  * @param event - the wheel's turn on the canvas
  * @param isMacOS - whether the page runs on macOS, read once as the page listens
- * @see RULE-interaction-7-navigation-and-history
  */
 function writeWheelView(document: Document, event: WheelEvent, isMacOS: boolean): void {
   const delta = {
@@ -86,7 +83,6 @@ function writeWheelView(document: Document, event: WheelEvent, isMacOS: boolean)
  * @kind procedure
  * @param document - page document
  * @param update - redraws the page
- * @see RULE-interaction-7-navigation-and-history
  */
 export function listenToWheel(document: Document, update: () => void): void {
   const isMacOS = globalThis.navigator.platform.startsWith("Mac");

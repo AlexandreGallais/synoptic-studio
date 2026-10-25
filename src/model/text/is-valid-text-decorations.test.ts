@@ -20,7 +20,7 @@ const CHOSEN = {
   underlineOpacity: 50,
 } as const;
 
-describe("isValidTextDecorations (US-041)", () => {
+describe("isValidTextDecorations", () => {
   it("[F16.AC4] gives a text of F05 strokes that follow its color, black and opaque kept", () => {
     expect(TEXT_DECORATION_DEFAULTS).toEqual({
       hasStrikeThroughColor: false,

@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { radiiWithTyped } from "./radii-with-typed";
 
-describe("radiiWithTyped (AUD-046)", () => {
+describe("radiiWithTyped", () => {
   it("[F44.AC4] adds -5 to each radius of a Mixed field: 10, 4, 20 give 5, 0, 15", () => {
     // 10 − 5 = 5; 4 − 5 = −1 taken at 0; 20 − 5 = 15.
     const typed = { isRelative: true, value: -5 };

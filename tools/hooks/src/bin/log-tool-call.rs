@@ -61,12 +61,10 @@ fn hook() -> u8 {
     let running = folder
         .join("running")
         .join(format!("{}.json", input.get("tool_use_id").text()));
-    let step = fs::read_to_string(folder.join("step")).unwrap_or_default();
     let context = CallContext {
         branch: branch_of(&checkout),
         snapshot: json_of(&folder.join("now.json")),
         started_at: count(&json_of(&running), "start"),
-        step: step.split('\n').next().unwrap_or_default().to_owned(),
         time: now_ms(),
     };
     let line = format!("{}\n", tool_call_record(&input, &context));

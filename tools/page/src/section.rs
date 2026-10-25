@@ -84,18 +84,3 @@ pub fn sections(text: &str, wanted: &str) -> Vec<Section> {
         })
         .collect()
 }
-
-/// The page's first section: its lines from the first down to its second heading, so the front
-/// matter, the title and the text under it; the whole page when it has one heading or none.
-#[must_use]
-pub fn first_section(text: &str) -> String {
-    let lines: Vec<&str> = text.lines().collect();
-    let end = headings(&lines)
-        .iter()
-        .enumerate()
-        .filter(|(_, heading)| heading.is_some())
-        .nth(1)
-        .map_or(lines.len(), |(index, _)| index);
-
-    joined(&lines, 0, end)
-}

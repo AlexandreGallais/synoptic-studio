@@ -15,7 +15,6 @@ import type { ColorModel, PickedColor } from "../../model";
  * @param picked - the hue, the saturation and the lightness or brightness, integers
  * @param model - the model the values are read in
  * @returns the color, `#` and six lower-case digits
- * @see DERIV-color-spaces
  */
 export function pickedColorToHex(picked: PickedColor, model: ColorModel): string {
   return exactColorToHex(

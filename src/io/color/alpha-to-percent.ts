@@ -11,7 +11,6 @@ import { BYTE_MAXIMUM, PERCENT, ratioOnScale } from "../../math";
  * @kind format
  * @param alpha - the alpha byte, an integer from 0 to 255
  * @returns the opacity, an integer from 0 to 100
- * @see DERIV-color-spaces
  */
 export function alphaToPercent(alpha: number): number {
   return ratioOnScale({ denominator: BYTE_MAXIMUM, numerator: alpha }, PERCENT);

@@ -15,7 +15,7 @@ const AREA_B = shapePickArea(
   rectangleAsFreeShape({ angle: 30, height: 50, radii: [0, 0, 0, 0], width: 100, x: 200, y: 20 }),
 );
 
-describe("pickAreasBox (US-072)", () => {
+describe("pickAreasBox", () => {
   it("[F39.AC2] gives A and B the dashed box from (10, −1.65064) to (305.80127, 91.65064)", () => {
     // B's half sizes 50 cos 30° + 25 sin 30° = 55.80127 across and 50 sin 30° + 25 cos 30° =
     // 46.65064 down about (250, 45): from (194.19873, −1.65064) to (305.80127, 91.65064).

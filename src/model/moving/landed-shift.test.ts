@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 
 import { landedShift } from "./landed-shift";
 
-describe("landedShift (US-072)", () => {
+describe("landedShift", () => {
   it("[F39.AC2] lands A's box at (10, 20), dragged by (30.6, 19.4), on (41, 39)", () => {
     // 10 + 30.6 = 40.6 rounds to 41, 20 + 19.4 = 39.4 to 39: a shift of (31, 19).
     expect(landedShift({ x: 10, y: 20 }, { x: 30.6, y: 19.4 })).toEqual({ x: 31, y: 19 });

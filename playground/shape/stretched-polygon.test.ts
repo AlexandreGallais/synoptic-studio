@@ -23,7 +23,7 @@ function isStretched(): boolean {
 /** Stretched hexagon in 100 × 100: six equal sides of 54.85838 (`DERIV-stretched-polygon`, checks). */
 const STRETCHED_HEXAGON = "M77.42919 100 L22.57081 100 L0 50 L22.57081 0 L77.42919 0 L100 50 Z";
 
-describe("playground: stretched polygon (US-021)", () => {
+describe("playground: stretched polygon", () => {
   beforeAll(() => {
     // The page as served, without its script tag: the test mounts the playground itself.
     openPage("");

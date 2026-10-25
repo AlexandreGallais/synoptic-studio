@@ -76,7 +76,7 @@ function holdFrames(): void {
   });
 }
 
-describe("the view follows the canvas's size (US-084, REF-RESIZE-OBSERVER-1)", () => {
+describe("the view follows the canvas's size (REF-RESIZE-OBSERVER-1)", () => {
   beforeEach(() => {
     openServedPage("");
     resizeCanvas(1960, 1000);
@@ -197,7 +197,7 @@ describe("the view follows the canvas's size (US-084, REF-RESIZE-OBSERVER-1)", (
   });
 });
 
-describe("the canvas's observer, mounted again (EN-150)", () => {
+describe("the canvas's observer, mounted again", () => {
   it("[F44.AC1] redraws the page once for the canvas resized after 2 mounts of the same page", () => {
     openPage("");
     mountPlayground(document, GUIDED_STEPS);

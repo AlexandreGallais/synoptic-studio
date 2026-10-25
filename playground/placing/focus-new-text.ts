@@ -9,7 +9,6 @@ import { writeTextSections } from "../text";
  *
  * @kind procedure
  * @param document - page document
- * @see RULE-interaction-1-tools
  */
 export function focusNewText(document: Document): void {
   const content = selectElement(document, "text-content");

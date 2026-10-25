@@ -26,7 +26,6 @@ export type TextDecorations = Pick<
  * @param post - the font's `post` table, at least 12 bytes long
  * @param os2 - the font's `OS/2` table, at least 30 bytes long
  * @returns the underline's and the strike-out's position and thickness, font units
- * @see REF-OT-POST
  */
 export function parseTextDecorations(
   post: Readonly<DataView>,

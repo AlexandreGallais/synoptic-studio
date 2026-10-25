@@ -14,8 +14,8 @@ function writeDisabled(document: Document, id: string, isDisabled: boolean): voi
 }
 
 /**
- * Lets the designer use the font controls only when they lead to a font read and approved
- * (US-059): while the installed fonts the browser listed are read, ahead and then the default
+ * Lets the designer use the font controls only when they lead to a font read and approved:
+ * while the installed fonts the browser listed are read, ahead and then the default
  * font's files again, the font list and **Installed fonts** are disabled, so that no
  * font is chosen during the reading; while no font
  * is available, the font list, empty, and the Content field are disabled, so that no text is

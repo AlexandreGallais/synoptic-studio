@@ -22,7 +22,6 @@ import { readStartedMove } from "./read-started-move";
  *
  * @kind procedure
  * @param document - page document
- * @see RULE-interaction-2-selector
  */
 export function showHover(document: Document): void {
   const svg = createViewSvg(document);

@@ -49,7 +49,7 @@ function pressPlane(type: string, clientX: number, clientY: number): void {
   pressPointer("#color-plane", type, { buttons: 1, clientX, clientY });
 }
 
-describe("Color picker: the plane (US-035, US-040)", () => {
+describe("Color picker: the plane", () => {
   beforeEach(() => {
     openServedPage("");
     chooseShapeKind("text");

@@ -8,7 +8,6 @@ const VERSION_OFFSET = 0;
  * @kind format
  * @param os2 - the font's `OS/2` table, at least 2 bytes long
  * @returns its version, 0 to 65 535; 0 to 5 in the specification
- * @see REF-OT-OS2
  */
 export function parseOs2Version(os2: Readonly<DataView>): number {
   return os2.getUint16(VERSION_OFFSET);

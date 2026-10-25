@@ -5,7 +5,7 @@ import { isKeptInOrder } from "./is-kept-in-order";
 /** Three objects, and one equal to the first by its fields but another object. */
 const [SHAPE_A, SHAPE_B, SHAPE_C, A_COPY] = [{ x: 0 }, { x: 1 }, { x: 2 }, { x: 0 }];
 
-describe("isKeptInOrder (US-077)", () => {
+describe("isKeptInOrder", () => {
   it.each([
     {
       name: "A and C among A, B, C",

@@ -77,7 +77,7 @@ const BOX = fc.record({
   y: fc.integer({ max: 100, min: -100 }),
 });
 
-describe("shapesEnclosedByBox (EN-144, DERIV-box-overlap)", () => {
+describe("shapesEnclosedByBox (DERIV-box-overlap)", () => {
   it("[F37.AC3] encloses A alone, B being held in half", () => {
     // (−10, −10) to (200, 110): A from 0 to 100 within it; B reaches x = 250.
     const areas = [shapePickArea(SHAPE_A), shapePickArea(SHAPE_B), shapePickArea(SHAPE_C)];

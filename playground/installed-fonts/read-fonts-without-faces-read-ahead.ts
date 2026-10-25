@@ -9,7 +9,6 @@ import type { FontFace, FontFamily, NamedFontFace } from "../../src";
  * @kind procedure
  * @param faces - the faces kept of the family read again
  * @returns those faces, in order; none read ahead whose file was refused at the second reading
- * @see RULE-shapes-text
  */
 function readHeldFaces(faces: readonly FontFace[]): readonly FontFace[] {
   return faces.filter((face) => face.file !== undefined || DEFAULT_FONT.faces.includes(face));
@@ -27,7 +26,6 @@ function readHeldFaces(faces: readonly FontFace[]): readonly FontFace[] {
  * @param fonts - the font families kept
  * @param faces - the faces read again, their files held, and their family
  * @returns the families, that of the faces holding its faces held alone; the families given when no face is read again
- * @see RULE-shapes-text
  */
 export function readFontsWithoutFacesReadAhead(
   fonts: readonly FontFamily[],

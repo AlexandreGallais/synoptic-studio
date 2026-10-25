@@ -7,7 +7,7 @@ import { measuredTextDrawing } from "./measured-text-drawing";
 import { textDrawing } from "./text-drawing";
 import { textMeasure } from "./text-measure";
 
-describe("textMeasure and measuredTextDrawing (US-048, DERIV-text-box)", () => {
+describe("textMeasure and measuredTextDrawing (DERIV-text-box)", () => {
   it("[F17.AC5] measures 'Hello World' in a box 50 wide: two lines, the widest 41.78125", () => {
     // Arial 16: "Hello" 36.4609375, "World" 41.78125 wide; two lines of 18.3984375.
     expect(

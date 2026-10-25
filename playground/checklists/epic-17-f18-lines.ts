@@ -3,7 +3,7 @@ import type { ChecklistLine } from "./checklist-line";
 /**
  * The lines of E17's checklist for F18, A safe and cheap parallel run, and E15's leftovers.
  *
- * Prepared by `val:prepare` from its acceptance criteria (EN-056), then written as what to
+ * Prepared by `val:prepare` from its acceptance criteria, then written as what to
  * try and what to see, at most 12: mostly commands run in a terminal at the repository's root,
  * US-061 in the playground, and the four decisions to confirm.
  */

@@ -16,7 +16,6 @@ import { PENDING_REDRAWS } from "./pending-redraws";
  *
  * @kind procedure
  * @param document - page document
- * @see RULE-interaction-7-navigation-and-history
  */
 export function listenToRedrawBeforeClicks(document: Document): void {
   const canvas = selectElement(document, "canvas");

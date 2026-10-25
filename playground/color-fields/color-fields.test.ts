@@ -42,7 +42,7 @@ function readFills(): readonly (string | null | undefined)[] {
   ];
 }
 
-describe("Color fields (US-035)", () => {
+describe("Color fields", () => {
   beforeEach(() => {
     openServedPage("");
     chooseShapeKind("text");

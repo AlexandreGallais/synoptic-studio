@@ -22,7 +22,8 @@ Everything the agent works from lives in the records, one SQLite file outside th
 | what the records know on a subject | `knowledge search <words> [--kind …]` |
 | the items of a kind, an epic, a status | `knowledge list --kind … --epic … --status …` |
 | any other question | `knowledge sql "<statement>"` |
-| a decision, a log row, an incident, a note written | `knowledge add <kind> <file or ->` |
+| a decision or a note written | `knowledge add <kind> <file or ->` |
+| a journal row, an incident, an improvement written | `knowledge sql "INSERT INTO <table> …"` |
 | a story's status | `target/release/backlog-status <ID> <status>` |
 | the ids a change cites, checked | `knowledge check-ids <paths>` |
 

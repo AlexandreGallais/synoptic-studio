@@ -19,7 +19,6 @@ const EMPTY_TEXT_WIDTH = 1;
  * @param text - its content, its size, its line height and whether it sits in a box
  * @param block - what it measures, `textMeasure`'s block
  * @returns 1 × λ, or the block given
- * @see RULE-interaction-1-tools
  */
 export function readShownTextBlock(metrics: FontMetrics, text: Text, block: Size): Size {
   const isEmpty = text.content === "" && !text.isInBox;

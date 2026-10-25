@@ -15,5 +15,5 @@ Audit: $ARGUMENTS. Checklist: `docs/conventions/audit.md` (A to H); the findings
 5. **Each finding reproduced** before it is recorded; one that changes neither correctness nor a requirement is "no action", with its reason.
 6. **Fixed**: small findings in the audit's commits; larger ones become stories for the Product Owner to order.
 7. **Breadth**: `npm run check:all`, the full one; `AGENTS.md`, `CLAUDE.md` and `.agents/` still describe how the work is done.
-8. **For the next feature**: the sources and questions its refinement needs; anything worth improving becomes an improvement row (`knowledge add improvement -`) for the next review.
+8. **For the next feature**: the sources and questions its refinement needs; anything worth improving becomes an improvement row (`knowledge sql "INSERT INTO improvements …"`) for the next review.
 9. Branch, commits and finish as a story (`/story`).

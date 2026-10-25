@@ -12,7 +12,6 @@ import type { KeptShape } from "../kept-shapes";
  * @param document - page document
  * @param row - the step's name, place and state (`historySteps`)
  * @returns the list item holding the button
- * @see RULE-interaction-7-navigation-and-history
  */
 export function createStepRow(document: Document, row: HistoryRow<KeptShape>): HTMLLIElement {
   const item = document.createElement("li");

@@ -8,7 +8,6 @@ import { LISTENER_CONTROLLERS } from "./listener-controllers";
  *
  * @kind procedure
  * @param document - page document
- * @see REF-MDN-ADD-EVENT-LISTENER
  */
 export function removeListeners(document: Document): void {
   LISTENER_CONTROLLERS.get(document)?.abort();

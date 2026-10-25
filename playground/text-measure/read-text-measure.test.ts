@@ -62,7 +62,7 @@ const PLACEMENT_AND_PAINT: ReadonlySet<string> = new Set([
   "y",
 ]);
 
-describe("readTextMeasure (US-048)", () => {
+describe("readTextMeasure", () => {
   it("has a changed value for every field of a text", () => {
     expect(new Set(Object.keys(CHANGED))).toEqual(new Set(Object.keys(HELLO_TEXT)));
   });

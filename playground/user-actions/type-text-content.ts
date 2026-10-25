@@ -7,7 +7,6 @@ import { selectPageElement } from "./select-page-element";
  *
  * @kind procedure
  * @param content - what is typed
- * @see RULE-interaction-1-tools
  */
 export function typeTextContent(content: string): void {
   const area = selectPageElement("#text-content");

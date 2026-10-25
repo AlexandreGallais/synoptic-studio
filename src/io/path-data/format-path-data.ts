@@ -10,7 +10,6 @@ const SEPARATOR = " ";
  * @kind format
  * @param parts - the commands, or the sub-paths each from its `moveto` to its `closepath`
  * @returns the `d` attribute of the `<path>`
- * @see REF-SVG2-PATHS
  */
 export function formatPathData(parts: readonly string[]): string {
   return parts.join(SEPARATOR);

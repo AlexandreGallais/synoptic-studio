@@ -1,7 +1,6 @@
-//! The fallback of `page <id>` for an id no file holds any more (EN-152, research note 0035, The
-//! tool): the document of that id in the project's records, as `knowledge show <id>` prints it,
-//! so that an id read in a commit or a test's title still opens once its file has moved into the
-//! database. `knowledge` is run by its binary beside `page`'s own, as every agent tool sits in
+//! `page <id>`, an id without a page (EN-152, research note 0035, The tool): the document of that
+//! id in the project's records, as `knowledge show <id>` prints it, since every item an id names
+//! lives there. `knowledge` is run by its binary beside `page`'s own, as every agent tool sits in
 //! `target/release/`.
 
 use std::path::{Path, PathBuf};

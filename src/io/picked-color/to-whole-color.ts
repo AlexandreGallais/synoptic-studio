@@ -16,7 +16,6 @@ import type { PickedColor } from "../../model";
  * @kind format
  * @param color - the color's exact values (`hexToExactColor`)
  * @returns its hue from 0 to 359, its saturation and lightness or brightness from 0 to 100
- * @see DERIV-color-spaces
  */
 export function toWholeColor(color: ExactColor): PickedColor {
   return {

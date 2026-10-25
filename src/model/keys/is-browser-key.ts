@@ -2,7 +2,7 @@ import type { KeyModifiers } from "./key-modifiers";
 
 /**
  * Tells a key pressed with Ctrl, Cmd or Alt held, which the page leaves to the browser
- * (`interaction.md` §1): such a key nudges, holds and steps no arrow, and zooms nothing, so that
+ * (`RULE-interaction-the-arrows-left-to-the-browser`): such a key nudges, holds and steps no arrow, and zooms nothing, so that
  * the browser keeps the keys it gives them; on macOS a key pressed with Cmd held sends no `keyup`
  * (`REF-WEBKIT-CMD-KEYUP`, `REF-MOZILLA-CMD-KEYUP`), so an arrow held from it would never be
  * released.

@@ -196,7 +196,7 @@ afterEach(() => {
 
 describe("the guided test of E15 (VAL-017): F05, F14, F16 and F15 in a row", () => {
   it("ends the epic's guided test, F05's steps first and F15's last; no longer the current one", () => {
-    // E15 is validated on its checklist (US-051): the steps stay in `?guide=epic` only.
+    // E15 is validated on its checklist: the steps stay in `?guide=epic` only.
     expect(CURRENT_GUIDED_STEPS).toEqual([]);
 
     expect(GUIDED_STEPS.slice(-155).map((step) => step.title.slice(0, 3))).toEqual([
@@ -259,7 +259,7 @@ describe("the guided test of F15 (VAL-017): fonts, embedding, the export", () =>
     await waitForPageTasks();
 
     expect(readOptions("text-font")).toEqual(["Inter", "Test Sans"]);
-    // Read ahead once listed (US-053), then read again once chosen.
+    // Read ahead once listed, then read again once chosen.
     expect(reads.map((read) => read.mock.calls.length)).toEqual([1, 1]);
 
     chooseOption("text-font", "Test Sans");
@@ -277,7 +277,7 @@ describe("the guided test of F15 (VAL-017): fonts, embedding, the export", () =>
 
   it(
     "[F15.AC1] [F18.AC19] measured with the font chosen: a second family 175.109375 × 38.71875, Inter 87.5546875 × 19.359375",
-    // Inter's tables read. alone: 773 ms, the median of 5 runs of its file (AUD-031); 20 s is 25
+    // Inter's tables read. alone: 773 ms, the median of 5 runs of its file; 20 s is 25
     // times it.
     { timeout: 20_000 },
     async () => {
@@ -296,7 +296,7 @@ describe("the guided test of F15 (VAL-017): fonts, embedding, the export", () =>
     await importTestFace(TEST_SANS);
     tickEmbedFonts();
 
-    // The drawing without its fonts (US-045); the file exported with them.
+    // The drawing without its fonts; the file exported with them.
     expect(readOutput()).toMatch(/^<g /u);
 
     expect(readExport()).toMatch(
@@ -454,7 +454,7 @@ describe("the guided test of F15 (VAL-017): its decisions, each with its example
 
   it(
     "[F18.AC19] decision 15: a file tagged OTTO, CFF outlines, embedded as font/otf and opentype",
-    // Inter's tables read. alone: 895 ms, the median of 5 runs of its file (AUD-031); 20 s is 22
+    // Inter's tables read. alone: 895 ms, the median of 5 runs of its file; 20 s is 22
     // times it.
     { timeout: 20_000 },
     async () => {
@@ -490,7 +490,7 @@ describe("the guided test of F15 (VAL-017): its decisions, each with its example
     openStep("Installed families read when chosen (decision 26)");
     clickElement("installed-fonts");
     await waitForPageTasks();
-    // Read ahead once listed (US-053), then read again once chosen.
+    // Read ahead once listed, then read again once chosen.
     expect(reads.map((read) => read.mock.calls.length)).toEqual([1]);
     chooseOption("text-font", "Test Sans");
     await waitForPageTasks();

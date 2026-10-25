@@ -17,7 +17,6 @@ const OUTLINE_WIDTH = 2;
  * @param area - what the shape offers the pointer, its contour as drawn
  * @param name - its class: `hover` for the shape under the pointer, `selection` for one selected
  * @returns the white line's `<path>`, then the dashes'
- * @see RULE-interaction-2-selector
  */
 export function createOutlineElements(
   document: Document,

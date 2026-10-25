@@ -1,7 +1,7 @@
 import type { ChecklistLine } from "./checklist-line";
 
 /**
- * The lines of E15's checklist on the text and its box (US-051): F05's options, then F14's, each
+ * The lines of E15's checklist on the text and its box: F05's options, then F14's, each
  * example in Inter 16 or 32 as the demo pages give it.
  */
 export const EPIC_15_TEXT_LINES: readonly ChecklistLine[] = [

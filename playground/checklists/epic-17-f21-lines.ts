@@ -3,7 +3,7 @@ import type { ChecklistLine } from "./checklist-line";
 /**
  * The lines of E17's checklist for F21, Agent tools and the library server in Rust.
  *
- * Prepared by `val:prepare` from its acceptance criteria (EN-056), then written as what to
+ * Prepared by `val:prepare` from its acceptance criteria, then written as what to
  * try and what to see, at most 12: commands run in a terminal at the repository's root or in a
  * story's worktree, each tried by VAL-022 on 2026-10-18, and the five decisions of F21 to
  * confirm.

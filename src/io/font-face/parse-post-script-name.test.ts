@@ -35,7 +35,7 @@ describe("parsePostScriptName (REF-OT-NAME)", () => {
 
   it("[F17.AC10] [F18.AC19] names each face of a collection sharing Inter's tables, read in the collection", () => {
     // Each face read at its directory, 24, 308 and 592 (12 + 3 × 4, then 284 bytes each), no
-    // face's file written (US-052).
+    // face's file written.
     const file = sharedTableCollection(TRUE_TYPE_VERSION, sharedSansTables());
     const offsets = parseCollectionOffsets(new DataView(file.buffer));
 

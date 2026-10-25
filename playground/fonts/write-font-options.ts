@@ -9,8 +9,7 @@ import type { FontSession } from "./font-session";
 /**
  * Reads the families the font list offers, each once: those kept, read and approved, Inter first
  * when the browser draws it, their names matched without regard to case; an installed family the
- * browser listed and not read yet is never offered, so that a family later refused never shows
- * (US-059).
+ * browser listed and not read yet is never offered, so that a family later refused never shows.
  *
  * @kind procedure
  * @param session - the session's fonts

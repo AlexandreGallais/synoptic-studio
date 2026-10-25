@@ -32,7 +32,6 @@ type ReadAheadPage = {
  * @param update - redraws the playground
  * @param count - what was counted before
  * @returns what was counted once every family is done
- * @see RULE-shapes-text
  */
 async function readNextFamilies(
   page: ReadAheadPage,
@@ -73,7 +72,6 @@ async function readNextFamilies(
  * @param document - page document
  * @param update - redraws the playground
  * @returns once every installed family is read
- * @see RULE-shapes-text
  */
 export async function readInstalledFontsAhead(
   document: Document,

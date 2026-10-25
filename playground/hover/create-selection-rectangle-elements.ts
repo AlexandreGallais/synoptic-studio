@@ -20,7 +20,6 @@ const LINE = 1;
  * @kind procedure
  * @param document - page document
  * @returns its area, its white line and its dashes; nothing without such a drag
- * @see RULE-interaction-2-selector
  */
 export function createSelectionRectangleElements(document: Document): readonly SVGPathElement[] {
   const drag = readRectangleDrag(document);

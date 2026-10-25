@@ -11,7 +11,6 @@ import type { HistoryBound } from "../../src";
  * @kind procedure
  * @param document - the playground's document
  * @returns the memory size and the steps kept whatever their size
- * @see RULE-interaction-7-navigation-and-history
  */
 export function readPageHistoryBound(document: Document): HistoryBound {
   return PAGE_HISTORY_BOUNDS.get(document) ?? DEFAULT_HISTORY_BOUND;

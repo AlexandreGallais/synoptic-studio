@@ -98,7 +98,7 @@ describe("regularPolygonContour (DERIV-regular-polygon-fit, checks)", () => {
     );
   });
 
-  it("[F02.AC3] fits a pentagon in 100 × 100 from the right end of its base (odd n above 3, AUD-002)", () => {
+  it("[F02.AC3] fits a pentagon in 100 × 100 from the right end of its base (odd n above 3)", () => {
     // Unit span 2 cos(π/10) × (1 + cos(π/5)); s = 100 / (2 cos(π/10)) = 52.57311: width reached.
     const s = 50 / Math.cos(Math.PI / 10);
     const top = (100 - s * (1 + Math.cos(Math.PI / 5))) / 2;

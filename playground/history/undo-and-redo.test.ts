@@ -199,7 +199,7 @@ const DRAWN = [
   { x: 400, y: 20 },
 ];
 
-describe("Undo and Redo, by the keys, what is done on the drawing (US-074)", () => {
+describe("Undo and Redo, by the keys, what is done on the drawing", () => {
   beforeEach(() => {
     openServedPage("");
     setElementBox("#canvas", { height: 600, left: 100, top: 50, width: 800 });
@@ -453,7 +453,7 @@ describe("Undo and Redo, by the keys, what is done on the drawing (US-074)", () 
     expect(readValue("width")).toBe("100");
     expect(readShape(0)).toMatchObject({ width: 100 });
 
-    // Typed, not applied (US-085): W keeps Ctrl + Z, the shape still 100 wide.
+    // Typed, not applied: W keeps Ctrl + Z, the shape still 100 wide.
     typeValue("width", "1");
 
     const typed = press("#width", UNDO);
@@ -511,7 +511,7 @@ describe("Undo and Redo, by the keys, what is done on the drawing (US-074)", () 
   });
 });
 
-describe("the Undo and Redo buttons and the history's size (US-074)", () => {
+describe("the Undo and Redo buttons and the history's size", () => {
   beforeEach(() => {
     openServedPage("");
     setElementBox("#canvas", { height: 600, left: 100, top: 50, width: 800 });
@@ -722,7 +722,7 @@ function readEditedText(): Text {
   return model;
 }
 
-describe("Undo and Redo what is typed and chosen in the panel (US-075)", () => {
+describe("Undo and Redo what is typed and chosen in the panel", () => {
   beforeEach(() => {
     openServedPage("");
     setElementBox("#canvas", { height: 600, left: 100, top: 50, width: 800 });
@@ -734,7 +734,7 @@ describe("Undo and Redo what is typed and chosen in the panel (US-075)", () => {
     for (const typed of ["1", "15", "150"]) {
       typeValue("width", typed);
 
-      // Typed, not applied (US-085): A still 100 wide, drawn 150 wide at Enter only.
+      // Typed, not applied: A still 100 wide, drawn 150 wide at Enter only.
       expect(readShapeModel()).toMatchObject({ width: 100 });
     }
 
@@ -947,7 +947,7 @@ describe("Undo and Redo what is typed and chosen in the panel (US-075)", () => {
   });
 });
 
-describe("Undo and Redo the buttons of the panel (US-075)", () => {
+describe("Undo and Redo the buttons of the panel", () => {
   beforeEach(() => {
     // A rectangle 120 × 80 of radius 10.
     openOnStep(1);
@@ -1023,7 +1023,7 @@ describe("Undo and Redo the buttons of the panel (US-075)", () => {
   });
 });
 
-describe("Undo and Redo a text placed and typed (US-075)", () => {
+describe("Undo and Redo a text placed and typed", () => {
   beforeEach(() => {
     openServedPage("");
     setElementBox("#canvas", { height: 600, left: 100, top: 50, width: 800 });

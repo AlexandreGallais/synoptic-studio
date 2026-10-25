@@ -12,7 +12,6 @@ import { readView } from "../view";
  * @kind procedure
  * @param document - page document
  * @param event - the pointer's move or release on the canvas
- * @see RULE-interaction-2-selector
  */
 export function moveSelectionDrag(document: Document, event: PointerEvent): void {
   const drag = SELECTION_DRAGS.get(document);

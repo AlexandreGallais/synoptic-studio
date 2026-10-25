@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { changedFields } from "./changed-fields";
 
-describe("changedFields (US-077)", () => {
+describe("changedFields", () => {
   it("[F41.AC1] names x alone for a rectangle nudged from (10, 20) to (11, 20)", () => {
     expect(changedFields({ width: 100, x: 10, y: 20 }, { width: 100, x: 11, y: 20 })).toEqual([
       "x",

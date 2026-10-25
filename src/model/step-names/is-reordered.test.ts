@@ -8,7 +8,7 @@ const [SHAPE_A, SHAPE_B, SHAPE_C] = [["a"], ["b"], ["c"]];
 /** A′, a new object of A's text. */
 const A_COPY = ["a"];
 
-describe("isReordered (US-077)", () => {
+describe("isReordered", () => {
   it.each([
     // B at 0, A at 1: both moved.
     {

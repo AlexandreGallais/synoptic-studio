@@ -23,7 +23,6 @@ import type { Point } from "../../src";
  * @param document - page document
  * @param event - the key pressed
  * @returns the shift; undefined for a key that nudges nothing
- * @see RULE-interaction-1-tools
  */
 function readNudge(document: Document, event: KeyboardEvent): Point | undefined {
   const isTaken = [
@@ -49,7 +48,6 @@ function readNudge(document: Document, event: KeyboardEvent): Point | undefined 
  * @param document - page document
  * @param shift - the nudge, before it lands
  * @param update - redraws the page from the values typed
- * @see RULE-interaction-2-selector
  */
 function moveSelectedShapes(document: Document, shift: Point, update: () => void): void {
   if (readPressedMove(document) !== undefined) {
@@ -74,7 +72,6 @@ function moveSelectedShapes(document: Document, shift: Point, update: () => void
  * @param document - page document
  * @param event - the key pressed
  * @param update - redraws the page from the values typed
- * @see RULE-interaction-2-selector
  */
 function moveNudgedShapes(document: Document, event: KeyboardEvent, update: () => void): void {
   const shift = readNudge(document, event);
@@ -99,7 +96,6 @@ function moveNudgedShapes(document: Document, event: KeyboardEvent, update: () =
  * @kind procedure
  * @param document - page document
  * @param update - redraws the page from the values typed
- * @see RULE-interaction-1-tools
  */
 export function listenToNudgeKeys(document: Document, update: () => void): void {
   listenToHeldArrows(document);

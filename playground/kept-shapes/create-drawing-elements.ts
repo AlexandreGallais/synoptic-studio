@@ -17,14 +17,13 @@ import type { Shape, Text } from "../../src";
 /**
  * Creates the elements of a text kept in the drawing, measured with its font's metrics; when they
  * are no longer read, a family read ahead whose files could not be read again leaving the session
- * (US-061) while Inter is not drawn, with the metrics it was last drawn with
+ * while Inter is not drawn, with the metrics it was last drawn with
  * (`KEPT_TEXT_METRICS`), so that it stays in the drawing and the export as it was.
  *
  * @kind procedure
  * @param document - page document
  * @param text - a text kept, valid when it was drawn
  * @returns its group; nothing for a text never drawn with metrics
- * @see RULE-interaction-1-tools
  */
 function createKeptTextElements(document: Document, text: Text): readonly SVGGElement[] {
   const key = JSON.stringify(text);
@@ -63,7 +62,6 @@ function createKeptShapeElement(document: Document, shape: Shape): SVGPathElemen
  * @param document - page document
  * @param key - `DRAWING_KEYS.below` or `DRAWING_KEYS.above`
  * @returns their elements, the first drawn first
- * @see RULE-interaction-2-selector
  */
 export function createDrawingElements(document: Document, key: string): readonly SVGElement[] {
   return readStoredDrawing(document, key).flatMap(({ shape }) =>

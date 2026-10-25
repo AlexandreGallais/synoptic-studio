@@ -8,7 +8,6 @@ import type { Size } from "../../src";
  * @kind procedure
  * @param document - page document
  * @returns its width and height, in CSS pixels
- * @see RULE-interaction-7-navigation-and-history
  */
 export function readCanvasSize(document: Document): Size {
   const { height, width } = selectElement(document, "canvas").getBoundingClientRect();

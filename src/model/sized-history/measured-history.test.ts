@@ -13,7 +13,7 @@ const SHAPE_A = keptRectangleAt(10);
 /** B at (200, 20), 615 characters. */
 const SHAPE_B = keptRectangleAt(200);
 
-describe("measuredHistory (EN-147)", () => {
+describe("measuredHistory", () => {
   it("[F41.AC2] counts nothing with nothing past nor to come", () => {
     const present = historyState([SHAPE_A], [0]);
 

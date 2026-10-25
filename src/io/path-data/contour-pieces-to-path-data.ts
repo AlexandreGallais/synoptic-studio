@@ -14,7 +14,6 @@ const CLOSE_PATH = "Z";
  * @kind format
  * @param piece - segment, arc or cubic
  * @returns its command, starting from the current point
- * @see REF-SVG2-PATHS
  */
 function formatPieceCommand(piece: ContourPiece): string {
   if (piece.kind === "segment") {
@@ -35,7 +34,6 @@ function formatPieceCommand(piece: ContourPiece): string {
  * @kind format
  * @param pieces - segments, arcs and cubics in drawing order, each starting where the previous one ends
  * @returns the `d` attribute of the `<path>`
- * @see REF-SVG2-PATHS
  */
 export function contourPiecesToPathData(pieces: readonly ContourPiece[]): string {
   const first = pieces.at(0);

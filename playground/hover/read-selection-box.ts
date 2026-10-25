@@ -11,7 +11,6 @@ import type { BoundingBox } from "../../src";
  * @kind procedure
  * @param drag - the press and the pointer
  * @returns the rectangle, on integers
- * @see RULE-interaction-2-selector
  */
 export function readSelectionBox(drag: SelectionDrag): BoundingBox {
   const box = draggedBox({ isSquare: false, press: drag.press, release: drag.pointer });

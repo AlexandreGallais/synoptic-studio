@@ -18,7 +18,6 @@ export type SvgAttribute = readonly [name: string, value: string];
  * @kind format
  * @param text - its content, font, color, spacing and options
  * @returns its attributes, in that order
- * @see REF-SVG2-TEXT
  */
 export function textToAttributes(text: Text): readonly SvgAttribute[] {
   const spacings: readonly SvgAttribute[] = [

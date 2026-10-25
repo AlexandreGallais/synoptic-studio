@@ -10,7 +10,7 @@ const MEASURED = { height: 19.359375, width: 85.5 };
 /** The block of an empty text: no line, no area. */
 const EMPTY_BLOCK = { height: 0, width: 0 };
 
-describe("readShownTextBlock (US-075)", () => {
+describe("readShownTextBlock", () => {
   it("[F40.AC2] keeps the measured block of a text with a content", () => {
     expect(readShownTextBlock(ARIAL_METRICS, HELLO_TEXT, MEASURED)).toEqual(MEASURED);
   });

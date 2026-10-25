@@ -66,7 +66,7 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-describe("the history's memory size and steps kept, set by the designer (US-076)", () => {
+describe("the history's memory size and steps kept, set by the designer", () => {
   it("[F40.AC4] opens on 100 MB and 5 steps kept, about 80,380 moves, the fields explained", () => {
     openBoundedPage();
 

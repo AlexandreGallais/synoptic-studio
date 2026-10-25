@@ -32,7 +32,6 @@ type CoverageIndexes = Readonly<Record<number, number>>;
  * @param glyphs - the glyphs to look for
  * @returns the coverage index of each glyph asked that is covered; undefined when the list
  * passes the table's end
- * @see REF-OT-LAYOUT-COMMON
  */
 function parseGlyphList(
   table: Readonly<DataView>,
@@ -61,7 +60,6 @@ function parseGlyphList(
  * @param glyphs - the glyphs to look for
  * @returns the coverage index of each glyph asked that is covered; undefined when the ranges pass
  * the table's end
- * @see REF-OT-LAYOUT-COMMON
  */
 function parseGlyphRanges(
   table: Readonly<DataView>,
@@ -91,7 +89,6 @@ function parseGlyphRanges(
  * @param range - where the range record starts in the table
  * @param glyph - a glyph of the range
  * @returns its coverage index
- * @see REF-OT-LAYOUT-COMMON
  */
 function parseRangeIndex(table: Readonly<DataView>, range: number, glyph: number): number {
   return indexInRange(glyph, table.getUint16(range), table.getUint16(range + START_INDEX_FIELD));
@@ -106,7 +103,6 @@ function parseRangeIndex(table: Readonly<DataView>, range: number, glyph: number
  * @param ranges - where each range record starts in the table
  * @param glyphs - the glyphs to look for
  * @returns the coverage index of each glyph asked that a range holds, by glyph
- * @see REF-OT-LAYOUT-COMMON
  */
 function rangesToIndexes(
   table: Readonly<DataView>,
@@ -132,7 +128,6 @@ function rangesToIndexes(
  * @param glyphs - the glyphs to look for
  * @returns the coverage index of each glyph asked that is covered, by glyph; undefined when the
  * Coverage table passes the table's end or has another format
- * @see REF-OT-LAYOUT-COMMON
  */
 export function parseCoverage(
   table: Readonly<DataView>,

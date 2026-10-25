@@ -61,7 +61,6 @@ type SubtableWalk = {
  * @param kern - the `kern` table
  * @param subtable - where the subtable starts in it
  * @returns its length in bytes; 0 when its header passes the table's end
- * @see REF-OT-KERN
  */
 function parseSubtableLength(kern: Readonly<DataView>, subtable: number): number {
   return isSpanWithin(subtable, SUBTABLE_HEADER_SIZE, kern.byteLength)
@@ -78,7 +77,6 @@ function parseSubtableLength(kern: Readonly<DataView>, subtable: number): number
  * @returns the offset of each subtable in the table, −1 for one whose header passes its end or
  * whose length is shorter than its header, or alone when the table cannot hold the headers of the
  * subtables announced; none for a version other than 0
- * @see REF-OT-KERN
  */
 function parseSubtableStarts(kern: Readonly<DataView>): readonly number[] {
   const count = kern.getUint16(0) === 0 ? kern.getUint16(2) : 0;
@@ -118,7 +116,6 @@ type KernStep = {
  * @param kern - the `kern` table
  * @param subtable - where the subtable starts in it, its header within the table
  * @returns the offset of each record in the table; undefined when they pass its end
- * @see REF-OT-KERN
  */
 function parsePairRecords(
   kern: Readonly<DataView>,
@@ -144,7 +141,6 @@ function parsePairRecords(
  * @param subtable - where the subtable starts in it, −1 for one whose header passes its end
  * @param glyphs - the glyphs asked, left and right
  * @returns its pairs, in order; undefined when they pass the table's end
- * @see REF-OT-KERN
  */
 function parseSteps(
   kern: Readonly<DataView>,
@@ -175,7 +171,6 @@ function parseSteps(
  * @kind format
  * @param steps - the pair's values, subtable after subtable
  * @returns the kerning accumulated, font units
- * @see REF-OT-KERN
  */
 function stepsToKerning(steps: readonly KernStep[]): number {
   return steps.reduce((sum, step) => (step.isOverride ? step.value : sum + step.value), 0);
@@ -188,7 +183,6 @@ function stepsToKerning(steps: readonly KernStep[]): number {
  * @kind format
  * @param steps - every pair of every subtable, in subtable order
  * @returns the rule, by pair key
- * @see REF-OT-KERN
  */
 function stepsToRule(steps: readonly KernStep[]): PairKerningRule {
   return {
@@ -211,7 +205,6 @@ function stepsToRule(steps: readonly KernStep[]): PairKerningRule {
  * @param glyphs - the glyphs asked, left and right
  * @returns its kerning lookup, none for another version or without such subtables; undefined when
  * a subtable passes the table's end or is shorter than its header
- * @see REF-OT-KERN
  */
 export function parseKernTable(
   kern: Readonly<DataView>,

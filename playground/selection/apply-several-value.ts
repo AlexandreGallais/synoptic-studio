@@ -56,7 +56,6 @@ type AxisStep = {
  * @param kept - a shape selected and its kind
  * @param stepped - the field the arrow is pressed in, `x` or `y`, and its step
  * @returns the shape moved and its kind
- * @see RULE-interaction-2-selector
  */
 function readSteppedKept(document: Document, kept: KeptShape, stepped: AxisStep): KeptShape {
   const { axis, step } = stepped;
@@ -91,7 +90,6 @@ function readSteppedKept(document: Document, kept: KeptShape, stepped: AxisStep)
  * @param kept - a shape selected and its kind
  * @param value - the field, the value and whether it is an arrow's step
  * @returns the shape changed and its kind
- * @see RULE-interaction-2-selector
  */
 function readSeveralKept(document: Document, kept: KeptShape, value: SeveralValue): KeptShape {
   const { isStep, key, typed } = value;
@@ -116,7 +114,6 @@ function readSeveralKept(document: Document, kept: KeptShape, value: SeveralValu
  * @param document - page document
  * @param key - the field: `x`, `y`, `width` or `height`
  * @param applied - the value and whether it is an arrow's step
- * @see RULE-interaction-2-selector
  */
 export function applySeveralValue(
   document: Document,

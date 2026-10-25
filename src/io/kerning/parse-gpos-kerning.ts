@@ -21,7 +21,6 @@ const FIELD_SIZE = 2;
  * @param gpos - the `GPOS` table, at least its 10-byte header
  * @param lookupList - where the LookupList table starts in it
  * @returns the offset of each Lookup table in the table; undefined when the list passes its end
- * @see REF-OT-LAYOUT-COMMON
  */
 function parseLookupOffsets(
   gpos: Readonly<DataView>,
@@ -48,7 +47,6 @@ function parseLookupOffsets(
  * @param indices - the indices of the `kern` feature's lookups
  * @param glyphs - the glyphs asked, first and second
  * @returns the lookups, in index order; undefined when an index or a lookup passes the table
- * @see REF-OT-LAYOUT-COMMON
  */
 function indicesToLookups(
   gpos: Readonly<DataView>,
@@ -75,7 +73,6 @@ function indicesToLookups(
  * @param glyphs - the glyphs asked, first and second
  * @returns its kerning lookups, none when it has no `kern` feature; undefined when a part of it
  * passes the table's end
- * @see REF-OT-GPOS
  */
 export function parseGposKerning(
   gpos: Readonly<DataView>,

@@ -6,7 +6,7 @@ import { straightBoxShift } from "./straight-box-shift";
 describe("straightBoxShift (ADR-0035)", () => {
   it("moves a straight box at x 4.19873 by 45.80127 to start at 50", () => {
     // A 100 × 50 turned by 30° about (60, 45): its straight box at x 60 − 55.80127 = 4.19873;
-    // 50 − 4.19873 = 45.80127 (`interaction.md` §2, Each shape set).
+    // 50 − 4.19873 = 45.80127 (`RULE-interaction-the-panel-for-several-shapes-x-or-y-set`).
     expect(straightBoxShift(60 - 55.80127018922194, 50)).toBeCloseTo(45.80127, 5);
   });
 

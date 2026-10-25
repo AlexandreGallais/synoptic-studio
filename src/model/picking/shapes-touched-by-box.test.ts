@@ -84,7 +84,7 @@ const BOX = fc.record({
   y: fc.integer({ max: 100, min: -100 }),
 });
 
-describe("shapesTouchedByBox (EN-144, DERIV-box-overlap)", () => {
+describe("shapesTouchedByBox (DERIV-box-overlap)", () => {
   it("[F37.AC3] touches A and B, which the rectangle holds whole and in half", () => {
     // (−10, −10) to (200, 110): A within it, B from x = 150 to 250 crossed by x = 200, C beyond.
     const areas = [shapePickArea(SHAPE_A), shapePickArea(SHAPE_B), shapePickArea(SHAPE_C)];

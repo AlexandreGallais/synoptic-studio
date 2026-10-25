@@ -9,7 +9,6 @@ import { PENDING_REDRAWS } from "./pending-redraws";
  *
  * @kind procedure
  * @param document - page document
- * @see REF-MDN-RAF
  */
 export function drawPendingRedraw(document: Document): void {
   const draw = PENDING_REDRAWS.get(document);

@@ -216,7 +216,7 @@ describe("parseFontFace (REF-OT-NAME, REF-OT-OS2)", () => {
 
   it(
     "[F15.AC1] reads Inter Regular 4.1: Inter, 400, upright, embeddable",
-    // alone: 753 ms, the median of 5 runs of its file (EN-129); 20 s is 26 times it.
+    // alone: 753 ms, the median of 5 runs of its file; 20 s is 26 times it.
     { timeout: 20_000 },
     () => {
       // REF-OT-NAME: no name ID 16, name ID 1 Inter; REF-OT-OS2: 400, fsSelection 0x00c0 (bit 6
@@ -251,7 +251,7 @@ describe("parseFontFace, faces of macOS and of collections (F17.AC4)", () => {
 
   it(
     "[F17.AC4] [F18.AC19] reads the 3 faces of a collection sharing Inter's tables, each tagged true as Chrome gives it on macOS: 400, 700, 400 italic",
-    // Inter's metrics read three times. alone: 2235 ms, the median of 5 runs of its file (EN-129);
+    // Inter's metrics read three times. alone: 2235 ms, the median of 5 runs of its file;
     // 20 s, 8.9 times it, holds a loaded pre-push run. Four times it is over Vitest's
     // 5 s: the test keeps its three faces. Each face is read once, tagged `true`: an untagged face
     // is the case of every other test here.
@@ -283,8 +283,8 @@ describe("parseFontFace, measuring with its face (F15.AC4)", () => {
     content: `ABC ${String(index)}\naBC`,
   }));
 
-  // This synthetic file's face measures them. alone: 7 ms, the median of 5 runs of its file
-  // (EN-129); a loaded pre-push run was seen at 157 ms (RET-003): 400 ms, Vitest's timeout, holds
+  // This synthetic file's face measures them. alone: 7 ms, the median of 5 runs of its file;
+  // a loaded pre-push run was seen at 157 ms: 400 ms, Vitest's timeout, holds
   // over that load and is 57 times the measure alone. No clock is read in the test.
   it(
     "[F15.AC4] [F18.AC10] measures the blocks of 1 000 texts of two lines in under 0.4 s",

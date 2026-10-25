@@ -14,7 +14,6 @@ import type { EmbeddedFace } from "../model";
  * @param document - document owning the elements
  * @param faces - the faces embedded, from `documentFontEmbedding`
  * @returns the detached `<defs>`, or nothing
- * @see REF-SVG2-STYLING
  */
 export function createEmbeddedFontsElements(
   document: Document,

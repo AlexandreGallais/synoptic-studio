@@ -10,7 +10,6 @@ import type { View } from "../../src";
  * @kind procedure
  * @param document - page document
  * @returns its scale and origin
- * @see RULE-interaction-7-navigation-and-history
  */
 export function readView(document: Document): View {
   return PAGE_VIEWS.get(document) ?? OPENING_VIEW;

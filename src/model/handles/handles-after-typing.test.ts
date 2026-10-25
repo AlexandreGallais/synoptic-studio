@@ -6,7 +6,7 @@ import { handlesAfterTyping } from "./handles-after-typing";
 
 describe("handlesAfterTyping", () => {
   it("[F12.AC2] sets the handle typed and mirrors the other in mode angle and length", () => {
-    // After (30, −15) typed: before becomes (−30, 15) (EN-024).
+    // After (30, −15) typed: before becomes (−30, 15).
     expect(handlesAfterTyping(NO_HANDLES, "after", { x: 30, y: -15 })).toEqual({
       ...NO_HANDLES,
       after: { x: 30, y: -15 },

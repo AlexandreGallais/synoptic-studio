@@ -25,7 +25,7 @@ const NUDGED = measureByState(
   new Set([SHAPE_A_NUDGED, SHAPE_B]),
 );
 
-describe("measureWithPresent (EN-147)", () => {
+describe("measureWithPresent", () => {
   it("[F41.AC2] takes A away once the present holds it: 1 252 to 24 bytes", () => {
     // A taken by the present, held by 1: 1 252 − 1 228 = 24; A′ left, held by none: nothing.
     const back = measureWithPresent(NUDGED, [SHAPE_A_NUDGED, SHAPE_B], [SHAPE_A, SHAPE_B]);

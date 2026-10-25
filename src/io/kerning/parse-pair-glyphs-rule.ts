@@ -48,7 +48,6 @@ type PairSetReading = {
  * @param reading - the ValueFormats and the glyphs asked
  * @returns each second glyph asked and its kerning; undefined when the PairSet passes the table's
  * end
- * @see REF-OT-GPOS
  */
 function parsePairSet(
   gpos: Readonly<DataView>,
@@ -79,7 +78,6 @@ function parsePairSet(
  * @param gpos - the `GPOS` table
  * @param subtable - where the subtable starts in it, its header within the table
  * @returns where each PairSet starts in the table; undefined when the offsets pass its end
- * @see REF-OT-GPOS
  */
 function parsePairSetPlaces(
   gpos: Readonly<DataView>,
@@ -108,7 +106,6 @@ function parsePairSetPlaces(
  * @param covered - the coverage index of each first glyph asked, by glyph
  * @param reading - where the PairSets sit, the ValueFormats and the glyphs asked
  * @returns the rule; undefined when a PairSet is missing or passes the table's end
- * @see REF-OT-GPOS
  */
 function pairSetsToRule(
   gpos: Readonly<DataView>,
@@ -133,7 +130,6 @@ function pairSetsToRule(
  * @kind format
  * @param sets - each first glyph and its PairSet
  * @returns the rule by pairs
- * @see REF-OT-KERN
  */
 function setsToRule(sets: readonly (readonly [string, PairSet])[]): PairKerningRule {
   return {
@@ -155,7 +151,6 @@ function setsToRule(sets: readonly (readonly [string, PairSet])[]): PairKerningR
  * @param subtable - where the subtable starts in it
  * @param glyphs - the glyphs asked, first and second
  * @returns the rule by glyph pairs; undefined when a part of it passes the table's end
- * @see REF-OT-GPOS
  */
 export function parsePairGlyphsRule(
   gpos: Readonly<DataView>,

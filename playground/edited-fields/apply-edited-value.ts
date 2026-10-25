@@ -21,7 +21,6 @@ import type { KeptShape } from "../kept-shapes";
  * @param document - page document
  * @param kept - the shape set, or as it was for a value refused, and its kind
  * @param isBoxTyped - whether a width or height was applied to it
- * @see RULE-interaction-2-selector
  */
 function writeEditedShape(document: Document, kept: KeptShape, isBoxTyped: boolean): void {
   const { shape } = kept;
@@ -49,7 +48,6 @@ function writeEditedShape(document: Document, kept: KeptShape, isBoxTyped: boole
  * @param document - page document
  * @param field - the value it sets and the field's id
  * @param typed - the value, relative or fixed; `undefined` when the text typed is no number
- * @see RULE-interaction-2-selector
  */
 function writeRefusedValue(
   document: Document,
@@ -76,7 +74,6 @@ function writeRefusedValue(
  * @param document - page document
  * @param kept - the shape as last drawn, and its kind
  * @param edit - the field, the value applied and the largest size (Q20)
- * @see RULE-interaction-2-selector
  */
 function writeAppliedShape(document: Document, kept: KeptShape, edit: PanelEdit): void {
   const shown = readEditedKeptShape(document, kept, edit);
@@ -99,7 +96,6 @@ function writeAppliedShape(document: Document, kept: KeptShape, edit: PanelEdit)
  * @param document - page document
  * @param field - the value it sets, `x`, `y`, `width` or `height`, and the field's id
  * @param typed - the value, relative or fixed; `undefined` when the text typed is no number
- * @see RULE-interaction-2-selector
  */
 export function applyEditedValue(
   document: Document,

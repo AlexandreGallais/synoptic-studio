@@ -310,7 +310,7 @@ fn runs_on_a_story_branch_changing_a_checks_input_only_the_tests_related_to_its_
     );
     git(&folder, &["push", "-q", "origin", "HEAD:develop"]);
     git(&folder, &["fetch", "-q", "origin"]);
-    git(&folder, &["switch", "-q", "-c", "fix/us-1-scan"]);
+    git(&folder, &["switch", "-q", "-c", "fix/us-001-scan"]);
     fs::create_dir_all(folder.join("src")).expect("folder");
     fs::write(folder.join("src/scan.ts"), "\n").expect("file");
     // oxlint's configuration changed: the lanes run, not the scoped checks (AUD-050).
@@ -382,7 +382,7 @@ fn aud050_runs_on_a_story_branch_only_the_checks_its_change_needs() {
     );
     git(&folder, &["push", "-q", "origin", "HEAD:develop"]);
     git(&folder, &["fetch", "-q", "origin"]);
-    git(&folder, &["switch", "-q", "-c", "docs/en-1-page"]);
+    git(&folder, &["switch", "-q", "-c", "docs/en-001-page"]);
     fs::create_dir_all(folder.join("docs")).expect("folder");
     fs::write(folder.join("docs/page.md"), "# Page\n").expect("page");
 
@@ -691,8 +691,7 @@ fn f29_ac2_reads_cargo_s_inputs_and_the_files_the_crates_tests_read() {
         assert!(touches_rust(&owned(&[path])), "{path}");
     }
     // Read by the crates' tests outside tools/: the scripts, the formatter's oxfmt and settings,
-    // the CI and its required checks, the lint's folders, the hooks' settings, the checklists,
-    // and the test files.
+    // the CI and its required checks, the lint's folders, the hooks' settings and the test files.
     for path in [
         "package.json",
         "package-lock.json",
@@ -701,7 +700,6 @@ fn f29_ac2_reads_cargo_s_inputs_and_the_files_the_crates_tests_read() {
         "docs/tooling/ci.md",
         "docs/conventions/files.md",
         ".claude/settings.json",
-        "playground/checklists/epic-17.ts",
         "src/math/angle/degrees.test.ts",
         "tests/declarations.test.ts",
     ] {
@@ -709,6 +707,7 @@ fn f29_ac2_reads_cargo_s_inputs_and_the_files_the_crates_tests_read() {
     }
     // A story of Markdown, of the library's code or of a script: none of them.
     assert!(!touches_rust(&owned(&[
+        "playground/checklists/epic-17.ts",
         "docs/backlog/stories/x.md",
         "docs/tooling/commands.md",
         "src/math/angle/degrees.ts",
@@ -876,7 +875,7 @@ fn f29_ac2_runs_every_lane_in_the_ci_even_with_a_base_known() {
     );
     git(&folder, &["push", "-q", "origin", "HEAD:develop"]);
     git(&folder, &["fetch", "-q", "origin"]);
-    git(&folder, &["switch", "-q", "-c", "docs/en-1-page"]);
+    git(&folder, &["switch", "-q", "-c", "docs/en-001-page"]);
     // A story of docs alone: outside the CI it skips both Rust lanes (the test above).
     fs::create_dir_all(folder.join("docs")).expect("folder");
     fs::write(folder.join("docs/page.md"), "# Page\n").expect("page");

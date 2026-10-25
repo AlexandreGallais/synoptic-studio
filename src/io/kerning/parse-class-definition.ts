@@ -37,7 +37,6 @@ type GlyphClasses = Readonly<Record<number, number>>;
  * @param values - where the array's class values start in it
  * @param index - the glyph's index in the array, from the start glyph (`indexInRange`)
  * @returns its class
- * @see REF-OT-LAYOUT-COMMON
  */
 function parseArrayClass(table: Readonly<DataView>, values: number, index: number): number {
   return table.getUint16(elementAddress(values, CLASS_SIZE, index));
@@ -52,7 +51,6 @@ function parseArrayClass(table: Readonly<DataView>, values: number, index: numbe
  * @param glyphs - the glyphs to look for
  * @returns the class of each glyph asked that the array assigns; undefined when the array passes
  * the table's end
- * @see REF-OT-LAYOUT-COMMON
  */
 function parseClassArray(
   table: Readonly<DataView>,
@@ -85,7 +83,6 @@ function parseClassArray(
  * @param glyphs - the glyphs to look for
  * @returns the class of each glyph asked that a range assigns; undefined when the ranges pass
  * the table's end
- * @see REF-OT-LAYOUT-COMMON
  */
 function parseClassRanges(
   table: Readonly<DataView>,
@@ -119,7 +116,6 @@ function parseClassRanges(
  * @param glyphs - the glyphs to look for
  * @returns the class of each glyph asked that it assigns, by glyph; undefined when it passes the
  * table's end or has another format
- * @see REF-OT-LAYOUT-COMMON
  */
 export function parseClassDefinition(
   table: Readonly<DataView>,

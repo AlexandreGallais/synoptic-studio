@@ -16,7 +16,6 @@ import type { Point } from "../../src";
  * @kind procedure
  * @param document - page document
  * @param point - the point clicked, in the coordinates of the SVG
- * @see RULE-interaction-1-tools
  */
 export function writePlacedText(document: Document, point: Point): void {
   writeNewTextFields(document);

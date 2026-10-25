@@ -154,7 +154,7 @@ function readOverlayPath(name: string): string | undefined {
   return document.querySelector(`#overlay svg path.${name}`)?.getAttribute("d") ?? undefined;
 }
 
-describe("a drag moves the shapes selected (US-072)", () => {
+describe("a drag moves the shapes selected", () => {
   beforeEach(() => {
     openServedPage("?guide=epic");
     setElementBox("#canvas", { height: 600, left: 100, top: 50, width: 800 });
@@ -396,7 +396,7 @@ describe("a drag moves the shapes selected (US-072)", () => {
   });
 });
 
-describe("a press inside the dashed box of several (US-072)", () => {
+describe("a press inside the dashed box of several", () => {
   beforeEach(() => {
     openServedPage("?guide=epic");
     setElementBox("#canvas", { height: 600, left: 100, top: 50, width: 800 });

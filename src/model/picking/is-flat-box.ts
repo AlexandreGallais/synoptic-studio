@@ -1,8 +1,7 @@
 import type { TurnedBox } from "../placement";
 
 /**
- * Whether a box has a width or a height of 0, so that the shape filling it paints nothing (Q15,
- * EN-143).
+ * Whether a box has a width or a height of 0, so that the shape filling it paints nothing (Q15).
  *
  * @kind domain
  * @param box - its width and its height

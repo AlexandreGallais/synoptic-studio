@@ -191,8 +191,6 @@ pub struct CallContext {
     pub snapshot: Value,
     /// When the call started, from its running file; 0 when unknown.
     pub started_at: f64,
-    /// What the agent says it is doing (`.git/metrics/step`).
-    pub step: String,
     /// When the hook runs, epoch milliseconds.
     pub time: i64,
 }
@@ -262,7 +260,7 @@ pub fn tool_call_record(input: &Value, context: &CallContext) -> String {
         || tool_input.get("run_in_background") == &Value::Bool(true);
 
     format!(
-        "{{{},\"agent\":{},\"agentId\":{},\"branch\":{},\"description\":{},{duration}\"error\":{},\"inputChars\":{},\"isBackground\":{is_background},\"isOk\":{},\"outputChars\":{},\"permissionMode\":{},\"session\":{},\"startedAt\":{},\"step\":{},\"summary\":{},\"time\":\"{}\",\"tool\":{},\"toolUseId\":{}}}",
+        "{{{},\"agent\":{},\"agentId\":{},\"branch\":{},\"description\":{},{duration}\"error\":{},\"inputChars\":{},\"isBackground\":{is_background},\"isOk\":{},\"outputChars\":{},\"permissionMode\":{},\"session\":{},\"startedAt\":{},\"summary\":{},\"time\":\"{}\",\"tool\":{},\"toolUseId\":{}}}",
         session_moment(&context.snapshot, context.time),
         quote(text_or(input, "agent_type", "main")),
         quote(input.get("agent_id").text()),
@@ -275,7 +273,6 @@ pub fn tool_call_record(input: &Value, context: &CallContext) -> String {
         quote(input.get("permission_mode").text()),
         quote(input.get("session_id").text()),
         number_text(context.started_at),
-        quote(&context.step),
         quote(&tool_summary(tool, tool_input, input.get("cwd").text())),
         calendar::temporal_instant_ms(context.time),
         quote(tool),

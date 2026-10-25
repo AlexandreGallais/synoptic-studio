@@ -31,7 +31,6 @@ const BURST_PAUSE = 500;
  * @kind procedure
  * @param document - page document
  * @param step - asks the step of the history
- * @see RULE-interaction-7-navigation-and-history
  */
 function stopArrowBurst(document: Document, step: () => void): void {
   const burst = ARROW_BURSTS.get(document);
@@ -51,7 +50,6 @@ function stopArrowBurst(document: Document, step: () => void): void {
  * @kind procedure
  * @param event - a key pressed in the panel
  * @returns the field; undefined outside such a field
- * @see RULE-interaction-7-navigation-and-history
  */
 function readSteppedField(event: KeyboardEvent): Element | undefined {
   return readKeyField(event)?.closest(BURST_FIELDS) ?? undefined;
@@ -65,7 +63,6 @@ function readSteppedField(event: KeyboardEvent): Element | undefined {
  * @kind procedure
  * @param event - a key pressed in the panel
  * @returns the field; undefined for another key, or outside such a field
- * @see RULE-interaction-7-navigation-and-history
  */
 function readArrowField(event: KeyboardEvent): Element | undefined {
   const isStep = fieldArrowStep(event.key, false) !== undefined && !isBrowserKey(event);
@@ -82,7 +79,6 @@ function readArrowField(event: KeyboardEvent): Element | undefined {
  * @param document - page document
  * @param event - a key pressed in the panel, no arrow that steps
  * @param step - asks the step of the history
- * @see RULE-interaction-7-navigation-and-history
  */
 function stopTypedBurst(document: Document, event: KeyboardEvent, step: () => void): void {
   const isTyped = ![
@@ -104,7 +100,6 @@ function stopTypedBurst(document: Document, event: KeyboardEvent, step: () => vo
  * @param document - page document
  * @param field - the field the arrow is pressed in
  * @param step - asks the step of the history
- * @see RULE-interaction-7-navigation-and-history
  */
 function stopOtherBurst(document: Document, field: Element, step: () => void): void {
   const burst = ARROW_BURSTS.get(document);
@@ -126,7 +121,6 @@ function stopOtherBurst(document: Document, field: Element, step: () => void): v
  * @param document - page document
  * @param event - a key pressed in the panel
  * @param step - asks the step of the history
- * @see RULE-interaction-7-navigation-and-history
  */
 function startArrowBurst(document: Document, event: KeyboardEvent, step: () => void): void {
   const field = readArrowField(event);
@@ -149,7 +143,6 @@ function startArrowBurst(document: Document, event: KeyboardEvent, step: () => v
  * @param document - page document
  * @param event - a key released
  * @param step - asks the step of the history
- * @see RULE-interaction-7-navigation-and-history
  */
 function startBurstPause(document: Document, event: KeyboardEvent, step: () => void): void {
   const burst = ARROW_BURSTS.get(document);
@@ -178,7 +171,6 @@ function startBurstPause(document: Document, event: KeyboardEvent, step: () => v
  * @param document - page document
  * @param event - the key pressed, or the pointer pressed
  * @param step - asks the step of the history
- * @see RULE-interaction-7-navigation-and-history
  */
 function closeBurstAtCommand(
   document: Document,
@@ -202,7 +194,6 @@ function closeBurstAtCommand(
  * @kind procedure
  * @param document - page document
  * @param step - asks the step of the history (`schedulePanelStep`)
- * @see RULE-interaction-7-navigation-and-history
  */
 export function listenToArrowBursts(document: Document, step: () => void): void {
   clearTimeout(ARROW_BURSTS.get(document)?.pause);

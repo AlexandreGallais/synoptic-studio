@@ -13,7 +13,6 @@ import type { BoundingBox } from "../../src";
  * @param box - the box, in user units
  * @param inset - how far each side moves inward, in user units, at least 0
  * @returns the closed sub-path
- * @see RULE-interaction-2-selector
  */
 export function readInsetBoxPathData(box: BoundingBox, inset: number): string {
   const size = boxSize(box);

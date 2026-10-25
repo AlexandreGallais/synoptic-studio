@@ -56,7 +56,7 @@ function readRectangleFrames(angle: string): readonly (readonly (string | null)[
   return [readFrames("turned-box"), readFrames("straight-box")];
 }
 
-describe("A turned text's frames drawn as a turned shape's (US-050)", () => {
+describe("A turned text's frames drawn as a turned shape's", () => {
   beforeEach(() => {
     openServedPage("");
   });
@@ -64,7 +64,7 @@ describe("A turned text's frames drawn as a turned shape's (US-050)", () => {
   it("[F17.AC7] draws a box 60 × 40 turned by 30 with the blue turned box and the dashed straight box of a rectangle", () => {
     const [, rectangleStraight] = readRectangleFrames("30");
 
-    // A page opened again: the text drawn alone, not placed from the rectangle (EN-142).
+    // A page opened again: the text drawn alone, not placed from the rectangle.
     openServedPage("");
     typeTextBox({ angle: "30", height: "40", width: "60" });
 

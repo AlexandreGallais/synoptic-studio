@@ -23,7 +23,6 @@ const ZOOM_ITEMS: ReadonlyMap<string, ZoomName> = new Map([
  *
  * @kind procedure
  * @param document - page document
- * @see RULE-interaction-7-navigation-and-history
  */
 function applyTypedZoom(document: Document): void {
   const typed = readNumber(document, "zoom-field");
@@ -48,7 +47,6 @@ function applyTypedZoom(document: Document): void {
  * @kind procedure
  * @param document - page document
  * @param update - redraws the page
- * @see RULE-interaction-7-navigation-and-history
  */
 export function listenToZoomMenu(document: Document, update: () => void): void {
   for (const [id, name] of ZOOM_ITEMS) {

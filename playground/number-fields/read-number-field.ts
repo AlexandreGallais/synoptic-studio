@@ -7,7 +7,6 @@ import { NUMBER_FIELDS } from "./number-fields";
  * @kind procedure
  * @param target - the target of an event of the panel
  * @returns the field; undefined for any other element
- * @see RULE-interaction-2-selector
  */
 export function readNumberField(target: EventTarget | null): HTMLInputElement | undefined {
   return target instanceof HTMLInputElement && target.matches(NUMBER_FIELDS) ? target : undefined;

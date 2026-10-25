@@ -341,6 +341,35 @@ fn rev009_commits_a_path_whose_deletion_is_staged() {
     );
 }
 
+#[cfg(unix)]
+#[test]
+fn commits_a_path_given_through_a_symbolic_link_to_a_folder() {
+    // `.claude/skills` links to `../.agents/skills`: Git refused `.claude/skills/run/x.md` as
+    // beyond a symbolic link (incident of 2026-10-25); the tool commits it by its target.
+    let repos = repos();
+    let message = "chore(tooling): change a skill\n\nRefs: EN-100.T1\n";
+
+    write(&repos.work, ".agents/skills/run/x.md", "x\n");
+    fs::create_dir_all(repos.work.join(".claude")).expect("folder");
+    std::os::unix::fs::symlink("../.agents/skills", repos.work.join(".claude/skills"))
+        .expect("link");
+    git(&repos.work, &["add", ".claude/skills"]);
+    git(&repos.work, &["commit", "--quiet", "-m", "link"]);
+    write(&repos.work, ".agents/skills/run/x.md", "changed\n");
+
+    let output = tool(
+        &repos.work,
+        &["commit", "-F", "-", ".claude/skills/run/x.md"],
+        message,
+    );
+
+    assert!(output.status.success(), "{}", stderr(&output));
+    assert_eq!(
+        git(&repos.work, &["show", "--name-only", "--format=", "HEAD"]),
+        ".agents/skills/run/x.md"
+    );
+}
+
 #[test]
 fn commits_the_named_files_with_a_message_of_several_lines_from_stdin() {
     let repos = repos();
@@ -444,12 +473,12 @@ fn runs_the_hooks_and_stops_on_their_failure() {
 fn f33_ac2_prints_what_the_hooks_write_when_the_commit_succeeds() {
     let repos = repos();
 
-    // `commit-msg` runs `move-rows --notes`, whose notes go to standard error and pass (EN-140):
-    // they reach the agent, though the commit succeeds (AUD-035, F3).
+    // A `commit-msg` hook's notes go to standard error and pass: they reach the agent, though the
+    // commit succeeds (AUD-035, F3).
     write(
         &repos.work,
         ".git/hooks/commit-msg",
-        "#!/bin/sh\necho \"move-rows: 1 note left in the story file\" >&2\nexit 0\n",
+        "#!/bin/sh\necho \"hook: 1 note\" >&2\nexit 0\n",
     );
     let chmod = clean("chmod", &repos.work)
         .args(["+x", ".git/hooks/commit-msg"])
@@ -461,10 +490,7 @@ fn f33_ac2_prints_what_the_hooks_write_when_the_commit_succeeds() {
     let output = tool(&repos.work, &["commit", "-F", "-", "a.md"], "chore: x\n");
 
     assert!(output.status.success(), "{}", stderr(&output));
-    assert_eq!(
-        stderr(&output),
-        "move-rows: 1 note left in the story file\n"
-    );
+    assert_eq!(stderr(&output), "hook: 1 note\n");
     assert!(stdout(&output).contains("chore: x on chore/en-100"));
 
     // A commit whose hooks write nothing prints nothing on standard error.

@@ -16,7 +16,6 @@ import { writeShapeSelection } from "./write-shape-selection";
  *
  * @kind procedure
  * @param document - page document
- * @see RULE-interaction-2-selector
  */
 export function removeSelectedShapes(document: Document): void {
   const selected = readSelectedShapes(document);

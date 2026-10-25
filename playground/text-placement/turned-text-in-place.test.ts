@@ -30,13 +30,13 @@ const TEST_SANS: TestFace = { family: "Test Sans", fsType: 0, isItalic: false, w
 // (47 + 43.9765625, 61 + 9.6796875) = (90.9765625, 70.6796875), and its turned top-left corner
 // P = middle − R(43.9765625, 9.6796875) = (90.97656 − 36.69848, 70.67969 − 26.09321)
 // = (54.27808, 44.58648). Its straight box starts at the corner's y, the corner being its highest
-// point, and h sin 23° to the left of it, X and Y showing it (AUD-040):
+// point, and h sin 23° to the left of it, X and Y showing it:
 // (54.27808 − 19.359375 · 0.39073113, 44.58648) = (54.27808 − 7.56432, 44.58648) = (46.71377, 44.58648).
 
 /** Precision of the corner kept: within 1e-9. */
 const DIGITS = 9;
 
-/** X and Y once turned by 23: the top-left of its straight box, at 5 decimals (AUD-040). */
+/** X and Y once turned by 23: the top-left of its straight box, at 5 decimals. */
 const START_SHOWN = ["46.71377", "44.58648"];
 
 /**
@@ -135,7 +135,7 @@ function readTransforms(): readonly (string | null | undefined)[] {
   ];
 }
 
-describe("Text tool: a turned text grows in place (US-038)", () => {
+describe("Text tool: a turned text grows in place", () => {
   beforeEach(() => {
     openServedPage("");
     chooseShapeKind("text");
@@ -210,7 +210,7 @@ describe("Text tool: a turned text grows in place (US-038)", () => {
   it("[F05.AC5] keeps the corner when the text goes into a box, then nothing moves on a spacing", () => {
     const corner = readCorner();
 
-    // The box takes the block rounded up, 88 × 20 (US-055), then 120 × 40.
+    // The box takes the block rounded up, 88 × 20, then 120 × 40.
     chooseOption("text-fit", "box");
     expectCorner(corner);
     typeAndEnter("text-box-width", "120");
@@ -250,7 +250,7 @@ describe("Text tool: a turned text grows in place (US-038)", () => {
     typeAndEnter("text-letter-spacing", "10");
 
     // (43.42272 + 88.97656, 78.58290 + 9.67969) = (132.39928, 88.26259); the position, behind
-    // the straight box X and Y show (AUD-040).
+    // the straight box X and Y show.
     expect(readTransforms()).toEqual([
       "rotate(23 132.39928 88.26259)",
       "rotate(23 132.39928 88.26259)",
@@ -277,7 +277,7 @@ describe("Text tool: a turned text grows in place (US-038)", () => {
   it("[F05.AC5] rounds a fraction typed in X, 47.5 giving 48: a position typed is an integer (ADR-0057)", () => {
     typeAndEnter("shape-x", "47.5");
 
-    // Rounded once, a tie up (AUD-046): the straight box starts at 48.
+    // Rounded once, a tie up: the straight box starts at 48.
     expect(readFields()[0]).toBe("48");
     expect(readText("#status")).toBe("");
   });
@@ -323,7 +323,7 @@ describe("Text tool: a turned text grows in place (US-038)", () => {
     // (43.42272 + 88.97656, 78.58290 + 9.67969) = (132.39928, 88.26259);
     // R(−k) = (−68.16000 + 6.22198, −57.19303 − 7.41507) = (−61.93802, −64.60810): the corner
     // (70.46126, 23.65449), the straight box's top; its left half of w cos 40° + h sin 40° =
-    // (136.32000 + 12.44397) / 2 = 74.38198 from the middle's x 132.39928: 58.01730 (AUD-040).
+    // (136.32000 + 12.44397) / 2 = 74.38198 from the middle's x 132.39928: 58.01730.
     expect(readFields()).toEqual(["58.0173", "23.65449"]);
     expect(readDrawn().x).toBe(x);
   });
@@ -337,7 +337,7 @@ describe("Text tool: a turned text grows in place (US-038)", () => {
 
     // Middle (47 + 88.97656, 61 + 9.67969) = (135.97656, 70.67969), R(−k) as at 40 above:
     // the corner (74.03854, 6.07158), X and Y showing (74.03854 − 12.44397, 6.07158) =
-    // (61.59457, 6.07158) (AUD-040).
+    // (61.59457, 6.07158).
     expect(readFields()).toEqual(["61.59458", "6.07158"]);
     expect(readDrawn().x).toBe(47);
   });

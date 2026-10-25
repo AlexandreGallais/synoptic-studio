@@ -10,7 +10,6 @@ import { DEGREES_PER_TURN, nearestInteger, nonNegativeRemainder } from "../../ma
  * @kind format
  * @param hue - the hue, in degrees, from 0 to 360
  * @returns the hue shown, an integer from 0 to 359
- * @see DERIV-color-spaces
  */
 export function toShownHue(hue: number): number {
   return nonNegativeRemainder(nearestInteger(hue), DEGREES_PER_TURN);

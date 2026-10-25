@@ -10,7 +10,6 @@ import type { KeptShape } from "../kept-shapes";
  * @kind procedure
  * @param event - a click inside the list
  * @returns the state; undefined for a click outside a step's button
- * @see RULE-interaction-7-navigation-and-history
  */
 export function readStepState(event: Event): HistoryState<KeptShape> | undefined {
   if (!(event.target instanceof Element)) {

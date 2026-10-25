@@ -7,4 +7,7 @@ mod mutations;
 mod runner;
 
 pub use mutations::{Kind, Language, Mutation, code_mask, mutations, selected};
-pub use runner::{Outcome, Request, VITEST_RELATED, Verdict, run, summary, test_file};
+pub use runner::{
+    Outcome, Request, VITEST_RELATED, Verdict, is_build_failure, left_copy_pid, run, summary,
+    test_file,
+};

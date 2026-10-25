@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 
 import { offsetOnLargerAxis } from "./offset-on-larger-axis";
 
-describe("offsetOnLargerAxis (US-072)", () => {
+describe("offsetOnLargerAxis", () => {
   it("[F39.AC2] keeps (30.6, 19.4) across, the larger, so that A lands at (41, 20)", () => {
     expect(offsetOnLargerAxis({ x: 30.6, y: 19.4 })).toEqual({ x: 30.6, y: 0 });
   });

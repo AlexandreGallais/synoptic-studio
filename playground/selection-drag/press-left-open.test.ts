@@ -105,7 +105,7 @@ function dragOnEmptyDrawing(): string | undefined {
 /** The rectangle from (300, 300) to (400, 400), its line 1 pixel wide half a pixel inward. */
 const RECTANGLE = "M300.5 300.5H399.5V399.5H300.5Z";
 
-describe("a press left open, then the next press on the empty drawing (US-090)", () => {
+describe("a press left open, then the next press on the empty drawing", () => {
   beforeEach(() => {
     openServedPage("?guide=epic");
     setElementBox("#canvas", { height: 600, left: 100, top: 50, width: 800 });
@@ -178,7 +178,7 @@ describe("a press left open, then the next press on the empty drawing (US-090)",
   });
 
   it("[F47.AC1] pans by a drag with Space really held, its repeats heard", () => {
-    // US-078: Space held, repeated, then the press: a pan, no rectangle drawn.
+    // Space held, repeated, then the press: a pan, no rectangle drawn.
     sendKey("keydown", " ", {});
     sendKey("keydown", " ", { repeat: true });
 

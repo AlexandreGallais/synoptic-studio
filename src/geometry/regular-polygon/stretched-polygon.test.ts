@@ -121,7 +121,7 @@ describe("stretchedPolygon (DERIV-stretched-polygon, checks)", () => {
   });
 
   it("[F06.AC2] stops equalizing the pentagon in 100 × 300 when its side corners turn 36°", () => {
-    // λ_hi = 6.74030, beyond ln λ = 1.9: the bracket [−3, 3] must hold it (review of EN-017).
+    // λ_hi = 6.74030, beyond ln λ = 1.9: the bracket [−3, 3] must hold it.
     expectPoints(
       stretchedPolygon(5, { height: 300, width: 100 }),
       [

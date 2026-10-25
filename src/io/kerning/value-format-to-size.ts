@@ -13,7 +13,6 @@ const FIELD_SIZE = 2;
  * @kind format
  * @param valueFormat - the ValueFormat flags
  * @returns the size of one ValueRecord, in bytes
- * @see REF-OT-GPOS
  */
 export function valueFormatToSize(valueFormat: number): number {
   return FIELD_SIZE * populationCount(modulo(valueFormat, DEFINED_FLAGS));

@@ -24,7 +24,7 @@ A worker works one story in its own worktree, in the background, and stops befor
 
 - **Tests before or with the code**, each new one seen failing once, the story's edge cases among them; a library story breaks each new test once on purpose, a tooling story leaves the mutations to its epic's audit.
 - **One commit per task**, footer `Refs: <ID>.Tn` and the attribution lines, by `target/release/git-sequences commit -F <file or -> <paths>`; before it, `npm run fix` (lint and type errors) and the touched tests (`npx vitest run <paths>`, `cargo test -p <crate>`).
-- **The records with the code**: a rule, a source, a derivation, a decision in the same task; log rows and incidents by `knowledge add <kind> -`. No Markdown doc is written.
+- **The records with the code**: a rule, a source, a derivation, a decision in the same task; journal rows, incidents and improvements by `knowledge sql "INSERT INTO <table> …"`, a note or a decision by `knowledge add <kind> -`. No Markdown doc is written.
 - **A binary that runs a command given to it** (a wrapper): `guard-bash`'s reading of that command lands in a task before the binary, and the worker hands back once it is pushed, so that the main thread rebuilds `guard-bash`.
 - **Never a polling loop**: a command over a minute runs with `run_in_background`; its end arrives as a notification.
 
