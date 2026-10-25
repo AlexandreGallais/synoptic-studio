@@ -11,6 +11,9 @@ use std::os::unix::fs::PermissionsExt;
 use std::path::{Path, PathBuf};
 use std::process::{Command, Output};
 
+use knowledge::snapshot::{NOT_SET, snapshot_name};
+use knowledge::store::open_store;
+
 /// A test's folder, its stubs and its Git configuration.
 struct Lab {
     root: PathBuf,
@@ -56,6 +59,7 @@ impl Lab {
             .env("GIT_CONFIG_GLOBAL", self.root.join("gitconfig"))
             .env("GIT_CONFIG_NOSYSTEM", "1")
             .env_remove("AGENT_RECORDS_ROOT")
+            .env_remove("AGENT_KNOWLEDGE_SNAPSHOT")
             .env_remove("AGENT_LIBRARY_FILE");
         command
     }
@@ -331,7 +335,7 @@ fn en114_records_save_copies_into_the_projects_folder_of_the_chosen_root() {
     assert_eq!(
         text(&saved),
         format!(
-            "missing metrics/tool-calls.jsonl\nsaved metrics/turns.jsonl\nsaved transcripts\nsaved library/library.sqlite\nSaved in {}.\n",
+            "missing metrics/tool-calls.jsonl\nsaved metrics/turns.jsonl\nsaved transcripts\nsaved library/library.sqlite\n{NOT_SET}\nSaved in {}.\n",
             folder.display()
         )
     );
@@ -361,6 +365,50 @@ fn en114_records_save_copies_into_the_projects_folder_of_the_chosen_root() {
 
     assert_eq!(unset.status.code(), Some(1));
     assert!(String::from_utf8_lossy(&unset.stderr).contains("AGENT_RECORDS_ROOT is not set"));
+}
+
+#[test]
+fn f48_ac3_records_save_takes_the_snapshot_too() {
+    let lab = Lab::new("records-snapshot", &[]);
+    let repo = lab.root.join("repo");
+    let root = lab.root.join("records");
+    let synced = lab.root.join("synced");
+
+    fs::create_dir_all(&synced).expect("synced");
+    lab.git(&lab.root, &["init", "-q", "repo"]);
+    lab.git(
+        &repo,
+        &[
+            "remote",
+            "add",
+            "origin",
+            "https://example.com/owner/studio.git",
+        ],
+    );
+    open_store(&root.join("studio/records.sqlite")).expect("records");
+
+    let saved = lab
+        .command(env!("CARGO_BIN_EXE_records-save"), &repo)
+        .env("AGENT_RECORDS_ROOT", &root)
+        .env("AGENT_KNOWLEDGE_SNAPSHOT", &synced)
+        .output()
+        .expect("records-save");
+    let day = snapshot_name(&calendar::today());
+    let copied = synced.join(&day).is_file();
+
+    assert!(
+        saved.status.success(),
+        "{}",
+        String::from_utf8_lossy(&saved.stderr)
+    );
+    assert_eq!(
+        text(&saved),
+        format!(
+            "missing metrics/tool-calls.jsonl\nmissing metrics/turns.jsonl\nmissing transcripts\nmissing library/library.sqlite\n{day} written into the folder AGENT_KNOWLEDGE_SNAPSHOT names: 1 kept, 0 removed\nSaved in {}.\n",
+            root.join("studio").display()
+        )
+    );
+    assert!(copied);
 }
 
 #[test]

@@ -1,5 +1,6 @@
 //! Tests of `.claude/settings.json` (EN-104, ADR-0078): every hook and the status line call a
-//! binary of `tools/hooks` by its path in `target/release`, never through `cargo run` nor Node.js.
+//! binary of `tools/hooks` by its path in `target/release`, never through `cargo run` nor Node.js;
+//! the session's end alone calls `knowledge snapshot` (EN-153).
 
 use std::fs;
 use std::path::Path;
@@ -44,9 +45,17 @@ fn f21_ac1_every_hook_and_the_status_line_call_a_hooks_binary_by_its_path() {
                 .unwrap_or_default()
                 .to_owned();
 
-            // Exec form, its arguments none: the path is one word, spaces and all (`REF-CC-HOOKS`).
-            assert_eq!(handler.get("args"), &Value::Array(Vec::new()), "{name}");
-            assert!(known.contains(&name), "{}", handler.get("command").text());
+            // Exec form, its arguments none but the snapshot's command: the path is one word,
+            // spaces and all (`REF-CC-HOOKS`).
+            if name == "knowledge" {
+                assert_eq!(
+                    handler.get("args"),
+                    &Value::Array(vec![Value::String("snapshot".to_owned())])
+                );
+            } else {
+                assert_eq!(handler.get("args"), &Value::Array(Vec::new()), "{name}");
+                assert!(known.contains(&name), "{}", handler.get("command").text());
+            }
             called.push(name);
         }
     }
@@ -57,6 +66,7 @@ fn f21_ac1_every_hook_and_the_status_line_call_a_hooks_binary_by_its_path() {
         [
             "check-handback",
             "guard-bash",
+            "knowledge",
             "library-pages",
             "limit-agents",
             "log-tool-call",
@@ -87,6 +97,38 @@ fn f32_ac1_runs_log_tool_call_when_any_subagent_stops() {
         handler.get("command").text() == "${CLAUDE_PROJECT_DIR}/target/release/log-tool-call"
             && handler.get("async") == &Value::Bool(true)
     }));
+}
+
+/// The snapshot's budget at a session's end, in seconds: `SessionEnd` gives its hooks 1.5 by
+/// default, a hook's own `timeout` raising it up to 60 (`REF-CC-HOOKS`).
+const SNAPSHOT_TIMEOUT: f64 = 30.0;
+
+#[test]
+fn f48_ac3_takes_the_snapshot_when_a_session_ends_within_its_timeout() {
+    let settings =
+        parse(&fs::read_to_string(root().join(".claude/settings.json")).expect("settings"))
+            .expect("JSON");
+    let handlers: Vec<&Value> = settings
+        .get("hooks")
+        .get("SessionEnd")
+        .items()
+        .iter()
+        .filter(|entry| matches!(entry.get("matcher").text(), "" | "*"))
+        .flat_map(|entry| entry.get("hooks").items())
+        .collect();
+
+    // Every reason a session ends; in the foreground, so that the copy ends before Claude Code.
+    assert_eq!(handlers.len(), 1);
+    assert_eq!(
+        handlers[0].get("command").text(),
+        "${CLAUDE_PROJECT_DIR}/target/release/knowledge"
+    );
+    assert_eq!(
+        handlers[0].get("args"),
+        &Value::Array(vec![Value::String("snapshot".to_owned())])
+    );
+    assert_eq!(handlers[0].get("async"), &Value::Null);
+    assert_eq!(handlers[0].get("timeout"), &Value::Number(SNAPSHOT_TIMEOUT));
 }
 
 /// The release binaries allowed without a prompt, each by name and, for a binary that also
