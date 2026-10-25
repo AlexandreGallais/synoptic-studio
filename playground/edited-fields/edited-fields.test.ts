@@ -9,8 +9,8 @@ import {
   clickAt,
   clickElement,
   commitField,
-  openOnStep,
-  openServedPage,
+  openOnHexagon,
+  openPage,
   readDisplay,
   readModel,
   readShapeModel,
@@ -63,7 +63,7 @@ function readTextModel(): Text {
 describe("one shape's Width and Height, Up and Down", () => {
   beforeEach(() => {
     // The page as it opens: the rectangle 120 × 80 at (0, 0), selected alone.
-    openServedPage("");
+    openPage("");
   });
 
   it.each([
@@ -107,7 +107,7 @@ describe("one shape's Width and Height, Up and Down", () => {
 
 describe("one shape's X and Y, Up and Down", () => {
   beforeEach(() => {
-    openServedPage("");
+    openPage("");
   });
 
   it("[F44.AC2] moves the rectangle 10 to the right for Shift + Up in X, X showing 10", () => {
@@ -160,7 +160,7 @@ describe("one shape's X and Y, Up and Down", () => {
 
 describe("an arrow in a turned shape's X or Y, landed on integers", () => {
   beforeEach(() => {
-    openServedPage("");
+    openPage("");
     // A sharp 100 × 50 at (10, 20) turned by 30° about its middle (60, 45): its straight box
     // starts at (60 − 55.80127, 45 − 46.65064) = (4.19873, −1.65064).
     typeAndEnter("radius", "0");
@@ -212,7 +212,7 @@ describe("an arrow in a turned shape's X or Y, landed on integers", () => {
 
 describe("a value typed in one shape's fields, relative or fixed", () => {
   beforeEach(() => {
-    openServedPage("");
+    openPage("");
   });
 
   it("[F44.AC2] makes the rectangle 130 wide for +10 in Width and Enter, the field showing 130", () => {
@@ -308,9 +308,9 @@ describe("a value typed in one shape's fields, relative or fixed", () => {
   });
 
   it("[F44.AC2] adds 10 to a converted triangle's height of 50√3, kept exact", () => {
-    // Step 10, a triangle 100 wide converted to a free shape: 50√3 = 86.60254 high (Q27);
+    // The hexagon 100 wide, converted to a free shape: 50√3 = 86.60254 high (Q27);
     // +10 makes it 50√3 + 10 = 96.60254 high, exact behind the 5 decimals shown.
-    openOnStep(10);
+    openOnHexagon();
     clickElement("mode-points");
     clickElement("convert");
     typeAndEnter("height", "+10");
@@ -365,7 +365,7 @@ describe("a value typed in one shape's fields, relative or fixed", () => {
 
 describe("a text's X, Y and box, alone", () => {
   beforeEach(() => {
-    openServedPage("");
+    openPage("");
     setElementBox("#canvas", { height: 600, left: 100, top: 50, width: 800 });
     // A text placed by a click, typed, then put in a box 200 × 100 at (40, 40).
     clickElement("tool-text");
@@ -433,7 +433,7 @@ describe("a text's X, Y and box, alone", () => {
 
 describe("several shapes' fields, the same rule", () => {
   beforeEach(() => {
-    openServedPage("");
+    openPage("");
     setElementBox("#canvas", { height: 600, left: 100, top: 50, width: 800 });
   });
 

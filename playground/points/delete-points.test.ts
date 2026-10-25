@@ -4,7 +4,8 @@ import { describe, expect, it } from "vitest";
 import {
   clickElement,
   clickPoint,
-  openOnStep,
+  openOnHexagon,
+  openPage,
   pressKey,
   readPointRows,
   readValue,
@@ -26,8 +27,8 @@ function deleteState(): { readonly isGreyed: boolean; readonly line: string } {
 
 describe("deleting points", () => {
   it("[F08.AC4] deletes the point selected: its neighbours joined, the selection cleared", () => {
-    // Step 1: a 120 × 80 rectangle, radius 10; point 2 (120, 0) deleted.
-    openOnStep(1);
+    // The page as it opens: a 120 × 80 rectangle, radius 10; point 2 (120, 0) deleted.
+    openPage("");
     clickElement("mode-points");
     clickPoint(2, false);
     clickElement("delete-points");
@@ -43,7 +44,7 @@ describe("deleting points", () => {
   });
 
   it("[F08.AC4] deletes with the Delete key, but not while a field is typed in", () => {
-    openOnStep(1);
+    openPage("");
     clickElement("mode-points");
     clickPoint(2, false);
     pressKey("#point-x", "Delete");
@@ -56,14 +57,14 @@ describe("deleting points", () => {
   });
 
   it("[F08.AC4] greys Delete when no point is selected", () => {
-    openOnStep(1);
+    openPage("");
     clickElement("mode-points");
 
     expect(deleteState()).toEqual({ isGreyed: true, line: "" });
   });
 
   it("[F08.AC4] refuses to leave fewer than 3 points, with a line saying why", () => {
-    openOnStep(1);
+    openPage("");
     clickElement("mode-points");
     clickPoint(1, false);
     clickPoint(2, true);
@@ -77,7 +78,7 @@ describe("deleting points", () => {
   it("[F08.AC4] refuses to leave points with no height, with a line saying why", () => {
     // A point added in the middle of the top edge: (0, 0), (60, 0), (120, 0), (120, 80), (0, 80);
     // without points 4 and 5, the three left lie at y 0.
-    openOnStep(1);
+    openPage("");
     clickElement("mode-points");
     clickPoint(1, false);
     clickPoint(2, true);
@@ -92,7 +93,7 @@ describe("deleting points", () => {
   });
 
   it("[F08.AC4] deletes the first and the last points: their neighbours wrap round", () => {
-    openOnStep(1);
+    openPage("");
     clickElement("mode-points");
     clickPoint(1, false);
     clickPoint(2, true);
@@ -109,8 +110,8 @@ describe("deleting points", () => {
   });
 
   it("[F08.AC4] greys Delete on a polygon and says to convert it first", () => {
-    // Step 10: a hexagon.
-    openOnStep(10);
+    // The hexagon: a hexagon.
+    openOnHexagon();
     clickElement("mode-points");
     clickPoint(1, false);
     pressKey("body", "Delete");
@@ -121,7 +122,7 @@ describe("deleting points", () => {
   });
 
   it("[F08.AC4] deletes nothing while the shape is refused", () => {
-    openOnStep(1);
+    openPage("");
     clickElement("mode-points");
     clickPoint(2, false);
 
@@ -133,7 +134,7 @@ describe("deleting points", () => {
   });
 
   it("[F08.AC4] leaves the rectangle as it is when Delete is pressed with no point selected", () => {
-    openOnStep(1);
+    openPage("");
     clickElement("mode-points");
     pressKey("body", "Delete");
 
@@ -141,7 +142,7 @@ describe("deleting points", () => {
   });
 
   it("[F08.AC4] deletes with Backspace too, the delete key of a Mac", () => {
-    openOnStep(1);
+    openPage("");
     clickElement("mode-points");
     clickPoint(2, false);
     pressKey("body", "Backspace");

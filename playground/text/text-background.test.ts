@@ -6,7 +6,7 @@ import {
   chooseOption,
   chooseShapeKind,
   clickElement,
-  openServedPage,
+  openPage,
   readText,
   readValue,
   selectPageElement,
@@ -54,7 +54,7 @@ function readBackground(): readonly (string | null | undefined)[] {
 
 describe("Text tool: a background behind the text", () => {
   beforeEach(() => {
-    openServedPage("");
+    openPage("");
     chooseShapeKind("text");
     typeAndEnter("text-size", "16");
     // happy-dom loses the option marked `selected` once the page is moved into its document: the

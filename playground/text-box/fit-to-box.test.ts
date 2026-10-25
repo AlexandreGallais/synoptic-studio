@@ -6,7 +6,7 @@ import {
   chooseOption,
   chooseShapeKind,
   clickElement,
-  openServedPage,
+  openPage,
   readModel,
   readValue,
   selectPageElement,
@@ -73,7 +73,7 @@ function chooseKind(kind: string): void {
 
 describe("Text tool: a text put in a box keeps its fitted size", () => {
   beforeEach(() => {
-    openServedPage("");
+    openPage("");
     chooseShapeKind("text");
     typeAndEnter("text-size", "16");
     chooseOption("text-weight", "400");
@@ -161,7 +161,7 @@ describe("Text tool: a text put in a box keeps its fitted size", () => {
 
 describe("Text tool: the box typed is kept when the text comes back to Box", () => {
   beforeEach(() => {
-    openServedPage("");
+    openPage("");
     chooseShapeKind("text");
     typeAndEnter("text-size", "16");
     chooseOption("text-weight", "400");

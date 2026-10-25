@@ -18,7 +18,7 @@ import {
   clickAt,
   clickElement,
   commitField,
-  openServedPage,
+  openPage,
   pressAndClick,
   pressKey,
   pressPointer,
@@ -169,8 +169,8 @@ function selectAll(): void {
 
 describe("the panel shows several shapes' position and size", () => {
   beforeEach(() => {
-    // The epic's step 1, a rectangle 120 × 80 at (0, 0), radius 10, whatever feature is validated.
-    openServedPage("?guide=epic");
+    // The page as it opens, a rectangle 120 × 80 at (0, 0), radius 10.
+    openPage("");
     setElementBox("#canvas", { height: 600, left: 100, top: 50, width: 800 });
   });
 
@@ -353,7 +353,7 @@ function selectAAndB(): void {
 
 describe("a value typed for several shapes, relative or fixed", () => {
   beforeEach(() => {
-    openServedPage("?guide=epic");
+    openPage("");
     setElementBox("#canvas", { height: 600, left: 100, top: 50, width: 800 });
   });
 
@@ -578,7 +578,7 @@ function readPresent(): readonly KeptShape[] {
 
 describe("the arrows in a field of several shapes", () => {
   beforeEach(() => {
-    openServedPage("?guide=epic");
+    openPage("");
     setElementBox("#canvas", { height: 600, left: 100, top: 50, width: 800 });
     selectAAndB();
   });
@@ -747,7 +747,7 @@ function applyWidthByClick(point: Point): void {
 
 describe("several shapes' width and height, the cases tried", () => {
   beforeEach(() => {
-    openServedPage("?guide=epic");
+    openPage("");
     setElementBox("#canvas", { height: 600, left: 100, top: 50, width: 800 });
   });
 

@@ -5,7 +5,7 @@ import {
   chooseShapeKind,
   clickElement,
   clickPoint,
-  openOnStep,
+  openPage,
   readDisabledState,
   readPointRows,
   readPressedState,
@@ -22,7 +22,7 @@ import { writeConvertedShape } from "./write-converted-shape";
  * @param width - width of its box
  */
 function openRoundShape(width: string): void {
-  openOnStep(1);
+  openPage("");
   chooseShapeKind("round");
   typeAndEnter("width", width);
   typeAndEnter("height", "80");
@@ -117,7 +117,7 @@ describe("converting a round shape", () => {
   });
 
   it("shows the conversion for a polygon too", () => {
-    openOnStep(1);
+    openPage("");
     chooseShapeKind("polygon");
     clickElement("mode-points");
 

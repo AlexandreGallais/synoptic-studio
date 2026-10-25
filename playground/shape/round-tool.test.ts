@@ -5,7 +5,7 @@ import {
   chooseShapeKind,
   clickElement,
   clickPoint,
-  openOnStep,
+  openPage,
   pressKey,
   readDisabledState,
   readPointRows,
@@ -28,7 +28,7 @@ function isHidden(id: string): boolean {
 describe("the Round tool", () => {
   it("[F10.AC1] draws a circle in a box 100 × 100: four cubic sides from its top", () => {
     // DERIV-round-shape-curve: handles 50κ = 27.61424, so 50 + 27.61424 = 77.61424.
-    openOnStep(1);
+    openPage("");
     typeAndEnter("width", "100");
     typeAndEnter("height", "100");
     chooseShapeKind("round");
@@ -42,7 +42,7 @@ describe("the Round tool", () => {
 
   it("[F10.AC1] draws an ellipse touching the four sides of a box 120 × 80", () => {
     // Handles 60κ = 33.13708 across, 40κ = 22.09139 down.
-    openOnStep(1);
+    openPage("");
     chooseShapeKind("round");
     typeAndEnter("width", "120");
     typeAndEnter("height", "80");
@@ -55,7 +55,7 @@ describe("the Round tool", () => {
   });
 
   it("[F10.AC2] has no radius nor anchor, and shows its 4 points without a handles switch", () => {
-    openOnStep(1);
+    openPage("");
     chooseShapeKind("round");
 
     expect([
@@ -84,7 +84,7 @@ describe("the Round tool", () => {
   });
 
   it("[F10.AC2] greys adding and deleting points, and keeps the curve; offers converting", () => {
-    openOnStep(1);
+    openPage("");
     chooseShapeKind("round");
     clickElement("mode-points");
     clickPoint(1, false);
@@ -106,8 +106,8 @@ describe("the Round tool", () => {
   });
 
   it("gives the rectangle back its radius after Round, and the polygon its own", () => {
-    // Step 1 is the rectangle 120 × 80, radius 10.
-    openOnStep(1);
+    // The page opens on the rectangle 120 × 80, radius 10.
+    openPage("");
 
     const rectangle = readText("#path-data");
 
@@ -129,7 +129,7 @@ describe("the Round tool", () => {
 
   it("turns about the centre of its box: at 30°, its top point at (80, 5.35898)", () => {
     // (60, 0) turned by 30° about (60, 40): (60 + 40 sin 30°, 40 − 40 cos 30°).
-    openOnStep(1);
+    openPage("");
     chooseShapeKind("round");
     typeAndEnter("angle", "30");
 
@@ -137,7 +137,7 @@ describe("the Round tool", () => {
   });
 
   it("[F44.AC4] takes a width below 0 at 0, the round shape 0 wide", () => {
-    openOnStep(1);
+    openPage("");
     chooseShapeKind("round");
     // -200 is relative: 120 − 200 = −80, taken at 0.
     typeAndEnter("width", "-200");
@@ -146,7 +146,7 @@ describe("the Round tool", () => {
   });
 
   it("refuses an angle emptied", () => {
-    openOnStep(1);
+    openPage("");
     chooseShapeKind("round");
     typeAndEnter("angle", "");
 

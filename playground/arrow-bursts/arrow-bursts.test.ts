@@ -7,7 +7,7 @@ import { readKeptDrawing } from "../kept-shapes";
 import {
   clickElement,
   dispatchDrawingPointer,
-  openServedPage,
+  openPage,
   selectInput,
   selectPageElement,
   setElementBox,
@@ -117,7 +117,7 @@ describe("a burst of arrows in a number field, one step", () => {
   beforeEach(() => {
     vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout"] });
     // The page opens with its rectangle, 120 × 80, selected: made 100 wide, a step of its own.
-    openServedPage("");
+    openPage("");
     typeAndEnter("width", "100");
   });
 
@@ -249,7 +249,7 @@ describe("a burst of arrows in a number field, one step", () => {
 
   it("[F43.AC3] forgets a burst whose pause runs when the page is mounted again", () => {
     holdUp("width", 3);
-    openServedPage("");
+    openPage("");
     setElementBox("#canvas", { height: 600, left: 100, top: 50, width: 800 });
     // No burst left open, its pause's end finding none (every field applies its value on Enter,
     // a step taken at once).
@@ -324,7 +324,7 @@ describe("a burst of arrows in a number field, one step", () => {
 describe("a burst of arrows in a field of several shapes, one step", () => {
   beforeEach(() => {
     vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout"] });
-    openServedPage("");
+    openPage("");
     setElementBox("#canvas", { height: 600, left: 100, top: 50, width: 800 });
     // The page's rectangle, 120 wide, and B, placed by the Rectangle tool and typed 40 wide.
     clickElement("tool-rectangle");

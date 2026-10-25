@@ -8,7 +8,7 @@ import {
   chooseOption,
   chooseShapeKind,
   clickElement,
-  openServedPage,
+  openPage,
   readPressedState,
   readText,
   readValue,
@@ -52,7 +52,7 @@ function readWeights(): readonly string[] {
 
 describe("The weight list of the family chosen", () => {
   beforeEach(() => {
-    openServedPage("");
+    openPage("");
     chooseShapeKind("text");
     chooseOption("text-weight", "400");
   });

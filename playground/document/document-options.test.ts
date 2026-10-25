@@ -9,7 +9,7 @@ import {
   chooseOption,
   chooseShapeKind,
   clickElement,
-  openServedPage,
+  openPage,
   readDisplay,
   readText,
   selectInput,
@@ -89,7 +89,7 @@ function readLeftOut(): readonly (string | null)[] {
 
 describe("The drawing's options: Embed fonts, no HTML layer", () => {
   beforeEach(() => {
-    openServedPage("");
+    openPage("");
     chooseShapeKind("text");
     chooseOption("text-weight", "400");
     typeAndEnter("text-size", "16");

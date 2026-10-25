@@ -7,7 +7,7 @@ import {
   chooseShapeKind,
   clickElement,
   dispatchDrawingPointer,
-  openServedPage,
+  openPage,
   setElementBox,
   typeAndEnter,
   typeTextContent,
@@ -69,7 +69,7 @@ function readPanelLabels(): ReadonlySet<string> {
 
 describe("The steps named by the panel's labels", () => {
   beforeEach(() => {
-    openServedPage("");
+    openPage("");
     setElementBox("#canvas", { height: 600, left: 100, top: 50, width: 800 });
     clickDrawing(IN_A);
   });

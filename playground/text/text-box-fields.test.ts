@@ -6,7 +6,7 @@ import {
   chooseOption,
   chooseShapeKind,
   clickElement,
-  openServedPage,
+  openPage,
   readDisplay,
   readModel,
   readText,
@@ -27,7 +27,7 @@ const BOX_ONLY = [
 
 describe("Text tool: the box's fields", () => {
   beforeEach(() => {
-    openServedPage("");
+    openPage("");
     chooseShapeKind("text");
     typeAndEnter("text-size", "16");
     // happy-dom loses the option marked `selected` once the page is moved into its document: the

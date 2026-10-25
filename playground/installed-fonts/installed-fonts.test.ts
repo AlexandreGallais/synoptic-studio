@@ -21,7 +21,7 @@ import {
   chooseOption,
   chooseShapeKind,
   clickElement,
-  openServedPage,
+  openPage,
   readDisabledState,
   readText,
   readValue,
@@ -256,7 +256,7 @@ function refuseCollectionJoins(): void {
 
 describe("Installed fonts", () => {
   beforeEach(() => {
-    openServedPage("");
+    openPage("");
     chooseShapeKind("text");
     chooseOption("text-weight", "400");
     typeAndEnter("text-size", "100");
@@ -819,7 +819,7 @@ function refusedAtSecondRead(font: InstalledFont, error: Error): InstalledFont {
 
 describe("Installed fonts read whole before they are listed", () => {
   beforeEach(() => {
-    openServedPage("");
+    openPage("");
     chooseShapeKind("text");
     chooseOption("text-weight", "400");
   });

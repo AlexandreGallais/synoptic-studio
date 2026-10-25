@@ -6,7 +6,8 @@ import {
   clickElement,
   clickPoint,
   commitField,
-  openOnStep,
+  openOnHexagon,
+  openPage,
   readDisabledState,
   readPointRows,
   readText,
@@ -55,8 +56,8 @@ function place(): string | undefined {
 
 describe("editing the points of a free shape", () => {
   it("[F08.AC1] shows the x and y of a polygon's point greyed, and the conversion button", () => {
-    // Step 10: a hexagon in 100 × 100.
-    openOnStep(10);
+    // The hexagon: a hexagon in 100 × 100.
+    openOnHexagon();
     clickElement("mode-points");
     clickPoint(1, false);
 
@@ -67,7 +68,7 @@ describe("editing the points of a free shape", () => {
   });
 
   it("[F08.AC1] converts the polygon into a free shape that does not move", () => {
-    openOnStep(10);
+    openOnHexagon();
     clickElement("mode-points");
 
     const before = readText("#path-data");
@@ -100,7 +101,7 @@ describe("editing the points of a free shape", () => {
       },
     },
   ])("rounds $how on a converted point's Y showing a fraction", ({ step }) => {
-    openOnStep(10);
+    openOnHexagon();
     clickElement("mode-points");
     clickElement("convert");
     clickPoint(1, false);
@@ -111,7 +112,7 @@ describe("editing the points of a free shape", () => {
   });
 
   it("[F08.AC1] hides the anchor, the corners and the conversion of a free shape", () => {
-    openOnStep(10);
+    openOnHexagon();
     clickElement("mode-points");
     clickElement("convert");
 
@@ -123,7 +124,7 @@ describe("editing the points of a free shape", () => {
   });
 
   it("[F08.AC2] moves a point of the converted polygon to the x typed, its y kept", () => {
-    openOnStep(10);
+    openOnHexagon();
     clickElement("mode-points");
     clickElement("convert");
     clickPoint(1, false);
@@ -134,8 +135,8 @@ describe("editing the points of a free shape", () => {
   });
 
   it("[F08.AC2] makes the rectangle a free shape when one of its points is typed", () => {
-    // Step 1: a 120 × 80 rectangle with radius 10.
-    openOnStep(1);
+    // The page as it opens: a 120 × 80 rectangle with radius 10.
+    openPage("");
     clickElement("mode-points");
     clickPoint(3, false);
     typeAndEnter("point-x", "150");
@@ -147,7 +148,7 @@ describe("editing the points of a free shape", () => {
   });
 
   it("[F08.AC2] ignores a coordinate that is no number, its x shown again", () => {
-    openOnStep(1);
+    openPage("");
     clickElement("mode-points");
     clickPoint(3, false);
     typeInField("point-x", "abc");
@@ -157,7 +158,7 @@ describe("editing the points of a free shape", () => {
   });
 
   it("[F44.AC4] rounds a coordinate typed with a fraction: 150.5 gives 151, a tie up", () => {
-    openOnStep(1);
+    openPage("");
     clickElement("mode-points");
     clickPoint(3, false);
     typeAndEnter("point-x", "150.5");
@@ -167,7 +168,7 @@ describe("editing the points of a free shape", () => {
   });
 
   it("[F08.AC1] stretches the converted polygon by an integer width, a fraction typed rounded", () => {
-    openOnStep(10);
+    openOnHexagon();
     clickElement("mode-points");
     clickElement("convert");
     typeAndEnter("width", "50");
@@ -188,7 +189,7 @@ describe("editing the points of a free shape", () => {
   });
 
   it("[F08.AC1] greys the conversion of a polygon of width 0", () => {
-    openOnStep(10);
+    openOnHexagon();
     clickElement("mode-points");
     typeAndEnter("width", "0");
 
@@ -196,8 +197,8 @@ describe("editing the points of a free shape", () => {
   });
 
   it("[F08.AC2] hides the point fields and moves nothing while the shape is refused", () => {
-    // Step 1, point 3 typed: a free shape; its angle then cleared, refused.
-    openOnStep(1);
+    // The page as it opens, point 3 typed: a free shape; its angle then cleared, refused.
+    openPage("");
     clickElement("mode-points");
     clickPoint(3, false);
     typeAndEnter("point-x", "150");
@@ -213,8 +214,8 @@ describe("editing the points of a free shape", () => {
   });
 
   it("[F08.AC1] converts no refused polygon", () => {
-    // Step 10, its corners emptied by a script: no polygon.
-    openOnStep(10);
+    // The hexagon, its corners emptied by a script: no polygon.
+    openOnHexagon();
     clickElement("mode-points");
     typeAndEnter("corners", "");
     clickElement("convert");
@@ -223,7 +224,7 @@ describe("editing the points of a free shape", () => {
   });
 
   it("[F08.AC2] moves nothing when no point is selected", () => {
-    openOnStep(1);
+    openPage("");
     clickElement("mode-points");
     clickPoint(3, false);
     commitField("shape");
@@ -232,14 +233,14 @@ describe("editing the points of a free shape", () => {
     expect(readValue("shape")).toBe("rectangle");
   });
 
-  it("[F08.AC2] drops the free shape kept when a guided step draws its own", () => {
-    openOnStep(1);
+  it("[F08.AC2] drops the free shape kept on Reset", () => {
+    openPage("");
     clickElement("mode-points");
     clickPoint(3, false);
     typeAndEnter("point-x", "150");
-    clickElement("guide-next");
+    clickElement("tool-reset");
 
-    // A step draws its own shape: the free shape goes, and so does its option.
+    // Reset draws the page's rectangle: the free shape goes, and so does its option.
     expect(
       document.querySelector<HTMLSelectElement>("#shape")?.dataset["freeShape"],
     ).toBeUndefined();
@@ -250,8 +251,8 @@ describe("editing the points of a free shape", () => {
   });
 
   it("[F08.AC3] adds a sharp point in the middle of the edge of two neighbours, selected alone", () => {
-    // Step 1: a 120 × 80 rectangle, radius 10; points 1 (0, 0) and 2 (120, 0): middle (60, 0).
-    openOnStep(1);
+    // The page as it opens: a 120 × 80 rectangle, radius 10; points 1 (0, 0) and 2 (120, 0): middle (60, 0).
+    openPage("");
     clickElement("mode-points");
     clickPoint(1, false);
     clickPoint(2, true);
@@ -271,7 +272,7 @@ describe("editing the points of a free shape", () => {
 
   it("[F08.AC3] adds the point of the closing edge, between the last point and the first, at the end", () => {
     // Points 4 (0, 80) and 1 (0, 0): middle (0, 40), numbered 5.
-    openOnStep(1);
+    openPage("");
     clickElement("mode-points");
     clickPoint(4, false);
     clickPoint(1, true);
@@ -283,7 +284,7 @@ describe("editing the points of a free shape", () => {
 
   it("[F08.AC3] halves the room of the corners at the ends of the edge", () => {
     // A 100 square, radius 1000 drawn 100; a point in the middle of the top edge leaves 50.
-    openOnStep(1);
+    openPage("");
     clickElement("mode-points");
     typeAndEnter("width", "100");
     typeAndEnter("height", "100");
@@ -297,7 +298,7 @@ describe("editing the points of a free shape", () => {
   });
 
   it("[F08.AC3] greys the button unless two neighbouring points are selected", () => {
-    openOnStep(1);
+    openPage("");
     clickElement("mode-points");
     clickPoint(1, false);
 
@@ -309,7 +310,7 @@ describe("editing the points of a free shape", () => {
   });
 
   it("[F08.AC3] greys the button on a polygon and says to convert it first", () => {
-    openOnStep(10);
+    openOnHexagon();
     clickElement("mode-points");
     clickPoint(1, false);
     clickPoint(2, true);
@@ -319,7 +320,7 @@ describe("editing the points of a free shape", () => {
   });
 
   it("[F08.AC3] adds no point while the shape is refused", () => {
-    openOnStep(1);
+    openPage("");
     clickElement("mode-points");
     clickPoint(1, false);
     clickPoint(2, true);
@@ -333,7 +334,7 @@ describe("editing the points of a free shape", () => {
   it("[F08.AC2] keeps the free shape when a point typed would leave it no width", () => {
     // A triangle (0, 0), (120, 80), (0, 80) once point 2 is deleted; point 2 typed at x 0 would put
     // every point at x 0: refused, the triangle stays.
-    openOnStep(1);
+    openPage("");
     clickElement("mode-points");
     clickPoint(2, false);
     clickElement("delete-points");
@@ -350,7 +351,7 @@ describe("editing the points of a free shape", () => {
   });
 
   it("[F08.AC3] greys adding a point on a shape of width 0, its radii kept", () => {
-    openOnStep(1);
+    openPage("");
     clickElement("mode-points");
     typeAndEnter("width", "0");
     clickPoint(1, false);
@@ -364,7 +365,7 @@ describe("editing the points of a free shape", () => {
   });
 
   it("[F08.AC5] shows the shape's radius in both modes, and a radius of the points in Points mode", () => {
-    openOnStep(1);
+    openPage("");
     clickElement("mode-points");
     clickPoint(1, false);
     typeAndEnter("point-radius", "30");
@@ -383,7 +384,7 @@ describe("editing the points of a free shape", () => {
   });
 
   it("[F08.AC2] keeps the focus in a radius field while it is typed in", () => {
-    openOnStep(1);
+    openPage("");
     clickElement("mode-points");
     clickPoint(1, false);
 
@@ -397,8 +398,8 @@ describe("editing the points of a free shape", () => {
   });
 
   it("[F08.AC2] brings the free shape back, its own size, when it is chosen again", () => {
-    // Step 1: point 3 typed at x 150, a free shape 150 wide; then the polygon, 100 wide, then back.
-    openOnStep(1);
+    // The page as it opens: point 3 typed at x 150, a free shape 150 wide; then the polygon, 100 wide, then back.
+    openPage("");
     clickElement("mode-points");
     clickPoint(3, false);
     typeAndEnter("point-x", "150");

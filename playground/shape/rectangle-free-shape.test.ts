@@ -14,8 +14,8 @@ import {
 
 describe("rectangle as a free shape", () => {
   beforeEach(() => {
-    // Step 1 of the guided test: a 120 × 80 rectangle, radius 10 (F01).
-    openPage("?step=1");
+    // The page as it opens: a 120 × 80 rectangle, radius 10 (F01).
+    openPage("");
   });
 
   it("[F09.AC4] shows the rectangle as a free shape: the corners of the unit square with their radii, its size", () => {

@@ -2,7 +2,7 @@
 
 import { beforeEach, describe, expect, it } from "vitest";
 
-import { chooseOption, chooseShapeKind, openServedPage, typeAndEnter } from "../user-actions";
+import { chooseOption, chooseShapeKind, openPage, typeAndEnter } from "../user-actions";
 
 /**
  * Reads the path data of the canvas's paths of a class, in order.
@@ -58,14 +58,14 @@ function readRectangleFrames(angle: string): readonly (readonly (string | null)[
 
 describe("A turned text's frames drawn as a turned shape's", () => {
   beforeEach(() => {
-    openServedPage("");
+    openPage("");
   });
 
   it("[F17.AC7] draws a box 60 × 40 turned by 30 with the blue turned box and the dashed straight box of a rectangle", () => {
     const [, rectangleStraight] = readRectangleFrames("30");
 
     // A page opened again: the text drawn alone, not placed from the rectangle.
-    openServedPage("");
+    openPage("");
     typeTextBox({ angle: "30", height: "40", width: "60" });
 
     // The straight box, upright, the same dashes as the rectangle's.

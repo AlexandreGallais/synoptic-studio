@@ -6,7 +6,7 @@ import {
   chooseOption,
   chooseShapeKind,
   clickElement,
-  openServedPage,
+  openPage,
   readText,
   readValue,
   typeAndEnter,
@@ -42,7 +42,7 @@ function readFields(): readonly string[] {
 // top-left corner, which a resize keeps, is (54.88207, 42.25840) (ADR-0057).
 describe("Text tool: X and Y of a turned text show its straight box", () => {
   beforeEach(() => {
-    openServedPage("");
+    openPage("");
     chooseShapeKind("text");
     chooseOption("text-fit", "box");
     typeAndEnter("text-box-width", "100");

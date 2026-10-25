@@ -1,7 +1,7 @@
 import { NO_VERTEX_SELECTION, freeShapeRadii, isFreeShape, isRegularPolygon } from "../../src";
-import { writeAnchorValue, writeStretchedValue } from "../guided-test";
 import { selectElement, writeEditedKind, writeInputValue, writeSelection } from "../page";
 import { writeStoredFreeShape } from "../shape";
+import { writeAnchorValue, writeStretchedValue } from "../shape-fields";
 
 import type { RegularPolygon, Shape } from "../../src";
 

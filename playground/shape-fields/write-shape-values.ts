@@ -1,14 +1,14 @@
 import { NO_VERTEX_SELECTION } from "../../src";
-import { OPENING_TEXT } from "../guided-steps";
 import { DRAWING_KEYS, writeStoredDrawing } from "../kept-shapes";
 import { clearKindSettings } from "../kind-settings";
 import { selectElement, writeInputValue, writeSelection } from "../page";
 
+import { OPENING_TEXT } from "./opening-text";
 import { writeAnchorValue } from "./write-anchor-value";
 import { writeStretchedValue } from "./write-stretched-value";
-import { writeTextStepValues } from "./write-text-step-values";
+import { writeTextValues } from "./write-text-values";
 
-import type { GuidedStep } from "../guided-steps";
+import type { ShapeValues } from "./shape-values";
 
 /**
  * Sets the shape selector, without firing any event.
@@ -33,14 +33,14 @@ function writeShapeValue(document: Document, shape: string): void {
  * @param document - page document
  */
 function writeKeptShapeCleared(document: Document): void {
-  // A step types one radius for every vertex (F03.AC2), and selects no vertex.
+  // One radius for every vertex (F03.AC2), and no vertex selected.
   delete selectElement(document, "radius").dataset["radii"];
-  // A step draws one shape alone, as the page opens: the shapes placed before it go, below and
+  // One shape alone, as the page opens: the shapes placed before it go, below and
   // above, and the settings kept for each kind.
   writeStoredDrawing(document, DRAWING_KEYS.below, []);
   writeStoredDrawing(document, DRAWING_KEYS.above, []);
   clearKindSettings(document);
-  // A step draws a rectangle or a polygon: the free shape kept goes.
+  // A rectangle or a polygon: the free shape kept goes.
   delete selectElement(document, "shape").dataset["freeShape"];
 
   selectElement(document, "shape")
@@ -49,30 +49,29 @@ function writeKeptShapeCleared(document: Document): void {
 }
 
 /**
- * Types the values of a step of the guided test into the inputs, without firing any event, and
- * the Text tool's fields: a step of a text its own, any other step the page's.
+ * Types the values of one shape into the inputs, without firing any event, the shapes placed and
+ * the settings kept forgotten, and the page's text into the Text tool's fields.
  *
  * @kind procedure
  * @param document - page document
- * @param step - step whose shape and numbers are typed
+ * @param values - the shape and numbers typed
  */
-export function writeStepValues(document: Document, step: GuidedStep): void {
+export function writeShapeValues(document: Document, values: ShapeValues): void {
   writeKeptShapeCleared(document);
   writeSelection(document, NO_VERTEX_SELECTION);
-  writeShapeValue(document, step.values.shape);
-  writeAnchorValue(document, step.values.anchor);
-  // The polygons of F02 to F08 are not stretched.
-  writeStretchedValue(document, step.values.stretched === true);
-  writeInputValue(document, "corners", step.values.corners);
-  writeInputValue(document, "width", step.values.width);
-  writeInputValue(document, "height", step.values.height);
-  writeInputValue(document, "radius", step.values.radius);
-  // A step of F01 to F09 draws a straight shape at (0, 0).
+  writeShapeValue(document, values.shape);
+  writeAnchorValue(document, values.anchor);
+  // Not stretched, as the page opens.
+  writeStretchedValue(document, false);
+  writeInputValue(document, "corners", values.corners);
+  writeInputValue(document, "width", values.width);
+  writeInputValue(document, "height", values.height);
+  writeInputValue(document, "radius", values.radius);
+  // A straight shape at (0, 0).
   delete selectElement(document, "shape").dataset["x"];
   delete selectElement(document, "shape").dataset["y"];
 
-  // A step of F05 types the Text tool's fields; any other step, and Reset, the page's,
-  // so that the next text placed is the page's and not the last one's. Either
-  // writes the X, Y and angle fields: 0 for a step of F01 to F09, as the opening text.
-  writeTextStepValues(document, step.values.text ?? OPENING_TEXT);
+  // The page's text, so that the next text placed is the page's and not the last one's, its X,
+  // Y and angle fields 0.
+  writeTextValues(document, OPENING_TEXT);
 }

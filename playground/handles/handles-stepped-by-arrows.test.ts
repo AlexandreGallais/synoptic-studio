@@ -5,7 +5,7 @@ import {
   chooseOption,
   clickElement,
   clickPoint,
-  openOnStep,
+  openPage,
   readText,
   selectInput,
   selectPageElement,
@@ -83,7 +83,7 @@ describe("a handle's fields stepped by the arrows", () => {
     // after side towards point 2 (120, 0), its before side towards point 4 (0, 80). Point 1
     // given handles in Mirror angle and length: after (12, 5) typed, before mirrored at
     // (−12, −5), both of length 13 (5, 12, 13), on the page the vectors themselves.
-    openOnStep(1);
+    openPage("");
     typeInField("radius", "0");
     clickElement("mode-points");
     clickPoint(1, false);

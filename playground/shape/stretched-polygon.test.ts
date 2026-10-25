@@ -113,13 +113,13 @@ describe("playground: stretched polygon", () => {
     expect(readText("#effective")).not.toBe("");
   });
 
-  it("unticks the check box when a step of the guided test draws a polygon of F02", () => {
+  it("unticks the check box on Reset, the page's rectangle drawn again", () => {
     chooseOption("shape", "polygon");
     clickElement(isStretched() ? "shape" : "stretched");
 
     expect(isStretched()).toBe(true);
 
-    clickElement("guide-next");
+    clickElement("tool-reset");
 
     expect(isStretched()).toBe(false);
   });

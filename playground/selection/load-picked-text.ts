@@ -1,6 +1,6 @@
 import { writePickedTextPosition } from "../edited-fields";
-import { writeTextFields } from "../guided-test";
 import { writeEditedKind } from "../page";
+import { writeTextFields } from "../shape-fields";
 
 import type { Text } from "../../src";
 

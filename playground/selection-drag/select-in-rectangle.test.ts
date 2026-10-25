@@ -6,7 +6,7 @@ import { readDrawnTexts, readSelectedShapes } from "../kept-shapes";
 import {
   clickElement,
   dispatchDrawingPointer,
-  openServedPage,
+  openPage,
   readShapeModel,
   readText,
   selectPageElement,
@@ -102,8 +102,8 @@ function readOverlayPath(name: string): string | undefined {
 
 describe("a selection rectangle selects shapes", () => {
   beforeEach(() => {
-    // The epic's step 1, a rectangle 120 × 80 at (0, 0), radius 10, whatever feature is validated.
-    openServedPage("?guide=epic");
+    // The page as it opens, a rectangle 120 × 80 at (0, 0), radius 10.
+    openPage("");
     setElementBox("#canvas", { height: 600, left: 100, top: 50, width: 800 });
   });
 
