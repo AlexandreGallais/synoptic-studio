@@ -378,9 +378,12 @@ fn lists_the_project_files_git_lists() {
     );
     assert!(unused::is_project("docs/.vitepress/theme/index.ts"));
     assert!(!unused::is_project(".claude/hooks/x.ts"));
-    assert!(unused::is_project("playground/points/index.ts"));
+    // The whole playground is a project of its own (EN-175), listed for its own check.
+    assert!(!unused::is_project("playground/testing/press-key.ts"));
     assert!(!unused::is_project("playground/src/main.ts"));
+    assert!(!unused::is_project("playground/vitest-base.config.ts"));
     assert!(unused::ls_files_arguments().contains(&":(glob)*.ts".to_owned()));
+    assert!(unused::ls_files_arguments().contains(&"playground/".to_owned()));
     fs::remove_dir_all(&root).expect("removed");
 }
 
@@ -422,7 +425,8 @@ fn f21_ac4_the_binary_reports_a_planted_file_in_a_git_checkout() {
 /// The playground's npm project of a planted checkout: an Angular app whose `src/main.ts` imports
 /// `@angular/core`, which asks `rxjs` as a peer and `zone.js` as an optional one; `@angular/build`
 /// named by `angular.json`'s builder, `sass` by its SCSS, `@angular/cli` by the `ng` of a script,
-/// `vitest` ignored until the playground's tests move (EN-160); `left-pad` and a file unused.
+/// `vitest` by its runner configuration; a test using a helper of `testing/`, the library by its name
+/// `editor` and a fixture of the root's `tests/` (EN-175); `left-pad`, a file and a helper unused.
 const PLAYGROUND: &[(&str, &str)] = &[
     (
         "playground/package.json",
@@ -449,6 +453,32 @@ const PLAYGROUND: &[(&str, &str)] = &[
         "export class AppComponent {}\n",
     ),
     ("playground/src/app/orphan.ts", "export const ORPHAN = 1;\n"),
+    (
+        "playground/vitest-base.config.ts",
+        "import { defineConfig } from \"vitest/config\";\n\nexport default defineConfig({});\n",
+    ),
+    (
+        "playground/src/app/app.component.test.ts",
+        "import { SCALE } from \"editor\";\nimport { expect, it } from \"vitest\";\n\nimport { FIXTURE } from \"../../../tests/fixture\";\nimport { pressKey } from \"../../testing/press-key\";\n\nit(\"a\", () => expect([SCALE, FIXTURE, pressKey]).toHaveLength(3));\n",
+    ),
+    (
+        "playground/testing/press-key.ts",
+        "export const pressKey = 1;\n",
+    ),
+    (
+        "playground/testing/orphan-helper.ts",
+        "export const HELPER = 1;\n",
+    ),
+    // The root's side: a fixture and an export of the library only the playground imports.
+    (
+        "tests/fixture.ts",
+        "export const FIXTURE = 1;\nexport const UNUSED_FIXTURE = 2;\n",
+    ),
+    (
+        "src/math/index.ts",
+        "export * from \"./add\";\nexport * from \"./scale\";\n",
+    ),
+    ("src/math/scale.ts", "export const SCALE = 2;\n"),
 ];
 
 #[test]
@@ -473,11 +503,13 @@ fn f50_ac3_the_binary_checks_the_playground_as_a_project_of_its_own() {
     fs::remove_dir_all(&root).expect("removed");
     // The playground's findings named from the root: its file, and `left-pad` at line 5, column
     // 6 of its `package.json` (four spaces, the quote, then the name); `rxjs` used through
-    // `@angular/core`, `zone.js` not listed; the root's `is-number` beside them.
+    // `@angular/core`, `zone.js` not listed; the root's `is-number` beside them. The playground's
+    // helper unused; the root's `SCALE` and `FIXTURE` used by the playground's test, not the
+    // fixture it leaves (line 2, column 14 after `export const `).
     assert_eq!(output.status.code(), Some(1));
     assert_eq!(
         String::from_utf8_lossy(&output.stdout),
-        "Unused files (1)\nplayground/src/app/orphan.ts\nUnused dependencies (1)\nleft-pad  playground/package.json:5:6\nUnused devDependencies (1)\nis-number  package.json:12:6\n"
+        "Unused files (2)\nplayground/src/app/orphan.ts\nplayground/testing/orphan-helper.ts\nUnused dependencies (1)\nleft-pad  playground/package.json:5:6\nUnused devDependencies (1)\nis-number  package.json:12:6\nUnused exports (1)\nUNUSED_FIXTURE  tests/fixture.ts:2:14\n"
     );
 }
 
@@ -489,14 +521,21 @@ fn f50_ac3_lists_the_playground_s_files_from_its_folder() {
             ("playground/src/main.ts", ""),
             ("playground/src/app/a.component.ts", ""),
             ("playground/src/app/a.component.html", ""),
-            ("playground/points/b.ts", ""),
+            ("playground/testing/b.ts", ""),
+            ("playground/vitest-base.config.ts", ""),
         ],
     );
-    let listed = "playground/src/main.ts\0playground/src/app/a.component.ts\0playground/src/app/a.component.html\0playground/points/b.ts\0playground/src/gone.ts\0";
+    let listed = "playground/src/main.ts\0playground/src/app/a.component.ts\0playground/src/app/a.component.html\0playground/testing/b.ts\0playground/vitest-base.config.ts\0playground/src/gone.ts\0src/a.ts\0";
 
+    // Its app, the helpers of its tests and its runner configuration (EN-175).
     assert_eq!(
         unused::playground_files(&root, listed),
-        ["src/app/a.component.ts", "src/main.ts"]
+        [
+            "src/app/a.component.ts",
+            "src/main.ts",
+            "testing/b.ts",
+            "vitest-base.config.ts"
+        ]
     );
     fs::remove_dir_all(&root).expect("removed");
 }
@@ -513,4 +552,22 @@ fn the_binary_exits_2_outside_a_checkout() {
 
     assert_eq!(output.status.code(), Some(2));
     fs::remove_dir_all(&root).expect("removed");
+}
+
+#[test]
+fn f50_ac3_names_from_the_root_the_file_a_project_imports_outside_its_folder() {
+    // `playground/src/a/b.test.ts` up three folders: the root's `tests/fixture`, its query dropped.
+    assert_eq!(
+        unused::outside(
+            "playground",
+            "src/a/b.test.ts",
+            "../../../tests/fixture?raw"
+        )
+        .as_deref(),
+        Some("tests/fixture")
+    );
+    // Inside the project, from the root's project, or out of the checkout: none.
+    assert_eq!(unused::outside("playground", "src/a/b.ts", "../c"), None);
+    assert_eq!(unused::outside("", "src/a.ts", "../../x"), None);
+    assert_eq!(unused::outside("playground", "a.ts", "../../x"), None);
 }

@@ -1158,6 +1158,7 @@
     {
       "files": [
         "./*.config.ts",
+        "playground/*.config.ts",
         "./*.setup.ts",
         "./*.test.ts",
         "tests/*.ts",
@@ -1207,7 +1208,12 @@
       "plugins": ["typescript", "jsdoc", "vitest"]
     },
     {
-      "files": ["./*.config.ts", "docs/.vitepress/config.ts", "docs/.vitepress/theme/index.ts"],
+      "files": [
+        "./*.config.ts",
+        "playground/*.config.ts",
+        "docs/.vitepress/config.ts",
+        "docs/.vitepress/theme/index.ts"
+      ],
       "rules": {
         "import/no-default-export": "off",
         "no-restricted-exports": "off"

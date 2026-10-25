@@ -14,7 +14,7 @@ import {
 } from "../src";
 
 import { CHECK_ALL_LANES } from "./check-all-lanes";
-import { isPlaygroundProject } from "./playground-project";
+import { CODE_FOLDERS } from "./code-folders";
 import { DECORATED_METRICS, HELLO_TEXT } from "./text-fixtures";
 
 import type { EmbeddedFace, Text } from "../src";
@@ -116,11 +116,11 @@ function exportedNames(folder: string): readonly string[] {
 
 /** Names the shared test modules export: a test file never declares them again (F11). */
 const SHARED_HELPERS = new Set(
-  ["playground/user-actions", "tests"].flatMap((folder) => exportedNames(folder)),
+  ["playground/testing", "tests"].flatMap((folder) => exportedNames(folder)),
 );
 
 /**
- * Text of every file of `src/` and `playground/` whose name ends as asked.
+ * Text of every file of the code folders whose name ends as asked.
  *
  * @param ending - end of the file name, such as `.test.ts`
  * @returns path from the repository root, and text, of each file
@@ -128,10 +128,10 @@ const SHARED_HELPERS = new Set(
 function sourcesEndingWith(
   ending: string,
 ): readonly { readonly path: string; readonly text: string }[] {
-  return ["src", "playground"].flatMap((root) =>
+  return CODE_FOLDERS.flatMap((root) =>
     readdirSync(join(ROOT, root), { recursive: true })
       .map(String)
-      .filter((name) => name.endsWith(ending) && !isPlaygroundProject(join(ROOT, root, name)))
+      .filter((name) => name.endsWith(ending))
       .map((name) => ({
         path: join(root, name),
         text: readFileSync(join(ROOT, root, name), "utf8"),
@@ -410,17 +410,29 @@ type TimingLimit = {
   readonly measure: number | undefined;
 };
 
+/** The playground, whose tests the root does not run but whose limits it reads (EN-160). */
+const PLAYGROUND = "playground";
+
+/**
+ * The files the `timings` configuration of the playground's `ng test` runs, from its `src/`, read
+ * from its `angular.json` (EN-175).
+ */
+const PLAYGROUND_TIMINGS: readonly string[] =
+  /"timings": \{\s*"include": \[(?<files>[^\]]*)\]/u
+    .exec(readFileSync(join(ROOT, PLAYGROUND, "angular.json"), "utf8"))
+    ?.groups?.["files"]?.match(/[^"\s,]+\.test\.ts/gu) ?? [];
+
 /**
  * Text of every test file of `src/`, `tests/` and `playground/`, the three folders holding a
- * per-test limit (AUD-031).
+ * per-test limit (AUD-031), the playground's app and test helpers included.
  *
  * @returns path from the repository root, and text, of each file
  */
 function timedTestFiles(): readonly { readonly path: string; readonly text: string }[] {
-  return ["src", "tests", "playground"].flatMap((root) =>
+  return ["src", "tests", join(PLAYGROUND, "src"), join(PLAYGROUND, "testing")].flatMap((root) =>
     readdirSync(join(ROOT, root), { recursive: true })
       .map(String)
-      .filter((name) => name.endsWith(".test.ts") && !isPlaygroundProject(join(ROOT, root, name)))
+      .filter((name) => name.endsWith(".test.ts"))
       .map((name) => ({
         path: join(root, name),
         text: readFileSync(join(ROOT, root, name), "utf8"),
@@ -560,9 +572,11 @@ describe("the timing tests (EN-129)", () => {
     expect(timedTestFiles().flatMap(({ path, text }) => untaggedTimings(path, text))).toEqual([]);
   });
 
-  it("runs alone every file holding a timing test, and no other", () => {
+  it("runs alone every file holding a timing test, the root's by its script, the playground's by its configuration", () => {
     const script = CHECK_ALL_LANES.find(({ name }) => name === "test:timings")?.command ?? "";
     const named = script.split(" ").filter((word) => word.endsWith(".test.ts"));
+    // The playground's by the `timings` configuration of its `ng test`, from its `src/` (EN-175).
+    const configured = PLAYGROUND_TIMINGS.map((file) => join(PLAYGROUND, "src", file));
 
     const tagged = timedTestFiles()
       .filter(({ text }) =>
@@ -570,7 +584,8 @@ describe("the timing tests (EN-129)", () => {
       )
       .map(({ path }) => path);
 
-    expect(named.toSorted(byName)).toEqual(tagged.toSorted(byName));
+    expect(script).toContain("ng test --no-watch --configuration timings");
+    expect([...named, ...configured].toSorted(byName)).toEqual(tagged.toSorted(byName));
   });
 
   it("names each timing test of a made-up file without its tag", () => {

@@ -155,13 +155,14 @@ const NODE_READERS: readonly RegExp[] = [
 const PLAYGROUND_INSTALL = "npm --prefix playground ci --ignore-scripts";
 
 /**
- * The commands that read the playground's packages: Angular's compiler and build, the playground's
+ * The commands that read the playground's packages: Angular's compiler, build and tests, the playground's
  * audit, which reads its lockfile alone, left out, and `dependencies unused`, which reads its
  * installed manifests.
  */
 const PLAYGROUND_READERS: readonly RegExp[] = [
   /\bngc -p playground\//u,
   /&& ng build\b/u,
+  /&& ng test\b/u,
   /target\/release\/dependencies unused\b/u,
 ];
 

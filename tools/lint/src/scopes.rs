@@ -61,6 +61,7 @@ pub struct Scope {
 /// The tools and their configurations: Node.js code, where development packages may be imported.
 pub const TOOLING_FILES: &[&str] = &[
     "*.config.ts",
+    "playground/*.config.ts",
     "*.setup.ts",
     "*.test.ts",
     "tests/*.ts",
@@ -98,8 +99,9 @@ const RELAXED: &[(&str, bool)] = &[
 /// (ADR-0104, NOTE-0036, findings 52 and 77): a component is a class, a file keeps Angular's
 /// suffixed name (`app.component.ts`), a folder has no barrel and is imported by its file, and a
 /// module constant keeps Angular's camelCase name (`appConfig`). Angular's own rules for these come
-/// with F51.
-pub const ANGULAR_APP_FILES: &[&str] = &["playground/src/**/*.ts"];
+/// with F51. The project's configuration files beside it, such as its test runner's, sit at the
+/// project's root as Angular's do (EN-160).
+pub const ANGULAR_APP_FILES: &[&str] = &["playground/src/**/*.ts", "playground/*.config.ts"];
 
 /// The scopes, in the order `ESLint`'s configuration applied them; only those that set a rule of
 /// this linter.

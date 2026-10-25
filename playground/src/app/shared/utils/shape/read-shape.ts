@@ -1,0 +1,171 @@
+import {
+  RECTANGLE_CORNER_COUNT,
+  freeShapeRadii,
+  isRegularPolygonCornerCount,
+  isValidFreeShape,
+  isValidRectangle,
+  isValidRegularPolygon,
+  isValidRoundShape,
+  rectangleAsFreeShape,
+  shapeCorners,
+} from "editor";
+
+import { readNumber, readShapeKind } from "../page";
+import { readAngle } from "../position";
+
+import { readAnchor } from "./read-anchor";
+import { readFreeShapeShape } from "./read-free-shape-shape";
+import { readPosition } from "./read-position";
+import { readStoredFreeShape } from "./read-stored-free-shape";
+import { updateKeptRadii } from "./update-kept-radii";
+
+import type { ShapeReading } from "./shape-reading";
+import type { Rectangle, RegularPolygon, RoundShape } from "editor";
+
+/** Message shown when a value of the rectangle is not an integer ≥ 0. */
+const INVALID_RECTANGLE =
+  "Width, height and radius must be integers ≥ 0, and the angle an integer.";
+
+/** Message shown when a value of the polygon is not allowed (Q15, Q19). */
+const INVALID_POLYGON =
+  "Width, height and radius must be integers ≥ 0, corners an integer from 3 to 12, and the angle an integer.";
+
+/** Message shown when a value of the round shape is not allowed (Q15). */
+const INVALID_ROUND = "Width and height must be integers ≥ 0, and the angle an integer.";
+
+/**
+ * Reads the rectangle typed in the width, height and radius inputs, with the radius of each of
+ * its four corners (ADR-0029).
+ *
+ * @kind procedure
+ * @param document - page document
+ * @returns the rectangle, possibly invalid (checked by `isValidRectangle`, then as a free shape)
+ */
+function readRectangle(document: Document): Rectangle {
+  // The tool's position is a creation value; the page moves the free shape it makes (ADR-0035).
+  return {
+    angle: readAngle(document),
+    height: readNumber(document, "height"),
+    radii: updateKeptRadii(document, RECTANGLE_CORNER_COUNT),
+    width: readNumber(document, "width"),
+    x: 0,
+    y: 0,
+  };
+}
+
+/**
+ * Reads the regular polygon typed in the inputs, with the radius of each of its corners
+ * (ADR-0029) and its anchor.
+ *
+ * @kind procedure
+ * @param document - page document
+ * @returns the polygon, possibly invalid (checked by `isValidRegularPolygon`)
+ */
+function readPolygon(document: Document): RegularPolygon {
+  const corners = readNumber(document, "corners");
+  const position = readPosition(document);
+
+  return {
+    anchor: readAnchor(document),
+    angle: readAngle(document),
+    corners,
+    height: readNumber(document, "height"),
+    // One radius per corner; none for a number of corners refused.
+    radii: updateKeptRadii(document, isRegularPolygonCornerCount(corners) ? corners : 0),
+    stretched: document.querySelector<HTMLInputElement>("#stretched")?.checked === true,
+    width: readNumber(document, "width"),
+    ...position,
+  };
+}
+
+/**
+ * Reads the rectangle typed in the inputs as the free shape the rectangle tool makes (ADR-0032),
+ * with its corners when it is valid.
+ *
+ * @kind procedure
+ * @param document - page document
+ * @returns the reading of the rectangle
+ */
+function readRectangleShape(document: Document): ShapeReading {
+  const rectangle = readRectangle(document);
+  // The rectangle tool makes a free shape (ADR-0032, ADR-0033): its corners, width and height.
+  const model = { ...rectangleAsFreeShape(rectangle), ...readPosition(document) };
+  // The rectangle tool takes integers (Q15); the free shape it makes is then checked too.
+  const isValid = isValidRectangle(rectangle) && isValidFreeShape(model);
+
+  return {
+    corners: isValid ? shapeCorners(model) : [],
+    isValid,
+    message: INVALID_RECTANGLE,
+    model,
+    radii: freeShapeRadii(model),
+  };
+}
+
+/**
+ * Reads the regular polygon typed in the inputs, with its corners when it is valid.
+ *
+ * @kind procedure
+ * @param document - page document
+ * @returns the reading of the polygon
+ */
+function readPolygonShape(document: Document): ShapeReading {
+  const model = readPolygon(document);
+  const isValid = isValidRegularPolygon(model);
+
+  return {
+    corners: isValid ? shapeCorners(model) : [],
+    isValid,
+    message: INVALID_POLYGON,
+    model,
+    radii: model.radii,
+  };
+}
+
+/**
+ * Reads the round shape typed in the inputs, with its 4 points on the curve when it is
+ * valid; it has no radius (ADR-0048).
+ *
+ * @kind procedure
+ * @param document - page document
+ * @returns the reading of the round shape
+ */
+function readRoundShape(document: Document): ShapeReading {
+  const model: RoundShape = {
+    angle: readAngle(document),
+    height: readNumber(document, "height"),
+    kind: "round",
+    width: readNumber(document, "width"),
+    ...readPosition(document),
+  };
+  const isValid = isValidRoundShape(model);
+
+  return {
+    corners: isValid ? shapeCorners(model) : [],
+    isValid,
+    message: INVALID_ROUND,
+    model,
+    radii: [0, 0, 0, 0],
+  };
+}
+
+/** How each shape kind of the selector is read; the rectangle for any other. */
+const READERS = new Map([
+  ["polygon", readPolygonShape],
+  ["round", readRoundShape],
+]);
+
+/**
+ * Reads the shape chosen in the selector from the inputs, with its corners when it is valid.
+ *
+ * @kind procedure
+ * @param document - page document
+ * @returns the reading of the rectangle, the polygon, the round shape or the free shape kept
+ */
+export function readShape(document: Document): ShapeReading {
+  const kept = readStoredFreeShape(document);
+
+  return kept === undefined
+    ? (READERS.get(readShapeKind(document)) ?? readRectangleShape)(document)
+    : readFreeShapeShape(document, kept);
+}

@@ -29,7 +29,8 @@ use crate::check_scope::Check;
 pub const BEFORE_LANES: &str = "rust:build";
 
 /// The check run alone after the lanes: the timing tests, whose limits measure a speed that the
-/// lanes' load slowed past them (REV-008), the test lane leaving them out.
+/// lanes' load slowed past them (REV-008), the test lane leaving them out: the root's, then the
+/// playground's by its `ng test` (EN-175).
 pub const AFTER_LANES: &str = "test:timings";
 
 /// The check of the test lane, which a story branch's push narrows to the tests its change can
@@ -45,12 +46,35 @@ pub const PLAYGROUND_TYPES: &str = "playground:types";
 /// The check building the playground's Angular app (EN-159).
 pub const PLAYGROUND_APP: &str = "playground:app";
 
+/// The check of the playground's tests under its coverage floor, by its `ng test` (EN-175).
+pub const PLAYGROUND_TESTS: &str = "playground:test";
+
 /// The failure of a playground check whose packages are not installed.
 macro_rules! playground_missing {
     () => {
         "The packages of the playground are missing: run npm ci --prefix playground"
     };
 }
+
+/// A command of Angular's `ng` run from the playground's folder, where `angular.json` is, its
+/// packages missing failing aloud.
+macro_rules! ng_in_playground {
+    ($($arguments:literal),+) => {
+        concat!(
+            "{ command -v ng > /dev/null || { echo '",
+            playground_missing!(),
+            "' >&2; exit 1; }; } && cd playground && ng ",
+            $($arguments),+
+        )
+    };
+}
+
+/// The playground's tests without their coverage, as a story's push runs them (EN-175).
+pub const PLAYGROUND_TESTS_WITHOUT_COVERAGE: &str = ng_in_playground!("test --no-watch");
+
+/// The playground's timing tests alone, by the `timings` configuration of its `ng test`: the
+/// files of `angular.json`'s list, their timing tests no longer skipped (EN-175).
+pub const PLAYGROUND_TIMINGS: &str = ng_in_playground!("test --no-watch --configuration timings");
 
 /// Each check by its name, with the command `sh -c` runs from the repository's root, the programs
 /// npm installs found first ([`search_path`]). The targets of `lint` and `format:check` are those
@@ -77,18 +101,23 @@ pub const CHECKS: &[(&str, &str)] = &[
         ),
     ),
     (TEST_SCRIPT, "vitest run --coverage --tags-filter='!timing'"),
+    // The playground's tests by Angular's unit-test builder on happy-dom, under the floor of its
+    // `angular.json`, their timing tests skipped by its runner configuration (EN-175).
+    (
+        PLAYGROUND_TESTS,
+        ng_in_playground!("test --no-watch --coverage"),
+    ),
     (
         "docs:build",
         "target/release/api-pages src/index.ts docs/api /api/ editor && vitepress build docs",
     ),
-    ("playground:build", "vite build --mode playground"),
-    // Angular's build of the app into `playground/dist/browser` (EN-159).
+    // Angular's build of the app into `playground/dist/browser` (EN-159), at the site's
+    // `PLAYGROUND_BASE` as its base href, then copied into the site built before it (EN-175).
     (
         PLAYGROUND_APP,
-        concat!(
-            "{ command -v ng > /dev/null || { echo '",
-            playground_missing!(),
-            "' >&2; exit 1; }; } && cd playground && ng build"
+        ng_in_playground!(
+            "build --base-href \"${PLAYGROUND_BASE:-/}\" && rm -rf ../docs/.vitepress/dist/playground ",
+            "&& mkdir -p ../docs/.vitepress/dist && cp -R dist/browser ../docs/.vitepress/dist/playground"
         ),
     ),
     (
@@ -137,11 +166,11 @@ pub const CHECKS: &[(&str, &str)] = &[
     (
         AFTER_LANES,
         concat!(
-            "vitest run --tags-filter=timing playground/hover/helps-on-any-color.test.ts ",
-            "playground/listeners/remove-listeners.test.ts playground/mount/mount-playground.test.ts ",
+            "vitest run --tags-filter=timing ",
             "src/io/font-face/parse-font-face.test.ts src/math/sequence/scan.test.ts ",
             "src/model/text-wrap/without-trailing-spaces.test.ts ",
-            "src/model/text-wrap/wrapped-paragraph.test.ts tests/history-timings.test.ts"
+            "src/model/text-wrap/wrapped-paragraph.test.ts tests/history-timings.test.ts && ",
+            ng_in_playground!("test --no-watch --configuration timings")
         ),
     ),
 ];
@@ -149,12 +178,11 @@ pub const CHECKS: &[(&str, &str)] = &[
 /// The lane of the linters and TypeScript's own errors, the playground's by Angular's compiler.
 const LINT_LANE: &[&str] = &["lint", PLAYGROUND_TYPES];
 
-/// The lane of the tests.
-const TEST_LANE: &[&str] = &[TEST_SCRIPT];
+/// The lane of the tests: the root's, then the playground's (EN-175).
+const TEST_LANE: &[&str] = &[TEST_SCRIPT, PLAYGROUND_TESTS];
 
-/// The lane of the documentation site and the playground built into it, then the playground's
-/// Angular app built by Angular.
-pub const DOCS_LANE: &[&str] = &["docs:build", "playground:build", PLAYGROUND_APP];
+/// The lane of the documentation site, then the playground's Angular app built by Angular into it.
+pub const DOCS_LANE: &[&str] = &["docs:build", PLAYGROUND_APP];
 
 /// The lane of the formatter, the secret scan and the dependencies.
 const FILES_LANE: &[&str] = &[
@@ -275,7 +303,6 @@ const DOCS_INPUTS: &[&str] = &[
     "rust-toolchain.toml",
     "package.json",
     "package-lock.json",
-    "vite.config.ts",
 ];
 
 /// Whether changed files touch an input of the docs lane: a file in one of its folders, or one of
@@ -840,10 +867,40 @@ mod tests {
 
         assert_eq!(lines.len(), CHECKS.len() - 1);
         assert_eq!(
-            lines[3],
+            lines[4],
             "docs\tdocs:build\ttarget/release/api-pages src/index.ts docs/api /api/ editor && \
              vitepress build docs"
         );
+    }
+
+    #[test]
+    fn f50_ac3_runs_the_playground_s_tests_under_their_floor_and_their_timings_after_the_root_s() {
+        assert_eq!(
+            lane_named("test"),
+            Some(&[TEST_SCRIPT, PLAYGROUND_TESTS][..])
+        );
+        // Its floor is `angular.json`'s, asked by `--coverage`; no watch outside a terminal.
+        assert!(
+            check_named(PLAYGROUND_TESTS)
+                .command
+                .ends_with("&& cd playground && ng test --no-watch --coverage")
+        );
+        // The root's timing tests, then the playground's alone by their configuration.
+        let timings = check_named(AFTER_LANES).command;
+
+        assert!(timings.starts_with("vitest run --tags-filter=timing "));
+        assert!(timings.ends_with(&format!(
+            "tests/history-timings.test.ts && {PLAYGROUND_TIMINGS}"
+        )));
+        for command in [PLAYGROUND_TESTS_WITHOUT_COVERAGE, PLAYGROUND_TIMINGS] {
+            assert!(
+                command.starts_with(
+                    "{ command -v ng > /dev/null || { echo 'The packages of the playground are \
+                     missing: run npm ci --prefix playground' >&2; exit 1; }; } && cd playground"
+                ),
+                "{command}"
+            );
+        }
     }
 
     #[test]
@@ -851,7 +908,7 @@ mod tests {
         assert_eq!(lane_named("lint"), Some(&["lint", PLAYGROUND_TYPES][..]));
         assert_eq!(
             lane_named("docs"),
-            Some(&["docs:build", "playground:build", PLAYGROUND_APP][..])
+            Some(&["docs:build", PLAYGROUND_APP][..])
         );
         // Its own tsconfig, no file written; the build from its folder, where `angular.json` is.
         assert!(
@@ -859,11 +916,13 @@ mod tests {
                 .command
                 .ends_with("&& ngc -p playground/tsconfig.app.json --noEmit")
         );
-        assert!(
-            check_named(PLAYGROUND_APP)
-                .command
-                .ends_with("&& cd playground && ng build")
-        );
+        // The site's app (EN-175): built at the site's base, `/` by default, then copied from
+        // `playground/dist/browser` into the site, replacing the last copy.
+        assert!(check_named(PLAYGROUND_APP).command.ends_with(
+            "&& cd playground && ng build --base-href \"${PLAYGROUND_BASE:-/}\" && rm -rf \
+             ../docs/.vitepress/dist/playground && mkdir -p ../docs/.vitepress/dist && cp -R \
+             dist/browser ../docs/.vitepress/dist/playground"
+        ));
         // Its packages missing, each fails saying how to install them.
         for (name, program) in [(PLAYGROUND_TYPES, "ngc"), (PLAYGROUND_APP, "ng")] {
             assert!(
@@ -914,7 +973,7 @@ mod tests {
         assert_eq!(
             skipped_lines(&owned(&["tools/lint/src/lib.rs"]), "origin/develop"),
             [
-                "- docs:build, playground:build, playground:app skipped: nothing changed in their inputs against origin/develop"
+                "- docs:build, playground:app skipped: nothing changed in their inputs against origin/develop"
             ]
         );
     }
@@ -931,7 +990,8 @@ mod tests {
         assert!(touches_site(&owned(&["package-lock.json"])));
         // The playground's packages, a project of its own built into the site (ADR-0104).
         assert!(touches_site(&owned(&["playground/package-lock.json"])));
-        assert!(touches_site(&owned(&["vite.config.ts"])));
+        // Vite's configuration no longer builds the playground (EN-175).
+        assert!(!touches_site(&owned(&["vite.config.ts"])));
         assert!(touches_site(&owned(&["Cargo.lock"])));
         assert!(touches_site(&owned(&["Cargo.toml"])));
         assert!(touches_site(&owned(&["rust-toolchain.toml"])));

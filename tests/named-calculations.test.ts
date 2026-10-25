@@ -4,13 +4,10 @@ import { basename, join } from "node:path";
 import { describe, expect, it } from "vitest";
 
 import { builtOnce } from "./built-once";
-import { isPlaygroundProject } from "./playground-project";
+import { CODE_FOLDERS } from "./code-folders";
 
 /** Repository root. */
 const ROOT = join(import.meta.dirname, "..");
-
-/** Folders whose code is read. */
-const CODE_FOLDERS = ["src", "playground"];
 
 /** A source file: its name and its lines of code, comments left out. */
 type SourceFile = {
@@ -29,10 +26,7 @@ function sourceFiles(): readonly SourceFile[] {
       .map(String)
       .filter(
         (file) =>
-          file.endsWith(".ts") &&
-          !file.endsWith(".test.ts") &&
-          basename(file) !== "index.ts" &&
-          !isPlaygroundProject(join(ROOT, folder, file)),
+          file.endsWith(".ts") && !file.endsWith(".test.ts") && basename(file) !== "index.ts",
       )
       .map((file) => ({
         code: readFileSync(join(ROOT, folder, file), "utf8")

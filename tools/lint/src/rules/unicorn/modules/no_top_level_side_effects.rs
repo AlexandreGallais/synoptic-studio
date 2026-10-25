@@ -28,9 +28,6 @@ pub struct NoTopLevelSideEffects;
 /// The rule's message.
 const MESSAGE: &str = "Do not use top-level side effects in exported modules.";
 
-/// The playground's entry module, which starts the page when loaded (`PLAYGROUND_ENTRY_FILES`).
-const PLAYGROUND_ENTRY: [&str; 1] = ["playground/index.ts"];
-
 /// The functions known to change nothing, by the module that exports them.
 const PURE_EXPORTS: [(&str, &[&str]); 8] = [
     (
@@ -57,11 +54,10 @@ const PURE_EXPORTS: [(&str, &[&str]); 8] = [
 
 /// Whether the rule is off for a path, as `ESLint`'s scopes turned it off.
 fn is_off(path: &str) -> bool {
-    matches_any(&PLAYGROUND_ENTRY, path)
-        || SCOPES
-            .iter()
-            .filter(|scope| matches!(scope.name, "tooling" | "tests"))
-            .any(|scope| matches_any(scope.files, path))
+    SCOPES
+        .iter()
+        .filter(|scope| matches!(scope.name, "tooling" | "tests"))
+        .any(|scope| matches_any(scope.files, path))
 }
 
 /// Whether a statement exports something that remains at run time.
@@ -358,7 +354,6 @@ mod tests {
         let code = "export {};\ninit();";
 
         for path in [
-            "playground/index.ts",
             "scripts/a.ts",
             "src/a/b.test.ts",
             "vite.config.ts",
@@ -371,5 +366,11 @@ mod tests {
             );
         }
         assert_eq!(places_at("playground/a/b.ts", code), [(2, 1)]);
+        // The old page's entry is gone (EN-160): the app's `src/main.ts` exports nothing.
+        assert_eq!(places_at("playground/index.ts", code), [(2, 1)]);
+        assert_eq!(
+            places_at("playground/src/main.ts", "await bootstrapApplication(App);"),
+            Vec::<(usize, usize)>::new()
+        );
     }
 }

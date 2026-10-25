@@ -1,0 +1,5 @@
+// The feature places its markup as if its host were not there, so that the page lays out as
+// before; the page's style stays in app.component.scss until the zones follow Figma (EN-160).
+:host {
+  display: contents;
+}
