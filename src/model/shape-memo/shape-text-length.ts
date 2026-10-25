@@ -8,7 +8,7 @@ import { memorizedShape } from "./memorized-shape";
  * @kind domain
  * @param shape - the shape measured, or what is kept of it, an object never changed once made
  * @returns the length of `JSON.stringify(shape)`
- * @see docs/domain/interaction.md#_7-navigation-and-history
+ * @see RULE-interaction-7-navigation-and-history
  */
 export function shapeTextLength(shape: Readonly<WeakKey>): number {
   return memorizedShape(shape).length;

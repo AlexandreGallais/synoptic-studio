@@ -9,6 +9,8 @@ use std::io;
 use std::path::{Component, Path, PathBuf};
 use std::process::Command;
 
+pub mod records_place;
+
 /// Where a folder's checkout keeps its Git data, read from the files Git writes rather than from
 /// Git itself: a hook runs before every tool call, and starting Git costs it more than its work.
 #[derive(Debug, Clone, PartialEq, Eq)]

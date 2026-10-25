@@ -38,7 +38,7 @@ const LINE_IN_CASE: Readonly<Record<TextCase, (line: string) => string>> = {
  * @param content - what the designer typed, a line break (CR LF, CR or LF) between two lines
  * @param textCase - the case to write it in
  * @returns the content in that case
- * @see docs/domain/shapes.md#text
+ * @see RULE-shapes-text
  */
 export function textInCase(content: string, textCase: TextCase): string {
   return content.replaceAll(LINE, (line) => LINE_IN_CASE[textCase](line));

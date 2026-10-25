@@ -11,7 +11,7 @@ import type { HistoryState } from "./history-state";
  * @template T - type of the shapes, or of what is kept of each
  * @param state - the state counted
  * @returns 8 times its shapes and its indices
- * @see docs/domain/interaction.md#_7-navigation-and-history
+ * @see RULE-interaction-7-navigation-and-history
  */
 export function stateSlotBytes<T>(state: HistoryState<T>): number {
   return (state.drawing.length + state.selection.length) * SLOT_BYTES;

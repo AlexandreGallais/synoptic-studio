@@ -11,7 +11,7 @@ import type { Text } from "../../src";
  * @kind procedure
  * @param document - page document
  * @returns the texts, the first drawn first
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 export function readDrawnTexts(document: Document): readonly Text[] {
   return readKeptDrawing(document)

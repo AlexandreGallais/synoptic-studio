@@ -19,7 +19,7 @@ import type { KeptShape } from "../kept-shapes";
  * @kind procedure
  * @param document - page document
  * @param state - the drawing and the selection to show
- * @see docs/domain/interaction.md#_7-navigation-and-history
+ * @see RULE-interaction-7-navigation-and-history
  */
 function writeHistoryState(document: Document, state: HistoryState<KeptShape>): void {
   writeShapeSelection(document, []);
@@ -38,7 +38,7 @@ function writeHistoryState(document: Document, state: HistoryState<KeptShape>): 
  * @param document - page document
  * @param move - `sizedUndoneHistory`, `sizedRedoneHistory`, or `sizedHistoryAt` to a state
  * @returns the history whose present to write back; undefined with nothing to undo or redo
- * @see docs/domain/interaction.md#_7-navigation-and-history
+ * @see RULE-interaction-7-navigation-and-history
  */
 function readMovedHistory(
   document: Document,
@@ -71,7 +71,7 @@ function readMovedHistory(
  * @param document - page document
  * @param move - `sizedUndoneHistory`, `sizedRedoneHistory`, or `sizedHistoryAt` to a state
  * @param update - redraws the page from the values typed
- * @see docs/domain/interaction.md#_7-navigation-and-history
+ * @see RULE-interaction-7-navigation-and-history
  */
 export function moveHistory(
   document: Document,

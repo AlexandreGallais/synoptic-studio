@@ -62,7 +62,7 @@ Copy before the first run with parallel workers:
 | one linter (oxlint, then the project's rules in Rust on Oxc's crates) and one formatter, every rule triaged before it is enabled | `check:all` from 170–217 s to about 73 s; 38 dev packages to 13 |
 | a worker type with the project's rules preloaded, without `CLAUDE.md` | a story worker's first request from 38,897 to 10,562 tokens (EN-065) |
 | the Git sequences a worker repeats as one call each (`git-sequences sync`, `commit`) | Git calls per worker from a median of 12 to 4 |
-| one row or one section read by `page`, every page fetched through the library | `docs/references.md` read whole 121 times in three days before |
+| one row or one section read by `page`, every page fetched through the library | `PAGE-references` read whole 121 times in three days before |
 | a tool that fails during a run written as a card, all fixed together at the next review (ADR-0086) | each fix during a run cost a worktree, a merge and a rebuild of every running story's binaries |
 
 ## Cases met in E01

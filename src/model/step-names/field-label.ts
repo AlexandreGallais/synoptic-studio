@@ -10,7 +10,7 @@ import { fieldWords } from "./field-words";
  * @kind domain
  * @param field - a field's name, in camel case
  * @returns the panel's label of the field
- * @see docs/domain/interaction.md#_7-navigation-and-history
+ * @see RULE-interaction-7-navigation-and-history
  */
 export function fieldLabel(field: string): string {
   return FIELD_LABELS.get(field) ?? fieldWords(field);

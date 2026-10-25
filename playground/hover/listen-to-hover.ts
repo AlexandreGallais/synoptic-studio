@@ -10,7 +10,7 @@ import { showHover } from "./show-hover";
  *
  * @kind procedure
  * @param document - page document
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 export function listenToHover(document: Document): void {
   const canvas = selectElement(document, "canvas");

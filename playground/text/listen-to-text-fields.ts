@@ -37,7 +37,7 @@ function listenToBoxChoice(document: Document): void {
  * @kind procedure
  * @param document - page document
  * @param update - redraws the playground
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 function listenToOptions(document: Document, update: () => void): void {
   const options = selectElement(document, "text-options");

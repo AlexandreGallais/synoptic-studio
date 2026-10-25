@@ -12,7 +12,7 @@ import { writeOwnValue } from "./write-own-value";
  * @kind procedure
  * @param event - a `change` heard on the document before the field
  * @param field - a field acting as a number field of its own
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 function stopRefusedText(event: Event, field: HTMLInputElement): void {
   if (!SHOWN_TEXTS.has(field)) {
@@ -32,7 +32,7 @@ function stopRefusedText(event: Event, field: HTMLInputElement): void {
  * @kind procedure
  * @param event - a `change` heard on the document before the field
  * @param field - a field acting as a number field of its own
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 export function applyOwnText(event: Event, field: HTMLInputElement): void {
   const typed = parsePanelValue(field.value);

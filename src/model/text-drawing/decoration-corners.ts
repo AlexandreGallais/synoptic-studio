@@ -14,7 +14,7 @@ const SHARP = [0, 0, 0, 0];
  * @kind domain
  * @param decoration - the rectangle, its width and height positive
  * @returns its four corners
- * @see docs/domain/shapes.md#text
+ * @see RULE-shapes-text
  */
 export function decorationCorners(decoration: LineDecoration): readonly Corner[] {
   return rectangleCorners({ ...decoration, angle: 0, radii: SHARP });

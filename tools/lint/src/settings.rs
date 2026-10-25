@@ -208,27 +208,6 @@ pub const PROCEDURE_VERBS: [&str; 51] = [
     "write",
 ];
 
-/// Where `@see` targets are resolved, from the root (docs/conventions/documentation.md).
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub struct ReferenceSources {
-    /// The folder of the ADRs.
-    pub adr_directory: &'static str,
-    /// The folder of the derivations.
-    pub derivations_directory: &'static str,
-    /// The bibliography.
-    pub references_file: &'static str,
-    /// The mark of a row not yet verified.
-    pub unverified_marker: &'static str,
-}
-
-/// The project's reference sources.
-pub const REFERENCE_SOURCES: ReferenceSources = ReferenceSources {
-    adr_directory: "docs/adr",
-    derivations_directory: "docs/derivations",
-    references_file: "docs/references.md",
-    unverified_marker: "[unverified]",
-};
-
 /// Most modules a folder holds before it asks for a domain to split it (ADR-0043).
 pub const FOLDER_SIGNAL: usize = 15;
 

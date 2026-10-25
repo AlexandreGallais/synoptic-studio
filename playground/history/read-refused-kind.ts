@@ -13,7 +13,7 @@ const NO_SHAPE_EDITED = new Set(["none", "several"]);
  * @param document - page document, just redrawn
  * @returns `rectangle`, `polygon`, `round`, `free` or `text`; undefined for a shape drawn, or
  * none or several selected
- * @see docs/domain/interaction.md#_7-navigation-and-history
+ * @see RULE-interaction-7-navigation-and-history
  */
 export function readRefusedKind(document: Document): string | undefined {
   const kind = readShapeKind(document);

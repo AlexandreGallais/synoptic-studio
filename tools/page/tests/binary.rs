@@ -237,15 +237,16 @@ fn a_wrong_call_or_a_missing_page_exits_2() {
 }
 
 #[test]
-fn a_missing_references_page_exits_2() {
+fn a_missing_references_page_finds_no_row_exit_1_for_the_fallback() {
     let repo = repo("noref");
 
     fs::remove_file(repo.0.join("docs/references.md")).expect("removed");
 
     let output = page(&repo.0, &["REF-A"]);
 
-    assert_eq!(output.status.code(), Some(2));
-    assert!(stderr(&output).starts_with("docs/references.md: "));
+    // Exit 1, as for an id no page holds, so that the records are asked (E49).
+    assert_eq!(output.status.code(), Some(1));
+    assert!(stderr(&output).starts_with("REF-A: no file docs/references.md"));
 }
 
 #[test]

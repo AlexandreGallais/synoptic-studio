@@ -12,7 +12,7 @@ import { updateShapeDrawing } from "./update-shape-drawing";
  * @kind procedure
  * @param document - page document
  * @param update - redraws the page from the values typed
- * @see docs/domain/interaction.md#_1-tools
+ * @see RULE-interaction-1-tools
  */
 function listenToShift(document: Document, update: () => void): void {
   document.addEventListener(
@@ -44,7 +44,7 @@ function listenToShift(document: Document, update: () => void): void {
  * @kind procedure
  * @param document - page document
  * @param update - redraws the page from the values typed
- * @see docs/domain/interaction.md#_1-tools
+ * @see RULE-interaction-1-tools
  */
 export function listenToShapeDrawing(document: Document, update: () => void): void {
   const canvas = selectElement(document, "canvas");

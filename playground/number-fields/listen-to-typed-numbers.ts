@@ -10,7 +10,7 @@ import { readNumberField } from "./read-number-field";
  *
  * @kind procedure
  * @param event - a key pressed, or the focus given
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 function writeShownText(event: Event): void {
   const field = readNumberField(event.target);
@@ -26,7 +26,7 @@ function writeShownText(event: Event): void {
  *
  * @kind procedure
  * @param event - a text typed, `input`
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 function writeTypedField(event: Event): void {
   const field = readNumberField(event.target);
@@ -42,7 +42,7 @@ function writeTypedField(event: Event): void {
  *
  * @kind procedure
  * @param event - a value applied, `change`
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 function clearTypedField(event: Event): void {
   const field = readNumberField(event.target);
@@ -60,7 +60,7 @@ function clearTypedField(event: Event): void {
  *
  * @kind procedure
  * @param event - a value applied, `change`, heard before any other listener of the document
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 function stopUnchangedText(event: Event): void {
   const field = readNumberField(event.target);
@@ -77,7 +77,7 @@ function stopUnchangedText(event: Event): void {
  *
  * @kind procedure
  * @param event - the focus given
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 function writeFocusedText(event: Event): void {
   clearTypedField(event);
@@ -94,7 +94,7 @@ function writeFocusedText(event: Event): void {
  *
  * @kind procedure
  * @param document - page document
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 export function listenToTypedNumbers(document: Document): void {
   const signal = readListenerSignal(document);

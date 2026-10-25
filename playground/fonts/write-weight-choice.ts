@@ -56,7 +56,7 @@ function readWeightLabel(weight: number): string {
  * @param family - the family chosen, with at least one face
  * @param weight - the weight asked
  * @returns the face's weight; the weight asked for a family without faces
- * @see docs/domain/shapes.md#text
+ * @see RULE-shapes-text
  */
 function readMatchingWeight(document: Document, family: FontFamily, weight: number): number {
   const isItalic = selectElement(document, "text-italic").getAttribute("aria-pressed") === "true";

@@ -9,7 +9,7 @@ import { readStoredDrawing } from "./read-stored-drawing";
  * @kind procedure
  * @param document - page document
  * @returns the indices, ascending
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 function readSeveralSelected(document: Document): readonly number[] {
   const kept = selectElement(document, "canvas").dataset[DRAWING_KEYS.selected] ?? "";
@@ -25,7 +25,7 @@ function readSeveralSelected(document: Document): readonly number[] {
  * @kind procedure
  * @param document - page document
  * @returns the indices, ascending
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 export function readSelectedShapes(document: Document): readonly number[] {
   if (readShapeKind(document) === "several") {

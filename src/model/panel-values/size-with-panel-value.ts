@@ -8,7 +8,7 @@ import type { Size } from "../../geometry";
  * @param side - `width` or `height`, the field typed
  * @param value - the new width or height (`panelValueAfterEdit`)
  * @returns the size after
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 export function sizeWithPanelValue(size: Size, side: "height" | "width", value: number): Size {
   return side === "width"

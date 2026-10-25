@@ -13,7 +13,7 @@ import type { Shape } from "../shape";
  * @kind domain
  * @param shape - a valid shape of the model
  * @returns its values
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 export function shapePanelValues(shape: Shape): PanelValues {
   const box = shapeStraightBox(shapeCorners(shape));

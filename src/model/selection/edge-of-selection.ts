@@ -7,7 +7,7 @@ import { isInIntegerRange, modulo } from "../../math";
  * @param point - number of a point
  * @param count - number of points of the shape
  * @returns `true` when the shape has that point
- * @see docs/domain/interaction.md#_3-node-editing
+ * @see RULE-interaction-3-node-editing
  */
 function isPointOf(point: number, count: number): boolean {
   return isInIntegerRange(point, 0, count - 1);
@@ -22,7 +22,7 @@ function isPointOf(point: number, count: number): boolean {
  * @param count - number of points of the shape
  * @returns the number of the edge, `undefined` unless exactly two distinct neighbouring points of
  * the shape (whole numbers from 0 to `count − 1`) are selected
- * @see docs/domain/interaction.md#_3-node-editing
+ * @see RULE-interaction-3-node-editing
  */
 export function edgeOfSelection(selected: readonly number[], count: number): number | undefined {
   const isPair =

@@ -6,7 +6,7 @@ import type { PanelValues } from "./panel-values";
  * @kind domain
  * @param key - the field
  * @returns `true` for `width` and `height`
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 export function isPanelSize(key: keyof PanelValues): key is "height" | "width" {
   return key === "width" || key === "height";

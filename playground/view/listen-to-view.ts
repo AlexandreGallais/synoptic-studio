@@ -20,7 +20,7 @@ const RESTARTS = ["tool-reset", "guide-previous", "guide-next"];
  * @kind procedure
  * @param document - page document
  * @param update - redraws the page
- * @see docs/domain/interaction.md#_7-navigation-and-history
+ * @see RULE-interaction-7-navigation-and-history
  */
 export function listenToView(document: Document, update: () => void): void {
   PAGE_VIEWS.delete(document);

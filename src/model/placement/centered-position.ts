@@ -15,7 +15,7 @@ import type { Point } from "../../math";
  * @param point - the point clicked, in the coordinates of the SVG, possibly fractional
  * @param size - width and height of the box, possibly fractional (a text's measured block)
  * @returns the top-left of the box before it turns (ADR-0035), integers
- * @see docs/domain/interaction.md#_1-tools
+ * @see RULE-interaction-1-tools
  */
 export function centeredPosition(point: Point, size: Size): Point {
   const corner = subtract(point, halfSize(size));

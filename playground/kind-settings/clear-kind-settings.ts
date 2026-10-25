@@ -8,7 +8,7 @@ import { KIND_SETTINGS } from "./kind-settings";
  *
  * @kind procedure
  * @param document - page document
- * @see docs/domain/interaction.md#_1-tools
+ * @see RULE-interaction-1-tools
  */
 export function clearKindSettings(document: Document): void {
   const { dataset } = selectElement(document, "toolbar");

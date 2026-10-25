@@ -29,7 +29,7 @@ const STEPPED_AXES: ReadonlyMap<string, "x" | "y"> = new Map([
  * @param field - the value it sets and the field's id
  * @param isStep - whether the value is an arrow's step
  * @returns the axis; undefined for a value typed, or a step in Width or Height
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 function readSteppedAxis(field: EditedField, isStep: boolean): "x" | "y" | undefined {
   return isStep ? STEPPED_AXES.get(field[1]) : undefined;
@@ -45,7 +45,7 @@ function readSteppedAxis(field: EditedField, isStep: boolean): "x" | "y" | undef
  * @param document - page document
  * @param field - the value it sets and the field's id
  * @param applied - the value and whether it is an arrow's step
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 function applyFieldValue(document: Document, field: EditedField, applied: AppliedValue): void {
   const axis = readSteppedAxis(field, applied.isStep);
@@ -70,7 +70,7 @@ function applyFieldValue(document: Document, field: EditedField, applied: Applie
  * @kind procedure
  * @param document - page document
  * @param update - redraws the page
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 export function listenToEditedFields(document: Document, update: () => void): void {
   for (const field of EDITED_FIELDS) {

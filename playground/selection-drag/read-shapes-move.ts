@@ -16,7 +16,7 @@ import type { ShapesMove } from "../hover";
  * @param index - the index of the shape pressed (`shapeAtPoint`)
  * @param isShift - whether Shift is held at the press
  * @returns the drawing, the shapes selected and moved, and their anchor
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 export function readShapesMove(document: Document, index: number, isShift: boolean): ShapesMove {
   const before = readSelectedShapes(document);

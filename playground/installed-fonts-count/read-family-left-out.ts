@@ -11,7 +11,7 @@ import type { InstalledFaceRead } from "../installed-fonts";
  * @kind procedure
  * @param reads - the reads of its faces, none kept
  * @returns the family's reason
- * @see docs/domain/shapes.md#text
+ * @see RULE-shapes-text
  */
 export function readFamilyLeftOut(reads: readonly InstalledFaceRead[]): InstalledFaceLeftOut {
   const reasons = new Set(reads.map((read) => read.leftOut));

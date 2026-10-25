@@ -56,7 +56,7 @@ function addWheelZoom(document: Document, event: WheelEvent, delta: number): voi
  * @param document - page document
  * @param event - the wheel's turn on the canvas
  * @param isMacOS - whether the page runs on macOS, read once as the page listens
- * @see docs/domain/interaction.md#_7-navigation-and-history
+ * @see RULE-interaction-7-navigation-and-history
  */
 function writeWheelView(document: Document, event: WheelEvent, isMacOS: boolean): void {
   const delta = {
@@ -86,7 +86,7 @@ function writeWheelView(document: Document, event: WheelEvent, isMacOS: boolean)
  * @kind procedure
  * @param document - page document
  * @param update - redraws the page
- * @see docs/domain/interaction.md#_7-navigation-and-history
+ * @see RULE-interaction-7-navigation-and-history
  */
 export function listenToWheel(document: Document, update: () => void): void {
   const isMacOS = globalThis.navigator.platform.startsWith("Mac");

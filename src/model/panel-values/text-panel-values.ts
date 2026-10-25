@@ -13,7 +13,7 @@ import type { Text } from "../text";
  * @param text - its position, its box, whether it sits in it, and its angle
  * @param block - its measured block (`textBlock`)
  * @returns its values
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 export function textPanelValues(text: Text, block: Size): PanelValues {
   const { height, width } = textFrame(text, block);

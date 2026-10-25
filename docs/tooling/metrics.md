@@ -51,7 +51,7 @@ Each tool of our own records its own use (EN-102), whoever calls it — the agen
 - **A poll is not recorded**: a subcommand another program calls on a timer is a poll, which its tool marks by calling `tool_use::run_or_poll` instead of `run`; its line is never written, its output and exit code unchanged. Today one: `run-totals status`, which the status line calls once a second during a run, about 18,000 lines a run of 5 hours that would say nothing of the tool's use; every other subcommand of `run-totals` is recorded. `tools/tool-use/tests/record.rs` proves both.
 - **Its cost**: 0.13 to 0.17 ms a call, about 121 bytes a line (EN-102's measures).
 - **Release builds only**: `package.json`, the Git hooks and `.claude/settings.json` run every tool with `--release`; a debug build is a test's, whose calls are not uses, so it records nothing.
-- No crate: the standard library appends the line ([research note 0025](../research/notes/0025-f21-agent-tools-in-rust.md)).
+- No crate: the standard library appends the line (research note 0025 NOTE-0025).
 
 ## The report
 
@@ -80,7 +80,7 @@ Each tool of our own records its own use (EN-102), whoever calls it — the agen
 - **A session's tokens** are Claude Code's count of it, its subagents' included, when its transcripts hold one (`modelUsage`, as in [the session report](#session-report)) and its first request came in the period: a Sonnet subagent's transcript holds a small part of what it wrote (CHK-021). Otherwise, and for the features, stories and tasks, they are the requests' sums: the count holds the whole session and cannot be cut by time nor by branch (AUD-034).
 - **Failed** counts the calls that ended in an error: a failing check, a refused commit, a denied command.
 
-It is the binary `metrics` of `tools/metrics` (EN-107), which reads the library in its own process. Measured on 1.6 GB of transcripts (2026-10-18): 6.4 s without the cache, then 0.5 s ([research note 0025](../research/notes/0025-f21-agent-tools-in-rust.md#the-tools-story-by-story)).
+It is the binary `metrics` of `tools/metrics` (EN-107), which reads the library in its own process. Measured on 1.6 GB of transcripts (2026-10-18): 6.4 s without the cache, then 0.5 s (research note 0025 NOTE-0025).
 
 ### Findings
 

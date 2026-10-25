@@ -10,7 +10,7 @@ import type { Point, SizedText } from "../../src";
  * @kind procedure
  * @param sized - a text and its measured block
  * @returns the top-left of its straight box, in the SVG
- * @see docs/domain/shapes.md#scripts-and-turning
+ * @see RULE-shapes-scripts-and-turning
  */
 export function readStraightStart(sized: SizedText): Point {
   const box = textStraightBox(sized.text, sized.block);

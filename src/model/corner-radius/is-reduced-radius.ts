@@ -8,7 +8,7 @@ import { EPSILON } from "../../math";
  * @param requested - the radius asked
  * @param effective - the radius drawn
  * @returns `true` when the radius drawn is smaller, beyond `EPSILON`
- * @see docs/domain/shapes.md#radius-clamping
+ * @see RULE-shapes-radius-clamping
  */
 export function isReducedRadius(requested: number, effective: number): boolean {
   return requested - effective >= EPSILON;

@@ -22,7 +22,7 @@ const LINE = 1;
  * @param document - page document
  * @param areas - what each shape selected offers the pointer, its contour as drawn
  * @returns the white line's `<path>`, then the dashes'
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 function createSelectionBox(
   document: Document,
@@ -47,7 +47,7 @@ function createSelectionBox(
  * @param document - page document
  * @returns their `<path>` elements; nothing while no shape is selected, or the one edited is
  * refused
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 export function createSelectionElements(document: Document): readonly SVGPathElement[] {
   const drawing = readKeptDrawing(document);

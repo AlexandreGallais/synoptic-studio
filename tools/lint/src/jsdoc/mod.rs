@@ -425,7 +425,6 @@ mod tests {
 
     use super::{all, comment_of, comment_text};
     use crate::project::Project;
-    use crate::settings::REFERENCE_SOURCES;
     use crate::source::Source;
 
     /// The comment each function of a code carries, by the function's name.
@@ -438,7 +437,7 @@ mod tests {
             .with_build_nodes(true)
             .build(&program)
             .semantic;
-        let project = Project::new(std::path::Path::new("/project"), REFERENCE_SOURCES);
+        let project = Project::new(std::path::Path::new("/project"));
         let source = Source::new("src/a.ts", &program, &semantic, &[], &project);
 
         semantic
@@ -491,7 +490,7 @@ mod tests {
             .parse()
             .program;
         let semantic = SemanticBuilder::new().build(&program).semantic;
-        let project = Project::new(std::path::Path::new("/project"), REFERENCE_SOURCES);
+        let project = Project::new(std::path::Path::new("/project"));
         let source = Source::new("src/a.ts", &program, &semantic, &[], &project);
         let docs = all(&source);
 

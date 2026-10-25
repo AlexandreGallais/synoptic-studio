@@ -17,7 +17,7 @@ import type { FreeShape } from "../free-shape";
  * @param polygon - valid polygon (`isValidRegularPolygon`) of width and height > 0: one of size 0
  * has no box to stretch, and is not converted (F08)
  * @returns the free shape drawing that polygon
- * @see docs/domain/interaction.md#_3-node-editing
+ * @see RULE-interaction-3-node-editing
  */
 export function regularPolygonAsFreeShape(polygon: RegularPolygon): FreeShape {
   const corners = regularPolygonCorners(polygon).map((corner) => curveCornerOf(corner));

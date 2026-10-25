@@ -15,7 +15,7 @@ import type { HistoryState } from "../history";
  * @param history - the history before the move
  * @param state - the state to show, the object the history holds
  * @returns the history moved, or the one given
- * @see docs/domain/interaction.md#_7-navigation-and-history
+ * @see RULE-interaction-7-navigation-and-history
  */
 export function sizedHistoryAt<T extends WeakKey>(
   history: SizedHistory<T>,

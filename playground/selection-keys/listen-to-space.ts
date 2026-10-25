@@ -10,7 +10,7 @@ import { readKeyField } from "./read-key-field";
  * @kind procedure
  * @param document - page document
  * @param event - the key pressed
- * @see docs/domain/interaction.md#_1-tools
+ * @see RULE-interaction-1-tools
  */
 function pressSpace(document: Document, event: KeyboardEvent): void {
   if (!(event.key === " " && readKeyField(event) === undefined)) {
@@ -31,7 +31,7 @@ function pressSpace(document: Document, event: KeyboardEvent): void {
  * @kind procedure
  * @param document - page document
  * @param event - the key pressed, or the pointer moved or pressed
- * @see docs/domain/interaction.md#_7-navigation-and-history
+ * @see RULE-interaction-7-navigation-and-history
  */
 function removeSpaceUnderCommand(document: Document, event: KeyboardEvent | PointerEvent): void {
   if (event.metaKey) {
@@ -46,7 +46,7 @@ function removeSpaceUnderCommand(document: Document, event: KeyboardEvent | Poin
  * @kind procedure
  * @param document - page document
  * @param event - the key released
- * @see docs/domain/interaction.md#_1-tools
+ * @see RULE-interaction-1-tools
  */
 function removeHeldSpace(document: Document, event: KeyboardEvent): void {
   if (event.key !== " ") {
@@ -70,7 +70,7 @@ function removeHeldSpace(document: Document, event: KeyboardEvent): void {
  *
  * @kind procedure
  * @param document - page document
- * @see docs/domain/interaction.md#_1-tools
+ * @see RULE-interaction-1-tools
  */
 export function listenToSpace(document: Document): void {
   document.addEventListener(

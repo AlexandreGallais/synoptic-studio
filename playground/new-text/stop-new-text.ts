@@ -11,7 +11,7 @@ import { readNewText } from "./read-new-text";
  *
  * @kind procedure
  * @param document - page document
- * @see docs/domain/interaction.md#_1-tools
+ * @see RULE-interaction-1-tools
  */
 export function stopNewText(document: Document): void {
   const text = readNewText(document);

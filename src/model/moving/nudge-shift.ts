@@ -26,7 +26,7 @@ const ARROW_DIRECTIONS: ReadonlyMap<string, Point> = new Map([
  * @param key - the key pressed, as `KeyboardEvent.key` names it
  * @param isFurther - whether Shift is held, nudging by 10
  * @returns the nudge, before it lands; undefined for a key other than an arrow
- * @see docs/domain/interaction.md#_1-tools
+ * @see RULE-interaction-1-tools
  */
 export function nudgeShift(key: string, isFurther: boolean): Point | undefined {
   const direction = ARROW_DIRECTIONS.get(key);

@@ -14,7 +14,7 @@ import { writeMovedDrawing } from "./write-moved-drawing";
  * @kind procedure
  * @param document - page document
  * @param update - redraws the page from the values typed
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 export function showSelectionDrag(document: Document, update: () => void): void {
   const drag = SELECTION_DRAGS.get(document);

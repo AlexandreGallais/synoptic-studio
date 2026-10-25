@@ -14,7 +14,7 @@ import type { KeptShape } from "../kept-shapes";
  * @param move - the drawing at the press and the shapes moved
  * @param shift - how far they go
  * @returns every shape in the order drawn, those moved at their new place
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 export function readMovedDrawing(move: ShapesMove, shift: Point): readonly KeptShape[] {
   return move.drawing.map((kept, index) => {

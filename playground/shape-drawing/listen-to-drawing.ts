@@ -22,7 +22,7 @@ import { listenToShapeDrawing } from "./listen-to-shape-drawing";
  * @kind procedure
  * @param document - page document
  * @param update - redraws the page from the values typed
- * @see docs/domain/interaction.md#_1-tools
+ * @see RULE-interaction-1-tools
  */
 export function listenToDrawing(document: Document, update: () => void): void {
   listenToView(document, update);

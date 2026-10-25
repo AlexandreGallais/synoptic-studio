@@ -14,7 +14,7 @@ import type { SizedHistory } from "./sized-history";
  * @template T - type of the shapes, or of what is kept of each, objects never changed once made
  * @param history - the history before the undo
  * @returns a new history, or the one given when nothing is past
- * @see docs/domain/interaction.md#_7-navigation-and-history
+ * @see RULE-interaction-7-navigation-and-history
  */
 export function sizedUndoneHistory<T extends WeakKey>(history: SizedHistory<T>): SizedHistory<T> {
   return sizedMovedHistory(history, undoneHistory(history));

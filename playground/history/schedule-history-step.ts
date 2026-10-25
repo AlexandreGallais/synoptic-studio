@@ -9,7 +9,7 @@ import { DUE_HISTORY_STEPS } from "./due-history-steps";
  * @kind procedure
  * @param document - page document
  * @param update - redraws the page from the values typed
- * @see docs/domain/interaction.md#_7-navigation-and-history
+ * @see RULE-interaction-7-navigation-and-history
  */
 export function scheduleHistoryStep(document: Document, update: () => void): void {
   DUE_HISTORY_STEPS.add(document);

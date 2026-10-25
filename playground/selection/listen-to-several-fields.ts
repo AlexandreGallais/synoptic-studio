@@ -15,7 +15,7 @@ import { SEVERAL_FIELDS } from "./several-fields";
  * @kind procedure
  * @param document - page document
  * @param update - redraws the page
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 export function listenToSeveralFields(document: Document, update: () => void): void {
   for (const [key, id] of SEVERAL_FIELDS) {

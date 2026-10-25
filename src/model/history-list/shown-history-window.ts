@@ -12,7 +12,7 @@ import type { HistoryWindow } from "./history-window";
  * @param future - how many states are to come
  * @param rows - the most rows shown, the present's included
  * @returns the past states shown, and those to come
- * @see docs/domain/interaction.md#_7-navigation-and-history
+ * @see RULE-interaction-7-navigation-and-history
  */
 export function shownHistoryWindow(past: number, future: number, rows: number): HistoryWindow {
   const beside = Math.max(rows - 1, 0);

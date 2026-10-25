@@ -95,7 +95,6 @@ mod tests {
 
     use super::module_sources;
     use crate::project::Project;
-    use crate::settings::REFERENCE_SOURCES;
     use crate::source::Source;
 
     /// The specifiers of a piece of code, each with whether it names types only.
@@ -108,7 +107,7 @@ mod tests {
             .with_build_nodes(true)
             .build(&program)
             .semantic;
-        let project = Project::new(Path::new("/project"), REFERENCE_SOURCES);
+        let project = Project::new(Path::new("/project"));
         let source = Source::new("a.ts", &program, &semantic, &[], &project);
 
         module_sources(&source)

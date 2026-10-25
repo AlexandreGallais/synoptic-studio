@@ -10,7 +10,7 @@
  * @param drawing - the shapes recorded, in the order drawn
  * @param present - the shapes of the history's present
  * @returns a new drawing, in the same order, each shape the present's when their texts are equal
- * @see docs/domain/interaction.md#_7-navigation-and-history
+ * @see RULE-interaction-7-navigation-and-history
  */
 export function sharedDrawing<T>(drawing: readonly T[], present: readonly T[]): readonly T[] {
   const texts = present.map((shape): readonly [string, T] => [JSON.stringify(shape), shape]);

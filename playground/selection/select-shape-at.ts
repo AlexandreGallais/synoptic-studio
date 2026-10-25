@@ -17,7 +17,7 @@ import type { Point } from "../../src";
  * @param document - page document
  * @param point - the point clicked, in the coordinates of the drawing's SVG
  * @param isShift - whether Shift is held, adding the shape under the point or taking it out
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 export function selectShapeAt(document: Document, point: Point, isShift: boolean): void {
   const index = readShapeAt(document, readPickAreas(document), point);

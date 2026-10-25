@@ -14,7 +14,7 @@ import type { TypedPanelValue } from "../../src";
  * @param document - page document
  * @param id - `radius` or `point-radius`
  * @returns the value; undefined for a field showing a number, its value applied
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 function readMixedTyped(document: Document, id: string): TypedPanelValue | undefined {
   const field = selectElement(document, id);

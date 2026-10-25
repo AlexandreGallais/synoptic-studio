@@ -6,7 +6,7 @@
  * @param before - the shape's fields before a step
  * @param after - its fields after it
  * @returns the names of the fields changed, sorted; none when the two are equal
- * @see docs/domain/interaction.md#_7-navigation-and-history
+ * @see RULE-interaction-7-navigation-and-history
  */
 export function changedFields(
   before: Readonly<Record<string, unknown>>,

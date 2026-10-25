@@ -21,7 +21,7 @@ import type { KeptShape } from "../kept-shapes";
  * @param present - the drawing and the selection the page shows
  * @param bound - the memory size and the steps kept (`readPageHistoryBound`)
  * @returns the history recorded
- * @see docs/domain/interaction.md#_7-navigation-and-history
+ * @see RULE-interaction-7-navigation-and-history
  */
 function readSavedHistory(
   history: SizedHistory<KeptShape> | undefined,
@@ -41,7 +41,7 @@ function readSavedHistory(
  * @kind procedure
  * @param document - page document, redrawn from the last action
  * @returns the page's history once recorded
- * @see docs/domain/interaction.md#_7-navigation-and-history
+ * @see RULE-interaction-7-navigation-and-history
  */
 export function saveHistoryStep(document: Document): SizedHistory<KeptShape> {
   const history = PAGE_HISTORIES.get(document);

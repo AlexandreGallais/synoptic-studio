@@ -4,7 +4,7 @@
 
 use rusqlite::{Connection, params};
 
-use crate::document::read_document;
+use crate::document::{Document, read_document};
 
 /// What `add` is given beside the text: the kind, the file it came from, the branch it is written
 /// on and the day.
@@ -66,20 +66,76 @@ pub fn add_document(
     origin: Origin<'_>,
 ) -> rusqlite::Result<String> {
     let document = read_document(text);
-    let date = document.date.as_deref().unwrap_or(origin.today);
     let id = match &document.id {
         Some(id) => id.clone(),
-        None => next_id(database, origin.kind, date)?,
+        None => next_id(
+            database,
+            origin.kind,
+            document.date.as_deref().unwrap_or(origin.today),
+        )?,
     };
-    let key = params![id, origin.branch];
 
     database.execute(
         "DELETE FROM documents WHERE id = ? AND branch = ? AND state = 'draft'",
-        key,
+        params![id, origin.branch],
     )?;
+    insert_document(database, &id, &document, origin, Written::Draft)?;
+    Ok(id)
+}
+
+/// How a document is written: a draft of its branch, or a merged row, public or private.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Written {
+    /// A `draft` of its branch, as `add` writes.
+    Draft,
+    /// A `merged` row, as an import writes what the trunk held; `true` for a private one.
+    Merged(bool),
+}
+
+/// Writes a text as the merged document of an id, replacing the merged row of that id, the
+/// drafts of every branch kept (E49, the move into the records): what an import of the files the
+/// trunk held writes, so that `search` and `show` find it. A private one, a memory, is flagged.
+///
+/// # Errors
+/// When SQLite fails.
+pub fn put_merged(
+    database: &Connection,
+    id: &str,
+    text: &str,
+    origin: Origin<'_>,
+    private: bool,
+) -> rusqlite::Result<()> {
+    database.execute(
+        "DELETE FROM documents WHERE id = ? AND state = 'merged'",
+        [id],
+    )?;
+    insert_document(
+        database,
+        id,
+        &read_document(text),
+        origin,
+        Written::Merged(private),
+    )
+}
+
+/// Inserts a document's row, its fields, its sections and its citations, its own id left out of
+/// them, in the state asked.
+fn insert_document(
+    database: &Connection,
+    id: &str,
+    document: &Document,
+    origin: Origin<'_>,
+    written: Written,
+) -> rusqlite::Result<()> {
+    let date = document.date.as_deref().unwrap_or(origin.today);
+    let (state, private) = match written {
+        Written::Draft => ("draft", false),
+        Written::Merged(private) => ("merged", private),
+    };
+
     database.execute(
         "INSERT INTO documents (id, kind, title, epic, feature, status, date, branch, state, private, path)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'draft', 0, ?)",
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
         params![
             id,
             origin.kind,
@@ -89,27 +145,36 @@ pub fn add_document(
             document.status,
             date,
             origin.branch,
+            state,
+            private,
             origin.path
         ],
     )?;
     for (key, value) in &document.fields {
         database.execute(
-            "INSERT INTO fields (document, branch, state, key, value) VALUES (?, ?, 'draft', ?, ?)",
-            params![id, origin.branch, key, value],
+            "INSERT INTO fields (document, branch, state, key, value) VALUES (?, ?, ?, ?, ?)",
+            params![id, origin.branch, state, key, value],
         )?;
     }
     for (position, section) in (0_i64..).zip(&document.sections) {
         database.execute(
             "INSERT INTO sections (document, branch, state, position, heading, text)
-            VALUES (?, ?, 'draft', ?, ?, ?)",
-            params![id, origin.branch, position, section.heading, section.text],
+            VALUES (?, ?, ?, ?, ?, ?)",
+            params![
+                id,
+                origin.branch,
+                state,
+                position,
+                section.heading,
+                section.text
+            ],
         )?;
     }
-    for cited in &document.citations {
+    for cited in document.citations.iter().filter(|cited| *cited != id) {
         database.execute(
-            "INSERT INTO links (\"from\", branch, state, \"to\") VALUES (?, ?, 'draft', ?)",
-            params![id, origin.branch, cited],
+            "INSERT INTO links (\"from\", branch, state, \"to\") VALUES (?, ?, ?, ?)",
+            params![id, origin.branch, state, cited],
         )?;
     }
-    Ok(id)
+    Ok(())
 }

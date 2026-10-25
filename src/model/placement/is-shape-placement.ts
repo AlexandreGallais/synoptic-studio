@@ -12,7 +12,7 @@ export type ShapePlacement = Pick<FreeShape, "angle" | "x" | "y">;
  * @kind domain
  * @param placement - the angle and the top-left of the box before turning
  * @returns `true` when both are allowed
- * @see docs/domain/shapes.md#rotation-of-shapes
+ * @see RULE-shapes-rotation-of-shapes
  */
 export function isShapePlacement(placement: ShapePlacement): boolean {
   return (

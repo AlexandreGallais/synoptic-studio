@@ -16,7 +16,7 @@ export type UnlistedFaceReason = "no-latin-letters" | "not-embeddable";
  * @kind domain
  * @param face - the face read, its metrics and its file
  * @returns the reason; undefined for a face that can be listed
- * @see docs/domain/shapes.md#text
+ * @see RULE-shapes-text
  */
 export function unlistedFaceReason(face: FontFace): UnlistedFaceReason | undefined {
   if (face.file?.isEmbeddable === false) {

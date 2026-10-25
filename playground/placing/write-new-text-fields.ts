@@ -8,7 +8,7 @@ import { selectElement } from "../page";
  *
  * @kind procedure
  * @param document - page document
- * @see docs/domain/interaction.md#_1-tools
+ * @see RULE-interaction-1-tools
  */
 export function writeNewTextFields(document: Document): void {
   Object.assign(selectElement(document, "text-content"), { value: "" });

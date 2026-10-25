@@ -7,7 +7,7 @@
  * @param start - where its straight box starts on that axis
  * @param target - where it must start, the value typed
  * @returns the shift, in user units
- * @see docs/domain/shapes.md#rotation-of-shapes
+ * @see RULE-shapes-rotation-of-shapes
  */
 export function straightBoxShift(start: number, target: number): number {
   return target - start;

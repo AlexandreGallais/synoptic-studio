@@ -7,7 +7,7 @@
  * @param part - the shorter list
  * @param whole - the list it is looked for in
  * @returns true when the items of `whole`, some left out, are those of `part`, by `===`
- * @see docs/domain/interaction.md#_7-navigation-and-history
+ * @see RULE-interaction-7-navigation-and-history
  */
 export function isKeptInOrder<T>(part: readonly T[], whole: readonly T[]): boolean {
   const found = whole.reduce((count, item) => (part[count] === item ? count + 1 : count), 0);

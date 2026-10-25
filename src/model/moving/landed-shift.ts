@@ -15,7 +15,7 @@ import type { Point } from "../../math";
  * @param anchor - the top-left of the straight box of the shapes moved, their dashed box for several
  * @param offset - how far the pointer went from the press, possibly fractional
  * @returns the shift every shape moved goes by
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 export function landedShift(anchor: Point, offset: Point): Point {
   return {

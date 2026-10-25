@@ -14,7 +14,7 @@ import type { History } from "../history";
  * @template T - type of the shapes, or of what is kept of each, objects never changed once made
  * @param history - the states, past, present and to come
  * @returns a new history, its states those given
- * @see docs/domain/interaction.md#_7-navigation-and-history
+ * @see RULE-interaction-7-navigation-and-history
  */
 export function measuredHistory<T extends WeakKey>(history: History<T>): SizedHistory<T> {
   const present = new Set(history.present.drawing);

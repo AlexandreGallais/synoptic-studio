@@ -15,7 +15,7 @@ import type { History } from "../history";
  * @param history - the history before the move
  * @param moved - its states once undone (`undoneHistory`) or redone (`redoneHistory`)
  * @returns a new history, or the one given when the move changed nothing
- * @see docs/domain/interaction.md#_7-navigation-and-history
+ * @see RULE-interaction-7-navigation-and-history
  */
 export function sizedMovedHistory<T extends WeakKey>(
   history: SizedHistory<T>,

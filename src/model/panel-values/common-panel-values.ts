@@ -23,7 +23,7 @@ export type CommonPanelValues = {
  * @kind domain
  * @param values - each shape's values (`shapePanelValues`, `textPanelValues`), in the order drawn
  * @returns their common values, `undefined` where they differ (an absent value, ADR-0025)
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 export function commonPanelValues(values: readonly PanelValues[]): CommonPanelValues {
   return {

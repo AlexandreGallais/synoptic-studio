@@ -16,7 +16,7 @@ import type { SelectionDrag } from "../hover";
  * @param document - page document
  * @param event - the press on the canvas
  * @returns the point pressed, in the coordinates of the drawing's SVG; undefined for another press
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 function readSelectorPress(document: Document, event: PointerEvent): Point | undefined {
   return readArmedTool(document) === "selector" && event.button === 0
@@ -35,7 +35,7 @@ function readSelectorPress(document: Document, event: PointerEvent): Point | und
  * @param press - the point pressed, in the coordinates of the drawing's SVG
  * @param event - the press, telling whether Shift and Alt are held
  * @returns the drag, the pointer on the press, not moved yet
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 function readPressedDrag(document: Document, press: Point, event: PointerEvent): SelectionDrag {
   const isShape = readMode(document) === "shape";
@@ -61,7 +61,7 @@ function readPressedDrag(document: Document, press: Point, event: PointerEvent):
  * @param document - page document
  * @param drag - the drag the press starts
  * @param pointerId - the pointer pressed
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 function startPointerCapture(document: Document, drag: SelectionDrag, pointerId: number): void {
   if (drag.isRectangle || drag.move !== undefined) {
@@ -79,7 +79,7 @@ function startPointerCapture(document: Document, drag: SelectionDrag, pointerId:
  * @kind procedure
  * @param document - page document
  * @param event - the press on the canvas
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 export function startSelectionDrag(document: Document, event: PointerEvent): void {
   SELECTION_DRAGS.delete(document);

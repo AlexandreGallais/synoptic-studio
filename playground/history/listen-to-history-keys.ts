@@ -31,7 +31,7 @@ const HISTORY_KEYS: ReadonlyMap<
  * @kind procedure
  * @param event - the key pressed
  * @returns the field; undefined outside the fields, or in a field whose value is applied
- * @see docs/domain/interaction.md#_1-tools
+ * @see RULE-interaction-1-tools
  */
 function readTypedField(event: KeyboardEvent): Element | undefined {
   const field = readKeyField(event);
@@ -48,7 +48,7 @@ function readTypedField(event: KeyboardEvent): Element | undefined {
  * @kind procedure
  * @param event - the key pressed
  * @returns `sizedUndoneHistory` or `sizedRedoneHistory`; undefined for a key the history does not take
- * @see docs/domain/interaction.md#_1-tools
+ * @see RULE-interaction-1-tools
  */
 function readHistoryMove(
   event: KeyboardEvent,
@@ -71,7 +71,7 @@ function readHistoryMove(
  * @kind procedure
  * @param event - an `input`, a `change` or a `focusout`
  * @param isTyped - true from its `input` on, false once applied or left
- * @see docs/domain/interaction.md#_1-tools
+ * @see RULE-interaction-1-tools
  */
 function writeTypedField(event: Event, isTyped: boolean): void {
   if (event.target instanceof Element) {
@@ -86,7 +86,7 @@ function writeTypedField(event: Event, isTyped: boolean): void {
  *
  * @kind procedure
  * @param document - page document
- * @see docs/domain/interaction.md#_1-tools
+ * @see RULE-interaction-1-tools
  */
 function listenToTypedFields(document: Document): void {
   document.addEventListener(
@@ -117,7 +117,7 @@ function listenToTypedFields(document: Document): void {
  * @kind procedure
  * @param document - page document
  * @param update - redraws the page from the values typed
- * @see docs/domain/interaction.md#_7-navigation-and-history
+ * @see RULE-interaction-7-navigation-and-history
  */
 function listenToKeyReleases(document: Document, update: () => void): void {
   document.addEventListener(
@@ -149,7 +149,7 @@ function listenToKeyReleases(document: Document, update: () => void): void {
  * @kind procedure
  * @param document - page document
  * @param update - redraws the page from the values typed
- * @see docs/domain/interaction.md#_1-tools
+ * @see RULE-interaction-1-tools
  */
 export function listenToHistoryKeys(document: Document, update: () => void): void {
   listenToTypedFields(document);

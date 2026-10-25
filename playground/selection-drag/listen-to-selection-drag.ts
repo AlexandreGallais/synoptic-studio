@@ -16,7 +16,7 @@ import { stopSelectionDrag } from "./stop-selection-drag";
  * @kind procedure
  * @param document - page document
  * @param update - redraws the page from the values typed
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 export function listenToSelectionDrag(document: Document, update: () => void): void {
   const canvas = selectElement(document, "canvas");

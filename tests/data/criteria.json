@@ -101,12 +101,18 @@
   { "id": "F17.AC18" },
   { "id": "F18.AC2" },
   { "id": "F18.AC3" },
-  { "id": "F18.AC4" },
+  {
+    "id": "F18.AC4",
+    "retired": "the logs moved into the records (EN-155): an entry is a row, unique by its key, no merge of files"
+  },
   {
     "id": "F18.AC5",
     "retired": "the stories index went with the backlog files into the records (EN-154, 2026-10-25)"
   },
-  { "id": "F18.AC6" },
+  {
+    "id": "F18.AC6",
+    "retired": "the shared logs whose shape it guarded moved into the records (EN-155): no story edits them any more"
+  },
   { "id": "F18.AC7" },
   { "id": "F18.AC8" },
   { "id": "F18.AC9" },
@@ -120,7 +126,10 @@
     "id": "F18.AC16",
     "retired": "rule-docs retired: a rule is written in the records with its code, the domain page refreshed at the review (decision of 2026-10-25, EN-154)"
   },
-  { "id": "F18.AC17" },
+  {
+    "id": "F18.AC17",
+    "retired": "the derivations and notes it guarded moved into the records (EN-155); the domain pages, rewritten as rule and example, keep short bullets (EN-156)"
+  },
   { "id": "F18.AC18" },
   { "id": "F18.AC19" },
   { "id": "F18.AC20" },

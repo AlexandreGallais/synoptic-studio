@@ -10,7 +10,7 @@ import type { KeptShape } from "./kept-shape";
  * @kind procedure
  * @param document - page document
  * @returns every shape kept, the first drawn first, with the kind the panel showed it as
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 export function readKeptDrawing(document: Document): readonly KeptShape[] {
   return [

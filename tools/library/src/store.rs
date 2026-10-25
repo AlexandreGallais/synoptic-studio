@@ -118,10 +118,20 @@ pub fn open_library(path: &Path) -> rusqlite::Result<Connection> {
         Connection::open(path)?
     };
 
-    database.execute_batch(SCHEMA)?;
-    migrate(&database)?;
+    make_library_tables(&database)?;
 
     Ok(database)
+}
+
+/// Makes the library's tables where they are missing, an older library brought up to them: in
+/// its own file, or in the project's records, which hold the library beside the knowledge (E49).
+///
+/// # Errors
+///
+/// When SQLite cannot create the tables.
+pub fn make_library_tables(database: &Connection) -> rusqlite::Result<()> {
+    database.execute_batch(SCHEMA)?;
+    migrate(database)
 }
 
 /// A number column, written by `node:sqlite` as an integer or a real (`position` is a real in the

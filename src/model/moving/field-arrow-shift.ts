@@ -16,7 +16,7 @@ import type { Point } from "../../math";
  * @param axis - the field the arrow is pressed in: `x` or `y`
  * @param step - the field's step (`fieldArrowStep`): 1 or 10 for Up, −1 or −10 for Down
  * @returns the shift the shape goes by
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 export function fieldArrowShift(anchor: Point, axis: "x" | "y", step: number): Point {
   const nudge = axis === "x" ? { x: step, y: 0 } : { x: 0, y: step };

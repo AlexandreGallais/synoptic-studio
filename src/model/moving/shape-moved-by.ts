@@ -13,7 +13,7 @@ import type { ShapePlacement } from "../placement";
  * @param shape - a shape or a text of the model
  * @param shift - how far it moves across and down, in user units
  * @returns it at its new place, nothing else changed
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 export function shapeMovedBy<T extends ShapePlacement>(shape: T, shift: Point): T {
   return shapeMovedOnAxis(shapeMovedOnAxis(shape, "x", shift.x), "y", shift.y);

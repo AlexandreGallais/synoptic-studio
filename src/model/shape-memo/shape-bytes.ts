@@ -9,7 +9,7 @@ import { shapeTextLength } from "./shape-text-length";
  * @kind domain
  * @param shape - the shape, or what is kept of it, an object never changed once made
  * @returns its bytes, twice its text's length
- * @see docs/domain/interaction.md#_7-navigation-and-history
+ * @see RULE-interaction-7-navigation-and-history
  */
 export function shapeBytes(shape: Readonly<WeakKey>): number {
   return shapeTextLength(shape) * CODE_UNIT_BYTES;

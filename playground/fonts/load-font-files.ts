@@ -47,7 +47,7 @@ function readFileFaces(bytes: Uint8Array<ArrayBuffer>): readonly NamedFontFace[]
  * @param file - the file chosen
  * @param faces - the faces read from it
  * @returns one sentence per face refused; none when every face is kept
- * @see docs/domain/shapes.md#text
+ * @see RULE-shapes-text
  */
 function readRefusedFaces(file: File, faces: readonly NamedFontFace[]): readonly string[] {
   return faces.flatMap((named) => {

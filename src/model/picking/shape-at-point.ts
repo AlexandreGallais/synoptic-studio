@@ -12,7 +12,7 @@ import type { Point } from "../../math";
  * @param point - the point asked, in user units
  * @param tolerance - the reach of a shape without area, in user units (`PICK_TOLERANCE` over the view's scale)
  * @returns the index of that shape, −1 for none
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 export function shapeAtPoint(areas: readonly PickArea[], point: Point, tolerance: number): number {
   return areas.findLastIndex((area) => isPickAreaAt(area, point, tolerance));

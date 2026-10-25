@@ -30,7 +30,7 @@ const RUST_CACHES = workflowOf("rust-caches.yml");
 
 /**
  * A Markdown link or reference definition to a file of the repository named `CHANGELOG.md`; an
- * address of another site, in code font or not, is left out (`docs/process/history.md` quotes
+ * address of another site, in code font or not, is left out (the history, `LOG-history` of the records, quotes
  * Dependabot's links to the changelogs of the actions).
  */
 const CHANGELOG_LINK =

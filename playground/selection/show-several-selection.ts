@@ -15,7 +15,7 @@ const SEVERAL_SELECTED = "Shift + click a shape to add it or take it out, or cli
  *
  * @kind procedure
  * @param document - page document
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 export function showSeveralSelection(document: Document): void {
   showNoSelection(document);

@@ -19,6 +19,10 @@
 //!   `target/release/knowledge check-ids <paths>`     the ids cited the records lack
 //!   `target/release/knowledge link-ids <paths>`      the links to backlog files written as ids
 //!   `target/release/knowledge branch-state <branch> merged|dropped` a branch's drafts marked
+//!   `target/release/knowledge import-<what> <folder|file>` what moved out of the Markdown and the
+//!                                                    records folder: decisions, research,
+//!                                                    derivations, sources, rules, logs, guide, memories,
+//!                                                    metrics, library, archives, saves, transcripts
 //!
 //! `search`, `show` and `list` read the merged rows and the current branch's drafts, filtered by
 //! `--kind`, `--epic`, `--feature`, `--status`, `--since`, `--branch` and `--state`; `--all` adds
@@ -37,20 +41,29 @@ use knowledge::backlog::{
     criteria_json, done_criteria, drop_branch, import_backlog, merge_branch, missing_ids,
 };
 use knowledge::links::with_ids;
+use knowledge::moved::{
+    Base, import_decisions, import_derivations, import_guide, import_logs, import_research,
+    import_sources,
+};
 use knowledge::paths::text_files;
+use knowledge::private_records::{
+    import_archives, import_library_file, import_memories, import_metrics, import_saves,
+};
 use knowledge::project::records_file;
 use knowledge::read::{
     Filters, hit_lines, list, listed_line, parse_filters, search, section_of, show,
 };
 use knowledge::records::git;
+use knowledge::rules::import_rules;
 use knowledge::snapshot::{NOT_SET, SNAPSHOT_VARIABLE, snapshot_folder, take_snapshot};
 use knowledge::sql;
 use knowledge::store::{SCHEMA_VERSION, open_store, schema_version, write, write_or_refuse};
 use knowledge::sync::{TRUNK, mark_merged, merged_branches};
+use knowledge::transcripts::import_transcripts;
 use rusqlite::Connection;
 
 /// The usage, printed for an unknown command or a wrong call.
-const USAGE: &str = "Usage: target/release/knowledge init | path | add <kind> <file or -> | search <words> [<filters>] | show <id> [<heading>] [<filters>] | list [<filters>] | sync | snapshot | sql \"<statement>\" [--purpose \"<text>\"] | import-backlog <folder> | export-criteria <file or -> | check-ids <paths> | link-ids <paths> | branch-state <branch> merged|dropped; the filters: --kind, --epic, --feature, --status, --since, --branch, --state <value>, --all";
+const USAGE: &str = "Usage: target/release/knowledge init | path | add <kind> <file or -> | search <words> [<filters>] | show <id> [<heading>] [<filters>] | list [<filters>] | sync | snapshot | sql \"<statement>\" [--purpose \"<text>\"] | import-backlog <folder> | export-criteria <file or -> | check-ids <paths> | link-ids <paths> | branch-state <branch> merged|dropped | import-decisions, import-research, import-derivations, import-rules, import-logs, import-guide, import-memories, import-metrics, import-archives, import-transcripts <folder> | import-sources, import-library, import-saves <file>; the filters: --kind, --epic, --feature, --status, --since, --branch, --state <value>, --all";
 
 /// The commands that take their own words, no filter.
 const OWN_WORDS: [&str; 6] = [
@@ -70,6 +83,7 @@ fn is_called_right(command: &str, words: &[String], filters: &Filters) -> bool {
         "search" | "check-ids" | "link-ids" => !words.is_empty(),
         "show" => matches!(words.len(), 1 | 2),
         "import-backlog" | "export-criteria" => words.len() == 1,
+        _ if IMPORTS.contains(&command) => words.len() == 1,
         "branch-state" => words.len() == 2 && matches!(words[1].as_str(), "merged" | "dropped"),
         "sql" => matches!(words.len(), 1 | 3) && (words.len() == 1 || words[1] == "--purpose"),
         _ => false,
@@ -238,6 +252,89 @@ fn imported(database: &Connection, folder: &str, branch: &str) -> Result<String,
     ))
 }
 
+/// The commands that import what moved into the records, each given one folder or file.
+const IMPORTS: [&str; 13] = [
+    "import-rules",
+    "import-decisions",
+    "import-research",
+    "import-derivations",
+    "import-sources",
+    "import-logs",
+    "import-guide",
+    "import-memories",
+    "import-metrics",
+    "import-library",
+    "import-archives",
+    "import-saves",
+    "import-transcripts",
+];
+
+/// Runs an import of what moved into the records, from a folder or a file, in one write.
+fn moved_in(
+    database: &Connection,
+    file: &Path,
+    (command, source): (&str, &str),
+    branch: &str,
+) -> Result<String, String> {
+    let path = Path::new(source);
+    let today = calendar::today();
+    let base = Base {
+        branch,
+        today: &today,
+    };
+    let is_file = matches!(
+        command,
+        "import-sources" | "import-library" | "import-saves"
+    );
+
+    if is_file && !path.is_file() || !is_file && !path.is_dir() {
+        let what = if is_file { "file" } else { "folder" };
+
+        return Err(format!("{source}: no such {what}"));
+    }
+
+    let read = |path: &Path| fs::read_to_string(path).map_err(|error| format!("{source}: {error}"));
+    let moved = match command {
+        "import-decisions" => write(database, |done| import_decisions(done, path, base))?,
+        "import-research" => write(database, |done| import_research(done, path, base))?,
+        "import-derivations" => write(database, |done| import_derivations(done, path, base))?,
+        "import-sources" => {
+            let text = read(path)?;
+
+            write(database, |done| import_sources(done, source, &text, base))?
+        }
+        "import-logs" => write(database, |done| import_logs(done, path, base))?,
+        "import-guide" => write(database, |done| import_guide(done, path, base))?,
+        "import-rules" => write(database, |done| import_rules(done, path, base))?,
+        "import-memories" => write(database, |done| import_memories(done, path, base))?,
+        "import-metrics" => write(database, |done| import_metrics(done, path))?,
+        "import-library" => {
+            let same = fs::canonicalize(path).ok() == fs::canonicalize(file).ok();
+
+            if same {
+                return Err(format!(
+                    "{source}: the records themselves, nothing to import"
+                ));
+            }
+
+            import_library_file(database, path)?
+        }
+        "import-archives" => write_or_refuse(database, |done| import_archives(done, path))?,
+        "import-saves" => {
+            let text = read(path)?;
+
+            write(database, |done| import_saves(done, &text))?
+        }
+        _ => write(database, |done| import_transcripts(done, path))?,
+    };
+
+    Ok(format!(
+        "{} and {} imported from {source}\n",
+        counted(moved.rows, "row", "rows"),
+        counted(moved.documents, "document", "documents")
+    ))
+}
+
 /// Writes the criteria of the done features to a file, or prints them for `-`.
 fn exported(database: &Connection, target: &str) -> Result<String, String> {
     let criteria = done_criteria(database).map_err(|error| error.to_string())?;
@@ -324,7 +421,7 @@ fn output(arguments: &[String]) -> Result<String, String> {
     let (command, words) = arguments
         .split_first()
         .map_or(("", &[][..]), |(command, words)| (command.as_str(), words));
-    let (words, filters) = if OWN_WORDS.contains(&command) {
+    let (words, filters) = if OWN_WORDS.contains(&command) || IMPORTS.contains(&command) {
         (words.to_vec(), Filters::default())
     } else {
         parse_filters(words)?
@@ -388,6 +485,9 @@ fn output(arguments: &[String]) -> Result<String, String> {
         "export-criteria" => exported(&database, &words[0]),
         "check-ids" => checked(&database, &words),
         "branch-state" => branch_state(&database, &words),
+        _ if IMPORTS.contains(&command) => {
+            moved_in(&database, &file, (command, &words[0]), &branch)
+        }
         _ => synced(&database, cwd),
     }
 }

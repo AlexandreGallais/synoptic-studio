@@ -12,6 +12,7 @@ knowledge-call = { path = "../knowledge-call" }
 git-repository = { path = "../git-repository" }
 library = { path = "../library" }
 page = { path = "../page" }
+serde_json.workspace = true
 tool-use = { path = "../tool-use" }
 
 # SQLite compiled into the binary, FTS5 included, except for the Windows check of check:rust, whose

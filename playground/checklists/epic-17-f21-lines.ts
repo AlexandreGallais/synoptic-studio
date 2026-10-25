@@ -62,7 +62,7 @@ export const EPIC_17_F21_LINES: readonly ChecklistLine[] = [
   {
     feature: "F21",
     todo: "Terminal: npm run -s page -- REF-CC-HOOKS",
-    see: "the table's header and the one row of REF-CC-HOOKS, about 2,600 characters of the 212,000 of docs/references.md, nothing else",
+    see: "the table's header and the one row of REF-CC-HOOKS, about 2,600 characters of the 212,000 of PAGE-references, nothing else",
   },
   {
     feature: "F21",

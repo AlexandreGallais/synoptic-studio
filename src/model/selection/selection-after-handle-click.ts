@@ -15,7 +15,7 @@ import type { VertexSelection } from "./vertex-selection";
  * @param vertex - number of the vertex of the handle, from 0
  * @param keys - modifier keys held
  * @returns the new selection
- * @see docs/domain/interaction.md#_3-node-editing
+ * @see RULE-interaction-3-node-editing
  */
 export function selectionAfterHandleClick(
   selection: VertexSelection,

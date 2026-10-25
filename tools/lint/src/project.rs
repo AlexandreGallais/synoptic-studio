@@ -1,6 +1,6 @@
 //! The repository the linter runs in: its root, and what the rules read from the disk beside the
 //! file, read once per run and shared by the threads (ADR-0069: work done once) — folder
-//! listings, the bibliography, the ADRs and the packages of `package.json`.
+//! listings and the packages of `package.json`.
 
 use std::collections::HashMap;
 use std::fs;
@@ -8,7 +8,6 @@ use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex, OnceLock, PoisonError};
 
 use crate::package::{self, Dependencies};
-use crate::settings::ReferenceSources;
 
 /// An entry of a folder.
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -26,24 +25,17 @@ pub struct Entry {
 pub struct Project {
     /// Its root, absolute.
     pub root: PathBuf,
-    /// Where `@see` targets are resolved.
-    pub sources: ReferenceSources,
     folders: Mutex<HashMap<PathBuf, Arc<Vec<Entry>>>>,
-    bibliography: OnceLock<HashMap<String, bool>>,
-    decisions: OnceLock<Vec<String>>,
     dependencies: OnceLock<Dependencies>,
 }
 
 impl Project {
-    /// A repository at a root, its reference sources given.
+    /// A repository at a root.
     #[must_use]
-    pub fn new(root: &Path, sources: ReferenceSources) -> Self {
+    pub fn new(root: &Path) -> Self {
         Self {
             root: root.to_path_buf(),
-            sources,
             folders: Mutex::new(HashMap::new()),
-            bibliography: OnceLock::new(),
-            decisions: OnceLock::new(),
             dependencies: OnceLock::new(),
         }
     }
@@ -87,39 +79,10 @@ impl Project {
             .cloned()
     }
 
-    /// The bibliography's identifiers, each with whether it is verified.
-    pub fn bibliography(&self) -> &HashMap<String, bool> {
-        self.bibliography.get_or_init(|| {
-            let text = fs::read_to_string(self.root.join(self.sources.references_file))
-                .unwrap_or_default();
-
-            text.lines()
-                .filter_map(|line| {
-                    reference_row(line).map(|id| {
-                        (
-                            id.to_owned(),
-                            !line.contains(self.sources.unverified_marker),
-                        )
-                    })
-                })
-                .collect()
-        })
-    }
-
     /// The packages `package.json` names, none when it cannot be read.
     pub fn dependencies(&self) -> &Dependencies {
         self.dependencies.get_or_init(|| {
             package::parse(&fs::read_to_string(self.root.join("package.json")).unwrap_or_default())
-        })
-    }
-
-    /// The file names of the ADRs.
-    pub fn decisions(&self) -> &[String] {
-        self.decisions.get_or_init(|| {
-            self.entries(&self.root.join(self.sources.adr_directory))
-                .iter()
-                .map(|entry| entry.name.clone())
-                .collect()
         })
     }
 }
@@ -141,34 +104,4 @@ fn read_entries(folder: &Path) -> Vec<Entry> {
             }
         })
         .collect()
-}
-
-/// The identifier of a bibliography row, ``| `REF-…` |``.
-fn reference_row(line: &str) -> Option<&str> {
-    let rest = line.strip_prefix('|')?.trim_start().strip_prefix('`')?;
-    let id = &rest[..rest.find('`')?];
-    let valid = id.strip_prefix("REF-").is_some_and(|tail| {
-        !tail.is_empty()
-            && tail
-                .bytes()
-                .all(|byte| byte.is_ascii_uppercase() || byte.is_ascii_digit() || byte == b'-')
-    });
-
-    valid.then_some(id)
-}
-
-#[cfg(test)]
-mod tests {
-    use super::reference_row;
-
-    #[test]
-    fn reads_the_identifier_of_a_bibliography_row() {
-        assert_eq!(reference_row("| `REF-OK-2` | x |"), Some("REF-OK-2"));
-        assert_eq!(reference_row("|`REF-A`|"), Some("REF-A"));
-        assert_eq!(reference_row("| `REF-a` | x |"), None);
-        assert_eq!(reference_row("| `DERIV-a` | x |"), None);
-        assert_eq!(reference_row("| `REF-A | x |"), None);
-        assert_eq!(reference_row("text"), None);
-        assert_eq!(reference_row("| `REF-` |"), None);
-    }
 }

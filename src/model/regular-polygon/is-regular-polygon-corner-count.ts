@@ -8,7 +8,7 @@ import { REGULAR_POLYGON_CORNER_RANGE } from "./regular-polygon-corner-range";
  * @kind domain
  * @param corners - number of corners to check
  * @returns `true` when it is allowed
- * @see docs/domain/shapes.md#regular-polygon
+ * @see RULE-shapes-regular-polygon
  */
 export function isRegularPolygonCornerCount(corners: number): boolean {
   const { max, min } = REGULAR_POLYGON_CORNER_RANGE;

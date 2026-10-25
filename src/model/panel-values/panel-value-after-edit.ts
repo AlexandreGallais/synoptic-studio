@@ -15,7 +15,7 @@ import type { PanelEdit } from "./panel-edit";
  * @param own - the shape's value in the field typed (`shapePanelValues`, `textPanelValues`)
  * @param edit - the field, the value typed and the largest size
  * @returns the shape's new value
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 export function panelValueAfterEdit(own: number, edit: PanelEdit): number {
   const { key, maxSize, typed } = edit;

@@ -13,7 +13,6 @@ use std::io;
 use std::path::{Path, PathBuf};
 use std::time::Duration;
 
-use crate::records::DATABASE_FILE;
 use crate::store::open_store;
 
 /// The variable naming the synced folder the snapshots go to.
@@ -36,10 +35,10 @@ const MISSING: &str = "AGENT_KNOWLEDGE_SNAPSHOT names a folder that does not exi
 /// Why a working file in the synced folder is refused, and what to do.
 const REFUSED: &str = "which a sync service copies mid-write: move AGENT_RECORDS_ROOT out of it, or name another synced folder.";
 
-/// The name of a day's snapshot, `records-2026-10-25.sqlite`.
+/// The name of a day's snapshot of a working file of a stem, `synoptic-studio-2026-10-25.sqlite`.
 #[must_use]
-pub fn snapshot_name(day: &str) -> String {
-    format!("records-{day}.sqlite")
+pub fn snapshot_name(stem: &str, day: &str) -> String {
+    format!("{stem}-{day}.sqlite")
 }
 
 /// Whether a text is a date `YYYY-MM-DD`: four digits, a dash, two, a dash, two.
@@ -54,24 +53,28 @@ fn is_date(text: &str) -> bool {
         })
 }
 
-/// Whether a file's name is a day's snapshot: `records-`, a date `YYYY-MM-DD`, `.sqlite`.
+/// Whether a file's name is a day's snapshot of a stem: the stem, a dash, a date `YYYY-MM-DD`,
+/// `.sqlite`.
 #[must_use]
-pub fn is_snapshot_name(name: &str) -> bool {
-    name.strip_prefix("records-")
+pub fn is_snapshot_name(stem: &str, name: &str) -> bool {
+    name.strip_prefix(stem)
+        .and_then(|rest| rest.strip_prefix('-'))
         .and_then(|rest| rest.strip_suffix(".sqlite"))
         .is_some_and(is_date)
 }
 
-/// The name of the temporary file a process copies into, `.records-<pid>.sqlite.tmp`.
+/// The name of the temporary file a process copies into, `.<stem>-<pid>.sqlite.tmp`.
 #[must_use]
-pub fn temporary_name(process: u32) -> String {
-    format!(".records-{process}.sqlite.tmp")
+pub fn temporary_name(stem: &str, process: u32) -> String {
+    format!(".{stem}-{process}.sqlite.tmp")
 }
 
-/// Whether a file's name is a snapshot's temporary file, `.records-<digits>.sqlite.tmp`.
+/// Whether a file's name is a snapshot's temporary file, `.<stem>-<digits>.sqlite.tmp`.
 #[must_use]
-pub fn is_temporary_name(name: &str) -> bool {
-    name.strip_prefix(".records-")
+pub fn is_temporary_name(stem: &str, name: &str) -> bool {
+    name.strip_prefix('.')
+        .and_then(|rest| rest.strip_prefix(stem))
+        .and_then(|rest| rest.strip_prefix('-'))
         .and_then(|rest| rest.strip_suffix(".sqlite.tmp"))
         .is_some_and(|digits| !digits.is_empty() && digits.chars().all(|c| c.is_ascii_digit()))
 }
@@ -79,10 +82,10 @@ pub fn is_temporary_name(name: &str) -> bool {
 /// The snapshots to remove so that the `kept` newest stay: the oldest by their date, which their
 /// names order; a name other than a snapshot's is never among them.
 #[must_use]
-pub fn removed_snapshots(names: &[String], kept: usize) -> Vec<String> {
+pub fn removed_snapshots(names: &[String], stem: &str, kept: usize) -> Vec<String> {
     let mut snapshots: Vec<String> = names
         .iter()
-        .filter(|name| is_snapshot_name(name))
+        .filter(|name| is_snapshot_name(stem, name))
         .cloned()
         .collect();
 
@@ -180,25 +183,25 @@ pub fn unless_gone<T>(result: io::Result<T>) -> io::Result<Option<T>> {
 
 /// Removes the snapshots beyond `KEPT` and the temporary files older than `LEFTOVER_AGE`, a file
 /// another snapshot removed first left alone; the snapshots kept and removed.
-fn prune(folder: &Path) -> io::Result<(usize, usize)> {
+fn prune(folder: &Path, stem: &str) -> io::Result<(usize, usize)> {
     let mut names = Vec::new();
 
     for entry in fs::read_dir(folder)? {
         let entry = entry?;
         let name = entry.file_name().to_string_lossy().into_owned();
 
-        if is_temporary_name(&name) {
+        if is_temporary_name(stem, &name) {
             let modified = unless_gone(entry.metadata().and_then(|metadata| metadata.modified()))?;
 
             if modified.is_some_and(|time| time.elapsed().is_ok_and(|age| age > LEFTOVER_AGE)) {
                 unless_gone(fs::remove_file(entry.path()))?;
             }
-        } else if is_snapshot_name(&name) {
+        } else if is_snapshot_name(stem, &name) {
             names.push(name);
         }
     }
 
-    let removed = removed_snapshots(&names, KEPT);
+    let removed = removed_snapshots(&names, stem, KEPT);
 
     for name in &removed {
         unless_gone(fs::remove_file(folder.join(name)))?;
@@ -216,13 +219,19 @@ pub fn take_snapshot(file: &Path, folder: &Path, day: &str) -> Result<String, St
     refuse_synced(file, folder)?;
     if !file.is_file() {
         return Ok(format!(
-            "no {DATABASE_FILE} in the records folder yet: nothing copied."
+            "no {} in the records folder yet: nothing copied.",
+            file.file_name().unwrap_or_default().to_string_lossy()
         ));
     }
 
+    let stem = file
+        .file_stem()
+        .map(|stem| stem.to_string_lossy().into_owned())
+        .unwrap_or_default();
+
     let database = open_store(file)?;
-    let temporary = folder.join(temporary_name(std::process::id()));
-    let name = snapshot_name(day);
+    let temporary = folder.join(temporary_name(&stem, std::process::id()));
+    let name = snapshot_name(&stem, day);
     let failed = |error: &dyn Display| {
         let _ = fs::remove_file(&temporary);
         format!("the snapshot {name}: {}", hidden(&error, folder))
@@ -240,7 +249,7 @@ pub fn take_snapshot(file: &Path, folder: &Path, day: &str) -> Result<String, St
         .map_err(|error| failed(&error))?;
     fs::rename(&temporary, folder.join(&name)).map_err(|error| failed(&error))?;
 
-    let (kept, removed) = prune(folder).map_err(|error| failed(&error))?;
+    let (kept, removed) = prune(folder, &stem).map_err(|error| failed(&error))?;
 
     Ok(format!(
         "{name} written into the folder {SNAPSHOT_VARIABLE} names: {kept} kept, {removed} removed"

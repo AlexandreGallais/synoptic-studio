@@ -12,7 +12,7 @@ const POSITION_FIELDS: ReadonlySet<string> = new Set(["x", "y"]);
  * @kind domain
  * @param fields - the names of the fields the step changed (`drawingChangedFields`)
  * @returns `Convert`, `Move`, a field's label or `Change`
- * @see docs/domain/interaction.md#_7-navigation-and-history
+ * @see RULE-interaction-7-navigation-and-history
  */
 export function fieldsStepName(fields: readonly string[]): string {
   const others = fields.filter((field) => !POSITION_FIELDS.has(field));

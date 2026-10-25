@@ -49,43 +49,43 @@ fn reads_rows_with_their_column_names_and_escapes_tabs_and_line_ends() {
 #[test]
 fn registers_a_new_table_with_its_purpose_and_refuses_one_without() {
     let (folder, database) = place("create");
-    let without = run(&database, "CREATE TABLE notes (id TEXT PRIMARY KEY)", None);
+    let without = run(&database, "CREATE TABLE ideas (id TEXT PRIMARY KEY)", None);
     let made = run(
         &database,
-        "CREATE TABLE notes (id TEXT PRIMARY KEY, branch TEXT NOT NULL DEFAULT '', state TEXT NOT NULL DEFAULT 'draft')",
-        Some("one row per note"),
+        "CREATE TABLE ideas (id TEXT PRIMARY KEY, branch TEXT NOT NULL DEFAULT '', state TEXT NOT NULL DEFAULT 'draft')",
+        Some("one row per idea"),
     );
     let registered = run(
         &database,
-        "SELECT purpose FROM tables_registry WHERE name = 'notes'",
+        "SELECT purpose FROM tables_registry WHERE name = 'ideas'",
         None,
     );
     let inserted = run(
         &database,
-        "INSERT INTO notes (id) VALUES ('a'), ('b')",
+        "INSERT INTO ideas (id) VALUES ('a'), ('b')",
         None,
     );
     let branch = run(
         &database,
-        "SELECT id, branch, state FROM notes ORDER BY id",
+        "SELECT id, branch, state FROM ideas ORDER BY id",
         None,
     );
     let index = run(
         &database,
-        "CREATE INDEX notes_by_state ON notes (state)",
+        "CREATE INDEX notes_by_state ON ideas (state)",
         None,
     );
-    let dropped = run(&database, "DROP TABLE notes", None);
+    let dropped = run(&database, "DROP TABLE ideas", None);
     let gone = run(
         &database,
-        "SELECT count(*) AS n FROM tables_registry WHERE name = 'notes'",
+        "SELECT count(*) AS n FROM tables_registry WHERE name = 'ideas'",
         None,
     );
 
     let _ = fs::remove_dir_all(&folder);
     assert!(without.is_err_and(|error| error.contains("--purpose")));
-    assert_eq!(made.as_deref(), Ok("0 rows changed, notes registered\n"));
-    assert_eq!(registered.as_deref(), Ok("purpose\none row per note\n"));
+    assert_eq!(made.as_deref(), Ok("0 rows changed, ideas registered\n"));
+    assert_eq!(registered.as_deref(), Ok("purpose\none row per idea\n"));
     assert_eq!(inserted.as_deref(), Ok("2 rows changed\n"));
     // A row written without a branch takes the branch checked out.
     assert_eq!(
@@ -103,7 +103,7 @@ fn lists_every_table_of_a_new_file_in_the_registry() {
     let (folder, database) = place("registry");
     let unlisted = run(
         &database,
-        "SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%' AND name NOT LIKE 'sections_index_%' AND name NOT IN (SELECT name FROM tables_registry)",
+        "SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%' AND name NOT LIKE 'sections_index_%' AND name NOT LIKE 'chunks_%' AND name NOT IN (SELECT name FROM tables_registry)",
         None,
     );
 
@@ -180,7 +180,7 @@ fn writes_the_backlogs_tables_and_refuses_to_drop_or_rewrite_any_core_table() {
             "{refused:?}"
         );
     }
-    assert_eq!(read_pragma.as_deref(), Ok("user_version\n4\n"));
+    assert_eq!(read_pragma.as_deref(), Ok("user_version\n5\n"));
     assert_eq!(kept.as_deref(), Ok("status\trisk\nparked\t\n"));
 }
 
