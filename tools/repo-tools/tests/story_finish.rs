@@ -172,7 +172,7 @@ impl Lab {
             .expect("records")
             .execute_batch(&format!(
                 "CREATE TABLE lint_exceptions (id INTEGER PRIMARY KEY, file TEXT, item TEXT, rule TEXT, reason TEXT);
-                CREATE TABLE dependencies (name TEXT, kind TEXT, version TEXT);
+                CREATE TABLE dependencies (project TEXT, name TEXT, kind TEXT, version TEXT);
                 INSERT INTO features (id, epic, title, status, state) VALUES ('F99', 'E99', 'A feature', 'in-progress', 'merged');
                 INSERT INTO stories (id, epic, feature, kind, title, status, topic, branch, state) VALUES
                   ('EN-901', 'E99', 'F99', 'EN', 'First', 'ready', 'first', 'develop', 'merged'),
@@ -505,7 +505,7 @@ fn opens_no_pull_request_into_develop_while_a_data_file_differs_from_the_records
     open_store(&lab.records())
         .expect("records")
         .execute(
-            "INSERT INTO dependencies VALUES ('vite', 'npm', '8.3.4')",
+            "INSERT INTO dependencies VALUES ('root', 'vite', 'npm', '8.3.4')",
             [],
         )
         .expect("row");

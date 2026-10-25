@@ -16,9 +16,9 @@ fn records() -> Connection {
     database
         .execute_batch(
             "CREATE TABLE lint_exceptions (id INTEGER PRIMARY KEY, file TEXT, item TEXT, rule TEXT, reason TEXT);
-             CREATE TABLE dependencies (name TEXT, kind TEXT, version TEXT, purpose TEXT);
+             CREATE TABLE dependencies (project TEXT, name TEXT, kind TEXT, version TEXT, purpose TEXT);
              INSERT INTO lint_exceptions (file, item, rule, reason) VALUES ('b.ts', 'g', 'y', 'later'), ('a.ts', 'f', 'x', NULL);
-             INSERT INTO dependencies VALUES ('vite', 'npm', '8.3.4', 'the server'), ('regex', 'crate', '1.13.1', 'patterns');",
+             INSERT INTO dependencies VALUES ('root', 'vite', 'npm', '8.3.4', 'the server'), ('root', 'regex', 'crate', '1.13.1', 'patterns'), ('playground', 'typescript', 'npm', '6.0.3', 'Angular');",
         )
         .unwrap();
     database
@@ -46,7 +46,7 @@ fn sorts_the_rows_and_reads_a_null_as_an_empty_text() {
             ),
             (
                 DEPENDENCIES_FILE,
-                "[\n  { \"name\": \"regex\", \"kind\": \"crate\", \"version\": \"1.13.1\" },\n  { \"name\": \"vite\", \"kind\": \"npm\", \"version\": \"8.3.4\" }\n]\n".to_owned()
+                "[\n  { \"project\": \"playground\", \"name\": \"typescript\", \"kind\": \"npm\", \"version\": \"6.0.3\" },\n  { \"project\": \"root\", \"name\": \"regex\", \"kind\": \"crate\", \"version\": \"1.13.1\" },\n  { \"project\": \"root\", \"name\": \"vite\", \"kind\": \"npm\", \"version\": \"8.3.4\" }\n]\n".to_owned()
             )
         ]
     );
