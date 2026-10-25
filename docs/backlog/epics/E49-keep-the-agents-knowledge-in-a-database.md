@@ -27,13 +27,13 @@ A list of features grouped by theme, with no closing of its own (ADR-0086). One 
 
 ## Features
 
-Cut by SP-034 (2026-10-25), in this order, each story of at most 3 tasks; their files are written once the Product Owner has answered the questions of [note 0035](../../research/notes/0035-e49-the-knowledge-database.md) (Questions for the Product Owner), which settle several stories' content.
+Cut by SP-034 (2026-10-25), in this order, each story of at most 3 tasks; the Product Owner answered the questions of [note 0035](../../research/notes/0035-e49-the-knowledge-database.md) the same day ([Decisions](#decisions)); each feature's file is written when it starts.
 
 | Feature | Expected stories | Status |
 | --- | --- | --- |
 | The knowledge database | the tables, opened by two worktrees; add, search, show and list, by branch; a clean snapshot into the synced folder (3) | to refine |
 | The checks freed from the files | the `@see` to stories pointed at the rules; the tests and tools reading finished items; the log rows written into the database (3) | to refine |
-| The move into the database | the finished stories, features and epics; the history, the logs, the retrospectives and the notes; the decisions and the memory (3) | to refine |
+| The move into the database | the finished stories, features and epics; the history, the logs, the retrospectives and the notes; the decisions, the memory and the security rules explained (3) | to refine |
 | The light docs | `shapes.md` and the domain's index as rule and example; `interaction.md` as rule and example; the pages kept, rewritten short; `AGENTS.md` and the agent's pages pointing to the tool (4) | to refine |
 
 Size: 4 features, 13 stories, 20 + 25 × 13 + (45 to 75) × 4 = 525 to 645 active minutes, 8.75 to 10.75 hours (note 0034, §1); the domain's two long pages take a story each, and the checks are rewritten before the move so that it breaks nothing.
@@ -42,8 +42,24 @@ Size: 4 features, 13 stories, 20 + 25 × 13 + (45 to 75) × 4 = 525 to 645 activ
 
 | Story | Status |
 | --- | --- |
-| [SP-034](../stories/E49-SP-034-refine-e49.md) — Refine E49, the knowledge database and the light docs | in-progress |
+| [SP-034](../stories/E49-SP-034-refine-e49.md) — Refine E49, the knowledge database and the light docs | done |
 
-## Open points
+## Decisions
 
-The refinement's questions, asked at once at SP-034's end: Q1 to Q10 of note 0035 — when a finished item leaves the repository, what the public site keeps, the trace of a done feature's criteria, the ADRs, the bibliography's rows, the guide pages, the agent's memory, the snapshots kept, the domain's settled questions, and whether the records folder is synced; and the variable naming the synced folder, to set once on the machine.
+The Product Owner's answers to the questions of [note 0035](../../research/notes/0035-e49-the-knowledge-database.md), on 2026-10-25, in neutral words:
+
+| Question | Decision |
+| --- | --- |
+| Q1, when a finished item leaves the repository | in its own `done` commit, before its pull request: no commit is needed after a merge; a feature's file leaves with its audit's `done` commit (the agent's choice, which the Product Owner left to it, preferring this one) |
+| Q2, what the public site keeps of finished work | one short page per epic done, generated at its end |
+| Q3, the trace of a done feature's criteria | one data file of the criteria beside the tests, outside the docs, so that the CI still checks every one |
+| Q4, the ADRs | moved into the database; each page that applies a decision states its principle in a sentence |
+| Q5, the bibliography | each row cut to its source, address, use and status; the reading notes moved |
+| Q6, the guide pages | moved; a try is guided by the playground's checklists and the stories' test cards |
+| Q7, the agent's memory | moved; `MEMORY.md` cut to a few lines pointing to the tool, new memories imported at each session's end |
+| Q8, the snapshots | one a day, the last 7 kept |
+| Q9, the domain's settled questions | moved; each rule stays on its domain page |
+| Q10, the records folder synced | no: checked on 2026-10-25, it is not synced; the working database lives in it |
+| Security rules | every safety rule (no personal information in the repository nor in a request, no secret, the guards) is written in the database with its reason and an example, for agents less versed in security; `AGENTS.md` keeps the short list |
+
+The variable naming the synced folder, `AGENT_KNOWLEDGE_SNAPSHOT`, is set once in the user's Claude Code settings beside `AGENT_RECORDS_ROOT`, never in the repository.

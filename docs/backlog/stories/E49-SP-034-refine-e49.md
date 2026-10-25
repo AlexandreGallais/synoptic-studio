@@ -2,7 +2,7 @@
 id: SP-034
 epic: E49
 title: Refine E49, the knowledge database and the light docs
-status: in-progress
+status: done
 points: 3
 ---
 
