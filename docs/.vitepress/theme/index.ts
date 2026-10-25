@@ -8,8 +8,6 @@ import type { Theme } from "vitepress";
 /**
  * Theme of the documentation site: VitePress's default theme, with Mermaid diagrams drawn once the
  * page is in the browser, and again whenever its content changes (another page opened).
- *
- * @see docs/tooling/documentation-site.md
  */
 const THEME: Theme = {
   enhanceApp: () => {

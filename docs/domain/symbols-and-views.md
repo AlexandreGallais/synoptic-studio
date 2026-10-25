@@ -2,76 +2,57 @@
 
 ## 1. Symbol
 
-- A symbol = a `<g>` group containing a **shape tree** (see `interaction.md` §6), **ports** and **animatable parts**.
-- A symbol has no business meaning: interfaces, properties and rules come from the Configurator ([configuration.md](./configuration.md)).
-- No SVG `<symbol>` / `<use>` element: symbol behavior is carried by the model, rendering stays a `<g>`.
-- Symbol origin: integer reference point for placement.
-- Inside the Symbol Editor, shapes may be rotated by any integer angle in degrees ([shapes.md](./shapes.md) §1).
-- **For later** (Product Owner, VAL-005 of F08, 2026-10-11; epic or feature to choose):
-  - **Clickable zone**: a symbol may have a rectangle laid over it as the zone that receives the clicks and sends its event, instead of the shape itself; the designer chooses one or the other. Parts of a symbol may stick out of its working area while the click stays on the zone.
-  - **Shared status zone**: a rectangle defined on every symbol where a status common to all symbols is shown the same way (for example the loss of the network link to a device), its drawing computed from that zone.
-  - **Saved position**: when a symbol is saved, its shapes may be moved so that the top-left of their bounding box is at (0, 0), giving positive coordinates, integers when the points are; another choice would be its center at (0, 0) — open (Q30).
+- **A symbol** is a `<g>` group holding a shape tree (`interaction.md` §6), ports and animatable parts. A pump symbol: a circle, a triangle, two ports and a rotating impeller.
+- **No business meaning**: interfaces, properties and rules come from the Configurator ([configuration](./configuration.md)). The same pump symbol serves a pump or a fan.
+- **No `<symbol>` nor `<use>`**: the model carries the symbol's behavior; it is drawn as a `<g>`.
+- **An origin**: an integer reference point, used to place it. Origin (0, 0).
+- **Shapes turn by any integer angle** inside the Symbol Editor ([shapes](./shapes.md) §1). A blade turned by 30°.
+- **Planned**:
+  - **A clickable zone**: a rectangle laid over the symbol receives its clicks and sends its event, instead of the shapes, the designer choosing one or the other; parts may stick out of it. A valve's zone 40 × 40 while its handle sticks out.
+  - **A shared status zone**: a rectangle on every symbol where a status common to all is shown alike, its drawing computed from the zone. The loss of a device's network link shown in the top-right zone.
+  - **The saved position** of a symbol's shapes is an open question (Q30): moved so the top-left of their bounding box is at (0, 0), or its centre, or left as they are.
 
 ## 2. Ports (connection points)
 
-| Property | Description |
-| --- | --- |
-| `id` | unique identifier within the symbol |
-| Position | integer point, relative to the symbol origin |
-| Exit direction | `N`, `E`, `S`, `W` — needed by orthogonal routing (the pipe leaves the port perpendicularly to the edge); rotates with the instance (ADR-0008) |
-| Count | free; e.g. a pump usually has 2, sometimes more |
+| Property | Description | Example |
+| --- | --- | --- |
+| `id` | unique within the symbol | `inlet` |
+| Position | integer point, relative to the symbol's origin | (0, 20) |
+| Exit direction | `N`, `E`, `S`, `W`: the pipe leaves the port perpendicular to its edge; turns with the instance | `W` turned by a quarter turn is `N` |
+| Count | free | a pump has 2, sometimes more |
 
 ## 3. Animations
 
-An animatable part of a symbol reacts to a value set by a configuration rule:
+An animatable part reacts to a value a configuration rule sets:
 
 | Animation | Effect |
 | --- | --- |
 | Color | the part takes a color |
 | Color blinking | the part alternates between colors |
-| Opacity / visibility blinking | the part blinks by opacity or display |
+| Opacity or visibility blinking | the part blinks by opacity or display |
 | Visibility | the part is shown or hidden |
-| Partial fill | the part is filled up to a level (e.g. a tank level) |
-| Rotation | the part rotates by an angle obtained by remapping (see below) |
+| Partial fill | the part is filled up to a level, as a tank |
+| Rotation | the part turns by an angle remapped from the property |
 
-### Remapping (Q13)
-
-An animation does not read a property raw: the property's range is **remapped** to the animation's range. Example: a property from 0 to 100 drives a rotation remapped to 0–90°, 0–180° or 0–360°. The remap is set per animation, so that one property can drive any animation type.
+- **Remapping**: an animation never reads a property raw; the property's range is remapped to the animation's, set per animation, so one property can drive any animation. A property from 0 to 100 driving a rotation of 0 to 90°: 50 turns it by 45°.
 
 ## 4. Synoptic view (View Editor)
 
-- Contains: instances of business symbols, pipes, static drawings.
-- Allowed on an instance: position (integer), rotation by **quarter turns only** (ADR-0008), override of default property values (live preview of animations), checking / unchecking pop-up lines ([configuration.md](./configuration.md) §5).
-- Forbidden: changing the symbol's geometry; adding a property not defined by the configuration.
-- Duplicating instances: yes.
-- Rotation: integer `q ∈ {0, 1, 2, 3}`, pivot = symbol origin; port directions rotate with the instance.
+- **Contents**: instances of business symbols, pipes, static drawings. A view of three pumps, a tank and their pipes.
+- **On an instance**: an integer position; a rotation by quarter turns only, `q ∈ {0, 1, 2, 3}`, about the symbol's origin, its ports' directions turning with it; default values overridden with a live preview of the animations; pop-up lines checked or unchecked ([configuration](./configuration.md) §5). `q = 1` turns a pump by 90°.
+- **Forbidden**: changing a symbol's geometry; adding a property the configuration does not define. A pump's circle cannot be resized in a view.
+- **Duplicating** instances is allowed. A pump copied keeps its overrides.
 
 ## 5. Pipes
 
-### Drawing
-
-- **Orthogonal only**: horizontal and vertical segments (ADR-0004).
-- Creation: click a port → click another port.
-- Initial path: automatic routing avoiding the symbols (`REF-WYBROW-2009`, `REF-MARRIOTT-2014`).
-- The pipe stays attached to its ports and **follows the symbols when they move**.
-- Manual editing: dragging a segment moves it **perpendicularly** to its direction (draw.io behavior); neighboring segments adapt.
-- Rounded bends: optional, same mechanism as the corner radius of shapes.
-
-### Conventions from industrial diagrams (P&ID)
-
-| Convention | Source |
-| --- | --- |
-| Process lines horizontal and vertical, drawn cleanly | `REF-PID-LECTURE` |
-| Crossing: the horizontal line is continuous, the vertical one is broken | `REF-PID-LECTURE` |
-| Horizontal lines dominate; main flow from left to right | `REF-PID-LECTURE`, `REF-EDRAW-PID` |
-| Line weight by hierarchy (main process > secondary > utilities) | `REF-EDRAW-PID` |
-
-Standards to consult to go further: `REF-ISO-10628`, `REF-ISA-5-1`, `REF-ISA-101`, `REF-TOGHRAEI`.
-
-### Diagonals (45°)
-
-Excluded in v1 (process diagram conventions, orthogonal routing algorithms). Can be reintroduced through a dedicated ADR.
+- **Orthogonal only**: horizontal and vertical segments; no diagonals. A pipe from (0, 0) to (100, 50) bends once or more.
+- **Created** by a click on a port, then on another port. `pump1.outlet` to `tank.inlet`.
+- **Routed automatically** at first, avoiding the symbols. A pipe goes around a tank in its way.
+- **Attached**: a pipe stays on its ports and follows the symbols when they move. A pump moved by (20, 0) drags its pipe's end.
+- **Edited** by dragging a segment perpendicular to its direction, its neighbours adapting. A horizontal segment dragged down by 10.
+- **Rounded bends**, optional, by the shapes' corner radius. A bend of radius 8.
+- **Conventions of industrial diagrams**: process lines horizontal and vertical, drawn cleanly; at a crossing the horizontal line is continuous and the vertical one broken; horizontal lines dominate, the main flow left to right; line weight by hierarchy, main process over secondary over utilities. A vertical pipe crossing a horizontal one shows a gap.
 
 ## 6. Storage
 
-Files on the user's computer, saved one by one: from the web page first, in a working folder with the desktop application (Q5, Q23, [configuration.md](./configuration.md) §6).
+Files on the user's computer, saved one by one: from the web page first, in a working folder with the desktop application ([configuration](./configuration.md) §6).

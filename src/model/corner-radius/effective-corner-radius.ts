@@ -16,7 +16,7 @@ import { EPSILON } from "../../math";
  * handles), the same radius requested on each
  * @returns the effective radius, <= the requested one; `undefined` when the corners draw
  * different radii (an absent value, an option type in other languages, ADR-0025)
- * @see docs/domain/shapes.md#radius-clamping-adr-0007
+ * @see docs/domain/shapes.md#radius-clamping
  */
 export function effectiveCornerRadius(radii: readonly number[]): number | undefined {
   const smallest = Math.min(...radii);

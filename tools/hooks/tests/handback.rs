@@ -37,8 +37,6 @@ fn checks_only_a_subagent_that_may_write() {
         "Explore",
         "Plan",
         "auditor",
-        "verifier",
-        "doc-editor",
         "math-expert",
         "functional-analyst",
         "claude-code-guide",

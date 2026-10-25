@@ -11,12 +11,10 @@ use worktree::{Story, base_branch, story_id, story_of_branch};
 use crate::json::{Value, quote, write};
 
 /// Agent types that only read: never checked.
-const READ_ONLY_AGENTS: [&str; 9] = [
+const READ_ONLY_AGENTS: [&str; 7] = [
     "Explore",
     "Plan",
     "auditor",
-    "verifier",
-    "doc-editor",
     "math-expert",
     "functional-analyst",
     "claude-code-guide",

@@ -17,10 +17,10 @@ Why Opus (EN-066): it finds the two readings of a rule and the one object behind
 
 | Need | Where |
 | --- | --- |
-| Vision, glossary, settled questions | `docs/domain/README.md`, then the domain page of the topic |
-| What is free and what is paid | ADR-0030, `docs/domain/editions.md` |
-| The epic, its features, past refinements | `docs/backlog/epics/`, `docs/backlog/features/`, `docs/research/notes/` |
-| How work is split; the interview method | `docs/backlog/README.md`, `docs/process/agile.md`; `docs/playbook/analysis.md` |
+| The editors in plain words; the rules and the glossary | `docs/the-editor.md`; the records' rules (`knowledge search <words>`) |
+| What is free and what is paid | ADR-0030 (`knowledge show ADR-0030`) and the editions' rules |
+| The epic, its features, past refinements | `knowledge sql "SELECT … FROM features WHERE epic = '<epic>'"`, `knowledge list --kind note` |
+| How work is split | `docs/backlog/README.md` |
 
 ## How you work
 

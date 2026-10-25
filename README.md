@@ -4,44 +4,41 @@
 [![Release](https://img.shields.io/github/v/release/AlexandreGallais/synoptic-studio)](https://github.com/AlexandreGallais/synoptic-studio/releases)
 [![License](https://img.shields.io/github/license/AlexandreGallais/synoptic-studio)](./LICENSE)
 
-A dependency-free TypeScript library to draw **SVG symbols** for **synoptic views** — the schematic screens that supervise industrial plants — and the editors built on it. Shapes are typed as whole numbers, every output is a `<path>`, and every function names the source it comes from.
+A dependency-free TypeScript library to draw **SVG symbols** for **synoptic views** — the schematic screens that supervise industrial plants — and the editors built on it. Shapes are typed as whole numbers, the geometry is computed from them, and every shape is written as a `<path>`.
 
 |  |  |
 | --- | --- |
-| **Documentation** | <https://alexandregallais.github.io/synoptic-studio/> — guide, domain, decisions, conventions, API |
+| **Documentation** | <https://alexandregallais.github.io/synoptic-studio/> — how the project works, the business rules, the API |
 | **Playground** | <https://alexandregallais.github.io/synoptic-studio/playground/> — the library at work, as of the last release |
-| **Status** | E01 "Draw symbol shapes from numbers" done; next, E14 "Draw curves" — see the [backlog](https://alexandregallais.github.io/synoptic-studio/backlog/) |
-
-## What it does today
-
-- Rectangles and regular polygons, each corner rounded by its own radius, reduced to fit.
-- A polygon anchored in its box, or stretched to fill it.
-- Free shapes: points moved, added and deleted, decimals kept where nothing was typed.
-- Any shape turned by any angle, edited while turned.
+| **Status** | [where it stands](./docs/where-it-stands.md), and the [order of the epics](./docs/backlog/README.md) |
 
 ## How it is built
 
 ```mermaid
 flowchart LR
   I[Typed integers] --> M[Model<br/>integers]
-  M --> G[Geometry<br/>segments and arcs]
+  M --> G[Geometry<br/>segments, arcs, cubic sides]
   G --> S[SVG path data]
   S --> P[Playground,<br/>editors]
 ```
 
-- **Integer model, exact output**: sizes, radii and angles are whole numbers; geometry is derived, never stored; 5 decimals in the SVG.
-- **Sourced**: each function cites a specification, a paper, a book, or a derivation written from read sources.
-- **Built by an agent, decided by a person**: a coding agent designs, implements, tests and documents; the Product Owner decides, tests and merges. The method is the [playbook](https://alexandregallais.github.io/synoptic-studio/playbook/).
+- **Integer model, exact output**: sizes, radii and angles are whole numbers; the geometry is computed, never stored; 5 decimals at most in the SVG.
+- **Small named functions**: each calculation is a function named after what it computes, tested on examples computed by hand.
+- **Built by an agent, decided by a person**: a coding agent designs, implements, tests and documents; the Product Owner decides the rules and the priorities, tries each change and validates each review ([how the project works](./docs/how-it-works.md)).
 
 ## Develop
 
+With Node.js 24 or later and the Rust toolchain of `rust-toolchain.toml`:
+
 ```sh
 npm install
-npm run dev        # playground on http://localhost:5173
-npm run docs:dev   # documentation site
-npm run fix        # oxfmt (tools/format) + oxlint --fix + the project's Rust linter --fix
-npm run check:all  # every check: lint, types, tests (100 % coverage), audit, unused code, docs build
-npm run build      # dist/
+npm run dev        # the playground on http://localhost:5173
+npm run docs:dev   # the documentation site
+npm run fix        # format and apply the linters' fixes
+npm run check:all  # every check, as before each push
+npm run build      # the library into dist/
 ```
+
+The other commands: [commands](./docs/commands.md).
 
 [Contributing](./.github/CONTRIBUTING.md) · [Code of conduct](./.github/CODE_OF_CONDUCT.md) · [Security](./SECURITY.md) · License: Apache-2.0 ([LICENSE](./LICENSE), [NOTICE](./NOTICE)) · Agent instructions: [AGENTS.md](./AGENTS.md)
