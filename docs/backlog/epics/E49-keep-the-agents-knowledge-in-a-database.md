@@ -27,16 +27,16 @@ A list of features grouped by theme, with no closing of its own (ADR-0086). One 
 
 ## Features
 
-Proposed when the epic was written (2026-10-25) as drafts: SP-034 cuts them again (ADR-0100, decision 2).
+Cut by SP-034 (2026-10-25), in this order, each story of at most 3 tasks; their files are written once the Product Owner has answered the questions of [note 0035](../../research/notes/0035-e49-the-knowledge-database.md) (Questions for the Product Owner), which settle several stories' content.
 
 | Feature | Expected stories | Status |
 | --- | --- | --- |
-| The knowledge database | its tables, multi-branch included; the tool's add, search and query; the snapshot into the synced folder (3) | to refine |
-| The move into the database | the logs and the history; the finished stories, the research notes, the guide pages, the retrospectives; the decisions and the memory (3) | to refine |
-| The light docs | the pages kept, rewritten short; the business rules as rule and example; `AGENTS.md` pointing to the tool (3) | to refine |
-| The checks | the tests and tools that read the docs, rewritten for the database or removed (2) | to refine |
+| The knowledge database | the tables, opened by two worktrees; add, search, show and list, by branch; a clean snapshot into the synced folder (3) | to refine |
+| The checks freed from the files | the `@see` to stories pointed at the rules; the tests and tools reading finished items; the log rows written into the database (3) | to refine |
+| The move into the database | the finished stories, features and epics; the history, the logs, the retrospectives and the notes; the decisions and the memory (3) | to refine |
+| The light docs | `shapes.md` and the domain's index as rule and example; `interaction.md` as rule and example; the pages kept, rewritten short; `AGENTS.md` and the agent's pages pointing to the tool (4) | to refine |
 
-Size: 4 features, 11 stories, 20 + 25 × 11 + (45 to 75) × 4 = 475 to 595 active minutes, 8 to 10 hours (note 0034, §1).
+Size: 4 features, 13 stories, 20 + 25 × 13 + (45 to 75) × 4 = 525 to 645 active minutes, 8.75 to 10.75 hours (note 0034, §1); the domain's two long pages take a story each, and the checks are rewritten before the move so that it breaks nothing.
 
 ## Refinement
 
@@ -46,4 +46,4 @@ Size: 4 features, 11 stories, 20 + 25 × 11 + (45 to 75) × 4 = 475 to 595 activ
 
 ## Open points
 
-The refinement's questions, asked at once at SP-034's end.
+The refinement's questions, asked at once at SP-034's end: Q1 to Q10 of note 0035 — when a finished item leaves the repository, what the public site keeps, the trace of a done feature's criteria, the ADRs, the bibliography's rows, the guide pages, the agent's memory, the snapshots kept, the domain's settled questions, and whether the records folder is synced; and the variable naming the synced folder, to set once on the machine.
