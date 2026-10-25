@@ -75,7 +75,7 @@ fn lists_a_session_and_its_subagents_only() {
 }
 
 #[test]
-fn f20_ac4_sums_the_session_and_its_subagents_and_reads_only_what_is_new() {
+fn sums_the_session_and_its_subagents_and_reads_only_what_is_new() {
     let projects = folder();
     let main = projects.join("s1.jsonl");
     let agent = projects.join("s1/subagents/agent-a.jsonl");

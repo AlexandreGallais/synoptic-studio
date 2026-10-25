@@ -14,7 +14,7 @@ use knowledge::add::{Origin, add_document};
 use knowledge::store::{SCHEMA_VERSION, open_store, write};
 
 /// The usage the binary prints for a wrong call.
-const USAGE: &str = "Usage: target/release/knowledge init | path | add <kind> <file or -> | search <words> [<filters>] | show <id> [<heading>] [<filters>] | list [<filters>] | sync | snapshot | sql \"<statement>\" [--purpose \"<text>\"] | import-backlog <folder> | export-criteria <file or -> | check-ids <paths> | link-ids <paths> | branch-state <branch> merged|dropped | import-decisions, import-research, import-derivations, import-rules, import-logs, import-guide, import-memories, import-metrics, import-archives, import-transcripts <folder> | import-sources, import-library, import-saves <file>; the filters: --kind, --epic, --feature, --status, --since, --branch, --state <value>, --all";
+const USAGE: &str = "Usage: target/release/knowledge init | path | add <kind> <file or -> | search <words> [<filters>] | show <id> [<heading>] [<filters>] | list [<filters>] | sync | snapshot | sql \"<statement>\" [--purpose \"<text>\"] | import-backlog <folder> | export-criteria <file or -> | export-data [--check] | check-ids <paths> | link-ids <paths> | branch-state <branch> merged|dropped | import-decisions, import-research, import-derivations, import-rules, import-logs, import-guide, import-memories, import-metrics, import-archives, import-transcripts <folder> | import-sources, import-library, import-saves <file>; the filters: --kind, --epic, --feature, --status, --since, --branch, --state <value>, --all";
 
 /// A folder of its own: `records/` for the root, `repo/` a repository whose `origin` names
 /// `some-project`, `home/` for `HOME`.
@@ -838,4 +838,81 @@ fn imports_what_moved_by_its_commands_a_missing_source_refused() {
         "knowledge: ../records/some-project.sqlite: the records themselves, nothing to import"
     );
     assert_eq!(text(&two_words).1, format!("knowledge: {USAGE}"));
+}
+
+#[test]
+fn writes_the_data_files_the_ci_reads_and_names_one_that_differs_from_the_records() {
+    let place = on_branch("data", "chore/aud-054-x");
+
+    fs::create_dir_all(place.join("repo/tests/data")).unwrap();
+    // Without the tables, the export names the file it cannot write.
+    let missing = run(&place, &["export-data"]);
+
+    run(
+        &place,
+        &[
+            "sql",
+            "CREATE TABLE lint_exceptions (id INTEGER PRIMARY KEY, file TEXT, item TEXT, rule TEXT, reason TEXT)",
+            "--purpose",
+            "exceptions",
+        ],
+    );
+    run(
+        &place,
+        &[
+            "sql",
+            "CREATE TABLE dependencies (name TEXT, kind TEXT, version TEXT, purpose TEXT)",
+            "--purpose",
+            "dependencies",
+        ],
+    );
+    run(
+        &place,
+        &[
+            "sql",
+            "INSERT INTO lint_exceptions (file, item, rule, reason) VALUES ('a.ts', 'f', 'x', 'why \"so\"')",
+        ],
+    );
+    run(
+        &place,
+        &[
+            "sql",
+            "INSERT INTO dependencies VALUES ('vite', 'npm', '8.3.4', 'the server'), ('regex', 'crate', '1.13.1', 'patterns')",
+        ],
+    );
+
+    let written = run(&place, &["export-data"]);
+    let agrees = run(&place, &["export-data", "--check"]);
+
+    fs::write(place.join("repo/tests/data/dependencies.json"), "[]\n").unwrap();
+
+    let differs = run(&place, &["export-data", "--check"]);
+    let wrong = run(&place, &["export-data", "--all"]);
+    let exceptions =
+        fs::read_to_string(place.join("repo/tests/data/lint-exceptions.json")).unwrap_or_default();
+
+    let _ = fs::remove_dir_all(&place);
+    assert!(
+        text(&missing)
+            .1
+            .starts_with("knowledge: tests/data/lint-exceptions.json: no such table"),
+        "{missing:?}"
+    );
+    assert_eq!(
+        text(&written).0,
+        "tests/data/lint-exceptions.json written\ntests/data/dependencies.json written"
+    );
+    assert_eq!(
+        exceptions,
+        "[\n  { \"file\": \"a.ts\", \"item\": \"f\", \"rule\": \"x\", \"reason\": \"why \\\"so\\\"\" }\n]\n"
+    );
+    assert_eq!(
+        text(&agrees).0,
+        "every data file the CI reads agrees with the records"
+    );
+    assert_eq!(
+        text(&differs).1,
+        "knowledge: data files the CI reads differ from the records: run target/release/knowledge export-data and commit them:\ntests/data/dependencies.json"
+    );
+    assert_eq!(text(&wrong).1, format!("knowledge: {USAGE}"));
 }

@@ -101,18 +101,9 @@
   { "id": "F17.AC18" },
   { "id": "F18.AC2" },
   { "id": "F18.AC3" },
-  {
-    "id": "F18.AC4",
-    "retired": "the logs moved into the records (EN-155): an entry is a row, unique by its key, no merge of files"
-  },
-  {
-    "id": "F18.AC5",
-    "retired": "the stories index went with the backlog files into the records (EN-154, 2026-10-25)"
-  },
-  {
-    "id": "F18.AC6",
-    "retired": "the shared logs whose shape it guarded moved into the records (EN-155): no story edits them any more"
-  },
+  { "id": "F18.AC4", "retired": "the logs moved into the records (EN-155): an entry is a row, unique by its key, no merge of files" },
+  { "id": "F18.AC5", "retired": "the stories index went with the backlog files into the records (EN-154, 2026-10-25)" },
+  { "id": "F18.AC6", "retired": "the shared logs whose shape it guarded moved into the records (EN-155): no story edits them any more" },
   { "id": "F18.AC7" },
   { "id": "F18.AC8" },
   { "id": "F18.AC9" },
@@ -122,14 +113,8 @@
   { "id": "F18.AC13" },
   { "id": "F18.AC14" },
   { "id": "F18.AC15" },
-  {
-    "id": "F18.AC16",
-    "retired": "rule-docs retired: a rule is written in the records with its code, the domain page refreshed at the review (decision of 2026-10-25, EN-154)"
-  },
-  {
-    "id": "F18.AC17",
-    "retired": "the derivations and notes it guarded moved into the records (EN-155); the domain pages, rewritten as rule and example, keep short bullets (EN-156)"
-  },
+  { "id": "F18.AC16", "retired": "rule-docs retired: a rule is written in the records with its code, the domain page refreshed at the review (decision of 2026-10-25, EN-154)" },
+  { "id": "F18.AC17", "retired": "the derivations and notes it guarded moved into the records (EN-155); the domain pages, rewritten as rule and example, keep short bullets (EN-156)" },
   { "id": "F18.AC18" },
   { "id": "F18.AC19" },
   { "id": "F18.AC20" },
@@ -148,13 +133,10 @@
   { "id": "F20.AC1" },
   { "id": "F20.AC2" },
   { "id": "F20.AC3" },
-  { "id": "F20.AC4" },
+  { "id": "F20.AC4", "retired": "the status line shows only an animation while the agent works, or chat free (method rule, Product Owner, 2026-10-25): it no longer gives a run's duration nor its tokens; run-totals keeps them for the run's report, tested by its own crate (AUD-054)" },
   { "id": "F20.AC6" },
   { "id": "F20.AC7" },
-  {
-    "id": "F20.AC8",
-    "retired": "its measures were read in the story files of EN-096 to EN-099, now rows of the records, which the CI cannot read (EN-154)"
-  },
+  { "id": "F20.AC8", "retired": "its measures were read in the story files of EN-096 to EN-099, now rows of the records, which the CI cannot read (EN-154)" },
   { "id": "F21.AC1" },
   { "id": "F21.AC2" },
   { "id": "F21.AC3" },
@@ -168,10 +150,7 @@
   { "id": "F22.AC2" },
   { "id": "F22.AC3" },
   { "id": "F22.AC4" },
-  {
-    "id": "F22.AC5",
-    "retired": "the frame of epics, features and stories was checked on the backlog files, now rows of the records, which the CI cannot read (EN-154)"
-  },
+  { "id": "F22.AC5", "retired": "the frame of epics, features and stories was checked on the backlog files, now rows of the records, which the CI cannot read (EN-154)" },
   { "id": "F23.AC1" },
   { "id": "F23.AC2" },
   { "id": "F24.AC1" },

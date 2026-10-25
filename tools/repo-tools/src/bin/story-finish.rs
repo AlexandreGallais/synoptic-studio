@@ -1,8 +1,9 @@
-//! `story-finish <base> <title> <body file>` (`npm run story:finish`, RET-002, ADR-0072, EN-051,
-//! EN-103, EN-154), in the story's checkout once its branch is pushed, under the merge lock of
-//! `tools/heavy-lock/`: stories merge one at a time, the next one waiting, then rebasing on the
-//! updated base. No `done` commit: the story's status lives in the records. Into `develop`, the
-//! ids the change cites are checked against the records first (`knowledge check-ids`). Its pull
+//! `story-finish <base> <title> <body file>` (RET-002, ADR-0072, EN-051, EN-103, EN-154), run as
+//! `target/release/heavy-lock --lock merge target/release/story-finish …` in the story's checkout
+//! once its branch is pushed: stories merge one at a time, the next one waiting, then rebasing on
+//! the updated base. No `done` commit: the story's status lives in the records. Into `develop`, the
+//! ids the change cites are checked against the records first (`knowledge check-ids`), and the data
+//! files the CI reads (`knowledge export-data --check`, AUD-054). Its pull
 //! request opened with the `autonomous` label, its merge by GitHub awaited for at most three
 //! minutes, an epic's refinement `SP` into `develop` as well (REV-009); a branch the auto-merge of
 //! its base does not take, opened without it, awaited by no one: it says at once that it waits for
@@ -18,11 +19,19 @@ use std::process::{Command, ExitCode};
 use std::thread;
 use std::time::Duration;
 
+use knowledge::data_files::stale_refusal;
 use repo_tools::story_finish::{
     Merger, Next, Rebase, Start, Story, auto_merge_of, clean_up, clean_up_plan, ids_refusal,
     manual_steps, merger, missing_cited_ids, needs_push, next_step, push_with_lease,
-    rebase_on_base, record_the_merge, run_words, start_step, worktrees,
+    rebase_on_base, record_the_merge, run_words, stale_data, start_step, worktrees,
 };
+
+/// Why a pull request into `develop` is not opened: the ids the change cites that the records
+/// lack, then the data files the CI reads in place of the records that differ from them; no check
+/// of the pull request can read either.
+fn develop_refusal(base: &str, here: &Path) -> Result<Option<String>, String> {
+    Ok(ids_refusal(&missing_cited_ids(base, here)?).or(stale_refusal(&stale_data(here)?)))
+}
 
 /// Time between two readings of the pull request's state.
 const POLL: Duration = Duration::from_secs(10);
@@ -101,9 +110,8 @@ fn finish(base: &str, title: &str, body: &str) -> Result<u8, String> {
 
     if start != Start::Clean {
         bring_up(base, &branch, here)?;
-        // Into `develop`, the ids the change cites, which no check of the pull request can read.
         if base == "develop"
-            && let Some(refusal) = ids_refusal(&missing_cited_ids(base, here)?)
+            && let Some(refusal) = develop_refusal(base, here)?
         {
             return Err(refusal);
         }
@@ -209,7 +217,7 @@ fn work() -> u8 {
     // Without its three arguments it stops: without a base, it rebased on `origin/undefined`
     // (AUD-020, N2).
     if [base, title, body].contains(&"") {
-        eprintln!("usage: npm run story:finish -- <base> <title> <body file>");
+        eprintln!("{USAGE}");
         return 1;
     }
 
@@ -220,7 +228,7 @@ fn work() -> u8 {
 }
 
 /// The usage, printed on `--help` or `-h` (REV-009).
-const USAGE: &str = "usage: npm run story:finish -- <base> <title> <body file>";
+const USAGE: &str = "usage: target/release/heavy-lock --lock merge target/release/story-finish <base> <title> <body file>";
 
 fn main() -> ExitCode {
     if let Some(code) = tool_use::usage(&std::env::args().skip(1).collect::<Vec<_>>(), USAGE) {

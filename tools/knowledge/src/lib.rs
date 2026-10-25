@@ -5,6 +5,7 @@
 
 pub mod add;
 pub mod backlog;
+pub mod data_files;
 pub mod document;
 pub mod front_matter;
 pub mod links;

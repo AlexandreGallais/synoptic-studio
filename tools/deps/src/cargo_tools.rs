@@ -1,20 +1,24 @@
 //! The cargo tools the Rust checks run, `cargo-llvm-cov` and `cargo-deny` (EN-121): installed by
 //! `cargo install`, so in neither `Cargo.toml` nor `Cargo.lock`. Their versions are read where they
 //! are written — the `CARGO_<TOOL>_VERSION` of each workflow's `env`, the
-//! `cargo install --locked <tool>@<version>` lines of `package.json`, the workflows and
-//! `docs/tooling/`, and the rows of `docs/tooling/dependencies.md`, Rust tools — then held to one
-//! version per tool, its row there, a version of the index neither yanked nor under 7 days old,
-//! and its latest release on crates.io 7 days old (`REF-CARGO-REGISTRY-INDEX`).
+//! `cargo install --locked <tool>@<version>` lines of `package.json`, the workflows and the checks'
+//! messages of `tools/repo-tools/src/check_all.rs`, and their rows of the records' `dependencies`,
+//! exported to `tests/data/dependencies.json` (AUD-054) — then held to one version per tool, its
+//! row there, a version of the index neither yanked nor under 7 days old, and its latest release
+//! on crates.io 7 days old (`REF-CARGO-REGISTRY-INDEX`).
 
 use std::collections::{BTreeMap, BTreeSet};
 
 use crate::version::Version;
 
-/// The page whose Rust tools table gives each tool its row.
-pub const DEPENDENCIES_PAGE: &str = "docs/tooling/dependencies.md";
+/// The data file whose `cargo-tool` rows give each tool its row.
+pub const DEPENDENCIES_PAGE: &str = "tests/data/dependencies.json";
 
-/// The heading of that table's section.
-const RUST_TOOLS_HEADING: &str = "## Rust tools";
+/// The checks whose messages name the command that installs a missing tool.
+pub const CHECKS_SOURCE: &str = "tools/repo-tools/src/check_all.rs";
+
+/// The kind of a cargo tool's row.
+const CARGO_TOOL: &str = "cargo-tool";
 
 /// What closes a word of an install line in a page or a script: a code span, a quote, a comma.
 const WORD_END: &[char] = &['`', '\'', '"', ',', ';', ')', '.'];
@@ -79,26 +83,30 @@ pub fn install_pins(text: &str, place: &str) -> Vec<ToolPin> {
         .collect()
 }
 
-/// The tools of the Rust tools table of `docs/tooling/dependencies.md`: each row whose second
-/// cell opens with a version number (`| cargo-deny | 0.20.2, 2026-07-09 | …`).
+/// The tools of the data file of the dependencies: each row of kind `cargo-tool` whose version
+/// is a version number (`{ "name": "cargo-deny", "kind": "cargo-tool", "version": "0.20.2" }`);
+/// none when the text is not a JSON array.
 #[must_use]
-pub fn row_pins(page: &str) -> Vec<ToolPin> {
-    page.lines()
-        .skip_while(|line| *line != RUST_TOOLS_HEADING)
-        .skip(1)
-        .take_while(|line| !line.starts_with("## "))
-        .filter_map(|line| {
-            let mut cells = line.strip_prefix('|')?.split('|').map(str::trim);
-            let name = cells.next()?.trim_matches('`');
-            let version = cells.next()?.split(',').next()?;
+pub fn row_pins(data: &str) -> Vec<ToolPin> {
+    let rows: serde_json::Value = serde_json::from_str(data).unwrap_or_default();
+    let field = |row: &serde_json::Value, key: &str| row.get(key)?.as_str().map(str::to_owned);
 
-            pin(name, version, DEPENDENCIES_PAGE)
+    rows.as_array()
+        .into_iter()
+        .flatten()
+        .filter(|row| field(row, "kind").as_deref() == Some(CARGO_TOOL))
+        .filter_map(|row| {
+            pin(
+                &field(row, "name")?,
+                &field(row, "version")?,
+                DEPENDENCIES_PAGE,
+            )
         })
         .collect()
 }
 
 /// The lines of the tools whose places disagree: one written at two versions, naming each
-/// version's places, and one written without its row in `docs/tooling/dependencies.md`.
+/// version's places, and one written without its row in `tests/data/dependencies.json`.
 #[must_use]
 pub fn disagreements(pins: &[ToolPin]) -> Vec<String> {
     let mut tools: BTreeMap<&str, BTreeMap<&str, BTreeSet<&str>>> = BTreeMap::new();
@@ -134,7 +142,7 @@ pub fn disagreements(pins: &[ToolPin]) -> Vec<String> {
                 format!("tool {name} {}", each.join(", "))
             });
             let rowless = (!has_row).then(|| {
-                format!("tool {name} without its row in {DEPENDENCIES_PAGE} (Rust tools)")
+                format!("tool {name} without its row in {DEPENDENCIES_PAGE} (a cargo-tool row of the records' dependencies)")
             });
 
             two.into_iter().chain(rowless)

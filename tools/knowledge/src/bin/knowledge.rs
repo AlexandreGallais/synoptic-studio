@@ -1,4 +1,5 @@
-//! `knowledge` (`target/release/knowledge`, E49, `docs/tooling/knowledge.md`): the project's
+//! `knowledge` (`target/release/knowledge`, E49; its conventions: the records' `conventions`, area
+//! `records`, and its row of `tools`): the project's
 //! records in one SQLite file, `$AGENT_RECORDS_ROOT/<repo>.sqlite`, shared by every branch and
 //! worktree:
 //!   `target/release/knowledge init`                  opens the file, made or brought up to the
@@ -18,6 +19,8 @@
 //!                                                    (`--purpose` for a new table)
 //!   `target/release/knowledge import-backlog <dir>`  the backlog's files into its tables
 //!   `target/release/knowledge export-criteria <file>` the done features' criteria, for the CI
+//!   `target/release/knowledge export-data [--check]` the other data files the CI reads, written
+//!                                                    from the records, or checked against them
 //!   `target/release/knowledge check-ids <paths>`     the ids cited the records lack
 //!   `target/release/knowledge link-ids <paths>`      the links to backlog files written as ids
 //!   `target/release/knowledge branch-state <branch> merged|dropped` a branch's drafts marked
@@ -42,6 +45,7 @@ use knowledge::add::{Origin, add_document, is_kind, row_table};
 use knowledge::backlog::{
     criteria_json, done_criteria, drop_branch, import_backlog, merge_branch, missing_ids,
 };
+use knowledge::data_files::{data_files, stale_data_files, stale_refusal};
 use knowledge::links::with_ids;
 use knowledge::moved::{
     Base, import_decisions, import_derivations, import_guide, import_logs, import_research,
@@ -65,13 +69,14 @@ use knowledge::transcripts::import_transcripts;
 use rusqlite::Connection;
 
 /// The usage, printed for an unknown command or a wrong call.
-const USAGE: &str = "Usage: target/release/knowledge init | path | add <kind> <file or -> | search <words> [<filters>] | show <id> [<heading>] [<filters>] | list [<filters>] | sync | snapshot | sql \"<statement>\" [--purpose \"<text>\"] | import-backlog <folder> | export-criteria <file or -> | check-ids <paths> | link-ids <paths> | branch-state <branch> merged|dropped | import-decisions, import-research, import-derivations, import-rules, import-logs, import-guide, import-memories, import-metrics, import-archives, import-transcripts <folder> | import-sources, import-library, import-saves <file>; the filters: --kind, --epic, --feature, --status, --since, --branch, --state <value>, --all";
+const USAGE: &str = "Usage: target/release/knowledge init | path | add <kind> <file or -> | search <words> [<filters>] | show <id> [<heading>] [<filters>] | list [<filters>] | sync | snapshot | sql \"<statement>\" [--purpose \"<text>\"] | import-backlog <folder> | export-criteria <file or -> | export-data [--check] | check-ids <paths> | link-ids <paths> | branch-state <branch> merged|dropped | import-decisions, import-research, import-derivations, import-rules, import-logs, import-guide, import-memories, import-metrics, import-archives, import-transcripts <folder> | import-sources, import-library, import-saves <file>; the filters: --kind, --epic, --feature, --status, --since, --branch, --state <value>, --all";
 
 /// The commands that take their own words, no filter.
-const OWN_WORDS: [&str; 6] = [
+const OWN_WORDS: [&str; 7] = [
     "sql",
     "import-backlog",
     "export-criteria",
+    "export-data",
     "check-ids",
     "link-ids",
     "branch-state",
@@ -85,6 +90,7 @@ fn is_called_right(command: &str, words: &[String], filters: &Filters) -> bool {
         "search" | "check-ids" | "link-ids" => !words.is_empty(),
         "show" => matches!(words.len(), 1 | 2),
         "import-backlog" | "export-criteria" => words.len() == 1,
+        "export-data" => words.is_empty() || words == ["--check"],
         _ if IMPORTS.contains(&command) => words.len() == 1,
         "branch-state" => words.len() == 2 && matches!(words[1].as_str(), "merged" | "dropped"),
         "sql" => matches!(words.len(), 1 | 3) && (words.len() == 1 || words[1] == "--purpose"),
@@ -358,6 +364,28 @@ fn exported(database: &Connection, target: &str) -> Result<String, String> {
     ))
 }
 
+/// Writes the data files the CI reads from the records, in the checkout's root; with `--check`,
+/// names those that differ from the records instead, an error when one does.
+fn exported_data(database: &Connection, root: &Path, words: &[String]) -> Result<String, String> {
+    if words.is_empty() {
+        let files = data_files(database)?;
+
+        for (path, text) in &files {
+            fs::write(root.join(path), text).map_err(|error| format!("{path}: {error}"))?;
+        }
+        return Ok(lines(
+            files.into_iter().map(|(path, _)| format!("{path} written")),
+        ));
+    }
+
+    let stale = stale_data_files(database, root)?;
+
+    stale_refusal(&stale).map_or_else(
+        || Ok("every data file the CI reads agrees with the records\n".to_owned()),
+        Err,
+    )
+}
+
 /// The ids cited under some paths that the records lack, one line each; an error when there are.
 fn checked(database: &Connection, paths: &[String]) -> Result<String, String> {
     let files = text_files(paths)?;
@@ -490,6 +518,7 @@ fn output(arguments: &[String]) -> Result<String, String> {
         "sql" => statement(&database, &words, &branch),
         "import-backlog" => imported(&database, &words[0], &branch),
         "export-criteria" => exported(&database, &words[0]),
+        "export-data" => exported_data(&database, cwd, &words),
         "check-ids" => checked(&database, &words),
         "branch-state" => branch_state(&database, &words),
         _ if IMPORTS.contains(&command) => {
