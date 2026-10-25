@@ -1,4 +1,5 @@
-//! `knowledge link-ids <paths>` (EN-154): the links and the paths to a backlog file, gone into
+//! `knowledge link-ids <paths>` (EN-154, E49): the links and the paths to a moved file — a backlog
+//! item, a decision, a note, a derivation, the bibliography, a log, a guide page — gone into
 //! the records, written as the item's short id, which `knowledge show` opens (E49, Decisions,
 //! References). A link `[text](…/backlog/stories/E49-F48-EN-151-….md)` becomes `EN-151`, its text
 //! kept when it says more; a bare path `docs/backlog/features/E49-F48-….md` becomes `F48`; a link to
@@ -6,9 +7,8 @@
 //! backlog gave every file, so that no database is needed.
 
 use crate::backlog::family;
-
-/// The folders of the backlog that moved into the records.
-const MOVED: [&str; 3] = ["backlog/stories/", "backlog/features/", "backlog/epics/"];
+use crate::moved::{guide_id, log_id};
+use crate::rules::{page_of, rule_id};
 
 /// The id a backlog file's name gives: `E49-F48-EN-151-topic.md` → `EN-151`, `E49-F48-topic.md`
 /// → `F48`, `E49-topic.md` → `E49`; `None` for any other name.
@@ -43,25 +43,107 @@ pub fn id_of_file(name: &str) -> Option<String> {
     Some(feature.unwrap_or(epic).to_owned())
 }
 
-/// What a link target to the backlog names: the id of its file, or `None` for an index or a folder
-/// of the backlog; `Err(())` when it is no target into the moved folders at all.
+/// The folders and files of the docs that moved into the records: the backlog's (EN-154), then
+/// the decisions, derivations, research, bibliography, logs and guide (E49, the move).
+const MOVED: [&str; 9] = [
+    "backlog/stories/",
+    "backlog/features/",
+    "backlog/epics/",
+    "adr/",
+    "derivations/",
+    "research/",
+    "references.md",
+    "process/",
+    "guide/",
+];
+
+/// The logs of `docs/process/` that moved; its other pages stay.
+const LOGS: [&str; 5] = [
+    "journal.md",
+    "history.md",
+    "improvements.md",
+    "feedback.md",
+    "tool-incidents.md",
+];
+
+/// The four digits a numbered file's name opens with, then a dash.
+fn numbered(name: &str) -> Option<&str> {
+    let digits = name.get(..4)?;
+
+    (digits.bytes().all(|byte| byte.is_ascii_digit()) && name[4..].starts_with('-'))
+        .then_some(digits)
+}
+
+/// The id a file or a folder of the moved docs gets, given its moved folder and what follows it:
+/// `Ok(None)` for a folder or an index whose link keeps its text alone, `Err(())` for a path that
+/// did not move or names nothing.
+fn moved_id(folder: &str, rest: &str) -> Result<Option<String>, ()> {
+    let is_index = rest.is_empty() || rest == "README.md";
+    let stem = rest.strip_suffix(".md").filter(|stem| !stem.contains('/'));
+
+    match folder {
+        "adr/" if is_index => Ok(Some("PAGE-adr".to_owned())),
+        "adr/" => numbered(rest)
+            .map(|number| Some(format!("ADR-{number}")))
+            .ok_or(()),
+        "derivations/" if is_index => Ok(Some("PAGE-derivations".to_owned())),
+        "derivations/" => stem.map(|stem| Some(format!("DERIV-{stem}"))).ok_or(()),
+        "research/" if is_index => Ok(Some("PAGE-research".to_owned())),
+        "research/" => match rest.split_once('/') {
+            Some(("notes" | "requests", "")) => Ok(None),
+            Some(("notes", name)) => numbered(name).map(|n| Some(format!("NOTE-{n}"))).ok_or(()),
+            Some(("requests", "_template.md")) => {
+                Ok(Some("PAGE-research-requests-template".to_owned()))
+            }
+            Some(("requests", name)) => numbered(name)
+                .map(|n| Some(format!("REQUEST-{n}")))
+                .ok_or(()),
+            _ => Err(()),
+        },
+        "references.md" if rest.is_empty() => Ok(Some("PAGE-references".to_owned())),
+        "process/" if LOGS.contains(&rest) => Ok(Some(log_id(rest))),
+        "process/" => match rest.strip_prefix("retrospectives/") {
+            Some("" | "README.md") => Ok(Some("PAGE-retrospectives".to_owned())),
+            Some(name) => name
+                .strip_suffix("-retrospective.md")
+                .filter(|epic| !epic.contains('/'))
+                .map(|epic| Some(format!("RETRO-{epic}")))
+                .ok_or(()),
+            None => Err(()),
+        },
+        "guide/" if is_index => Ok(Some("PAGE-guide".to_owned())),
+        "guide/" if stem.is_some() => Ok(Some(guide_id(rest))),
+        "backlog/stories/" | "backlog/features/" | "backlog/epics/" if is_index => Ok(None),
+        "backlog/stories/" | "backlog/features/" | "backlog/epics/" if stem.is_some() => {
+            id_of_file(rest).map(Some).ok_or(())
+        }
+        _ => Err(()),
+    }
+}
+
+/// What a link target to the moved docs names: the id of its file, or `None` for an index or a
+/// folder whose link keeps its text; `Err(())` when it is no target into the moved docs at all,
+/// an address of the web among them. A moved folder is found where a path's part starts.
 fn target_id(target: &str) -> Result<Option<String>, ()> {
     let path = target.split('#').next().unwrap_or_default();
-    let Some(at) = MOVED
+
+    if path.contains("://") {
+        return Err(());
+    }
+
+    let found = MOVED
         .iter()
-        .find_map(|folder| path.find(folder).map(|found| found + folder.len()))
-    else {
+        .filter_map(|folder| {
+            path.match_indices(folder)
+                .find(|(at, _)| *at == 0 || path[..*at].ends_with('/'))
+                .map(|(at, _)| (at, *folder))
+        })
+        .min();
+    let Some((at, folder)) = found else {
         return Err(());
     };
-    let name = &path[at..];
 
-    if name.is_empty() || name == "README.md" {
-        return Ok(None);
-    }
-    if name.contains('/') {
-        return Err(());
-    }
-    id_of_file(name).map(Some).ok_or(())
+    moved_id(folder, &path[at + folder.len()..])
 }
 
 /// Whether a text holds a word, cut at every character but a letter, a digit or a dash.
@@ -186,8 +268,14 @@ fn rewrite_bare_paths(text: &str) -> String {
         let path = token.trim_end_matches('.');
         let path_end = start + path.len();
 
+        // A bare path names the docs by their folder, `docs/adr/…`: a word `derivations/` alone
+        // in a sentence is no path.
+        let is_docs = MOVED
+            .iter()
+            .any(|folder| path.contains(&format!("docs/{folder}")));
+
         match target_id(path) {
-            Ok(Some(id)) => {
+            Ok(Some(id)) if is_docs => {
                 out.push_str(&rest[..start]);
                 out.push_str(&id);
             }
@@ -202,5 +290,42 @@ fn rewrite_bare_paths(text: &str) -> String {
 /// A text with its links and bare paths to the backlog's moved files written as ids.
 #[must_use]
 pub fn with_ids(text: &str) -> String {
-    rewrite_bare_paths(&rewrite_markdown_links(text))
+    with_rule_ids(&rewrite_bare_paths(&rewrite_markdown_links(text)))
+}
+
+/// A `@see` line's citations of a domain page written as the rule's id (E49): the page and its
+/// anchor, `docs/domain/shapes.md#_2-corner-radius` → `RULE-shapes-2-corner-radius`, the page
+/// alone `RULE-shapes`. Elsewhere a domain page, which stays for the Product Owner, keeps its path.
+#[must_use]
+pub fn with_rule_ids(text: &str) -> String {
+    const PAGE: &str = "docs/domain/";
+
+    text.split_inclusive('\n')
+        .map(|line| {
+            if !line.contains("@see") {
+                return line.to_owned();
+            }
+
+            let mut out = String::new();
+            let mut rest = line;
+
+            while let Some(at) = rest.find(PAGE) {
+                let after = &rest[at + PAGE.len()..];
+                let length = after
+                    .find(|character: char| !is_path_character(character))
+                    .unwrap_or(after.len());
+                let token = after[..length].trim_end_matches('.');
+                let (file, anchor) = token.split_once('#').unwrap_or((token, ""));
+
+                out.push_str(&rest[..at]);
+                match file.strip_suffix(".md").filter(|stem| !stem.contains('/')) {
+                    Some(_) => out.push_str(&rule_id(&page_of(file), anchor)),
+                    None => out.push_str(&rest[at..at + PAGE.len() + token.len()]),
+                }
+                rest = &after[token.len()..];
+            }
+            out.push_str(rest);
+            out
+        })
+        .collect()
 }

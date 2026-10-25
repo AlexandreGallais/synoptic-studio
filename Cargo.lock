@@ -607,6 +607,7 @@ dependencies = [
  "library",
  "page",
  "rusqlite",
+ "serde_json",
  "test-support",
  "tool-use",
 ]
@@ -1209,6 +1210,7 @@ dependencies = [
  "git-repository",
  "hooks",
  "knowledge",
+ "library",
  "shared-files",
  "stale-binaries",
  "test-support",

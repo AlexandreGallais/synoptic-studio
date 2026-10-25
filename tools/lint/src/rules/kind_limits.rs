@@ -192,7 +192,6 @@ impl Rule for KindLimits {
 mod tests {
     use super::{KindLimits, Metrics, metrics};
     use crate::project::Project;
-    use crate::settings::REFERENCE_SOURCES;
     use crate::source::Source;
     use crate::testing::{NONE, lint, messages};
 
@@ -279,7 +278,7 @@ mod tests {
         let semantic = oxc_semantic::SemanticBuilder::new()
             .build(&parsed.program)
             .semantic;
-        let project = Project::new(std::path::Path::new("/project"), REFERENCE_SOURCES);
+        let project = Project::new(std::path::Path::new("/project"));
         let source = Source::new(
             "src/a.ts",
             &parsed.program,

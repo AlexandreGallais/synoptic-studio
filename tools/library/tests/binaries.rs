@@ -209,6 +209,7 @@ fn without_its_variable_the_library_is_in_the_home_data_folder_never_at_library_
     let output = place
         .command(env!("CARGO_BIN_EXE_library"))
         .env_remove("AGENT_LIBRARY_FILE")
+        .env_remove("AGENT_RECORDS_ROOT")
         .arg("list")
         .output()
         .unwrap();
@@ -233,6 +234,7 @@ fn without_its_variable_nor_a_home_neither_binary_starts() {
         let output = place
             .command(binary)
             .env_remove("AGENT_LIBRARY_FILE")
+            .env_remove("AGENT_RECORDS_ROOT")
             .env_remove("HOME")
             .env_remove("USERPROFILE")
             .arg("list")

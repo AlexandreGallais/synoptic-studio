@@ -599,10 +599,21 @@ fn holds_document(database: &Connection, id: &str) -> rusqlite::Result<bool> {
         .map(|found| found.is_some())
 }
 
+/// Whether the records hold a business rule of an id, a bullet of a domain page (E49).
+fn holds_rule(database: &Connection, id: &str) -> rusqlite::Result<bool> {
+    if !id.starts_with("RULE-") {
+        return Ok(false);
+    }
+    database
+        .query_row("SELECT 1 FROM rules WHERE id = ?", [id], |_| Ok(()))
+        .optional()
+        .map(|found| found.is_some())
+}
+
 /// The ids a text cites that the records should hold and do not, each with its line, from 1: a
 /// backlog id missing from its table, or an id of a kind whose documents the records hold,
-/// missing from them; an id of a kind the records hold nothing of yet (`REF-`, `ADR-`) is not
-/// checked.
+/// missing from them, a business rule's `RULE-` id read in `rules` too; an id of a kind the
+/// records hold nothing of is not checked.
 ///
 /// # Errors
 /// When SQLite fails.
@@ -618,7 +629,11 @@ pub fn missing_ids(database: &Connection, text: &str) -> rusqlite::Result<Vec<(u
         }) {
             let is_missing = match family(&id) {
                 Some(family) => !holds_item(database, &id, family)?,
-                None => holds_kind(database, &id)? && !holds_document(database, &id)?,
+                None => {
+                    holds_kind(database, &id)?
+                        && !holds_document(database, &id)?
+                        && !holds_rule(database, &id)?
+                }
             };
 
             if is_missing {

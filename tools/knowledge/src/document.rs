@@ -94,7 +94,7 @@ pub fn is_citation(word: &str) -> bool {
 
     match parts.as_slice() {
         ["REF", rest @ ..] => !rest.is_empty() && rest.iter().all(upper),
-        ["DERIV", rest @ ..] => !rest.is_empty() && rest.iter().all(lower),
+        ["DERIV" | "RULE", rest @ ..] => !rest.is_empty() && rest.iter().all(lower),
         [single] => single
             .split_at_checked(1)
             .is_some_and(|(letter, number)| matches!(letter, "E" | "F") && digits(number)),

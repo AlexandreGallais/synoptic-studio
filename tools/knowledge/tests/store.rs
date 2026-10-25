@@ -87,7 +87,12 @@ fn f48_ac1_makes_every_table_of_note_0035_with_its_full_text_index_kept_by_trigg
     }
     assert_eq!(
         triggers,
-        ["sections_delete", "sections_insert", "sections_update"]
+        [
+            "sections_delete",
+            "sections_insert",
+            "sections_update",
+            "uses_insert"
+        ]
     );
 }
 
@@ -182,10 +187,10 @@ fn f48_ac1_sets_user_version_to_the_schemas_number_and_keeps_the_rows_when_opene
         .unwrap();
 
     clean(&file);
-    // Schema 4 since EN-154, the backlog's tables added.
-    assert_eq!(SCHEMA_VERSION, 4);
-    assert_eq!(version, 4);
-    assert_eq!(pragma, 4);
+    // Schema 5 since the move into the records, its tables added.
+    assert_eq!(SCHEMA_VERSION, 5);
+    assert_eq!(version, 5);
+    assert_eq!(pragma, 5);
     assert_eq!(rows, 1);
 }
 
@@ -302,11 +307,11 @@ fn f48_ac1_refuses_to_write_to_a_newer_file_and_still_reads_it() {
         .unwrap();
 
     clean(&file);
-    assert_eq!(version, 5);
+    assert_eq!(version, 6);
     assert_eq!(
         refused,
         Err(
-            "the file's schema is 5, newer than this binary's 4: rebuild the tools from your base, target/release/git-sequences sync"
+            "the file's schema is 6, newer than this binary's 5: rebuild the tools from your base, target/release/git-sequences sync"
                 .to_owned()
         )
     );
@@ -380,7 +385,12 @@ fn f48_ac1_brings_a_schema_1_file_up_to_the_last_its_rows_kept_with_their_branch
     assert_eq!(indexed, ["EN-151"]);
     assert_eq!(
         triggers,
-        ["sections_delete", "sections_insert", "sections_update"]
+        [
+            "sections_delete",
+            "sections_insert",
+            "sections_update",
+            "uses_insert"
+        ]
     );
 }
 

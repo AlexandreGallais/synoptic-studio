@@ -84,7 +84,6 @@ mod tests {
     use super::{FolderLayout, check};
     use crate::project::Project;
     use crate::rules::Rule;
-    use crate::settings::REFERENCE_SOURCES;
     use crate::source::Source;
     use crate::testing::{NONE, fixture, lint_at, messages, write_files};
 
@@ -137,7 +136,7 @@ mod tests {
         let semantic = oxc_semantic::SemanticBuilder::new()
             .build(&parsed.program)
             .semantic;
-        let project = Project::new(root, REFERENCE_SOURCES);
+        let project = Project::new(root);
         let source = Source::new(path, &parsed.program, &semantic, &[], &project);
 
         messages(&check(

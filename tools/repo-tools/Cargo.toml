@@ -16,6 +16,7 @@ stale-binaries = { path = "../stale-binaries" }
 tool-use = { path = "../tool-use" }
 
 [dev-dependencies]
+library = { path = "../library" }
 test-support = { path = "../test-support" }
 
 [lints]

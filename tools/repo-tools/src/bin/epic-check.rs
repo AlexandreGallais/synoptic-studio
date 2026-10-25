@@ -17,12 +17,14 @@ use std::time::SystemTime;
 use calendar::now_ms;
 use hooks::json::{Value, parse};
 use knowledge::backlog::epic_items;
+use knowledge::private_records::last_save;
 use knowledge::project::open_records;
 use knowledge::records::main_and_origin;
+use knowledge::store::open_store;
 use repo_tools::epic_check::{
     Finding, check_all_finding, failed_calls, left_branches, lost_calls, main_ci, open_items, table,
 };
-use repo_tools::records_save::{LAST_SAVE, ROOT_VARIABLE, project_name, records_folder};
+use repo_tools::records_save::{ROOT_VARIABLE, project_name, records_database};
 
 /// A command's trimmed output and whether it succeeded: its own output when it failed — check:all
 /// names the checks that failed — else the error, as Node.js wrote it.
@@ -178,17 +180,24 @@ fn github_findings(root: &Path) -> Vec<Finding> {
     ]
 }
 
-/// The private records: their folder and the last save (ADR-0081).
+/// The private records: their file and the last save it holds (ADR-0081, E49).
 fn records_finding(root: &Path) -> Finding {
     let folder = main_and_origin(root).and_then(|(main, origin)| {
-        records_folder(
+        records_database(
             env::var(ROOT_VARIABLE).ok().as_deref(),
             &project_name(&origin, &main),
         )
     });
-    let last = folder
-        .as_ref()
-        .map(|folder| fs::read_to_string(folder.join(LAST_SAVE)).unwrap_or_default());
+    let last = folder.as_ref().map(|file| {
+        if file.is_file() {
+            open_store(file)
+                .ok()
+                .and_then(|database| last_save(&database).ok().flatten())
+                .unwrap_or_default()
+        } else {
+            String::new()
+        }
+    });
 
     Finding {
         what: "private records".to_owned(),

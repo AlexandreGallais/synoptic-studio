@@ -210,21 +210,34 @@ fn a_page_the_library_returned_empty_may_be_fetched_otherwise() {
 #[test]
 fn the_library_file_is_the_one_the_library_scripts_open() {
     assert_eq!(
-        library_file(Some("/l.sqlite".into()), Some("/home/a".into())),
+        library_file(
+            Some("/l.sqlite".into()),
+            Some(PathBuf::from("/r.sqlite")),
+            Some("/home/a".into())
+        ),
         Some(PathBuf::from("/l.sqlite"))
     );
     assert_eq!(
-        library_file(None, Some("/home/a".into())),
+        library_file(None, None, Some("/home/a".into())),
         Some(PathBuf::from(
             "/home/a/.local/share/agent-library/library.sqlite"
         ))
     );
-    assert_eq!(library_file(None, None), None);
+    // The records, when the project has them, before the home's (E49).
+    assert_eq!(
+        library_file(
+            None,
+            Some(PathBuf::from("/r.sqlite")),
+            Some("/home/a".into())
+        ),
+        Some(PathBuf::from("/r.sqlite"))
+    );
+    assert_eq!(library_file(None, None, None), None);
     // An empty home names no folder, as the library's server reads it (AUD-023: the two copies
     // differed there).
-    assert_eq!(library_file(None, Some(String::new())), None);
+    assert_eq!(library_file(None, None, Some(String::new())), None);
     assert_eq!(
-        library_file(Some(String::new()), Some("/home/a".into())),
+        library_file(Some(String::new()), None, Some("/home/a".into())),
         Some(PathBuf::from(
             "/home/a/.local/share/agent-library/library.sqlite"
         ))
@@ -242,6 +255,7 @@ fn the_hook_never_reads_the_library_at_library_path() {
     // the hook reads the home's library, which has none, and refuses.
     let mut child = Command::new(env!("CARGO_BIN_EXE_library-pages"))
         .env_remove("AGENT_LIBRARY_FILE")
+        .env_remove("AGENT_RECORDS_ROOT")
         .env("LIBRARY_PATH", &file)
         .env("HOME", folder.join("home"))
         .stdin(Stdio::piped())

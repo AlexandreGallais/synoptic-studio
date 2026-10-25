@@ -27,15 +27,21 @@ struct Seen {
     refusal: Option<String>,
 }
 
+/// Whether a table is one of the tables FTS5 keeps for a full-text index of the tool: the
+/// knowledge's `sections_index_…` or the library's `chunks_…`.
+fn is_index_shadow(table: &str) -> bool {
+    table.starts_with("sections_index_") || table.starts_with("chunks_")
+}
+
 /// Whether a table is one the tool keeps, its full-text index's own tables among them.
 #[must_use]
 pub fn is_core(table: &str) -> bool {
-    CORE_TABLES.contains(&table) || table.starts_with("sections_index_")
+    CORE_TABLES.contains(&table) || is_index_shadow(table)
 }
 
 /// Whether a table is written by the tool alone.
 fn is_written_by_the_tool(table: &str) -> bool {
-    WRITTEN_BY_THE_TOOL.contains(&table) || table.starts_with("sections_index_")
+    WRITTEN_BY_THE_TOOL.contains(&table) || is_index_shadow(table)
 }
 
 /// Whether a statement's text is an `ALTER TABLE <name> ADD …`, the one change of a table that

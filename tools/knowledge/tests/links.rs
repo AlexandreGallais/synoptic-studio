@@ -70,7 +70,7 @@ fn writes_a_bare_path_as_its_id_and_a_link_to_an_index_as_its_text() {
 
 #[test]
 fn leaves_every_other_link_and_path_as_it_is() {
-    let text = "[note](../research/notes/0035-x.md), [x](https://example.org/backlog/stories/a), \
+    let text = "[agile](../process/agile.md), [x](https://example.org/backlog/stories/a), \
                 docs/backlog/README.md, docs/backlog/epics/ and [a](b) [c] (d)\n\
                 docs/backlog/stories/E99-*.md and docs/backlog/features/x.txt\n";
 
@@ -96,4 +96,44 @@ fn reads_a_test_or_a_fixture_as_no_text_whose_ids_are_checked() {
     ] {
         assert!(!is_test_path(path), "{path}");
     }
+}
+
+#[test]
+fn writes_each_link_and_path_to_a_moved_doc_as_its_id() {
+    let text = "[note 0035](../research/notes/0035-e49.md), [ADR-0081](../adr/0081-records.md#decision), \
+                [the ADRs](../adr/), [request](./research/requests/0004-polygons.md), \
+                [the bibliography](../references.md#git), [journal](./journal.md) \
+                [log](../process/journal.md), [E01's](./retrospectives/E01-retrospective.md) \
+                [record](../process/retrospectives/E17-retrospective.md), \
+                [guide](../guide/e01-draw-shapes.md), [notes](../research/notes/)\n\
+                `docs/derivations/text-box.md`, docs/adr/README.md, docs/research/README.md#2 and \
+                docs/process/tool-incidents.md; stays: docs/process/agile.md, derivations/ alone, \
+                [process](../process/README.md), [x](https://example.org/adr/)\n";
+
+    assert_eq!(
+        with_ids(text),
+        "note 0035 (NOTE-0035), ADR-0081, the ADRs (PAGE-adr), request (REQUEST-0004), \
+         the bibliography (PAGE-references), [journal](./journal.md) log (LOG-journal), \
+         [E01's](./retrospectives/E01-retrospective.md) record (RETRO-E17), \
+         guide (GUIDE-e01-draw-shapes), notes\n\
+         `DERIV-text-box`, PAGE-adr, PAGE-research and LOG-tool-incidents; stays: \
+         docs/process/agile.md, derivations/ alone, [process](../process/README.md), \
+         [x](https://example.org/adr/)\n"
+    );
+}
+
+#[test]
+fn writes_a_see_of_a_domain_page_as_its_rules_id_elsewhere_the_path_kept() {
+    let text = " * @see docs/domain/shapes.md#_2-corner-radius\n\
+                 * @see docs/domain/interaction.md#text and docs/domain/README.md.\n\
+                 * @see docs/domain/\n\
+                 the rules: docs/domain/shapes.md#text\n";
+
+    assert_eq!(
+        with_ids(text),
+        " * @see RULE-shapes-2-corner-radius\n\
+          * @see RULE-interaction-text and RULE-domain.\n\
+          * @see docs/domain/\n\
+          the rules: docs/domain/shapes.md#text\n"
+    );
 }

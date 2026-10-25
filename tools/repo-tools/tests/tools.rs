@@ -315,7 +315,7 @@ fn f18_ac8_branches_clean_deletes_the_merged_and_gone_branches_and_keeps_a_fresh
 }
 
 #[test]
-fn en114_records_save_copies_into_the_projects_folder_of_the_chosen_root() {
+fn en114_records_save_writes_what_serves_into_the_projects_file_of_the_chosen_root() {
     let lab = Lab::new("records", &[]);
     let repo = lab.root.join("repo");
     let root = lab.root.join("records");
@@ -330,11 +330,20 @@ fn en114_records_save_copies_into_the_projects_folder_of_the_chosen_root() {
             }
         })
         .collect();
-    let transcripts = lab.root.join("home/.claude/projects").join(project);
+    let claude = lab.root.join("home/.claude/projects").join(project);
     let library = lab.root.join("library.sqlite");
 
-    fs::create_dir_all(transcripts.join("sub")).expect("transcripts");
-    fs::write(transcripts.join("sub/s.jsonl"), "{}\n").expect("transcript");
+    fs::create_dir_all(claude.join("memory")).expect("transcripts");
+    fs::write(
+        claude.join("s1.jsonl"),
+        "{\"type\":\"user\",\"sessionId\":\"s1\",\"uuid\":\"u1\",\"timestamp\":\"2026-10-22T14:00:00.000Z\",\"message\":{\"content\":\"Bonjour\"}}\n",
+    )
+    .expect("transcript");
+    fs::write(
+        claude.join("memory/feedback-x.md"),
+        "---\nname: feedback-x\n---\nA memory.\n",
+    )
+    .expect("memory");
     fs::create_dir_all(&root).expect("root");
     lab.git(&lab.root, &["init", "-q", "repo"]);
     lab.git(
@@ -347,13 +356,12 @@ fn en114_records_save_copies_into_the_projects_folder_of_the_chosen_root() {
         ],
     );
     fs::create_dir_all(repo.join(".git/metrics")).expect("metrics");
-    fs::write(repo.join(".git/metrics/turns.jsonl"), "{}\n").expect("turns");
-    let made = Command::new("sqlite3")
-        .arg(&library)
-        .arg("create table t(x); insert into t values (1), (2);")
-        .status()
-        .expect("sqlite3");
-    assert!(made.success());
+    fs::write(
+        repo.join(".git/metrics/turns.jsonl"),
+        "{\"session\":\"s1\",\"start\":1}\n",
+    )
+    .expect("turns");
+    library::store::open_library(&library).expect("library");
 
     let save = |root: &Path| {
         lab.command(env!("CARGO_BIN_EXE_records-save"), &repo)
@@ -363,29 +371,32 @@ fn en114_records_save_copies_into_the_projects_folder_of_the_chosen_root() {
             .expect("records-save")
     };
     let saved = save(&root);
-    let folder = root.join("studio");
-    let rows = Command::new("sqlite3")
-        .arg(folder.join("library/library.sqlite"))
-        .arg("select count(*) from t")
-        .output()
-        .expect("sqlite3");
+    let file = root.join("studio.sqlite");
+    let read = |query: &str| knowledge::sql::read(&open_store(&file).expect("records"), query);
 
     assert_eq!(
         text(&saved),
         format!(
-            "missing metrics/tool-calls.jsonl\nsaved metrics/turns.jsonl\nsaved transcripts\nsaved library/library.sqlite\n{NOT_SET}\nSaved in {}.\n",
-            folder.display()
+            "metrics: 1 rows\ntranscripts: 1 rows\nmemories: 1 rows\nlibrary: 0 rows\n{NOT_SET}\nSaved in {}.\n",
+            file.display()
         )
     );
-    assert_eq!(String::from_utf8_lossy(&rows.stdout), "2\n");
-    assert!(folder.join("transcripts/sub/s.jsonl").exists());
-    assert!(
-        fs::read_to_string(folder.join("last-save.txt"))
-            .expect("last save")
-            .starts_with("20")
+    assert_eq!(
+        read("SELECT session, text FROM messages").as_deref(),
+        Ok("session\ttext\ns1\tBonjour\n")
     );
-    // Nothing Git: the records are never committed nor sent.
-    assert!(!folder.join(".git").exists());
+    assert_eq!(
+        read("SELECT count(*) AS n FROM saves").as_deref(),
+        Ok("n\n1\n")
+    );
+    // No transcript copied, no folder of the project's: one file.
+    assert_eq!(
+        fs::read_dir(&root).expect("root").count(),
+        fs::read_dir(&root)
+            .expect("root")
+            .filter(|entry| entry.as_ref().is_ok_and(|e| e.path().is_file()))
+            .count()
+    );
 
     // A root that does not exist: it says so, fails and writes nothing.
     let nowhere = lab.root.join("nowhere");
@@ -413,6 +424,7 @@ fn f48_ac3_records_save_takes_the_snapshot_too() {
     let synced = lab.root.join("synced");
 
     fs::create_dir_all(&synced).expect("synced");
+    fs::create_dir_all(&root).expect("root");
     lab.git(&lab.root, &["init", "-q", "repo"]);
     lab.git(
         &repo,
@@ -423,7 +435,6 @@ fn f48_ac3_records_save_takes_the_snapshot_too() {
             "https://example.com/owner/studio.git",
         ],
     );
-    open_store(&root.join("studio/records.sqlite")).expect("records");
 
     let saved = lab
         .command(env!("CARGO_BIN_EXE_records-save"), &repo)
@@ -431,7 +442,7 @@ fn f48_ac3_records_save_takes_the_snapshot_too() {
         .env("AGENT_KNOWLEDGE_SNAPSHOT", &synced)
         .output()
         .expect("records-save");
-    let day = snapshot_name(&calendar::today());
+    let day = snapshot_name("studio", &calendar::today());
     let copied = synced.join(&day).is_file();
 
     assert!(
@@ -442,8 +453,8 @@ fn f48_ac3_records_save_takes_the_snapshot_too() {
     assert_eq!(
         text(&saved),
         format!(
-            "missing metrics/tool-calls.jsonl\nmissing metrics/turns.jsonl\nmissing transcripts\nmissing library/library.sqlite\n{day} written into the folder AGENT_KNOWLEDGE_SNAPSHOT names: 1 kept, 0 removed\nSaved in {}.\n",
-            root.join("studio").display()
+            "metrics: missing\ntranscripts: missing\nmemories: missing\nlibrary: missing\n{day} written into the folder AGENT_KNOWLEDGE_SNAPSHOT names: 1 kept, 0 removed\nSaved in {}.\n",
+            root.join("studio.sqlite").display()
         )
     );
     assert!(copied);
