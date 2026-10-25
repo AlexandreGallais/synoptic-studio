@@ -1,4 +1,4 @@
-//! `branches-clean` (`target/release/branches-clean`, ADR-0038, AUD-020, EN-103), in the checkout it is
+//! `branches-clean` (`target/release/branches-clean`, ADR-0072, AUD-020, EN-103), in the checkout it is
 //! started from, after each merged feature pull request and each release: stale remote branches
 //! pruned, local branches merged into `develop` or deleted on GitHub removed with their worktrees,
 //! a story just started and a worktree a running process works in kept, then what is left reported.

@@ -177,7 +177,7 @@ pub fn related_tests_line(base: &str) -> String {
     )
 }
 
-/// Whether a branch is a story's, `<type>/<id>-<topic>` (ADR-0038): its push may run only the
+/// Whether a branch is a story's, `<type>/<id>-<topic>` (ADR-0072): its push may run only the
 /// tests its change affects; a feature branch, `develop`, `main` or a detached head run them all.
 #[must_use]
 pub fn is_story_branch(branch: &str) -> bool {

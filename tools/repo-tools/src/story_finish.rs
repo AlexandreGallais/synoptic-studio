@@ -1,4 +1,4 @@
-//! The end of a story in a run (RET-002, ADR-0045, ADR-0065, EN-051, EN-103): what `story-finish`
+//! The end of a story in a run (RET-002, ADR-0072, ADR-0065, EN-051, EN-103): what `story-finish`
 //! decides — where it starts from the story's pull request, when it stops waiting, the clean-up of a
 //! merged story and the same steps to type when it stopped midway — and the Git sequences it runs,
 //! each given its folder: the rebase on the base, whose conflicts in the backlog's status rows only

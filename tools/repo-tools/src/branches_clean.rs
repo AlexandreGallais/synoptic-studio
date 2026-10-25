@@ -1,4 +1,4 @@
-//! The clean-up of the local clone after a feature (ADR-0038, AUD-020, EN-103): local branches
+//! The clean-up of the local clone after a feature (ADR-0072, AUD-020, EN-103): local branches
 //! already merged into `develop` or whose branch on GitHub was deleted are removed with their
 //! worktrees, and what is left reported. A branch just made for a story — never pushed, without a
 //! commit beyond the branch it was made from — and a worktree a running process works in are kept.

@@ -1,4 +1,4 @@
-# Quality gate of the pull requests into main: the only CI run (ADR-0038, docs/tooling/ci.md).
+# Quality gate of the pull requests into main: the only CI run (ADR-0072, docs/tooling/ci.md).
 # Work branches (stories, features, develop) are checked locally by the Git hooks. Each lane of
 # `check:all` is a job of its own, in parallel, each its own check on the pull request (EN-124).
 # Its trigger is its only condition (ADR-0088): every job runs on every pull request into main,

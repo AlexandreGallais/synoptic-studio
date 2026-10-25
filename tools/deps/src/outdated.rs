@@ -1,5 +1,5 @@
 //! `deps outdated`: every version the repository pins against its latest version at least 7 days
-//! old (ADR-0038) — the npm packages of `package.json`, the GitHub Actions of the workflows,
+//! old (ADR-0072) — the npm packages of `package.json`, the GitHub Actions of the workflows,
 //! Node.js's major in `.nvmrc`, the crates of `[workspace.dependencies]`, the cargo tools the Rust
 //! checks install (EN-121) — and every crate of `Cargo.lock` published less than 7 days ago, which
 //! Cargo picks by itself (research note 0025, The crates, checked). One line per finding, with the

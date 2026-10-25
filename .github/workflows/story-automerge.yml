@@ -1,4 +1,4 @@
-# The stories' auto-merge (ADR-0028, ADR-0045, ADR-0086, ADR-0088): merges, always by a merge
+# The stories' auto-merge (ADR-0072, ADR-0086, ADR-0088): merges, always by a merge
 # commit, a story pull request of the owner labeled `autonomous` into its feature branch
 # (`feature/f22-…`). Its checks ran locally before the push (pre-push hook, `check:all`): no CI
 # runs on it. A feature or a review goes into `develop` by `feature-automerge.yml`; nothing reaches
@@ -33,7 +33,7 @@ jobs:
           BRANCH: ${{ github.event.pull_request.head.ref }}
         run: |
           if ! printf '%s' "$BRANCH" | grep -Eq '^[a-z]+/(us|en|sp|chk|aud|val)-[0-9]{3}-'; then
-            echo "Branch $BRANCH into $BASE is not a US, EN, SP, CHK, AUD or VAL branch: no auto-merge (ADR-0028, ADR-0045, ADR-0086)."
+            echo "Branch $BRANCH into $BASE is not a US, EN, SP, CHK, AUD or VAL branch: no auto-merge (ADR-0072, ADR-0086)."
             exit 1
           fi
       - name: Merge (merge commit)

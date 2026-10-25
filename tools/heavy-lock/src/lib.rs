@@ -1,4 +1,4 @@
-//! Lock of the heavy commands (ADR-0063, EN-047): `check:all`, `npm run test`, `golden:check` and
+//! Lock of the heavy commands (ADR-0072, EN-047): `check:all`, `npm run test`, `golden:check` and
 //! `docs:build` run one at a time across every worktree. Each takes `heavy.lock` in the Git common
 //! directory and holds the kernel's advisory lock on it (`flock(2)`, `REF-MACOS-FLOCK`) for the
 //! command's life; another heavy command waits and says who holds it, from the owner written in the

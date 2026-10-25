@@ -1,4 +1,4 @@
-//! `PreToolUse` hook on `Agent` and `SendMessage` (ADR-0063, EN-047, EN-063): refuses a fourth
+//! `PreToolUse` hook on `Agent` and `SendMessage` (ADR-0072, EN-047, EN-063): refuses a fourth
 //! subagent at once, started or resumed, naming the three running; a message to the main
 //! conversation or to a subagent running goes through, since it starts none. It counts them from the session's transcript, starting where the status line's
 //! cache in `.git/metrics/` stopped. Any failure lets the call through: the hook never blocks work

@@ -1,5 +1,5 @@
 # Static security analysis of the TypeScript code and of the workflows (docs/tooling/ci.md,
-# ADR-0038, EN-134): pull requests into main, compared with the analysis of main, refreshed on
+# ADR-0072, EN-134): pull requests into main, compared with the analysis of main, refreshed on
 # each push to main and weekly.
 name: CodeQL
 

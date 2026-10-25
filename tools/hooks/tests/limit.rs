@@ -51,7 +51,7 @@ fn f18_ac2_refuses_a_fourth_subagent_naming_the_three_running() {
     assert_eq!(AGENT_LIMIT, 3);
     assert_eq!(
         refusal(&running, AGENT_LIMIT, 125_000),
-        Some("At most 3 subagents at once (ADR-0063): 3 running — general-purpose: a1 (2 min); general-purpose: a2 (2 min); general-purpose: a3 (2 min). Wait for one to end, then start or resume this one.".to_owned())
+        Some("At most 3 subagents at once (ADR-0072): 3 running — general-purpose: a1 (2 min); general-purpose: a2 (2 min); general-purpose: a3 (2 min). Wait for one to end, then start or resume this one.".to_owned())
     );
     assert_eq!(refusal(&running[..2], AGENT_LIMIT, 0), None);
 }

@@ -10,7 +10,7 @@ use git_hooks::branch::{branch_refusal, is_valid_branch};
 fn f21_ac4_passes_every_branch_name_of_the_history() {
     // The names of the pull requests (head and base), the merges and the branches, on 2026-10-18,
     // each with validate-branch-name 1.3.2's verdict on `.validate-branch-namerc.json`: all pass but
-    // release-please's branch, refused since EN-112 removed release-please (ADR-0079), and the six
+    // release-please's branch, refused since EN-112 removed release-please (ADR-0101), and the six
     // branches without the id of a story the auto-merge takes, refused since EN-118 (I50).
     let fixture = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/branch-names.txt");
     let text = fs::read_to_string(fixture).unwrap();
@@ -28,7 +28,7 @@ fn f21_ac4_passes_every_branch_name_of_the_history() {
 #[test]
 fn f21_ac4_refuses_what_validate_branch_name_refused() {
     // Each verdict is the JavaScript pattern's, tried on 2026-10-18; those of `release/…` and
-    // `release-please--…` are the pattern's since EN-112 (ADR-0079).
+    // `release-please--…` are the pattern's since EN-112 (ADR-0101).
     for name in [
         "worktree-agent-a13cbef",
         "feat/US-061-topic",

@@ -135,7 +135,7 @@ pub fn state_text(
             stale.join("; ")
         ));
     }
-    lines.push("- a story is implemented only when ready; the Product Owner's /run sets its scope ready (ADR-0045).".to_owned());
+    lines.push("- a story is implemented only when ready; the Product Owner's /run sets its scope ready (ADR-0072).".to_owned());
     lines.push(String::new());
     lines.join("\n")
 }

@@ -256,7 +256,7 @@ function parentStatuses(item: Item): ReadonlyMap<string, string> {
   return parent === undefined ? new Map() : tableStatuses(join(BACKLOG, folder, parent));
 }
 
-/** Story kinds every feature needs: research spike, checkpoint, audit, validation (ADR-0020, ADR-0028). */
+/** Story kinds every feature needs: research spike, checkpoint, audit, validation (ADR-0020, ADR-0072). */
 const FRAME_PREFIXES = ["SP-", "CHK-", "AUD-", "VAL-"];
 
 /** The first small feature (ADR-0084): its research may come before its refinement, from a retrospective. */
@@ -666,7 +666,7 @@ describe("backlog", () => {
     expect(mismatches.map((item) => item.file)).toEqual([]);
   });
 
-  it("frames every feature with a spike, a checkpoint, an audit and a validation, a small one with an audit and a validation (ADR-0020, ADR-0028, ADR-0084)", () => {
+  it("frames every feature with a spike, a checkpoint, an audit and a validation, a small one with an audit and a validation (ADR-0020, ADR-0072, ADR-0084)", () => {
     const stories = items().filter((item) => item.folder === "stories");
     const features = [...new Set(stories.map((story) => story.fields["feature"] ?? ""))].filter(
       (feature) => feature !== "",

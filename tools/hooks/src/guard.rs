@@ -25,7 +25,7 @@ use crate::worktrees::worktree_root;
 pub use crate::heredoc::{heredoc_bodies, without_heredocs};
 
 /// Why a full Vitest run is denied.
-pub const FULL_VITEST: &str = "A full Vitest run takes the heavy lock: run `npm run test`, or name the test files (ADR-0063).";
+pub const FULL_VITEST: &str = "A full Vitest run takes the heavy lock: run `npm run test`, or name the test files (ADR-0072).";
 
 /// Why `gh pr merge` is denied.
 pub const MERGE: &str =
