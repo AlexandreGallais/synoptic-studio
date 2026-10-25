@@ -113,7 +113,7 @@ fn f18_ac11_epic_check_prints_its_table_and_fails_on_a_finding() {
     let repo = lab.root.join("repo");
 
     // The epic's backlog in the records of the test's folder, the project named after `repo`.
-    open_store(&lab.root.join("records/repo/records.sqlite"))
+    open_store(&lab.root.join("records/repo.sqlite"))
         .expect("records")
         .execute_batch(
             "INSERT INTO stories (id, epic, feature, kind, title, status) VALUES
@@ -207,7 +207,7 @@ fn abandoned_story(lab: &Lab, main: &Path) -> PathBuf {
         &["push", "-q", "origin", "--delete", "chore/en-904-abandoned"],
     );
 
-    let records = lab.root.join("records/origin/records.sqlite");
+    let records = lab.root.join("records/origin.sqlite");
 
     open_store(&records)
         .expect("records")
@@ -464,7 +464,7 @@ fn f48_ac3_records_save_takes_the_snapshot_too() {
 fn f21_ac2_backlog_status_writes_the_records_and_names_an_item_it_does_not_find() {
     let lab = Lab::new("status", &[]);
     let repo = lab.root.join("repo");
-    let records = lab.root.join("records/repo/records.sqlite");
+    let records = lab.root.join("records/repo.sqlite");
 
     fs::create_dir_all(&repo).expect("repo");
     lab.git(&repo, &["init", "-q"]);

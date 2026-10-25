@@ -55,6 +55,27 @@ pub enum Verdict {
     Survived,
     /// The tests ran too long and were stopped: a loop that no longer ends.
     TimedOut,
+    /// The mutated file did not build (`error: could not compile`): no test ran, so nothing was
+    /// caught; a mutation of a Rust file to make again another way.
+    Unbuilt,
+}
+
+/// Whether a failed run's output is Cargo's refusal to build, not a test that failed.
+#[must_use]
+pub fn is_build_failure(output: &str) -> bool {
+    output
+        .lines()
+        .any(|line| line.trim_start().starts_with("error: could not compile"))
+}
+
+/// The process id of a copy a stopped run left behind, read from its folder's name
+/// `mutate-<pid>-<n>`; `None` for any other name, a test's `mutate-test-…` among them.
+#[must_use]
+pub fn left_copy_pid(name: &str) -> Option<u32> {
+    let (pid, number) = name.strip_prefix("mutate-")?.split_once('-')?;
+    let is_number = !number.is_empty() && number.bytes().all(|byte| byte.is_ascii_digit());
+
+    pid.parse().ok().filter(|_| is_number)
 }
 
 /// One mutation tried, or a file that could not be.
@@ -104,6 +125,7 @@ impl Outcome {
                     Verdict::Caught => "caught",
                     Verdict::Survived => "SURVIVED",
                     Verdict::TimedOut => "caught (timed out)",
+                    Verdict::Unbuilt => "NOT BUILT",
                 };
                 let short = |text: &str| text.split_whitespace().collect::<Vec<_>>().join(" ");
 
@@ -140,9 +162,23 @@ pub fn summary(outcomes: &[Outcome]) -> String {
             }
         )
     });
+    let unbuilt = count(&|outcome| {
+        matches!(
+            outcome,
+            Outcome::Tried {
+                verdict: Verdict::Unbuilt,
+                ..
+            }
+        )
+    });
     let skipped = count(&|outcome| matches!(outcome, Outcome::Skipped { .. }));
+    let not_built = if unbuilt == 0 {
+        String::new()
+    } else {
+        format!(", {unbuilt} not built")
+    };
 
-    format!("{caught} caught, {survived} survived, {skipped} file(s) skipped")
+    format!("{caught} caught, {survived} survived{not_built}, {skipped} file(s) skipped")
 }
 
 /// A command without the `GIT_*` variables of the process running it.
@@ -224,11 +260,49 @@ struct Copy {
     dir: PathBuf,
 }
 
+/// Whether a process still runs: `kill -0` succeeds for it; this process always does, and so does
+/// any where `kill` is not the shell's (Windows), so that no copy is taken for one left.
+fn is_alive(pid: u32) -> bool {
+    !cfg!(unix)
+        || pid == std::process::id()
+        || Command::new("kill")
+            .args(["-0", &pid.to_string()])
+            .stdout(Stdio::null())
+            .stderr(Stdio::null())
+            .status()
+            .is_ok_and(|status| status.success())
+}
+
+/// Removes the copies of runs stopped before their end, which never removed theirs (a run stopped
+/// in the background): each registered worktree named `mutate-<pid>-<n>` whose process is gone,
+/// then the registrations of folders already deleted. A copy that cannot be removed stays.
+fn remove_left_copies(top: &Path) {
+    let listed = git(top, &["worktree", "list", "--porcelain"]).unwrap_or_default();
+
+    for path in listed
+        .lines()
+        .filter_map(|line| line.strip_prefix("worktree "))
+    {
+        let name = Path::new(path)
+            .file_name()
+            .map(|name| name.to_string_lossy().into_owned())
+            .unwrap_or_default();
+
+        if left_copy_pid(&name).is_some_and(|pid| !is_alive(pid)) {
+            let _ = git(top, &["worktree", "remove", "--force", path]);
+            let _ = fs::remove_dir_all(path);
+        }
+    }
+    let _ = git(top, &["worktree", "prune"]);
+}
+
 impl Copy {
     /// A worktree of the repository at `top` holding its tracked files as they are now, and its
-    /// untracked files that Git does not ignore.
+    /// untracked files that Git does not ignore; the copies stopped runs left removed first.
     fn new(top: &Path) -> Result<Self, String> {
         static NEXT: AtomicUsize = AtomicUsize::new(0);
+
+        remove_left_copies(top);
         let dir = std::env::temp_dir().join(format!(
             "mutate-{}-{}",
             std::process::id(),
@@ -428,7 +502,10 @@ fn mutate_file(
 
     for mutation in selected(mutations(&source, Language::of(file)), request.all) {
         fs::write(&path, mutation.apply(&source)).map_err(|error| error.to_string())?;
-        let ended = test(copy, request.command, file, Some(limit), None);
+        let ended = test(copy, request.command, file, Some(limit), Some(&log));
+        let output = fs::read_to_string(&log).unwrap_or_default();
+        // A log already gone is as good as removed.
+        let _ = fs::remove_file(&log);
 
         fs::write(&path, &source).map_err(|error| error.to_string())?;
         let (line, column) = mutation.position(&source);
@@ -441,6 +518,7 @@ fn mutate_file(
             replacement: mutation.replacement,
             verdict: match ended? {
                 Ended::Passed => Verdict::Survived,
+                Ended::Failed if is_build_failure(&output) => Verdict::Unbuilt,
                 Ended::Failed => Verdict::Caught,
                 Ended::TimedOut => Verdict::TimedOut,
             },
@@ -494,5 +572,12 @@ mod tests {
     #[test]
     fn f26_ac1_names_the_group_after_the_end_of_kills_options() {
         assert_eq!(group_kill_arguments(4242), ["-KILL", "--", "-4242"]);
+    }
+
+    #[test]
+    fn tells_a_process_that_runs_from_one_gone() {
+        assert!(is_alive(std::process::id()));
+        // No process id reaches 4 000 000 000 on macOS or Linux.
+        assert!(!is_alive(4_000_000_000));
     }
 }

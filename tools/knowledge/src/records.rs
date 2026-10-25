@@ -1,15 +1,13 @@
 //! Where a project's records live (ADR-0081, E49): the folder `AGENT_RECORDS_ROOT` holds the
 //! records of every project, each one SQLite file named after its repository,
-//! `<AGENT_RECORDS_ROOT>/<repo>.sqlite`, so that two projects never write over each other. A file
-//! of the former place, `<AGENT_RECORDS_ROOT>/<repo>/records.sqlite`, is read as long as it is the
-//! only one, until it is moved. Shared by `knowledge`, `records-save` and `epic-check`, so that
-//! each finds the same file.
+//! `<AGENT_RECORDS_ROOT>/<repo>.sqlite`, so that two projects never write over each other. Shared
+//! by `knowledge`, `records-save` and `epic-check`, so that each finds the same file.
 
 use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
 
 /// The place of the file, shared with the hooks and the library, which find it without Git.
-pub use git_repository::records_place::{LEGACY_FILE, database_in, database_name, project_name};
+pub use git_repository::records_place::{database_in, database_name, project_name};
 use git_repository::{Failure, stdout_of};
 
 /// The variable naming the folder of every project's records.

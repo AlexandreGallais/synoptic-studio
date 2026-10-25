@@ -288,3 +288,83 @@ fn rev009_copies_the_untracked_files_and_leaves_the_ignored_ones() {
         ]
     );
 }
+
+#[test]
+fn reports_a_mutation_that_does_not_build_as_not_built_never_caught() {
+    // The test plays Cargo: with `value < low` mutated, it prints Cargo's refusal to build and
+    // fails, as a `+` swapped in a `String` sum does (incident of 2026-10-25).
+    let project = Project::new(&[
+        ("lib.mjs", CLAMP),
+        (
+            "build.mjs",
+            "import { readFileSync } from 'node:fs';\n\
+             if (!readFileSync(process.argv[2], 'utf8').includes('value < low')) {\n\
+             console.error('error: could not compile `lib` (lib) due to 1 previous error');\n\
+             process.exit(101);\n}\n",
+        ),
+    ]);
+    let files = ["lib.mjs".to_owned()];
+    let command = [
+        "node".to_owned(),
+        "build.mjs".to_owned(),
+        "{file}".to_owned(),
+    ];
+    let request = Request {
+        dir: &project.dir,
+        files: &files,
+        command: &command,
+        all: false,
+        grace: Duration::from_secs(1),
+    };
+    let outcomes = run(&request, &mut |_| {}).unwrap();
+
+    assert_eq!(verdicts(&outcomes)[0], (Kind::Comparison, Verdict::Unbuilt));
+    assert!(outcomes[0].line().starts_with("NOT BUILT  lib.mjs:2:13"));
+    assert!(summary(&outcomes).contains(", 1 not built, "));
+    assert!(mutate::is_build_failure(
+        "   Compiling x\nerror: could not compile `x` (bin \"x\")\n"
+    ));
+    assert!(!mutate::is_build_failure("test result: FAILED. 1 failed\n"));
+}
+
+#[test]
+fn removes_the_copy_a_stopped_run_left_before_making_its_own() {
+    // A copy of a run long gone, process id 4 000 000 000, still registered as a worktree.
+    let project = Project::new(&[("lib.mjs", CLAMP), ("test.mjs", TEST_CLAMP)]);
+    let left = project
+        .dir
+        .with_file_name(format!("mutate-4000000000-{}", std::process::id()));
+
+    git(
+        &project.dir,
+        &[
+            "worktree",
+            "add",
+            "--quiet",
+            "--detach",
+            &left.to_string_lossy(),
+        ],
+    );
+    project.mutate("lib.mjs", "test.mjs", false);
+
+    let listed = git(&project.dir, &["worktree", "list"]);
+    let _ = fs::remove_dir_all(&left);
+
+    assert_eq!(listed.lines().count(), 1, "{listed}");
+    assert!(!left.exists());
+    assert_eq!(mutate::left_copy_pid("mutate-42-0"), Some(42));
+    for name in [
+        "mutate-test-42-0",
+        "mutate-42-",
+        "mutate-42-x",
+        "other-42-0",
+        "mutate-42",
+    ] {
+        assert_eq!(mutate::left_copy_pid(name), None, "{name}");
+    }
+}
+
+/// Tests `clamp` alone.
+const TEST_CLAMP: &str = "import { clamp } from './lib.mjs';
+if (clamp(5, 0, 10) !== 5) { process.exit(1); }
+";

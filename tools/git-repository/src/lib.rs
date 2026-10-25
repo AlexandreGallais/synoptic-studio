@@ -72,6 +72,25 @@ pub fn branch_of(checkout: &Checkout) -> String {
         .unwrap_or_default()
 }
 
+/// The story id of a story branch, `chore/en-050-topic` (or `refs/heads/…`) giving `EN-050`: the
+/// branch's type, a slash, the id's letters in lower case, a hyphen and three digits, then the end
+/// or a hyphen, as the pre-push's pattern names a story branch (ADR-0072). `None` for `develop`,
+/// `main`, a feature branch or any other name. The one reader of the workspace (AUD-053), in place
+/// of the four that accepted different branches.
+#[must_use]
+pub fn story_of_branch(branch: &str) -> Option<String> {
+    let name = branch.strip_prefix("refs/heads/").unwrap_or(branch);
+    let (_, story) = name.split_once('/')?;
+    let (kind, rest) = story.split_once('-')?;
+    let digits = rest.get(..3)?;
+    let after = &rest[3..];
+    let is_kind = !kind.is_empty() && kind.bytes().all(|byte| byte.is_ascii_lowercase());
+    let is_number = digits.bytes().all(|byte| byte.is_ascii_digit());
+
+    (is_kind && is_number && (after.is_empty() || after.starts_with('-')))
+        .then(|| format!("{}-{digits}", kind.to_ascii_uppercase()))
+}
+
 /// The Git common folder of a folder, absolute: the main checkout's `.git`, a worktree's included.
 #[must_use]
 pub fn common_folder(folder: &Path) -> Option<String> {

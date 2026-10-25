@@ -185,7 +185,7 @@ pub fn related_tests_line(base: &str) -> String {
 /// tests its change affects; a feature branch, `develop`, `main` or a detached head run them all.
 #[must_use]
 pub fn is_story_branch(branch: &str) -> bool {
-    shared_files::shared::story_of(branch).is_some()
+    git_repository::story_of_branch(branch).is_some()
 }
 
 /// The current branch, `HEAD` when it is detached.

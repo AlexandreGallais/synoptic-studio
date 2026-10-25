@@ -1,11 +1,13 @@
 //! Tests of `knowledge sql` (EN-154): a reading's rows, a write in a transaction, a new table
 //! registered with its purpose, a row without a branch given the branch checked out, and what is
-//! refused: a core table dropped or rewritten, the documents written, a pragma set, a
-//! transaction, an attached file. Every file is made in a folder of the temporary folder.
+//! refused: a core table dropped or rewritten, a document's text written, a pragma set, a
+//! transaction, an attached file; a document's row deleted or updated. Every file is made in a
+//! folder of the temporary folder.
 
 use std::fs;
 use std::path::PathBuf;
 
+use knowledge::add::{Origin, add_document};
 use knowledge::sql::{is_added_column, is_reading, read, unescaped, write};
 use knowledge::store::{CORE_TABLES, open_store, write_or_refuse};
 use rusqlite::Connection;
@@ -182,6 +184,48 @@ fn writes_the_backlogs_tables_and_refuses_to_drop_or_rewrite_any_core_table() {
     }
     assert_eq!(read_pragma.as_deref(), Ok("user_version\n5\n"));
     assert_eq!(kept.as_deref(), Ok("status\trisk\nparked\t\n"));
+}
+
+#[test]
+fn deletes_a_document_with_its_rows_and_index_or_updates_its_columns() {
+    let (folder, database) = place("documents");
+    let added = write_or_refuse(&database, |transaction| {
+        add_document(
+            transaction,
+            "---\nid: NOTE-9\n---\n\n# Gone\n\nzephyr text.\n",
+            Origin {
+                kind: "note",
+                path: "",
+                branch: "chore/en-154-x",
+                today: "2026-10-25",
+            },
+        )
+        .map_err(|error| error.to_string())
+    });
+    let private = run(
+        &database,
+        "UPDATE documents SET private = 1 WHERE id = 'NOTE-9'",
+        None,
+    );
+    let flagged = run(
+        &database,
+        "SELECT private FROM documents WHERE id = 'NOTE-9'",
+        None,
+    );
+    let deleted = run(&database, "DELETE FROM documents WHERE id = 'NOTE-9'", None);
+    let left = run(
+        &database,
+        "SELECT (SELECT count(*) FROM sections WHERE document = 'NOTE-9') + (SELECT count(*) FROM sections_index WHERE sections_index MATCH 'zephyr') AS n",
+        None,
+    );
+
+    let _ = fs::remove_dir_all(&folder);
+    assert_eq!(added.as_deref(), Ok("NOTE-9"));
+    assert_eq!(private.as_deref(), Ok("1 row changed\n"));
+    assert_eq!(flagged.as_deref(), Ok("private\n1\n"));
+    // The row, its fields, its sections and its index's rows, the cascades counted.
+    assert!(deleted.is_ok(), "{deleted:?}");
+    assert_eq!(left.as_deref(), Ok("n\n0\n"));
 }
 
 #[test]

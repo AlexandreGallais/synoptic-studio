@@ -1,8 +1,7 @@
 //! The metrics of the agent's work (`docs/tooling/metrics.md`, EN-107), rewritten from the TypeScript
 //! scripts with their output unchanged: the metrics report (`target/release/metrics`), its findings of the
 //! rules added, and the session report (`target/release/session-report`), both read from Claude Code's
-//! transcripts incrementally; what the agents do (`target/release/activity`); the watchdog of a
-//! background task under Claude Code's Monitor (`watch-task`).
+//! transcripts incrementally; what the agents do (`target/release/activity`).
 
 pub mod activity;
 pub mod cache;
@@ -18,5 +17,5 @@ pub mod tools;
 pub mod transcript;
 pub mod turn_time;
 pub mod turns;
-pub mod watch;
+
 pub mod work;

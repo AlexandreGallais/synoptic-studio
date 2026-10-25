@@ -3,9 +3,42 @@
 use git_sequences::{
     Branch, Push, Request, Source, State, Target, USAGE, branch_of, changes_refusal, changes_step,
     commit_refusal, commit_steps, fetch_step, message_refusal, parse, state_base, state_report,
-    state_steps, sync_steps, sync_target,
+    state_steps, sync_steps, sync_target, through_link,
 };
 use worktree::Story;
+
+#[test]
+fn writes_a_path_through_a_link_to_a_folder_by_its_target() {
+    // `.claude` + `../.agents/skills` = `.agents/skills`, then the rest of the path.
+    assert_eq!(
+        through_link(
+            ".claude/skills/run/x.md",
+            ".claude/skills",
+            "../.agents/skills"
+        )
+        .as_deref(),
+        Some(".agents/skills/run/x.md")
+    );
+    // A link at the root, its target beside it, `./` and doubled slashes read away.
+    assert_eq!(
+        through_link("rules/a.md", "rules", "./.agents//rules").as_deref(),
+        Some(".agents/rules/a.md")
+    );
+    // Not below the link (the link itself, a name that only starts like it), an absolute target,
+    // a target above the root.
+    for (path, link, target) in [
+        (".claude/skills", ".claude/skills", "../.agents/skills"),
+        (
+            ".claude/skillset/a.md",
+            ".claude/skills",
+            "../.agents/skills",
+        ),
+        (".claude/skills/a.md", ".claude/skills", "/elsewhere"),
+        ("skills/a.md", "skills", "../outside"),
+    ] {
+        assert_eq!(through_link(path, link, target), None, "{path}");
+    }
+}
 
 fn words(line: &str) -> Vec<String> {
     line.split_whitespace().map(str::to_owned).collect()

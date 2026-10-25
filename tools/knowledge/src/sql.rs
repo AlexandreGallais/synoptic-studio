@@ -1,7 +1,9 @@
 //! `knowledge sql "<statement>"` (EN-154): one statement of SQL on the records, for the agent's own
 //! questions and its own tables. A reading prints its rows; a write runs in `BEGIN IMMEDIATE` and
 //! may create a table or an index, insert, update or delete, never drop nor rewrite a core table
-//! nor write the documents, which `add` and `sync` keep with their index. What a statement does is
+//! nor write a document's text, which `add` and `sync` keep with its index; a document's row may be
+//! deleted (its fields, sections and citations cascade, its index kept by its trigger) or its
+//! columns updated, a private memory or one that no longer holds. What a statement does is
 //! read from SQLite itself, by the authorizer it calls for each action while it compiles the
 //! statement (`REF-SQLITE-AUTHORIZER`), kept in place while the statement runs since a change of
 //! the schema compiles it again; never from its text but for `ALTER TABLE`, whose kind of change
@@ -25,6 +27,23 @@ struct Seen {
     created: Vec<String>,
     dropped: Vec<String>,
     refusal: Option<String>,
+    /// Whether the statement deletes or updates a document's row: the writes that follow are its
+    /// cascades to its fields, sections and citations and its index's trigger.
+    cascades: bool,
+}
+
+/// Whether an action writes one of a document's own tables, as the cascades of a document's row
+/// deleted or updated do: its fields, sections, citations and their index.
+fn is_cascade(action: &AuthAction<'_>) -> bool {
+    match *action {
+        AuthAction::Insert { table_name }
+        | AuthAction::Update { table_name, .. }
+        | AuthAction::Delete { table_name } => {
+            ["fields", "sections", "links", "sections_index"].contains(&table_name)
+                || table_name.starts_with("sections_index_")
+        }
+        _ => false,
+    }
 }
 
 /// Whether a table is one of the tables FTS5 keeps for a full-text index of the tool: the
@@ -87,6 +106,11 @@ pub fn refusal(action: &AuthAction<'_>, statement: &str) -> Option<String> {
         AuthAction::CreateTrigger { table_name, .. } if is_written_by_the_tool(table_name) => {
             kept("CREATE TRIGGER on", table_name)
         }
+        AuthAction::Update { table_name, .. } | AuthAction::Delete { table_name }
+            if table_name == "documents" =>
+        {
+            None
+        }
         AuthAction::Insert { table_name }
         | AuthAction::Update { table_name, .. }
         | AuthAction::Delete { table_name }
@@ -127,9 +151,15 @@ fn cell(value: ValueRef<'_>) -> String {
     escaped(&text)
 }
 
-/// Notes an action the authorizer allows: a table created or dropped.
+/// Notes an action the authorizer allows: a table created or dropped, a document's row deleted or
+/// updated.
 fn note(seen: &mut Seen, action: &AuthAction<'_>) {
     match *action {
+        AuthAction::Update { table_name, .. } | AuthAction::Delete { table_name }
+            if table_name == "documents" =>
+        {
+            seen.cascades = true;
+        }
         AuthAction::CreateTable { table_name } | AuthAction::CreateVtable { table_name, .. } => {
             seen.created.push(table_name.to_owned());
         }
@@ -158,7 +188,9 @@ fn watched<T>(
         .authorizer(Some(move |context: AuthContext<'_>| {
             let mut seen = watcher.lock().unwrap_or_else(PoisonError::into_inner);
 
-            if let Some(reason) = refusal(&context.action, &text) {
+            if let Some(reason) = refusal(&context.action, &text)
+                && !(seen.cascades && is_cascade(&context.action))
+            {
                 seen.refusal.get_or_insert(reason);
                 return Authorization::Deny;
             }

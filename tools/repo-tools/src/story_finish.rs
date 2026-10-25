@@ -15,11 +15,11 @@ use std::io::{self, Write};
 use std::path::Path;
 use std::process::{Command, Stdio};
 
+use git_repository::story_of_branch as story_of;
 use knowledge::backlog::{merge_branch, missing_ids, set_status};
 use knowledge::paths::is_test_path;
 use knowledge::project::open_records;
 use knowledge::store::write_or_refuse;
-use shared_files::shared::story_of;
 use stale_binaries::RELEASE_BUILD;
 
 /// Readings of the pull request's state before giving up: three minutes, one each 10 s.

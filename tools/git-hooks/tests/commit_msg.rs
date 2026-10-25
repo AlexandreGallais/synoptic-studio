@@ -131,7 +131,7 @@ fn f21_ac4_a_story_branch_asks_for_its_footer() {
     repository.git(&["switch", "--quiet", "-c", "chore/en-998-topic"]);
     let refused = repository.commit("feat(tooling): add a check\n\nRefs: EN-997.T1\n");
     assert!(!refused.status.success());
-    assert!(text(&refused.stderr).contains("`Refs: EN-998.T<n>` (a task) or `Closes: EN-998`"));
+    assert!(text(&refused.stderr).contains("`Refs: EN-998.T<n>`, a task of its story"));
 
     assert!(
         repository
@@ -140,7 +140,7 @@ fn f21_ac4_a_story_branch_asks_for_its_footer() {
             .success()
     );
     assert!(
-        repository
+        !repository
             .commit("docs(backlog): set EN-998 done\n\nCloses: EN-998\n")
             .status
             .success()

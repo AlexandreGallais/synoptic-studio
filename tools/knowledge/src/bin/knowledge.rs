@@ -1,10 +1,12 @@
 //! `knowledge` (`target/release/knowledge`, E49, `docs/tooling/knowledge.md`): the project's
-//! records in one SQLite file, `$AGENT_RECORDS_ROOT/<repo>/records.sqlite`, shared by every branch
-//! and worktree:
+//! records in one SQLite file, `$AGENT_RECORDS_ROOT/<repo>.sqlite`, shared by every branch and
+//! worktree:
 //!   `target/release/knowledge init`                  opens the file, made or brought up to the
 //!                                                    schema; its path
 //!   `target/release/knowledge path`                  the file, which nothing opens
-//!   `target/release/knowledge add <kind> <file|->`   a document, a draft of the current branch
+//!   `target/release/knowledge add <kind> <file|->`   a document, a draft of the current branch;
+//!                                                    a journal row, an incident, an improvement
+//!                                                    or a feedback goes by `sql` into its table
 //!   `target/release/knowledge search <words>`        the best sections, BM25-ranked
 //!   `target/release/knowledge show <id> [<heading>]` a document, or one of its sections
 //!   `target/release/knowledge list`                  the documents, one line each
@@ -36,7 +38,7 @@ use std::path::Path;
 use std::process::ExitCode;
 
 use git_repository::{branch_of, checkout_of};
-use knowledge::add::{Origin, add_document, is_kind};
+use knowledge::add::{Origin, add_document, is_kind, row_table};
 use knowledge::backlog::{
     criteria_json, done_criteria, drop_branch, import_backlog, merge_branch, missing_ids,
 };
@@ -124,7 +126,12 @@ fn init(file: &Path) -> Result<String, String> {
 fn add(database: &Connection, kind: &str, source: &str, branch: &str) -> Result<String, String> {
     if !is_kind(kind) {
         return Err(format!(
-            "{kind}: a kind is one word of lower-case letters, as story or journal"
+            "{kind}: a kind is one word of lower-case letters, as story or note"
+        ));
+    }
+    if let Some(table) = row_table(kind) {
+        return Err(format!(
+            "{kind}: a row of the table {table}, with its columns, not a document: target/release/knowledge sql \"INSERT INTO {table} (…) VALUES (…)\""
         ));
     }
     if branch.is_empty() {

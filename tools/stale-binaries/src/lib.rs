@@ -195,8 +195,6 @@ pub const RUST_INPUTS: &[&str] = &[
     "docs/conventions/files.md",
     // The hooks' settings, read against their binaries (`hooks`).
     ".claude/settings.json",
-    // The playground's checklists, copied by `val-prepare`'s tests.
-    "playground/checklists/",
     // The test files, read for the binaries they start (`repo-tools`, `[F19.AC9]`).
     "*.test.ts",
 ];
