@@ -27,8 +27,8 @@ fn f21_ac4_passes_every_branch_name_of_the_history() {
 
 #[test]
 fn f21_ac4_refuses_what_validate_branch_name_refused() {
-    // Each verdict is the JavaScript pattern's, tried on 2026-10-18; those of `release/…` and
-    // `release-please--…` are the pattern's since EN-112 (ADR-0101).
+    // Each verdict is the JavaScript pattern's, tried on 2026-10-18; those of `release-please--…`
+    // are the pattern's since EN-112, those of `release/…` since REV-009 (ADR-0101).
     for name in [
         "worktree-agent-a13cbef",
         "feat/US-061-topic",
@@ -47,6 +47,8 @@ fn f21_ac4_refuses_what_validate_branch_name_refused() {
         "release/v0.3.0",
         "release/0.03.0",
         "release/0.3.0-rc",
+        "release/0.3.0",
+        "release/10.0.12",
         "develop2",
         "origin/develop",
         "main\nx",
@@ -54,8 +56,6 @@ fn f21_ac4_refuses_what_validate_branch_name_refused() {
         assert!(!is_valid_branch(name), "{name:?}");
     }
     for name in [
-        "release/0.3.0",
-        "release/10.0.12",
         "feat/us-061-topic",
         "docs/val-018-remarks",
         "feature/f21-x",
