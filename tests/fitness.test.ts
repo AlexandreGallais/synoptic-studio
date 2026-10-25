@@ -414,6 +414,15 @@ type TimingLimit = {
 const PLAYGROUND = "playground";
 
 /**
+ * The files the `timings` configuration of the playground's `ng test` runs, from its `src/`, read
+ * from its `angular.json` (EN-175).
+ */
+const PLAYGROUND_TIMINGS: readonly string[] =
+  /"timings": \{\s*"include": \[(?<files>[^\]]*)\]/u
+    .exec(readFileSync(join(ROOT, PLAYGROUND, "angular.json"), "utf8"))
+    ?.groups?.["files"]?.match(/[^"\s,]+\.test\.ts/gu) ?? [];
+
+/**
  * Text of every test file of `src/`, `tests/` and `playground/`, the three folders holding a
  * per-test limit (AUD-031), the playground's app and test helpers included.
  *
@@ -563,19 +572,20 @@ describe("the timing tests (EN-129)", () => {
     expect(timedTestFiles().flatMap(({ path, text }) => untaggedTimings(path, text))).toEqual([]);
   });
 
-  it("runs alone every file holding a timing test the root runs, and no other", () => {
+  it("runs alone every file holding a timing test, the root's by its script, the playground's by its configuration", () => {
     const script = CHECK_ALL_LANES.find(({ name }) => name === "test:timings")?.command ?? "";
     const named = script.split(" ").filter((word) => word.endsWith(".test.ts"));
+    // The playground's by the `timings` configuration of its `ng test`, from its `src/` (EN-175).
+    const configured = PLAYGROUND_TIMINGS.map((file) => join(PLAYGROUND, "src", file));
 
     const tagged = timedTestFiles()
       .filter(({ text }) =>
         text.split("\n").some((line) => TIMEOUT.test(line) && line.includes(TIMING_TAG)),
       )
-      .map(({ path }) => path)
-      // The playground's tests run by its own `ng test` (EN-160).
-      .filter((path) => !path.startsWith(PLAYGROUND));
+      .map(({ path }) => path);
 
-    expect(named.toSorted(byName)).toEqual(tagged.toSorted(byName));
+    expect(script).toContain("ng test --no-watch --configuration timings");
+    expect([...named, ...configured].toSorted(byName)).toEqual(tagged.toSorted(byName));
   });
 
   it("names each timing test of a made-up file without its tag", () => {

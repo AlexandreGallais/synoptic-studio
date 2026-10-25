@@ -68,15 +68,16 @@ fn check_unused() -> u8 {
         files: unused::project_files(&root, &listed),
         root,
     };
-    let mut findings = unused::check(&tree);
+    // The playground's npm project, from its folder (ADR-0104), first: its imports of the library
+    // and of the root's test fixtures count in the root's check (EN-175).
+    let (found, uses) = if playground.root.join("package.json").is_file() {
+        unused::check_with_uses(&playground, &unused::PLAYGROUND, &[])
+    } else {
+        (unused::Findings::default(), Vec::new())
+    };
+    let (mut findings, _) = unused::check_with_uses(&tree, &unused::ROOT, &uses);
 
-    // The playground's npm project, from its folder (ADR-0104).
-    if playground.root.join("package.json").is_file() {
-        findings.add(
-            unused::check_project(&playground, &unused::PLAYGROUND),
-            unused::PLAYGROUND_FOLDER,
-        );
-    }
+    findings.add(found, unused::PLAYGROUND_FOLDER);
 
     print!("{}", findings.report());
     u8::from(!findings.is_empty())

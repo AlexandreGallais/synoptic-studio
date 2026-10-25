@@ -107,6 +107,16 @@
               "lines": 98,
               "statements": 98
             }
+          },
+          "configurations": {
+            "timings": {
+              "include": [
+                "app/shared/utils/hover/helps-on-any-color.test.ts",
+                "app/shared/utils/listeners/remove-listeners.test.ts",
+                "app/shared/utils/mount/mount-playground.test.ts"
+              ],
+              "runnerConfig": "vitest-timings.config.ts"
+            }
           }
         }
       }

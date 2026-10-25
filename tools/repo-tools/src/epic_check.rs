@@ -627,7 +627,7 @@ mod tests {
         assert_eq!(
             failing_checks(&output),
             [
-                "test (lane test): scripts/epic-check.test.ts > epic-check > lists the branches, src/math/unit.test.ts > unit > keeps a zero vector",
+                "test (lane test → playground:test): scripts/epic-check.test.ts > epic-check > lists the branches, src/math/unit.test.ts > unit > keeps a zero vector",
                 "check:rust (lane check:rust): heavy_lock_waits",
                 "playground:build (lane docs:build → playground:build → playground:app)",
             ]
@@ -690,7 +690,7 @@ mod tests {
         assert_eq!(
             failing_checks(&output),
             [
-                "test (lane test): a.test.ts > t0, a.test.ts > t1, a.test.ts > t2, a.test.ts > t3, a.test.ts > t4, a.test.ts > t5, a.test.ts > t6, a.test.ts > t7, a.test.ts > t8, a.test.ts > t9, 2 more"
+                "test (lane test → playground:test): a.test.ts > t0, a.test.ts > t1, a.test.ts > t2, a.test.ts > t3, a.test.ts > t4, a.test.ts > t5, a.test.ts > t6, a.test.ts > t7, a.test.ts > t8, a.test.ts > t9, 2 more"
             ]
         );
     }

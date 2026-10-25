@@ -24,10 +24,10 @@ use std::thread;
 use std::time::Instant;
 
 use repo_tools::check_all::{
-    AFTER_LANES, BEFORE_LANES, RUST_COVERAGE, TEST_SCRIPT, change_against_base, check_named,
-    config_report, current_branch, git_lines, is_story_branch, lane_named, lanes_to_run,
-    listed_lines, related_tests_command, related_tests_line, report_of, repository_tests,
-    search_path, skipped_lines, summary,
+    AFTER_LANES, BEFORE_LANES, PLAYGROUND_TESTS, PLAYGROUND_TESTS_WITHOUT_COVERAGE, RUST_COVERAGE,
+    TEST_SCRIPT, change_against_base, check_named, config_report, current_branch, git_lines,
+    is_story_branch, lane_named, lanes_to_run, listed_lines, related_tests_command,
+    related_tests_line, report_of, repository_tests, search_path, skipped_lines, summary,
 };
 use repo_tools::check_scope::{
     Check, Crate, RUST_TESTS, SKIPPED_ON_A_STORY, needs_full_check, read_crate, scope, scope_line,
@@ -152,8 +152,8 @@ fn workspace_crates(root: &Path) -> Vec<Crate> {
 }
 
 /// The lanes and the check after them of a full run: every lane the change does not leave out;
-/// on a story whose change is known, without `deps:outdated`, and the Rust tests without their
-/// coverage.
+/// on a story whose change is known, without `deps:outdated`, and the Rust and the playground's
+/// tests without their coverage.
 fn full_run(
     change: Option<&(String, Vec<String>)>,
     is_story: bool,
@@ -193,6 +193,9 @@ fn full_run(
                     }
                     if is_story && *name == RUST_COVERAGE {
                         RUST_TESTS.clone_into(&mut check.command);
+                    }
+                    if is_story && *name == PLAYGROUND_TESTS {
+                        PLAYGROUND_TESTS_WITHOUT_COVERAGE.clone_into(&mut check.command);
                     }
                     check
                 })

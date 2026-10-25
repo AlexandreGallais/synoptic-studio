@@ -154,7 +154,7 @@ fn f18_ac11_epic_check_prints_its_table_and_fails_on_a_finding() {
         [
             "| Check | Result | Detail |",
             "| --- | --- | --- |",
-            "| check:all (code, site, playground, dependencies) | **to look at** | test (lane test): a.test.ts > b |",
+            "| check:all (code, site, playground, dependencies) | **to look at** | test (lane test → playground:test): a.test.ts > b |",
             "| branches left | **to look at** | feat/old |",
             "| pull requests open | ok | #7 a pull request |",
             "| issues open | ok | 0 |",

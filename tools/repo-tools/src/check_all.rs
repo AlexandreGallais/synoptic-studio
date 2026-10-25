@@ -29,7 +29,8 @@ use crate::check_scope::Check;
 pub const BEFORE_LANES: &str = "rust:build";
 
 /// The check run alone after the lanes: the timing tests, whose limits measure a speed that the
-/// lanes' load slowed past them (REV-008), the test lane leaving them out.
+/// lanes' load slowed past them (REV-008), the test lane leaving them out: the root's, then the
+/// playground's by its `ng test` (EN-175).
 pub const AFTER_LANES: &str = "test:timings";
 
 /// The check of the test lane, which a story branch's push narrows to the tests its change can
@@ -45,12 +46,35 @@ pub const PLAYGROUND_TYPES: &str = "playground:types";
 /// The check building the playground's Angular app (EN-159).
 pub const PLAYGROUND_APP: &str = "playground:app";
 
+/// The check of the playground's tests under its coverage floor, by its `ng test` (EN-175).
+pub const PLAYGROUND_TESTS: &str = "playground:test";
+
 /// The failure of a playground check whose packages are not installed.
 macro_rules! playground_missing {
     () => {
         "The packages of the playground are missing: run npm ci --prefix playground"
     };
 }
+
+/// A command of Angular's `ng` run from the playground's folder, where `angular.json` is, its
+/// packages missing failing aloud.
+macro_rules! ng_in_playground {
+    ($arguments:literal) => {
+        concat!(
+            "{ command -v ng > /dev/null || { echo '",
+            playground_missing!(),
+            "' >&2; exit 1; }; } && cd playground && ng ",
+            $arguments
+        )
+    };
+}
+
+/// The playground's tests without their coverage, as a story's push runs them (EN-175).
+pub const PLAYGROUND_TESTS_WITHOUT_COVERAGE: &str = ng_in_playground!("test --no-watch");
+
+/// The playground's timing tests alone, by the `timings` configuration of its `ng test`: the
+/// files of `angular.json`'s list, their timing tests no longer skipped (EN-175).
+pub const PLAYGROUND_TIMINGS: &str = ng_in_playground!("test --no-watch --configuration timings");
 
 /// Each check by its name, with the command `sh -c` runs from the repository's root, the programs
 /// npm installs found first ([`search_path`]). The targets of `lint` and `format:check` are those
@@ -77,20 +101,19 @@ pub const CHECKS: &[(&str, &str)] = &[
         ),
     ),
     (TEST_SCRIPT, "vitest run --coverage --tags-filter='!timing'"),
+    // The playground's tests by Angular's unit-test builder on happy-dom, under the floor of its
+    // `angular.json`, their timing tests skipped by its runner configuration (EN-175).
+    (
+        PLAYGROUND_TESTS,
+        ng_in_playground!("test --no-watch --coverage"),
+    ),
     (
         "docs:build",
         "target/release/api-pages src/index.ts docs/api /api/ editor && vitepress build docs",
     ),
     ("playground:build", "vite build --mode playground"),
     // Angular's build of the app into `playground/dist/browser` (EN-159).
-    (
-        PLAYGROUND_APP,
-        concat!(
-            "{ command -v ng > /dev/null || { echo '",
-            playground_missing!(),
-            "' >&2; exit 1; }; } && cd playground && ng build"
-        ),
-    ),
+    (PLAYGROUND_APP, ng_in_playground!("build")),
     (
         "format:check",
         concat!(
@@ -140,7 +163,8 @@ pub const CHECKS: &[(&str, &str)] = &[
             "vitest run --tags-filter=timing ",
             "src/io/font-face/parse-font-face.test.ts src/math/sequence/scan.test.ts ",
             "src/model/text-wrap/without-trailing-spaces.test.ts ",
-            "src/model/text-wrap/wrapped-paragraph.test.ts tests/history-timings.test.ts"
+            "src/model/text-wrap/wrapped-paragraph.test.ts tests/history-timings.test.ts && ",
+            ng_in_playground!("test --no-watch --configuration timings")
         ),
     ),
 ];
@@ -148,8 +172,8 @@ pub const CHECKS: &[(&str, &str)] = &[
 /// The lane of the linters and TypeScript's own errors, the playground's by Angular's compiler.
 const LINT_LANE: &[&str] = &["lint", PLAYGROUND_TYPES];
 
-/// The lane of the tests.
-const TEST_LANE: &[&str] = &[TEST_SCRIPT];
+/// The lane of the tests: the root's, then the playground's (EN-175).
+const TEST_LANE: &[&str] = &[TEST_SCRIPT, PLAYGROUND_TESTS];
 
 /// The lane of the documentation site and the playground built into it, then the playground's
 /// Angular app built by Angular.
@@ -839,10 +863,40 @@ mod tests {
 
         assert_eq!(lines.len(), CHECKS.len() - 1);
         assert_eq!(
-            lines[3],
+            lines[4],
             "docs\tdocs:build\ttarget/release/api-pages src/index.ts docs/api /api/ editor && \
              vitepress build docs"
         );
+    }
+
+    #[test]
+    fn f50_ac3_runs_the_playground_s_tests_under_their_floor_and_their_timings_after_the_root_s() {
+        assert_eq!(
+            lane_named("test"),
+            Some(&[TEST_SCRIPT, PLAYGROUND_TESTS][..])
+        );
+        // Its floor is `angular.json`'s, asked by `--coverage`; no watch outside a terminal.
+        assert!(
+            check_named(PLAYGROUND_TESTS)
+                .command
+                .ends_with("&& cd playground && ng test --no-watch --coverage")
+        );
+        // The root's timing tests, then the playground's alone by their configuration.
+        let timings = check_named(AFTER_LANES).command;
+
+        assert!(timings.starts_with("vitest run --tags-filter=timing "));
+        assert!(timings.ends_with(&format!(
+            "tests/history-timings.test.ts && {PLAYGROUND_TIMINGS}"
+        )));
+        for command in [PLAYGROUND_TESTS_WITHOUT_COVERAGE, PLAYGROUND_TIMINGS] {
+            assert!(
+                command.starts_with(
+                    "{ command -v ng > /dev/null || { echo 'The packages of the playground are \
+                     missing: run npm ci --prefix playground' >&2; exit 1; }; } && cd playground"
+                ),
+                "{command}"
+            );
+        }
     }
 
     #[test]
