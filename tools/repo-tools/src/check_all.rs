@@ -99,7 +99,11 @@ pub const CHECKS: &[(&str, &str)] = &[
         ),
     ),
     ("lint:secrets", "target/release/secret-scan"),
-    ("deps:audit", "npm audit --audit-level=low"),
+    // Both projects' lockfiles, the playground's its own (ADR-0104).
+    (
+        "deps:audit",
+        "npm audit --audit-level=low && npm --prefix playground audit --audit-level=low",
+    ),
     ("deps:unused", "target/release/dependencies unused"),
     ("deps:outdated", "target/release/dependencies outdated"),
     // rustfmt, Clippy, the RustSec advisories read offline, the check for Windows without linking
