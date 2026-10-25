@@ -45,6 +45,7 @@ The agent calls a tool by its release binary, from the root of its checkout, rat
 - `target/release/epic-check <epic> <first day>`
 - `target/release/val-prepare . <feature>`
 - `target/release/release notes [<base>]`, then `release check <file>`
+- `target/release/knowledge …`
 - `target/release/library …`
 - `target/release/metrics`, `target/release/session-report …`, `target/release/activity`
 - `target/release/records-save`

@@ -93,7 +93,7 @@ fn f32_ac1_runs_log_tool_call_when_any_subagent_stops() {
 /// publishes or deletes, by its subcommand (AUD-023): `heavy-lock` runs any command given after it,
 /// `branches-clean` deletes branches and worktrees, `git-hooks install` sets the hooks folder and
 /// `release publish` makes a release, so each of them asks.
-const ALLOWED_BINARIES: [&str; 21] = [
+const ALLOWED_BINARIES: [&str; 22] = [
     "activity",
     "backlog-status",
     "context-size",
@@ -103,6 +103,7 @@ const ALLOWED_BINARIES: [&str; 21] = [
     "git-sequences commit",
     "git-sequences state",
     "git-sequences sync",
+    "knowledge",
     "library",
     "metrics",
     "page",

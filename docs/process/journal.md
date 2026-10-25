@@ -8,6 +8,8 @@ What each working session dealt with, in the agent's words: the Product Owner's 
 - `#decision` The Product Owner asked for the agent's knowledge in one SQLite file per project in the records folder, outside Git, the docs short and readable, then the agent's setup shared with every coding agent: E49 and E50, before E21. SP-034 (#505) refined E49, ten answers in its Decisions; the records folder's whole content in one file, the raw transcripts left as files it indexes.
 - `#run` The Product Owner started a run on 2026-10-25 without a scope named, after the agent proposed F48, the knowledge database: the scope is F48, from EN-151 to its audit, AUD-050.
 - `#run` EN-151: `tools/knowledge` makes `$AGENT_RECORDS_ROOT/<repo>/records.sqlite` with note 0035's tables in WAL, each write in `BEGIN IMMEDIATE`, a newer schema refused for writing; `records-save` finds its folder through the same functions.
+- `#run` EN-152: knowledge add, search, show, list and sync, and page's fallback on knowledge show; schema 2 keys a document by its id and its branch, so that a branch writes its draft of an id another holds, the four tables rebuilt by SQLite's procedure for a changed key (`REF-SQLITE-ALTER-TABLE`, added). Timings, a temporary records root of three documents: 27 to 39 ms a command, page's fallback 28 ms against 3 ms for a page found.
+- `#run` EN-152: four connections opening a new file at once failed 1 run in 25 with `database is locked`: the switch to WAL is refused at once, without the busy timeout, while another connection writes; the opening now waits for that write by a `BEGIN IMMEDIATE` and switches again, a test reproducing it every time.
 
 ## 2026-10-25 — SP-033 and REV-009, the epics regrouped and the documentation cleaned
 
