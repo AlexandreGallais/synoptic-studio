@@ -426,12 +426,23 @@ fn f48_ac2_marks_merged_the_rows_of_the_branches_merged_into_develop_and_no_othe
 
     let of_d = run(&place, &["list"]);
 
+    git(&repo, &["checkout", "-q", "develop"]);
+    fs::write(repo.join("one.md"), "---\nid: EN-904\n---\n# EN-904\n").unwrap();
+    run(&place, &["add", "story", "one.md"]);
+
+    let one = run(&place, &["sync"]);
+
     let _ = fs::remove_dir_all(&place);
     assert_eq!(
         text(&synced).0,
         "2 rows marked merged, of the 2 branches merged into develop"
     );
     assert_eq!(states, ["EN-901 merged", "EN-902 merged", "EN-903 draft"]);
+    // The row added on develop; develop, feature/a and chore/d, made from develop, merged.
+    assert_eq!(
+        text(&one).0,
+        "1 row marked merged, of the 3 branches merged into develop"
+    );
     assert_eq!(text(&of_c).0.lines().count(), 3);
     // chore/d reads the merged rows, never chore/c's draft.
     assert_eq!(
@@ -456,7 +467,10 @@ fn f48_ac2_fails_aloud_on_a_wrong_add_or_an_id_it_reads_nowhere() {
         run(&place, &["add", "Story", "empty.md"]),
         run(&place, &["add", "story", "missing.md"]),
         run(&place, &["add", "story", "empty.md"]),
+        // `output` gives the child an empty standard input.
+        run(&place, &["add", "journal", "-"]),
         run(&place, &["list", "--colour", "red"]),
+        run(&place, &["sync", "--kind", "story"]),
     ]
     .map(|output| (output.status.code(), text(&output).1));
 
@@ -475,9 +489,17 @@ fn f48_ac2_fails_aloud_on_a_wrong_add_or_an_id_it_reads_nowhere() {
     git(&place.join("repo"), &["checkout", "-q", "--detach"]);
 
     let detached = run(&place, &["add", "story", "story.md"]);
+    let detached_show = run(&place, &["show", "EN-999"]);
+
+    // A repository without develop: sync cannot ask Git which branches are merged into it.
+    git(&place.join("repo"), &["branch", "-m", "develop", "trunk"]);
+
+    let no_develop = run(&place, &["sync"]);
+    let missing = fs::read_to_string(place.join("repo/missing.md"))
+        .unwrap_err()
+        .to_string();
 
     let _ = fs::remove_dir_all(&place);
-    let missing = std::io::Error::from(std::io::ErrorKind::NotFound).to_string();
 
     assert_eq!(
         failures,
@@ -488,7 +510,9 @@ fn f48_ac2_fails_aloud_on_a_wrong_add_or_an_id_it_reads_nowhere() {
                 .to_owned(),
             format!("knowledge: missing.md: {missing}"),
             "knowledge: empty.md: nothing to add".to_owned(),
+            "knowledge: the standard input: nothing to add".to_owned(),
             "knowledge: --colour: no such filter".to_owned(),
+            format!("knowledge: {USAGE}"),
         ]
         .map(|message| (Some(1), message))
     );
@@ -509,5 +533,17 @@ fn f48_ac2_fails_aloud_on_a_wrong_add_or_an_id_it_reads_nowhere() {
             Some(1),
             "knowledge: add writes on a branch: check one out".to_owned()
         )
+    );
+    assert_eq!(
+        text(&detached_show).1,
+        "knowledge: EN-999: no document of it read on a detached HEAD"
+    );
+    assert_eq!(no_develop.status.code(), Some(1));
+    assert!(
+        text(&no_develop).1.ends_with(
+            "knowledge: git branch --merged develop --format=%(refname:short) failed in ."
+        ),
+        "{}",
+        text(&no_develop).1
     );
 }

@@ -3,6 +3,10 @@
 //! the fenced blocks are found by `page`'s functions, the front matter by `backlog-index`'s, so
 //! that the three tools read a page alike.
 
+use backlog_index::front_matter::front_matter;
+use page::fence::fenced;
+use page::section::heading;
+
 /// A part of a document, from one heading down to the next heading of any level.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Section {
@@ -39,8 +43,31 @@ pub struct Document {
 /// first heading is a section of an empty heading, left out when empty. Joined, they are the text.
 #[must_use]
 pub fn sections_of(text: &str) -> Vec<Section> {
-    let _ = text;
-    Vec::new()
+    let lines: Vec<&str> = text.split_inclusive('\n').collect();
+    let bare: Vec<&str> = lines
+        .iter()
+        .map(|line| line.trim_end_matches(['\n', '\r']))
+        .collect();
+    let mut sections = Vec::new();
+    let mut current = Section {
+        heading: String::new(),
+        text: String::new(),
+    };
+
+    for ((line, bare), is_fenced) in lines.iter().zip(&bare).zip(fenced(&bare)) {
+        if let Some((_, title)) = heading(bare).filter(|_| !is_fenced) {
+            let next = Section {
+                heading: title.to_owned(),
+                text: String::new(),
+            };
+
+            sections.push(std::mem::replace(&mut current, next));
+        }
+        current.text.push_str(line);
+    }
+    sections.push(current);
+    sections.retain(|section| !section.text.is_empty());
+    sections
 }
 
 /// Whether a word is an id the project cites: `REF-` and upper-case parts (`REF-GIT-BRANCH`),
@@ -49,32 +76,101 @@ pub fn sections_of(text: &str) -> Vec<Section> {
 /// `JOURNAL-2026-10-25-3`).
 #[must_use]
 pub fn is_citation(word: &str) -> bool {
-    let _ = word;
-    false
+    let all = |part: &str, accepted: fn(&u8) -> bool| {
+        !part.is_empty() && part.bytes().all(|byte| accepted(&byte))
+    };
+    let upper = |part: &&str| {
+        all(part, |byte| {
+            byte.is_ascii_uppercase() || byte.is_ascii_digit()
+        })
+    };
+    let lower = |part: &&str| {
+        all(part, |byte| {
+            byte.is_ascii_lowercase() || byte.is_ascii_digit()
+        })
+    };
+    let digits = |part: &str| all(part, u8::is_ascii_digit);
+    let parts: Vec<&str> = word.split('-').collect();
+
+    match parts.as_slice() {
+        ["REF", rest @ ..] => !rest.is_empty() && rest.iter().all(upper),
+        ["DERIV", rest @ ..] => !rest.is_empty() && rest.iter().all(lower),
+        [single] => single
+            .split_at_checked(1)
+            .is_some_and(|(letter, number)| matches!(letter, "E" | "F") && digits(number)),
+        [kind, number, rest @ ..] => {
+            kind.len() >= 2
+                && all(kind, u8::is_ascii_uppercase)
+                && number.len() >= 3
+                && digits(number)
+                && rest.iter().all(|part| digits(part))
+        }
+        [] => false,
+    }
 }
 
 /// The ids a text cites, each once, in the order first met: its words, cut at every character but
 /// a letter, a digit or a dash, their outer dashes left out, that [`is_citation`] accepts.
 #[must_use]
 pub fn citations(text: &str) -> Vec<String> {
-    let _ = text;
-    Vec::new()
+    let mut found: Vec<String> = Vec::new();
+
+    for word in
+        text.split(|character: char| !(character.is_ascii_alphanumeric() || character == '-'))
+    {
+        let word = word.trim_matches('-');
+
+        if is_citation(word) && !found.iter().any(|known| known == word) {
+            found.push(word.to_owned());
+        }
+    }
+    found
 }
 
 /// A text read as a document: its front matter's fields, its title, its sections and its
 /// citations, its own id left out of them.
 #[must_use]
 pub fn read_document(text: &str) -> Document {
-    let _ = text;
+    let mut fields: Vec<(String, String)> = front_matter(text).into_iter().collect();
+
+    fields.sort();
+
+    let field = |key: &str| {
+        fields
+            .iter()
+            .find(|(name, _)| name == key)
+            .map(|(_, value)| value.clone())
+    };
+    let sections = sections_of(text);
+    let id = field("id");
+    let title = field("title")
+        .or_else(|| {
+            sections
+                .iter()
+                .find(|section| !section.heading.is_empty())
+                .map(|section| section.heading.clone())
+        })
+        .or_else(|| {
+            text.lines()
+                .map(str::trim)
+                .find(|line| !line.is_empty())
+                .map(str::to_owned)
+        })
+        .unwrap_or_default();
+    let citations = citations(text)
+        .into_iter()
+        .filter(|cited| Some(cited) != id.as_ref())
+        .collect();
+
     Document {
-        id: None,
-        title: String::new(),
-        epic: String::new(),
-        feature: String::new(),
-        status: String::new(),
-        date: None,
-        fields: Vec::new(),
-        sections: Vec::new(),
-        citations: Vec::new(),
+        title,
+        epic: field("epic").unwrap_or_default(),
+        feature: field("feature").unwrap_or_default(),
+        status: field("status").unwrap_or_default(),
+        date: field("date"),
+        id,
+        fields,
+        sections,
+        citations,
     }
 }

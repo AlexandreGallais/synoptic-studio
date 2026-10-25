@@ -433,3 +433,37 @@ fn f48_ac1_keys_a_document_by_its_id_and_its_branch_from_schema_2() {
     assert!(section_of_another.is_err());
     assert_eq!(left, [1, 0, 1, 0]);
 }
+
+#[test]
+fn f48_ac1_puts_the_file_in_wal_while_another_connection_writes_it_in_its_old_mode() {
+    let file = place("wal-while-writing");
+
+    fs::create_dir_all(file.parent().unwrap()).unwrap();
+
+    let (holding, held) = mpsc::channel();
+    let writer_file = file.clone();
+    // A connection of the rollback journal holds the write lock; switching to WAL needs the file
+    // alone, which SQLite refuses at once rather than wait (`REF-SQLITE-WAL`, §9).
+    let writer = thread::spawn(move || {
+        let database = Connection::open(&writer_file).unwrap();
+
+        database
+            .execute_batch("BEGIN IMMEDIATE; CREATE TABLE other (a);")
+            .unwrap();
+        holding.send(()).unwrap();
+        thread::sleep(Duration::from_millis(300));
+        database.execute_batch("COMMIT;").unwrap();
+    });
+
+    held.recv().unwrap();
+
+    let opened = open_store(&file).map(|database| {
+        database
+            .query_row("PRAGMA journal_mode", [], |row| row.get::<_, String>(0))
+            .unwrap()
+    });
+
+    writer.join().unwrap();
+    clean(&file);
+    assert_eq!(opened, Ok("wal".to_owned()));
+}
