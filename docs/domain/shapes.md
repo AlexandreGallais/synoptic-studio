@@ -236,11 +236,11 @@ The library reads a TrueType or OpenType file (`REF-OT-OTFF`) into plain numbers
 
 #### Default font available
 
-Inter's shipped metrics are used only for the faces the browser really draws with them (provisional, VAL-018's first pass, 2026-10-16, decided by the agent while the Product Owner was away, US-053, to confirm at VAL-018's second pass):
+Inter's shipped metrics are used only for the faces the browser really draws with them (decided by the agent at VAL-018's first pass, 2026-10-16, US-053; confirmed at its second pass, the weights offered being the real ones, F17 validated at its third):
 
 - **Check of each face**: as the page opens, the editor measures the line `Pump P-101 Running` at size 1000 in each of Inter's 18 faces on a canvas, its font named as the drawing names it (`700 1000px "Inter", sans-serif`, `REF-MDN-CANVAS-FONT`).
 - **Face kept**: when the browser's width lies within 9 units of the width its metrics give — half a unit per character, the most a browser rounding each advance to a whole pixel moves it; Inter 400 and 500 differ by about 116 units on that line, Inter and Helvetica by more.
-- **Inter not installed** (the Product Owner's Mac draws Helvetica, its 300, 400 and 700 only): no face is kept, and **Inter leaves the font list** (provisional, VAL-018's second pass, 2026-10-16, US-056, to confirm at VAL-018: before, it stayed first without weights).
+- **Inter not installed** (the Product Owner's Mac draws Helvetica, its 300, 400 and 700 only): no face is kept, and **Inter leaves the font list** (Product Owner, VAL-018's second pass, 2026-10-16, US-056: a font that is not available is not listed, Inter included; before, it stayed first without weights).
 - **No font yet**: the list is empty and no text is drawn until a font is read, and the page says `No font is available yet: Inter is not installed on this computer. Click Installed fonts first, a font is chosen as soon as one is read; or import a font file with Import a font.`, no field outlined.
 - **Fields disabled**: while no font is available, the font list and the Content field are disabled, so that no text is written before a font is (Product Owner, 2026-10-16, US-059).
 - **Default font chosen** — **Settled** (Product Owner, 2026-10-16, US-060):
@@ -415,7 +415,7 @@ F15, decided at F05's refinement, round 2; the rules marked "confirmed at VAL-01
 
 - **Sources**: the designer imports a TrueType or OpenType file (`.ttf`, `.otf`), or, in Chrome and Edge, chooses a font installed on the computer after a click and the browser's permission (`REF-WICG-LOCAL-FONT-ACCESS`):
   - both are read by the same reader, from the file's bytes, once, into the metrics F05 reads, and kept with the file (confirmed at VAL-017: kept for the session; across sessions with the editor's files, E41);
-  - an installed family read ahead keeps its metrics alone until it is chosen (US-053, provisional, below).
+  - an installed family read ahead keeps its metrics alone until it is chosen (US-053, below).
 - **Font list**: the editor's font field is a **list of the families it can measure**, not a name typed: the default Inter, the fonts imported and the installed fonts read with the browser's permission (Product Owner, 2026-10-15, US-036):
   - the weight list shows the faces of the family chosen only; the size of a text is computed with the metrics of the font selected, never with Inter's alone;
   - a font typed by name without metrics, such as `monospace`, was measured with Inter while the browser drew another font, so its block and its trim were wrong.
@@ -447,7 +447,7 @@ A click lists the installed families after the browser's `local-fonts` permissio
 - **Font list disabled while reading** — **Settled** (Product Owner, 2026-10-16, US-059):
   - no installed family is offered in the font list before it is read and approved, not even for a moment, and the font list and **Installed fonts** are disabled until every family is read, so that no font is chosen during the reading; a reading that fails gives them back;
   - they stay disabled while the default font's files are read again (US-060), the page saying `Reading Helvetica, the default font: the font list can be used once it is read.`, so that the list is never enabled for a moment between the two readings (F18, US-061).
-- **Reading in the background** — **Provisional** (VAL-018's first pass, 2026-10-16, decided by the agent while the Product Owner was away, US-053, to confirm at VAL-018's second pass):
+- **Reading in the background** — **Settled** (decided by the agent at VAL-018's first pass, 2026-10-16, US-053; accepted at its second pass, slow but visible, the fonts that cannot be read left out):
   - their files are then read in the background, family after family, each face on its own, the page answering between two files, a line counting them (`Reading the installed fonts: 12 of 312 families…`);
   - the line then sums up (`Installed fonts read: 309 families; 3 left out: 1 not embeddable (…); 1 no Latin letters (Apple Color Emoji); 1 unreadable (ABC Oracle Book).`), each reason said only when a family has it (US-056);
   - a family none of whose faces can be read and listed never enters the font list;
