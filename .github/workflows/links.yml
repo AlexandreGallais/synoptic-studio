@@ -1,4 +1,4 @@
-# Weekly link check of every Markdown file: sources of docs/references.md and internal links
+# Weekly link check of every Markdown file: the sources it cites and internal links
 # (ADR-0022, docs/tooling/ci.md). Exclusions in .lycheeignore.
 name: Links
 

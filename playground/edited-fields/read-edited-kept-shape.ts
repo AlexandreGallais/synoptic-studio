@@ -15,7 +15,7 @@ import type { KeptShape } from "../kept-shapes";
  * @param shape - a shape selected
  * @param edit - the field, the value typed and the largest size (Q20)
  * @returns the shape changed
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 function readEditedShape(document: Document, shape: DrawingShape, edit: PanelEdit): DrawingShape {
   if (!isDrawnText(shape)) {
@@ -29,7 +29,7 @@ function readEditedShape(document: Document, shape: DrawingShape, edit: PanelEdi
 
 /**
  * Reads a shape kept once a value is typed in its X, Y, Width or Height (`readEditedShape`), one
- * of several shapes selected (F38) or the one the panel edits alone (US-085), with the kind the
+ * of several shapes selected or the one the panel edits alone, with the kind the
  * panel showed it as, a text keeping its metrics (`writeKeptMetrics`).
  *
  * @kind procedure
@@ -37,7 +37,7 @@ function readEditedShape(document: Document, shape: DrawingShape, edit: PanelEdi
  * @param kept - a shape selected and its kind
  * @param edit - the field, the value typed and the largest size (Q20)
  * @returns the shape changed and its kind
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 export function readEditedKeptShape(
   document: Document,

@@ -32,7 +32,7 @@ type ReadAheadPage = {
  * @param update - redraws the playground
  * @param count - what was counted before
  * @returns what was counted once every family is done
- * @see docs/domain/shapes.md#text
+ * @see RULE-shapes-text
  */
 async function readNextFamilies(
   page: ReadAheadPage,
@@ -62,18 +62,18 @@ async function readNextFamilies(
 
 /**
  * Reads the installed fonts the browser listed in the background, family after family, each face
- * on its own, the page answering between two files (US-053): a family keeps its faces' metrics,
+ * on its own, the page answering between two files: a family keeps its faces' metrics,
  * not their files, which are read again when it is chosen; a family none of whose faces can be
  * read and approved never enters the font list; a line counts the families read, then says those
  * left out. Once all are read, the first family read and approved is chosen when no font is
- * available, its files read again (`writeDefaultChoice`, US-056, US-060), else the page says that
- * none can be used (US-059).
+ * available, its files read again (`writeDefaultChoice`), else the page says that
+ * none can be used.
  *
  * @kind procedure
  * @param document - page document
  * @param update - redraws the playground
  * @returns once every installed family is read
- * @see docs/domain/shapes.md#text
+ * @see RULE-shapes-text
  */
 export async function readInstalledFontsAhead(
   document: Document,

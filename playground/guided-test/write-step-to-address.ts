@@ -5,7 +5,6 @@
  * @kind procedure
  * @param document - page document
  * @param index - index of the step shown, counted from 0
- * @see docs/backlog/stories/E01-F07-VAL-003-validate-anchor.md
  */
 export function writeStepToAddress(document: Document, index: number): void {
   const address = new URL(document.location.href);

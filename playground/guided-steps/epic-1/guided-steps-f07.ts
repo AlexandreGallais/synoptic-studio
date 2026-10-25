@@ -1,6 +1,6 @@
 import type { GuidedStep } from "../guided-step";
 
-/** The steps of US-010's test card (F07, VAL-003), one at a time, with the corner cell shown in a wide box. */
+/** The steps of US-010's test card, one at a time, with the corner cell shown in a wide box. */
 export const GUIDED_STEPS_F07: readonly GuidedStep[] = [
   {
     explanation:

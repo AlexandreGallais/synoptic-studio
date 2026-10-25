@@ -1,8 +1,8 @@
-/** The values a field acting as a number field of its own takes (US-087, AUD-046). */
+/** The values a field acting as a number field of its own takes. */
 export type OwnFieldRange = {
   /** Whether a value beyond the range goes round it, an angle's turn, rather than to its bound. */
   readonly isTurn: boolean;
-  /** Whether it holds whole numbers, its value always rounded to the nearest integer (AUD-047). */
+  /** Whether it holds whole numbers, its value always rounded to the nearest integer. */
   readonly isWhole: boolean;
   /** Its minimum, `-Infinity` for none. */
   readonly minimum: number;

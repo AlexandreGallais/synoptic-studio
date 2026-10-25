@@ -8,15 +8,15 @@ import { writeNewTextFields } from "./write-new-text-fields";
 import type { Point } from "../../src";
 
 /**
- * Places a text by a click (F35): a new text (`writeNewTextFields`), empty, whose block as shown,
- * 1 wide and one line tall (`readShownTextBlock`, US-075), is centred on the point on integers
- * (`centeredPosition`), a text whose font has no metrics yet (US-056) taken as 0 × 0, its top-left
+ * Places a text by a click: a new text (`writeNewTextFields`), empty, whose block as shown,
+ * 1 wide and one line tall (`readShownTextBlock`), is centred on the point on integers
+ * (`centeredPosition`), a text whose font has no metrics yet taken as 0 × 0, its top-left
  * on the point.
  *
  * @kind procedure
  * @param document - page document
  * @param point - the point clicked, in the coordinates of the SVG
- * @see docs/domain/interaction.md#_1-tools
+ * @see RULE-interaction-1-tools
  */
 export function writePlacedText(document: Document, point: Point): void {
   writeNewTextFields(document);

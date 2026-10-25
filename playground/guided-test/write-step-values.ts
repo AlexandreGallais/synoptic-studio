@@ -16,7 +16,6 @@ import type { GuidedStep } from "../guided-steps";
  * @kind procedure
  * @param document - page document
  * @param shape - `rectangle`, `polygon`, `round` or `text`
- * @see docs/backlog/stories/E01-F02-US-007-shape-selector-playground.md
  */
 function writeShapeValue(document: Document, shape: string): void {
   const select = selectElement(document, "shape");
@@ -32,17 +31,16 @@ function writeShapeValue(document: Document, shape: string): void {
  *
  * @kind procedure
  * @param document - page document
- * @see docs/backlog/stories/E01-F08-VAL-005-validate-node-editing.md
  */
 function writeKeptShapeCleared(document: Document): void {
   // A step types one radius for every vertex (F03.AC2), and selects no vertex.
   delete selectElement(document, "radius").dataset["radii"];
   // A step draws one shape alone, as the page opens: the shapes placed before it go, below and
-  // above, and the settings kept for each kind (F35, F36, SP-026).
+  // above, and the settings kept for each kind.
   writeStoredDrawing(document, DRAWING_KEYS.below, []);
   writeStoredDrawing(document, DRAWING_KEYS.above, []);
   clearKindSettings(document);
-  // A step draws a rectangle or a polygon: the free shape kept goes (F08).
+  // A step draws a rectangle or a polygon: the free shape kept goes.
   delete selectElement(document, "shape").dataset["freeShape"];
 
   selectElement(document, "shape")
@@ -57,25 +55,24 @@ function writeKeptShapeCleared(document: Document): void {
  * @kind procedure
  * @param document - page document
  * @param step - step whose shape and numbers are typed
- * @see docs/backlog/stories/E01-F02-VAL-002-validate-polygon.md
  */
 export function writeStepValues(document: Document, step: GuidedStep): void {
   writeKeptShapeCleared(document);
   writeSelection(document, NO_VERTEX_SELECTION);
   writeShapeValue(document, step.values.shape);
   writeAnchorValue(document, step.values.anchor);
-  // The polygons of F02 to F08 are not stretched (F06).
+  // The polygons of F02 to F08 are not stretched.
   writeStretchedValue(document, step.values.stretched === true);
   writeInputValue(document, "corners", step.values.corners);
   writeInputValue(document, "width", step.values.width);
   writeInputValue(document, "height", step.values.height);
   writeInputValue(document, "radius", step.values.radius);
-  // A step of F01 to F09 draws a straight shape at (0, 0) (F04).
+  // A step of F01 to F09 draws a straight shape at (0, 0).
   delete selectElement(document, "shape").dataset["x"];
   delete selectElement(document, "shape").dataset["y"];
 
-  // A step of F05 types the Text tool's fields (VAL-014); any other step, and Reset, the page's,
-  // so that the next text placed is the page's and not the last one's (F35, SP-026). Either
+  // A step of F05 types the Text tool's fields; any other step, and Reset, the page's,
+  // so that the next text placed is the page's and not the last one's. Either
   // writes the X, Y and angle fields: 0 for a step of F01 to F09, as the opening text.
   writeTextStepValues(document, step.values.text ?? OPENING_TEXT);
 }

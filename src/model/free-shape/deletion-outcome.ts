@@ -15,7 +15,7 @@ export type DeletionOutcome = "allowed" | "flat" | "too-few";
  * @param shape - free shape, as drawn at its size
  * @param removed - numbers of the points to delete, from 0; one outside the shape deletes nothing
  * @returns `allowed`, `too-few` (fewer than 3 points left) or `flat` (no width or no height left)
- * @see docs/domain/interaction.md#_3-node-editing
+ * @see RULE-interaction-3-node-editing
  */
 export function deletionOutcome(shape: FreeShape, removed: readonly number[]): DeletionOutcome {
   const left = freeShapeWithoutPoints(shape, removed);

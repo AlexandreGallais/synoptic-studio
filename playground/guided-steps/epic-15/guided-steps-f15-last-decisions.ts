@@ -6,8 +6,8 @@ import type { GuidedStep } from "../guided-step";
 const ARIAL_16 = createTextStepValues({ content: "Pump P-101", font: "Arial", size: 16 });
 
 /**
- * The F15 decisions to confirm (VAL-017), rows 24 to 32 of the story's table, the rules of US-036
- * and AUD-018, one step each with its example; those of the HTML layer removed (US-044).
+ * The F15 decisions to confirm, rows 24 to 32 of the story's table, the rules of US-036
+ * and AUD-018, one step each with its example; those of the HTML layer removed.
  */
 export const GUIDED_STEPS_F15_LAST_DECISIONS: readonly GuidedStep[] = [
   {

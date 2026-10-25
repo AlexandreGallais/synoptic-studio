@@ -58,7 +58,7 @@ function writeKeptRadii(document: Document, radii: string): void {
 
 /**
  * Gives a new shape the settings of the last shape of its kind, or, before any, the values the
- * page opens with (SP-026), without firing any event: one memory per kind, so that a rectangle's
+ * page opens with, without firing any event: one memory per kind, so that a rectangle's
  * radius never reaches a polygon. A kind without settings changes nothing.
  *
  * @kind procedure

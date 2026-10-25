@@ -11,6 +11,6 @@ export type ReadAheadCount = {
   readonly read: number;
   /** The families left out, none of their faces listed, in the browser's order. */
   readonly leftOut: readonly LeftOutFamily[];
-  /** The faces refused in the families read, in the browser's order (US-062). */
+  /** The faces refused in the families read, in the browser's order. */
   readonly refused: readonly RefusedFace[];
 };

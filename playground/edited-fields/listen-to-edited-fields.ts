@@ -15,7 +15,7 @@ type AppliedValue = {
   readonly typed: TypedPanelValue | undefined;
 };
 
-/** The fields an arrow's step moves the shape in as the arrow on the drawing, by id (F46). */
+/** The fields an arrow's step moves the shape in as the arrow on the drawing, by id. */
 const STEPPED_AXES: ReadonlyMap<string, "x" | "y"> = new Map([
   ["shape-x", "x"],
   ["shape-y", "y"],
@@ -29,7 +29,7 @@ const STEPPED_AXES: ReadonlyMap<string, "x" | "y"> = new Map([
  * @param field - the value it sets and the field's id
  * @param isStep - whether the value is an arrow's step
  * @returns the axis; undefined for a value typed, or a step in Width or Height
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 function readSteppedAxis(field: EditedField, isStep: boolean): "x" | "y" | undefined {
   return isStep ? STEPPED_AXES.get(field[1]) : undefined;
@@ -37,7 +37,7 @@ function readSteppedAxis(field: EditedField, isStep: boolean): "x" | "y" | undef
 
 /**
  * Applies a value to a field of the shape the panel edits alone: an arrow's step in X or Y moves
- * it as the arrow on the drawing, landed on integers (`applySteppedPosition`, F46); any other
+ * it as the arrow on the drawing, landed on integers (`applySteppedPosition`); any other
  * value, and a step in its Width or Height, is set by the computation of several shapes'
  * (`applyEditedValue`).
  *
@@ -45,7 +45,7 @@ function readSteppedAxis(field: EditedField, isStep: boolean): "x" | "y" | undef
  * @param document - page document
  * @param field - the value it sets and the field's id
  * @param applied - the value and whether it is an arrow's step
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 function applyFieldValue(document: Document, field: EditedField, applied: AppliedValue): void {
   const axis = readSteppedAxis(field, applied.isStep);
@@ -61,16 +61,16 @@ function applyFieldValue(document: Document, field: EditedField, applied: Applie
 }
 
 /**
- * Makes the fields of the shape the panel edits, alone, act as number fields (US-085), as several
+ * Makes the fields of the shape the panel edits, alone, act as number fields, as several
  * shapes' (`listenToNumberField`, `EDITED_FIELDS`): a value typed applied on Enter or when the
  * field is left, Up and Down stepping it by 1, or 10 with Shift, each set by the computation of
  * several shapes', but for an arrow in X or Y, which moves it as the arrow on the drawing, landed
- * on integers (`applyFieldValue`, F46); the page is then redrawn.
+ * on integers (`applyFieldValue`); the page is then redrawn.
  *
  * @kind procedure
  * @param document - page document
  * @param update - redraws the page
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 export function listenToEditedFields(document: Document, update: () => void): void {
   for (const field of EDITED_FIELDS) {

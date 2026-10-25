@@ -11,9 +11,9 @@ const PUMP = createTextStepValues({ content: "Pump P-101" });
 const ARIAL_PUMP = createTextStepValues({ content: "Pump P-101", font: "Arial" });
 
 /**
- * The F15 steps (VAL-017): its options — a font imported or installed, its weights, the text
+ * The F15 steps: its options — a font imported or installed, its weights, the text
  * measured with it, the fonts embedded, the export — then its decisions to confirm, and back to the
- * rectangle; the HTML layer's steps removed with it (ADR-0060, US-044).
+ * rectangle; the HTML layer's steps removed with it (ADR-0060).
  */
 export const GUIDED_STEPS_F15: readonly GuidedStep[] = [
   {

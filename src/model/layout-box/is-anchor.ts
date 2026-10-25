@@ -8,7 +8,7 @@ import type { Anchor } from "../../geometry";
  * @kind domain
  * @param anchor - horizontal and vertical alignment to check
  * @returns `true` when both are allowed
- * @see docs/domain/shapes.md#regular-polygon
+ * @see RULE-shapes-regular-polygon
  */
 export function isAnchor(anchor: Anchor): boolean {
   return ALIGNMENTS.includes(anchor.horizontal) && ALIGNMENTS.includes(anchor.vertical);

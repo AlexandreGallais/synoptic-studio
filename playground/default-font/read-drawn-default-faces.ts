@@ -62,7 +62,7 @@ function readDrawnFace(document: Document, face: FontFace): readonly FontFace[] 
 
 /**
  * Reads the faces of Inter, the default font, that the browser draws as their shipped metrics
- * measure them (US-053): each face's probe line measured on a canvas, as the drawing names the
+ * measure them: each face's probe line measured on a canvas, as the drawing names the
  * font, and compared with its width from the metrics. Inter missing, the browser draws its
  * fallback, Helvetica on macOS, whose widths differ; a weight Inter lacks is drawn with a nearby
  * face, whose widths differ too. A browser without a canvas cannot be asked.

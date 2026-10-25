@@ -2,7 +2,7 @@
 export type ColorField = {
   /** The id of the hexadecimal field. */
   readonly color: string;
-  /** The id of the check box ticked while the color follows the text's, empty for a color that follows none (US-041). */
+  /** The id of the check box ticked while the color follows the text's, empty for a color that follows none. */
   readonly follows: string;
   /** The id of the opacity field. */
   readonly opacity: string;

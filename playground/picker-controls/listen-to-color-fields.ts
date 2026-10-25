@@ -11,13 +11,12 @@ import { showColorPicker, updateColorPicker } from "../color-picker";
  * Listens to each color's fields: the hexadecimal field keeps its color when it gets the focus,
  * and commits what it holds when it is left or Enter pressed (`commitColorField`), the page
  * redrawn after, and an open picker following the color and its opacity; an opacity applied, on
- * Enter or when it is left (US-087), and accepted marks a color that follows the text's as chosen
- * (`commitOpacityField`, US-041), before the page is redrawn.
+ * Enter or when it is left, and accepted marks a color that follows the text's as chosen
+ * (`commitOpacityField`), before the page is redrawn.
  *
  * @kind procedure
  * @param document - page document
  * @param update - redraws the playground
- * @see docs/backlog/stories/E15-F16-US-035-pick-a-color.md
  */
 export function listenToColorFields(document: Document, update: () => void): void {
   for (const swatch of document.querySelectorAll<HTMLElement>(".swatch")) {
@@ -35,7 +34,7 @@ export function listenToColorFields(document: Document, update: () => void): voi
       updateColorPicker(document);
     });
 
-    // Applied on Enter or when it is left, as every number field (US-087).
+    // Applied on Enter or when it is left, as every number field.
     opacity.addEventListener("change", () => {
       commitOpacityField(document, ids);
       showColorPicker(document);

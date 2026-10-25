@@ -9,7 +9,7 @@ const OPENING = createColorStepValues({});
 const ORANGE = createColorStepValues({ color: "#ff8000" });
 
 /**
- * The F16 options to try (VAL-016), one per step: the hexadecimal forms typed or pasted, a value
+ * The F16 options to try, one per step: the hexadecimal forms typed or pasted, a value
  * refused, the opacity, the swatch, the picker opened and closed, its sliders by mouse and keys,
  * its plane in HSB and HSL, its values typed, a grey and the background's color.
  */

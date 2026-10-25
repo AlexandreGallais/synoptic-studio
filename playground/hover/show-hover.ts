@@ -9,20 +9,20 @@ import { readHoverPoint } from "./read-hover-point";
 import { readStartedMove } from "./read-started-move";
 
 /**
- * Draws the layer above the drawing (F36): an `<svg>` of the drawing's size and origin
+ * Draws the layer above the drawing: an `<svg>` of the drawing's size and origin
  * (`createViewSvg`), which the pointer passes through, holding the outline of the shape selected
  * (`createSelectionElements`), then, with the selector armed, the outline of the shape under the
  * pointer (`createHoverElements`): each one line of white and black dashes 2 screen pixels wide on
- * its contour as drawn, a native stroke allowed in this layer alone (US-086, ADR-0099); no hover
+ * its contour as drawn, a native stroke allowed in this layer alone (ADR-0099); no hover
  * with a tool armed, nor
- * once the pointer has left the drawing, nor while shapes are moved (`readStartedMove`, F39), nor
+ * once the pointer has left the drawing, nor while shapes are moved (`readStartedMove`), nor
  * while a selection rectangle is drawn, which outlines instead the shapes it would take
- * (`createTakenElements`, F43) and comes last (`createSelectionRectangleElements`, F37). The
+ * (`createTakenElements`) and comes last (`createSelectionRectangleElements`). The
  * drawing's `<svg>` is never touched, so that the export holds no outline.
  *
  * @kind procedure
  * @param document - page document
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 export function showHover(document: Document): void {
   const svg = createViewSvg(document);

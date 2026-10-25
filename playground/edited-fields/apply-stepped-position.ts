@@ -5,7 +5,7 @@ import { readPanelValues } from "../picking";
 import { applyEditedValue } from "./apply-edited-value";
 
 /**
- * Moves the shape the panel edits alone by an arrow in its X or Y (F46): as the arrow on the
+ * Moves the shape the panel edits alone by an arrow in its X or Y: as the arrow on the
  * drawing along that axis, landed on integers as a drag's release (`fieldArrowShift`), from its
  * straight box as last drawn (`readPanelValues`), its X and Y then set to the landed values as
  * whole numbers typed (`applyEditedValue`); a shape refused, or a text never measured, which has
@@ -15,7 +15,7 @@ import { applyEditedValue } from "./apply-edited-value";
  * @param document - page document
  * @param axis - the field the arrow is pressed in: `x` or `y`
  * @param step - the field's step: 1 or 10 for Up, −1 or −10 for Down
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 export function applySteppedPosition(document: Document, axis: "x" | "y", step: number): void {
   const [kept] = readStoredDrawing(document, DRAWING_KEYS.edited);

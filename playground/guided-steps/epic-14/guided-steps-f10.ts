@@ -10,7 +10,7 @@ const ELLIPSE = {
   width: 120,
 } as const;
 
-/** The F10 options to try (VAL-012), one per step: a short list. */
+/** The F10 options to try, one per step: a short list. */
 export const GUIDED_STEPS_F10: readonly GuidedStep[] = [
   {
     explanation: "Round, 100 × 100.",

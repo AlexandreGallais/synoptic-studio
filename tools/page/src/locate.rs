@@ -1,5 +1,6 @@
-//! The page that holds an id, when no page is named: `REF-` rows in `docs/references.md`, an ADR,
-//! a derivation and a backlog item each in a file of their own.
+//! The page that held an id, when no page is named: `REF-` rows in `docs/references.md`, an ADR,
+//! a derivation and a backlog item each in a file of their own. Since they moved into the records
+//! (E49), a missing page sends the id to `knowledge show`, by the caller's fallback.
 
 use std::fs;
 use std::path::{Path, PathBuf};

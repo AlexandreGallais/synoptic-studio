@@ -4,7 +4,7 @@ import type { TypedPanelValue } from "../../model";
 const PANEL_NUMBER = /^(?<sign>[+-]?)(?:\d+(?:[,.]\d*)?|[,.]\d+)$/u;
 
 /**
- * Reads a value typed in a field acting as a number field (F38, AUD-046): a decimal number, white
+ * Reads a value typed in a field acting as a number field: a decimal number, white
  * space around it ignored, relative when it starts with `+` or `-`, as Figma (`REF-FIGMA-ADJUST`);
  * `+50` adds 50, `-20` takes 20 away, `460` sets 460, `1.5` sets 1.5, its fraction kept for the
  * field to round once its value is computed; a comma is a decimal separator as a point is,
@@ -15,7 +15,7 @@ const PANEL_NUMBER = /^(?<sign>[+-]?)(?:\d+(?:[,.]\d*)?|[,.]\d+)$/u;
  * @kind format
  * @param typed - the text of the field
  * @returns the value and whether it is relative; `undefined` when it is no number
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 export function parsePanelValue(typed: string): TypedPanelValue | undefined {
   const text = typed.trim();

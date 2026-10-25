@@ -11,7 +11,8 @@ use std::sync::atomic::{AtomicUsize, Ordering};
 
 const STORY: &str = "chore/en-100-git-sequences";
 const FEATURE: &str = "feature/f20-a-context-diet";
-const STORY_FILE: &str = "docs/backlog/stories/E17-F20-EN-100-git-sequences.md";
+/// What a `knowledge` script standing for the records prints for EN-100, a story of F20 (EN-154).
+const EN_100: &str = "kind\\tfeature\\ttopic\\nEN\\tF20\\tgit-sequences\\n";
 
 static NEXT: AtomicUsize = AtomicUsize::new(0);
 
@@ -39,9 +40,35 @@ fn git(dir: &Path, words: &[&str]) -> String {
     String::from_utf8_lossy(&output.stdout).trim().to_owned()
 }
 
+/// A copy of the tool beside a `knowledge` script standing for the records, in the folder of the
+/// test's repositories: it holds EN-100 alone, so that no test reads the real records.
+fn beside_records(dir: &Path) -> PathBuf {
+    let folder = dir.parent().expect("the repositories' folder").join("bin");
+    let binary = folder.join("git-sequences");
+
+    if !binary.exists() {
+        fs::create_dir_all(&folder).expect("bin made");
+        fs::copy(env!("CARGO_BIN_EXE_git-sequences"), &binary).expect("tool copied");
+        write(
+            &folder,
+            "knowledge",
+            &format!(
+                "#!/bin/sh\ncase \"$2\" in *\"'EN-100'\"*) printf '{EN_100}';; *) printf 'kind\\tfeature\\ttopic\\n';; esac\n"
+            ),
+        );
+        #[cfg(unix)]
+        fs::set_permissions(
+            folder.join("knowledge"),
+            <fs::Permissions as std::os::unix::fs::PermissionsExt>::from_mode(0o755),
+        )
+        .expect("script runs");
+    }
+    binary
+}
+
 /// Runs the tool in `dir`, `input` on its standard input.
 fn tool(dir: &Path, words: &[&str], input: &str) -> Output {
-    let mut child = clean(env!("CARGO_BIN_EXE_git-sequences"), dir)
+    let mut child = clean(beside_records(dir).to_str().expect("a path"), dir)
         .args(words)
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
@@ -117,7 +144,7 @@ fn repos() -> Repos {
         &["remote", "add", "origin", &origin.to_string_lossy()],
     );
     write(&work, "README.md", "one\n");
-    write(&work, STORY_FILE, "# EN-100\n");
+
     git(&work, &["add", "."]);
     git(&work, &["commit", "--quiet", "-m", "first"]);
     git(&work, &["push", "--quiet", "origin", "main"]);
@@ -532,12 +559,15 @@ fn sync_with_cargo(repos: &Repos, code: u8) -> (Output, String) {
         stubs.display(),
         env::var("PATH").unwrap_or_default()
     );
-    let output = clean(env!("CARGO_BIN_EXE_git-sequences"), &repos.work)
-        .arg("sync")
-        .env("PATH", path)
-        .stdin(Stdio::null())
-        .output()
-        .expect("the tool runs");
+    let output = clean(
+        beside_records(&repos.work).to_str().expect("a path"),
+        &repos.work,
+    )
+    .arg("sync")
+    .env("PATH", path)
+    .stdin(Stdio::null())
+    .output()
+    .expect("the tool runs");
 
     (output, fs::read_to_string(log).unwrap_or_default())
 }

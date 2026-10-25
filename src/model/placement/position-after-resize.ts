@@ -10,7 +10,7 @@ import type { Point } from "../../math";
 
 /**
  * Position of a turned shape after its width or height is typed: its turned top-left corner
- * stays where it is drawn, as Figma (Product Owner, F04; `DERIV-turned-shape` step 5). At 0° the
+ * stays where it is drawn, as Figma (Product Owner; `DERIV-turned-shape` step 5). At 0° the
  * position does not change: the top-left of the box is fixed, as in F09.
  *
  * @kind domain

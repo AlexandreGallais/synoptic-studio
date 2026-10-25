@@ -20,13 +20,12 @@ const INVALID_FREE_SHAPE =
   "Width, height and radius typed must be integers ≥ 0, the angle an integer, and the points must span some width and height.";
 
 /**
- * Reads the text of an input as the page reads it, the value applied (`readShownText`, AUD-046).
+ * Reads the text of an input as the page reads it, the value applied (`readShownText`).
  *
  * @kind procedure
  * @param document - page document
  * @param id - id of the input to read
  * @returns the characters in the input, empty when the element is no input
- * @see docs/backlog/stories/E01-F08-US-014-convert-and-move.md
  */
 function readInputText(document: Document, id: string): string {
   const input = selectElement(document, id);
@@ -43,7 +42,6 @@ function readInputText(document: Document, id: string): string {
  * @param id - `width` or `height`
  * @param kept - the size the free shape has
  * @returns the size, and whether it is allowed
- * @see docs/backlog/stories/E01-F08-US-014-convert-and-move.md
  */
 function readFreeSize(
   document: Document,
@@ -64,7 +62,6 @@ function readFreeSize(
  * @param document - page document
  * @param kept - the free shape the page keeps
  * @returns the reading of the free shape
- * @see docs/backlog/stories/E01-F08-US-014-convert-and-move.md
  */
 export function readFreeShapeShape(document: Document, kept: FreeShape): ShapeReading {
   const width = readFreeSize(document, "width", kept.width);

@@ -35,7 +35,7 @@ The project's own tool, `tools/release/` (`target/release/release`), drafts and 
 
 ## What a release text holds
 
-The rules `release notes` drafts by and `release check` checks, from the sources on good release notes, read again through the library on 2026-10-18 ([EN-112](../backlog/stories/E17-F21-EN-112-release-tool-in-rust.md), [research note 0025](../research/notes/0025-f21-agent-tools-in-rust.md)). Where Keep a Changelog and Common Changelog differ, the text follows Common Changelog, the stricter: no `Unreleased` section, the text written at the review with its references; no `Deprecated` nor `Security` group, a deprecation listed under `Changed` (`REF-COMMON-CHANGELOG`, 6.2). A release's notes are the texts of its pull requests joined, so they follow the same rules.
+The rules `release notes` drafts by and `release check` checks, from the sources on good release notes, read again through the library on 2026-10-18 (EN-112, research note 0025 (NOTE-0025)). Where Keep a Changelog and Common Changelog differ, the text follows Common Changelog, the stricter: no `Unreleased` section, the text written at the review with its references; no `Deprecated` nor `Security` group, a deprecation listed under `Changed` (`REF-COMMON-CHANGELOG`, 6.2). A release's notes are the texts of its pull requests joined, so they follow the same rules.
 
 | Rule | Source | Checked by `release check` |
 | --- | --- | --- |

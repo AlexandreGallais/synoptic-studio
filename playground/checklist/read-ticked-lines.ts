@@ -7,7 +7,6 @@ import { readChecklistKey } from "./read-checklist-key";
  * @kind procedure
  * @param written - the text kept in the storage
  * @returns the value it holds, or none
- * @see docs/backlog/stories/E15-F17-US-051-validation-checklist-page.md
  */
 function readWrittenValue(written: string): unknown {
   try {
@@ -23,7 +22,6 @@ function readWrittenValue(written: string): unknown {
  * @kind procedure
  * @param written - the text kept in the storage
  * @returns the texts listed
- * @see docs/backlog/stories/E15-F17-US-051-validation-checklist-page.md
  */
 function readTextList(written: string): readonly string[] {
   const value = readWrittenValue(written);
@@ -40,7 +38,6 @@ function readTextList(written: string): readonly string[] {
  * @param document - the playground's document
  * @param name - the checklist's name, `E15`
  * @returns what the ticked lines say to try
- * @see docs/backlog/stories/E15-F17-US-051-validation-checklist-page.md
  */
 export function readTickedLines(document: Document, name: string): ReadonlySet<string> {
   const written = readBrowserStorage(document)?.getItem(readChecklistKey(name)) ?? "[]";

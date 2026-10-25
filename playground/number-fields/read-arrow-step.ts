@@ -11,7 +11,7 @@ import type { TypedPanelValue } from "../../src";
  * @kind procedure
  * @param event - the key pressed in the field
  * @returns the step, relative; undefined for a key that steps nothing
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 export function readArrowStep(event: KeyboardEvent): TypedPanelValue | undefined {
   const step = fieldArrowStep(event.key, event.shiftKey);

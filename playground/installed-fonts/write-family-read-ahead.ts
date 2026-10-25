@@ -12,14 +12,14 @@ import type { FamilyOutcome } from "../installed-fonts-count";
 /**
  * Reads the faces read ahead with a family's faces more, those read and checked alone, remembered
  * under the name their files give, so that they are read again when the family is chosen; a face
- * refused at this first reading is never read again nor listed (US-062).
+ * refused at this first reading is never read again nor listed.
  *
  * @kind procedure
  * @param readAhead - the faces read ahead before
  * @param fonts - the family's faces, as the browser lists them
  * @param reads - their reads, in the same order
  * @returns the faces read ahead; those before alone for a family none of whose faces was read
- * @see docs/domain/shapes.md#text
+ * @see RULE-shapes-text
  */
 function readReadAheadFonts(
   readAhead: readonly ReadAheadFont[],
@@ -39,18 +39,18 @@ function readReadAheadFonts(
 }
 
 /**
- * Keeps what a family's reads gave (US-053): its faces' metrics without their files
+ * Keeps what a family's reads gave: its faces' metrics without their files
  * (`readFontsWithReadAheadFace`), its faces read and checked remembered under the name their files
- * give so that they are read again when the family is chosen, a face refused left out (US-062),
+ * give so that they are read again when the family is chosen, a face refused left out,
  * and the family no longer listed as not read; a family none of whose faces is read and listed
- * never enters the font list, its reason kept (US-056).
+ * never enters the font list, its reason kept.
  *
  * @kind procedure
  * @param document - page document
  * @param fonts - the family's faces, as the browser lists them
  * @param reads - their reads
  * @returns whether the family was read, or left out and why
- * @see docs/domain/shapes.md#text
+ * @see RULE-shapes-text
  */
 export function writeFamilyReadAhead(
   document: Document,

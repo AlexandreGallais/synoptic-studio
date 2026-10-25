@@ -17,7 +17,7 @@ import type { FreeShape } from "./free-shape";
  * @param shape - free shape, straight or turned
  * @param removed - numbers of the points to remove, from 0, in any order
  * @returns the free shape of the points left, its box placed so that the points left stay where they are drawn
- * @see docs/domain/interaction.md#_3-node-editing
+ * @see RULE-interaction-3-node-editing
  */
 export function freeShapeWithoutPoints(shape: FreeShape, removed: readonly number[]): FreeShape {
   const corners = freeShapeCorners(shape);

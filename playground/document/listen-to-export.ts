@@ -15,7 +15,6 @@ const FILE_NAME = "drawing.svg";
  * @kind procedure
  * @param document - page document
  * @param readTexts - reads the texts of the drawing, as the page holds them
- * @see docs/backlog/stories/E15-F15-US-036-import-choose-and-embed-a-font.md
  */
 export function listenToExport(document: Document, readTexts: () => readonly Text[]): void {
   selectElement(document, "export-svg").addEventListener("click", () => {

@@ -12,7 +12,6 @@ const COLOR_TEXT = { content: "Pump P-101" } as const;
  * @kind procedure
  * @param fields - the fields that differ from that text
  * @returns the values Next types
- * @see docs/backlog/stories/E15-F16-VAL-016-validate-f16.md
  */
 export function createColorStepValues(fields: Partial<GuidedText>): GuidedStep["values"] {
   return createTextStepValues({ ...COLOR_TEXT, ...fields });

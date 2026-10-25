@@ -4,8 +4,8 @@ import type { FontSession, InstalledFont } from "../fonts";
 
 /**
  * Reads the installed faces of a family whose files are not held: those read ahead, their metrics
- * kept without their files, under the name their files give (US-053); a family listed and not
- * read yet is never offered in the font list (US-059).
+ * kept without their files, under the name their files give; a family listed and not
+ * read yet is never offered in the font list.
  *
  * @kind procedure
  * @param session - the families kept and the installed faces read ahead

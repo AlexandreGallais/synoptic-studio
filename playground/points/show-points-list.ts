@@ -13,7 +13,7 @@ import type { ShapeReading } from "../shape";
  * @param vertex - number of the vertex, from 0
  * @param effective - radius drawn at this vertex, after clamping
  * @returns a line such as `1 · x 25 · y 6.69873 · radius 10`
- * @see docs/domain/interaction.md#_3-node-editing
+ * @see RULE-interaction-3-node-editing
  */
 function createRowText(corner: Corner, vertex: number, effective: number): string {
   const { point, radius } = corner;
@@ -33,7 +33,6 @@ function createRowText(corner: Corner, vertex: number, effective: number): strin
  * @param document - page document
  * @param reading - valid shape
  * @param selection - vertices selected
- * @see docs/backlog/stories/E01-F03-US-013-points-list-selection.md
  */
 export function showPointsList(
   document: Document,

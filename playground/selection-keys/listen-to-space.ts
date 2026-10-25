@@ -10,7 +10,7 @@ import { readKeyField } from "./read-key-field";
  * @kind procedure
  * @param document - page document
  * @param event - the key pressed
- * @see docs/domain/interaction.md#_1-tools
+ * @see RULE-interaction-1-tools
  */
 function pressSpace(document: Document, event: KeyboardEvent): void {
   if (!(event.key === " " && readKeyField(event) === undefined)) {
@@ -26,12 +26,12 @@ function pressSpace(document: Document, event: KeyboardEvent): void {
  * released while Cmd is held sends no `keyup` on macOS (`REF-WEBKIT-CMD-KEYUP`), Cmd + Space is the
  * system's (`REF-APPLE-SHORTCUTS`), which may take Cmd's `keyup` too, while Cmd's own `keydown`
  * carries it (`REF-UIEVENTS-KEYS`), so that Space let go under Cmd no longer makes the next drag
- * pan (US-091); an event without Cmd changes nothing.
+ * pan; an event without Cmd changes nothing.
  *
  * @kind procedure
  * @param document - page document
  * @param event - the key pressed, or the pointer moved or pressed
- * @see docs/domain/interaction.md#_7-navigation-and-history
+ * @see RULE-interaction-7-navigation-and-history
  */
 function removeSpaceUnderCommand(document: Document, event: KeyboardEvent | PointerEvent): void {
   if (event.metaKey) {
@@ -46,7 +46,7 @@ function removeSpaceUnderCommand(document: Document, event: KeyboardEvent | Poin
  * @kind procedure
  * @param document - page document
  * @param event - the key released
- * @see docs/domain/interaction.md#_1-tools
+ * @see RULE-interaction-1-tools
  */
 function removeHeldSpace(document: Document, event: KeyboardEvent): void {
   if (event.key !== " ") {
@@ -66,11 +66,11 @@ function removeHeldSpace(document: Document, event: KeyboardEvent): void {
  * page does not scroll nor a button of the toolbar take it; typed in a field, it is the field's
  * (`interaction.md` §1). Its release ends it wherever the focus is, and so do any key or pointer
  * event carrying Cmd, heard before the canvas's press, a release under Cmd never heard on macOS
- * (US-091), and the window losing the focus, a release in another window never heard (AUD-044).
+ * (US-091), and the window losing the focus, a release in another window never heard.
  *
  * @kind procedure
  * @param document - page document
- * @see docs/domain/interaction.md#_1-tools
+ * @see RULE-interaction-1-tools
  */
 export function listenToSpace(document: Document): void {
   document.addEventListener(

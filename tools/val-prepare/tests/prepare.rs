@@ -6,8 +6,9 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 
 use val_prepare::{
-    Criterion, Feature, LINE_LIMIT, epic_number, feature_id, lines_module, parse_feature, plan,
-    ts_string, with_checklist, with_exports, with_feature_lines,
+    Criterion, Feature, LINE_LIMIT, Plan, epic_number, feature_id, feature_statement,
+    feature_text_of, lines_module, parse_feature, plan, ts_string, with_checklist, with_exports,
+    with_feature_lines,
 };
 
 const CHECKLISTS: &str = "../../playground/checklists";
@@ -40,12 +41,22 @@ impl std::ops::Deref for Root {
     }
 }
 
-/// A repository of its own: a copy of the playground's checklists and one feature file per
-/// `(id, epic, criteria)`.
+/// The plan of a feature whose text the test wrote in its folder `features/`, standing for the
+/// records (EN-154).
+fn planned(root: &Path, id: &str) -> Result<Plan, String> {
+    let text = fs::read_to_string(root.join("features").join(format!("{id}.md")))
+        .map_err(|_| format!("no feature {id} in the records"))?;
+
+    plan(root, id, &text)
+}
+
+/// A repository of its own: a copy of the playground's checklists and, standing for the records,
+/// one feature's text per `(id, epic, criteria)`, with a `knowledge` script beside a copy of the
+/// tool printing them.
 fn repository(name: &str, features: &[(&str, &str, usize)]) -> Root {
     let root = std::env::temp_dir().join(format!("val-prepare-{}-{name}", std::process::id()));
     let checklists = root.join("playground/checklists");
-    let backlog = root.join("docs/backlog/features");
+    let backlog = root.join("features");
 
     let _ = fs::remove_dir_all(&root);
     fs::create_dir_all(&checklists).unwrap();
@@ -61,8 +72,47 @@ fn repository(name: &str, features: &[(&str, &str, usize)]) -> Root {
     }
 
     for (id, epic, count) in features {
-        let file = backlog.join(format!("{epic}-{id}-a-feature.md"));
-        fs::write(file, feature_text(id, epic, *count)).unwrap();
+        fs::write(
+            backlog.join(format!("{id}.md")),
+            feature_text(id, epic, *count),
+        )
+        .unwrap();
+    }
+    fs::create_dir_all(root.join("bin")).unwrap();
+    fs::copy(
+        env!("CARGO_BIN_EXE_val-prepare"),
+        root.join("bin/val-prepare"),
+    )
+    .unwrap();
+    // `knowledge sql "SELECT text FROM features WHERE id = 'F18'"`: the text, escaped.
+    fs::write(
+        root.join("bin/knowledge"),
+        format!(
+            "#!/bin/sh\nid=$(echo \"$2\" | sed \"s/.*'\\(F[0-9]*\\)'.*/\\1/\")\nprintf 'text\\n'\n[ -f '{0}/escaped/'$id ] && cat '{0}/escaped/'$id\nexit 0\n",
+            root.display()
+        ),
+    )
+    .unwrap();
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+
+        fs::set_permissions(
+            root.join("bin/knowledge"),
+            fs::Permissions::from_mode(0o755),
+        )
+        .unwrap();
+    }
+    fs::create_dir_all(root.join("escaped")).unwrap();
+    for (id, epic, count) in features {
+        fs::write(
+            root.join("escaped").join(id),
+            format!(
+                "{}\n",
+                knowledge_call::escaped(&feature_text(id, epic, *count))
+            ),
+        )
+        .unwrap();
     }
 
     Root(root)
@@ -169,7 +219,7 @@ fn adds_once_to_an_epic_checklist_the_map_and_the_index() {
 #[test]
 fn f18_ac12_prepares_a_new_epic_checklist_and_its_address() {
     let root = repository("new-epic", &[("F99", "E99", 3)]);
-    let prepared = plan(&root, "F99").unwrap();
+    let prepared = planned(&root, "F99").unwrap();
     let paths: Vec<String> = prepared
         .writes
         .iter()
@@ -227,7 +277,7 @@ fn f18_ac12_prepares_a_new_epic_checklist_and_its_address() {
 #[test]
 fn f18_ac12_adds_a_feature_to_its_epic_existing_checklist() {
     let root = repository("same-epic", &[("F99", "E15", 1)]);
-    let prepared = plan(&root, "F99").unwrap();
+    let prepared = planned(&root, "F99").unwrap();
 
     assert!(
         prepared.writes[1]
@@ -245,9 +295,9 @@ fn f18_ac12_adds_a_feature_to_its_epic_existing_checklist() {
 fn warns_above_twelve_criteria_and_not_at_twelve() {
     let root = repository("limit", &[("F01", "E01", 12), ("F02", "E01", 13)]);
 
-    assert_eq!(plan(&root, "F01").unwrap().warning, None);
+    assert_eq!(planned(&root, "F01").unwrap().warning, None);
     assert_eq!(
-        plan(&root, "F02").unwrap().warning.as_deref(),
+        planned(&root, "F02").unwrap().warning.as_deref(),
         Some("F02 has 13 criteria: merge its lines down to 12, one per thing to see")
     );
 }
@@ -257,15 +307,24 @@ fn refuses_an_unknown_feature_one_not_refined_and_lines_already_written() {
     let root = repository("refusals", &[("F18", "E17", 1), ("F19", "E17", 0)]);
 
     assert_eq!(
-        plan(&root, "F19").unwrap_err(),
+        planned(&root, "F19").unwrap_err(),
         "F19 has no numbered acceptance criteria yet: refine it first"
     );
 
-    assert!(
-        plan(&root, "F77")
-            .unwrap_err()
-            .contains("no feature file for F77")
+    // A feature the records lack.
+    assert_eq!(
+        feature_text_of("F77", &[]).unwrap_err(),
+        "no feature F77 in the records"
     );
+    assert_eq!(
+        feature_text_of("F18", &[vec!["text of F18".to_owned()]]).as_deref(),
+        Ok("text of F18")
+    );
+    assert_eq!(
+        feature_statement("f18").as_deref(),
+        Some("SELECT text FROM features WHERE id = 'F18'")
+    );
+    assert_eq!(feature_statement("F18' OR '1"), None);
 
     fs::write(
         root.join("playground/checklists/epic-17-f18-lines.ts"),
@@ -274,7 +333,7 @@ fn refuses_an_unknown_feature_one_not_refined_and_lines_already_written() {
     .unwrap();
 
     assert!(
-        plan(&root, "F18")
+        planned(&root, "F18")
             .unwrap_err()
             .contains("exists: its lines are kept")
     );
@@ -283,7 +342,8 @@ fn refuses_an_unknown_feature_one_not_refined_and_lines_already_written() {
 #[test]
 fn f18_ac12_the_tool_writes_the_files_and_says_the_address() {
     let root = repository("run", &[("F18", "E17", 2)]);
-    let output = Command::new(env!("CARGO_BIN_EXE_val-prepare"))
+    let tool = root.join("bin/val-prepare");
+    let output = Command::new(&tool)
         .args([root.to_str().unwrap(), "f18"])
         .output()
         .unwrap();
@@ -295,12 +355,18 @@ fn f18_ac12_the_tool_writes_the_files_and_says_the_address() {
     assert!(read(&root, "playground/checklists/checklists.ts").contains("EPIC_17_CHECKLIST"));
     assert!(!root.join("playground/guided-steps").exists());
 
-    let again = Command::new(env!("CARGO_BIN_EXE_val-prepare"))
+    let again = Command::new(&tool)
         .args([root.to_str().unwrap(), "F18"])
+        .output()
+        .unwrap();
+    let unknown = Command::new(&tool)
+        .args([root.to_str().unwrap(), "F19"])
         .output()
         .unwrap();
 
     assert!(!again.status.success());
+    assert_eq!(unknown.status.code(), Some(1));
+    assert!(String::from_utf8_lossy(&unknown.stderr).contains("no feature F19 in the records"));
 
     let usage = Command::new(env!("CARGO_BIN_EXE_val-prepare"))
         .output()
@@ -385,13 +451,9 @@ fn f32_ac2_refuses_a_feature_whose_criteria_are_all_struck_and_counts_only_those
 
     let root = repository("struck", &[]);
 
-    fs::write(
-        root.join("docs/backlog/features/E17-F21-a-feature.md"),
-        text,
-    )
-    .unwrap();
+    fs::write(root.join("features/F21.md"), text).unwrap();
     assert_eq!(
-        plan(&root, "F21").unwrap_err(),
+        planned(&root, "F21").unwrap_err(),
         "F21 has no numbered acceptance criteria yet: refine it first"
     );
 
@@ -407,9 +469,9 @@ fn f32_ac2_refuses_a_feature_whose_criteria_are_all_struck_and_counts_only_those
         .collect();
 
     fs::write(
-        root.join("docs/backlog/features/E17-F22-a-feature.md"),
+        root.join("features/F22.md"),
         format!("---\nid: F22\nepic: E17\ntitle: T\n---\n\n## Acceptance criteria\n\n{thirteen}"),
     )
     .unwrap();
-    assert_eq!(plan(&root, "F22").unwrap().warning, None);
+    assert_eq!(planned(&root, "F22").unwrap().warning, None);
 }

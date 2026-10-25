@@ -2,9 +2,9 @@
 # pull request of the owner labeled `autonomous` into `develop`, from a feature branch, a review
 # (`…/rev-…`, ADR-0086, decision 4) or an epic's refinement spike (`…/sp-…`, decided by the
 # Product Owner on 2026-10-25, REV-009), then dispatches the develop CI, which blocks nothing
-# (ADR-0088, decision 5). A story goes into its feature branch by `story-automerge.yml`; nothing
-# reaches `main` this way: the Product Owner merges it after each review. The agent never merges;
-# removing the label before the merge stops it.
+# (ADR-0088, decision 5). A story goes into its feature branch by `story-automerge.yml`; `develop`
+# goes into `main` by `main-automerge.yml`, once the Product Owner validated the review (label
+# `po-validated`, 2026-10-25). The agent never merges; removing the label before the merge stops it.
 name: Feature auto-merge
 
 # The base is chosen by `branches` alone (ADR-0088, decision 2, EN-134). Not `opened`: a pull

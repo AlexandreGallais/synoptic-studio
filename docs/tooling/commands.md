@@ -29,7 +29,7 @@
 | `target/release/metrics`, `target/release/session-report` | the report of the agent's work, the session report ([metrics](./metrics.md)) |
 | `target/release/library …` | the local source library ([sources](./sources.md)) |
 | `node scripts/default-font-metrics.ts <folder>` | writes `src/model/font/inter-metrics.json` from Inter's static TrueType files unpacked in the folder, which the repository does not keep |
-| `npm run backlog:index`, `story:finish`, `mutate`, `golden:check` | the agent's tools kept as scripts, each run by a tool, a hook or under a lock ([agent tools](./agent-tools.md)) |
+| `npm run story:finish`, `mutate`, `golden:check` | the agent's tools kept as scripts, each run by a tool, a hook or under a lock ([agent tools](./agent-tools.md)) |
 | `target/release/<binary>` | every other tool of the agent, by its binary ([agent tools](./agent-tools.md#the-binaries-the-agent-calls)) |
 | `npx vitest`, `npx tsc --noEmit`, `npx vitepress preview docs` | Vitest watching, TypeScript 7's own check (the lint reports the same errors), the built site served: for a person at the screen, no script (EN-115) |
 

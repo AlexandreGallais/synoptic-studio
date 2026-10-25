@@ -18,7 +18,7 @@ import type { TypedPanelValue } from "../../src";
  * @kind procedure
  * @param field - a field acting as a number field
  * @returns its apply; undefined for a field of its own
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 function readFieldApply(
   field: HTMLInputElement,
@@ -34,7 +34,7 @@ function readFieldApply(
  * @kind procedure
  * @param event - a `change` heard on the document before the field
  * @param field - a field acting as a number field
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 function applyFieldText(event: Event, field: HTMLInputElement): void {
   const apply = readFieldApply(field);
@@ -52,11 +52,11 @@ function applyFieldText(event: Event, field: HTMLInputElement): void {
  * Applies a value typed in a field acting as a number field, at Enter or when it is left
  * (`change`, `applyFieldText`); the `change` of an arrow's step, its value applied already
  * (`STEPPED_CHANGES`), goes to the field's own listeners as it is, where reading it again as
- * typed made a negative one relative (US-088).
+ * typed made a negative one relative.
  *
  * @kind procedure
  * @param event - a `change` heard on the document before the field
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 function applyTypedValue(event: Event): void {
   const field = readNumberField(event.target);
@@ -75,7 +75,7 @@ function applyTypedValue(event: Event): void {
  * @kind procedure
  * @param field - a field acting as a number field
  * @param step - the arrow's step, `+1` or `-10`
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 function applySteppedValue(field: HTMLInputElement, step: TypedPanelValue): void {
   const apply = readFieldApply(field);
@@ -101,7 +101,7 @@ function applySteppedValue(field: HTMLInputElement, step: TypedPanelValue): void
  *
  * @kind procedure
  * @param event - a key pressed, heard on the document after the panel
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 function applyArrowValue(event: KeyboardEvent): void {
   const field = readNumberField(event.target);
@@ -116,7 +116,7 @@ function applyArrowValue(event: KeyboardEvent): void {
 }
 
 /**
- * Makes every field acting as a number field act under one rule (US-085, US-087, AUD-046,
+ * Makes every field acting as a number field act under one rule (US-085,
  * `NUMBER_FIELDS`), one mechanism heard on the document whose apply alone differs, the shapes'
  * (`listenToNumberField`) or the field's own: a value typed applied on Enter or when the field is
  * left, never while it is typed, the value applied kept apart from the text typed
@@ -127,7 +127,7 @@ function applyArrowValue(event: KeyboardEvent): void {
  *
  * @kind procedure
  * @param document - page document
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 export function listenToNumberFields(document: Document): void {
   const signal = readListenerSignal(document);

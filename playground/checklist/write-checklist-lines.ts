@@ -10,7 +10,6 @@ import type { ChecklistLine } from "../checklists";
  * @param line - its feature, what to try and what to see
  * @param isTicked - whether its box starts ticked
  * @returns the line's list item
- * @see docs/backlog/stories/E15-F17-US-051-validation-checklist-page.md
  */
 function createLineElement(
   document: Document,
@@ -49,7 +48,6 @@ function createLineElement(
  * @param document - the playground's document
  * @param lines - each line's feature, what to try and what to see, in order
  * @param tickedTodos - what the ticked lines say to try
- * @see docs/backlog/stories/E15-F17-US-051-validation-checklist-page.md
  */
 export function writeChecklistLines(
   document: Document,

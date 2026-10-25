@@ -2,7 +2,7 @@ import { hasBasicLatinLetters } from "./has-basic-latin-letters";
 
 import type { FontFace } from "../font";
 
-/** Why a face read from a file, installed or imported, is not listed (US-056, US-059): its `fsType` forbids embedding it, or it lacks a letter of the ISO basic Latin alphabet. */
+/** Why a face read from a file, installed or imported, is not listed: its `fsType` forbids embedding it, or it lacks a letter of the ISO basic Latin alphabet. */
 export type UnlistedFaceReason = "no-latin-letters" | "not-embeddable";
 
 /**
@@ -16,7 +16,7 @@ export type UnlistedFaceReason = "no-latin-letters" | "not-embeddable";
  * @kind domain
  * @param face - the face read, its metrics and its file
  * @returns the reason; undefined for a face that can be listed
- * @see docs/domain/shapes.md#text
+ * @see RULE-shapes-text
  */
 export function unlistedFaceReason(face: FontFace): UnlistedFaceReason | undefined {
   if (face.file?.isEmbeddable === false) {

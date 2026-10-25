@@ -19,7 +19,7 @@ const DASH = 4;
  * @param document - page document
  * @param line - the path it follows, its class and its width in screen pixels
  * @returns the white line's `<path>`, then the dashes'
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 export function createDashedLineElements(
   document: Document,

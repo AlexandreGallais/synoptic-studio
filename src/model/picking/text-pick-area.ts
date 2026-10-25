@@ -16,7 +16,7 @@ import type { Text } from "../text";
  * @param text - its position, its box, whether it sits in it, and its angle
  * @param block - its measured block (`textBlock`)
  * @returns its frame's corners, its sides and whether it is flat
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 export function textPickArea(text: Text, block: Size): PickArea {
   const corners = textFrameCorners(text, block);

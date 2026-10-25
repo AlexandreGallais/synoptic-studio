@@ -31,7 +31,7 @@ const HISTORY_KEYS: ReadonlyMap<
  * @kind procedure
  * @param event - the key pressed
  * @returns the field; undefined outside the fields, or in a field whose value is applied
- * @see docs/domain/interaction.md#_1-tools
+ * @see RULE-interaction-1-tools
  */
 function readTypedField(event: KeyboardEvent): Element | undefined {
   const field = readKeyField(event);
@@ -48,7 +48,7 @@ function readTypedField(event: KeyboardEvent): Element | undefined {
  * @kind procedure
  * @param event - the key pressed
  * @returns `sizedUndoneHistory` or `sizedRedoneHistory`; undefined for a key the history does not take
- * @see docs/domain/interaction.md#_1-tools
+ * @see RULE-interaction-1-tools
  */
 function readHistoryMove(
   event: KeyboardEvent,
@@ -71,7 +71,7 @@ function readHistoryMove(
  * @kind procedure
  * @param event - an `input`, a `change` or a `focusout`
  * @param isTyped - true from its `input` on, false once applied or left
- * @see docs/domain/interaction.md#_1-tools
+ * @see RULE-interaction-1-tools
  */
 function writeTypedField(event: Event, isTyped: boolean): void {
   if (event.target instanceof Element) {
@@ -86,7 +86,7 @@ function writeTypedField(event: Event, isTyped: boolean): void {
  *
  * @kind procedure
  * @param document - page document
- * @see docs/domain/interaction.md#_1-tools
+ * @see RULE-interaction-1-tools
  */
 function listenToTypedFields(document: Document): void {
   document.addEventListener(
@@ -111,13 +111,13 @@ function listenToTypedFields(document: Document): void {
 /**
  * Asks a step of the history at each key released outside the panel's fields
  * (`scheduleHistoryStep`), so that a key held is one step from its press to its release (SP-029's
- * answer 3), arrows held together from the first press to the last release (US-081); and when
+ * answer 3), arrows held together from the first press to the last release; and when
  * the window loses the focus, which releases the arrows held, their releases never heard.
  *
  * @kind procedure
  * @param document - page document
  * @param update - redraws the page from the values typed
- * @see docs/domain/interaction.md#_7-navigation-and-history
+ * @see RULE-interaction-7-navigation-and-history
  */
 function listenToKeyReleases(document: Document, update: () => void): void {
   document.addEventListener(
@@ -140,7 +140,7 @@ function listenToKeyReleases(document: Document, update: () => void): void {
 }
 
 /**
- * Listens to the keys of the history (F40, `interaction.md` §1): Ctrl + Z undoes, Ctrl + Shift + Z
+ * Listens to the keys of the history (`interaction.md` §1): Ctrl + Z undoes, Ctrl + Shift + Z
  * and Ctrl + Y redo, Cmd for Ctrl on macOS, their default prevented (`readHistoryMove`,
  * `moveHistory`); a field of the panel typed in since its value was applied keeps them, any other
  * field leaves them to the drawing (SP-029's answer 9). Heard as the key goes down to its target.
@@ -149,7 +149,7 @@ function listenToKeyReleases(document: Document, update: () => void): void {
  * @kind procedure
  * @param document - page document
  * @param update - redraws the page from the values typed
- * @see docs/domain/interaction.md#_1-tools
+ * @see RULE-interaction-1-tools
  */
 export function listenToHistoryKeys(document: Document, update: () => void): void {
   listenToTypedFields(document);

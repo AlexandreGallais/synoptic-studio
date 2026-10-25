@@ -11,7 +11,6 @@ import { readKeptColor } from "./read-kept-color";
  * @param document - page document
  * @param id - the hexadecimal field's id
  * @returns the color, `#` and six lower-case digits
- * @see docs/backlog/stories/E15-F16-US-035-pick-a-color.md
  */
 export function readShownColor(document: Document, id: string): string {
   const field = readColorInput(document, id);

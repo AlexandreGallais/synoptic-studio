@@ -20,7 +20,7 @@ type AskedView = (document: Document, pointer: Point | undefined) => View | unde
  * @param pointer - the pointer's offset on the canvas while it is over the drawing, in CSS pixels;
  * undefined otherwise
  * @returns the view stepped, its scale within the bounds
- * @see docs/domain/interaction.md#_7-navigation-and-history
+ * @see RULE-interaction-7-navigation-and-history
  */
 function readSteppedView(document: Document, direction: -1 | 1, pointer: Point | undefined): View {
   const view = readView(document);
@@ -50,7 +50,7 @@ const ASKED_VIEWS: Readonly<Record<ZoomName, AskedView>> = {
  * @param pointer - the pointer's offset on the canvas while it is over the drawing, in CSS pixels;
  * undefined otherwise
  * @returns the view; undefined for a fit with no shape to fit
- * @see docs/domain/interaction.md#_7-navigation-and-history
+ * @see RULE-interaction-7-navigation-and-history
  */
 export function readAskedView(
   document: Document,

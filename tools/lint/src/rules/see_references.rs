@@ -1,9 +1,10 @@
-//! `local/see-references`: every `@see` of a `JSDoc` block points to an existing and verified
-//! reference — `REF-*` in the bibliography, `DERIV-*`, `ADR-NNNN` or a `docs/…` page — and every
-//! top-level function of a kind that computes or rules has one (docs/conventions/documentation.md).
-//! It guards against invented references.
-
-use std::path::Path;
+//! `local/see-references`: every `@see` of a `JSDoc` block cites a reference of a known form — a
+//! `REF-*`, `DERIV-*`, `RULE-*` or `ADR-NNNN` id, the id of a backlog item, `EN-151` or `F48`, or a `docs/…`
+//! page that exists — and every top-level function of a kind that computes or rules has one
+//! (docs/conventions/documentation.md). The ids are read by their form alone: the bibliography,
+//! the derivations, the decisions and the backlog live in the records, which the CI cannot read,
+//! and `knowledge check-ids` checks each id against them, its source verified, before a pull
+//! request into `develop` (E49). It guards against references of no known form.
 
 use crate::finding::Finding;
 use crate::project::Project;
@@ -15,6 +16,9 @@ use crate::source::{Source, tag_values};
 /// need not (Product Owner, 2026-10-25).
 const KINDS_CITING: [&str; 3] = ["math", "geometry", "domain"];
 
+/// The kinds of stories the backlog has held, the prefix of their ids.
+const STORY_KINDS: [&str; 9] = ["US", "EN", "SP", "CHK", "AUD", "VAL", "NAM", "REV", "RET"];
+
 /// The rule.
 pub struct SeeReferences;
 
@@ -25,10 +29,24 @@ pub enum Status {
     Valid,
     /// Nothing of that name exists.
     Missing,
-    /// Its bibliography row is marked unverified.
-    Unverified,
     /// It is none of the families a `@see` may cite.
     UnknownFormat,
+}
+
+/// Whether a target is the id of a backlog item by its form: `E` or `F` and two digits, or a
+/// story's kind, a dash and three digits.
+#[must_use]
+pub fn is_backlog_id(target: &str) -> bool {
+    let digits = |text: &str, count: usize| {
+        text.len() == count && text.bytes().all(|byte| byte.is_ascii_digit())
+    };
+
+    match target.split_once('-') {
+        Some((kind, number)) => STORY_KINDS.contains(&kind) && digits(number, 3),
+        None => target
+            .split_at_checked(1)
+            .is_some_and(|(letter, number)| matches!(letter, "E" | "F") && digits(number, 2)),
+    }
 }
 
 /// Whether a text is a prefix followed by at least one character of a set.
@@ -38,36 +56,27 @@ fn is_identifier(target: &str, prefix: &str, allowed: fn(char) -> bool) -> bool 
         .is_some_and(|rest| !rest.is_empty() && rest.chars().all(allowed))
 }
 
-/// The status of a `@see` target.
+/// The status of a `@see` target: a `REF-`, `DERIV-`, `RULE-` or `ADR-` id and a backlog id by
+/// their form alone, since the bibliography, the derivations, the rules, the decisions and the
+/// backlog live in the
+/// records, which the CI cannot read, and `knowledge check-ids` checks each id cited against
+/// them before a pull request into `develop` (E49); a `docs/` page by the file it names.
 #[must_use]
 pub fn status(project: &Project, target: &str) -> Status {
-    let sources = project.sources;
-    if is_identifier(target, "REF-", |letter| {
+    let is_reference = is_identifier(target, "REF-", |letter| {
         letter.is_ascii_uppercase() || letter.is_ascii_digit() || letter == '-'
-    }) {
-        return match project.bibliography().get(target) {
-            None => Status::Missing,
-            Some(true) => Status::Valid,
-            Some(false) => Status::Unverified,
-        };
-    }
-    if is_identifier(target, "DERIV-", |letter| {
+    });
+    let is_derivation = is_identifier(target, "DERIV-", |letter| {
         letter.is_ascii_lowercase() || letter.is_ascii_digit() || letter == '-'
-    }) {
-        let file = Path::new(sources.derivations_directory)
-            .join(format!("{}.md", &target["DERIV-".len()..]));
-        return found(project.is_file(&project.root.join(file)));
-    }
-    if target.len() == "ADR-0000".len()
-        && is_identifier(target, "ADR-", |letter| letter.is_ascii_digit())
-    {
-        let prefix = format!("{}-", &target["ADR-".len()..]);
-        return found(
-            project
-                .decisions()
-                .iter()
-                .any(|name| name.starts_with(&prefix)),
-        );
+    });
+    let is_rule = is_identifier(target, "RULE-", |letter| {
+        letter.is_ascii_lowercase() || letter.is_ascii_digit() || letter == '-'
+    });
+    let is_decision = target.len() == "ADR-0000".len()
+        && is_identifier(target, "ADR-", |letter| letter.is_ascii_digit());
+
+    if is_reference || is_derivation || is_rule || is_decision || is_backlog_id(target) {
+        return Status::Valid;
     }
     let path = target.split('#').next().unwrap_or_default();
     if target.starts_with("docs/")
@@ -101,7 +110,7 @@ impl Rule for SeeReferences {
             let kind = source.kind(&function).unwrap_or_default();
             if KINDS_CITING.contains(&kind) && source.tags(&function, "see").is_empty() {
                 let message = format!(
-                    "`{kind}` function without `@see`: cite a REF-*, DERIV-*, ADR-* or docs/ page."
+                    "`{kind}` function without `@see`: cite a REF-*, DERIV-*, RULE-*, ADR-*, a backlog id or a docs/ page."
                 );
                 findings.push(source.finding(self.name(), Source::name_offset(&function), message));
             }
@@ -119,11 +128,8 @@ impl Rule for SeeReferences {
                     Status::Missing => {
                         format!("`@see {target}` does not exist in the documentation.")
                     }
-                    Status::Unverified => format!(
-                        "`@see {target}` is marked [unverified] in docs/references.md: verify it before citing it."
-                    ),
                     Status::UnknownFormat => format!(
-                        "`@see {target}`: expected REF-*, DERIV-*, ADR-NNNN or docs/…/file.md."
+                        "`@see {target}`: expected REF-*, DERIV-*, RULE-*, ADR-NNNN, a backlog id (EN-151, F48) or docs/…/file.md."
                     ),
                 };
                 findings.push(source.finding(self.name(), comment.span.start, message));
@@ -140,23 +146,13 @@ mod tests {
     use super::SeeReferences;
     use crate::testing::{NONE, fixture, lint_at, messages};
 
-    /// A repository with one verified and one unverified reference, a derivation and an ADR.
+    /// A repository with one page of the docs.
     fn documentation() -> PathBuf {
         let root = fixture("see-references");
-        for folder in ["docs/adr", "docs/derivations", "src"] {
+        for folder in ["docs/domain", "src"] {
             fs::create_dir_all(root.join(folder)).unwrap_or_default();
         }
-        let files = [
-            (
-                "docs/references.md",
-                "| ID | Ref | Use | Status |\n|---|---|---|---|\n| `REF-OK` | x | y | [verified] |\n| `REF-TODO` | x | y | [unverified] |\n",
-            ),
-            ("docs/derivations/fit.md", "# fit\n"),
-            ("docs/adr/0001-scope.md", "# scope\n"),
-        ];
-        for (file, text) in files {
-            fs::write(root.join(file), text).unwrap_or_default();
-        }
+        fs::write(root.join("docs/domain/shapes.md"), "# Shapes\n").unwrap_or_default();
         root
     }
 
@@ -174,7 +170,9 @@ mod tests {
     fn asks_a_function_of_a_kind_for_a_see() {
         assert_eq!(
             found("/** @kind math */\nfunction f(): void {}"),
-            ["`math` function without `@see`: cite a REF-*, DERIV-*, ADR-* or docs/ page."]
+            [
+                "`math` function without `@see`: cite a REF-*, DERIV-*, RULE-*, ADR-*, a backlog id or a docs/ page."
+            ]
         );
         assert_eq!(found("function f(): void {}"), NONE);
     }
@@ -191,50 +189,55 @@ mod tests {
     }
 
     #[test]
-    fn reports_a_target_that_does_not_exist() {
-        for target in ["REF-NOPE", "DERIV-nope", "ADR-0002", "docs/nope.md"] {
-            assert_eq!(
-                found(&citing(target)),
-                [format!(
-                    "`@see {target}` does not exist in the documentation."
-                )]
-            );
-        }
+    fn reports_a_page_of_the_docs_that_does_not_exist() {
+        assert_eq!(
+            found(&citing("docs/nope.md")),
+            ["`@see docs/nope.md` does not exist in the documentation."]
+        );
     }
 
     #[test]
-    fn reports_an_unverified_reference_and_an_unknown_format() {
-        assert_eq!(
-            found(&citing("REF-TODO")),
-            [
-                "`@see REF-TODO` is marked [unverified] in docs/references.md: verify it before citing it."
-            ]
-        );
+    fn reports_a_target_of_no_known_form() {
         for target in [
             "https://example.org",
             "ADR-12",
+            "ADR-00000",
             "REF-a",
             "DERIV-A",
+            "RULE-Shapes",
             "docs/a.txt",
+            "EN-15",
+            "F100",
+            "XX-001",
+            "en-151",
         ] {
             assert_eq!(
                 found(&citing(target)),
                 [format!(
-                    "`@see {target}`: expected REF-*, DERIV-*, ADR-NNNN or docs/…/file.md."
+                    "`@see {target}`: expected REF-*, DERIV-*, RULE-*, ADR-NNNN, a backlog id (EN-151, F48) or docs/…/file.md."
                 )]
             );
         }
     }
 
     #[test]
-    fn accepts_existing_and_verified_targets() {
+    fn accepts_the_ids_by_their_form_and_a_page_that_exists() {
+        // The ids by their form alone: the CI has no records to read them in (E49).
         for target in [
             "REF-OK",
+            "REF-NOT-IN-ANY-FILE",
             "DERIV-fit",
+            "RULE-shapes-2-corner-radius",
             "ADR-0001",
-            "docs/references.md#section",
+            "ADR-0000",
+            "docs/domain/shapes.md#section",
+            "EN-151",
+            "US-010",
+            "RET-001",
+            "F48",
+            "E01",
         ] {
-            assert_eq!(found(&citing(target)), NONE);
+            assert_eq!(found(&citing(target)), NONE, "{target}");
         }
     }
 
@@ -244,7 +247,7 @@ mod tests {
             &SeeReferences,
             &documentation(),
             "src/a.ts",
-            "const A = 1;\n/** A value. @see REF-NOPE */\nconst B = 2;\n// @see REF-NOPE\n",
+            "const A = 1;\n/** A value. @see REF-a */\nconst B = 2;\n// @see REF-a\n",
         );
 
         assert_eq!(

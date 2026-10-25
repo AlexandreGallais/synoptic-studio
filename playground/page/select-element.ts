@@ -1,10 +1,10 @@
 /** Specification of the story demonstrated by the page. */
-const STORY = "docs/backlog/stories/E01-F02-US-007-shape-selector-playground.md";
+const STORY = "US-007";
 
 /**
  * Selects a required element of the page by its id, read from the document's map of ids
  * (`getElementById`), which a redraw does not empty, where `querySelector` walks the tree again
- * after each change of the document (`REF-HAPPY-DOM-QUERY`, EN-150).
+ * after each change of the document (`REF-HAPPY-DOM-QUERY`).
  *
  * @kind procedure
  * @param document - page document
@@ -14,7 +14,7 @@ const STORY = "docs/backlog/stories/E01-F02-US-007-shape-selector-playground.md"
  * @see REF-HAPPY-DOM-QUERY
  */
 export function selectElement(document: Document, id: string): HTMLElement {
-  // oxlint-disable-next-line unicorn/prefer-query-selector -- the map of ids, not a walk of the tree after each change (REF-HAPPY-DOM-QUERY, EN-150)
+  // oxlint-disable-next-line unicorn/prefer-query-selector -- the map of ids, not a walk of the tree after each change (REF-HAPPY-DOM-QUERY)
   const element = document.getElementById(id);
 
   if (!(element instanceof HTMLElement)) {

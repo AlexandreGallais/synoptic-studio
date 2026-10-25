@@ -1,16 +1,16 @@
 //! `story-finish <base> <title> <body file>` (`npm run story:finish`, RET-002, ADR-0072, EN-051,
-//! EN-103), in the story's checkout once its branch is pushed, under the merge lock of
+//! EN-103, EN-154), in the story's checkout once its branch is pushed, under the merge lock of
 //! `tools/heavy-lock/`: stories merge one at a time, the next one waiting, then rebasing on the
-//! updated base. A story file still holding rows for the logs stops it first: its `done` commit
-//! moves them (`move-rows`, ADR-0091). Its pull request opened with the `autonomous` label, its
-//! merge by GitHub awaited for at most three minutes, an epic's refinement `SP` into `develop` as
-//! well (REV-009); a branch the auto-merge of its base does not take, opened without it, awaited
-//! by no one: it says at once that it waits for the Product Owner's merge (EN-118). Once merged, the base brought up
-//! to date where it is checked out, nothing committed on it, and the story's worktree and branch
-//! removed here and on GitHub. A rebase that met the status rows of another story's done commit writes the story's own
-//! again after it; a head that differs from its branch on GitHub is pushed with lease before the
-//! pull request. Run again after a stop, it reuses the story's pull request, and goes straight to
-//! the clean-up once merged (AUD-020).
+//! updated base. No `done` commit: the story's status lives in the records. Into `develop`, the
+//! ids the change cites are checked against the records first (`knowledge check-ids`). Its pull
+//! request opened with the `autonomous` label, its merge by GitHub awaited for at most three
+//! minutes, an epic's refinement `SP` into `develop` as well (REV-009); a branch the auto-merge of
+//! its base does not take, opened without it, awaited by no one: it says at once that it waits for
+//! the Product Owner's merge (EN-118). Once merged, the branch's rows of the records marked merged
+//! and its story `done`, the base brought up to date where it is checked out, nothing committed on
+//! it, and the story's worktree and branch removed here and on GitHub. A head that differs from its
+//! branch on GitHub is pushed with lease before the pull request. Run again after a stop, it reuses
+//! the story's pull request, and goes straight to the clean-up once merged (AUD-020).
 
 use std::env;
 use std::path::Path;
@@ -19,9 +19,9 @@ use std::thread;
 use std::time::Duration;
 
 use repo_tools::story_finish::{
-    Merger, Next, Rebase, Start, Story, auto_merge_of, clean_up, clean_up_plan, manual_steps,
-    merger, needs_push, next_step, push_with_lease, rebase_on_base, rows_refusal, run_words,
-    start_step, worktrees, write_status_again,
+    Merger, Next, Rebase, Start, Story, auto_merge_of, clean_up, clean_up_plan, ids_refusal,
+    manual_steps, merger, missing_cited_ids, needs_push, next_step, push_with_lease,
+    rebase_on_base, record_the_merge, run_words, start_step, worktrees,
 };
 
 /// Time between two readings of the pull request's state.
@@ -76,28 +76,10 @@ fn await_merge(url: &str, cwd: &Path) -> Result<String, String> {
     }
 }
 
-/// The rebase on the base, the status rows written again after it, and the push with lease of a
-/// head that differs from GitHub's.
+/// The rebase on the base and the push with lease of a head that differs from GitHub's.
 fn bring_up(base: &str, branch: &str, here: &Path) -> Result<(), String> {
     let rebased = rebase_on_base(base, here)?;
 
-    if let Rebase::Rebased(resolved) = &rebased {
-        if !resolved.is_empty() {
-            println!(
-                "{branch}: the status rows of {} left to origin/{base}",
-                resolved.join(", ")
-            );
-        }
-
-        let written = write_status_again(branch, here)?;
-
-        if !written.is_empty() {
-            println!(
-                "{branch}: its status written again after the rebase, in its done commit: {}",
-                written.join(", ")
-            );
-        }
-    }
     if needs_push(here, branch) {
         push_with_lease(branch, here)?;
         if rebased == Rebase::UpToDate {
@@ -118,10 +100,13 @@ fn finish(base: &str, title: &str, body: &str) -> Result<u8, String> {
     let start = start_step(&state);
 
     if start != Start::Clean {
-        if let Some(refusal) = rows_refusal(&branch, here) {
+        bring_up(base, &branch, here)?;
+        // Into `develop`, the ids the change cites, which no check of the pull request can read.
+        if base == "develop"
+            && let Some(refusal) = ids_refusal(&missing_cited_ids(base, here)?)
+        {
             return Err(refusal);
         }
-        bring_up(base, &branch, here)?;
     }
 
     let by = merger(base, &branch);
@@ -175,6 +160,17 @@ fn finish(base: &str, title: &str, body: &str) -> Result<u8, String> {
         &["worktree", "list", "--porcelain"],
         here,
     )?);
+    // The records written before the worktree goes, from its folder; a failure says what to run,
+    // and the clean-up goes on.
+    if state == "MERGED" {
+        match record_the_merge(&branch, here) {
+            Ok(line) => println!("{line}"),
+            Err(error) => eprintln!(
+                "the records not written ({error}): run `target/release/knowledge branch-state {branch} merged` and `target/release/backlog-status <ID> done`"
+            ),
+        }
+    }
+
     let plan = clean_up_plan(
         Story {
             base,

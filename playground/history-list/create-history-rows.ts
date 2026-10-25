@@ -8,7 +8,7 @@ import type { SizedHistory } from "../../src";
 import type { KeptShape } from "../kept-shapes";
 
 /**
- * Creates the rows of the list of the history's steps (US-077): the steps around the present
+ * Creates the rows of the list of the history's steps: the steps around the present
  * (`historySteps`, `HISTORY_LIST_ROWS`), each a button named by its action
  * (`readKeptShapeFields`, `createStepRow`), and a line for the steps left out before and after
  * them (`createLeftOutRows`).
@@ -17,7 +17,7 @@ import type { KeptShape } from "../kept-shapes";
  * @param document - page document
  * @param history - the page's history; undefined before its first redraw
  * @returns the list's items, the oldest first; none without a history
- * @see docs/domain/interaction.md#_7-navigation-and-history
+ * @see RULE-interaction-7-navigation-and-history
  */
 export function createHistoryRows(
   document: Document,

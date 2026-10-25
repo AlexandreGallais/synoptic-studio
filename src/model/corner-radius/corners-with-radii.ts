@@ -14,7 +14,7 @@ import type { Point } from "../../math";
  * @param radii - requested radius of each vertex, as many as `points` (`areValidRadii`); a vertex
  * without one is sharp (radius 0), as a new vertex is (ADR-0029)
  * @returns one corner per vertex, in drawing order
- * @see docs/domain/shapes.md#_2-corner-radius
+ * @see RULE-shapes-2-corner-radius
  */
 export function cornersWithRadii(
   points: readonly Point[],

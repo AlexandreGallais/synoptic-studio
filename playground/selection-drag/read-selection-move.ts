@@ -5,7 +5,7 @@ import { readPickAreas } from "../picking";
 import type { ShapesMove } from "../hover";
 
 /**
- * Reads the move of the shapes selected (F39): the drawing as it is, the shapes selected before
+ * Reads the move of the shapes selected: the drawing as it is, the shapes selected before
  * and once moved, the shapes moved, a text never measured, which is not drawn, left as it is, and
  * their anchor, the top-left of their dashed box (`pickAreasBox`), for one shape its straight box,
  * the X and Y the panel shows.
@@ -16,7 +16,7 @@ import type { ShapesMove } from "../hover";
  * cancelled
  * @param selected - the shapes selected once it moves, by their indices
  * @returns the drawing, the shapes selected and moved, and their anchor
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 export function readSelectionMove(
   document: Document,

@@ -36,101 +36,36 @@ type Group = {
 };
 
 /**
- * The site in reading order, for the agent first (REV-009): what the project is, its domain and
- * its library's API, how to work, the tooling, then the records, grouped and last.
+ * The site for a person: the editor, how the project works and where it stands, the order of the
+ * epics, then the API and the commands. Everything else the agent reads in its records.
  */
 const GROUPS: readonly Group[] = [
   {
     sections: [
-      { collapsed: false, folder: "domain", overview: true, pages: "all", title: "Domain" },
-      { collapsed: true, folder: "api", overview: true, pages: [], title: "API" },
+      {
+        collapsed: false,
+        folder: "",
+        overview: false,
+        pages: ["the-editor.md", "how-it-works.md", "where-it-stands.md"],
+        title: "Overview",
+      },
+      { collapsed: false, folder: "backlog", overview: true, pages: [], title: "Epics" },
     ],
     title: "The project",
   },
+
   {
     sections: [
+      { collapsed: true, folder: "api", overview: true, pages: [], title: "API" },
       {
         collapsed: false,
-        folder: "conventions",
-        overview: true,
-        pages: "all",
-        title: "Conventions",
-      },
-      {
-        collapsed: false,
-        folder: "process",
-        overview: true,
-        pages: ["agile.md"],
-        title: "Process",
-      },
-      { collapsed: false, folder: "backlog", overview: true, pages: "all", title: "Backlog" },
-      { collapsed: true, folder: "backlog/epics", overview: true, pages: "all", title: "Epics" },
-      {
-        collapsed: true,
-        folder: "backlog/features",
-        overview: true,
-        pages: "all",
-        title: "Features",
-      },
-      { collapsed: false, folder: "research", overview: true, pages: "all", title: "Research" },
-      { collapsed: true, folder: "playbook", overview: true, pages: "all", title: "Playbook" },
-    ],
-    title: "How to work",
-  },
-  {
-    sections: [
-      { collapsed: false, folder: "tooling", overview: true, pages: "all", title: "Tooling" },
-    ],
-    title: "Tooling",
-  },
-  {
-    sections: [
-      { collapsed: true, folder: "adr", overview: true, pages: "all", title: "Decisions" },
-      {
-        collapsed: true,
-        folder: "research/notes",
-        overview: true,
-        pages: "all",
-        title: "Research notes",
-      },
-      {
-        collapsed: true,
-        folder: "research/requests",
-        overview: false,
-        pages: "all",
-        title: "Research requests",
-      },
-      {
-        collapsed: true,
-        folder: "derivations",
-        overview: true,
-        pages: "all",
-        title: "Derivations",
-      },
-      {
-        collapsed: true,
         folder: "",
         overview: false,
-        pages: ["references.md"],
-        title: "References",
-      },
-      { collapsed: true, folder: "guide", overview: true, pages: "all", title: "Guide" },
-      {
-        collapsed: true,
-        folder: "process/retrospectives",
-        overview: true,
-        pages: "all",
-        title: "Retrospectives",
-      },
-      {
-        collapsed: true,
-        folder: "process",
-        overview: false,
-        pages: ["journal.md", "improvements.md", "feedback.md", "tool-incidents.md", "history.md"],
-        title: "Logs",
+        pages: ["commands.md", "tooling/knowledge.md"],
+        title: "Tools",
       },
     ],
-    title: "Records",
+    title: "Reference",
   },
 ];
 
@@ -224,11 +159,7 @@ function apiItems(): DefaultTheme.SidebarItem[] {
   return isSidebar(parsed) ? parsed : [];
 }
 
-/**
- * VitePress configuration of the documentation site.
- *
- * @see docs/tooling/documentation-site.md
- */
+/** VitePress configuration of the documentation site. */
 export default defineConfig({
   base: BASE,
   cleanUrls: true,

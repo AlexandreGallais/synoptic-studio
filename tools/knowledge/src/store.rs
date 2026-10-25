@@ -11,10 +11,64 @@
 use std::fs;
 use std::path::Path;
 
+use library::store::make_library_tables;
 use rusqlite::{Connection, Transaction, TransactionBehavior};
 
 /// The number of the schema this binary writes, `PRAGMA user_version` of the file.
-pub const SCHEMA_VERSION: i64 = 3;
+pub const SCHEMA_VERSION: i64 = 5;
+
+/// The tables the tool keeps itself, which `knowledge sql` never drops nor rewrites: the
+/// documents and what is cut from them, the metrics, the backlog and the registry (EN-154), what
+/// moved from the Markdown and the library (schema 5).
+pub const CORE_TABLES: [&str; 34] = [
+    "documents",
+    "fields",
+    "sections",
+    "sections_index",
+    "links",
+    "calls",
+    "turns",
+    "tables_registry",
+    "epics",
+    "features",
+    "stories",
+    "criteria",
+    "tasks",
+    "decisions",
+    "notes",
+    "derivations",
+    "sources",
+    "journal",
+    "improvements",
+    "feedback",
+    "incidents",
+    "retrospectives",
+    "memories",
+    "tool_uses",
+    "archives",
+    "saves",
+    "sessions",
+    "messages",
+    "commands",
+    "transcript_files",
+    "rules",
+    "pages",
+    "chunks",
+    "project_uses",
+];
+
+/// The core tables `knowledge sql` writes to by no statement at all: the documents and what is
+/// cut from them are written by `add`, `import-backlog` and `sync` alone, so that a section never
+/// leaves the full-text index behind; the library's pages and their index, written by the library.
+pub const WRITTEN_BY_THE_TOOL: [&str; 7] = [
+    "documents",
+    "fields",
+    "sections",
+    "sections_index",
+    "links",
+    "pages",
+    "chunks",
+];
 
 /// The tables of schema 1 (research note 0035, Its tables). A document is any former file or
 /// record, cut into sections at its headings; `sections_index` indexes the sections without a copy
@@ -213,9 +267,176 @@ const SCHEMA_3: &str = "
   END;
 ";
 
+/// Schema 4 holds the backlog in tables of its own, shaped for the agent's questions — which
+/// stories of a feature are open, which story a branch works on, which criteria a done feature
+/// holds — rather than as files (E49, EN-154): `epics`, `features`, `stories`, their `tasks` and
+/// the features' numbered `criteria`, each row's `branch` the branch whose work it is and its
+/// `state` that branch's, `draft` until merged; and `tables_registry`, one row per table and what
+/// it holds, every table of the file listed there. Only tables and indexes are added: an older
+/// binary still reads the file.
+const SCHEMA_4: &str = "
+  CREATE TABLE IF NOT EXISTS tables_registry (name TEXT PRIMARY KEY, purpose TEXT NOT NULL);
+  CREATE TABLE IF NOT EXISTS epics (
+    id TEXT PRIMARY KEY, title TEXT NOT NULL, status TEXT NOT NULL,
+    position INTEGER NOT NULL DEFAULT 0, topic TEXT NOT NULL DEFAULT '',
+    text TEXT NOT NULL DEFAULT '', branch TEXT NOT NULL DEFAULT '',
+    state TEXT NOT NULL DEFAULT 'draft' CHECK (state IN ('draft', 'merged', 'dropped'))
+  );
+  CREATE TABLE IF NOT EXISTS features (
+    id TEXT PRIMARY KEY, epic TEXT NOT NULL, title TEXT NOT NULL, status TEXT NOT NULL,
+    position INTEGER NOT NULL DEFAULT 0, topic TEXT NOT NULL DEFAULT '',
+    criteria TEXT NOT NULL DEFAULT '', text TEXT NOT NULL DEFAULT '',
+    branch TEXT NOT NULL DEFAULT '',
+    state TEXT NOT NULL DEFAULT 'draft' CHECK (state IN ('draft', 'merged', 'dropped'))
+  );
+  CREATE INDEX IF NOT EXISTS features_by_epic ON features (epic, position);
+  CREATE TABLE IF NOT EXISTS stories (
+    id TEXT PRIMARY KEY, epic TEXT NOT NULL, feature TEXT NOT NULL DEFAULT '', kind TEXT NOT NULL,
+    title TEXT NOT NULL, status TEXT NOT NULL, points INTEGER, position INTEGER NOT NULL DEFAULT 0,
+    topic TEXT NOT NULL DEFAULT '', criteria TEXT NOT NULL DEFAULT '',
+    tasks TEXT NOT NULL DEFAULT '', test_card TEXT NOT NULL DEFAULT '',
+    question TEXT NOT NULL DEFAULT '', text TEXT NOT NULL DEFAULT '',
+    branch TEXT NOT NULL DEFAULT '',
+    state TEXT NOT NULL DEFAULT 'draft' CHECK (state IN ('draft', 'merged', 'dropped'))
+  );
+  CREATE INDEX IF NOT EXISTS stories_by_feature ON stories (feature, position);
+  CREATE INDEX IF NOT EXISTS stories_by_epic ON stories (epic, status);
+  CREATE INDEX IF NOT EXISTS stories_by_status ON stories (status);
+  CREATE INDEX IF NOT EXISTS stories_by_branch ON stories (branch, state);
+  CREATE TABLE IF NOT EXISTS tasks (
+    story TEXT NOT NULL, number INTEGER NOT NULL, title TEXT NOT NULL,
+    done INTEGER NOT NULL DEFAULT 0 CHECK (done IN (0, 1)), PRIMARY KEY (story, number)
+  );
+  CREATE TABLE IF NOT EXISTS criteria (
+    id TEXT PRIMARY KEY, feature TEXT NOT NULL, number INTEGER NOT NULL, text TEXT NOT NULL,
+    struck INTEGER NOT NULL DEFAULT 0 CHECK (struck IN (0, 1)), retired TEXT NOT NULL DEFAULT ''
+  );
+  CREATE INDEX IF NOT EXISTS criteria_by_feature ON criteria (feature, number);
+  INSERT OR IGNORE INTO tables_registry (name, purpose) VALUES
+    ('documents', 'one row per document a branch wrote, its id, branch and state the key; read by search, show and list'),
+    ('fields', 'a document''s front-matter fields, by key and value'),
+    ('sections', 'a document cut at its headings, the text search reads'),
+    ('sections_index', 'FTS5 over sections, kept by three triggers'),
+    ('links', 'the ids a document cites'),
+    ('calls', 'a tool call of tool-calls.jsonl'),
+    ('turns', 'a turn of turns.jsonl'),
+    ('tables_registry', 'every table of the file and what it holds'),
+    ('epics', 'one row per epic: its title, status, the Product Owner''s order (position) and text'),
+    ('features', 'one row per feature: its epic, order in it, status, criteria and text'),
+    ('stories', 'one row per story: its epic, feature, kind, status, points, order, topic, criteria, tasks, test card, question and text; branch and state of the work'),
+    ('tasks', 'a story''s tasks, numbered, done or not'),
+    ('criteria', 'a feature''s numbered criteria, struck through or retired with a reason; exported for the CI''s trace');
+";
+
+/// Schema 5 holds what moved out of the repository's Markdown (E49, block 2 of the move): the
+/// decisions, the research notes and requests, the derivations and the sources, each a row of
+/// its own beside its document for search; the logs as rows, one per entry; the retrospectives,
+/// the agent's memories, the uses of the tools, the archives' bundles, the saves, and what a
+/// session's transcript holds that serves — its times and tokens, its commands and the Product
+/// Owner's messages — rather than the transcript itself. The library's tables join the file by
+/// the library's own function (`library::store::make_library_tables`), run after this batch. Only
+/// tables and indexes are added: an older binary still reads the file.
+const SCHEMA_5: &str = "
+  CREATE TABLE IF NOT EXISTS decisions (
+    id TEXT PRIMARY KEY, title TEXT NOT NULL, status TEXT NOT NULL, date TEXT NOT NULL,
+    principle TEXT NOT NULL, text TEXT NOT NULL
+  );
+  CREATE INDEX IF NOT EXISTS decisions_by_status ON decisions (status);
+  CREATE TABLE IF NOT EXISTS notes (
+    id TEXT PRIMARY KEY, kind TEXT NOT NULL, title TEXT NOT NULL, status TEXT NOT NULL,
+    date TEXT NOT NULL, text TEXT NOT NULL
+  );
+  CREATE TABLE IF NOT EXISTS derivations (
+    id TEXT PRIMARY KEY, title TEXT NOT NULL, used_by TEXT NOT NULL, text TEXT NOT NULL
+  );
+  CREATE TABLE IF NOT EXISTS sources (
+    id TEXT PRIMARY KEY, title TEXT NOT NULL, url TEXT NOT NULL, used_for TEXT NOT NULL,
+    status TEXT NOT NULL CHECK (status IN ('verified', 'unverified')), verified TEXT NOT NULL,
+    topic TEXT NOT NULL, notes TEXT NOT NULL
+  );
+  CREATE INDEX IF NOT EXISTS sources_by_topic ON sources (topic);
+  CREATE TABLE IF NOT EXISTS journal (
+    id INTEGER PRIMARY KEY, date TEXT NOT NULL, session TEXT NOT NULL, tag TEXT NOT NULL,
+    text TEXT NOT NULL, UNIQUE (date, session, text)
+  );
+  CREATE INDEX IF NOT EXISTS journal_by_tag ON journal (tag, date);
+  CREATE TABLE IF NOT EXISTS improvements (
+    id INTEGER PRIMARY KEY, date TEXT NOT NULL, origin TEXT NOT NULL, item TEXT NOT NULL,
+    kind TEXT NOT NULL, UNIQUE (date, item)
+  );
+  CREATE TABLE IF NOT EXISTS feedback (
+    id INTEGER PRIMARY KEY, date TEXT NOT NULL, happened TEXT NOT NULL, should_have TEXT NOT NULL,
+    prevented_by TEXT NOT NULL, UNIQUE (date, happened)
+  );
+  CREATE TABLE IF NOT EXISTS incidents (
+    id INTEGER PRIMARY KEY, date TEXT NOT NULL, tool TEXT NOT NULL, used TEXT NOT NULL,
+    failed TEXT NOT NULL, instead TEXT NOT NULL, UNIQUE (date, tool)
+  );
+  CREATE TABLE IF NOT EXISTS retrospectives (
+    id TEXT PRIMARY KEY, epic TEXT NOT NULL, title TEXT NOT NULL, text TEXT NOT NULL
+  );
+  CREATE TABLE IF NOT EXISTS memories (
+    name TEXT PRIMARY KEY, description TEXT NOT NULL, type TEXT NOT NULL,
+    private INTEGER NOT NULL DEFAULT 1 CHECK (private IN (0, 1)), modified TEXT NOT NULL,
+    text TEXT NOT NULL
+  );
+  CREATE TABLE IF NOT EXISTS tool_uses (
+    tool TEXT, subcommand TEXT, worktree TEXT, start TEXT, durationMs INTEGER, exitCode INTEGER,
+    UNIQUE (tool, subcommand, worktree, start)
+  );
+  CREATE TABLE IF NOT EXISTS archives (
+    name TEXT PRIMARY KEY, size INTEGER NOT NULL, modified INTEGER NOT NULL, bytes BLOB NOT NULL
+  );
+  CREATE TABLE IF NOT EXISTS saves (at TEXT PRIMARY KEY);
+  CREATE TABLE IF NOT EXISTS sessions (
+    id TEXT PRIMARY KEY, start TEXT NOT NULL, end TEXT NOT NULL, wallMs INTEGER NOT NULL,
+    inputTokens INTEGER NOT NULL, outputTokens INTEGER NOT NULL, messages INTEGER NOT NULL,
+    commands INTEGER NOT NULL
+  );
+  CREATE TABLE IF NOT EXISTS messages (
+    id TEXT PRIMARY KEY, session TEXT NOT NULL, time TEXT NOT NULL, text TEXT NOT NULL
+  );
+  CREATE INDEX IF NOT EXISTS messages_by_session ON messages (session, time);
+  CREATE TABLE IF NOT EXISTS commands (
+    id TEXT PRIMARY KEY, session TEXT NOT NULL, agent TEXT NOT NULL, time TEXT NOT NULL,
+    command TEXT NOT NULL, description TEXT NOT NULL
+  );
+  CREATE INDEX IF NOT EXISTS commands_by_session ON commands (session, time);
+  CREATE TABLE IF NOT EXISTS rules (
+    id TEXT PRIMARY KEY, page TEXT NOT NULL, section TEXT NOT NULL, name TEXT NOT NULL,
+    rule TEXT NOT NULL, example TEXT NOT NULL, position INTEGER NOT NULL
+  );
+  CREATE INDEX IF NOT EXISTS rules_by_section ON rules (section, position);
+  CREATE TABLE IF NOT EXISTS transcript_files (
+    path TEXT PRIMARY KEY, size INTEGER NOT NULL, modified INTEGER NOT NULL
+  );
+  INSERT OR IGNORE INTO tables_registry (name, purpose) VALUES
+    ('decisions', 'one row per ADR: its title, status, date, principle in a sentence and text; edited in place'),
+    ('notes', 'one row per research note (NOTE-), research request (REQUEST-) or page of the research (PAGE-)'),
+    ('derivations', 'one row per derivation, DERIV-<name>: its title, the stories using it, its text'),
+    ('sources', 'the bibliography, one row per REF- id: title, address, use, verified or not and when, topic, reading notes'),
+    ('journal', 'one row per entry of the journal: its session''s date and heading, its tag, its text'),
+    ('improvements', 'one row per idea, irritant or lesson: date, from whom, item, kind'),
+    ('feedback', 'one row per critique of the agent''s work: what happened, what it should have done, what prevents it'),
+    ('incidents', 'one row per tool incident: date, tool and what for, how used, why it failed, what was done instead'),
+    ('retrospectives', 'one row per epic''s retrospective, RETRO-<epic>, with its text'),
+    ('memories', 'the agent''s memories of Claude Code, one per file, private'),
+    ('tool_uses', 'a use of an agent tool, of tool-uses.jsonl'),
+    ('archives', 'a Git bundle of a branch archived, its bytes'),
+    ('saves', 'the instant of each save of the records'),
+    ('sessions', 'one row per session''s transcript: its first and last instants, tokens, the Product Owner''s messages and the commands counted'),
+    ('messages', 'the Product Owner''s own messages, verbatim, private'),
+    ('commands', 'each Bash command of a transcript, the main thread''s or an agent''s'),
+    ('rules', 'one row per business rule of the domain''s pages: its part (RULE-<page>-<anchor>), name, rule and example'),
+    ('transcript_files', 'each transcript read, its size and time, so that an unchanged one is not read again'),
+    ('pages', 'the library: one row per page read, its Markdown'),
+    ('chunks', 'the library: FTS5 over the sections of its pages'),
+    ('project_uses', 'the library: each use of a page, by tool and project');
+";
+
 /// The migrations, the one of index `n` bringing a file of schema `n` up to `n + 1`: a new file
 /// runs them all.
-pub const MIGRATIONS: [&str; 3] = [SCHEMA_1, SCHEMA_2, SCHEMA_3];
+pub const MIGRATIONS: [&str; 5] = [SCHEMA_1, SCHEMA_2, SCHEMA_3, SCHEMA_4, SCHEMA_5];
 
 /// A failure of SQLite on the store's file, named by its path.
 fn on_file(path: &Path, error: &impl std::fmt::Display) -> String {
@@ -240,6 +461,9 @@ fn migrate(database: &Connection) -> rusqlite::Result<()> {
         .skip(usize::try_from(version).unwrap_or(0))
     {
         transaction.execute_batch(migration)?;
+    }
+    if version < 5 {
+        make_library_tables(&transaction)?;
     }
     if version < SCHEMA_VERSION {
         transaction.pragma_update(None, "user_version", SCHEMA_VERSION)?;
@@ -340,6 +564,20 @@ pub fn write<T>(
     database: &Connection,
     work: impl FnOnce(&Transaction<'_>) -> rusqlite::Result<T>,
 ) -> Result<T, String> {
+    write_or_refuse(database, |transaction| {
+        work(transaction).map_err(|error| error.to_string())
+    })
+}
+
+/// [`write`] of a work that may refuse with a reason of its own, rolled back as a failure of
+/// SQLite is (EN-154).
+///
+/// # Errors
+/// As [`write`], and the work's own reason.
+pub fn write_or_refuse<T>(
+    database: &Connection,
+    work: impl FnOnce(&Transaction<'_>) -> Result<T, String>,
+) -> Result<T, String> {
     let failed = |error: rusqlite::Error| error.to_string();
     let transaction =
         Transaction::new_unchecked(database, TransactionBehavior::Immediate).map_err(failed)?;
@@ -351,7 +589,7 @@ pub fn write<T>(
         ));
     }
 
-    let done = work(&transaction).map_err(failed)?;
+    let done = work(&transaction)?;
 
     transaction.commit().map_err(failed)?;
     Ok(done)

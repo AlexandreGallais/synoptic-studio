@@ -9,7 +9,6 @@ import type { FreeShape } from "../../src";
  *
  * @kind procedure
  * @param document - page document
- * @see docs/backlog/stories/E01-F08-US-014-convert-and-move.md
  */
 function selectFreeShape(document: Document): void {
   const option = selectElement(document, "shape").querySelector('option[value="free"]');
@@ -26,15 +25,14 @@ function selectFreeShape(document: Document): void {
  * Keeps a valid free shape on the page (ADR-0033), leaving the one kept when it is not: stored
  * on the shape selector, which shows "Free shape", its width and height written in their inputs
  * and its radii kept on the radius input; a rectangle or a polygon becoming free keeps its
- * settings first, as the last shape of its kind (SP-026).
+ * settings first, as the last shape of its kind.
  *
  * @kind procedure
  * @param document - page document
  * @param shape - free shape to keep
- * @see docs/backlog/stories/E01-F08-US-014-convert-and-move.md
  */
 export function writeStoredFreeShape(document: Document, shape: FreeShape): void {
-  // A move that leaves no width or no height is no shape: the one kept stays (AUD-005).
+  // A move that leaves no width or no height is no shape: the one kept stays.
   if (!isValidFreeShape(shape)) {
     return;
   }

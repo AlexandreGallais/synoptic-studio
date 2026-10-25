@@ -13,20 +13,18 @@
 
 ## Layout
 
-The sidebar and the navigation bar follow one order, `GROUPS` in `docs/.vitepress/config.ts`, ordered for a reader, the agent first (REV-009): what the project is, its domain and its library's API, how to work, the tooling, then the records, grouped and last.
+The sidebar and the navigation bar follow one order, `GROUPS` in `docs/.vitepress/config.ts`, ordered for a person: what the editor is, how the project works and where it stands, the order of the epics, then the API and the commands. Everything else the agent reads in its records (`target/release/knowledge show|search`).
 
-| Group | Sections, in order (folders of `docs/`) |
+| Group | Sections, in order (pages of `docs/`) |
 | --- | --- |
-| The project | Domain (`domain/`), API (`api/`, generated) |
-| How to work | Conventions (`conventions/`), Process (`process/`, its index and `agile.md`), Backlog (`backlog/`), Epics (`backlog/epics/`), Features (`backlog/features/`), Research (`research/`, the protocol), Playbook (`playbook/`) |
-| Tooling | Tooling (`tooling/`) |
-| Records | Decisions (`adr/`), Research notes (`research/notes/`), Research requests (`research/requests/`), Derivations (`derivations/`), References (`references.md`), Guide (`guide/`, the pages of past features and epics), Retrospectives (`process/retrospectives/`), Logs (the journal, the improvement and feedback logs, the tool incidents and the history of `process/`) |
+| The project | Overview (`the-editor.md`, `how-it-works.md`, `where-it-stands.md`), Epics (`backlog/`) |
+| Reference | API (`api/`, generated), Tools (`commands.md`, `tooling/knowledge.md`) |
 
 A section lists its folder's Markdown files, titled by their first `#` heading, a `README.md` as its index and the templates (`_*.md`) left out, or the pages it names; the story files are reached from the backlog's indexes, not the sidebar. `docs/index.md` is the home page, its links in the same order.
 
 ## Writing pages
 
-- Link with relative Markdown links (`[ADR-0011](../adr/0011-function-kinds.md)`), so that VitePress checks them.
+- Link with relative Markdown links (`ADR-0011`), so that VitePress checks them.
 - Never write double curly braces, even in inline code: VitePress evaluates them as a Vue expression. Use a fenced code block or `<span v-pre>`.
 
 ## PDF

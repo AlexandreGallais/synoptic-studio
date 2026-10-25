@@ -13,14 +13,14 @@ import { scheduleHistoryStep } from "./schedule-history-step";
 const RESTARTS = ["tool-reset", "guide-previous", "guide-next"];
 
 /**
- * Listens to the ends of the drawing's actions (F40): a step asked at each click on the drawing,
+ * Listens to the ends of the drawing's actions: a step asked at each click on the drawing,
  * each release of the pointer on it, a drag cancelled included (`scheduleHistoryStep`); a key
  * released asks its own, with the keys of the history (`listenToHistoryKeys`).
  *
  * @kind procedure
  * @param document - page document
  * @param update - redraws the page from the values typed
- * @see docs/domain/interaction.md#_7-navigation-and-history
+ * @see RULE-interaction-7-navigation-and-history
  */
 function listenToActionEnds(document: Document, update: () => void): void {
   for (const type of ["click", "pointerup", "pointercancel"]) {
@@ -31,14 +31,14 @@ function listenToActionEnds(document: Document, update: () => void): void {
 }
 
 /**
- * Listens to what moves the page's history (F40): the Undo and Redo buttons (`moveHistory`), and a
+ * Listens to what moves the page's history: the Undo and Redo buttons (`moveHistory`), and a
  * click on a step of the list, going back or forward to the state after it, as many undos or
- * redos at once (`readStepState`, `sizedHistoryAt`, US-077).
+ * redos at once (`readStepState`, `sizedHistoryAt`).
  *
  * @kind procedure
  * @param document - page document
  * @param update - redraws the page from the values typed
- * @see docs/domain/interaction.md#_7-navigation-and-history
+ * @see RULE-interaction-7-navigation-and-history
  */
 function listenToHistoryMoves(document: Document, update: () => void): void {
   for (const [id, move] of [
@@ -60,7 +60,7 @@ function listenToHistoryMoves(document: Document, update: () => void): void {
 }
 
 /**
- * Listens to what records, undoes, redoes and bounds the steps of the page (F40), its history
+ * Listens to what records, undoes, redoes and bounds the steps of the page, its history
  * emptied first, the page being mounted: the fields of its bound, read from the browser, a bound
  * applied asking a step that the drawing unchanged does not take, but that bounds the history by
  * it at once (`listenToHistoryBound`, `scheduleHistoryStep`); the ends of the drawing's actions (`listenToActionEnds`) and of
@@ -73,7 +73,7 @@ function listenToHistoryMoves(document: Document, update: () => void): void {
  * @kind procedure
  * @param document - page document
  * @param update - redraws the page from the values typed
- * @see docs/domain/interaction.md#_7-navigation-and-history
+ * @see RULE-interaction-7-navigation-and-history
  */
 export function listenToHistory(document: Document, update: () => void): void {
   clearPageHistory(document);

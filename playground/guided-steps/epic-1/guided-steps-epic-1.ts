@@ -31,7 +31,7 @@ const HEXAGON = {
   width: 160,
 } as const;
 
-/** The user test of the epic E01 (REV-001): each step crosses several features. */
+/** The user test of the epic E01: each step crosses several features. */
 export const GUIDED_STEPS_EPIC_1: readonly GuidedStep[] = [
   {
     explanation:

@@ -6,7 +6,7 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 use std::time::{Duration, SystemTime};
 
-use hooks::session::{StoryRow, feature_line, is_feature_file, is_stale, state_text, story_rows};
+use hooks::session::{StoryRow, feature_line, feature_stories, is_stale, state_text};
 
 #[test]
 fn a_call_is_stale_only_past_one_day() {
@@ -16,10 +16,7 @@ fn a_call_is_stale_only_past_one_day() {
     assert!(!is_stale(0));
 }
 
-/// Story table of a feature with one finished story out of three.
-const TABLE: &str = "| ID | Type | Title | Status |\n| --- | --- | --- | --- |\n| [EN-001](../stories/a.md) | Enabler | First | done |\n| [SP-001](../stories/b.md) | Spike | Research | draft |\n| [VAL-001](../stories/c.md) | Validation | Validate | draft |";
-
-/// A row of a story table.
+/// A row of a feature's stories.
 fn row(id: &str, status: &str, title: &str) -> StoryRow {
     StoryRow {
         id: id.into(),
@@ -28,43 +25,53 @@ fn row(id: &str, status: &str, title: &str) -> StoryRow {
     }
 }
 
-#[test]
-fn reads_the_story_rows_of_a_feature_in_delivery_order() {
-    let rows: Vec<String> = story_rows(TABLE)
-        .iter()
-        .map(|row| format!("{} {}", row.id, row.status))
-        .collect();
+/// The rows `knowledge sql` gives for two features, in the order of `FEATURE_STORIES`, then a row
+/// of another shape.
+fn records_rows() -> Vec<Vec<String>> {
+    let mut rows: Vec<Vec<String>> = [
+        ["E01-F01-x", "EN-001", "done", "First"],
+        ["E01-F01-x", "SP-001", "draft", "Research"],
+        ["E01-F01-x", "VAL-001", "draft", "Validate"],
+        ["E02-F02-y", "US-002", "draft", "Later"],
+    ]
+    .iter()
+    .map(|cells| cells.iter().map(|&cell| cell.to_owned()).collect())
+    .collect();
 
-    assert_eq!(rows, ["EN-001 done", "SP-001 draft", "VAL-001 draft"]);
+    rows.push(vec!["short".to_owned()]);
+    rows
 }
 
 #[test]
-fn reads_a_row_as_the_regular_expression_did() {
-    // Spaces kept inside the title, trimmed around it; a carriage return ends the line.
+fn groups_the_stories_of_each_feature_in_their_order() {
+    let features = feature_stories(&records_rows());
+
+    // A row of another shape is left out.
     assert_eq!(
-        story_rows("|  [US-018](x.md)  | Story |  Turn a  shape  | in-progress |\r\n"),
-        [row("US-018", "in-progress", "Turn a  shape")]
+        features,
+        [
+            (
+                "E01-F01-x".to_owned(),
+                vec![
+                    row("EN-001", "done", "First"),
+                    row("SP-001", "draft", "Research"),
+                    row("VAL-001", "draft", "Validate"),
+                ]
+            ),
+            (
+                "E02-F02-y".to_owned(),
+                vec![row("US-002", "draft", "Later")]
+            ),
+        ]
     );
-    for line in [
-        "| [US-01](x) | t | a | done |",
-        "| [us-001](x) | t | a | done |",
-        "| [US-0012](x) | t | a | done |",
-        "| [-001](x) | t | a | done |",
-        "| [US-001](x) | t | a | Done |",
-        "| [US-001](x) | t | a | done | more |",
-        "| [US-001](x) | t | a | done | x",
-        "| [US-001](x) | t | a |  |",
-        "| [US-001] | t | a | done |",
-        " | [US-001](x) | t | a | done |",
-    ] {
-        assert_eq!(story_rows(line), [], "{line}");
-    }
 }
 
 #[test]
 fn names_the_next_unfinished_story_of_a_started_feature() {
+    let features = feature_stories(&records_rows());
+
     assert_eq!(
-        feature_line("E01-F01-x.md", &story_rows(TABLE)).as_deref(),
+        feature_line(&features[0].0, &features[0].1).as_deref(),
         Some("E01-F01-x: 1/3 stories finished; next SP-001 (draft) — Research")
     );
 }
@@ -99,22 +106,6 @@ fn is_silent_for_a_feature_not_started_or_finished() {
         Some("f: 1/2 stories finished; next US-002 (draft) — u")
     );
     assert_eq!(feature_line("f.md", &[]), None);
-}
-
-#[test]
-fn tells_a_feature_file_by_its_name() {
-    assert!(is_feature_file("E17-F21-agent-tools-in-rust.md"));
-    assert!(is_feature_file("E01-F01-.md"));
-    for name in [
-        "E17-F21-x.md.bak",
-        "E17-EN-104-x.md",
-        "E1-F21-x.md",
-        "E17-F2-x.md",
-        "README.md",
-        "E17-F21x.md",
-    ] {
-        assert!(!is_feature_file(name), "{name}");
-    }
 }
 
 #[test]
@@ -163,20 +154,32 @@ fn git(folder: &Path, arguments: &[&str]) {
     assert!(status.success(), "git {arguments:?}");
 }
 
-/// A repository with two feature files, one started, and one commit.
-fn project() -> PathBuf {
-    let root = std::env::temp_dir().join(format!("session-state-{}", std::process::id()));
-    let features = root.join("docs/backlog/features");
+/// A repository with one commit, and a copy of the hook beside a `knowledge` script standing for
+/// the records: two features, one started, so that no test reads the real records (EN-154).
+fn project(name: &str) -> PathBuf {
+    let root = std::env::temp_dir().join(format!("session-state-{name}-{}", std::process::id()));
+    let bin = root.join("bin");
 
     let _ = fs::remove_dir_all(&root);
-    fs::create_dir_all(&features).expect("folders");
-    fs::write(features.join("E02-F02-later.md"), TABLE).expect("feature");
-    fs::write(
-        features.join("E01-F01-first.md"),
-        "| [EN-002](x) | t | Only | in-progress |\n",
+    fs::create_dir_all(&bin).expect("folders");
+    fs::copy(
+        env!("CARGO_BIN_EXE_session-state"),
+        bin.join("session-state"),
     )
-    .expect("feature");
-    fs::write(features.join("README.md"), TABLE).expect("readme");
+    .expect("hook copied");
+    fs::write(
+        bin.join("knowledge"),
+        "#!/bin/sh\nprintf 'feature\\tid\\tstatus\\ttitle\\nE01-F01-first\\tEN-002\\tin-progress\\tOnly\\nE02-F02-later\\tEN-001\\tdone\\tFirst\\nE02-F02-later\\tSP-001\\tdraft\\tResearch\\nE02-F02-later\\tVAL-001\\tdraft\\tValidate\\n'\n",
+    )
+    .expect("script");
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+
+        fs::set_permissions(bin.join("knowledge"), fs::Permissions::from_mode(0o755))
+            .expect("script runs");
+    }
+    fs::write(root.join(".gitignore"), "bin/\n").expect("ignored");
     git(&root, &["init", "-q", "-b", "develop"]);
     git(&root, &["add", "."]);
     git(&root, &["commit", "-q", "-m", "docs: start"]);
@@ -186,7 +189,7 @@ fn project() -> PathBuf {
 
 #[test]
 fn prints_the_project_state_and_removes_the_calls_left_running_for_a_day() {
-    let root = project();
+    let root = project("state");
     let running = root.join(".git/metrics/running");
     let old = SystemTime::now() - Duration::from_secs(86_401);
 
@@ -199,14 +202,14 @@ fn prints_the_project_state_and_removes_the_calls_left_running_for_a_day() {
         .and_then(|file| file.set_times(FileTimes::new().set_modified(old)))
         .expect("old time");
 
-    let output = clean(env!("CARGO_BIN_EXE_session-state"))
+    let output = clean(&root.join("bin/session-state").display().to_string())
         .env("CLAUDE_PROJECT_DIR", &root)
         .output()
         .expect("hook runs");
     let text = String::from_utf8_lossy(&output.stdout);
 
     assert!(output.status.success());
-    // Sorted by name: E01 before E02; the README is no feature.
+    // In the records' order: E01 before E02.
     assert!(
         text.starts_with("Project state (SessionStart hook, ADR-0021):\n- branch develop, 1 uncommitted file(s), last commit: "),
         "{text}"
@@ -231,4 +234,26 @@ fn fails_without_a_repository() {
     assert_eq!(output.status.code(), Some(1));
     assert_eq!(output.stdout, [] as [u8; 0]);
     let _ = fs::remove_dir_all(&folder);
+}
+
+#[test]
+fn leaves_the_features_out_when_the_records_cannot_be_read() {
+    let root = project("unread");
+
+    // No `knowledge` beside the hook: the session still starts, its state without the features.
+    fs::remove_file(root.join("bin/knowledge")).expect("script removed");
+
+    let output = clean(&root.join("bin/session-state").display().to_string())
+        .env("CLAUDE_PROJECT_DIR", &root)
+        .output()
+        .expect("hook runs");
+    let text = String::from_utf8_lossy(&output.stdout);
+
+    assert!(output.status.success());
+    assert!(text.contains("\n- no feature started\n"), "{text}");
+    assert!(
+        String::from_utf8_lossy(&output.stderr).contains("the records cannot be read"),
+        "{output:?}"
+    );
+    let _ = fs::remove_dir_all(&root);
 }

@@ -17,16 +17,16 @@ const ARROW_DIRECTIONS: ReadonlyMap<string, Point> = new Map([
 ]);
 
 /**
- * How far an arrow key nudges the shapes selected (F39): 1 toward the arrow, or 10 with Shift, as
+ * How far an arrow key nudges the shapes selected: 1 toward the arrow, or 10 with Shift, as
  * Figma nudges (`interaction.md` §1), the arrow's direction scaled by the step (`scale`), Right
  * adding 1 across, Shift + Up taking 10 down away; the anchor then lands on integers by this
- * nudge as by a drag's offset (`landedNudgeShift`, F46).
+ * nudge as by a drag's offset (`landedNudgeShift`).
  *
  * @kind domain
  * @param key - the key pressed, as `KeyboardEvent.key` names it
  * @param isFurther - whether Shift is held, nudging by 10
  * @returns the nudge, before it lands; undefined for a key other than an arrow
- * @see docs/domain/interaction.md#_1-tools
+ * @see RULE-interaction-1-tools
  */
 export function nudgeShift(key: string, isFurther: boolean): Point | undefined {
   const direction = ARROW_DIRECTIONS.get(key);

@@ -57,7 +57,7 @@ function cutWithUnit(cut: EllipsisCut, unit: string, context: CutContext): Ellip
  * overflowing (`DERIV-text-box`, step 6, provisional). The line's start is measured once, unit by
  * unit, and the longest start that fits is kept, which is where removing units from the end first
  * fits. No start ends with a space, so the trailing spaces are cut with no step of their own: a
- * trim before the units changed no result (AUD-016).
+ * trim before the units changed no result.
  *
  * @kind domain
  * @param context - the text and the metrics of its face

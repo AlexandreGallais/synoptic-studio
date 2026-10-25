@@ -54,6 +54,8 @@ fn in_page(file: &Path, wanted: &str) -> Result<String, Failure> {
 /// The row or the first section of `id`, in the page that holds it.
 fn by_id(id: &str) -> Result<String, Failure> {
     match home(Path::new("."), id).map_err(|message| (message, 1))? {
+        // The bibliography moved into the records (E49): its page gone, the id falls back on them.
+        Home::Row(file) if !file.is_file() => Err((format!("{id}: no file {}", file.display()), 1)),
         Home::Row(file) => {
             let found = rows(&read(&file)?, id);
 

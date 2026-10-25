@@ -21,7 +21,7 @@ const NO_RANGE: OwnFieldRange = {
  * @param value - the value computed
  * @param range - the field's range
  * @returns the value within the range
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 function readValueInRange(value: number, range: OwnFieldRange): number {
   const { isTurn, minimum, maximum } = range;
@@ -34,14 +34,14 @@ function readValueInRange(value: number, range: OwnFieldRange): number {
 /**
  * Reads the value computed from a value applied in a field: from the numbers as typed
  * (`valueWithTyped`), then rounded to the nearest integer, a tie up, for a field of whole numbers,
- * whatever was typed (`nearestInteger`, AUD-047): 33.54102 shown and Up give 35, `+1` likewise.
+ * whatever was typed (`nearestInteger`): 33.54102 shown and Up give 35, `+1` likewise.
  *
  * @kind procedure
  * @param range - the field's range, telling whether it holds whole numbers
  * @param own - the number the field showed before, 0 when it showed none
  * @param typed - the value typed, or an arrow's step, relative
  * @returns the value, before the field's range
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 function readComputedValue(range: OwnFieldRange, own: number, typed: TypedPanelValue): number {
   const value = valueWithTyped(own, typed);
@@ -59,7 +59,7 @@ function readComputedValue(range: OwnFieldRange, own: number, typed: TypedPanelV
  * @param own - the number the field showed before
  * @param typed - the value typed, or an arrow's step, relative
  * @returns the value within its range
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 function readValueFrom(field: HTMLInputElement, own: number, typed: TypedPanelValue): number {
   const range = OWN_FIELD_RANGES.get(field.id) ?? NO_RANGE;
@@ -69,7 +69,7 @@ function readValueFrom(field: HTMLInputElement, own: number, typed: TypedPanelVa
 
 /**
  * Reads the value a field acting as a number field of its own takes for a value applied in it
- * (US-087, AUD-046): a value as typed, or a relative one added to the number the field showed
+ * (US-087): a value as typed, or a relative one added to the number the field showed
  * before (`valueWithTyped`), rounded when the field holds whole numbers (`nearestInteger`), then
  * within the field's range (`OWN_FIELD_RANGES`,
  * `readValueInRange`): 13 in Corners gives 12, 1.5 in the radius 2, `-20` in the Angle at 10
@@ -81,7 +81,7 @@ function readValueFrom(field: HTMLInputElement, own: number, typed: TypedPanelVa
  * @param shown - the number the field showed before; undefined when it showed none
  * @returns the value; undefined for a relative value with no number to start from, a Mixed
  * radius's, which each vertex's own takes (`listenToRadius`)
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 export function readOwnValue(
   field: HTMLInputElement,

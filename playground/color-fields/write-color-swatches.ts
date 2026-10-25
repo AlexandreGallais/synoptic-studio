@@ -7,7 +7,6 @@ import { readShownColor } from "./read-shown-color";
  *
  * @kind procedure
  * @param document - page document
- * @see docs/backlog/stories/E15-F16-US-035-pick-a-color.md
  */
 export function writeColorSwatches(document: Document): void {
   for (const swatch of document.querySelectorAll<HTMLElement>(".swatch")) {

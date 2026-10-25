@@ -17,7 +17,7 @@ const CLICK_TOLERANCE = 3;
  * @param pointer - the point the pointer is on, in user units
  * @param scale - the view's scale, CSS pixels per user unit, > 0
  * @returns true once the pointer is further than 3 pixels from the press
- * @see docs/domain/interaction.md#_1-tools
+ * @see RULE-interaction-1-tools
  */
 export function isDragged(press: Point, pointer: Point, scale: number): boolean {
   return distance(press, pointer) * scale > CLICK_TOLERANCE + EPSILON;

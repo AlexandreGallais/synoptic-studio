@@ -12,7 +12,7 @@ import type { Vector } from "../../math";
  * @param end - the handle typed: towards the previous point (`before`) or the next (`after`)
  * @param typed - its new vector from the point, as drawn
  * @returns the handles after the change
- * @see docs/domain/shapes.md
+ * @see RULE-shapes
  */
 export function handlesAfterTyping(
   handles: Handles,

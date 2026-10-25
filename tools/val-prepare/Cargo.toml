@@ -7,6 +7,7 @@ license.workspace = true
 publish.workspace = true
 
 [dependencies]
+knowledge-call = { path = "../knowledge-call" }
 tool-use = { path = "../tool-use" }
 
 [lints]

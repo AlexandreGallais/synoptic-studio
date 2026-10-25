@@ -10,7 +10,6 @@ import { readChecklistKey } from "./read-checklist-key";
  * @param document - the playground's document
  * @param name - the checklist's name, `E15`
  * @param todos - what the ticked lines say to try
- * @see docs/backlog/stories/E15-F17-US-051-validation-checklist-page.md
  */
 export function writeTickedLines(document: Document, name: string, todos: readonly string[]): void {
   const storage = readBrowserStorage(document);

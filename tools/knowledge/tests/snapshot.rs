@@ -37,9 +37,12 @@ fn names(texts: &[&str]) -> Vec<String> {
 
 #[test]
 fn f48_ac3_names_the_days_snapshot_and_its_temporary_file() {
-    assert_eq!(snapshot_name("2026-10-25"), "records-2026-10-25.sqlite");
-    assert_eq!(temporary_name(42), ".records-42.sqlite.tmp");
-    assert!(is_snapshot_name("records-2026-10-25.sqlite"));
+    assert_eq!(
+        snapshot_name("records", "2026-10-25"),
+        "records-2026-10-25.sqlite"
+    );
+    assert_eq!(temporary_name("records", 42), ".records-42.sqlite.tmp");
+    assert!(is_snapshot_name("records", "records-2026-10-25.sqlite"));
     for other in [
         "records.sqlite",
         "records.sqlite-wal",
@@ -54,9 +57,9 @@ fn f48_ac3_names_the_days_snapshot_and_its_temporary_file() {
         "notes.txt",
         "",
     ] {
-        assert!(!is_snapshot_name(other), "{other}");
+        assert!(!is_snapshot_name("records", other), "{other}");
     }
-    assert!(is_temporary_name(".records-42.sqlite.tmp"));
+    assert!(is_temporary_name("records", ".records-42.sqlite.tmp"));
     for other in [
         ".records-.sqlite.tmp",
         ".records-4a.sqlite.tmp",
@@ -64,7 +67,7 @@ fn f48_ac3_names_the_days_snapshot_and_its_temporary_file() {
         ".records-42.sqlite",
         "records-2026-10-25.sqlite",
     ] {
-        assert!(!is_temporary_name(other), "{other}");
+        assert!(!is_temporary_name("records", other), "{other}");
     }
 }
 
@@ -86,19 +89,22 @@ fn f48_ac3_removes_the_oldest_beyond_the_seven_kept() {
 
     assert_eq!(KEPT, 7);
     assert_eq!(
-        removed_snapshots(&eight, KEPT),
+        removed_snapshots(&eight, "records", KEPT),
         ["records-2026-10-18.sqlite"]
     );
     // Seven, or fewer: none goes.
     assert_eq!(
-        removed_snapshots(&eight[1..], KEPT),
+        removed_snapshots(&eight[1..], "records", KEPT),
         [] as [std::string::String; 0]
     );
     assert_eq!(
-        removed_snapshots(&names(&["records-2026-10-25.sqlite"]), KEPT),
+        removed_snapshots(&names(&["records-2026-10-25.sqlite"]), "records", KEPT),
         [] as [std::string::String; 0]
     );
-    assert_eq!(removed_snapshots(&[], KEPT), [] as [std::string::String; 0]);
+    assert_eq!(
+        removed_snapshots(&[], "records", KEPT),
+        [] as [std::string::String; 0]
+    );
     // Two days kept of four across a year's end: the two oldest, oldest first.
     assert_eq!(
         removed_snapshots(
@@ -108,13 +114,18 @@ fn f48_ac3_removes_the_oldest_beyond_the_seven_kept() {
                 "records-2026-12-31.sqlite",
                 "records-2026-12-29.sqlite",
             ]),
+            "records",
             2
         ),
         ["records-2026-12-29.sqlite", "records-2026-12-30.sqlite"]
     );
     // None kept: every snapshot goes, never another file.
     assert_eq!(
-        removed_snapshots(&names(&["notes.txt", "records-2026-10-25.sqlite"]), 0),
+        removed_snapshots(
+            &names(&["notes.txt", "records-2026-10-25.sqlite"]),
+            "records",
+            0
+        ),
         ["records-2026-10-25.sqlite"]
     );
 }
@@ -254,7 +265,7 @@ fn text(output: &Output) -> (String, String) {
 
 /// The working file of the place.
 fn working(place: &Path) -> PathBuf {
-    place.join("records/some-project/records.sqlite")
+    place.join("records/some-project.sqlite")
 }
 
 /// Adds a story of an id to a store, committed.
@@ -312,7 +323,7 @@ fn f48_ac3_snapshots_every_committed_row_while_another_connection_writes() {
         .unwrap();
 
     let output = snapshot(&place);
-    let day = snapshot_name(&calendar::today());
+    let day = snapshot_name("some-project", &calendar::today());
 
     writer.execute_batch("ROLLBACK").unwrap();
 
@@ -373,7 +384,7 @@ fn f48_ac3_replaces_the_days_snapshot_when_it_runs_again() {
     add(&database, "EN-2");
 
     let second = snapshot(&place);
-    let day = snapshot_name(&calendar::today());
+    let day = snapshot_name("some-project", &calendar::today());
     let files = listed(&place.join("synced"));
     let count: i64 = Connection::open(place.join("synced").join(&day))
         .unwrap()
@@ -413,14 +424,14 @@ fn f48_ac3_keeps_the_seven_newest_days_and_removes_a_killed_copys_leftover() {
     // Seven older days, then today's: eight, the oldest removed. A file of another name stays; a
     // temporary file two hours old is a killed copy's leftover, one a minute old a live copy's.
     for day in 1..=7 {
-        written(&synced, &format!("records-2000-01-0{day}.sqlite"), 0);
+        written(&synced, &format!("some-project-2000-01-0{day}.sqlite"), 0);
     }
     written(&synced, "notes.txt", 7_200);
-    written(&synced, ".records-1.sqlite.tmp", 7_200);
-    written(&synced, ".records-2.sqlite.tmp", 60);
+    written(&synced, ".some-project-1.sqlite.tmp", 7_200);
+    written(&synced, ".some-project-2.sqlite.tmp", 60);
 
     let output = snapshot(&place);
-    let day = snapshot_name(&calendar::today());
+    let day = snapshot_name("some-project", &calendar::today());
     let files = listed(&synced);
 
     let _ = fs::remove_dir_all(&place);
@@ -432,14 +443,14 @@ fn f48_ac3_keeps_the_seven_newest_days_and_removes_a_killed_copys_leftover() {
     assert_eq!(
         files,
         [
-            ".records-2.sqlite.tmp".to_owned(),
+            ".some-project-2.sqlite.tmp".to_owned(),
             "notes.txt".to_owned(),
-            "records-2000-01-02.sqlite".to_owned(),
-            "records-2000-01-03.sqlite".to_owned(),
-            "records-2000-01-04.sqlite".to_owned(),
-            "records-2000-01-05.sqlite".to_owned(),
-            "records-2000-01-06.sqlite".to_owned(),
-            "records-2000-01-07.sqlite".to_owned(),
+            "some-project-2000-01-02.sqlite".to_owned(),
+            "some-project-2000-01-03.sqlite".to_owned(),
+            "some-project-2000-01-04.sqlite".to_owned(),
+            "some-project-2000-01-05.sqlite".to_owned(),
+            "some-project-2000-01-06.sqlite".to_owned(),
+            "some-project-2000-01-07.sqlite".to_owned(),
             day,
         ]
     );
@@ -465,7 +476,7 @@ fn f48_ac3_copies_nothing_without_the_setting_and_does_not_fail() {
     // Neither variable set, as on a machine without the records: the same, no failure.
     let neither = knowledge(&place).arg("snapshot").output().unwrap();
     let synced = listed(&place.join("synced"));
-    let records = listed(&place.join("records/some-project"));
+    let records = listed(&place.join("records"));
 
     let _ = fs::remove_dir_all(&place);
     for output in [unset, empty, neither] {
@@ -473,7 +484,7 @@ fn f48_ac3_copies_nothing_without_the_setting_and_does_not_fail() {
         assert_eq!(text(&output), (NOT_SET.to_owned(), String::new()));
     }
     assert_eq!(synced, [] as [std::string::String; 0]);
-    assert_eq!(records, ["records.sqlite"]);
+    assert_eq!(records, ["some-project.sqlite"]);
 }
 
 #[test]
@@ -508,7 +519,7 @@ fn f48_ac3_says_so_when_there_is_no_working_file_yet() {
     assert!(output.status.success());
     assert_eq!(
         text(&output).0,
-        "no records.sqlite in the records folder yet: nothing copied."
+        "no some-project.sqlite in the records folder yet: nothing copied."
     );
     assert_eq!(synced, [] as [std::string::String; 0]);
     assert!(!made);
@@ -537,13 +548,13 @@ fn f48_ac3_refuses_to_open_a_working_file_inside_the_synced_folder() {
     let path = run(&["path"], &root);
     // A root mistyped inside the synced folder: refused before the message naming the root.
     let mistyped = run(&["init"], &synced.join("mistyped"));
-    // The project's folder itself synced.
+    // The records' folder itself synced.
     let project = knowledge(&place)
         .arg("init")
         .env("AGENT_RECORDS_ROOT", &root)
-        .env("AGENT_KNOWLEDGE_SNAPSHOT", root.join("some-project"))
+        .env("AGENT_KNOWLEDGE_SNAPSHOT", &root)
         .output();
-    let made = root.join("some-project/records.sqlite").exists();
+    let made = root.join("some-project.sqlite").exists();
     let in_synced = listed(&synced);
 
     let _ = fs::remove_dir_all(&place);
@@ -571,7 +582,7 @@ fn f48_ac3_takes_several_snapshots_at_once_each_pruning_without_failing() {
     // Nine older days: each snapshot finds the two oldest to remove, which another may remove
     // first.
     for day in 1..=9 {
-        written(&synced, &format!("records-2000-01-0{day}.sqlite"), 0);
+        written(&synced, &format!("some-project-2000-01-0{day}.sqlite"), 0);
     }
 
     let children: Vec<_> = (0..6)

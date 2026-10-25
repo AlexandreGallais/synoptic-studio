@@ -5,7 +5,6 @@
  * @kind procedure
  * @param document - the playground's document
  * @returns the storage, or none when the browser gives none
- * @see docs/backlog/stories/E15-F17-US-051-validation-checklist-page.md
  */
 export function readBrowserStorage(document: Document): Storage | undefined {
   const view = document.defaultView;

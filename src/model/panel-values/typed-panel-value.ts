@@ -1,5 +1,5 @@
 /**
- * A value typed in a field acting as a number field (F38, AUD-046): a number, relative to the
+ * A value typed in a field acting as a number field: a number, relative to the
  * field's own value, or each shape's, when typed with a sign, `+50` or `-20`, otherwise the value
  * set; a fraction kept, for the field to round once its value is computed.
  */

@@ -1,5 +1,5 @@
 /**
- * The shapes selected after a selection rectangle with the Selector (F37): the shapes it takes
+ * The shapes selected after a selection rectangle with the Selector: the shapes it takes
  * (`shapesTouchedByBox`, or `shapesEnclosedByBox` with Alt) alone; with Shift, added to the shapes
  * selected, none taken out, so that a rectangle taking none keeps the selection.
  *
@@ -8,7 +8,7 @@
  * @param taken - indices of the shapes the rectangle takes, ascending, no repeat
  * @param isShift - whether Shift is held at the release
  * @returns the indices selected after the rectangle, ascending, no repeat
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 export function shapeSelectionAfterBox(
   selected: readonly number[],

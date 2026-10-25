@@ -14,7 +14,7 @@ import type { Shape } from "../shape";
  * @kind domain
  * @param shape - a valid shape of the model
  * @returns its corners' points, its contour and whether it is flat
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 export function shapePickArea(shape: Shape): PickArea {
   const corners = shapeCorners(shape);

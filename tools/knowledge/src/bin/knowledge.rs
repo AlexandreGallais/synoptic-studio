@@ -12,11 +12,22 @@
 //!                                                    `develop` marked merged
 //!   `target/release/knowledge snapshot`              the day's copy into the synced folder
 //!                                                    `AGENT_KNOWLEDGE_SNAPSHOT` names, seven kept
+//!   `target/release/knowledge sql "<statement>"`     one statement: a reading's rows, or a write
+//!                                                    (`--purpose` for a new table)
+//!   `target/release/knowledge import-backlog <dir>`  the backlog's files into its tables
+//!   `target/release/knowledge export-criteria <file>` the done features' criteria, for the CI
+//!   `target/release/knowledge check-ids <paths>`     the ids cited the records lack
+//!   `target/release/knowledge link-ids <paths>`      the links to backlog files written as ids
+//!   `target/release/knowledge branch-state <branch> merged|dropped` a branch's drafts marked
+//!   `target/release/knowledge import-<what> <folder|file>` what moved out of the Markdown and the
+//!                                                    records folder: decisions, research,
+//!                                                    derivations, sources, rules, logs, guide, memories,
+//!                                                    metrics, library, archives, saves, transcripts
 //!
 //! `search`, `show` and `list` read the merged rows and the current branch's drafts, filtered by
 //! `--kind`, `--epic`, `--feature`, `--status`, `--since`, `--branch` and `--state`; `--all` adds
-//! the dropped rows. Every command refuses a working file inside the synced folder. An
-//! error is printed on the error output, exit 1.
+//! the dropped rows. Every command but `link-ids` refuses a working file inside the synced folder.
+//! An error is printed on the error output, exit 1.
 
 use std::env;
 use std::fs;
@@ -26,30 +37,55 @@ use std::process::ExitCode;
 
 use git_repository::{branch_of, checkout_of};
 use knowledge::add::{Origin, add_document, is_kind};
+use knowledge::backlog::{
+    criteria_json, done_criteria, drop_branch, import_backlog, merge_branch, missing_ids,
+};
+use knowledge::links::with_ids;
+use knowledge::moved::{
+    Base, import_decisions, import_derivations, import_guide, import_logs, import_research,
+    import_sources,
+};
+use knowledge::paths::text_files;
+use knowledge::private_records::{
+    import_archives, import_library_file, import_memories, import_metrics, import_saves,
+};
+use knowledge::project::records_file;
 use knowledge::read::{
     Filters, hit_lines, list, listed_line, parse_filters, search, section_of, show,
 };
-use knowledge::records::{
-    DATABASE_FILE, ROOT_VARIABLE, git, main_and_origin, project_name, project_records,
-    records_folder,
-};
-use knowledge::snapshot::{
-    NOT_SET, SNAPSHOT_VARIABLE, refuse_synced, snapshot_folder, take_snapshot,
-};
-use knowledge::store::{SCHEMA_VERSION, open_store, schema_version, write};
+use knowledge::records::git;
+use knowledge::rules::import_rules;
+use knowledge::snapshot::{NOT_SET, SNAPSHOT_VARIABLE, snapshot_folder, take_snapshot};
+use knowledge::sql;
+use knowledge::store::{SCHEMA_VERSION, open_store, schema_version, write, write_or_refuse};
 use knowledge::sync::{TRUNK, mark_merged, merged_branches};
+use knowledge::transcripts::import_transcripts;
 use rusqlite::Connection;
 
 /// The usage, printed for an unknown command or a wrong call.
-const USAGE: &str = "Usage: target/release/knowledge init | path | add <kind> <file or -> | search <words> [<filters>] | show <id> [<heading>] [<filters>] | list [<filters>] | sync | snapshot; the filters: --kind, --epic, --feature, --status, --since, --branch, --state <value>, --all";
+const USAGE: &str = "Usage: target/release/knowledge init | path | add <kind> <file or -> | search <words> [<filters>] | show <id> [<heading>] [<filters>] | list [<filters>] | sync | snapshot | sql \"<statement>\" [--purpose \"<text>\"] | import-backlog <folder> | export-criteria <file or -> | check-ids <paths> | link-ids <paths> | branch-state <branch> merged|dropped | import-decisions, import-research, import-derivations, import-rules, import-logs, import-guide, import-memories, import-metrics, import-archives, import-transcripts <folder> | import-sources, import-library, import-saves <file>; the filters: --kind, --epic, --feature, --status, --since, --branch, --state <value>, --all";
+
+/// The commands that take their own words, no filter.
+const OWN_WORDS: [&str; 6] = [
+    "sql",
+    "import-backlog",
+    "export-criteria",
+    "check-ids",
+    "link-ids",
+    "branch-state",
+];
 
 /// Whether a command is called with the number of words it takes, and filters only where it reads.
 fn is_called_right(command: &str, words: &[String], filters: &Filters) -> bool {
     let shaped = match command {
         "init" | "path" | "sync" | "list" | "snapshot" => words.is_empty(),
         "add" => words.len() == 2,
-        "search" => !words.is_empty(),
+        "search" | "check-ids" | "link-ids" => !words.is_empty(),
         "show" => matches!(words.len(), 1 | 2),
+        "import-backlog" | "export-criteria" => words.len() == 1,
+        _ if IMPORTS.contains(&command) => words.len() == 1,
+        "branch-state" => words.len() == 2 && matches!(words[1].as_str(), "merged" | "dropped"),
+        "sql" => matches!(words.len(), 1 | 3) && (words.len() == 1 || words[1] == "--purpose"),
         _ => false,
     };
 
@@ -181,15 +217,222 @@ fn synced(database: &Connection, cwd: &Path) -> Result<String, String> {
     ))
 }
 
+/// Runs one statement: a reading prints its rows, a write runs in `BEGIN IMMEDIATE`.
+fn statement(database: &Connection, words: &[String], branch: &str) -> Result<String, String> {
+    let text = &words[0];
+    let purpose = words.get(2).map(String::as_str);
+
+    if sql::is_reading(database, text)? {
+        if purpose.is_some() {
+            return Err("--purpose names a table a statement creates".to_owned());
+        }
+        return sql::read(database, text);
+    }
+    write_or_refuse(database, |transaction| {
+        sql::write(transaction, text, purpose, branch)
+    })
+}
+
+/// Imports the backlog's folder.
+fn imported(database: &Connection, folder: &str, branch: &str) -> Result<String, String> {
+    let path = Path::new(folder);
+
+    if !path.join("stories").is_dir() {
+        return Err(format!("{folder}: no stories folder, not a backlog"));
+    }
+
+    let today = calendar::today();
+    let done = write(database, |transaction| {
+        import_backlog(transaction, path, branch, &today)
+    })?;
+
+    Ok(format!(
+        "{} epics, {} features, {} stories, {} criteria and {} tasks imported\n",
+        done.epics, done.features, done.stories, done.criteria, done.tasks
+    ))
+}
+
+/// The commands that import what moved into the records, each given one folder or file.
+const IMPORTS: [&str; 13] = [
+    "import-rules",
+    "import-decisions",
+    "import-research",
+    "import-derivations",
+    "import-sources",
+    "import-logs",
+    "import-guide",
+    "import-memories",
+    "import-metrics",
+    "import-library",
+    "import-archives",
+    "import-saves",
+    "import-transcripts",
+];
+
+/// Runs an import of what moved into the records, from a folder or a file, in one write.
+fn moved_in(
+    database: &Connection,
+    file: &Path,
+    (command, source): (&str, &str),
+    branch: &str,
+) -> Result<String, String> {
+    let path = Path::new(source);
+    let today = calendar::today();
+    let base = Base {
+        branch,
+        today: &today,
+    };
+    let is_file = matches!(
+        command,
+        "import-sources" | "import-library" | "import-saves"
+    );
+
+    if is_file && !path.is_file() || !is_file && !path.is_dir() {
+        let what = if is_file { "file" } else { "folder" };
+
+        return Err(format!("{source}: no such {what}"));
+    }
+
+    let read = |path: &Path| fs::read_to_string(path).map_err(|error| format!("{source}: {error}"));
+    let moved = match command {
+        "import-decisions" => write(database, |done| import_decisions(done, path, base))?,
+        "import-research" => write(database, |done| import_research(done, path, base))?,
+        "import-derivations" => write(database, |done| import_derivations(done, path, base))?,
+        "import-sources" => {
+            let text = read(path)?;
+
+            write(database, |done| import_sources(done, source, &text, base))?
+        }
+        "import-logs" => write(database, |done| import_logs(done, path, base))?,
+        "import-guide" => write(database, |done| import_guide(done, path, base))?,
+        "import-rules" => write(database, |done| import_rules(done, path, base))?,
+        "import-memories" => write(database, |done| import_memories(done, path, base))?,
+        "import-metrics" => write(database, |done| import_metrics(done, path))?,
+        "import-library" => {
+            let same = fs::canonicalize(path).ok() == fs::canonicalize(file).ok();
+
+            if same {
+                return Err(format!(
+                    "{source}: the records themselves, nothing to import"
+                ));
+            }
+
+            import_library_file(database, path)?
+        }
+        "import-archives" => write_or_refuse(database, |done| import_archives(done, path))?,
+        "import-saves" => {
+            let text = read(path)?;
+
+            write(database, |done| import_saves(done, &text))?
+        }
+        _ => write(database, |done| import_transcripts(done, path))?,
+    };
+
+    Ok(format!(
+        "{} and {} imported from {source}\n",
+        counted(moved.rows, "row", "rows"),
+        counted(moved.documents, "document", "documents")
+    ))
+}
+
+/// Writes the criteria of the done features to a file, or prints them for `-`.
+fn exported(database: &Connection, target: &str) -> Result<String, String> {
+    let criteria = done_criteria(database).map_err(|error| error.to_string())?;
+    let json = criteria_json(&criteria);
+
+    if target == "-" {
+        return Ok(json);
+    }
+    fs::write(target, json).map_err(|error| format!("{target}: {error}"))?;
+    Ok(format!(
+        "{} written: {}\n",
+        target,
+        counted(criteria.len(), "criterion", "criteria")
+    ))
+}
+
+/// The ids cited under some paths that the records lack, one line each; an error when there are.
+fn checked(database: &Connection, paths: &[String]) -> Result<String, String> {
+    let files = text_files(paths)?;
+    let mut missing = Vec::new();
+
+    for file in &files {
+        let Ok(text) = fs::read_to_string(file) else {
+            continue;
+        };
+
+        for (line, id) in missing_ids(database, &text).map_err(|error| error.to_string())? {
+            missing.push(format!(
+                "{}:{line}: {id} is not in the records",
+                file.display()
+            ));
+        }
+    }
+    if missing.is_empty() {
+        Ok(format!(
+            "every id cited is in the records, {} read\n",
+            counted(files.len(), "file", "files")
+        ))
+    } else {
+        Err(missing.join("\n"))
+    }
+}
+
+/// Writes the links and paths to backlog files as ids, in every text file under some paths.
+fn linked(paths: &[String]) -> Result<String, String> {
+    let mut changed = 0;
+
+    for file in text_files(paths)? {
+        let Ok(text) = fs::read_to_string(&file) else {
+            continue;
+        };
+        let written = with_ids(&text);
+
+        if written != text {
+            fs::write(&file, written).map_err(|error| format!("{}: {error}", file.display()))?;
+            changed += 1;
+        }
+    }
+    Ok(format!(
+        "{} written with ids\n",
+        counted(changed, "file", "files")
+    ))
+}
+
+/// Marks a branch's drafts merged or dropped.
+fn branch_state(database: &Connection, words: &[String]) -> Result<String, String> {
+    let (branch, state) = (&words[0], words[1].as_str());
+    let marked = write(database, |transaction| {
+        if state == "merged" {
+            merge_branch(transaction, branch)
+        } else {
+            drop_branch(transaction, branch)
+        }
+    })?;
+
+    Ok(format!(
+        "{} of {branch} marked {state}\n",
+        counted(marked, "row", "rows")
+    ))
+}
+
 /// What a command prints, or the error it met.
 fn output(arguments: &[String]) -> Result<String, String> {
     let (command, words) = arguments
         .split_first()
         .map_or(("", &[][..]), |(command, words)| (command.as_str(), words));
-    let (words, filters) = parse_filters(words)?;
+    let (words, filters) = if OWN_WORDS.contains(&command) || IMPORTS.contains(&command) {
+        (words.to_vec(), Filters::default())
+    } else {
+        parse_filters(words)?
+    };
 
     if !is_called_right(command, &words, &filters) {
         return Err(USAGE.to_owned());
+    }
+    // A rewrite of files, which needs no records.
+    if command == "link-ids" {
+        return linked(&words);
     }
 
     let setting = env::var(SNAPSHOT_VARIABLE).ok();
@@ -203,18 +446,7 @@ fn output(arguments: &[String]) -> Result<String, String> {
         None
     };
     let cwd = Path::new(".");
-    let root = env::var(ROOT_VARIABLE).ok();
-    let (main, origin) = main_and_origin(cwd)?;
-    let folder = records_folder(root.as_deref(), &project_name(&origin, &main))?;
-
-    // Refused before any message naming a path, `path`'s own line and a missing root's included,
-    // so that none prints one inside the synced folder; a synced folder named but not made yet is
-    // refused around the file too.
-    if let Some(named) = setting.as_deref().filter(|named| !named.is_empty()) {
-        refuse_synced(&folder.join(DATABASE_FILE), Path::new(named))?;
-    }
-
-    let file = project_records(root.as_deref(), &main, &origin)?.join(DATABASE_FILE);
+    let file = records_file(cwd)?;
 
     if let Some(folder) = snapshot_into {
         return take_snapshot(&file, &folder, &calendar::today()).map(|line| line + "\n");
@@ -248,6 +480,14 @@ fn output(arguments: &[String]) -> Result<String, String> {
                 .map(listed_line),
         )),
         "show" => shown(&database, &words, &branch, &filters),
+        "sql" => statement(&database, &words, &branch),
+        "import-backlog" => imported(&database, &words[0], &branch),
+        "export-criteria" => exported(&database, &words[0]),
+        "check-ids" => checked(&database, &words),
+        "branch-state" => branch_state(&database, &words),
+        _ if IMPORTS.contains(&command) => {
+            moved_in(&database, &file, (command, &words[0]), &branch)
+        }
         _ => synced(&database, cwd),
     }
 }

@@ -1,5 +1,5 @@
 //! `format --write|--check <targets…>` (EN-073): the repository's one formatter, run from its root
-//! by `npm run format:check`, `fix`, `backlog:index` and the pre-commit hook. It runs oxfmt on the targets,
+//! by `npm run format:check`, `fix` and the pre-commit hook. It runs oxfmt on the targets,
 //! then writes every Markdown table of their `.md` files without padding (ADR-0068). `--write`
 //! prints nothing when no file changed, and how many changed otherwise (EN-108). `--check` changes
 //! nothing: oxfmt checks the other files, and each Markdown file is formatted in a temporary copy,

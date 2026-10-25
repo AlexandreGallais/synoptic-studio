@@ -17,7 +17,7 @@ const STRETCHED = { ...HEXAGON, stretched: true } as const;
 /** A pentagon in a box too wide for equal sides: 300 × 50, stretched. */
 const WIDE_PENTAGON = { ...STRETCHED, corners: 5, height: 50, width: 300 } as const;
 
-/** The steps of the US-021 card (F06, VAL-009), one at a time. */
+/** The steps of the US-021 card, one at a time. */
 export const GUIDED_STEPS_F06: readonly GuidedStep[] = [
   {
     explanation:

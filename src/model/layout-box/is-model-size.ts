@@ -9,7 +9,7 @@ import { isInIntegerRange } from "../../math";
  * @kind domain
  * @param value - width, height or corner radius
  * @returns `true` when the value is a safe integer ≥ 0
- * @see docs/domain/shapes.md#_3-creation-tools
+ * @see RULE-shapes-3-creation-tools
  */
 export function isModelSize(value: number): boolean {
   return isInIntegerRange(value, 0, Number.MAX_SAFE_INTEGER);

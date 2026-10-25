@@ -11,7 +11,7 @@ import type { HistoryMeasure } from "./history-measure";
  * @param measure - the measure whose counts are read
  * @param shapes - the shapes looked at
  * @returns their bytes (`shapeBytes`), summed over those held
- * @see docs/domain/interaction.md#_7-navigation-and-history
+ * @see RULE-interaction-7-navigation-and-history
  */
 function heldBytes<T extends WeakKey>(measure: HistoryMeasure, shapes: ReadonlySet<T>): number {
   return shapes
@@ -21,7 +21,7 @@ function heldBytes<T extends WeakKey>(measure: HistoryMeasure, shapes: ReadonlyS
 }
 
 /**
- * The measure once the history's present changes its drawing (EN-147): each shape the present
+ * The measure once the history's present changes its drawing: each shape the present
  * leaves that a past or future state holds adds its text's length times 2, each it takes that one
  * holds takes it away (`heldBytes`); the counts unchanged, and a selection replaced alone changes
  * nothing (ADR-0097).
@@ -32,7 +32,7 @@ function heldBytes<T extends WeakKey>(measure: HistoryMeasure, shapes: ReadonlyS
  * @param from - the present's drawing before
  * @param to - the present's drawing after
  * @returns a new measure, or the one given when its size is unchanged
- * @see docs/domain/interaction.md#_7-navigation-and-history
+ * @see RULE-interaction-7-navigation-and-history
  */
 export function measureWithPresent<T extends WeakKey>(
   measure: HistoryMeasure,

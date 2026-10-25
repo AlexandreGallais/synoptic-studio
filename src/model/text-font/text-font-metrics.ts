@@ -12,7 +12,7 @@ import type { Text } from "../text";
  * @param text - its font, fallback, weight and style
  * @param fonts - the font families whose metrics are known, the default font among them
  * @returns the face's metrics; undefined when none of the three families is among them
- * @see docs/domain/shapes.md#text
+ * @see RULE-shapes-text
  */
 export function textFontMetrics(text: Text, fonts: readonly FontFamily[]): FontMetrics | undefined {
   return textFontFace(text, fonts)?.face.metrics;

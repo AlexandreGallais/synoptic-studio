@@ -16,7 +16,6 @@ import type { ShapeReading } from "../shape";
  * @param document - page document
  * @param reading - valid shape
  * @param selection - vertices selected
- * @see docs/backlog/stories/E01-F08-US-015-add-middle-point.md
  */
 export function showPointButtons(
   document: Document,
@@ -25,7 +24,7 @@ export function showPointButtons(
 ): void {
   const { model } = reading;
   const isConverted = !isFreeShape(model);
-  // A shape without width or height cannot be converted (F08).
+  // A shape without width or height cannot be converted.
   const isFlat = model.width === 0 || model.height === 0;
   const edge = edgeOfSelection(selection.selected, reading.corners.length * Number(hasArea(model)));
   const convert = selectElement(document, "convert");

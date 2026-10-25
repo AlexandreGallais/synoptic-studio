@@ -9,13 +9,12 @@ import type { FontMetrics, Text } from "../../src";
 /**
  * Reads the metrics a text is measured with (`textFontMetrics`), kept while the values they
  * depend on stay the same: its font, fallback, weight and style, and the session's families
- * kept; a size, an opacity or a box changed reads them again from the cache (US-048).
+ * kept; a size, an opacity or a box changed reads them again from the cache.
  *
  * @kind procedure
  * @param document - page document
  * @param text - the text read from the fields
  * @returns the metrics of its face; undefined for a font without metrics nor fallback
- * @see docs/backlog/stories/E15-F17-US-048-fluid-changes-held-keys.md
  */
 export function readTextMetrics(document: Document, text: Text): FontMetrics | undefined {
   const { kept } = readFontSession(document);

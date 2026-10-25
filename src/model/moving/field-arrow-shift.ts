@@ -3,7 +3,7 @@ import { landedNudgeShift } from "./landed-nudge-shift";
 import type { Point } from "../../math";
 
 /**
- * How far an arrow in X or Y moves the shape the panel edits alone (F46): as the arrow on the
+ * How far an arrow in X or Y moves the shape the panel edits alone: as the arrow on the
  * drawing along that axis, Up in X as Right and Up in Y as Down, the y axis pointing down, its
  * nudge across or down by the field's step, then landed as the arrow on the drawing lands its
  * anchor (`landedNudgeShift`), so that the straight box's top-left lands on integers on both axes.
@@ -16,7 +16,7 @@ import type { Point } from "../../math";
  * @param axis - the field the arrow is pressed in: `x` or `y`
  * @param step - the field's step (`fieldArrowStep`): 1 or 10 for Up, −1 or −10 for Down
  * @returns the shift the shape goes by
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 export function fieldArrowShift(anchor: Point, axis: "x" | "y", step: number): Point {
   const nudge = axis === "x" ? { x: step, y: 0 } : { x: 0, y: step };

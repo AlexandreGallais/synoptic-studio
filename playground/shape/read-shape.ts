@@ -39,7 +39,6 @@ const INVALID_ROUND = "Width and height must be integers ≥ 0, and the angle an
  * @kind procedure
  * @param document - page document
  * @returns the rectangle, possibly invalid (checked by `isValidRectangle`, then as a free shape)
- * @see docs/backlog/stories/E01-F01-US-003-round-rectangle-corners.md
  */
 function readRectangle(document: Document): Rectangle {
   // The tool's position is a creation value; the page moves the free shape it makes (ADR-0035).
@@ -55,12 +54,11 @@ function readRectangle(document: Document): Rectangle {
 
 /**
  * Reads the regular polygon typed in the inputs, with the radius of each of its corners
- * (ADR-0029) and its anchor (F07).
+ * (ADR-0029) and its anchor.
  *
  * @kind procedure
  * @param document - page document
  * @returns the polygon, possibly invalid (checked by `isValidRegularPolygon`)
- * @see docs/backlog/stories/E01-F02-US-007-shape-selector-playground.md
  */
 function readPolygon(document: Document): RegularPolygon {
   const corners = readNumber(document, "corners");
@@ -86,7 +84,6 @@ function readPolygon(document: Document): RegularPolygon {
  * @kind procedure
  * @param document - page document
  * @returns the reading of the rectangle
- * @see docs/backlog/stories/E01-F09-US-017-rectangle-as-free-shape.md
  */
 function readRectangleShape(document: Document): ShapeReading {
   const rectangle = readRectangle(document);
@@ -110,7 +107,6 @@ function readRectangleShape(document: Document): ShapeReading {
  * @kind procedure
  * @param document - page document
  * @returns the reading of the polygon
- * @see docs/backlog/stories/E01-F02-US-007-shape-selector-playground.md
  */
 function readPolygonShape(document: Document): ShapeReading {
   const model = readPolygon(document);
@@ -126,13 +122,12 @@ function readPolygonShape(document: Document): ShapeReading {
 }
 
 /**
- * Reads the round shape typed in the inputs (F10), with its 4 points on the curve when it is
+ * Reads the round shape typed in the inputs, with its 4 points on the curve when it is
  * valid; it has no radius (ADR-0048).
  *
  * @kind procedure
  * @param document - page document
  * @returns the reading of the round shape
- * @see docs/backlog/stories/E14-F10-US-029-round-tool.md
  */
 function readRoundShape(document: Document): ShapeReading {
   const model: RoundShape = {
@@ -164,8 +159,7 @@ const READERS = new Map([
  *
  * @kind procedure
  * @param document - page document
- * @returns the reading of the rectangle, the polygon, the round shape or the free shape kept (F08)
- * @see docs/backlog/stories/E01-F02-US-007-shape-selector-playground.md
+ * @returns the reading of the rectangle, the polygon, the round shape or the free shape kept
  */
 export function readShape(document: Document): ShapeReading {
   const kept = readStoredFreeShape(document);

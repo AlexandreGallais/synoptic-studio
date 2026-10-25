@@ -16,7 +16,7 @@ import type { FreeShape } from "./free-shape";
  * @kind domain
  * @param shape - corners, width and height to check
  * @returns `true` when every value is allowed
- * @see docs/domain/shapes.md#rectangle
+ * @see RULE-shapes-rectangle
  */
 export function isValidFreeShape(shape: FreeShape): boolean {
   const sizes = [shape.width, shape.height];

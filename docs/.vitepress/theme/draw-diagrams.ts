@@ -61,7 +61,6 @@ async function drawDiagram(block: Element, index: number): Promise<void> {
  * same blocks natively.
  *
  * @returns once every diagram is drawn
- * @see docs/conventions/writing.md
  */
 export async function drawDiagrams(): Promise<void> {
   const blocks = [...document.querySelectorAll(SOURCES)];

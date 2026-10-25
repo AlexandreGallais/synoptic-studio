@@ -8,7 +8,6 @@ import { selectElement } from "../page";
  * @param common - radius shared by the vertices shown, `undefined` when there is none
  * @param count - number of vertices the field speaks for
  * @returns `Select points`, `Mixed`, or nothing when the field shows a value
- * @see docs/backlog/stories/E01-F03-US-011-radius-field-mixed.md
  */
 function createPlaceholder(common: number | undefined, count: number): string {
   if (count === 0) {
@@ -37,7 +36,6 @@ export type RadiiShown = {
  * @param document - page document
  * @param id - `radius` (the shape's field) or `point-radius` (the points' field)
  * @param radii - requested radius of each vertex, and the vertices the field speaks for
- * @see docs/backlog/stories/E01-F03-US-011-radius-field-mixed.md
  */
 export function writeRadiusField(document: Document, id: string, radii: RadiiShown): void {
   const field = selectElement(document, id);

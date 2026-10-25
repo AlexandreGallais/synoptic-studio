@@ -8,14 +8,13 @@ import type { GuidedStep } from "../guided-steps";
 
 /**
  * Shows one step of the guided test and types its values, so that the drawing follows once the page
- * redraws (VAL-001, VAL-002); writes its number into the page address (VAL-003). A test without
+ * redraws; writes its number into the page address. A test without
  * steps is not shown.
  *
  * @kind procedure
  * @param document - page document
  * @param steps - steps of the guided test, possibly none
  * @param index - step to show, kept within the first and the last step
- * @see docs/backlog/stories/E01-F01-VAL-001-validate-rectangle.md
  */
 export function showGuidedStep(
   document: Document,

@@ -9,13 +9,13 @@ const NO_SELECTION = "Click a shape to edit it, or choose a tool and click the d
 const PIPELINE = ["model", "contour", "pieces", "path-data"];
 
 /**
- * Shows the drawing with no shape selected (F36): every shape drawn, in the order drawn, none
+ * Shows the drawing with no shape selected: every shape drawn, in the order drawn, none
  * edited; the panel's fields hidden, its title saying none is selected and how to select one, the
  * pipeline column empty.
  *
  * @kind procedure
  * @param document - page document
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 export function showNoSelection(document: Document): void {
   selectElement(document, "canvas").replaceChildren(createDrawingSvg(document, []));

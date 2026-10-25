@@ -7,7 +7,7 @@ import type { VertexSelection } from "./vertex-selection";
  * @kind domain
  * @param vertex - number of the vertex clicked, from 0
  * @returns the new selection
- * @see docs/domain/interaction.md#_3-node-editing
+ * @see RULE-interaction-3-node-editing
  */
 export function selectionAfterClick(vertex: number): VertexSelection {
   return { selected: [vertex], start: vertex };

@@ -15,7 +15,7 @@ export type CommonPanelValues = {
 };
 
 /**
- * The values the panel shows for several shapes (F38): each one common to them, the first shape's,
+ * The values the panel shows for several shapes: each one common to them, the first shape's,
  * when every shape's lies within `EPSILON` of it (`commonValue`, ADR-0003), or none where
  * they differ, the field then empty and reading Mixed, as Figma (`REF-FIGMA-ADJUST`); none for no
  * shape.
@@ -23,7 +23,7 @@ export type CommonPanelValues = {
  * @kind domain
  * @param values - each shape's values (`shapePanelValues`, `textPanelValues`), in the order drawn
  * @returns their common values, `undefined` where they differ (an absent value, ADR-0025)
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 export function commonPanelValues(values: readonly PanelValues[]): CommonPanelValues {
   return {

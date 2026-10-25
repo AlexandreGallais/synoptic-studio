@@ -25,13 +25,12 @@ const PLACEMENT_AND_PAINT: ReadonlySet<string> = new Set([
 /**
  * Reads what a text measures, its lines shown and their block (`textMeasure`), kept while its
  * metrics and every value but its position, angle, colors and opacities stay the same: an
- * opacity changed draws again from the lines kept, a size changed measures them again (US-048).
+ * opacity changed draws again from the lines kept, a size changed measures them again.
  *
  * @kind procedure
  * @param metrics - the metrics of its face, as `readTextMetrics` keeps them
  * @param text - the text read from the fields
  * @returns its lines shown and its block
- * @see docs/backlog/stories/E15-F17-US-048-fluid-changes-held-keys.md
  */
 export function readTextMeasure(metrics: FontMetrics, text: Text): MeasuredText {
   const measuredValues = Object.entries(text).filter(([name]) => !PLACEMENT_AND_PAINT.has(name));

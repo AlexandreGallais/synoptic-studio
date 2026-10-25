@@ -10,12 +10,11 @@ use oxc_allocator::Allocator;
 use crate::finding::Finding;
 use crate::project::Project;
 use crate::rules::Rule;
-use crate::settings::REFERENCE_SOURCES;
 
 /// The findings of one rule on a piece of code, the file at a path of a root.
 #[must_use]
 pub fn lint_at(rule: &dyn Rule, root: &Path, path: &str, code: &str) -> Vec<Finding> {
-    let project = Project::new(root, REFERENCE_SOURCES);
+    let project = Project::new(root);
 
     crate::lint_text(&project, path, code, &[rule], &Allocator::default())
 }

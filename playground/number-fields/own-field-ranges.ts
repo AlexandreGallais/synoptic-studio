@@ -43,10 +43,10 @@ const PERCENT: OwnFieldRange = {
 };
 
 /**
- * The values each field acting as a number field of its own takes, by its id (US-087, AUD-046),
+ * The values each field acting as a number field of its own takes, by its id,
  * from the constants of what it sets, so that the page writes no bound of its own: a value beyond
  * a range is taken at its bound, an angle's, the Angle's and the picker's hue, going round; every
- * field holds whole numbers, its value always rounded (AUD-047), but the Zoom's percentage, from
+ * field holds whole numbers, its value always rounded, but the Zoom's percentage, from
  * 1 %, its maximum the view's own (`boundedScale`).
  */
 export const OWN_FIELD_RANGES: ReadonlyMap<string, OwnFieldRange> = new Map([

@@ -9,20 +9,20 @@ import { listenToShapeDrawing } from "./listen-to-shape-drawing";
 
 /**
  * Listens to the pointer on the drawing: first to what changes the view, the wheel, a pinch and a
- * drag that pans, which stops the listeners after it (`listenToView`, F42); with a tool armed, a
- * click places the tool's shape (`listenToPlacing`, F35), a drag draws its box
- * (`listenToShapeDrawing`, F36); with the selector, a click picks the shape under it
- * (`listenToPicking`, F36), Shift adding it or taking it out (F37), and a drag from an empty place
- * selects the shapes its rectangle takes (`listenToSelectionDrag`, F37); and to the keys of the
+ * drag that pans, which stops the listeners after it (`listenToView`); with a tool armed, a
+ * click places the tool's shape (`listenToPlacing`), a drag draws its box
+ * (`listenToShapeDrawing`); with the selector, a click picks the shape under it
+ * (`listenToPicking`), Shift adding it or taking it out, and a drag from an empty place
+ * selects the shapes its rectangle takes (`listenToSelectionDrag`); and to the keys of the
  * selection, Ctrl + A, Escape and Delete (`listenToSelectionKeys`), the arrows, which nudge the
- * shapes selected (`listenToNudgeKeys`, F39), `Space` held, which makes a drag pan
- * (`listenToSpace`, F42), and the zoom's keys and the percentage's menu (`listenToZoomKeys`,
- * `listenToZoomMenu`, F42).
+ * shapes selected (`listenToNudgeKeys`), `Space` held, which makes a drag pan
+ * (`listenToSpace`), and the zoom's keys and the percentage's menu (`listenToZoomKeys`,
+ * `listenToZoomMenu`).
  *
  * @kind procedure
  * @param document - page document
  * @param update - redraws the page from the values typed
- * @see docs/domain/interaction.md#_1-tools
+ * @see RULE-interaction-1-tools
  */
 export function listenToDrawing(document: Document, update: () => void): void {
   listenToView(document, update);

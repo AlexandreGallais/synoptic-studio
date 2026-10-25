@@ -8,12 +8,11 @@ import type { Text } from "../../src";
  * Puts the box of a text back to the size Fit content measures, rounded up (`readFittedBox`,
  * US-055), when the designer presses **Reset**, shown in Box mode: the box then counts as not
  * typed (`#text-options`' `data-box-typed` removed), so that the next switch from Fit content to
- * Box measures the text again (US-057). A text that cannot be measured leaves the box as it is.
+ * Box measures the text again. A text that cannot be measured leaves the box as it is.
  *
  * @kind procedure
  * @param document - page document
  * @param text - the text read from the fields, valid or not
- * @see docs/backlog/stories/E15-F17-US-057-box-size-kept.md
  */
 export function resetFittedBox(document: Document, text: Text): void {
   const box = readFittedBox(document, text);

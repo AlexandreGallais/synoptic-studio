@@ -1,0 +1,13 @@
+[package]
+name = "knowledge-call"
+version = "0.1.0"
+edition.workspace = true
+description = "The records read by the knowledge binary beside a tool's own, for the tools below it (EN-154)"
+license.workspace = true
+publish.workspace = true
+
+[dev-dependencies]
+test-support = { path = "../test-support" }
+
+[lints]
+workspace = true

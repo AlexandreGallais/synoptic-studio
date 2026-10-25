@@ -10,7 +10,6 @@ import type { GuidedText } from "../guided-steps";
  * @param document - page document
  * @param id - its `id` attribute, without `#`
  * @param value - the value written
- * @see docs/backlog/stories/E15-F05-VAL-014-validate-f05.md
  */
 function writeFieldValue(document: Document, id: string, value: string): void {
   // An input, a text area and a select each hold their value in `value`.
@@ -24,7 +23,6 @@ function writeFieldValue(document: Document, id: string, value: string): void {
  * @param document - page document
  * @param id - its `id` attribute, without `#`
  * @param isChecked - whether it is ticked
- * @see docs/backlog/stories/E15-F05-VAL-014-validate-f05.md
  */
 function writeCheckedValue(document: Document, id: string, isChecked: boolean): void {
   const box = selectElement(document, id);
@@ -37,12 +35,11 @@ function writeCheckedValue(document: Document, id: string, isChecked: boolean): 
 /**
  * Types a step's box and background choices into the Text tool's fields, without firing any
  * event: Fit content or Box, long words, the ellipsis, the vertical alignment, the wrap, the trim
- * and the background with its color (VAL-015).
+ * and the background with its color.
  *
  * @kind procedure
  * @param document - page document
  * @param text - the fields typed
- * @see docs/backlog/stories/E15-F14-VAL-015-validate-f14.md
  */
 function writeTextBoxValues(document: Document, text: GuidedText): void {
   for (const [id, value] of [
@@ -61,12 +58,11 @@ function writeTextBoxValues(document: Document, text: GuidedText): void {
 /**
  * Types a step's underline and strike-through colors into the Text tool's fields, without firing
  * any event: each box "follows the text's color" ticked unless its color was chosen, then the
- * color and the opacity it keeps (US-041).
+ * color and the opacity it keeps.
  *
  * @kind procedure
  * @param document - page document
  * @param text - the fields typed
- * @see docs/backlog/stories/E15-F16-US-041-underline-and-strike-through-colors.md
  */
 function writeTextStrokeColorValues(document: Document, text: GuidedText): void {
   writeCheckedValue(document, "text-underline-follows", !text.hasUnderlineColor);
@@ -80,12 +76,11 @@ function writeTextStrokeColorValues(document: Document, text: GuidedText): void 
 /**
  * Types a text's style into the Text tool's fields, without firing any event: underline,
  * strike-through and italic, then the font chosen in its list and the weight among the family's
- * faces (US-036), the bold button holding no weight before (US-037).
+ * faces, the bold button holding no weight before.
  *
  * @kind procedure
  * @param document - page document
  * @param text - the fields typed
- * @see docs/backlog/stories/E15-F15-US-036-import-choose-and-embed-a-font.md
  */
 function writeTextStyleValues(document: Document, text: GuidedText): void {
   writeCheckedValue(document, "text-underline", text.isUnderlined);
@@ -97,16 +92,15 @@ function writeTextStyleValues(document: Document, text: GuidedText): void {
 }
 
 /**
- * Types a text into the Text tool's fields, its font and weight chosen in their lists (US-036),
- * its box's and its background's among them (VAL-015), its strokes' colors (US-041), and its X, Y
+ * Types a text into the Text tool's fields, its font and weight chosen in their lists,
+ * its box's and its background's among them, its strokes' colors, and its X, Y
  * and angle into the placement fields, without firing any event; the text last drawn goes
- * (US-038) and the box typed (US-057), so that the text starts from its own values: a step's
- * (VAL-014), or a text picked on the drawing (F36).
+ * (US-038) and the box typed, so that the text starts from its own values: a step's
+ * (VAL-014), or a text picked on the drawing.
  *
  * @kind procedure
  * @param document - page document
  * @param text - every field of a text but its fallback
- * @see docs/backlog/stories/E15-F05-VAL-014-validate-f05.md
  */
 export function writeTextFields(document: Document, text: GuidedText): void {
   for (const [id, value] of [
@@ -141,8 +135,8 @@ export function writeTextFields(document: Document, text: GuidedText): void {
   writeTextBoxValues(document, text);
   writeTextStrokeColorValues(document, text);
 
-  // The text last drawn (US-038): a text is never placed from the one before.
+  // The text last drawn: a text is never placed from the one before.
   delete selectElement(document, "text-options").dataset["drawnText"];
-  // The box typed (US-057): its box measured again when Box is chosen.
+  // The box typed: its box measured again when Box is chosen.
   delete selectElement(document, "text-options").dataset["boxTyped"];
 }

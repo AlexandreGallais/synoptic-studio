@@ -5,6 +5,7 @@ use git_sequences::{
     commit_refusal, commit_steps, fetch_step, message_refusal, parse, state_base, state_report,
     state_steps, sync_steps, sync_target,
 };
+use worktree::Story;
 
 fn words(line: &str) -> Vec<String> {
     line.split_whitespace().map(str::to_owned).collect()
@@ -12,11 +13,23 @@ fn words(line: &str) -> Vec<String> {
 
 const STORY: &str = "chore/en-100-git-sequences-as-rust-commands";
 
-fn files() -> Vec<String> {
+/// The stories the records hold: EN-100 of F20, and REV-003 of an epic alone.
+fn files() -> Vec<Story> {
+    let story = |id: &str, kind: &str, feature: Option<&str>, topic: &str| Story {
+        id: id.to_owned(),
+        kind: kind.to_owned(),
+        feature: feature.map(str::to_owned),
+        topic: topic.to_owned(),
+    };
+
     vec![
-        "README.md".to_owned(),
-        "E17-F20-EN-100-git-sequences-as-rust-commands.md".to_owned(),
-        "E15-REV-003-review-e15.md".to_owned(),
+        story(
+            "EN-100",
+            "EN",
+            Some("F20"),
+            "git-sequences-as-rust-commands",
+        ),
+        story("REV-003", "REV", None, "review-e15"),
     ]
 }
 
@@ -102,7 +115,8 @@ fn tells_main_a_story_branch_and_the_shared_ones_apart() {
 
 #[test]
 fn rebases_a_story_on_its_feature_branch() {
-    // [EN-100.AC1] the feature branch of F20, found from the story file named by the branch.
+    // [EN-100.AC1] the feature branch of F20, found from the story the branch names, as the
+    // records hold it (EN-154).
     assert_eq!(
         sync_target(&branch_of(STORY), None, &files(), &remotes()),
         Ok(Target::Rebase(
@@ -147,7 +161,7 @@ fn refuses_to_sync_main_a_detached_head_or_a_story_without_base() {
             .is_err_and(|reason| reason.contains("main"))
     );
     assert!(sync_target(&Branch::Detached, None, &files(), &remotes()).is_err());
-    // No story file, no feature branch on GitHub, no id in the branch name.
+    // No story in the records, no feature branch on GitHub, no id in the branch name.
     assert!(
         sync_target(&branch_of("chore/en-101-other"), None, &files(), &remotes())
             .is_err_and(|reason| reason.contains("EN-101"))

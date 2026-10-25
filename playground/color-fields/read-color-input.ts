@@ -1,7 +1,7 @@
 import { selectElement } from "../page";
 
 /** The story whose page holds the color fields. */
-const STORY = "docs/backlog/stories/E15-F16-US-035-pick-a-color.md";
+const STORY = "US-035";
 
 /**
  * Reads a field of a color: its hexadecimal or its opacity, an input of the page.
@@ -11,7 +11,6 @@ const STORY = "docs/backlog/stories/E15-F16-US-035-pick-a-color.md";
  * @param id - its `id` attribute, without `#`
  * @returns the input element itself
  * @throws {TypeError} when the page's element is no input
- * @see docs/backlog/stories/E15-F16-US-035-pick-a-color.md
  */
 export function readColorInput(document: Document, id: string): HTMLInputElement {
   const input = selectElement(document, id);

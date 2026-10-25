@@ -14,7 +14,7 @@ import type { ShapeFields } from "../step-names";
  * @param index - the row's index, the oldest first
  * @param present - the present's index
  * @returns `past` before it, `present` at it, `future` after it
- * @see docs/domain/interaction.md#_7-navigation-and-history
+ * @see RULE-interaction-7-navigation-and-history
  */
 function stepPlace(index: number, present: number): StepPlace {
   if (index < present) {
@@ -34,7 +34,7 @@ function stepPlace(index: number, present: number): StepPlace {
  * @param state - the state after the row's step
  * @param fields - reads the fields of a shape
  * @returns the step's name, or `Start`
- * @see docs/domain/interaction.md#_7-navigation-and-history
+ * @see RULE-interaction-7-navigation-and-history
  */
 function rowName<T>(
   before: HistoryState<T> | undefined,
@@ -53,7 +53,7 @@ function rowName<T>(
  * @param earlier - how many of the oldest past states are left out
  * @param after - how many states to come are shown
  * @returns the past states shown, the present and the states to come shown
- * @see docs/domain/interaction.md#_7-navigation-and-history
+ * @see RULE-interaction-7-navigation-and-history
  */
 function shownStates<T>(
   history: History<T>,
@@ -64,7 +64,7 @@ function shownStates<T>(
 }
 
 /**
- * The list of the history's steps (US-077): the states around the present the window shows
+ * The list of the history's steps: the states around the present the window shows
  * (`shownHistoryWindow`), the oldest first, each named by the step that led to it from the state
  * before (`stepName`), the oldest state of the history `Start`, with where each stands against the
  * present (`stepPlace`) and how many states are left out on each side (`rowName`,
@@ -76,7 +76,7 @@ function shownStates<T>(
  * @param rows - the most rows shown, the present's included
  * @param fields - reads the fields of a shape
  * @returns the rows shown and the states left out
- * @see docs/domain/interaction.md#_7-navigation-and-history
+ * @see RULE-interaction-7-navigation-and-history
  */
 export function historySteps<T>(
   history: History<T>,

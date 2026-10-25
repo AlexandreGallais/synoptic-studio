@@ -10,14 +10,13 @@ import { readTextModel } from "./read-text-model";
 
 /**
  * Listens to the choice of Fit content or Box on the choice itself, so that the box's fields take
- * the text's block rounded up before the options redraw the text (`writeFittedBox`, US-055): a
+ * the text's block rounded up before the options redraw the text (`writeFittedBox`): a
  * browser sends `input`, then `change`, each reaching the choice before its group. A width or
  * height applied marks the box as the designer's (`data-box-typed`, `applyEditedValue`), kept
- * from then on (US-057).
+ * from then on.
  *
  * @kind procedure
  * @param document - page document
- * @see docs/backlog/stories/E15-F17-US-057-box-size-kept.md
  */
 function listenToBoxChoice(document: Document): void {
   const fit = selectElement(document, "text-fit");
@@ -32,12 +31,12 @@ function listenToBoxChoice(document: Document): void {
 /**
  * Listens to the Text tool's options: a value typed or chosen redraws the text, except a field
  * acting as a number field, the box's Width and Height, whose value is applied on Enter or when it
- * is left (`readNumberField`, `listenToEditedFields`, US-085), redrawing nothing while it is typed.
+ * is left (`readNumberField`, `listenToEditedFields`), redrawing nothing while it is typed.
  *
  * @kind procedure
  * @param document - page document
  * @param update - redraws the playground
- * @see docs/domain/interaction.md#_2-selector
+ * @see RULE-interaction-2-selector
  */
 function listenToOptions(document: Document, update: () => void): void {
   const options = selectElement(document, "text-options");
@@ -58,7 +57,6 @@ function listenToOptions(document: Document, update: () => void): void {
  * @kind procedure
  * @param document - page document
  * @param update - redraws the playground
- * @see docs/backlog/stories/E15-F05-US-037-bold-gives-back-the-weight-and-no-sentence-case.md
  */
 function listenToBold(document: Document, update: () => void): void {
   selectElement(document, "text-bold").addEventListener("click", () => {
@@ -73,19 +71,18 @@ function listenToBold(document: Document, update: () => void): void {
 
 /**
  * Listens to the Text tool's fields: its font controls (`listenToFonts`) and **Export SVG**
- * (`listenToExport`, US-036); a value typed or chosen, the drawing's options among them, redraws
- * the text; the bold button gives 700 and gives back the weight before (`pressBold`, US-037), a
+ * (`listenToExport`); a value typed or chosen, the drawing's options among them, redraws
+ * the text; the bold button gives 700 and gives back the weight before (`pressBold`), a
  * weight chosen in the list forgetting the weight held; the italic button turns italic on or off;
  * a field acting as a number field, the box's Width and Height, redraws nothing while it is typed,
- * its value applied on Enter or when it is left (`listenToEditedFields`, US-085); Box chosen after Fit
- * content first writes the block rounded up in the box's fields (`writeFittedBox`, US-055), unless
- * the designer typed the box, which then comes back (US-057); **Reset** puts the box back to that
- * size and forgets the box typed (`resetFittedBox`, US-057).
+ * its value applied on Enter or when it is left (`listenToEditedFields`); Box chosen after Fit
+ * content first writes the block rounded up in the box's fields (`writeFittedBox`), unless
+ * the designer typed the box, which then comes back; **Reset** puts the box back to that
+ * size and forgets the box typed (`resetFittedBox`).
  *
  * @kind procedure
  * @param document - page document
  * @param update - redraws the playground
- * @see docs/backlog/stories/E15-F05-US-031-place-a-text.md
  */
 export function listenToTextFields(document: Document, update: () => void): void {
   const italic = selectElement(document, "text-italic");

@@ -90,7 +90,7 @@ function directoryToLayoutTables(
  * lists `cmap`, `head`, `hhea`, `hmtx`, `post` and `OS/2` within the file, each long enough for
  * the fields read in it, and `GPOS`, `kern` and `name` when it has them. A face of a collection
  * is read in the collection itself, at its directory, its table offsets counted from the
- * collection's start (`REF-OT-OTFF`), no file of its own written (US-052).
+ * collection's start (`REF-OT-OTFF`), no file of its own written.
  *
  * @kind format
  * @param view - the font file, or a collection

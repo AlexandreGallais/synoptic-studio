@@ -12,7 +12,6 @@ import type { GuidedStep } from "../guided-steps";
  * @param document - page document
  * @param steps - steps of the guided test
  * @param update - redraws the page from the values typed
- * @see docs/backlog/stories/E01-F01-VAL-001-validate-rectangle.md
  */
 export function listenToGuide(
   document: Document,

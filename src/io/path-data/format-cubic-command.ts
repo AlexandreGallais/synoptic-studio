@@ -4,7 +4,7 @@ import type { Cubic } from "../../geometry";
 
 /**
  * Path command of a cubic side: `C`, its two control points and its end, each pair at fixed
- * precision (`REF-SVG2-PATHS` §9.3.6, EN-001).
+ * precision (`REF-SVG2-PATHS` §9.3.6).
  *
  * @kind format
  * @param cubic - start, control points and end; the start is the current point of the path

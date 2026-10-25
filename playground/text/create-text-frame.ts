@@ -13,11 +13,11 @@ import type { DrawnText, Text } from "../../src";
 
 /**
  * Draws the frame of the selected text, its measured block when it fits its content, its box
- * when it sits in one (`textFrame`, US-033), in a `<g>` of class `text-frame` turned as the text
+ * when it sits in one (`textFrame`), in a `<g>` of class `text-frame` turned as the text
  * is, about its middle, and as a shape's boxes are drawn: upright, dashed by thin filled
- * rectangles (`createStraightBoxElement`); turned, as a turned shape's (US-050), a thin blue frame
+ * rectangles (`createStraightBoxElement`); turned, as a turned shape's, a thin blue frame
  * (`createFrameElements`, `turned-box`), with its straight box behind it, upright and dashed
- * (`textStraightBox`, US-039). A frame without area, an empty block or a box 0 wide or 0 tall, is
+ * (`textStraightBox`). A frame without area, an empty block or a box 0 wide or 0 tall, is
  * not drawn, nor its straight box.
  *
  * @kind procedure
@@ -26,7 +26,6 @@ import type { DrawnText, Text } from "../../src";
  * @param drawn - its block and its middle, from `textDrawing`
  * @returns the dashed frame of an upright text; the straight box and the turned frame of a turned
  * one; nothing for a frame without area
- * @see docs/backlog/stories/E15-F17-US-050-turned-text-frames-as-shapes.md
  */
 export function createTextFrame(
   document: Document,

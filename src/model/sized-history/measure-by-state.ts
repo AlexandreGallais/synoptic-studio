@@ -28,7 +28,7 @@ type ShapeChange<T> = {
  * @param shape - the shape a state joining or leaving holds
  * @param change - 1 or −1, and the shapes of the present
  * @returns a new measure
- * @see docs/domain/interaction.md#_7-navigation-and-history
+ * @see RULE-interaction-7-navigation-and-history
  */
 function measureByShape<T extends WeakKey>(
   before: HistoryMeasure,
@@ -45,7 +45,7 @@ function measureByShape<T extends WeakKey>(
 }
 
 /**
- * The measure once a state joins or leaves the past or the states to come (EN-147): each shape it
+ * The measure once a state joins or leaves the past or the states to come: each shape it
  * holds held by one state more as it joins, one less as it leaves, counted once; a shape going
  * from no state to one, or from one to none, that the present does not hold adds or takes away
  * its text's length times 2 (`measureByShape`); and 8 bytes for each of its references and
@@ -57,7 +57,7 @@ function measureByShape<T extends WeakKey>(
  * @param change - the state, and 1 as it joins or −1 as it leaves
  * @param present - the shapes of the history's present
  * @returns a new measure
- * @see docs/domain/interaction.md#_7-navigation-and-history
+ * @see RULE-interaction-7-navigation-and-history
  */
 export function measureByState<T extends WeakKey>(
   measure: HistoryMeasure,

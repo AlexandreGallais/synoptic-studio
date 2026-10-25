@@ -9,7 +9,6 @@ import type { GuidedStep } from "../guided-steps";
  * @kind procedure
  * @param document - page document
  * @returns the steps to show, possibly none
- * @see docs/backlog/stories/E01-RET-001-retrospective-e01.md
  */
 export function readGuidedTestSteps(document: Document): readonly GuidedStep[] {
   const query = new URLSearchParams(document.location.search);

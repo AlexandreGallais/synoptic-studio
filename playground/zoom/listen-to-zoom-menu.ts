@@ -18,12 +18,12 @@ const ZOOM_ITEMS: ReadonlyMap<string, ZoomName> = new Map([
 /**
  * Applies the percentage typed in the menu's field about the canvas's centre, within the bounds
  * (`fractionFromPercent`, `zoomedView`), a fraction kept, the field having taken a value below
- * 1 % at 1 % (`OWN_FIELD_RANGES`, AUD-046); a field showing no number changes nothing, the redraw
+ * 1 % at 1 % (`OWN_FIELD_RANGES`); a field showing no number changes nothing, the redraw
  * then showing the zoom in force in the field (`showZoom`).
  *
  * @kind procedure
  * @param document - page document
- * @see docs/domain/interaction.md#_7-navigation-and-history
+ * @see RULE-interaction-7-navigation-and-history
  */
 function applyTypedZoom(document: Document): void {
   const typed = readNumber(document, "zoom-field");
@@ -43,12 +43,12 @@ function applyTypedZoom(document: Document): void {
  * drawing and Fit the selection each apply their zoom about the canvas's centre, the pointer being
  * on the menu (`applyZoom`), then close the menu; a percentage typed in its field and applied, by
  * Enter or by leaving the field, zooms to it about the canvas's centre, within the bounds, from
- * 1 % (agent's choice, `applyTypedZoom`, AUD-046); then a redraw asked.
+ * 1 % (agent's choice, `applyTypedZoom`); then a redraw asked.
  *
  * @kind procedure
  * @param document - page document
  * @param update - redraws the page
- * @see docs/domain/interaction.md#_7-navigation-and-history
+ * @see RULE-interaction-7-navigation-and-history
  */
 export function listenToZoomMenu(document: Document, update: () => void): void {
   for (const [id, name] of ZOOM_ITEMS) {

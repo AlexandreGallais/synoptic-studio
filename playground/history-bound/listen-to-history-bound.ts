@@ -19,7 +19,7 @@ import type { HistoryBound } from "../../src";
  * @param document - page document
  * @param part - `size` or `steps`, the part the field sets
  * @param onBound - bounds the page's history by the bound just set
- * @see docs/domain/interaction.md#_7-navigation-and-history
+ * @see RULE-interaction-7-navigation-and-history
  */
 function applyTypedPart(document: Document, part: keyof HistoryBound, onBound: () => void): void {
   const field = HISTORY_BOUND_FIELDS[part];
@@ -37,7 +37,7 @@ function applyTypedPart(document: Document, part: keyof HistoryBound, onBound: (
 }
 
 /**
- * Listens to the fields of the history's bound (F40, `HISTORY_BOUND_FIELDS`), the bound kept in
+ * Listens to the fields of the history's bound (`HISTORY_BOUND_FIELDS`), the bound kept in
  * the browser read first (`readStoredHistoryBound`) and shown (`writeBoundFields`): a value
  * applied, by Enter or by leaving its field (`change`), sets its part of the bound when its field
  * accepts it (`applyTypedPart`), then the history is bounded by it (`onBound`); otherwise the
@@ -46,7 +46,7 @@ function applyTypedPart(document: Document, part: keyof HistoryBound, onBound: (
  * @kind procedure
  * @param document - page document
  * @param onBound - bounds the page's history by the bound just set
- * @see docs/domain/interaction.md#_7-navigation-and-history
+ * @see RULE-interaction-7-navigation-and-history
  */
 export function listenToHistoryBound(document: Document, onBound: () => void): void {
   const stored = readStoredHistoryBound(document);

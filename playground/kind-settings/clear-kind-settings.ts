@@ -4,11 +4,11 @@ import { KIND_SETTINGS } from "./kind-settings";
 
 /**
  * Forgets the settings kept for each kind (`saveKindSettings`), as the page opens: the next shape
- * of each kind starts with the page's values (SP-026).
+ * of each kind starts with the page's values.
  *
  * @kind procedure
  * @param document - page document
- * @see docs/domain/interaction.md#_1-tools
+ * @see RULE-interaction-1-tools
  */
 export function clearKindSettings(document: Document): void {
   const { dataset } = selectElement(document, "toolbar");

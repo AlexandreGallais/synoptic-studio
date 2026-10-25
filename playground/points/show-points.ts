@@ -12,14 +12,13 @@ import type { ShapeReading } from "../shape";
 
 /**
  * Shows the radius fields: the shape's for every vertex, the point's for the selected ones. A
- * round shape has no radius (F10): its fields are left as they are, the radii kept for the next
+ * round shape has no radius: its fields are left as they are, the radii kept for the next
  * shape, and the point's field hidden.
  *
  * @kind procedure
  * @param document - page document
  * @param reading - valid shape
  * @param selection - vertices selected
- * @see docs/backlog/stories/E14-F10-US-029-round-tool.md
  */
 function writeRadiusFields(
   document: Document,
@@ -43,13 +42,12 @@ function writeRadiusFields(
 /**
  * Shows what the mode says about the vertices: in Points mode their handles, the selected ones
  * ringed, their list, and a radius field for the selected vertices; in both modes, the shape's
- * radius field for every vertex (F03.AC4, F03.AC5, VAL-005).
+ * radius field for every vertex (F03.AC4, F03.AC5).
  *
  * @kind procedure
  * @param document - page document
  * @param reading - valid shape
  * @returns the handles to draw over the shape, none in Shape mode
- * @see docs/backlog/stories/E01-F03-US-013-points-list-selection.md
  */
 export function showPoints(document: Document, reading: ShapeReading): readonly SVGPathElement[] {
   const contour = reading.corners.map((corner) => corner.point);

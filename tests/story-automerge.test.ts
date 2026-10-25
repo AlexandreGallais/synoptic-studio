@@ -31,6 +31,9 @@ const STORIES = workflowText("story-automerge.yml");
 /** The features' auto-merge, into `develop`: a feature branch or a review (EN-134). */
 const FEATURES = workflowText("feature-automerge.yml");
 
+/** The merge of `develop` into `main` once the Product Owner validated the review (EN-154). */
+const MAIN = workflowText("main-automerge.yml");
+
 /**
  * The auto-merge a pull request into a base starts, as their triggers' `branches` filters choose
  * it, `[F34.AC1]` below holding each filter: `develop` the features', a feature branch the
@@ -210,6 +213,28 @@ afterEach(() => {
 function triggerInto(branches: string): string {
   return `\non:\n  pull_request:\n    types: [labeled, reopened, ready_for_review]\n    branches: ${branches}\n\n`;
 }
+
+describe("the merge into main once the Product Owner validated the review (2026-10-25, EN-154)", () => {
+  it("merges a pull request into main labelled po-validated, of the owner, ready, by a merge commit", () => {
+    expect(MAIN).toContain(triggerInto("[main]"));
+    expect(MAIN).toMatch(/^name: Main auto-merge$/mu);
+
+    expect(MAIN).toContain(
+      "    if: >-\n      contains(github.event.pull_request.labels.*.name, 'po-validated')\n      && github.event.pull_request.author_association == 'OWNER'\n      && !github.event.pull_request.draft\n    runs-on:",
+    );
+
+    expect(MAIN).toContain(`gh pr merge "$PR_URL" --auto --merge`);
+    expect(MAIN).not.toMatch(/--rebase|--squash|--admin/u);
+  });
+
+  it("merges develop alone into main, and starts no release", () => {
+    expect(scriptOf(MAIN, "Check the branch is develop")).toContain(
+      'if [ "$BRANCH" != develop ]; then',
+    );
+
+    expect(MAIN).not.toMatch(/release|workflow run/u);
+  });
+});
 
 describe("the auto-merge per base (ADR-0086, ADR-0088)", () => {
   it("[F22.AC4] [F34.AC1] merges a story into a feature branch, and a feature or a review into develop, by their two workflows", () => {

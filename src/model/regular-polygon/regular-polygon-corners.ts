@@ -13,7 +13,7 @@ import type { Corner } from "../../geometry";
  * @kind domain
  * @param polygon - valid polygon (`isValidRegularPolygon`)
  * @returns one corner per vertex, in drawing order
- * @see docs/domain/shapes.md#regular-polygon
+ * @see RULE-shapes-regular-polygon
  */
 export function regularPolygonCorners(polygon: RegularPolygon): readonly Corner[] {
   return cornersWithRadii(regularPolygonContour(polygon), polygon.radii);

@@ -7,7 +7,7 @@
  * @param selected - numbers of the selected vertices, from 0
  * @param radius - radius typed
  * @returns the new radii, as many as before
- * @see docs/domain/shapes.md#_2-corner-radius
+ * @see RULE-shapes-2-corner-radius
  */
 export function radiiWithSelection(
   radii: readonly number[],

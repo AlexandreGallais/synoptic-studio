@@ -10,7 +10,6 @@ import type { Point, SizedText } from "../../src";
  * @kind procedure
  * @param sized - a text and its measured block
  * @returns its turned top-left corner, in the SVG
- * @see docs/backlog/stories/E15-F17-US-054-turned-text-position-shows-its-corner.md
  */
 export function readTurnedCorner(sized: SizedText): Point {
   const [corner = sized.text] = textFrameCorners(sized.text, sized.block);

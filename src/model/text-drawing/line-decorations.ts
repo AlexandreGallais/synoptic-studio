@@ -65,7 +65,7 @@ function strokeAtSize(metrics: FontMetrics, size: number, units: StrokeMetrics):
 /**
  * The strokes along one line of a text: those it asks for (`askedStrokes`), drawn as rectangles
  * rather than `text-decoration` (ADR-0052), each in its own color and opacity once chosen, else
- * in the text's (`textStrokeFill`, US-041). A line with no length, empty or tightened past
+ * in the text's (`textStrokeFill`). A line with no length, empty or tightened past
  * nothing, has none, and a stroke the font gives no thickness, 0 or negative, is not drawn.
  *
  * @kind domain

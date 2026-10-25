@@ -4,7 +4,7 @@ import type { Anchor } from "../../geometry";
 export type RegularPolygon = {
   /** Angle in degrees, an integer from 0 to 359, clockwise on screen, about the center of its box (ADR-0035). */
   readonly angle: number;
-  /** Place in its box: one alignment per axis; `mid` on both is F02's placement, the one editors start with (F07). */
+  /** Place in its box: one alignment per axis; `mid` on both is F02's placement, the one editors start with. */
   readonly anchor: Anchor;
   /** Number of corners `n`, integer from 3 to 12 (Q19). */
   readonly corners: number;
@@ -19,7 +19,7 @@ export type RegularPolygon = {
 
   /**
    * Whether it is stretched to touch the four sides of its box, its sides as even as its corners
-   * allow (rule C, F06, ADR-0037); `false` is the regular polygon of F02, placed by its anchor.
+   * allow (rule C, ADR-0037); `false` is the regular polygon of F02, placed by its anchor.
    */
   readonly stretched: boolean;
   /** Width of the box it fits in, integer ≥ 0. */

@@ -7,16 +7,15 @@ import { readBoxPathData } from "./read-box-path-data";
 import type { BoundingBox, Shape } from "../../src";
 
 /**
- * Draws the boxes of a shape behind it. A polygon's box, grey, shows its anchor (F07) and turns
+ * Draws the boxes of a shape behind it. A polygon's box, grey, shows its anchor and turns
  * with it. A turned shape also gets its straight box, dashed, and its turned box as a thin frame,
- * the selection (F04): drawn by fills, never by a native stroke.
+ * the selection: drawn by fills, never by a native stroke.
  *
  * @kind procedure
  * @param document - page document
  * @param model - shape read from the inputs
  * @param straight - straight box of the drawn shape
  * @returns the polygon's box and, for a turned shape, its straight box and its frame
- * @see docs/backlog/stories/E01-F04-US-018-turn-a-shape.md
  */
 export function createBoxElements(
   document: Document,
