@@ -19,6 +19,17 @@ const PLAYGROUND_MODE = "playground";
  */
 const CI_REPORTERS = ["default", "github-actions", "junit"];
 
+/**
+ * The playground's own npm project (ADR-0104): its Angular app, its packages, Angular's cache and
+ * its build, which the root's tests and coverage leave to the playground's lanes (EN-159).
+ */
+const SECOND_PROJECT = [
+  "playground/src/**",
+  "playground/node_modules/**",
+  "playground/.angular/**",
+  "playground/dist/**",
+];
+
 /** Coverage floor of the playground (RET-001), measured then rounded down; raised, never lowered. */
 const PLAYGROUND_COVERAGE = { branches: 89, functions: 100, lines: 98, statements: 98 };
 
@@ -71,7 +82,12 @@ const TEST_PROJECTS: readonly TestProjectInlineConfiguration[] = [
   },
   {
     extends: true,
-    test: { include: ["playground/**/*.test.ts"], isolate: true, name: "isolated" },
+    test: {
+      exclude: [...SECOND_PROJECT],
+      include: ["playground/**/*.test.ts"],
+      isolate: true,
+      name: "isolated",
+    },
   },
 ];
 
@@ -93,7 +109,7 @@ export default defineConfig(({ mode }) => {
     root: join(ROOT, "playground"),
     test: {
       coverage: {
-        exclude: ["**/index.ts", "**/*.test.ts", "playground/user-actions/**"],
+        exclude: ["**/index.ts", "**/*.test.ts", "playground/user-actions/**", ...SECOND_PROJECT],
         include: ["src/**/*.ts", "playground/**/*.ts"],
         provider: "v8",
         reporter: ["text-summary"],

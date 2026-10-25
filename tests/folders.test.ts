@@ -3,6 +3,8 @@ import { join, relative } from "node:path";
 
 import { describe, expect, it } from "vitest";
 
+import { isPlaygroundProject } from "./playground-project";
+
 /** Repository root. */
 const ROOT = join(import.meta.dirname, "..");
 /** The lint's settings, which hold the signal and the folders let past it (`tools/lint`). */
@@ -67,7 +69,10 @@ function foldersPastSignal(): readonly string[] {
     .flatMap((root) => [
       root,
       ...readdirSync(join(ROOT, root), { recursive: true, withFileTypes: true })
-        .filter((entry) => entry.isDirectory())
+        .filter(
+          (entry) =>
+            entry.isDirectory() && !isPlaygroundProject(join(entry.parentPath, entry.name)),
+        )
         .map((entry) => relative(ROOT, join(entry.parentPath, entry.name))),
     ])
     .filter((folder) => moduleCount(folder) > FOLDER_SIGNAL);
@@ -85,7 +90,9 @@ const BESIDE_FOLDERS = new Set(["index.ts", "index.html"]);
  */
 function filesBesideFolders(): readonly string[] {
   const entries = ["src", "playground"].flatMap((root) =>
-    readdirSync(join(ROOT, root), { recursive: true, withFileTypes: true }),
+    readdirSync(join(ROOT, root), { recursive: true, withFileTypes: true }).filter(
+      (entry) => !isPlaygroundProject(join(entry.parentPath, entry.name)),
+    ),
   );
   const parents = new Set(
     entries.filter((entry) => entry.isDirectory()).map((entry) => entry.parentPath),
