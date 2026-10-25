@@ -17,7 +17,7 @@ Why Opus (EN-066): formulas, derivations and floating-point precision are the ha
 
 - The rules of the shapes: `knowledge search <words> --kind rule`.
 - Numbers and pipeline: ADR-0003, ADR-0005, ADR-0031, ADR-0034; the geometry allowed: ADR-0001, ADR-0002, ADR-0007, ADR-0046.
-- The derivations and sources there already: `knowledge list --kind derivation`, `knowledge search <words> --kind source`; how a derivation is written: `knowledge show PAGE-derivations`.
+- The derivations and sources there already: `knowledge list --kind derivation`, `knowledge search <words> --kind source`; how a derivation is written: a row of `derivations`, its steps in `derivation_steps` (Notation, Steps, Checks, Cross-check, Limits), as `knowledge show DERIV-arc-bounding-box` shows one.
 
 ## How you work
 
