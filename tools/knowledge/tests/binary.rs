@@ -726,7 +726,10 @@ fn imports_the_backlog_reads_and_writes_it_by_sql_and_exports_its_criteria() {
     );
     assert_eq!(
         text(&not_a_backlog),
-        (String::new(), "knowledge: .: no stories folder, not a backlog".to_owned())
+        (
+            String::new(),
+            "knowledge: .: no stories folder, not a backlog".to_owned()
+        )
     );
     assert_eq!(text(&read).0, "id\tstatus\nEN-151\tdone");
     assert_eq!(text(&created).0, "0 rows changed, notes registered");
@@ -744,7 +747,10 @@ fn imports_the_backlog_reads_and_writes_it_by_sql_and_exports_its_criteria() {
     assert_eq!(text(&merged).0, "1 row of chore/en-154-x marked merged");
     assert_eq!(text(&dropped).0, "0 rows of chore/en-154-x marked dropped");
     assert_eq!(text(&wrong_state).1, format!("knowledge: {USAGE}"));
-    assert_eq!(text(&notes).0, "id\tbranch\tstate\na\tchore/en-154-x\tmerged");
+    assert_eq!(
+        text(&notes).0,
+        "id\tbranch\tstate\na\tchore/en-154-x\tmerged"
+    );
     assert_eq!(
         text(&printed).0,
         "[\n  { \"id\": \"F48.AC1\" },\n  { \"id\": \"F48.AC2\" }\n]"
@@ -785,6 +791,9 @@ fn checks_the_ids_a_page_cites_and_writes_its_links_to_backlog_files_as_ids() {
     );
     assert_eq!(text(&linked).0, "1 file written with ids");
     assert_eq!(page, "EN-151 and EN-999.\n");
-    assert_eq!(text(&found).0, "every id cited is in the records, 1 file read");
+    assert_eq!(
+        text(&found).0,
+        "every id cited is in the records, 1 file read"
+    );
     assert_eq!(text(&nowhere).1, "knowledge: none: no such file or folder");
 }

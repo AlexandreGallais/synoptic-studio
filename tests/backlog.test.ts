@@ -41,8 +41,29 @@ const CHECKER = "backlog.test.ts";
  * @returns each criterion, in the file's order
  */
 function criteria(): readonly Criterion[] {
-  // oxlint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-type-assertion -- the file is written by `knowledge export-criteria` in this shape, and the test below checks each entry's fields
-  return JSON.parse(readFileSync(CRITERIA_FILE, "utf8")) as readonly Criterion[];
+  const read: unknown = JSON.parse(readFileSync(CRITERIA_FILE, "utf8"));
+
+  const entries: readonly unknown[] = Array.isArray(read) ? read : [];
+
+  return entries.filter((entry) => isCriterion(entry));
+}
+
+/**
+ * Whether a value of the data file is a criterion: an object with a text `id`, and a text
+ * `retired` when it has one.
+ *
+ * @param value - an entry of the file
+ * @returns `true` for a criterion
+ */
+function isCriterion(value: unknown): value is Criterion {
+  if (typeof value !== "object" || value === null) {
+    return false;
+  }
+
+  const id: unknown = Reflect.get(value, "id");
+  const retired: unknown = Reflect.get(value, "retired");
+
+  return typeof id === "string" && (retired === undefined || typeof retired === "string");
 }
 
 /**
@@ -137,7 +158,9 @@ describe("backlog", () => {
     const read = criteria();
     const ids = read.map((criterion) => criterion.id);
 
-    expect(read.length).toBeGreaterThan(0);
+    expect(read.length).toBeGreaterThan(200);
+    expect(isCriterion({ id: "F01.AC1", retired: 3 })).toBe(false);
+    expect(isCriterion("F01.AC1")).toBe(false);
     expect(ids.filter((id) => !CRITERION_ID.test(id))).toEqual([]);
     expect(ids.filter((id, index) => ids.indexOf(id) !== index)).toEqual([]);
     expect(read.filter((criterion) => criterion.retired?.trim() === "")).toEqual([]);
