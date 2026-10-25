@@ -275,7 +275,7 @@ fn work() -> u8 {
             return u8::from(!failed.is_empty());
         }
         _ => {
-            eprintln!("usage: check-all [--lane <name> | --list]");
+            eprintln!("{USAGE}");
             return 2;
         }
     }
@@ -306,6 +306,12 @@ fn work() -> u8 {
     u8::from(!failed.is_empty())
 }
 
+/// How `check-all` is called.
+const USAGE: &str = "usage: check-all [--lane <name> | --list]";
+
 fn main() -> ExitCode {
+    if let Some(code) = tool_use::usage(&env::args().skip(1).collect::<Vec<_>>(), USAGE) {
+        return code;
+    }
     tool_use::run("check-all", "", work)
 }
