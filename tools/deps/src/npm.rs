@@ -38,18 +38,36 @@ fn is_old_enough(metadata: &Value, text: &str, now_ms: i64) -> bool {
 /// than `current`: `None` when it is up to date, or when `current` is no version number.
 #[must_use]
 pub fn behind(name: &str, current: &str, metadata: &Value, now_ms: i64) -> Option<Behind> {
+    behind_below(name, current, metadata, now_ms, None)
+}
+
+/// As [`behind`], only versions below `ceiling` taken when one is given: a package held under a
+/// major or minor another package asks, as the playground's `typescript` under the 6.1 Angular's
+/// compiler refuses (ADR-0104).
+#[must_use]
+pub fn behind_below(
+    name: &str,
+    current: &str,
+    metadata: &Value,
+    now_ms: i64,
+    ceiling: Option<&Version>,
+) -> Option<Behind> {
     let pinned = Version::parse(current)?;
     let takes_pre = pinned.is_pre();
+    let is_below = |text: &str| {
+        ceiling.is_none_or(|ceiling| Version::parse(text).is_some_and(|version| version < *ceiling))
+    };
     let latest = metadata["dist-tags"]["latest"].as_str()?;
     let target = if (latest == current || is_old_enough(metadata, latest, now_ms))
         && is_candidate(metadata, latest, takes_pre)
+        && is_below(latest)
     {
         latest.to_owned()
     } else {
         metadata["versions"]
             .as_object()?
             .keys()
-            .filter(|text| is_candidate(metadata, text, takes_pre))
+            .filter(|text| is_candidate(metadata, text, takes_pre) && is_below(text))
             .filter(|text| is_old_enough(metadata, text, now_ms))
             .filter_map(|text| Some((Version::parse(text)?, text)))
             .max_by(|(left, _), (right, _)| left.cmp(right))

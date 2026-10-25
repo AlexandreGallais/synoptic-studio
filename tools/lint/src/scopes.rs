@@ -4,10 +4,9 @@
 
 use crate::glob::matches_any;
 
-/// Generated, vendored or copied paths, never linted (once `eslint/settings/files.ts`), those of
-/// the playground's npm project among them; and the playground's Angular app, a project of its
-/// own whose lanes come with EN-159 (ADR-0104).
-pub const IGNORED: [&str; 15] = [
+/// Generated, vendored or copied paths, never linted (once `eslint/settings/files.ts`), the
+/// packages, cache and build of the playground's npm project among them (ADR-0104).
+pub const IGNORED: [&str; 14] = [
     "dist/**",
     "coverage/**",
     "node_modules/**",
@@ -19,7 +18,6 @@ pub const IGNORED: [&str; 15] = [
     "target/**",
     "tools/*/tests/fixtures/**",
     ".git/**",
-    "playground/src/**",
     "playground/node_modules/**",
     "playground/.angular/**",
     "playground/dist/**",
@@ -96,9 +94,16 @@ const RELAXED: &[(&str, bool)] = &[
     ("local/see-references", false),
 ];
 
+/// The playground's Angular app, which follows Angular's usage rather than the library's
+/// (ADR-0104, NOTE-0036, findings 52 and 77): a component is a class, a file keeps Angular's
+/// suffixed name (`app.component.ts`), a folder has no barrel and is imported by its file, and a
+/// module constant keeps Angular's camelCase name (`appConfig`). Angular's own rules for these come
+/// with F51.
+pub const ANGULAR_APP_FILES: &[&str] = &["playground/src/**/*.ts"];
+
 /// The scopes, in the order `ESLint`'s configuration applied them; only those that set a rule of
 /// this linter.
-pub const SCOPES: [Scope; 7] = [
+pub const SCOPES: [Scope; 8] = [
     Scope {
         name: "single-export-modules",
         files: SINGLE_EXPORT_FILES,
@@ -158,6 +163,20 @@ pub const SCOPES: [Scope; 7] = [
         files: TEST_FILES,
         ignores: &[],
         rules: RELAXED,
+    },
+    Scope {
+        name: "angular-app",
+        files: ANGULAR_APP_FILES,
+        ignores: &[],
+        rules: &[
+            ("@typescript-eslint/naming-convention", false),
+            ("functional/no-classes", false),
+            ("functional/no-this-expressions", false),
+            ("local/canonical-import-path", false),
+            ("local/folder-has-index", false),
+            ("local/folder-layout", false),
+            ("local/one-export-per-file", false),
+        ],
     },
 ];
 
@@ -384,12 +403,35 @@ mod tests {
         assert!(is_ignored("docs/api/index.ts"));
         assert!(is_ignored("tools/api-pages/tests/fixtures/a.ts"));
         assert!(is_ignored("node_modules/a/b.ts"));
-        assert!(is_ignored("playground/src/app/app.component.ts"));
         assert!(is_ignored("playground/node_modules/a/b.d.ts"));
         assert!(is_ignored("playground/.angular/cache/a.ts"));
         assert!(is_ignored("playground/dist/a.ts"));
         assert!(!is_ignored("src/index.ts"));
         assert!(!is_ignored("playground/points/index.ts"));
+        assert!(!is_ignored("playground/src/app/app.component.ts"));
+    }
+
+    #[test]
+    fn f50_ac3_lints_the_angular_app_by_angular_s_usage() {
+        let app = rules_for("playground/src/app/app.component.ts");
+
+        // A class with Angular's suffixed name, in a folder without a barrel, imported by its file.
+        for rule in [
+            "@typescript-eslint/naming-convention",
+            "functional/no-classes",
+            "functional/no-this-expressions",
+            "local/canonical-import-path",
+            "local/folder-has-index",
+            "local/folder-layout",
+            "local/one-export-per-file",
+        ] {
+            assert!(!app.contains(&rule), "{rule}");
+        }
+        // The rest of the playground's rules stay on; the old page keeps the library's.
+        assert!(app.contains(&"import-x/no-restricted-paths"));
+        assert!(app.contains(&"local/require-kind"));
+        assert!(rules_for("playground/points/delete-points.ts").contains(&"functional/no-classes"));
+        assert!(rules_for("playground/points/delete-points.ts").contains(&"local/folder-layout"));
     }
 
     #[test]

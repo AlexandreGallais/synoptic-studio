@@ -33,5 +33,6 @@
       "defaultCategory": "error"
     }
   },
-  "files": []
+  "files": [],
+  "references": [{ "path": "./tsconfig.app.json" }]
 }

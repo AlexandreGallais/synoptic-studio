@@ -44,6 +44,7 @@ jobs:
           - name: Lint and types
             lanes: lint
             node-packages: true
+            playground-packages: true
             git-hooks: true
           # cargo-deny for `[F19.AC9]`'s advisories test (EN-126).
           - name: TypeScript tests
@@ -54,9 +55,11 @@ jobs:
           - name: Docs, playground and build
             lanes: docs
             node-packages: true
+            playground-packages: true
           - name: Format, secrets and dependencies
             lanes: files
             node-packages: true
+            playground-packages: true
           # rustfmt, Clippy, the advisories, the check for Windows and the binaries' freshness run
           # no program npm installs: the release binaries built by their own step (EN-130).
           - name: Rust
@@ -107,6 +110,10 @@ jobs:
         with:
           node-version-file: .nvmrc
           cache: npm
+          # One npm cache for both projects, keyed on both lockfiles (ADR-0104, REF-SETUP-NODE-CACHE).
+          cache-dependency-path: |
+            package-lock.json
+            playground/package-lock.json
       # The Rust lane runs no program npm installs: the release binaries `check-all` and the
       # freshness check read are built by their own step (EN-130).
       - if: matrix.release-build
@@ -124,6 +131,11 @@ jobs:
           path: target/release/git-hooks
           if-no-files-found: error
           retention-days: 1
+      # The playground's packages, an npm project of its own, after the root's (ADR-0104): Angular's
+      # compiler and build for the lint and docs lanes, its installed manifests for `dependencies
+      # unused`; their install scripts left unrun, as the conventions of the dependencies keep them.
+      - if: matrix.playground-packages
+        run: npm --prefix playground ci --ignore-scripts
       # Every crate of Cargo.lock, for every target (`REF-CARGO-FETCH`): the build downloads only the
       # host's, but `cargo metadata`, which cargo-deny and `[F19.AC9]` run offline, reads them all;
       # a cache of an older Cargo.lock lacks the new ones (EN-116). By the lanes calling cargo-deny.

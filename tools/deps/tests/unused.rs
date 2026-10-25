@@ -419,6 +419,88 @@ fn f21_ac4_the_binary_reports_a_planted_file_in_a_git_checkout() {
     fs::remove_dir_all(&root).expect("removed");
 }
 
+/// The playground's npm project of a planted checkout: an Angular app whose `src/main.ts` imports
+/// `@angular/core`, which asks `rxjs` as a peer and `zone.js` as an optional one; `@angular/build`
+/// named by `angular.json`'s builder, `sass` by its SCSS, `@angular/cli` by the `ng` of a script,
+/// `vitest` ignored until the playground's tests move (EN-160); `left-pad` and a file unused.
+const PLAYGROUND: &[(&str, &str)] = &[
+    (
+        "playground/package.json",
+        "{\n  \"scripts\": { \"start\": \"ng serve\" },\n  \"dependencies\": {\n    \"@angular/core\": \"22.2.3\",\n    \"left-pad\": \"1.3.0\",\n    \"rxjs\": \"7.8.2\"\n  },\n  \"devDependencies\": {\n    \"@angular/build\": \"22.2.3\",\n    \"@angular/cli\": \"22.2.3\",\n    \"sass\": \"1.105.2\",\n    \"vitest\": \"5.0.5\"\n  }\n}\n",
+    ),
+    (
+        "playground/angular.json",
+        "{\n  \"builder\": \"@angular/build:application\",\n  \"style\": \"scss\"\n}\n",
+    ),
+    (
+        "playground/node_modules/@angular/core/package.json",
+        "{ \"peerDependencies\": { \"rxjs\": \"^7.4.0\", \"zone.js\": \"~0.16.0\" }, \"peerDependenciesMeta\": { \"zone.js\": { \"optional\": true } } }",
+    ),
+    (
+        "playground/node_modules/@angular/cli/package.json",
+        "{ \"bin\": { \"ng\": \"bin/ng.js\" } }",
+    ),
+    (
+        "playground/src/main.ts",
+        "import { Component } from \"@angular/core\";\n\nimport { AppComponent } from \"./app/app.component\";\n\nexport const APP = [Component, AppComponent];\n",
+    ),
+    (
+        "playground/src/app/app.component.ts",
+        "export class AppComponent {}\n",
+    ),
+    ("playground/src/app/orphan.ts", "export const ORPHAN = 1;\n"),
+];
+
+#[test]
+fn f50_ac3_the_binary_checks_the_playground_as_a_project_of_its_own() {
+    let files: Vec<(&str, &str)> = BASE.iter().chain(PLAYGROUND).copied().collect();
+    let root = plant("playground", &files);
+
+    assert!(
+        test_support::command("git")
+            .args(["init", "--quiet"])
+            .current_dir(&root)
+            .status()
+            .expect("git runs")
+            .success()
+    );
+    let output = test_support::command(env!("CARGO_BIN_EXE_dependencies"))
+        .arg("unused")
+        .current_dir(&root)
+        .output()
+        .expect("the binary runs");
+
+    fs::remove_dir_all(&root).expect("removed");
+    // The playground's findings named from the root: its file, and `left-pad` at line 5, column
+    // 6 of its `package.json` (four spaces, the quote, then the name); `rxjs` used through
+    // `@angular/core`, `zone.js` not listed; the root's `is-number` beside them.
+    assert_eq!(output.status.code(), Some(1));
+    assert_eq!(
+        String::from_utf8_lossy(&output.stdout),
+        "Unused files (1)\nplayground/src/app/orphan.ts\nUnused dependencies (1)\nleft-pad  playground/package.json:5:6\nUnused devDependencies (1)\nis-number  package.json:12:6\n"
+    );
+}
+
+#[test]
+fn f50_ac3_lists_the_playground_s_files_from_its_folder() {
+    let root = plant(
+        "playground-files",
+        &[
+            ("playground/src/main.ts", ""),
+            ("playground/src/app/a.component.ts", ""),
+            ("playground/src/app/a.component.html", ""),
+            ("playground/points/b.ts", ""),
+        ],
+    );
+    let listed = "playground/src/main.ts\0playground/src/app/a.component.ts\0playground/src/app/a.component.html\0playground/points/b.ts\0playground/src/gone.ts\0";
+
+    assert_eq!(
+        unused::playground_files(&root, listed),
+        ["src/app/a.component.ts", "src/main.ts"]
+    );
+    fs::remove_dir_all(&root).expect("removed");
+}
+
 #[test]
 fn the_binary_exits_2_outside_a_checkout() {
     let root = plant("no-git", &[("package.json", "{}")]);
