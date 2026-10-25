@@ -1,6 +1,6 @@
 # ADR-0023 — Inspection cadence: demo at each feature, review and retrospective at each epic
 
-**Status**: Accepted
+**Status**: Accepted. Its review and retrospective per epic superseded by ADR-0086 (2026-10-18), held by each review; its `VAL` per feature by ADR-0100 (2026-10-24).
 
 ## Context
 

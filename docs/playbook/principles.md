@@ -12,7 +12,7 @@ What makes code written by an agent trustworthy, and the work fast. Each princip
 | 6 | **Business rules belong to the Product Owner** | the agent asks instead of inventing; every answer goes to the domain docs in the same change | `AGENTS.md` |
 | 7 | **Inspect at the end of every delivery** | a demo after each feature, a review of the work and the method at each return of the Product Owner, every rule questioned every four to five epics | ADR-0023, ADR-0086, `docs/process/agile.md` |
 | 8 | **Zero runtime dependency** | every dev dependency justified, read before upgrade, at least 7 days old, audit blocking | ADR-0009, ADR-0038 |
-| 9 | **Decisions are written once** | ADRs superseded, never rewritten; docs say "why" once and link to it | `docs/conventions/writing.md` |
+| 9 | **Decisions are written once** | ADRs superseded, never rewritten, and removed into one record once they no longer hold; docs say "why" once and link to it | `docs/conventions/writing.md` |
 | 10 | **The repository is the memory** | backlog, decisions, sources and lessons in versioned Markdown that the agent reloads at each session | ADR-0021, `REF-ANTHROPIC-CONTEXT` |
 | 11 | **Measure, then speed up** | every command timed, every story's time and tokens known; the slowest and the most frequent become tools | `docs/tooling/metrics.md` |
 | 12 | **Read once, keep it** | pages read online kept in a local library, searched before going online: fewer requests, fewer tokens | ADR-0039 |

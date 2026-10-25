@@ -1,6 +1,6 @@
 # ADR-0043 — Folders by business domain, files and folders never side by side
 
-**Status**: Accepted (Product Owner, F11, 2026-10-13). Supersedes ADR-0042.
+**Status**: Accepted (Product Owner, F11, 2026-10-13). Supersedes ADR-0042, removed since (ADR-0101).
 
 ## Context
 
@@ -26,4 +26,4 @@ ADR-0042 named folders by theme and made 15 modules a signal. EN-022 applied it,
 
 ## References
 
-ADR-0042 and its sources (`REF-ANGULAR-STYLE`, `REF-ANGULAR-STYLE-17`, `REF-KCD-COLOCATION`, `REF-VITEST-INCLUDE`, `REF-SCREAMING-ARCHITECTURE`), ADR-0012, ADR-0019, `docs/domain/shapes.md`
+ADR-0042 (removed, ADR-0101) and its sources (`REF-ANGULAR-STYLE`, `REF-ANGULAR-STYLE-17`, `REF-KCD-COLOCATION`, `REF-VITEST-INCLUDE`, `REF-SCREAMING-ARCHITECTURE`), ADR-0012, ADR-0019, `docs/domain/shapes.md`

@@ -97,7 +97,7 @@ Added by the main thread on 2026-10-18, from the frictions of F21's run:
 F18's criterion 1, for the `done` commit (the pre-push hook refuses a feature file on a story branch, ADR-0065), in `docs/backlog/features/E17-F18-a-safe-and-cheap-parallel-run.md`:
 
 ```markdown
-1. ~~Release pull request on `develop`~~, only the release on `main`. The first half superseded on 2026-10-18 by [ADR-0079](../../adr/0079-the-release-on-a-release-branch-by-our-own-tool.md): the project's tool prepares a release on a release branch from `develop`, without release-please's pull request (EN-112).
+1. ~~Release pull request on `develop`~~, only the release on `main`. The first half superseded on 2026-10-18 by [ADR-0079](../../adr/0101-the-adrs-that-no-longer-hold-removed-into-one-record.md): the project's tool prepares a release on a release branch from `develop`, without release-please's pull request (EN-112).
 ```
 
 T9 is not done: `deps:outdated` at 02:24 UTC on 2026-10-18 found every crate on its latest version at least 7 days old; `serde_json` 1.0.153 (2026-10-11 14:20 UTC) and 1.0.154 (15:32 UTC) fall due later that day. Their notes, read on GitHub's releases page: 1.0.153 reports invalid UTF-8 at the first bad byte (#1345); 1.0.154 supports `preserve_order` in `no_std` builds (#1333), a feature not used here. The bump is `Cargo.toml`'s `serde_json = "=1.0.154"`, `cargo update -p serde_json --precise 1.0.154`, and the row of `docs/tooling/dependencies.md` (Crates) without its sentence on 1.0.153 and 1.0.154.

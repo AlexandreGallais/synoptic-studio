@@ -1,6 +1,6 @@
 # ADR-0068 — Tables without padding moved to F19's formatter
 
-**Status**: Accepted, confirmed by the Product Owner at F18's validation (VAL-019, 2026-10-17). Accepted by the agent first (2026-10-17, EN-048 and AUD-020, the choice left to it by the Product Owner on 2026-10-17). Supersedes ADR-0065 decision 1 (Prettier's `proseWrap: "never"`); ADR-0065's other decisions stand. Decision 2 carried by EN-073 (2026-10-17): oxfmt pads every table with no option against it, so the Rust tool `tools/format` runs oxfmt, then writes the tables without padding.
+**Status**: Accepted, confirmed by the Product Owner at F18's validation (VAL-019, 2026-10-17). Accepted by the agent first (2026-10-17, EN-048 and AUD-020, the choice left to it by the Product Owner on 2026-10-17). Supersedes ADR-0065 decision 1 (Prettier's `proseWrap: "never"`); ADR-0065's other decisions stand. Decision 2 carried by EN-073 (2026-10-17): oxfmt pads every table with no option against it, so the Rust tool `tools/format` runs oxfmt, then writes the tables without padding. Decision 1, Prettier's padding until F19, gone with Prettier (ADR-0075).
 
 ## Context
 

@@ -9,7 +9,7 @@ status: done
 
 **Benefit hypothesis**: the Product Owner merges a reviewed feature into `main` with a green CI, publishes 0.3.0 by one button, its notes the features' texts, without a release branch nor a commit of the version; a run works one story at a time and spends less of the week's usage.
 
-Decided by the Product Owner on 2026-10-18 at E17's retrospective, then changed the same day during F22's run by [ADR-0086](../../adr/0086-one-story-at-a-time-into-develop-the-release-by-a-button.md), which supersedes ADR-0083 and adds EN-122 ([RET-004](../stories/E17-RET-004-retrospective-e17.md), P1 and P2; [ADR-0083](../../adr/0083-the-release-made-by-the-merge-into-main-from-a-tag.md)). A tooling feature: validated by the agent (ADR-0072). Its research was done by RET-004 (`REF-SEMANTIC-RELEASE-FAQ`, `REF-NPM-VERSION`, `REF-GH-WORKFLOW-DISPATCH`); four stories, so no checkpoint (ADR-0084). E17 closes at the publication of 0.3.0.
+Decided by the Product Owner on 2026-10-18 at E17's retrospective, then changed the same day during F22's run by [ADR-0086](../../adr/0086-one-story-at-a-time-into-develop-the-release-by-a-button.md), which supersedes ADR-0083 and adds EN-122 ([RET-004](../stories/E17-RET-004-retrospective-e17.md), P1 and P2; [ADR-0083](../../adr/0101-the-adrs-that-no-longer-hold-removed-into-one-record.md)). A tooling feature: validated by the agent (ADR-0072). Its research was done by RET-004 (`REF-SEMANTIC-RELEASE-FAQ`, `REF-NPM-VERSION`, `REF-GH-WORKFLOW-DISPATCH`); four stories, so no checkpoint (ADR-0084). E17 closes at the publication of 0.3.0.
 
 ## Refinement (2026-10-18)
 

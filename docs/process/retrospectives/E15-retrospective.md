@@ -171,7 +171,7 @@ The feedback log's nine rows are written as habits in [Working with the agent](.
 
 ## 6. Changes adopted
 
-- [ADR-0063](../../adr/0063-runs-with-a-limited-number-of-agents.md): ADR-0051 amended — at most 3 subagents (a trial), one heavy command at a time, the audit per feature, the worker brief in the run skill, a heartbeat.
+- [ADR-0063](../../adr/0101-the-adrs-that-no-longer-hold-removed-into-one-record.md): ADR-0051 amended — at most 3 subagents (a trial), one heavy command at a time, the audit per feature, the worker brief in the run skill, a heartbeat.
 - [ADR-0064](../../adr/0064-checks-by-level.md): checks by level from E02.
 - [ADR-0065](../../adr/0065-parallel-branches-merged-without-conflicts.md): shared files that merge without conflicts.
 - [ADR-0066](../../adr/0066-a-register-of-exceptions.md): the register of exceptions, the byte buffer written once.

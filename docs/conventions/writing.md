@@ -145,6 +145,7 @@ Markdown pages are linted by the project's linter (`tools/lint`, [lint.md](./lin
 | --- | --- |
 | business rule | `docs/domain/` |
 | structural decision and its alternatives | new ADR |
+| an ADR that no longer holds | its row in the record of [ADR-0101](../adr/0101-the-adrs-that-no-longer-hold-removed-into-one-record.md), its file removed |
 | code rule | `docs/conventions/` (and the lint rule enforcing it) |
 | tooling procedure | `docs/tooling/` |
 | planned work | `docs/backlog/` |

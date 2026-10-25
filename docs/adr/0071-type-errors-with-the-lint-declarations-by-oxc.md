@@ -1,6 +1,6 @@
 # ADR-0071 — Type errors with the lint, declarations by Oxc
 
-**Status**: Accepted (2026-10-17, decided by the Product Owner during F19's run; EN-091). Partly supersedes ADR-0010's consequences: `tsc` leaves `npm run check`, and `tsconfig.build.json` no longer emits the declarations.
+**Status**: Accepted (2026-10-17, decided by the Product Owner during F19's run; EN-091). Partly supersedes the consequences of ADR-0010 (removed since, ADR-0101; its linter first restated by ADR-0075): `tsc` leaves `npm run check`, and `tsconfig.build.json` no longer emits the declarations.
 
 ## Context
 
@@ -28,8 +28,8 @@
 
 - `tests/type-check-with-lint.test.ts` plants a type error and expects oxlint to report it at its place; `tests/declarations.test.ts` runs `tools/declarations` on `src/`, so that an export missing its type fails the tests, not only the CI's build.
 - A new export of `src/` computed from other values is written with its type, as in `export const DEGREES_PER_HALF_TURN: number = DEGREES_PER_TURN / 2`.
-- ADR-0010's other decisions stay: oxlint and ESLint carry what they can, `tsconfig.json` only what they cannot.
+- The other decisions of ADR-0010 stay, restated by ADR-0075: oxlint and ESLint carry what they can, `tsconfig.json` only what they cannot.
 
 ## References
 
-ADR-0010, ADR-0069, `REF-OXC-README`, `REF-OXLINT-CLI`, `REF-OXLINT-TYPE-AWARE`, `REF-TSGOLINT`, `REF-OXC-ISOLATED-DECLARATIONS`, `REF-TS-ISOLATED-DECLARATIONS`, [EN-091](../backlog/stories/E17-F19-EN-091-configuration-files-reviewed-for-speed.md)
+ADR-0069, ADR-0075, ADR-0101 (ADR-0010, removed), `REF-OXC-README`, `REF-OXLINT-CLI`, `REF-OXLINT-TYPE-AWARE`, `REF-TSGOLINT`, `REF-OXC-ISOLATED-DECLARATIONS`, `REF-TS-ISOLATED-DECLARATIONS`, [EN-091](../backlog/stories/E17-F19-EN-091-configuration-files-reviewed-for-speed.md)
