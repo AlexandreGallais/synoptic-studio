@@ -137,8 +137,7 @@ pub const CHECKS: &[(&str, &str)] = &[
     (
         AFTER_LANES,
         concat!(
-            "vitest run --tags-filter=timing playground/hover/helps-on-any-color.test.ts ",
-            "playground/listeners/remove-listeners.test.ts playground/mount/mount-playground.test.ts ",
+            "vitest run --tags-filter=timing ",
             "src/io/font-face/parse-font-face.test.ts src/math/sequence/scan.test.ts ",
             "src/model/text-wrap/without-trailing-spaces.test.ts ",
             "src/model/text-wrap/wrapped-paragraph.test.ts tests/history-timings.test.ts"

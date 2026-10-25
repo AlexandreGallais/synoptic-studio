@@ -109,7 +109,7 @@ export default defineConfig(({ mode }) => {
     root: join(ROOT, "playground"),
     test: {
       coverage: {
-        exclude: ["**/index.ts", "**/*.test.ts", "playground/user-actions/**", ...SECOND_PROJECT],
+        exclude: ["**/index.ts", "**/*.test.ts", "playground/testing/**", ...SECOND_PROJECT],
         include: ["src/**/*.ts", "playground/**/*.ts"],
         provider: "v8",
         reporter: ["text-summary"],

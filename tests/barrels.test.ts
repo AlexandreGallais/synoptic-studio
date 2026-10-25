@@ -65,7 +65,7 @@ describe("barrels", () => {
     expect(targets).toEqual(
       expect.arrayContaining([
         join(import.meta.dirname, "..", "src", "math", "vector", "vector"),
-        join(import.meta.dirname, "..", "playground", "user-actions", "keys"),
+        join(import.meta.dirname, "..", "playground", "testing", "keys"),
       ]),
     );
 

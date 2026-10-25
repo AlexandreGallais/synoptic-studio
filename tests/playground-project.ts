@@ -14,6 +14,7 @@ const PLAYGROUND_PROJECT = new Set([
   "angular.json",
   "tsconfig.json",
   "tsconfig.app.json",
+  "tsconfig.spec.json",
   "src",
   "public",
   "node_modules",

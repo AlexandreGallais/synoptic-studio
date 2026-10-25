@@ -38,6 +38,7 @@
   "exclude": [
     "node_modules",
     "playground/src",
+    "playground/testing",
     "playground/node_modules",
     "playground/.angular",
     "playground/dist"

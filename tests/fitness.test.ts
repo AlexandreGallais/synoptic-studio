@@ -116,7 +116,7 @@ function exportedNames(folder: string): readonly string[] {
 
 /** Names the shared test modules export: a test file never declares them again (F11). */
 const SHARED_HELPERS = new Set(
-  ["playground/user-actions", "tests"].flatMap((folder) => exportedNames(folder)),
+  ["playground/testing", "tests"].flatMap((folder) => exportedNames(folder)),
 );
 
 /**
@@ -410,17 +410,24 @@ type TimingLimit = {
   readonly measure: number | undefined;
 };
 
+/** The playground's Angular app, whose tests the root does not run but whose limits it reads (EN-160). */
+const PLAYGROUND_APP = join("playground", "src");
+
 /**
  * Text of every test file of `src/`, `tests/` and `playground/`, the three folders holding a
- * per-test limit (AUD-031).
+ * per-test limit (AUD-031), the playground's Angular app included.
  *
  * @returns path from the repository root, and text, of each file
  */
 function timedTestFiles(): readonly { readonly path: string; readonly text: string }[] {
-  return ["src", "tests", "playground"].flatMap((root) =>
+  return ["src", "tests", "playground", PLAYGROUND_APP].flatMap((root) =>
     readdirSync(join(ROOT, root), { recursive: true })
       .map(String)
-      .filter((name) => name.endsWith(".test.ts") && !isPlaygroundProject(join(ROOT, root, name)))
+      .filter(
+        (name) =>
+          name.endsWith(".test.ts") &&
+          (root === PLAYGROUND_APP || !isPlaygroundProject(join(ROOT, root, name))),
+      )
       .map((name) => ({
         path: join(root, name),
         text: readFileSync(join(ROOT, root, name), "utf8"),
@@ -560,7 +567,7 @@ describe("the timing tests (EN-129)", () => {
     expect(timedTestFiles().flatMap(({ path, text }) => untaggedTimings(path, text))).toEqual([]);
   });
 
-  it("runs alone every file holding a timing test, and no other", () => {
+  it("runs alone every file holding a timing test the root runs, and no other", () => {
     const script = CHECK_ALL_LANES.find(({ name }) => name === "test:timings")?.command ?? "";
     const named = script.split(" ").filter((word) => word.endsWith(".test.ts"));
 
@@ -568,7 +575,9 @@ describe("the timing tests (EN-129)", () => {
       .filter(({ text }) =>
         text.split("\n").some((line) => TIMEOUT.test(line) && line.includes(TIMING_TAG)),
       )
-      .map(({ path }) => path);
+      .map(({ path }) => path)
+      // The Angular app's tests run by its own `ng test` (EN-160).
+      .filter((path) => !path.startsWith(PLAYGROUND_APP));
 
     expect(named.toSorted(byName)).toEqual(tagged.toSorted(byName));
   });

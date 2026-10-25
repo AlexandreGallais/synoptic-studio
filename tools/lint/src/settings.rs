@@ -216,7 +216,7 @@ pub const FOLDER_SIGNAL: usize = 15;
 pub const FOLDERS_PAST_SIGNAL: [&str; 1] = [
     // One theme, what a user does to the page: splitting it into reading, typing and clicking
     // would split it by kind of code, which ADR-0043 refuses.
-    "playground/user-actions",
+    "playground/testing",
 ];
 
 /// Folders exempt from a barrel: the root, the site's theme, the repository's tests.

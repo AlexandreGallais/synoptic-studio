@@ -1,0 +1,19 @@
+import { isFreeShape } from "editor";
+
+import { readShape } from "./read-shape";
+
+import type { FreeShape } from "editor";
+
+/**
+ * Reads the free shape whose points may be typed: the one shown, when it is valid and not a
+ * regular polygon nor a round shape (converted first).
+ *
+ * @kind procedure
+ * @param document - page document
+ * @returns the free shape, `undefined` when none can be edited
+ */
+export function readEditedFreeShape(document: Document): FreeShape | undefined {
+  const { isValid, model } = readShape(document);
+
+  return isValid && isFreeShape(model) ? model : undefined;
+}
