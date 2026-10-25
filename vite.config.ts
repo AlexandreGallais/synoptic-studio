@@ -98,10 +98,11 @@ export default defineConfig(({ mode }) => {
         include: ["src/**/*.ts", "playground/**/*.ts"],
         provider: "v8",
         reporter: ["text-summary"],
-        // The library is covered entirely; the playground, a demo shell, has a floor that only rises.
+        // The library at 95 % while it is developed, raised again at a later refinement (Product
+        // Owner, 2026-10-25); the playground, a demo shell, has a floor that only rises.
         thresholds: {
           "playground/**/*.ts": PLAYGROUND_COVERAGE,
-          "src/**/*.ts": { 100: true },
+          "src/**/*.ts": { branches: 95, functions: 95, lines: 95, statements: 95 },
         },
       },
       // Each test font file read once per run, its bytes handed to every test file (EN-089).
