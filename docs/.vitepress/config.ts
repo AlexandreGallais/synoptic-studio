@@ -36,8 +36,8 @@ type Group = {
 };
 
 /**
- * The site for a person: how the project works and where it stands, the business rules, then
- * the API and the commands. Everything else the agent reads in its records.
+ * The site for a person: the editor, how the project works and where it stands, the order of the
+ * epics, then the API and the commands. Everything else the agent reads in its records.
  */
 const GROUPS: readonly Group[] = [
   {
@@ -46,19 +46,14 @@ const GROUPS: readonly Group[] = [
         collapsed: false,
         folder: "",
         overview: false,
-        pages: ["how-it-works.md", "where-it-stands.md"],
+        pages: ["the-editor.md", "how-it-works.md", "where-it-stands.md"],
         title: "Overview",
       },
       { collapsed: false, folder: "backlog", overview: true, pages: [], title: "Epics" },
     ],
     title: "The project",
   },
-  {
-    sections: [
-      { collapsed: false, folder: "domain", overview: true, pages: "all", title: "Domain" },
-    ],
-    title: "Domain",
-  },
+
   {
     sections: [
       { collapsed: true, folder: "api", overview: true, pages: [], title: "API" },

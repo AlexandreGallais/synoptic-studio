@@ -2,7 +2,7 @@
 
 ## What it is
 
-`editor` is a dependency-free TypeScript library that draws SVG symbols for synoptic views, the schematic screens that supervise industrial plants. Four tools will be built on it: the Symbol Editor, the Configurator, the View Editor and its drawing tools ([domain](./domain/)). Today the library and its playground exist; the editors come later, in the [order of the epics](./backlog/).
+`editor` is a dependency-free TypeScript library that draws SVG symbols for synoptic views, the schematic screens that supervise industrial plants. Four tools will be built on it: the Symbol Editor, the Configurator, the View Editor and its drawing tools ([the editor](./the-editor.md)). Today the library and its playground exist; the editors come later, in the [order of the epics](./backlog/).
 
 ## How the library computes
 

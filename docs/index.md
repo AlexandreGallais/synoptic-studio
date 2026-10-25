@@ -7,6 +7,9 @@ hero:
   tagline: A dependency-free TypeScript library that draws the symbols of synoptic views from numbers.
   actions:
     - theme: brand
+      text: The editor
+      link: /the-editor
+    - theme: alt
       text: How it works
       link: /how-it-works
     - theme: alt
@@ -26,9 +29,9 @@ features:
   - title: Epics
     details: The order of the work to come.
     link: /backlog/
-  - title: Domain
-    details: The business rules of shapes, symbols, views and interaction, each with an example.
-    link: /domain/
+  - title: The editor
+    details: The editors, what one can draw, how one selects, moves and undoes.
+    link: /the-editor
   - title: API
     details: One page per exported function, generated from the code.
     link: /api/
