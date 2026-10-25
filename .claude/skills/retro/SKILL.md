@@ -15,6 +15,6 @@ Review: $ARGUMENTS. Decisions: ADR-0023, ADR-0086 (no epic has a retrospective: 
 5. **The agent's own review**: recurring mistakes, guards hit, rules ignored, context lost; the rows of `docs/process/feedback.md` grouped into the habits of `docs/playbook/agent.md`, then moved to the record.
 6. **Evolvability review**, when the span gives it figures: the six questions, each "nothing yet", a story or an ADR; every "considered for later" trigger and every override of `package.json` checked again.
 7. **Decide** with the Product Owner: each change becomes an ADR, a story, a rule, a check, or "not now" with its reason.
-8. **Write** `docs/process/retrospectives/REV-<nnn>-retrospective.md` from the template; move the treated rows out of the logs.
+8. **Write** the record: after an epic's end, `docs/process/retrospectives/E<nn>-retrospective.md` from the template, with its row in that folder's index; otherwise in the review's own story file. Move the treated rows out of the logs.
 9. **The playbook** (`docs/playbook/`) and **the agent's configuration** (`AGENTS.md`, `CLAUDE.md`, rules, skills, agents): new lessons with the check that prevents each; a repeated mistake gets a check, not a sentence. At the review after an epic's last feature, fresh research on how projects built by a coding agent are run, read and recorded before use; every four to five epics, question **every** rule against how the project went (`docs/process/agile.md`).
 10. `target/release/records-save`: the span's transcripts and metrics in the private records, a local folder (ADR-0081).

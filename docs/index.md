@@ -20,6 +20,9 @@ features:
   - title: Domain
     details: Shapes, symbols, views, pipes and interaction — the business source of truth.
     link: /domain/
+  - title: API
+    details: One page per exported function, generated from the TSDoc.
+    link: /api/
   - title: Conventions
     details: How code is written; almost every rule is enforced by oxlint and the project's linter.
     link: /conventions/
@@ -32,15 +35,12 @@ features:
   - title: Research
     details: Where a source is looked for, in which order, and when to stop and ask.
     link: /research/
-  - title: Tooling
-    details: Commands, the agent's tools, dependencies, versions, Git workflow, this site.
-    link: /tooling/
-  - title: API
-    details: One page per exported function, generated from the TSDoc.
-    link: /api/
   - title: Playbook
     details: How to run a project with a coding agent — principles, starter kit, lessons.
     link: /playbook/
+  - title: Tooling
+    details: Commands, the agent's tools, dependencies, versions, Git workflow, this site.
+    link: /tooling/
   - title: Records
     details: Decisions (ADRs), research notes, derivations, references, the guide pages of past features, retrospectives and logs.
     link: /adr/

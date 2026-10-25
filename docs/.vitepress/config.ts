@@ -36,13 +36,14 @@ type Group = {
 };
 
 /**
- * The site in reading order, for the agent first (REV-009): what the project is, how to work,
- * the tooling, then the records, grouped and last.
+ * The site in reading order, for the agent first (REV-009): what the project is, its domain and
+ * its library's API, how to work, the tooling, then the records, grouped and last.
  */
 const GROUPS: readonly Group[] = [
   {
     sections: [
       { collapsed: false, folder: "domain", overview: true, pages: "all", title: "Domain" },
+      { collapsed: true, folder: "api", overview: true, pages: [], title: "API" },
     ],
     title: "The project",
   },
@@ -79,7 +80,6 @@ const GROUPS: readonly Group[] = [
   {
     sections: [
       { collapsed: false, folder: "tooling", overview: true, pages: "all", title: "Tooling" },
-      { collapsed: true, folder: "api", overview: true, pages: [], title: "API" },
     ],
     title: "Tooling",
   },
