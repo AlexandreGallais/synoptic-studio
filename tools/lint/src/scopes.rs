@@ -4,8 +4,9 @@
 
 use crate::glob::matches_any;
 
-/// Generated, vendored or copied paths, never linted (once `eslint/settings/files.ts`).
-pub const IGNORED: [&str; 11] = [
+/// Generated, vendored or copied paths, never linted (once `eslint/settings/files.ts`); and the
+/// playground's Angular app, a project of its own whose lanes come with EN-159 (ADR-0104).
+pub const IGNORED: [&str; 12] = [
     "dist/**",
     "coverage/**",
     "node_modules/**",
@@ -17,6 +18,7 @@ pub const IGNORED: [&str; 11] = [
     "target/**",
     "tools/*/tests/fixtures/**",
     ".git/**",
+    "playground/src/**",
 ];
 
 /// The rules on for every TypeScript file before the scopes, with the plugins' own lists
@@ -378,7 +380,9 @@ mod tests {
         assert!(is_ignored("docs/api/index.ts"));
         assert!(is_ignored("tools/api-pages/tests/fixtures/a.ts"));
         assert!(is_ignored("node_modules/a/b.ts"));
+        assert!(is_ignored("playground/src/app/app.component.ts"));
         assert!(!is_ignored("src/index.ts"));
+        assert!(!is_ignored("playground/points/index.ts"));
     }
 
     #[test]
