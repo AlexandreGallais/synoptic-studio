@@ -714,7 +714,7 @@ fn writes_the_data_files_the_ci_reads_and_names_one_that_differs_from_the_record
         &place,
         &[
             "sql",
-            "CREATE TABLE dependencies (name TEXT, kind TEXT, version TEXT, purpose TEXT)",
+            "CREATE TABLE dependencies (project TEXT, name TEXT, kind TEXT, version TEXT, purpose TEXT)",
             "--purpose",
             "dependencies",
         ],
@@ -730,7 +730,7 @@ fn writes_the_data_files_the_ci_reads_and_names_one_that_differs_from_the_record
         &place,
         &[
             "sql",
-            "INSERT INTO dependencies VALUES ('vite', 'npm', '8.3.4', 'the server'), ('regex', 'crate', '1.13.1', 'patterns')",
+            "INSERT INTO dependencies VALUES ('root', 'vite', 'npm', '8.3.4', 'the server'), ('root', 'regex', 'crate', '1.13.1', 'patterns')",
         ],
     );
 

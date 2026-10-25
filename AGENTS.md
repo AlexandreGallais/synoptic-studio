@@ -53,7 +53,7 @@ The details and their reasons are rows of the records — `conventions` by area,
 
 Hooks refuse most of these; none is worked around.
 
-- a runtime dependency; a dev package or crate younger than 7 days or without its row in the records;
+- a runtime dependency of the library; a dev package or crate younger than 7 days or without its row in the records;
 - ESLint, or a new script, hook or tool in TypeScript;
 - a lint rule disabled to make code pass;
 - a push to `main` or `develop`; `--no-verify`; a force push without lease; a pull request merged other than by its auto-merge label — the one into `main` only once the Product Owner validated the review in the chat.

@@ -11,8 +11,13 @@ type PackageManifest = {
   readonly overrides?: Readonly<Record<string, string>>;
 };
 
-/** A dependency of the records' `dependencies`: its name, kind and version. */
-type Dependency = { readonly kind: string; readonly name: string; readonly version: string };
+/** A dependency of the records' `dependencies`: its project, name, kind and version. */
+type Dependency = {
+  readonly kind: string;
+  readonly name: string;
+  readonly project: string;
+  readonly version: string;
+};
 
 /**
  * A field of a parsed row, as text.
@@ -40,6 +45,7 @@ const DEPENDENCIES: readonly Dependency[] = (() => {
   return (Array.isArray(parsed) ? parsed : []).map((row: unknown) => ({
     kind: textField(row, "kind"),
     name: textField(row, "name"),
+    project: textField(row, "project"),
     version: textField(row, "version"),
   }));
 })();
@@ -90,13 +96,14 @@ function byText(first: string, second: string): number {
 }
 
 /**
- * The dependencies of a kind, each `name@version`.
+ * The root project's dependencies of a kind, each `name@version`: the playground's are its own
+ * project's (ADR-0104).
  *
  * @param kind - `npm`, `crate`, `action`…
- * @returns each row of that kind, sorted
+ * @returns each root row of that kind, sorted
  */
 function documented(kind: string): readonly string[] {
-  return DEPENDENCIES.filter((row) => row.kind === kind)
+  return DEPENDENCIES.filter((row) => row.project === "root" && row.kind === kind)
     .map((row) => `${row.name}@${row.version}`)
     .toSorted(byText);
 }

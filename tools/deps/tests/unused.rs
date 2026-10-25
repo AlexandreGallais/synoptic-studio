@@ -378,6 +378,8 @@ fn lists_the_project_files_git_lists() {
     );
     assert!(unused::is_project("docs/.vitepress/theme/index.ts"));
     assert!(!unused::is_project(".claude/hooks/x.ts"));
+    assert!(unused::is_project("playground/points/index.ts"));
+    assert!(!unused::is_project("playground/src/main.ts"));
     assert!(unused::ls_files_arguments().contains(&":(glob)*.ts".to_owned()));
     fs::remove_dir_all(&root).expect("removed");
 }

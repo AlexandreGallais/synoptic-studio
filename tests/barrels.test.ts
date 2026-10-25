@@ -3,6 +3,8 @@ import { dirname, join } from "node:path";
 
 import { describe, expect, it } from "vitest";
 
+import { isPlaygroundProject } from "./playground-project";
+
 /** Library root: every `index.ts` below it is a barrel. */
 const ROOTS = ["src", "playground"].map((folder) => join(import.meta.dirname, "..", folder));
 
@@ -17,7 +19,12 @@ const PLAYGROUND_ENTRY = join(import.meta.dirname, "..", "playground", "index.ts
 function barrels(): string[] {
   return ROOTS.flatMap((root) =>
     readdirSync(root, { recursive: true, withFileTypes: true })
-      .filter((entry) => entry.isFile() && entry.name === "index.ts")
+      .filter(
+        (entry) =>
+          entry.isFile() &&
+          entry.name === "index.ts" &&
+          !isPlaygroundProject(join(entry.parentPath, entry.name)),
+      )
       .map((entry) => join(entry.parentPath, entry.name)),
   ).filter((barrel) => barrel !== PLAYGROUND_ENTRY);
 }

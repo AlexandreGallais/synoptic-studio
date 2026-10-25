@@ -14,6 +14,7 @@ import {
 } from "../src";
 
 import { CHECK_ALL_LANES } from "./check-all-lanes";
+import { isPlaygroundProject } from "./playground-project";
 import { DECORATED_METRICS, HELLO_TEXT } from "./text-fixtures";
 
 import type { EmbeddedFace, Text } from "../src";
@@ -130,7 +131,7 @@ function sourcesEndingWith(
   return ["src", "playground"].flatMap((root) =>
     readdirSync(join(ROOT, root), { recursive: true })
       .map(String)
-      .filter((name) => name.endsWith(ending))
+      .filter((name) => name.endsWith(ending) && !isPlaygroundProject(join(ROOT, root, name)))
       .map((name) => ({
         path: join(root, name),
         text: readFileSync(join(ROOT, root, name), "utf8"),
@@ -419,7 +420,7 @@ function timedTestFiles(): readonly { readonly path: string; readonly text: stri
   return ["src", "tests", "playground"].flatMap((root) =>
     readdirSync(join(ROOT, root), { recursive: true })
       .map(String)
-      .filter((name) => name.endsWith(".test.ts"))
+      .filter((name) => name.endsWith(".test.ts") && !isPlaygroundProject(join(ROOT, root, name)))
       .map((name) => ({
         path: join(root, name),
         text: readFileSync(join(ROOT, root, name), "utf8"),

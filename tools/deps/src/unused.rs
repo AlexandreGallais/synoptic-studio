@@ -23,6 +23,10 @@ pub const PROJECT: &[&str] = &[
     "tests/",
 ];
 
+/// The playground's Angular app, a second npm project with its own `package.json` (ADR-0104):
+/// left out of [`PROJECT`] until `deps` reads both projects (EN-159).
+pub const SECOND_PROJECT: &str = "playground/src/";
+
 /// The entry files besides the tests (`*.test.ts`) and the files the scripts name: Vite's and
 /// Vitest's configuration, the playground's page script (`playground/index.html`), the site's
 /// configuration and theme.
@@ -155,12 +159,14 @@ pub struct Tree {
     pub files: Vec<String>,
 }
 
-/// Whether a path from the root is a project file: a `.ts` file at the root or in a project folder.
+/// Whether a path from the root is a project file: a `.ts` file at the root or in a project folder,
+/// outside [`SECOND_PROJECT`].
 #[must_use]
 pub fn is_project(path: &str) -> bool {
     Path::new(path)
         .extension()
         .is_some_and(|extension| extension == "ts")
+        && !path.starts_with(SECOND_PROJECT)
         && PROJECT.iter().any(|entry| match entry.strip_prefix("*") {
             Some(_) => !path.contains('/'),
             None => path.starts_with(entry),

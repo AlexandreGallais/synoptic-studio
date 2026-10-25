@@ -14,7 +14,8 @@ use crate::backlog::json_string;
 /// The register of exceptions (ADR-0066), which `tests/exceptions.test.ts` reads.
 pub const LINT_EXCEPTIONS_FILE: &str = "tests/data/lint-exceptions.json";
 
-/// The dependencies, which `tests/package.test.ts` and `dependencies outdated` read.
+/// The dependencies of both npm projects, the root's and the playground's (ADR-0104), which
+/// `tests/package.test.ts` and `dependencies outdated` read.
 pub const DEPENDENCIES_FILE: &str = "tests/data/dependencies.json";
 
 /// One data file: its path from the checkout's root, the query of its rows, and the names of its
@@ -34,8 +35,8 @@ const DATA_FILES: [DataFile; 2] = [
     },
     DataFile {
         path: DEPENDENCIES_FILE,
-        query: "SELECT name, kind, version FROM dependencies ORDER BY kind, name",
-        fields: &["name", "kind", "version"],
+        query: "SELECT project, name, kind, version FROM dependencies ORDER BY project, kind, name",
+        fields: &["project", "name", "kind", "version"],
     },
 ];
 

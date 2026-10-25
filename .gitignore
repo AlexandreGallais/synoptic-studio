@@ -2,6 +2,8 @@ node_modules
 dist
 coverage
 .DS_Store
+# Angular's cache, in the playground's project (ADR-0104)
+.angular/
 
 docs/api
 docs/.vitepress/cache

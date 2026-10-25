@@ -21,6 +21,10 @@
     "docs/.vitepress/.temp/**",
     ".claude/worktrees/**",
     "target/**",
+    "playground/src/**",
+    "playground/node_modules/**",
+    "playground/.angular/**",
+    "playground/dist/**",
     "**/*.{js,cjs,mjs}"
   ],
   "overrides": [
