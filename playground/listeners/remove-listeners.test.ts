@@ -64,6 +64,10 @@ function pressTimes(init: KeyboardEventInit, count: number): void {
 describe("the listeners of a mount removed at the next one (EN-150, REF-MDN-ADD-EVENT-LISTENER)", () => {
   it.each([1, 2, 48])(
     "[F43.AC1] redraws the page 14 times for 7 undos by Ctrl + Z after %i mounts, each key heard once",
+    // After 48 mounts, alone: 469 ms, the median of 5 runs of its file (451 to 498 ms); over
+    // Vitest's 5 s under the pre-push's load twice on 2026-10-25, so run alone after the lanes
+    // (AUD-050); 2 s is 4.3 times it.
+    { tags: ["timing"], timeout: 2000 },
     (mounts) => {
       openTimes(mounts);
 
