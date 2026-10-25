@@ -1,7 +1,7 @@
 ---
 id: E49
 title: Keep the agent's knowledge in a database, the docs light
-status: draft
+status: in-progress
 ---
 
 # E49 — Keep the agent's knowledge in a database, the docs light
@@ -31,10 +31,10 @@ Cut by SP-034 (2026-10-25), in this order, each story of at most 3 tasks; the Pr
 
 | Feature | Expected stories | Status |
 | --- | --- | --- |
-| The knowledge database | the tables, opened by two worktrees; add, search, show and list, by branch; a clean snapshot into the synced folder (3) | to refine |
+| [F48](../features/E49-F48-the-knowledge-database.md) — The knowledge database | the tables, opened by two worktrees; add, search, show and list, by branch; a clean snapshot into the synced folder (3) | in-progress |
 | The checks freed from the files | the `@see` to stories pointed at the rules; the tests and tools reading finished items; the log rows written into the database (3) | to refine |
 | The move into the database | the finished stories, features and epics; the history, the logs, the retrospectives and the notes; the decisions, the memory and the security rules explained (3) | to refine |
-| The light docs | `shapes.md` and the domain's index as rule and example; `interaction.md` as rule and example; the pages kept, rewritten short; `AGENTS.md` and the agent's pages pointing to the tool (4) | to refine |
+| The light docs | `shapes.md` and the domain's index as rule and example; `interaction.md` as rule and example; the pages kept, rewritten short; `AGENTS.md` and the agent's pages pointing to the tool, the configuration files the moved docs leave behind cleaned: rules, scripts, the site, tests (4) | to refine |
 
 Size: 4 features, 13 stories, 20 + 25 × 13 + (45 to 75) × 4 = 525 to 645 active minutes, 8.75 to 10.75 hours (note 0034, §1); the domain's two long pages take a story each, and the checks are rewritten before the move so that it breaks nothing.
 
@@ -60,6 +60,7 @@ The Product Owner's answers to the questions of [note 0035](../../research/notes
 | Q8, the snapshots | one a day, the last 7 kept |
 | Q9, the domain's settled questions | moved; each rule stays on its domain page |
 | Q10, the records folder synced | no: checked on 2026-10-25, it is not synced; the working database lives in it |
+| One file of records | the project's records are one SQLite file, `records.sqlite`: the knowledge, the library's store, the metrics, the saves and the archives; the raw transcripts, 2.3 GB, stay files it indexes, so that a daily snapshot stays near 100 MB rather than 2.4 GB (asked by the Product Owner the same day, the transcripts' place the agent's choice) |
 | Security rules | every safety rule (no personal information in the repository nor in a request, no secret, the guards) is written in the database with its reason and an example, for agents less versed in security; `AGENTS.md` keeps the short list |
 
 The variable naming the synced folder, `AGENT_KNOWLEDGE_SNAPSHOT`, is set once in the user's Claude Code settings beside `AGENT_RECORDS_ROOT`, never in the repository.

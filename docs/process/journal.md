@@ -2,6 +2,12 @@
 
 What each working session dealt with, in the agent's words: the Product Owner's requests in neutral words, decisions, where they were recorded. Newest first. Written by the agent at the end of each session or before a long pause (ADR-0024); searched with `grep` (tags written `#tag`).
 
+## 2026-10-25 — E49 refined, the run of F48
+
+- `#review` After REV-009 the site's API moved beside the domain and the E02 retrospective listed (#504); `main` merged back into `develop` by mistake (#506), the Git rule corrected.
+- `#decision` The Product Owner asked for the agent's knowledge in one SQLite file per project in the records folder, outside Git, the docs short and readable, then the agent's setup shared with every coding agent: E49 and E50, before E21. SP-034 (#505) refined E49, ten answers in its Decisions; the records folder's whole content in one file, the raw transcripts left as files it indexes.
+- `#run` The Product Owner started a run on 2026-10-25 without a scope named, after the agent proposed F48, the knowledge database: the scope is F48, from EN-151 to its audit, AUD-050.
+
 ## 2026-10-25 — SP-033 and REV-009, the epics regrouped and the documentation cleaned
 
 - `#backlog` SP-033 (#496): the epics not done regrouped into 28 epics of one subject, E21 to E48, in the order the Product Owner chose; Q23 (the web page first, a desktop epic later) and Q26 settled; the contrast of texts moved to the pro edition.

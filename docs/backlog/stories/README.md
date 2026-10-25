@@ -400,4 +400,8 @@
 | [RET-004](./E17-RET-004-retrospective-e17.md) | E17 | Retrospective of E17 | done |
 | [REV-006](./E17-REV-006-review-2026-10-18.md) | E17 | Review of 2026-10-18, F22 | done |
 | [REV-007](./E17-REV-007-review-2026-10-19.md) | E17 | Review of 2026-10-19, F23 to F34 | done |
+| [EN-151](./E49-F48-EN-151-the-tables-opened-by-two-worktrees.md) | F48 | The tables, opened by two worktrees | ready |
+| [EN-152](./E49-F48-EN-152-add-search-show-and-list-by-branch.md) | F48 | Add, search, show and list, by branch | ready |
+| [EN-153](./E49-F48-EN-153-a-clean-snapshot-into-the-synced-folder.md) | F48 | A clean snapshot into the synced folder | ready |
+| [AUD-050](./E49-F48-AUD-050-audit-f48.md) | F48 | Audit F48 | ready |
 | [SP-034](./E49-SP-034-refine-e49.md) | E49 | Refine E49, the knowledge database and the light docs | done |
