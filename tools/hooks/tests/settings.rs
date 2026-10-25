@@ -166,8 +166,7 @@ fn f48_ac3_takes_the_snapshot_when_a_session_ends_within_its_timeout() {
 /// publishes or deletes, by its subcommand (AUD-023): `heavy-lock` runs any command given after it,
 /// `branches-clean` deletes branches and worktrees, `git-hooks install` sets the hooks folder and
 /// `release publish` makes a release, so each of them asks.
-const ALLOWED_BINARIES: [&str; 19] = [
-    "activity",
+const ALLOWED_BINARIES: [&str; 18] = [
     "backlog-status",
     "context-size",
     "dependencies outdated",

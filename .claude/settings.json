@@ -8,7 +8,6 @@
       "Bash(git switch *)",
       "Bash(gh api -X DELETE repos/AlexandreGallais/synoptic-studio/git/refs/heads/*)",
       "Bash(npm run *)",
-      "Bash(target/release/activity *)",
       "Bash(target/release/backlog-status *)",
       "Bash(target/release/context-size *)",
       "Bash(target/release/dependencies outdated *)",

@@ -2,7 +2,7 @@
 name = "metrics"
 version = "0.1.0"
 edition.workspace = true
-description = "The metrics of the agent's work: the report, the session report and the activity (EN-107)"
+description = "The metrics of the agent's work: the report and the session report (EN-107)"
 license.workspace = true
 publish.workspace = true
 

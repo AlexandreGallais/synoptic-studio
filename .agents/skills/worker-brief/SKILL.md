@@ -14,7 +14,6 @@ A worker works one story in its own worktree, in the background, and stops befor
 2. **One Git command per call**, never chained by `&&`, `;` or a pipe; a chain of Git reads goes through (`git status; git log -3`).
 3. Start with `target/release/git-sequences sync`; `git-sequences state` prints the branch, its base, the changes and the commits ahead.
 4. A scratch folder of its own, `<scratchpad>/<story id>`.
-5. **Progress in plain words**: one short line per step in the transcript, starting with the time, `HH:MM — what I am doing`, so that the Product Owner can follow the worker.
 
 ## Read first
 
