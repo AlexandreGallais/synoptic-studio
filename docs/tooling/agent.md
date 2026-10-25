@@ -43,9 +43,9 @@ flowchart LR
 
 | Agent type | Task kind | Tools | Preloaded |
 | --- | --- | --- | --- |
-| `story-worker` | `US`, `EN`, a `REV`'s naming pass, an `AUD`'s fixes, a `VAL`'s preparation | Bash, Read, Edit, Write, Grep, Glob, the library | `project-rules`, `worker-brief` |
+| `story-worker` | `US`, `EN`, a `REV`'s naming pass, an `AUD`'s fixes | Bash, Read, Edit, Write, Grep, Glob, the library | `project-rules`, `worker-brief` |
 | `researcher` | a research spike (`SP`) | the story worker's, `WebFetch`, `WebSearch` | `project-rules`, `worker-brief`, `spike` |
-| `clerk` | unused since ADR-0086: the main thread writes the statuses, the journal, the `done` commits and the merges itself; the file stays until a review removes it | Bash, Read, Edit, Write, Grep, Glob | `project-rules` |
+| `clerk` | none, unused: the main thread writes the statuses, the journal, the `done` commits and the merges itself (ADR-0086) | Bash, Read, Edit, Write, Grep, Glob | `project-rules` |
 
 - **A fresh worker per story**, never one agent chaining stories: an agent's cost is its growing context re-read at each call, not its start (EN-122's worker ended near 255,000 tokens, a start costs about 10,600; ADR-0086).
 - **No agent for small tasks**: the main thread writes the statuses, the journal, the `done` commits and the merges itself (ADR-0086).
@@ -76,11 +76,11 @@ Agents to add when their epic comes:
 
 ## Models
 
-**Each agent type runs on the cheapest model that does its task as well**, named in its file with the reason in the file's body (EN-066; F20's second round, 2026-10-17). Sonnet 5.5 costs half of Opus 5.5 (`REF-CLAUDE-PROMPT-CACHING`); a task that derives, judges or computes values stays on Opus until a measured trial shows Sonnet does as well.
+**Each agent type runs on the cheapest model that does its task as well**, named in its file with the reason in the file's body (EN-066). Sonnet 5.5 costs half of Opus 5.5 (`REF-CLAUDE-PROMPT-CACHING`); a task that derives, judges or computes values stays on Opus until a measured trial shows Sonnet does as well.
 
 | Agent type | Model | Why |
 | --- | --- | --- |
-| `clerk` | `sonnet` | unused since ADR-0086; copies given facts into set formats and follows the fixed steps of a merge or a rebase: nothing to derive or judge |
+| `clerk` | `sonnet` | unused (ADR-0086); copies given facts into set formats and follows the fixed steps of a merge or a rebase: nothing to derive or judge |
 | `story-worker` | `opus` | code, hand-computed tests and the docs of its rules; until one story on Sonnet, measured beside one on Opus, shows Sonnet does as well |
 | `researcher` | `opus` | judges what each source states; the feature is built from it |
 | `auditor` | `opus` | re-derives formulas and recomputes values; a weaker reviewer than the worker misses more |
@@ -104,7 +104,7 @@ The model is taken from the first of these that names one (`REF-CC-SUBAGENTS`): 
 | `log-tool-call` (Rust) | `PostToolUse`, `PostToolUseFailure`, `SubagentStop`, in the background | logs each call and its duration; on a subagent's stop, removes the files of its calls still shown running ([metrics](./metrics.md#the-calls-running), EN-120) |
 | `status-line` (Rust) | status line, every second | place in the backlog, step, session, call running ([metrics](./metrics.md#status-line)) |
 
-`limit-agents` and `check-handback` let the call through when they cannot read their input, so that a hook's own failure never blocks work. `guard-bash` alone fails closed, both its handlers', the shell's and the writes', `onFailure` set to `block` (`REF-CC-HOOKS`, AUD-023, AUD-033): a binary missing (a clone before `npm install`, a `cargo clean`) or crashing would otherwise let every shell command and every write through unjudged; it blocks them instead, the Bash calls rebuilding it included, so a person runs `npm run rust:build` once. `library-pages` runs on every `WebFetch` and only on a shell command whose text names `curl` or `wget`, the handlers' `if`, `Bash(*curl*)` and `Bash(*wget*)` (`REF-CC-HOOKS`, `REF-CC-PERMISSIONS`): a command it refuses names one, `/usr/bin/curl` or `sh -c 'curl …'` too, so the filter skips none, and the other commands do not start it. It and `check-handback` stop after 30 seconds and let the call through, in place of the 600 of the default, set when they ran through `cargo run`, which could wait on Cargo's build lock during a `check:all`. Every hook and the status line run their release binary by its path, `${CLAUDE_PROJECT_DIR}/target/release/<hook>` in exec form (ADR-0078, `REF-CC-HOOKS`): about 3 ms a hook, against 47 ms through `cargo run` and 59 to 106 ms for the TypeScript hooks they replace; the status line 10 ms a refresh against 180 ms, 1.9 % of a core against 24.5 % (EN-104). The binaries are the main checkout's, rebuilt at `prepare`, after `git-sequences sync`, after `story:finish` and after a pull that changed a Rust input (the `post-merge` and `post-rewrite` hooks, EN-131); `session-state` names one older than its sources, and `npm run rust:fresh` fails on it. The Rust hooks live in `tools/hooks`, each with its tests.
+`limit-agents` and `check-handback` let the call through when they cannot read their input, so that a hook's own failure never blocks work. `guard-bash` alone fails closed, both its handlers', the shell's and the writes', `onFailure` set to `block` (`REF-CC-HOOKS`, AUD-023, AUD-033): a binary missing (a clone before `npm install`, a `cargo clean`) or crashing would otherwise let every shell command and every write through unjudged; it blocks them instead, the Bash calls rebuilding it included, so a person runs `npm run rust:build` once. `library-pages` runs on every `WebFetch` and only on a shell command whose text names `curl` or `wget`, the handlers' `if`, `Bash(*curl*)` and `Bash(*wget*)` (`REF-CC-HOOKS`, `REF-CC-PERMISSIONS`): a command it refuses names one, `/usr/bin/curl` or `sh -c 'curl …'` too, so the filter skips none, and the other commands do not start it. It and `check-handback` stop after 30 seconds and let the call through. Every hook and the status line run their release binary by its path, `${CLAUDE_PROJECT_DIR}/target/release/<hook>` in exec form (ADR-0078, `REF-CC-HOOKS`): about 3 ms a hook, against 47 ms through `cargo run`; the status line 10 ms a refresh, 1.9 % of a core (EN-104). The binaries are the main checkout's, rebuilt at `prepare`, after `git-sequences sync`, after `story:finish` and after a pull that changed a Rust input (the `post-merge` and `post-rewrite` hooks, EN-131); `session-state` names one older than its sources, and `npm run rust:fresh` fails on it. The Rust hooks live in `tools/hooks`, each with its tests.
 
 ## Pushes
 
@@ -130,7 +130,7 @@ Before each story the run merges `origin/develop` into the feature branch when `
 
 ## Cloud agents and scheduled tasks
 
-Product Owner, 2026-10-17: every agent works on the Product Owner's machine, in its repository; cloud agents are not used. A scheduled task (`CronCreate`) is made only when the Product Owner asks for one.
+Every agent works on the Product Owner's machine, in its repository; cloud agents are not used (decided on 2026-10-17). A scheduled task (`CronCreate`) is made only when the Product Owner asks for one.
 
 ## Searching past conversations
 
@@ -144,7 +144,7 @@ jq -r 'select(.type == "user") | .message.content | strings' <id>.jsonl | grep -
 
 ## Rules for this folder
 
-- Every hook and the status line are Rust binaries of `tools/hooks` (ADR-0073, EN-104), each tested in `tools/hooks/tests`; a ported hook writes the same bytes as the TypeScript one did, its JSON as `JSON.stringify` writes it.
+- Every hook and the status line are Rust binaries of `tools/hooks` (ADR-0073, EN-104), each tested in `tools/hooks/tests`, its JSON written as `JSON.stringify` writes it.
 - A rule a hook enforces is not repeated as an instruction: the hook's refusal says it when it matters.
 - A guard that blocks legitimate work is changed by a new ADR, never bypassed; `.claude/settings.local.json` (personal, not committed) may add permissions, never remove a guard.
 - Changes go to `develop` as tooling, with `chore(tooling): …` commits.

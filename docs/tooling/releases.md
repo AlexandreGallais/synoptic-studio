@@ -1,6 +1,6 @@
 # Releases
 
-The project's own tool, `tools/release/` (`target/release/release`), drafts and checks the features' text of each pull request into `main`, and makes a release by a button (ADR-0086; the flows before it, ADR-0067, ADR-0079 and ADR-0083, recorded in ADR-0101): the version lives only in the tags `vx.y.z` and their GitHub releases, never in a commit, and `package.json` holds `0.0.0-development`. The tool replaced release-please on 2026-10-18 (EN-112) and became the button with EN-117.
+The project's own tool, `tools/release/` (`target/release/release`), drafts and checks the features' text of each pull request into `main`, and makes a release by a button (ADR-0086; the flows before it, ADR-0067, ADR-0079 and ADR-0083, recorded in ADR-0101): the version lives only in the tags `vx.y.z` and their GitHub releases, never in a commit, and `package.json` holds `0.0.0-development`.
 
 | Step | Branch | Who | What happens |
 | --- | --- | --- | --- |
@@ -14,10 +14,10 @@ The project's own tool, `tools/release/` (`target/release/release`), drafts and 
 - `release publish` does nothing without a commit since the last tag: a second press, or a press with nothing merged, releases nothing. It refuses a body that breaks a rule, naming its pull request and its line: edit the body on GitHub, then press again.
 - It refuses notes that disagree with the version ([below](#the-version)): a body listing changes when no commit since the last tag changes the library nor the playground, which then holds the notice of no change, and bodies listing none when a commit does (AUD-024).
 - The body of a Dependabot pull request, a security update merged into `main` ([CI](./ci.md)), its head branch `dependabot/…`, is left out of the notes: its commit is not a change of the library, and what the update changes for a user is written in the next review's text (AUD-024).
-- Three workflows, each started by its trigger alone (ADR-0088): `release.yml` by its button, `workflow_dispatch` its only trigger, its job without an `if:`; `site.yml` by a push to `main`; `rust-caches.yml` by a push to `main`, where it saves `main`'s Rust caches, `develop`'s being the `develop` CI's ([CI](./ci.md#the-rust-build-and-its-caches), EN-135). Before EN-132 they were three jobs of `release.yml`, each under its own `if:` on the event and the branch.
+- Three workflows, each started by its trigger alone (ADR-0088): `release.yml` by its button, `workflow_dispatch` its only trigger, its job without an `if:`; `site.yml` by a push to `main`; `rust-caches.yml` by a push to `main`, where it saves `main`'s Rust caches, `develop`'s being the `develop` CI's ([CI](./ci.md#the-rust-build-and-its-caches), EN-135).
 - The button on a branch other than `main` releases nothing: `release publish` reads the run's fully-formed ref, `GITHUB_REF` (`REF-GH-VARIABLES`), and refuses any other than `refs/heads/main`, empty included, before any Git or GitHub call, exiting 1 with `the run is on the ref "<ref>", not "refs/heads/main"`; a tag named `main` is refused so, whose short name, `GITHUB_REF_NAME`, is `main` too (AUD-030). It deploys nothing either, the site being `site.yml`'s.
-- The workflow runs on `GITHUB_TOKEN` alone (`contents: write` to make the release, `actions: read` to download the report, `pull-requests: read` to read the bodies, `REF-GH-JOB-PERMISSIONS`): no personal token, no third-party action. The token `RELEASE_PLEASE_TOKEN` release-please needed is no longer read; **the Product Owner deletes its secret** (_Settings → Secrets and variables → Actions_) and the token itself in their GitHub account (_Settings → Developer settings → Fine-grained tokens_).
-- The notes of 0.1.0 and 0.2.0 stay in their GitHub releases; `CHANGELOG.md` is gone.
+- The workflow runs on `GITHUB_TOKEN` alone (`contents: write` to make the release, `actions: read` to download the report, `pull-requests: read` to read the bodies, `REF-GH-JOB-PERMISSIONS`): no personal token, no third-party action. No workflow reads the secret `RELEASE_PLEASE_TOKEN`: **the Product Owner deletes it** (_Settings → Secrets and variables → Actions_) and its token in their GitHub account (_Settings → Developer settings → Fine-grained tokens_).
+- Each release's notes are in its GitHub release; the repository keeps no `CHANGELOG.md`.
 - The library stays below `1.0.0` until the Product Owner calls it stable. It is not published to npm yet; once it is, the version is written into the package at publish time, never committed (ADR-0086).
 
 ## The version
@@ -31,7 +31,7 @@ The project's own tool, `tools/release/` (`target/release/release`), drafts and 
 | anything else, or no commit of the library nor the playground: then its notes are the notice of no change | patch | patch |
 | no commit since the last tag | no release: `release publish` does nothing | no release |
 
-**Rolling back** to the release branch of ADR-0079 (removed: ADR-0101): `tools/release/`, `release.yml`, `package.json`, `package-lock.json` and `CHANGELOG.md` from the commit before EN-117's. To release-please (ADR-0067, removed: ADR-0101): `release-please-config.json`, `.release-please-manifest.json`, the `release-pr`, `release-please` and `test-report` jobs of `release.yml`, the `release-please--` branch pattern and the commit-message exception of `tools/git-hooks/`, from the commit before EN-112's, and a personal token in the secret `RELEASE_PLEASE_TOKEN`.
+**Rolling back** to a flow removed (ADR-0067, ADR-0079, recorded in ADR-0101): its files are those of the commit before EN-112's (release-please) or before EN-117's (the release branch).
 
 ## What a release text holds
 
@@ -50,7 +50,7 @@ The rules `release notes` drafts by and `release check` checks, from the sources
 | Conventional Commits only draft the categories; each line is then rephrased: a draft generated, then edited | `REF-COMMON-CHANGELOG` (3.1, 4.2) | no line still marked `[draft]` |
 | The version follows Semantic Versioning; before 1.0.0 a release raises the minor version for a feature or a breaking change | `REF-SEMVER` (Summary, FAQ) | — `release publish` computes it |
 
-What release-please's 0.2.0 notes did against them, their 163 lines of changes, still in its GitHub release: one line per commit, 29 under Features and 96 under Documentation; a feature's commits beside its own merge commit; the tooling's commits among the library's; scopes in bold instead of words; a commit referenced where a pull request exists; the breaking change in a block of its own, far from its group. GitHub's generated notes list the merged pull requests by label (`REF-GH-RELEASE-NOTES`): here stories and features, without what they change for a user.
+GitHub's generated notes list the merged pull requests by label (`REF-GH-RELEASE-NOTES`): here stories and features, without what they change for a user.
 
 ### How the draft is made
 
