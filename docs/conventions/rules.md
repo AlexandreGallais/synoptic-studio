@@ -208,7 +208,7 @@ Measured on real edits: the last 500 changes of a TypeScript file in the history
 | `commit-msg`: the message | Conventional Commits, the scopes, 100 characters a line | 24 ms (commitlint: 218 ms, EN-108) | kept: every message alike, read by `release notes`, `release publish` and the agent's `git log`; commitlint's rules ported to Rust (`git-hooks commit-msg`, EN-108) |
 | the scope list | 14 scopes, `SCOPES` in `tools/git-hooks/src/message.rs` | — | kept: `docs(backlog)` 227 and `docs(docs)` 148 times in the last 3,000 commits, every scope a layer or an area; **changed**: `eslint` dropped, its folder gone with EN-085 |
 | `commit-msg`: `rule-docs` on a done commit | a story that changes a rule brings its docs | 0.05 s | kept: a rule changed without its Q row and its feature's audit (up to F47, its VAL and its guide page) is refused at the commit, not found at the review (EN-059) |
-| `pre-push`: `refuse-shared-files` | no shared file on a story branch | 0.05 s | kept: ADR-0065, no conflict on the indexes since |
+| `pre-push`: `refuse-shared-files` | no shared file on a story branch | 0.05 s | **removed** (ADR-0102, 2026-10-25): its refusals cost pushes made again, and one story at a time meets no conflict on the shared files |
 | `pre-push`: the branch name | the branch's name, one pattern | 13 ms (validate-branch-name: 44 ms, EN-108) | kept: `story:finish` and the auto-merge read the story's id from it; one regular expression (`git-hooks branch`, EN-108) |
 | `pre-push`: `check:all` | every check, in lanes | about 40 s, 57 to 68 s with the docs build (EN-085) | kept: the story's only check (ADR-0072) |
 | `pre-push`: `golden:check` | results unchanged by a refactor | when a golden file is written | kept: ADR-0049's naming pass |

@@ -2,7 +2,7 @@
 name = "shared-files"
 version = "0.1.0"
 edition.workspace = true
-description = "Shared files written only by the main thread, at merge (ADR-0065, EN-050)"
+description = "A story file's rows moved into the logs by its done commit (ADR-0091, ADR-0102)"
 license.workspace = true
 publish.workspace = true
 
