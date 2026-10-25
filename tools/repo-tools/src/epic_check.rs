@@ -629,7 +629,7 @@ mod tests {
             [
                 "test (lane test): scripts/epic-check.test.ts > epic-check > lists the branches, src/math/unit.test.ts > unit > keeps a zero vector",
                 "check:rust (lane check:rust): heavy_lock_waits",
-                "playground:build (lane docs:build → playground:build)",
+                "playground:build (lane docs:build → playground:build → playground:app)",
             ]
         );
     }
@@ -641,7 +641,7 @@ mod tests {
             Finding {
                 what: "check:all (code, site, playground, dependencies)".to_owned(),
                 is_ok: false,
-                detail: "lint (lane lint)".to_owned(),
+                detail: "lint (lane lint → playground:types)".to_owned(),
             }
         );
         // No check named (the lock failed before any check ran): the output's end.

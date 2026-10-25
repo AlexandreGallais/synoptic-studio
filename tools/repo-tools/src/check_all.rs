@@ -39,6 +39,19 @@ pub const TEST_SCRIPT: &str = "test";
 /// The check of the Rust workspace's tests under the coverage floor (EN-130).
 pub const RUST_COVERAGE: &str = "rust:coverage";
 
+/// The check of the playground's types and templates, by Angular's compiler (EN-159).
+pub const PLAYGROUND_TYPES: &str = "playground:types";
+
+/// The check building the playground's Angular app (EN-159).
+pub const PLAYGROUND_APP: &str = "playground:app";
+
+/// The failure of a playground check whose packages are not installed.
+macro_rules! playground_missing {
+    () => {
+        "The packages of the playground are missing: run npm ci --prefix playground"
+    };
+}
+
 /// Each check by its name, with the command `sh -c` runs from the repository's root, the programs
 /// npm installs found first ([`search_path`]). The targets of `lint` and `format:check` are those
 /// `fix` gives the same tools in `package.json`.
@@ -52,12 +65,32 @@ pub const CHECKS: &[(&str, &str)] = &[
             "playground scripts src tests"
         ),
     ),
+    // The playground's Angular app, an npm project of its own (ADR-0104): its code and templates
+    // type-checked by Angular's compiler on the playground's TypeScript, its packages missing
+    // failing aloud (EN-159).
+    (
+        PLAYGROUND_TYPES,
+        concat!(
+            "{ command -v ngc > /dev/null || { echo '",
+            playground_missing!(),
+            "' >&2; exit 1; }; } && ngc -p playground/tsconfig.app.json --noEmit"
+        ),
+    ),
     (TEST_SCRIPT, "vitest run --coverage --tags-filter='!timing'"),
     (
         "docs:build",
         "target/release/api-pages src/index.ts docs/api /api/ editor && vitepress build docs",
     ),
     ("playground:build", "vite build --mode playground"),
+    // Angular's build of the app into `playground/dist/browser` (EN-159).
+    (
+        PLAYGROUND_APP,
+        concat!(
+            "{ command -v ng > /dev/null || { echo '",
+            playground_missing!(),
+            "' >&2; exit 1; }; } && cd playground && ng build"
+        ),
+    ),
     (
         "format:check",
         concat!(
@@ -109,14 +142,15 @@ pub const CHECKS: &[(&str, &str)] = &[
     ),
 ];
 
-/// The lane of the linters and TypeScript's own errors.
-const LINT_LANE: &[&str] = &["lint"];
+/// The lane of the linters and TypeScript's own errors, the playground's by Angular's compiler.
+const LINT_LANE: &[&str] = &["lint", PLAYGROUND_TYPES];
 
 /// The lane of the tests.
 const TEST_LANE: &[&str] = &[TEST_SCRIPT];
 
-/// The lane of the documentation site and the playground built into it.
-pub const DOCS_LANE: &[&str] = &["docs:build", "playground:build"];
+/// The lane of the documentation site and the playground built into it, then the playground's
+/// Angular app built by Angular.
+pub const DOCS_LANE: &[&str] = &["docs:build", "playground:build", PLAYGROUND_APP];
 
 /// The lane of the formatter, the secret scan and the dependencies.
 const FILES_LANE: &[&str] = &[
@@ -198,11 +232,15 @@ pub fn listed_lines() -> Vec<String> {
 }
 
 /// The folders searched for a check's programs: the repository's `node_modules/.bin`, where npm
-/// installs oxlint, Vitest, Vite and `VitePress`, then those of `PATH`, so that a check finds them
-/// whether npm started `check-all` or the CI called it by its path.
+/// installs oxlint, Vitest, Vite and `VitePress`, the playground's, where it installs Angular's
+/// `ngc` and `ng` (ADR-0104), then those of `PATH`, so that a check finds them whether npm started
+/// `check-all` or the CI called it by its path.
 #[must_use]
 pub fn search_path(root: &Path, path: Option<&OsString>) -> OsString {
-    let mut folders = vec![root.join("node_modules").join(".bin")];
+    let mut folders = vec![
+        root.join("node_modules").join(".bin"),
+        root.join("playground").join("node_modules").join(".bin"),
+    ];
 
     folders.extend(path.map(env::split_paths).into_iter().flatten());
     env::join_paths(folders).unwrap_or_else(|_| path.cloned().unwrap_or_default())
@@ -798,10 +836,40 @@ mod tests {
 
         assert_eq!(lines.len(), CHECKS.len() - 1);
         assert_eq!(
-            lines[2],
+            lines[3],
             "docs\tdocs:build\ttarget/release/api-pages src/index.ts docs/api /api/ editor && \
              vitepress build docs"
         );
+    }
+
+    #[test]
+    fn f50_ac3_checks_the_playground_by_angular_s_compiler_and_builds_it() {
+        assert_eq!(lane_named("lint"), Some(&["lint", PLAYGROUND_TYPES][..]));
+        assert_eq!(
+            lane_named("docs"),
+            Some(&["docs:build", "playground:build", PLAYGROUND_APP][..])
+        );
+        // Its own tsconfig, no file written; the build from its folder, where `angular.json` is.
+        assert!(
+            check_named(PLAYGROUND_TYPES)
+                .command
+                .ends_with("&& ngc -p playground/tsconfig.app.json --noEmit")
+        );
+        assert!(
+            check_named(PLAYGROUND_APP)
+                .command
+                .ends_with("&& cd playground && ng build")
+        );
+        // Its packages missing, each fails saying how to install them.
+        for (name, program) in [(PLAYGROUND_TYPES, "ngc"), (PLAYGROUND_APP, "ng")] {
+            assert!(
+                check_named(name).command.starts_with(&format!(
+                    "{{ command -v {program} > /dev/null || {{ echo 'The packages of the \
+                     playground are missing: run npm ci --prefix playground' >&2; exit 1; }}; }}"
+                )),
+                "{name}"
+            );
+        }
     }
 
     #[test]
@@ -811,11 +879,13 @@ mod tests {
 
         assert_eq!(
             search_path(root, Some(&path)),
-            OsString::from("/repo/node_modules/.bin:/usr/bin:/bin")
+            OsString::from(
+                "/repo/node_modules/.bin:/repo/playground/node_modules/.bin:/usr/bin:/bin"
+            )
         );
         assert_eq!(
             search_path(root, None),
-            OsString::from("/repo/node_modules/.bin")
+            OsString::from("/repo/node_modules/.bin:/repo/playground/node_modules/.bin")
         );
     }
 
@@ -840,7 +910,7 @@ mod tests {
         assert_eq!(
             skipped_lines(&owned(&["tools/lint/src/lib.rs"]), "origin/develop"),
             [
-                "- docs:build, playground:build skipped: nothing changed in their inputs against origin/develop"
+                "- docs:build, playground:build, playground:app skipped: nothing changed in their inputs against origin/develop"
             ]
         );
     }
@@ -855,6 +925,8 @@ mod tests {
         assert!(touches_site(&owned(&["playground/main.ts"])));
         assert!(touches_site(&owned(&["tools/api-pages/src/main.rs"])));
         assert!(touches_site(&owned(&["package-lock.json"])));
+        // The playground's packages, a project of its own built into the site (ADR-0104).
+        assert!(touches_site(&owned(&["playground/package-lock.json"])));
         assert!(touches_site(&owned(&["vite.config.ts"])));
         assert!(touches_site(&owned(&["Cargo.lock"])));
         assert!(touches_site(&owned(&["Cargo.toml"])));

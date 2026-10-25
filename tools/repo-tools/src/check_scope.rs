@@ -12,7 +12,7 @@ use std::path::Path;
 
 use stale_binaries::touches;
 
-use crate::check_all::quoted;
+use crate::check_all::{PLAYGROUND_TYPES, check_named, quoted};
 
 /// A check of a scoped push: its name in the report and the shell command it runs.
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -44,11 +44,23 @@ pub const FULL_INPUTS: &[&str] = &[
     "deny.toml",
     "package.json",
     "package-lock.json",
+    // The playground's packages, an npm project of its own (ADR-0104).
+    "playground/package.json",
+    "playground/package-lock.json",
     "tsconfig.json",
     "vite.config.ts",
     ".oxlintrc.json",
     "tests/font-files-setup.ts",
     "tests/inter-regular.ttf",
+];
+
+/// What Angular's compiler reads of the playground's app: its code, templates and styles, and its
+/// project's settings (EN-159).
+pub const PLAYGROUND_APP_INPUTS: &[&str] = &[
+    "playground/src/",
+    "playground/angular.json",
+    "playground/tsconfig.json",
+    "playground/tsconfig.app.json",
 ];
 
 /// The checks a story's push gives up whatever it changed, on the full run too: the dependency
@@ -181,6 +193,7 @@ pub struct Scope {
 /// workspace's, `repository_tests` the test files of `tests/` and `scripts/`, which read the
 /// repository's files beside their imports.
 ///
+/// - the playground's app or its settings changed: Angular's type check of it (EN-159);
 /// - TypeScript changed: oxlint on its files, `tsc --noEmit` on the project, the unused exports;
 /// - TypeScript or Markdown changed: the project's linter on their files;
 /// - a file changed outside `tools/`: the Vitest tests related to it, and the repository's own;
@@ -228,6 +241,9 @@ pub fn scope(
             format!("target/release/lint {}", words(&linted)),
         ));
         lanes.push(lane);
+    }
+    if touches(paths, PLAYGROUND_APP_INPUTS) {
+        lanes.push(vec![check_named(PLAYGROUND_TYPES)]);
     }
     if !typescript.is_empty() {
         lanes.push(vec![
@@ -401,6 +417,55 @@ mod tests {
             "src/x.ts"
         ])));
         assert!(!needs_full_check(&[]));
+    }
+
+    #[test]
+    fn f50_ac3_runs_the_full_check_for_the_playground_s_packages() {
+        for input in ["playground/package.json", "playground/package-lock.json"] {
+            assert!(needs_full_check(&owned(&[input])), "{input}");
+        }
+        assert!(!needs_full_check(&owned(&[
+            "playground/src/main.ts",
+            "playground/angular.json"
+        ])));
+    }
+
+    #[test]
+    fn f50_ac3_checks_the_playground_s_app_by_angular_s_compiler() {
+        let types = check_named(PLAYGROUND_TYPES);
+
+        // A template: Angular's check alone, then the related tests.
+        let template = owned(&["playground/src/app/app.component.html"]);
+        let scope_of_template = scope(&template, &template, &crates(), &[]);
+
+        assert_eq!(scope_of_template.lanes[0], vec![types.clone()]);
+        assert_eq!(scope_of_template.lanes.len(), 2);
+        // Its settings, even removed from the working tree.
+        for input in [
+            "playground/angular.json",
+            "playground/tsconfig.json",
+            "playground/tsconfig.app.json",
+        ] {
+            let change = owned(&[input]);
+
+            assert_eq!(
+                scope(&change, &[], &crates(), &[]).lanes[0],
+                vec![types.clone()]
+            );
+        }
+        // The old page and a folder only starting like the app's: not Angular's.
+        for path in ["playground/points/a.ts", "playground/srcx/a.ts"] {
+            let change = owned(&[path]);
+
+            assert!(
+                !scope(&change, &change, &crates(), &[])
+                    .lanes
+                    .iter()
+                    .flatten()
+                    .any(|check| check.name == PLAYGROUND_TYPES),
+                "{path}"
+            );
+        }
     }
 
     #[test]
