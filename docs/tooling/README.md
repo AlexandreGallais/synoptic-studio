@@ -15,3 +15,4 @@ How the project is built, checked, documented, versioned and released, and how t
 | [agent-tools.md](./agent-tools.md) | the agent's own tools, the Rust workspace, the shared files |
 | [metrics.md](./metrics.md) | how long the agent's work takes and how many tokens it uses; the status line |
 | [sources.md](./sources.md) | the local source library (ADR-0039) |
+| [knowledge.md](./knowledge.md) | the project's records in one SQLite file, its knowledge tables, two worktrees writing at once (E49) |

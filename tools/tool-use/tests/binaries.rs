@@ -79,9 +79,9 @@ fn reads_the_call_in_the_code_never_in_a_comment() {
 #[test]
 fn f21_ac7_every_binary_of_the_workspace_records_its_use_under_its_name() {
     let binaries = binaries();
-    // The 43 binaries of 2026-10-19, `bench` the last (AUD-023, EN-141): one added or lost changes
+    // The 44 binaries of 2026-10-25, `knowledge` the last (EN-151): one added or lost changes
     // the count, which is then written again here.
-    assert_eq!(binaries.len(), 43, "{binaries:?}");
+    assert_eq!(binaries.len(), 44, "{binaries:?}");
 
     let missing: Vec<String> = binaries
         .iter()

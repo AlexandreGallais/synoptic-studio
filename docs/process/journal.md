@@ -7,6 +7,7 @@ What each working session dealt with, in the agent's words: the Product Owner's 
 - `#review` After REV-009 the site's API moved beside the domain and the E02 retrospective listed (#504); `main` merged back into `develop` by mistake (#506), the Git rule corrected.
 - `#decision` The Product Owner asked for the agent's knowledge in one SQLite file per project in the records folder, outside Git, the docs short and readable, then the agent's setup shared with every coding agent: E49 and E50, before E21. SP-034 (#505) refined E49, ten answers in its Decisions; the records folder's whole content in one file, the raw transcripts left as files it indexes.
 - `#run` The Product Owner started a run on 2026-10-25 without a scope named, after the agent proposed F48, the knowledge database: the scope is F48, from EN-151 to its audit, AUD-050.
+- `#run` EN-151: `tools/knowledge` makes `$AGENT_RECORDS_ROOT/<repo>/records.sqlite` with note 0035's tables in WAL, each write in `BEGIN IMMEDIATE`, a newer schema refused for writing; `records-save` finds its folder through the same functions.
 
 ## 2026-10-25 — SP-033 and REV-009, the epics regrouped and the documentation cleaned
 

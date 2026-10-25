@@ -3,7 +3,7 @@ id: EN-151
 epic: E49
 feature: F48
 title: The tables, opened by two worktrees
-status: ready
+status: done
 points: 3
 ---
 
@@ -25,3 +25,7 @@ The crate `tools/knowledge` and its file, as [note 0035](../../research/notes/00
 - [ ] T3 — `docs/tooling/knowledge.md` and the records folder's layout row (`records.sqlite`) (30 min)
 
 One task = one commit, referenced as `EN-151.T1` in the commit footer.
+
+## For the main thread
+
+The records folder's README (outside the repository) needs its layout row, which a worker cannot write: `| <project>/records.sqlite | the project's records, its knowledge tables first (target/release/knowledge, EN-151) |`. The binary `knowledge` is not in `.claude/settings.json`'s allow list nor in agent-tools.md's list of the binaries the agent calls: a permission change, left to the main thread for EN-152, when the agent starts calling it.
