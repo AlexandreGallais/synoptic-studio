@@ -699,7 +699,7 @@ fn f29_ac2_reads_cargo_s_inputs_and_the_files_the_crates_tests_read() {
     // A story of Markdown, of the library's code or of a script: none of them.
     assert!(!touches_rust(&owned(&[
         "playground/checklists/epic-17.ts",
-        "docs/how-it-works.md",
+        "docs/how-it-is-made.md",
         "tests/data/criteria.json",
         "src/math/angle/degrees.ts",
         "playground/main.ts",
