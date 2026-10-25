@@ -33,7 +33,7 @@ Every top-level function, type and module constant carries a `/** … */` block.
 
 Checked by `local/see-references`.
 
-Every function cites at least one source it was written from, so that its formula can be checked against that source.
+Every `math`, `geometry` and `domain` function cites at least one source it was written from, so that its formula or rule can be checked against that source; a `format` or `procedure` function, such as the playground's clicks and displays, may cite one but need not (Product Owner, 2026-10-25).
 
 | Form | Resolution | Example |
 | --- | --- | --- |

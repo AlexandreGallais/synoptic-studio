@@ -92,7 +92,7 @@ it("[F01.AC3] clamps a 100 × 25 rectangle with radius 100 to an effective radiu
 
 ## Coverage
 
-`npm run test` measures the coverage of `src/` and `playground/` (`@vitest/coverage-v8`). It fails below **100 %** of lines, branches, functions and statements in `src/`, and below the playground's floor (lines 98, statements 98, functions 100, branches 89 on 2026-10-13). Barrels, tests, the playground's entry and `playground/user-actions/` are excluded. An uncovered branch is either a missing test or dead code.
+`npm run test` measures the coverage of `src/` and `playground/` (`@vitest/coverage-v8`). It fails below **95 %** of lines, branches, functions and statements in `src/` while the library is developed, raised again at a later refinement (Product Owner, 2026-10-25), and below the playground's floor (lines 98, statements 98, functions 100, branches 89 on 2026-10-13). Barrels, tests, the playground's entry and `playground/user-actions/` are excluded. An uncovered branch is either a missing test or dead code.
 
 ## Checking the tests themselves
 
@@ -106,7 +106,7 @@ it("[F01.AC3] clamps a 100 × 25 rectangle with radius 100 to an effective radiu
 | Levels | examples computed by hand; properties; criterion tests `[F01.ACn]`; the test cards of the user stories, tried by the Product Owner on `develop` at the review (`REV`, ADR-0100); regression and end-to-end suites once the applications exist (E48, ADR-0020) |
 | Environments | the core in Node.js without a DOM; `render` and the playground with happy-dom; browsers for end-to-end, later |
 | Independence | the `auditor`, `verifier` and `math-expert` agents re-derive, recompute and try mutations; the Product Owner tries the test cards |
-| Success | every test green, 100 % coverage of `src/`, no `.skip` nor `.only`, on every push and every release |
+| Success | every test green, 95 % coverage of `src/`, no `.skip` nor `.only`, on every push and every release |
 | Regression | every test runs before every push and on the pull request into `main`; a done feature's criterion tests are never deleted, only changed by a story citing the criterion |
 | Evidence | each release carries its JUnit report (`test-report.xml`) as a release asset |
 

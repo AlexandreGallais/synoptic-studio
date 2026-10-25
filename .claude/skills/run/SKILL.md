@@ -101,7 +101,7 @@ A run stops only when it must, and says which in its message:
 
 ## A feature's end (ADR-0100)
 
-A feature ends with its audit; it has no `VAL` of its own (2026-10-23, ADR-0100).
+A feature ends with its audit; it has no `VAL` of its own (2026-10-23, ADR-0100). In an epic tagged **method and tools** (E49, E50), a feature ends with its last story, without an audit, and the epic ends with one audit and a full check (2026-10-25).
 
 1. Once its `AUD` is merged into the feature branch, its status and the feature's `done` in the audit's done commit, open **one** pull request from the feature branch into `develop`, its body the stories with their pull requests and the evidence, labeled `autonomous`: GitHub merges it with a merge commit.
 2. Then bring the main checkout to `develop` (`git switch develop`, `git merge --ff-only origin/develop`, `npm ci`), so that the Product Owner's `npm run dev` shows the latest work; delete the feature branch here and on GitHub (`gh api -X DELETE repos/<owner>/<repo>/git/refs/heads/<branch>`, which runs no checks).

@@ -24,7 +24,6 @@ User stories only (ADR-0072): what the Product Owner runs in the playground, wit
 
 ## Tasks
 
-- [ ] T1 — The interface (files, names, signatures, TSDoc) and its tests from the criteria, failing (1 h)
-- [ ] T2 — Verb + precise object + the tests of T1 passing (2 h)
+- [ ] T1 — Verb + precise object, its tests from the criteria written before or with the code (2 h)
 
-One task = one commit, referenced as `US-000.T1` in the commit footer. At most three tasks: a larger story is split, the split proposed to the Product Owner with an example (EN-123).
+One task = one commit, referenced as `US-000.T1` in the commit footer; a few tasks, sized from the measured durations.

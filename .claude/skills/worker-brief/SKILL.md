@@ -23,10 +23,10 @@ How a run's worker works one story in its own worktree. The `story-worker` and `
 
 ## Work
 
-- **Tests first** (ADR-0084): `T1` the interface and its tests from the criteria, seen failing, which stands for breaking each new test once; `T2` the code; the pre-push `check:all` runs on the head.
+- **Tests first** (ADR-0084): the tests from the criteria written before or with the code, each seen failing once, in one commit with the code or apart as is faster (2026-10-25); the pre-push `check:all` runs on the head.
 - **One commit per task**, footer `Refs: <ID>.Tn` and the attribution lines, the message in a file of the scratch folder or a here-document (`-F -`), made by `target/release/git-sequences commit`.
 - **Before each commit**: `npm run fix`, which reports the type errors with the lint (EN-091), and the touched tests (`npx vitest run <paths>`, `cargo test -p <crate>`).
-- **Edge cases and mutations** (ADR-0064): no review checks a story, so its worker writes the story's edge cases into its tests and breaks each new test once on purpose to see it fail.
+- **Edge cases and mutations** (ADR-0064): no review checks a story, so its worker writes the story's edge cases into its tests; a library story breaks each new test once on purpose to see it fail, a tooling story leaves the mutations to its epic's final audit (2026-10-25).
 - **Docs in the same task as the code** they describe: domain, derivations, references, playground.
 - **A binary that runs a command given to it** (`heavy-lock`, `bench`, a wrapper): `guard-bash`'s reading of that command lands in a task before the one that builds the binary, and the worker hands back once that task is pushed, before building the binary, so that the main thread rebuilds the main checkout's `guard-bash` from the branch, whose judgment every call goes through (AUD-035).
 - **The current step**, one short line in French, goes to `.git/metrics/step` of the main checkout (`git rev-parse --git-common-dir` gives its folder): the status line shows it.
