@@ -103,6 +103,10 @@ const RELAXED: &[(&str, bool)] = &[
 /// project's root as Angular's do (EN-160).
 pub const ANGULAR_APP_FILES: &[&str] = &["playground/src/**/*.ts", "playground/*.config.ts"];
 
+/// The old page's folders inside the Angular app, kept unchanged as its utils (EN-160): they keep
+/// the library's rules, as `tests/code-folders.ts` says, until F57 to F59 move them.
+pub const ANGULAR_APP_IGNORES: &[&str] = &["playground/src/app/shared/utils/**"];
+
 /// The scopes, in the order `ESLint`'s configuration applied them; only those that set a rule of
 /// this linter.
 pub const SCOPES: [Scope; 8] = [
@@ -169,7 +173,7 @@ pub const SCOPES: [Scope; 8] = [
     Scope {
         name: "angular-app",
         files: ANGULAR_APP_FILES,
-        ignores: &[],
+        ignores: ANGULAR_APP_IGNORES,
         rules: &[
             ("@typescript-eslint/naming-convention", false),
             ("functional/no-classes", false),
@@ -429,11 +433,24 @@ mod tests {
         ] {
             assert!(!app.contains(&rule), "{rule}");
         }
-        // The rest of the playground's rules stay on; the old page keeps the library's.
+        // The rest of the playground's rules stay on.
         assert!(app.contains(&"import-x/no-restricted-paths"));
         assert!(app.contains(&"local/require-kind"));
-        assert!(rules_for("playground/points/delete-points.ts").contains(&"functional/no-classes"));
-        assert!(rules_for("playground/points/delete-points.ts").contains(&"local/folder-layout"));
+        // The old page's folders, the app's utils, keep the library's rules (EN-160).
+        let util = rules_for("playground/src/app/shared/utils/points/show-delete-button.ts");
+        let barrel = rules_for("playground/src/app/shared/utils/points/index.ts");
+        for rule in [
+            "@typescript-eslint/naming-convention",
+            "functional/no-classes",
+            "functional/no-this-expressions",
+            "local/canonical-import-path",
+            "local/folder-has-index",
+            "local/folder-layout",
+            "local/one-export-per-file",
+        ] {
+            assert!(util.contains(&rule), "{rule}");
+        }
+        assert!(barrel.contains(&"local/barrel-exports"));
     }
 
     #[test]
