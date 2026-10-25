@@ -13,19 +13,16 @@
 
 ## Layout
 
-| Folder | Section of the site |
-| --- | --- |
-| `docs/index.md` | home |
-| `docs/domain/` | Domain |
-| `docs/adr/` | Decisions |
-| `docs/conventions/` | Conventions |
-| `docs/tooling/` | Tooling |
-| `docs/derivations/` | Derivations |
-| `docs/research/` | Research |
-| `docs/references.md` | References |
-| `docs/api/` | API (generated) |
+The sidebar and the navigation bar follow one order, `GROUPS` in `docs/.vitepress/config.ts`, ordered for a reader, the agent first (REV-009): what the project is, how to work, the tooling, then the records, grouped and last.
 
-The sidebar is built from each folder's Markdown files, titled by their first `#` heading; a `README.md` is its folder's index.
+| Group | Sections, in order (folders of `docs/`) |
+| --- | --- |
+| The project | Domain (`domain/`) |
+| How to work | Conventions (`conventions/`), Process (`process/`, its index and `agile.md`), Backlog (`backlog/`), Epics (`backlog/epics/`), Features (`backlog/features/`), Research (`research/`, the protocol), Playbook (`playbook/`) |
+| Tooling | Tooling (`tooling/`), API (`api/`, generated) |
+| Records | Decisions (`adr/`), Research notes (`research/notes/`), Research requests (`research/requests/`), Derivations (`derivations/`), References (`references.md`), Guide (`guide/`, the pages of past features and epics), Retrospectives (`process/retrospectives/`), Logs (the journal, the improvement and feedback logs, the tool incidents and the history of `process/`) |
+
+A section lists its folder's Markdown files, titled by their first `#` heading, a `README.md` as its index and the templates (`_*.md`) left out, or the pages it names; the story files are reached from the backlog's indexes, not the sidebar. `docs/index.md` is the home page, its links in the same order.
 
 ## Writing pages
 

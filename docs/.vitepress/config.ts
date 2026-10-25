@@ -17,20 +17,125 @@ const API_SIDEBAR_FILE = join(DOCS_ROOT, "api", "api-sidebar.json");
 /** Name of a folder's index page in the repository (served as the folder's index). */
 const FOLDER_INDEX = "README.md";
 
-/** Site sections: title and folder, in reading order. */
-const SECTIONS = [
-  { folder: "guide", title: "Guide" },
-  { folder: "domain", title: "Domain" },
-  { folder: "adr", title: "Decisions" },
-  { folder: "conventions", title: "Conventions" },
-  { folder: "tooling", title: "Tooling" },
-  { folder: "derivations", title: "Derivations" },
-  { folder: "backlog", title: "Backlog" },
-  { folder: "backlog/epics", title: "Epics" },
-  { folder: "research", title: "Research" },
-  { folder: "process", title: "Process" },
-  { folder: "playbook", title: "Playbook" },
+/**
+ * A section of the site: a folder, its index first when it has one, then its pages, every page of
+ * the folder or the ones named, in that order.
+ */
+type Section = {
+  readonly collapsed: boolean;
+  readonly folder: string;
+  readonly overview: boolean;
+  readonly pages: "all" | readonly string[];
+  readonly title: string;
+};
+
+/** A group of sections, a heading of the sidebar and an entry of the navigation bar. */
+type Group = {
+  readonly sections: readonly Section[];
+  readonly title: string;
+};
+
+/**
+ * The site in reading order, for the agent first (REV-009): what the project is, how to work,
+ * the tooling, then the records, grouped and last.
+ */
+const GROUPS: readonly Group[] = [
+  {
+    sections: [
+      { collapsed: false, folder: "domain", overview: true, pages: "all", title: "Domain" },
+    ],
+    title: "The project",
+  },
+  {
+    sections: [
+      {
+        collapsed: false,
+        folder: "conventions",
+        overview: true,
+        pages: "all",
+        title: "Conventions",
+      },
+      {
+        collapsed: false,
+        folder: "process",
+        overview: true,
+        pages: ["agile.md"],
+        title: "Process",
+      },
+      { collapsed: false, folder: "backlog", overview: true, pages: "all", title: "Backlog" },
+      { collapsed: true, folder: "backlog/epics", overview: true, pages: "all", title: "Epics" },
+      {
+        collapsed: true,
+        folder: "backlog/features",
+        overview: true,
+        pages: "all",
+        title: "Features",
+      },
+      { collapsed: false, folder: "research", overview: true, pages: "all", title: "Research" },
+      { collapsed: true, folder: "playbook", overview: true, pages: "all", title: "Playbook" },
+    ],
+    title: "How to work",
+  },
+  {
+    sections: [
+      { collapsed: false, folder: "tooling", overview: true, pages: "all", title: "Tooling" },
+      { collapsed: true, folder: "api", overview: true, pages: [], title: "API" },
+    ],
+    title: "Tooling",
+  },
+  {
+    sections: [
+      { collapsed: true, folder: "adr", overview: true, pages: "all", title: "Decisions" },
+      {
+        collapsed: true,
+        folder: "research/notes",
+        overview: true,
+        pages: "all",
+        title: "Research notes",
+      },
+      {
+        collapsed: true,
+        folder: "research/requests",
+        overview: false,
+        pages: "all",
+        title: "Research requests",
+      },
+      {
+        collapsed: true,
+        folder: "derivations",
+        overview: true,
+        pages: "all",
+        title: "Derivations",
+      },
+      {
+        collapsed: true,
+        folder: "",
+        overview: false,
+        pages: ["references.md"],
+        title: "References",
+      },
+      { collapsed: true, folder: "guide", overview: true, pages: "all", title: "Guide" },
+      {
+        collapsed: true,
+        folder: "process/retrospectives",
+        overview: true,
+        pages: "all",
+        title: "Retrospectives",
+      },
+      {
+        collapsed: true,
+        folder: "process",
+        overview: false,
+        pages: ["journal.md", "improvements.md", "feedback.md", "tool-incidents.md", "history.md"],
+        title: "Logs",
+      },
+    ],
+    title: "Records",
+  },
 ];
+
+/** The address of the playground, as of the last merge into `main`. */
+const PLAYGROUND = "https://alexandregallais.github.io/synoptic-studio/playground/";
 
 /**
  * Title of a Markdown page: its first level-1 heading, or its file name.
@@ -45,20 +150,52 @@ function pageTitle(path: string): string {
 }
 
 /**
- * Sidebar entries of a section: its index first, then its pages sorted by file name.
+ * The pages of a section: every Markdown page of its folder sorted by file name, its index and
+ * the templates left out, or the ones it names, in its order.
  *
- * @param folder - section folder, relative to the docs root
- * @returns sidebar items linking to every Markdown page of the folder
+ * @param section - section of the site
+ * @returns the file names of its pages
  */
-function sectionItems(folder: string): DefaultTheme.SidebarItem[] {
-  const pages = readdirSync(join(DOCS_ROOT, folder))
+function sectionPages(section: Section): readonly string[] {
+  if (section.pages !== "all") {
+    return section.pages;
+  }
+
+  return readdirSync(join(DOCS_ROOT, section.folder))
     .filter((name) => name.endsWith(".md") && name !== FOLDER_INDEX && !name.startsWith("_"))
     .toSorted((left, right) => left.localeCompare(right, "en"));
+}
 
-  return pages.map((name) => ({
-    link: `/${folder}/${name.slice(0, -".md".length)}`,
-    text: pageTitle(join(DOCS_ROOT, folder, name)),
+/**
+ * The address of a section: its index, or its first page when it has none.
+ *
+ * @param section - section of the site
+ * @returns the link of its first entry
+ */
+function sectionLink(section: Section): string {
+  const prefix = section.folder === "" ? "" : `/${section.folder}`;
+
+  return section.overview
+    ? `${prefix}/`
+    : `${prefix}/${(sectionPages(section)[0] ?? "").slice(0, -".md".length)}`;
+}
+
+/**
+ * Sidebar entries of a section: its index first when it has one, then its pages; the API's from
+ * the sidebar `tools/api-pages` writes.
+ *
+ * @param section - section of the site
+ * @returns sidebar items linking to its pages
+ */
+function sectionItems(section: Section): DefaultTheme.SidebarItem[] {
+  const prefix = section.folder === "" ? "" : `/${section.folder}`;
+  const overview = section.overview ? [{ link: `${prefix}/`, text: "Overview" }] : [];
+  const pages = sectionPages(section).map((name) => ({
+    link: `${prefix}/${name.slice(0, -".md".length)}`,
+    text: pageTitle(join(DOCS_ROOT, section.folder, name)),
   }));
+
+  return section.folder === "api" ? [...overview, ...apiItems()] : [...overview, ...pages];
 }
 
 /**
@@ -105,25 +242,25 @@ export default defineConfig({
   },
   themeConfig: {
     nav: [
-      ...SECTIONS.map((section) => ({ link: `/${section.folder}/`, text: section.title })),
-      { link: "/references", text: "References" },
-      { link: "/api/", text: "API" },
-      {
-        link: "https://alexandregallais.github.io/synoptic-studio/playground/",
-        text: "Playground",
-      },
+      ...GROUPS.map((group) => ({
+        items: group.sections.map((section) => ({
+          link: sectionLink(section),
+          text: section.title,
+        })),
+        text: group.title,
+      })),
+      { link: PLAYGROUND, text: "Playground" },
     ],
     outline: "deep",
     search: { provider: "local" },
-    sidebar: [
-      ...SECTIONS.map((section) => ({
-        collapsed: false,
-        items: [{ link: `/${section.folder}/`, text: "Overview" }, ...sectionItems(section.folder)],
+    sidebar: GROUPS.map((group) => ({
+      items: group.sections.map((section) => ({
+        collapsed: section.collapsed,
+        items: sectionItems(section),
         text: section.title,
       })),
-      { items: [{ link: "/references", text: "Bibliography" }], text: "References" },
-      { items: [{ link: "/api/", text: "Overview" }, ...apiItems()], text: "API" },
-    ],
+      text: group.title,
+    })),
   },
   title: "editor",
 });
