@@ -47,7 +47,10 @@ fn f21_ac1_every_hook_and_the_status_line_call_a_hooks_binary_by_its_path() {
 
             // Exec form, its arguments none but the snapshot's command: the path is one word,
             // spaces and all (`REF-CC-HOOKS`).
-            if name == "knowledge" {
+            // The end-of-session rituals, outside the hooks crate (EN-154).
+            if name == "records-save" || name == "session-report" {
+                assert_eq!(handler.get("args"), &Value::Array(Vec::new()), "{name}");
+            } else if name == "knowledge" {
                 assert_eq!(
                     handler.get("args"),
                     &Value::Array(vec![Value::String("snapshot".to_owned())])
@@ -70,6 +73,8 @@ fn f21_ac1_every_hook_and_the_status_line_call_a_hooks_binary_by_its_path() {
             "library-pages",
             "limit-agents",
             "log-tool-call",
+            "records-save",
+            "session-report",
             "session-state",
             "track-tool-call"
         ]
@@ -118,7 +123,16 @@ fn f48_ac3_takes_the_snapshot_when_a_session_ends_within_its_timeout() {
         .collect();
 
     // Every reason a session ends; in the foreground, so that the copy ends before Claude Code.
-    assert_eq!(handlers.len(), 1);
+    // The snapshot, then the end-of-session rituals, silently (2026-10-25, EN-154).
+    assert_eq!(handlers.len(), 3);
+    assert_eq!(
+        handlers[1].get("command").text(),
+        "${CLAUDE_PROJECT_DIR}/target/release/records-save"
+    );
+    assert_eq!(
+        handlers[2].get("command").text(),
+        "${CLAUDE_PROJECT_DIR}/target/release/session-report"
+    );
     assert_eq!(
         handlers[0].get("command").text(),
         "${CLAUDE_PROJECT_DIR}/target/release/knowledge"
