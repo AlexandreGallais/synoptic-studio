@@ -1,7 +1,7 @@
 // @vitest-environment happy-dom
 import { describe, expect, it } from "vitest";
 
-import { openServedPage, readValue, runResizeObservers, selectPageElement } from "../user-actions";
+import { openPage, readValue, runResizeObservers, selectPageElement } from "../user-actions";
 
 import { readListenerSignal } from "./read-listener-signal";
 import { removeListeners } from "./remove-listeners";
@@ -16,7 +16,7 @@ function openTimes(count: number): void {
     return;
   }
 
-  openServedPage("");
+  openPage("");
   openTimes(count - 1);
 }
 

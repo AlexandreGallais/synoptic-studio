@@ -6,7 +6,7 @@
 
 Editors for drawing the symbols of **synoptic views** — the schematic screens that supervise plants, networks and buildings — where **every shape is defined by numbers**: whole-number sizes, radii and angles, the geometry computed from them, each shape written as one clean SVG `<path>`.
 
-- **Documentation**: <https://alexandregallais.github.io/synoptic-studio/> — [the software](./docs/the-software.md), [how it is made](./docs/how-it-is-made.md), [where it stands](./docs/where-it-stands.md), the API.
+- **Documentation**: <https://alexandregallais.github.io/synoptic-studio/> — [the software](./docs/the-software.md), [how it is made](./docs/how-it-is-made.md), the API.
 - **Playground**: <https://alexandregallais.github.io/synoptic-studio/playground/> — the library at work, as of the last release.
 
 ## How it is made

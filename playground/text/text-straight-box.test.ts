@@ -5,7 +5,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import {
   chooseOption,
   chooseShapeKind,
-  openServedPage,
+  openPage,
   readDisplay,
   readText,
   selectPageElement,
@@ -55,7 +55,7 @@ function typeBox(width: string, height: string): void {
 
 describe("Text tool: the straight box of a turned text", () => {
   beforeEach(() => {
-    openServedPage("");
+    openPage("");
     chooseShapeKind("text");
     typeAndEnter("text-size", "16");
     // happy-dom loses the option marked `selected` once the page is moved into its document.

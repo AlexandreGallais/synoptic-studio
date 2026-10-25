@@ -25,7 +25,7 @@ Talk to them through `target/release/knowledge`, called from the checkout's root
 
 Start any task with the records: the story (`knowledge show <ID>`), its feature and epic, the rules and decisions it touches (`knowledge search`), the conventions of its area. The records are kept true as you go: a rule, a decision, a source, an incident or a status changes in the records with the work that changes it.
 
-**The docs are for the Product Owner only** (`docs/`: what the software is and how the project is made). Nothing is written in them while working; they are refreshed once, at a review. Code and docs cite short ids, never a path into the records.
+**The docs are for the Product Owner only** (`docs/`: what the software is and how the project is made). They are not changed until the Product Owner asks, not even at a review. Code cites short ids, never a path into the records.
 
 ## Golden rules
 
@@ -63,12 +63,11 @@ Hooks refuse most of these; none is worked around.
 
 | Level | Flow |
 | --- | --- |
-| Epic | one subject, opened by a refinement spike from `develop` that asks every question at once; an epic tagged **method and tools** has one audit, at its end |
-| Feature | a few stories, then its audit; one feature at a time; merged into `develop` |
-| Story | one behavior, a few tasks, a commit per task (`Refs: <ID>.Tn`); its row, status and log rows in the records, no story file; a test card for a user story |
-| Branches | `main` the reviewed work; `develop` integration; `feature/f<nn>-<topic>` from `develop`; `<type>/<id>-<topic>` per story; every change on a branch of its own merged by a merge commit, so the history shows each story and feature as a bubble |
-| Push | a story's push runs only the checks its change needs; the full check at a feature's push |
-| Review | only when the Product Owner asks: the naming pass, the tool incidents, the dependency updates, the docs refreshed; then `develop` → `main` |
+| Epic | one subject, taken in the Product Owner's order; its research reads the sources and the code, then one questionnaire asks every question at once, meant to be right the first time; the whole cut — features, stories, tasks — is made before any code; unrelated features go to another epic, a scope that grows is cut again at once; an epic tagged **method and tools** has no audit per feature and one thorough audit at its end |
+| Feature | branched from `develop`; its stories one at a time, each by a fresh worker; at its end a light audit of that feature (none in a method-and-tools epic), then the full check — mechanical, as the CI runs it — and its auto-merge into `develop` |
+| Story | from the records (criteria, tasks); code and tests written together; a commit per task (`Refs: <ID>.Tn`); a push that checks only what it touches; a pull request into its feature, auto-merged; its status and log rows in the records, no story file; every friction or need written at once as an `improvements` row |
+| Branches | `main` the reviewed work; `develop` integration; `feature/f<nn>-<topic>` from `develop`; `<type>/<id>-<topic>` per story; every change on a branch of its own merged by a merge commit, even a one-commit change, so the history shows each story and feature as a bubble; always a work branch into its base, never `develop` into a work branch — a conflict is solved by rebuilding the branch from `develop` |
+| Review | only when the Product Owner asks, the feature under way finished first: the naming pass (names of functions, arguments, properties, constants), the tool incidents, the dependency updates, the issues triaged, the method and tools — every friction and need, unfiltered; once the Product Owner validates it in the chat, the `po-validated` label merges `develop` into `main`; a release only on request |
 | Agents | one worker per story, in the background, never one agent chaining stories; specialists (`auditor`, `math-expert`, `functional-analyst`) only where their independence pays |
 
 ## Done

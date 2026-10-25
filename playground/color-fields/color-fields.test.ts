@@ -7,7 +7,7 @@ import {
   chooseShapeKind,
   clickElement,
   commitField,
-  openServedPage,
+  openPage,
   readText,
   readValue,
   selectPageElement,
@@ -44,7 +44,7 @@ function readFills(): readonly (string | null | undefined)[] {
 
 describe("Color fields", () => {
   beforeEach(() => {
-    openServedPage("");
+    openPage("");
     chooseShapeKind("text");
     chooseOption("text-weight", "400");
     chooseOption("text-fit", "content");

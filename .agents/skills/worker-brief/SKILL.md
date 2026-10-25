@@ -27,6 +27,8 @@ A worker works one story in its own worktree, in the background, and stops befor
 - **The records with the code**: a rule, a source, a derivation, a decision in the same task; journal rows, incidents and improvements by `knowledge sql "INSERT INTO <table> …"`, a note or a decision by `knowledge add <kind> -`. No Markdown doc is written.
 - **A binary that runs a command given to it** (a wrapper): `guard-bash`'s reading of that command lands in a task before the binary, and the worker hands back once it is pushed, so that the main thread rebuilds `guard-bash`.
 - **Never a polling loop**: a command over a minute runs with `run_in_background`; its end arrives as a notification.
+- **Every friction at once**: each small problem, friction or misunderstanding met during the story is written the moment it comes as a row of the records' `improvements` (kind `friction` or `need`, `knowledge sql "INSERT INTO improvements …"`), never filtered.
+- **Bubbles**: the story comes up to its feature branch by `git-sequences sync`, never by a merge of `develop` into it; nothing in `docs/` is changed.
 
 ## Heavy commands
 

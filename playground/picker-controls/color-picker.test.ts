@@ -7,7 +7,7 @@ import {
   chooseShapeKind,
   clickElement,
   commitField,
-  openServedPage,
+  openPage,
   pressKey,
   pressPointer,
   readDisplay,
@@ -53,7 +53,7 @@ function readAttribute(selector: string, name: string): string | null {
 
 describe("Color picker: opening, sliders and values", () => {
   beforeEach(() => {
-    openServedPage("");
+    openPage("");
     chooseShapeKind("text");
     chooseOption("text-weight", "400");
     chooseOption("text-fit", "content");

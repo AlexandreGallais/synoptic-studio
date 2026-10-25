@@ -8,7 +8,7 @@ import { createResizeObserver } from "./create-resize-observer";
  * and its `ResizeObserver` a stand-in the test tells of a size change (`runResizeObservers`).
  *
  * @kind procedure
- * @param search - query of the address, `?step=10`, or empty
+ * @param search - query of the address, or empty
  */
 export function loadPage(search: string): void {
   const parser = new DOMParser();

@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import {
   clickAt,
   clickElement,
-  openServedPage,
+  openPage,
   readText,
   readValue,
   runResizeObservers,
@@ -112,7 +112,7 @@ function placeRectangle(at: Point): void {
 
 describe("the zoom's keys, the fits and the percentage shown", () => {
   beforeEach(() => {
-    openServedPage("");
+    openPage("");
     setElementBox("#canvas", { height: 800, left: 100, top: 50, width: 1200 });
     // A, 100 × 50 at (10, 20), sharp, selected.
     typeAndEnter("radius", "0");

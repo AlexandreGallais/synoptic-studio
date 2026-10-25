@@ -7,7 +7,7 @@ import {
   chooseOption,
   chooseShapeKind,
   clickElement,
-  openServedPage,
+  openPage,
   typeAndEnter,
 } from "../user-actions";
 
@@ -64,7 +64,7 @@ function readCounts(): Record<string, number> {
 
 describe("What a redraw computes again", () => {
   beforeEach(() => {
-    openServedPage("");
+    openPage("");
     chooseShapeKind("text");
     typeAndEnter("text-size", "16");
 

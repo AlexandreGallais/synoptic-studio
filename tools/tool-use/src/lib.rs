@@ -62,7 +62,7 @@ pub fn run(tool: &str, subcommand: &str, work: impl FnOnce() -> u8) -> ExitCode 
 }
 
 /// Runs a tool's work, its use recorded as [`run`] does unless the call is a poll: a program
-/// called on a timer, such as the status line drawn once a second, whose thousands of lines would
+/// called on a timer, such as a status line drawn once a second, whose thousands of lines would
 /// say nothing of the tool's use (EN-102).
 pub fn run_or_poll(
     tool: &str,

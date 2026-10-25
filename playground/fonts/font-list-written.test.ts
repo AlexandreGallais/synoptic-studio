@@ -7,7 +7,7 @@ import {
   chooseFiles,
   chooseShapeKind,
   clickElement,
-  openServedPage,
+  openPage,
   selectChoice,
   typeAndEnter,
   waitForPageTasks,
@@ -57,7 +57,7 @@ describe("The font list written only when the session's fonts change", () => {
       value: vi.fn<() => Promise<readonly InstalledFont[]>>().mockResolvedValue(INSTALLED),
     });
 
-    openServedPage("");
+    openPage("");
     chooseShapeKind("text");
     clickElement("installed-fonts");
     await waitForPageTasks();

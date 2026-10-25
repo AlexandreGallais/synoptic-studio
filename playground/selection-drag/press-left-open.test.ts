@@ -4,7 +4,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import {
   clickElement,
   dispatchDrawingPointer,
-  openServedPage,
+  openPage,
   readShapeModel,
   selectPageElement,
   setElementBox,
@@ -15,7 +15,7 @@ import type { Point } from "../../src";
 import type { PointerKeys } from "../user-actions";
 
 // The canvas sits at (100, 50) in the window, 800 × 600, the page at the opening view, 100 % from
-// (−40, −40): the drawing's point (x, y) is the window's (x + 140, y + 90). The epic's step 1
+// (−40, −40): the drawing's point (x, y) is the window's (x + 140, y + 90). The page as it opens
 // holds the rectangle 120 × 80 at (0, 0) alone: (300, 300) to (400, 400) is empty.
 
 /** No key held. */
@@ -107,7 +107,7 @@ const RECTANGLE = "M300.5 300.5H399.5V399.5H300.5Z";
 
 describe("a press left open, then the next press on the empty drawing", () => {
   beforeEach(() => {
-    openServedPage("?guide=epic");
+    openPage("");
     setElementBox("#canvas", { height: 600, left: 100, top: 50, width: 800 });
   });
 

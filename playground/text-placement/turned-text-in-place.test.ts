@@ -10,7 +10,7 @@ import {
   chooseShapeKind,
   clickElement,
   commitField,
-  openServedPage,
+  openPage,
   readText,
   readValue,
   selectPageElement,
@@ -137,7 +137,7 @@ function readTransforms(): readonly (string | null | undefined)[] {
 
 describe("Text tool: a turned text grows in place", () => {
   beforeEach(() => {
-    openServedPage("");
+    openPage("");
     chooseShapeKind("text");
     typeAndEnter("text-size", "16");
     chooseOption("text-weight", "400");

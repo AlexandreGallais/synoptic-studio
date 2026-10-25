@@ -1,7 +1,7 @@
 import { writeFontOptions, writeWeightChoice } from "../fonts";
 import { selectElement, writeInputValue } from "../page";
 
-import type { GuidedText } from "../guided-steps";
+import type { TextFields } from "./text-fields";
 
 /**
  * Writes a value into a text field, a text area or a choice of the page, without firing any event.
@@ -33,7 +33,7 @@ function writeCheckedValue(document: Document, id: string, isChecked: boolean): 
 }
 
 /**
- * Types a step's box and background choices into the Text tool's fields, without firing any
+ * Types a text's box and background choices into the Text tool's fields, without firing any
  * event: Fit content or Box, long words, the ellipsis, the vertical alignment, the wrap, the trim
  * and the background with its color.
  *
@@ -41,7 +41,7 @@ function writeCheckedValue(document: Document, id: string, isChecked: boolean): 
  * @param document - page document
  * @param text - the fields typed
  */
-function writeTextBoxValues(document: Document, text: GuidedText): void {
+function writeTextBoxValues(document: Document, text: TextFields): void {
   for (const [id, value] of [
     ["text-fit", text.isInBox ? "box" : "content"],
     ["text-vertical-alignment", text.verticalAlignment],
@@ -56,7 +56,7 @@ function writeTextBoxValues(document: Document, text: GuidedText): void {
 }
 
 /**
- * Types a step's underline and strike-through colors into the Text tool's fields, without firing
+ * Types a text's underline and strike-through colors into the Text tool's fields, without firing
  * any event: each box "follows the text's color" ticked unless its color was chosen, then the
  * color and the opacity it keeps.
  *
@@ -64,7 +64,7 @@ function writeTextBoxValues(document: Document, text: GuidedText): void {
  * @param document - page document
  * @param text - the fields typed
  */
-function writeTextStrokeColorValues(document: Document, text: GuidedText): void {
+function writeTextStrokeColorValues(document: Document, text: TextFields): void {
   writeCheckedValue(document, "text-underline-follows", !text.hasUnderlineColor);
   writeCheckedValue(document, "text-strike-follows", !text.hasStrikeThroughColor);
   writeFieldValue(document, "text-underline-color", text.underlineColor);
@@ -82,7 +82,7 @@ function writeTextStrokeColorValues(document: Document, text: GuidedText): void 
  * @param document - page document
  * @param text - the fields typed
  */
-function writeTextStyleValues(document: Document, text: GuidedText): void {
+function writeTextStyleValues(document: Document, text: TextFields): void {
   writeCheckedValue(document, "text-underline", text.isUnderlined);
   writeCheckedValue(document, "text-strike", text.isStruckThrough);
   selectElement(document, "text-italic").setAttribute("aria-pressed", String(text.isItalic));
@@ -95,14 +95,14 @@ function writeTextStyleValues(document: Document, text: GuidedText): void {
  * Types a text into the Text tool's fields, its font and weight chosen in their lists,
  * its box's and its background's among them, its strokes' colors, and its X, Y
  * and angle into the placement fields, without firing any event; the text last drawn goes
- * and the box typed, so that the text starts from its own values: a step's,
- * or a text picked on the drawing.
+ * and the box typed, so that the text starts from its own values: the page's on
+ * Reset, or a text picked on the drawing.
  *
  * @kind procedure
  * @param document - page document
  * @param text - every field of a text but its fallback
  */
-export function writeTextFields(document: Document, text: GuidedText): void {
+export function writeTextFields(document: Document, text: TextFields): void {
   for (const [id, value] of [
     ["text-content", text.content],
     ["text-color", text.color],

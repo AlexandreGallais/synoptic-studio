@@ -5,7 +5,7 @@ paths:
 
 # Markdown
 
-The docs are the Product Owner's, written only at a review; working facts go into the records. How a page is written: the records' `conventions`, area `writing`, and `word_list`. What breaks a page in the site's build or the checks:
+The docs are the Product Owner's: nothing in `docs/` is changed, not even at a review, until they say otherwise; working facts go into the records. How a page is written: the records' `conventions`, area `writing`, and `word_list`. What breaks a page in the site's build or the checks:
 
 - A `|` inside a table cell, even in code, is escaped `\|`.
 - Never two curly braces in a row: VitePress evaluates them.

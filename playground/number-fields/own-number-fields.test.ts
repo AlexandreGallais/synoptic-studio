@@ -7,7 +7,7 @@ import { SEVERAL_FIELDS } from "../selection";
 import {
   chooseShapeKind,
   clickElement,
-  openServedPage,
+  openPage,
   readShapeModel,
   readText,
   readValue,
@@ -101,7 +101,7 @@ describe("every number field, the rule of one shape's", () => {
     // The page as it opens: the rectangle 120 × 80 at (0, 0), selected alone, its radius 10; the
     // history's bound the browser keeps forgotten, a memory taken at 1 000 MB by a test before.
     localStorage.clear();
-    openServedPage("");
+    openPage("");
   });
 
   it("[F44.AC4] steps the radius by 1, then by 10 with Shift, the key's default prevented", () => {
@@ -317,7 +317,7 @@ describe("every number field, the rule of one shape's", () => {
 describe("a burst of arrows in the radius, one step", () => {
   beforeEach(() => {
     vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout"] });
-    openServedPage("");
+    openPage("");
   });
 
   afterEach(() => {
@@ -382,7 +382,7 @@ describe("readOwnValue", () => {
   });
 
   it("[F44.AC4] names every field of its own in its table, bounds from what each sets", () => {
-    openServedPage("");
+    openPage("");
 
     const ids = [...document.querySelectorAll(OWN_NUMBER_FIELDS)].map((field) => field.id);
 

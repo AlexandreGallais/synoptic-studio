@@ -9,7 +9,7 @@ import {
   clickAt,
   clickElement,
   dispatchDrawingPointer,
-  openServedPage,
+  openPage,
   readShapeModel,
   runResizeObservers,
   selectPageElement,
@@ -177,8 +177,8 @@ function readStyle(name: string, property: string): string {
 
 describe("the helps as one dashed line of white and black", () => {
   beforeEach(() => {
-    // The epic's step 1, a rectangle 120 × 80 at (0, 0), radius 10, whatever feature is validated.
-    openServedPage("?guide=epic");
+    // The page as it opens, a rectangle 120 × 80 at (0, 0), radius 10.
+    openPage("");
     setElementBox("#canvas", { height: 600, left: 100, top: 50, width: 800 });
   });
 
@@ -321,7 +321,7 @@ describe("the helps as one dashed line of white and black", () => {
 
 describe("R outlined by its contour's path", () => {
   beforeEach(() => {
-    openServedPage("");
+    openPage("");
     setElementBox("#canvas", { height: 800, left: 100, top: 50, width: 1200 });
     // R, 99 999 × 100 000 of radius 100 000, its radius 0 first so that no large rounded shape is
     // drawn on the way.

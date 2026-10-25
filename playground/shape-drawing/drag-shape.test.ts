@@ -5,7 +5,7 @@ import {
   chooseOption,
   clickElement,
   dispatchDrawingPointer,
-  openServedPage,
+  openPage,
   readModel,
   readPressedState,
   readShapeModel,
@@ -76,8 +76,8 @@ function countShapes(): number {
 
 describe("a drag with a tool draws the shape's box", () => {
   beforeEach(() => {
-    // The epic's step 1, a rectangle 120 × 80 at (0, 0), whatever feature is being validated.
-    openServedPage("?guide=epic");
+    // The page as it opens, a rectangle 120 × 80 at (0, 0).
+    openPage("");
     setElementBox("#canvas", { height: 600, left: 100, top: 50, width: 800 });
   });
 

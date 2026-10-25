@@ -7,7 +7,7 @@ import {
   chooseOption,
   clickAt,
   clickElement,
-  openServedPage,
+  openPage,
   readModel,
   readShapeModel,
   readValue,
@@ -75,7 +75,7 @@ describe("a burst of arrows in one shape's fields, one step", () => {
   beforeEach(() => {
     vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout"] });
     // The page as it opens: the rectangle 120 × 80 at (0, 0), selected alone.
-    openServedPage("");
+    openPage("");
   });
 
   afterEach(() => {
@@ -146,7 +146,7 @@ describe("a burst of arrows in one shape's fields, one step", () => {
 describe("a burst of arrows in a text's box, one step", () => {
   beforeEach(() => {
     vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout"] });
-    openServedPage("");
+    openPage("");
     setElementBox("#canvas", { height: 600, left: 100, top: 50, width: 800 });
     clickElement("tool-text");
     clickAt("#canvas", { clientX: 400, clientY: 300 });

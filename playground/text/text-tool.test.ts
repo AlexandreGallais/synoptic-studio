@@ -8,7 +8,7 @@ import {
   chooseShapeKind,
   clickElement,
   clickWithKeys,
-  openServedPage,
+  openPage,
   readDisplay,
   readPressedState,
   readText,
@@ -60,7 +60,7 @@ function readLines(): readonly (readonly (string | null)[])[] {
 
 describe("Text tool", () => {
   beforeEach(() => {
-    openServedPage("");
+    openPage("");
     chooseShapeKind("text");
     // "H" over "HH" in Inter Regular 16: H advances 1522 of 2048 units, 11.890625; HH 23.78125.
     typeAndEnter("text-size", "16");

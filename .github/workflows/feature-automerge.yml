@@ -36,7 +36,7 @@ jobs:
           BRANCH: ${{ github.event.pull_request.head.ref }}
         run: |
           if ! printf '%s' "$BRANCH" | grep -Eq '^(feature/f[0-9]{2}-|[a-z]+/rev-[0-9]{3}-|[a-z]+/sp-[0-9]{3}-|[a-z]+/aud-[0-9]{3}-)'; then
-            echo "Branch $BRANCH into develop is not a feature branch, a REV nor an SP: no auto-merge (ADR-0072, ADR-0086, REV-009)."
+            echo "Branch $BRANCH into develop is not a feature branch, a REV, an SP nor an AUD: no auto-merge (ADR-0072, ADR-0086, REV-009)."
             exit 1
           fi
       - name: Merge (merge commit), then start the develop CI

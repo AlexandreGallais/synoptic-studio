@@ -18,7 +18,7 @@
         --radius: 0.6rem;
         --shadow: 0 4px 16px #0003;
       }
-      /* Side by side: the drawing, the checklist when asked, the options, the pipeline when shown;
+      /* Side by side: the drawing, the options, the pipeline when shown;
          a column hidden gives its room to the drawing. */
       body {
         display: flex;
@@ -26,7 +26,7 @@
         margin: 0;
         background: var(--stage);
       }
-      /* The stage: the drawing, with the toolbar and the guided test floating over it. */
+      /* The stage: the drawing, with the toolbar floating over it. */
       #stage {
         position: relative;
         flex: 1 1 0;
@@ -278,86 +278,6 @@
         width: 1.1rem;
         height: 1.1rem;
         fill: currentcolor;
-      }
-      /* The guided test: a card at the bottom of the stage, shown only when it has steps. */
-      #guide {
-        position: absolute;
-        bottom: 0.75rem;
-        left: 0.75rem;
-        width: min(28rem, calc(100% - 1.5rem));
-        padding: 0.75rem 1rem;
-        background: var(--panel);
-        border-left: 4px solid var(--accent);
-        border-radius: var(--radius);
-        box-shadow: var(--shadow);
-      }
-      #guide h2 {
-        margin: 0;
-        font-size: 0.8rem;
-        font-weight: normal;
-        color: var(--muted);
-      }
-      #guide h3 {
-        margin: 0.2rem 0 0.4rem;
-        font-size: 1rem;
-      }
-      #guide p {
-        margin: 0.3rem 0;
-      }
-      /* Large targets, clicked over and over during a guided test. */
-      #guide-buttons {
-        display: flex;
-        gap: 0.5rem;
-      }
-      #guide-buttons button {
-        flex: 1;
-        min-height: 2.5rem;
-        font: inherit;
-      }
-      /* The checklist of an epic: a scrolling column right of the drawing, never over it
-        , a box per line. */
-      #checklist {
-        flex: 0 0 24rem;
-        box-sizing: border-box;
-        padding: 0.75rem 1rem;
-        overflow: auto;
-        background: var(--panel);
-        border-left: 4px solid var(--accent);
-      }
-      #checklist h2 {
-        margin: 0 0 0.5rem;
-        font-size: 1rem;
-      }
-      #checklist-lines {
-        padding: 0;
-        margin: 0;
-        list-style: none;
-      }
-      #checklist-lines li + li {
-        border-top: 1px solid var(--line);
-      }
-      #checklist-lines label {
-        display: grid;
-        grid-template-columns: auto auto 1fr;
-        gap: 0.1rem 0.5rem;
-        padding: 0.4rem 0;
-        cursor: pointer;
-      }
-      #checklist-lines input {
-        grid-row: span 2;
-        margin-top: 0.15rem;
-      }
-      .checklist-feature {
-        grid-row: span 2;
-        font-size: 0.8rem;
-        color: var(--muted);
-      }
-      .checklist-see {
-        grid-column: 3;
-        color: var(--muted);
-      }
-      #checklist-lines input:checked ~ span {
-        opacity: 0.55;
       }
       aside {
         flex: 0 0 20rem;
@@ -785,21 +705,7 @@
           </button>
         </p>
       </nav>
-      <section id="guide" aria-label="Guided test" hidden>
-        <h2>Guided test — step <span id="guide-number"></span> / <span id="guide-count"></span></h2>
-        <h3 id="guide-title"></h3>
-        <p id="guide-explanation"></p>
-        <p><strong>Look at:</strong> <span id="guide-look"></span></p>
-        <p id="guide-buttons">
-          <button id="guide-previous" type="button">Previous</button>
-          <button id="guide-next" type="button">Next</button>
-        </p>
-      </section>
     </div>
-    <section id="checklist" aria-labelledby="checklist-heading" hidden>
-      <h2 id="checklist-heading">Checklist of <span id="checklist-name"></span></h2>
-      <ol id="checklist-lines"></ol>
-    </section>
     <aside id="panel" aria-label="Panel">
       <h1 id="shape-title">Rectangle</h1>
       <!-- The kind of the shape the panel edits, kept as the page's state; a placed shape sets it. -->

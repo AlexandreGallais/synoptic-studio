@@ -7,7 +7,7 @@ import {
   chooseShapeKind,
   clickElement,
   commitField,
-  openServedPage,
+  openPage,
   pressPointer,
   readDisplay,
   readText,
@@ -78,7 +78,7 @@ function isFollowing(id: string): boolean {
 
 describe("The underline's and the strike-through's colors", () => {
   beforeEach(() => {
-    openServedPage("");
+    openPage("");
     chooseShapeKind("text");
     chooseOption("text-weight", "400");
     chooseOption("text-fit", "content");

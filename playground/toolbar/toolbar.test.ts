@@ -1,16 +1,13 @@
 // @vitest-environment happy-dom
 import { beforeEach, describe, expect, it } from "vitest";
 
-import { CURRENT_GUIDED_STEPS, GUIDED_STEPS } from "../guided-steps";
-import { mountPlayground } from "../mount";
 import {
   chooseShapeKind,
   clickAt,
   clickElement,
   clickWithKeys,
   commitField,
-  loadPage,
-  openServedPage,
+  openPage,
   readDisplay,
   readPressedState,
   readText,
@@ -21,8 +18,8 @@ import {
 
 describe("toolbar", () => {
   beforeEach(() => {
-    // The epic's step 1, a rectangle, whatever feature is being validated.
-    openServedPage("?guide=epic");
+    // The page as it opens, a rectangle.
+    openPage("");
   });
 
   it("starts with the selector armed, a rectangle edited and the polygon's options hidden", () => {
@@ -51,8 +48,8 @@ describe("toolbar", () => {
 
 describe("toolbar after a free shape", () => {
   beforeEach(() => {
-    // The epic's step 1, radius 10, whatever feature is being validated.
-    openServedPage("?guide=epic");
+    // The page as it opens, radius 10.
+    openPage("");
     // A pentagon 120 × 80 converted to a free shape: its width becomes 84.11698.
     chooseShapeKind("polygon");
 
@@ -111,7 +108,7 @@ describe("toolbar after a free shape", () => {
 
 describe("pipeline column", () => {
   it("is shown, then hidden and shown again by its button", () => {
-    openServedPage("");
+    openPage("");
 
     expect(readDisplay("output") === "none").toBe(false);
 
@@ -128,27 +125,5 @@ describe("pipeline column", () => {
       false,
       true,
     ]);
-  });
-});
-
-describe("guided test of the page", () => {
-  it("shows the steps of the feature being validated", () => {
-    openServedPage("");
-
-    expect(readDisplay("guide") === "none").toBe(CURRENT_GUIDED_STEPS.length === 0);
-  });
-
-  it("is hidden without steps, as between features", () => {
-    loadPage("");
-    mountPlayground(document, []);
-
-    expect(readDisplay("guide") === "none").toBe(true);
-  });
-
-  it("shows every step of the epic at ?guide=epic", () => {
-    openServedPage("?guide=epic");
-
-    expect(readDisplay("guide") === "none").toBe(false);
-    expect(readText("#guide-count")).toBe(String(GUIDED_STEPS.length));
   });
 });

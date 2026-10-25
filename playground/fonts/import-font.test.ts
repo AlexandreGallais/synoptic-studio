@@ -8,7 +8,7 @@ import {
   chooseFiles,
   chooseOption,
   chooseShapeKind,
-  openServedPage,
+  openPage,
   readText,
   readValue,
   selectChoice,
@@ -125,7 +125,7 @@ describe("Import a font", () => {
   });
 
   beforeEach(() => {
-    openServedPage("");
+    openPage("");
     chooseShapeKind("text");
     chooseOption("text-weight", "400");
     typeAndEnter("text-size", "100");

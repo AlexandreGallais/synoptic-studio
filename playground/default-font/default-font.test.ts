@@ -9,7 +9,7 @@ import {
   chooseOption,
   chooseShapeKind,
   clickElement,
-  openServedPage,
+  openPage,
   readDisabledState,
   readText,
   readValue,
@@ -212,7 +212,7 @@ function readLeftOut(): readonly (string | null)[] {
  * Opens the page on the Text tool.
  */
 function openTextTool(): void {
-  openServedPage("");
+  openPage("");
   chooseShapeKind("text");
 }
 
@@ -553,7 +553,7 @@ describe("The font list held while the default font is read again", () => {
     });
 
     // Every family read ahead, Test Sans's file read a second time and not given yet; the page's
-    // redraws run at once in a test (`openServedPage`), so the list read is the one drawn.
+    // redraws run at once in a test (`openPage`), so the list read is the one drawn.
     expect(readDisabledState("text-font")).toBe("true");
     expect(readDisabledState("installed-fonts")).toBe("true");
 

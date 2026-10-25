@@ -11,8 +11,7 @@ import {
   clickPoint,
   commitField,
   dispatchDrawingPointer,
-  openOnStep,
-  openServedPage,
+  openPage,
   pressPointer,
   readDisabledState,
   readModel,
@@ -201,7 +200,7 @@ const DRAWN = [
 
 describe("Undo and Redo, by the keys, what is done on the drawing", () => {
   beforeEach(() => {
-    openServedPage("");
+    openPage("");
     setElementBox("#canvas", { height: 600, left: 100, top: 50, width: 800 });
     drawShapes();
   });
@@ -513,7 +512,7 @@ describe("Undo and Redo, by the keys, what is done on the drawing", () => {
 
 describe("the Undo and Redo buttons and the history's size", () => {
   beforeEach(() => {
-    openServedPage("");
+    openPage("");
     setElementBox("#canvas", { height: 600, left: 100, top: 50, width: 800 });
   });
 
@@ -619,15 +618,6 @@ describe("the Undo and Redo buttons and the history's size", () => {
     expect(readDisabledState("history-undo")).toBe("true");
     expect(readText("#history-size")).toBe("History 0 B of 100 MB");
   });
-
-  it("[F40.AC1] empties the history at a step of the guided test", () => {
-    openServedPage("?guide=epic");
-    holdRight(1);
-    clickElement("guide-next");
-
-    expect(readDisabledState("history-undo")).toBe("true");
-    expect(readDisabledState("history-redo")).toBe("true");
-  });
 });
 
 /**
@@ -724,7 +714,7 @@ function readEditedText(): Text {
 
 describe("Undo and Redo what is typed and chosen in the panel", () => {
   beforeEach(() => {
-    openServedPage("");
+    openPage("");
     setElementBox("#canvas", { height: 600, left: 100, top: 50, width: 800 });
     drawShapes();
     clickDrawing(IN_A, NO_KEY);
@@ -950,7 +940,7 @@ describe("Undo and Redo what is typed and chosen in the panel", () => {
 describe("Undo and Redo the buttons of the panel", () => {
   beforeEach(() => {
     // A rectangle 120 × 80 of radius 10.
-    openOnStep(1);
+    openPage("");
   });
 
   it.each([
@@ -1025,7 +1015,7 @@ describe("Undo and Redo the buttons of the panel", () => {
 
 describe("Undo and Redo a text placed and typed", () => {
   beforeEach(() => {
-    openServedPage("");
+    openPage("");
     setElementBox("#canvas", { height: 600, left: 100, top: 50, width: 800 });
     // A step before the text: the page's rectangle nudged from (0, 0) to (1, 0).
     holdRight(1);

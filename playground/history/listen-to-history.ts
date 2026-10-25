@@ -9,8 +9,8 @@ import { listenToPanelSteps } from "./listen-to-panel-steps";
 import { moveHistory } from "./move-history";
 import { scheduleHistoryStep } from "./schedule-history-step";
 
-/** The buttons that start the page again, as it opens: Reset and the guided test's steps. */
-const RESTARTS = ["tool-reset", "guide-previous", "guide-next"];
+/** The buttons that start the page again, as it opens: Reset. */
+const RESTARTS = ["tool-reset"];
 
 /**
  * Listens to the ends of the drawing's actions: a step asked at each click on the drawing,
@@ -63,8 +63,8 @@ function listenToHistoryMoves(document: Document, update: () => void): void {
  * applied asking a step that the drawing unchanged does not take, but that bounds the history by
  * it at once (`listenToHistoryBound`, `scheduleHistoryStep`); the ends of the drawing's actions (`listenToActionEnds`) and of
  * the panel's changes (`listenToPanelSteps`); the Undo and Redo buttons and the list of steps
- * (`listenToHistoryMoves`); Reset
- * and the guided test's Previous and Next, which empty the history (`clearPageHistory`), then
+ * (`listenToHistoryMoves`); Reset,
+ * which empties the history (`clearPageHistory`), then
  * redraw; the keys of the history (`listenToHistoryKeys`). Wired after the drawing's listeners and
  * the toolbar's, so that a step follows the action.
  *

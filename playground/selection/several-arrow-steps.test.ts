@@ -13,7 +13,7 @@ import {
 import {
   clickElement,
   dispatchDrawingPointer,
-  openServedPage,
+  openPage,
   selectPageElement,
   setElementBox,
   typeAndEnter,
@@ -91,7 +91,7 @@ function readAnchors(): readonly Point[] {
 describe("an arrow in several shapes' X or Y, each landed on integers", () => {
   beforeEach(() => {
     vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout"] });
-    openServedPage("");
+    openPage("");
     setElementBox("#canvas", { height: 600, left: 100, top: 50, width: 800 });
     // A′, a sharp 100 × 50 at (10, 20) turned by 30° about its middle (60, 45): its straight box
     // starts at (60 − 55.80127, 45 − 46.65064) = (4.19873, −1.65064). Then A, 100 × 50 at

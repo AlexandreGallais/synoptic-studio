@@ -5,7 +5,7 @@ import { PAGE_HISTORIES } from "../history";
 import { readKeptDrawing } from "../kept-shapes";
 import {
   clickElement,
-  openServedPage,
+  openPage,
   readDisabledState,
   readText,
   readValue,
@@ -54,7 +54,7 @@ function readStepCounts(): { readonly past: number; readonly future: number } {
  * Opens the page, the drawing given its box, so that the keys and the buttons reach it.
  */
 function openBoundedPage(): void {
-  openServedPage("");
+  openPage("");
   setElementBox("#canvas", { height: 600, left: 100, top: 50, width: 800 });
 }
 

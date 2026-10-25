@@ -7,7 +7,7 @@ import {
   chooseShapeKind,
   clickElement,
   commitField,
-  openServedPage,
+  openPage,
   pressKey,
   pressPointer,
   readValue,
@@ -51,7 +51,7 @@ function pressPlane(type: string, clientX: number, clientY: number): void {
 
 describe("Color picker: the plane", () => {
   beforeEach(() => {
-    openServedPage("");
+    openPage("");
     chooseShapeKind("text");
     chooseOption("text-weight", "400");
     chooseOption("text-fit", "content");

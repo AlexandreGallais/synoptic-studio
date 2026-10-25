@@ -8,7 +8,6 @@
       "Bash(git switch *)",
       "Bash(gh api -X DELETE repos/AlexandreGallais/synoptic-studio/git/refs/heads/*)",
       "Bash(npm run *)",
-      "Bash(target/release/activity *)",
       "Bash(target/release/backlog-status *)",
       "Bash(target/release/context-size *)",
       "Bash(target/release/dependencies outdated *)",
@@ -214,11 +213,6 @@
         ]
       }
     ]
-  },
-  "statusLine": {
-    "type": "command",
-    "command": "\"$(git rev-parse --show-toplevel)/target/release/status-line\"",
-    "refreshInterval": 1
   },
   "enabledMcpjsonServers": ["library"],
   "cleanupPeriodDays": 3650

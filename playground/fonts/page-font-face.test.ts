@@ -7,7 +7,7 @@ import { fontCollection, testFaceFile } from "../../tests";
 import {
   chooseFiles,
   chooseShapeKind,
-  openServedPage,
+  openPage,
   readText,
   waitForPageTasks,
 } from "../user-actions";
@@ -77,7 +77,7 @@ function createFakeFace(family: string, source: Uint8Array, descriptors: object)
 
 describe("A font imported drawn by the page, CSS Font Loading's FontFace", () => {
   beforeEach(() => {
-    openServedPage("");
+    openPage("");
     chooseShapeKind("text");
     Object.defineProperty(globalThis, "FontFace", { configurable: true, value: createFakeFace });
     Object.defineProperty(document, "fonts", { configurable: true, value: { add: addFace } });

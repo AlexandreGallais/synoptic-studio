@@ -1,12 +1,14 @@
-import { writeStepValues } from "../guided-test";
+import { writeShapeValues } from "../shape-fields";
 
 /** The shape the page opens with, as `index.html` sets it. */
 const DEFAULT_SHAPE = {
-  explanation: "",
-  look: "",
-  title: "Reset",
-  values: { anchor: "mid mid", corners: 6, height: 80, radius: 10, shape: "rectangle", width: 120 },
-};
+  anchor: "mid mid",
+  corners: 6,
+  height: 80,
+  radius: 10,
+  shape: "rectangle",
+  width: 120,
+} as const;
 
 /**
  * Puts back the shape the page opens with, alone: a rectangle 120 × 80, radius 10, straight, at
@@ -17,5 +19,5 @@ const DEFAULT_SHAPE = {
  * @param document - page document
  */
 export function writeDefaultShape(document: Document): void {
-  writeStepValues(document, DEFAULT_SHAPE);
+  writeShapeValues(document, DEFAULT_SHAPE);
 }

@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { isDrawnText } from "../../src";
 import { PAGE_HISTORIES } from "../history";
 import { readKeptDrawing } from "../kept-shapes";
-import { openServedPage, selectPageElement, setElementBox, typeAndEnter } from "../user-actions";
+import { openPage, selectPageElement, setElementBox, typeAndEnter } from "../user-actions";
 
 import type { Point } from "../../src";
 
@@ -76,7 +76,7 @@ function readPresentA(): Point {
  * as typed values are recorded by a key released outside the fields.
  */
 function openWithA(): void {
-  openServedPage("");
+  openPage("");
   setElementBox("#canvas", { height: 600, left: 100, top: 50, width: 800 });
   typeAndEnter("radius", "0");
   typeAndEnter("width", "100");

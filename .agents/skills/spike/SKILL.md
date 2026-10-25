@@ -8,8 +8,8 @@ argument-hint: "[spike id, e.g. SP-001]"
 
 Spike: $ARGUMENTS. The protocol: `knowledge show PAGE-research` (the order of the sources, how many, when to stop); what is written goes into the records, not into the repository.
 
-- **An epic's refinement**: an `SP` from `develop`. The Product Owner's account of the epic, the research, then its features of 2 to 4 stories, each of at most 3 tasks, written as rows of the records; every question asked at once, each with options and a numeric example. An epic about the agent's own work is tagged **method and tools**: one audit, at its end.
-- **A feature's spike**, only for questions left after the refinement: a short `SP`, the first story of its feature branch.
+- **An epic's refinement**: an `SP` from `develop`. The Product Owner's account of the epic, deep research on this epic only, then one questionnaire with every question at once, each with options and a numeric example, aimed right the first time (a second round only if truly needed); then the full cut before any code: its features of 2 to 4 stories, each of at most 3 tasks, written as rows of the records. A feature unrelated to the subject goes to another epic; scope that grows is cut again at once. An epic about the agent's own work is tagged **method and tools**: one audit, at its end.
+- **A feature's spike**, only when the refinement truly left a question: a short `SP`, the first story of its feature branch.
 
 1. **Inventory**: per story, each formula, algorithm, specification point and behavior it needs.
 2. **The records first** (`knowledge search`, `--kind source`, `--kind note`, the rules), then the library (`library_search`). Then, in the background and only when the feature holds them, the `functional-analyst` on its business rules, the `math-expert` on its formulas.

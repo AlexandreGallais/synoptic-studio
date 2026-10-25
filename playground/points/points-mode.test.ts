@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import {
   chooseOption,
   clickElement,
-  openPage,
+  openOnHexagon,
   readPressedState,
   typeAndEnter,
 } from "../user-actions";
@@ -20,8 +20,8 @@ function handles(): readonly SVGPathElement[] {
 
 describe("points mode", () => {
   beforeEach(() => {
-    // Step 10 of the guided test: a hexagon in 100 × 100 (F02).
-    openPage("?step=10");
+    // A hexagon in 100 × 100 (F02).
+    openOnHexagon();
   });
 
   it("[F03.AC4] opens on Shape mode, without handles", () => {

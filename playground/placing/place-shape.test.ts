@@ -11,7 +11,7 @@ import {
   clickAt,
   clickElement,
   clickPoint,
-  openServedPage,
+  openPage,
   readCheckedRadio,
   readDisplay,
   readPressedState,
@@ -114,8 +114,8 @@ function readArmedTool(): string {
 
 describe("a click with a tool adds a shape where it is clicked", () => {
   beforeEach(() => {
-    // The epic's step 1, a rectangle 120 × 80, radius 10, whatever feature is being validated.
-    openServedPage("?guide=epic");
+    // The page as it opens, a rectangle 120 × 80, radius 10.
+    openPage("");
     setElementBox("#canvas", { height: 600, left: 100, top: 50, width: 800 });
   });
 
@@ -316,23 +316,18 @@ describe("a click with a tool adds a shape where it is clicked", () => {
     ]);
   });
 
-  it("[F35.AC1] forgets the shapes placed on Reset and at the next guided step", () => {
+  it("[F35.AC1] forgets the shapes placed on Reset", () => {
     placeShape("rectangle", { x: 250, y: 140 });
     clickElement("tool-reset");
 
     expect(readShapePaths()).toHaveLength(1);
     expect(readArmedTool()).toBe("selector");
-
-    placeShape("rectangle", { x: 250, y: 140 });
-    clickElement("guide-next");
-
-    expect(readShapePaths()).toHaveLength(1);
   });
 });
 
 describe("what a new shape starts with", () => {
   beforeEach(() => {
-    openServedPage("?guide=epic");
+    openPage("");
     setElementBox("#canvas", { height: 600, left: 100, top: 50, width: 800 });
   });
 
@@ -453,12 +448,5 @@ describe("what a new shape starts with", () => {
       "32",
       "400",
     ]);
-
-    // The epic's step 2 holds no text: the next text is the page's too.
-    typeAndEnter("text-size", "20");
-    clickElement("guide-next");
-    placeShape("text", { x: 250, y: 140 });
-
-    expect(readValue("text-size")).toBe("32");
   });
 });

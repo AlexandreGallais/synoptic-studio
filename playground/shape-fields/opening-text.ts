@@ -1,12 +1,12 @@
-import { TEXT_BOX_DEFAULTS, TEXT_DECORATION_DEFAULTS } from "../../../src";
+import { TEXT_BOX_DEFAULTS, TEXT_DECORATION_DEFAULTS } from "../../src";
 
-import type { GuidedText } from "./guided-text";
+import type { TextFields } from "./text-fields";
 
 /**
  * The text the page opens with, as `index.html` writes the Text tool's fields: "Pump P-101" over
  * "Running", Inter 32, regular, at (0, 0).
  */
-export const OPENING_TEXT: GuidedText = {
+export const OPENING_TEXT: TextFields = {
   ...TEXT_BOX_DEFAULTS,
   ...TEXT_DECORATION_DEFAULTS,
   alignment: "left",

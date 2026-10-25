@@ -8,7 +8,7 @@ import { readSelection } from "../page";
 import {
   clickAt,
   clickElement,
-  openServedPage,
+  openPage,
   pressAndClick,
   pressKey,
   pressPointer,
@@ -176,8 +176,8 @@ function drawThreeRectangles(): {
 
 describe("Shift + click adds or removes a shape", () => {
   beforeEach(() => {
-    // The epic's step 1, a rectangle 120 × 80 at (0, 0), radius 10, whatever feature is validated.
-    openServedPage("?guide=epic");
+    // The page as it opens, a rectangle 120 × 80 at (0, 0), radius 10.
+    openPage("");
     setElementBox("#canvas", { height: 600, left: 100, top: 50, width: 800 });
   });
 
@@ -303,7 +303,7 @@ describe("Shift + click adds or removes a shape", () => {
 
 describe("Ctrl + A selects every shape and Escape none", () => {
   beforeEach(() => {
-    openServedPage("?guide=epic");
+    openPage("");
     setElementBox("#canvas", { height: 600, left: 100, top: 50, width: 800 });
   });
 
@@ -383,7 +383,7 @@ describe("Ctrl + A selects every shape and Escape none", () => {
 
 describe("the shapes' selection in Points mode", () => {
   beforeEach(() => {
-    openServedPage("?guide=epic");
+    openPage("");
     setElementBox("#canvas", { height: 600, left: 100, top: 50, width: 800 });
   });
 
@@ -430,7 +430,7 @@ describe("the shapes' selection in Points mode", () => {
 
 describe("Delete removes the selected shapes", () => {
   beforeEach(() => {
-    openServedPage("?guide=epic");
+    openPage("");
     setElementBox("#canvas", { height: 600, left: 100, top: 50, width: 800 });
   });
 
