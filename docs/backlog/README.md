@@ -1,10 +1,10 @@
 # Backlog
 
-The project's work is planned as epics, features, stories and tasks (SAFe levels on top of Scrum). Since EN-154 the backlog lives in the agent's records, one SQLite database outside the repository, read and written by `target/release/knowledge` ([the records](../tooling/knowledge.md)): no story file, no index, no status commit. This page keeps what a person reads: the order of the epics and how work is planned.
+The work is planned as epics, features, stories and tasks. The backlog lives in the agent's records, a database outside the repository ([the records](../tooling/knowledge.md)); this page keeps what a person reads: the order of the epics and how work is planned.
 
 ## The order of the epics
 
-The Product Owner's priorities, the library first and the editors' interface last (2026-10-19), the agent's knowledge and setup before E21 since they speed up every epic after them (2026-10-25).
+The Product Owner's priorities: the library first and the editors' interface last; the agent's knowledge and setup before the next library epic, since they speed up every epic after them.
 
 | Order | Epic | Status |
 | --- | --- | --- |
@@ -46,6 +46,8 @@ The Product Owner's priorities, the library first and the editors' interface las
 
 ## How work is planned
 
-- **An epic** is one subject; it opens with its refinement, a spike that asks the Product Owner every question at once and cuts its features. **A feature** is a capability the user can see and test, its numbered criteria its requirements (`F48.AC1`, ADR-0027), 2 to 4 stories then an audit. **A story** is one behavior, at most 3 tasks, one commit per task (ADR-0084).
-- **No iterations**: items flow through `draft`, `ready`, `in-progress`, `done` (or `parked`, `dropped`) one at a time; the Product Owner's `/run` sets its scope `ready`, then tries what changed on `develop` at each return, before `develop` goes into `main`.
-- **Where it is written**: every item's row in the records, `knowledge sql "SELECT … FROM stories WHERE feature = 'F48'"`; a status by `target/release/backlog-status <ID> <status>`; a story's branch made by `worktree-new <ID>` from its row, its rows marked merged by `story-finish` once GitHub merged it. The criteria of the done features are exported to `tests/data/criteria.json`, so that the CI checks each one has a test without the records.
+- **An epic** is one subject; it opens with a refinement that reads the sources, asks the Product Owner every question at once and cuts its features. An epic about the agent's own method and tools is audited once, at its end.
+- **A feature** is a capability the user can see and test, its numbered criteria its requirements (`F48.AC1`), a few stories, then an audit.
+- **A story** is one behavior, at most 3 tasks, one commit per task, its tests written before or with its code.
+- **No iterations**: items flow through `draft`, `ready`, `in-progress`, `done`, or `parked` and `dropped`, one at a time; the Product Owner starts a run, then tries what changed on `develop` at each return, before `develop` goes into `main`.
+- **Checked without the records**: the criteria of the done features are exported to `tests/data/criteria.json`, so the CI checks that each one has a test.

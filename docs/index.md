@@ -4,47 +4,35 @@ layout: home
 hero:
   name: editor
   text: Integer, orthogonal, path-only SVG editing
-  tagline: A dependency-free TypeScript library of small, named, sourced functions for synoptic-view symbols.
+  tagline: A dependency-free TypeScript library that draws the symbols of synoptic views from numbers.
   actions:
     - theme: brand
-      text: Domain
-      link: /domain/
+      text: How it works
+      link: /how-it-works
     - theme: alt
-      text: Process
-      link: /process/
+      text: Where it stands
+      link: /where-it-stands
     - theme: alt
-      text: API
-      link: /api/
+      text: Playground
+      link: https://alexandregallais.github.io/synoptic-studio/playground/
 
 features:
+  - title: How it works
+    details: What the library computes, who does what, how work flows and how quality is kept.
+    link: /how-it-works
+  - title: Where it stands
+    details: What is done, what is under way.
+    link: /where-it-stands
+  - title: Epics
+    details: The order of the work to come.
+    link: /backlog/
   - title: Domain
-    details: Shapes, symbols, views, pipes and interaction — the business source of truth.
+    details: The business rules of shapes, symbols, views and interaction, each with an example.
     link: /domain/
   - title: API
-    details: One page per exported function, generated from the TSDoc.
+    details: One page per exported function, generated from the code.
     link: /api/
-  - title: Conventions
-    details: How code is written; almost every rule is enforced by oxlint and the project's linter.
-    link: /conventions/
-  - title: Process
-    details: The method on one page, its cadences, the review at each return.
-    link: /process/
-  - title: Backlog
-    details: Epics, features and stories — what is done, what comes next.
-    link: /backlog/
-  - title: Research
-    details: Where a source is looked for, in which order, and when to stop and ask.
-    link: /research/
-  - title: Playbook
-    details: How to run a project with a coding agent — principles, starter kit, lessons.
-    link: /playbook/
-  - title: Tooling
-    details: Commands, the agent's tools, dependencies, versions, Git workflow, this site.
-    link: /tooling/
-  - title: Records
-    details: Decisions (ADRs), research notes, derivations, references, the guide pages of past features, retrospectives and logs.
-    link: /adr/
-  - title: Playground
-    details: The library at work in the browser, as of the last merge into main.
-    link: https://alexandregallais.github.io/synoptic-studio/playground/
+  - title: Commands
+    details: What a person runs in a clone of the repository.
+    link: /commands
 ---
