@@ -50,7 +50,7 @@ Ordered by the agent at SP-025 (2026-10-19), each needing the one before it. A f
 | [SP-025](../stories/E02-SP-025-cut-the-editing-work-into-small-features.md) — Cut the editing work into small features | done |
 | [REV-008](../stories/E02-REV-008-review-of-e02.md) — Review of 2026-10-24, F35 to F47 | done |
 | [SP-033](../stories/E02-SP-033-regroup-the-epics.md) — Regroup the epics not done into small epics of one subject | done |
-| [REV-009](../stories/E02-REV-009-review-of-2026-10-25.md) — Review of 2026-10-25, the regrouping and the documentation | in-progress |
+| [REV-009](../stories/E02-REV-009-review-of-2026-10-25.md) — Review of 2026-10-25, the regrouping and the documentation | done |
 
 ## Working method for E02 and the epics cut from it
 

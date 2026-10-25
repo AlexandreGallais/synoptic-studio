@@ -9,7 +9,8 @@ use std::process::Output;
 use test_support::command;
 
 /// A Git repository in a fresh temporary folder whose `commit-msg` hook runs the check, on a
-/// story's branch with a story file of F98.
+/// story's branch with a story file of F47, the last feature with a VAL, and one of F98, audited
+/// alone (ADR-0100).
 struct Repository {
     root: PathBuf,
 }
@@ -42,13 +43,21 @@ impl Repository {
         repository.git(&["config", "core.hooksPath", "hooks"]);
         repository.write("docs/domain/README.md", "# Domain\n");
         repository.write("docs/domain/shapes.md", "# Shapes\n");
-        repository.write("docs/guide/f98-topic.md", "# F98\n");
+        repository.write("docs/guide/f47-topic.md", "# F47\n");
         repository.write(
-            "docs/backlog/stories/E99-F98-VAL-999-validate-f98.md",
+            "docs/backlog/stories/E99-F47-VAL-999-validate-f47.md",
             "# VAL\n",
         );
         repository.write(
-            "docs/backlog/stories/E99-F98-EN-997-topic.md",
+            "docs/backlog/stories/E99-F47-EN-997-topic.md",
+            "status: ready\n",
+        );
+        repository.write(
+            "docs/backlog/stories/E99-F98-AUD-998-audit-f98.md",
+            "# AUD\n",
+        );
+        repository.write(
+            "docs/backlog/stories/E99-F98-EN-995-topic.md",
             "status: ready\n",
         );
         assert!(repository.commit("chore: start").status.success());
@@ -103,7 +112,7 @@ fn refuses_a_done_commit_lacking_the_docs_of_a_rule() {
 
     repository.change_rule();
     repository.write(
-        "docs/backlog/stories/E99-F98-EN-997-topic.md",
+        "docs/backlog/stories/E99-F47-EN-997-topic.md",
         "status: done\n",
     );
 
@@ -121,11 +130,11 @@ fn refuses_a_done_commit_lacking_the_docs_of_a_rule() {
         "{error}"
     );
     assert!(
-        error.contains("the decisions to confirm of F98's VAL"),
+        error.contains("the decisions to confirm of F47's VAL"),
         "{error}"
     );
     assert!(
-        error.contains("the guide page docs/guide/f98-*.md"),
+        error.contains("the guide page docs/guide/f47-*.md"),
         "{error}"
     );
 }
@@ -142,13 +151,13 @@ fn takes_the_docs_from_the_done_commit_or_the_tasks() {
             .status
             .success()
     );
-    repository.write("docs/guide/f98-topic.md", "# F98\n\nA step.\n");
+    repository.write("docs/guide/f47-topic.md", "# F47\n\nA step.\n");
     repository.write(
-        "docs/backlog/stories/E99-F98-VAL-999-validate-f98.md",
+        "docs/backlog/stories/E99-F47-VAL-999-validate-f47.md",
         "# VAL\n\n1. A rule\n",
     );
     repository.write(
-        "docs/backlog/stories/E99-F98-EN-997-topic.md",
+        "docs/backlog/stories/E99-F47-EN-997-topic.md",
         "status: done\n",
     );
 
@@ -163,7 +172,7 @@ fn takes_the_line_saying_none_is_affected() {
 
     repository.change_rule();
     repository.write(
-        "docs/backlog/stories/E99-F98-EN-997-topic.md",
+        "docs/backlog/stories/E99-F47-EN-997-topic.md",
         "status: done\n",
     );
 
@@ -178,7 +187,7 @@ fn takes_the_line_saying_none_is_affected() {
 fn passes_a_story_without_a_rule_and_the_other_commits() {
     let repository = Repository::new("clean");
 
-    repository.write("docs/guide/f98-topic.md", "# F98\n\nChanged.\n");
+    repository.write("docs/guide/f47-topic.md", "# F47\n\nChanged.\n");
     assert!(
         repository
             .commit("docs: a task\n\nRefs: EN-997.T1")
@@ -196,11 +205,51 @@ fn passes_a_story_without_a_rule_and_the_other_commits() {
             .success()
     );
     repository.write(
-        "docs/backlog/stories/E99-F98-EN-997-topic.md",
+        "docs/backlog/stories/E99-F47-EN-997-topic.md",
         "status: done\n",
     );
 
     let output = repository.commit(DONE);
+
+    assert!(output.status.success(), "{output:?}");
+}
+
+#[test]
+fn asks_an_audited_feature_for_its_audit_and_not_a_val() {
+    let repository = Repository::new("audited");
+
+    repository.write("docs/domain/shapes.md", "# Shapes\n\nA new rule.\n");
+    assert!(
+        repository
+            .commit("feat: change a rule\n\nRefs: EN-995.T1")
+            .status
+            .success()
+    );
+    repository.write(
+        "docs/backlog/stories/E99-F98-EN-995-topic.md",
+        "status: done\n",
+    );
+
+    let done = "docs(backlog): set EN-995 done\n\nCloses: EN-995";
+    let output = repository.commit(done);
+    let error = String::from_utf8_lossy(&output.stderr);
+
+    // From F48 (ADR-0100), the feature's audit is asked for, no VAL nor guide page.
+    assert!(!output.status.success(), "{error}");
+    assert!(
+        error.contains("the rule to recheck in F98's audit"),
+        "{error}"
+    );
+    assert!(!error.contains("VAL"), "{error}");
+    assert!(!error.contains("docs/guide/"), "{error}");
+
+    repository.write("docs/domain/README.md", "# Domain\n\n| Q99 | a rule |\n");
+    repository.write(
+        "docs/backlog/stories/E99-F98-AUD-998-audit-f98.md",
+        "# AUD\n\n- Recheck the new rule of shapes.md.\n",
+    );
+
+    let output = repository.commit(done);
 
     assert!(output.status.success(), "{output:?}");
 }

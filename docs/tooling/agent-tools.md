@@ -143,7 +143,7 @@ A tool is written when a retrospective's metrics show its signal — the hand wo
 | `page` | `page` | one row or one section of a repository page, by its id or its heading ([above](#tools)) |
 | `mutate` | `mutate` | the mutations in a copy of the repository |
 | `lint` | `lint`, `fix`, the pre-commit hook, after oxlint | the project's linter on Oxc: the project's rules, those oxlint lacks and the Markdown rules, each file parsed once ([lint](../conventions/lint.md)) |
-| `rule-docs` | the `commit-msg` hook, at a `done` commit (`check-rule-docs`) | asks a story that changes `docs/domain/` for its Q row, its VAL's decisions to confirm and its guide page, unless the message says `Rule-docs: none affected, <why>` |
+| `rule-docs` | the `commit-msg` hook, at a `done` commit (`check-rule-docs`) | asks a story that changes `docs/domain/` for its Q row and, from F48, its feature's `AUD` story naming the rule to recheck (ADR-0100; up to F47, its VAL's decisions to confirm and its guide page), unless the message says `Rule-docs: none affected, <why>` |
 | `api-pages` | `docs:api`, `docs:dev`, `docs:build` | the API pages from `src/index.ts` and its TSDoc ([documentation site](./documentation-site.md)) |
 | `declarations` | `build` | the library's `.d.ts` from each module alone (ADR-0071, [build](./commands.md#build)) |
 | `library` | `.mcp.json` (`library-mcp`), `library`, `metrics`, `records-save` | the local source library: its MCP server on `rmcp` and its command line, over one SQLite file ([sources](./sources.md)) |

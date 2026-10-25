@@ -31,7 +31,7 @@ flowchart LR
 | `/spike` | an epic's refinement from `develop`, or a feature's short spike when questions remain (ADR-0020, ADR-0086) |
 | `/derivation` | a `DERIV-*` from read sources |
 | `/audit` | the feature audit with the reviewing agents |
-| `/review` | a feature's demo page and checklist; the review at each return of the Product Owner (ADR-0023, ADR-0086) |
+| `/review` | the review at each return of the Product Owner, the test cards of the user stories merged since the last merge into `main` (ADR-0023, ADR-0086, ADR-0100) |
 | `/retro` | the method's part of each review: tool cards, logs, playbook (ADR-0023, ADR-0086) |
 | `/triage` | open issues, each with a recommendation (ADR-0026) |
 | `project-rules` | the digest of `AGENTS.md` and `CLAUDE.md`, preloaded by every agent type started without them |
@@ -45,7 +45,6 @@ flowchart LR
 | --- | --- | --- | --- |
 | `story-worker` | `US`, `EN`, a `REV`'s naming pass, an `AUD`'s fixes | Bash, Read, Edit, Write, Grep, Glob, the library | `project-rules`, `worker-brief` |
 | `researcher` | a research spike (`SP`) | the story worker's, `WebFetch`, `WebSearch` | `project-rules`, `worker-brief`, `spike` |
-| `clerk` | none, unused: the main thread writes the statuses, the journal, the `done` commits and the merges itself (ADR-0086) | Bash, Read, Edit, Write, Grep, Glob | `project-rules` |
 
 - **A fresh worker per story**, never one agent chaining stories: an agent's cost is its growing context re-read at each call, not its start (EN-122's worker ended near 255,000 tokens, a start costs about 10,600; ADR-0086).
 - **No agent for small tasks**: the main thread writes the statuses, the journal, the `done` commits and the merges itself (ADR-0086).
@@ -70,7 +69,7 @@ Agents to add when their epic comes:
 
 | Agent | Would bring | When |
 | --- | --- | --- |
-| `interaction-designer` | handles, dragging, selection, keyboard: how editors behave | E02, the first editor application |
+| `interaction-designer` | handles, dragging, selection, keyboard: how editors behave | E45 (Design the editor's interface) |
 | `svg-expert` | the SVG specification: paths, strokes, other tools' files | E31 (strokes), E41 and E42 (files) |
 | `performance` | budgets, profiling, large views | E38 (views), or a first performance budget |
 
@@ -80,7 +79,6 @@ Agents to add when their epic comes:
 
 | Agent type | Model | Why |
 | --- | --- | --- |
-| `clerk` | `sonnet` | unused (ADR-0086); copies given facts into set formats and follows the fixed steps of a merge or a rebase: nothing to derive or judge |
 | `story-worker` | `opus` | code, hand-computed tests and the docs of its rules; until one story on Sonnet, measured beside one on Opus, shows Sonnet does as well |
 | `researcher` | `opus` | judges what each source states; the feature is built from it |
 | `auditor` | `opus` | re-derives formulas and recomputes values; a weaker reviewer than the worker misses more |

@@ -10,10 +10,11 @@ use regex::Regex;
 /// The branches the repository accepts: `main`, `develop`, `feature/f<nn>-<topic>`,
 /// `<type>/<story-id>-<topic>` in kebab case, the id of a story an auto-merge takes (`US`, `EN`,
 /// `SP`, `CHK`, `AUD`, `VAL` by `story-automerge.yml`, `REV` by `feature-automerge.yml`), so that a fix without a story id is refused at its push
-/// as at its merge (EN-118, I50), a release branch `release/x.y.z` (ADR-0101), and the bot's
-/// `dependabot/…`; release-please's `release-please--…` no longer since EN-112. Written as
+/// as at its merge (EN-118, I50), and the bot's `dependabot/…`; release-please's
+/// `release-please--…` no longer since EN-112, nor `release/x.y.z`, whose flow ADR-0101 removed,
+/// since REV-009. Written as
 /// JavaScript read it: its `.` stops at every line terminator.
-pub const BRANCH_PATTERN: &str = r"^(main|develop|feature/f[0-9]{2}-[a-z0-9]+(-[a-z0-9]+)*|(feat|fix|docs|refactor|test|chore|build|ci|perf|style|revert)/(us|en|sp|chk|aud|val|rev)-[0-9]{3}(-[a-z0-9]+)+|release/(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)|dependabot/[^\n\r\x{2028}\x{2029}]+)$";
+pub const BRANCH_PATTERN: &str = r"^(main|develop|feature/f[0-9]{2}-[a-z0-9]+(-[a-z0-9]+)*|(feat|fix|docs|refactor|test|chore|build|ci|perf|style|revert)/(us|en|sp|chk|aud|val|rev)-[0-9]{3}(-[a-z0-9]+)+|dependabot/[^\n\r\x{2028}\x{2029}]+)$";
 
 /// The pattern, compiled once.
 static BRANCH: LazyLock<Regex> = LazyLock::new(|| {
@@ -32,8 +33,8 @@ pub fn branch_refusal(name: &str) -> Option<String> {
     (!is_valid_branch(name)).then(|| {
         format!(
             "✖   branch name \"{name}\" refused: it must be `main`, `develop`, \
-             `feature/f01-<kebab-case-topic>`, `<type>/<story-id>-<kebab-case-topic>` (a fix \
-             without a story takes the id of the story it serves) or `release/x.y.z` \
+             `feature/f01-<kebab-case-topic>` or `<type>/<story-id>-<kebab-case-topic>` (a fix \
+             without a story takes the id of the story it serves) \
              (docs/tooling/git-workflow.md); pattern {BRANCH_PATTERN}"
         )
     })

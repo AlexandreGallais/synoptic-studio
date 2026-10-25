@@ -2,6 +2,11 @@
 
 What each working session dealt with, in the agent's words: the Product Owner's requests in neutral words, decisions, where they were recorded. Newest first. Written by the agent at the end of each session or before a long pause (ADR-0024); searched with `grep` (tags written `#tag`).
 
+## 2026-10-25 — SP-033 and REV-009, the epics regrouped and the documentation cleaned
+
+- `#backlog` SP-033 (#496): the epics not done regrouped into 28 epics of one subject, E21 to E48, in the order the Product Owner chose; Q23 (the web page first, a desktop epic later) and Q26 settled; the contrast of texts moved to the pro edition.
+- `#review` The naming pass of E02 held after all (#495), now at every review; REV-009 in bubbles: an epic's spike merged by the auto-merge (#497), the tool cards and the telemetry (#498), the naming pass since `main` (#499), 15 ADRs removed into ADR-0101 (#500), every living page brought to where the project stands (#501), the leftovers and the site's order (this bubble).
+
 ## 2026-10-24 — REV-008, the review of E02
 
 - `#review` E02 merged into `develop` (#490) once the Product Owner validated it over three tries of the playground; the retrospective held (`docs/process/retrospectives/E02-retrospective.md`); the Product Owner's decisions written as ADR-0100: small epics of one subject researched in full at their start, each feature into `develop` at its audit's end, the main checkout on `develop`, no `VAL` per feature, `develop` → `main` at each return, bubbles only, this project's rigour kept, estimates from the measures, advisories settled by the agent.

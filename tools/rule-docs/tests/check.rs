@@ -98,6 +98,24 @@ fn reads_the_docs_from_the_story_file_name() {
         docs_of("E17-F18-EN-059-done-commit-checks-the-docs.md", "EN-059"),
         Some(f18())
     );
+    // From F48 (ADR-0100) a feature has no VAL nor guide page: its audit names the rule to recheck.
+    assert_eq!(
+        docs_of("E24-F48-US-062-topic.md", "US-062"),
+        Some(vec![Doc::QRow, Doc::Audit("F48".into())])
+    );
+    assert_eq!(
+        docs_of("E02-F47-US-061-topic.md", "US-061"),
+        Some(vec![
+            Doc::QRow,
+            Doc::Decisions("F47".into()),
+            Doc::Guide("f47-".into()),
+        ])
+    );
+    assert_eq!(
+        docs_of("E24-F100-EN-200-topic.md", "EN-200"),
+        Some(vec![Doc::QRow, Doc::Audit("F100".into())])
+    );
+    assert_eq!(docs_of("E24-Fx-EN-200-topic.md", "EN-200"), None);
     assert_eq!(
         docs_of("E15-NAM-001-naming-pass-e15.md", "NAM-001"),
         Some(vec![Doc::QRow, Doc::Guide("e15-".into())])
@@ -134,6 +152,10 @@ fn names_each_doc_by_its_path() {
     assert!(Doc::Guide("f18-".into()).is("docs/guide/f18-run.MD"));
     assert!(!Doc::Guide("f18-".into()).is("docs/guide/f19-rust.md"));
     assert!(!Doc::Guide("f1-".into()).is("docs/guide/f18-parallel-run.md"));
+    assert!(Doc::Audit("F48".into()).is("docs/backlog/stories/E24-F48-AUD-050-audit-f48.md"));
+    assert!(!Doc::Audit("F48".into()).is("docs/backlog/stories/E24-F48-US-062-topic.md"));
+    assert!(!Doc::Audit("F4".into()).is("docs/backlog/stories/E24-F48-AUD-050-audit-f48.md"));
+    assert!(!Doc::Audit("F48".into()).is("docs/backlog/E24-F48-AUD-050-audit-f48.md"));
 }
 
 #[test]
@@ -195,5 +217,9 @@ fn names_what_is_missing_and_the_way_out() {
     assert!(
         refusal("EN-059", &[Doc::Decisions("F18".into())])
             .contains("the decisions to confirm of F18's VAL")
+    );
+    assert!(
+        refusal("US-062", &[Doc::Audit("F48".into())])
+            .contains("the rule to recheck in F48's audit (docs/backlog/stories/*-F48-AUD-*.md)")
     );
 }

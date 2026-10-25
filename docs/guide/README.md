@@ -2,7 +2,7 @@
 
 What the library does, explained in plain language for the Product Owner and, later, for users. No formula without a sentence that says what it means; no term without a definition or a link to the [glossary](../domain/). Each page ends with **how to try it** in the playground and the **validation** by the Product Owner.
 
-Written at the end of each feature (its demo page) and at the review of each epic (its epic report), ADR-0023. Category: explanation (`REF-DIATAXIS`); the API reference stays austere.
+The pages below are records: a feature's demo page was written at its end up to F42, an epic's report at its review up to E17 (ADR-0023). Since ADR-0100 a feature has no demo page, no checklist and no `VAL` of its own: at each review the Product Owner tries on `develop` what changed, from the test cards (`## Product Owner test`) of the user stories merged since the last merge into `main` (the `review` skill). Category: explanation (`REF-DIATAXIS`); the API reference stays austere.
 
 ## Writing rules
 
@@ -11,8 +11,8 @@ Written at the end of each feature (its demo page) and at the review of each epi
 3. Numbers from the playground rather than symbols: "a 100 × 25 rectangle with radius 100 gets radius 12.5".
 4. A picture (SVG produced by the library, or a sketch) for every geometric idea.
 5. Say the limits: what the feature does not do yet, and which feature will.
-6. A feature is tried on its epic's **checklist**, one page in the playground (`?checklist=E15`): one line per option kept and per decision to confirm, what to try and what to see, a check box before it, no Previous nor Next; the boxes ticked stay in that browser (US-051). The Product Owner says what they see; the agent records the result and the remarks in neutral words (`docs/conventions/writing.md`).
-7. The guided steps written up to E15 stay in the playground's epic list, `?guide=epic`, for a closer look, never as the way a feature is tried.
+6. The Product Owner says what they see; the agent records the result and the remarks in neutral words (`docs/conventions/writing.md`).
+7. The epics' checklists written up to E17 (`?checklist=E15`, US-051) and the guided steps written up to E15 (`?guide=epic`) stay in the playground for a closer look, never as the way a feature is tried.
 
 ## Pages
 
@@ -62,4 +62,4 @@ Written at the end of each feature (its demo page) and at the review of each epi
 | [E15 — Placing text in symbols](./e15-place-text.md) | the five features of E15, the words, the tour of the review, the decisions, the direction to remove |
 | [E17 — Fast tooling with Oxc and Rust](./e17-fast-tooling-with-oxc-and-rust.md) | the four features of E17 with NAM-002, EN-114 and EN-115, the figures before and after, the words, a story's life as the user test, the decisions, the checklist run again, the questions of the review |
 
-Templates: `_feature-demo.md`, `_epic-report.md` (not published).
+Template: `_epic-report.md` (not published).

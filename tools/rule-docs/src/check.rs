@@ -9,8 +9,11 @@ const DOMAIN: &str = "docs/domain/";
 /// The domain's index, holding the Q rows of its settled questions.
 pub const Q_ROWS: &str = "docs/domain/README.md";
 
-/// The folder of the story files, a feature's VAL among them.
+/// The folder of the story files, a feature's VAL or AUD among them.
 const STORIES: &str = "docs/backlog/stories/";
+
+/// The first feature with no VAL nor guide page, its audit ending it (ADR-0100, decision 4).
+const FIRST_AUDITED_FEATURE: u32 = 48;
 
 /// The folder of the guide pages, one per feature (`f18-…`) or epic (`e17-…`).
 const GUIDE: &str = "docs/guide/";
@@ -27,6 +30,8 @@ pub enum Doc {
     Decisions(String),
     /// The guide page of a feature or an epic, by its file name's start, e.g. `f18-`.
     Guide(String),
+    /// The audit story of a feature from F48, naming the rule to recheck, e.g. `F48`.
+    Audit(String),
 }
 
 impl Doc {
@@ -38,6 +43,9 @@ impl Doc {
             Doc::Decisions(feature) => path
                 .strip_prefix(STORIES)
                 .is_some_and(|name| name.contains(&format!("-{feature}-VAL-"))),
+            Doc::Audit(feature) => path
+                .strip_prefix(STORIES)
+                .is_some_and(|name| name.contains(&format!("-{feature}-AUD-"))),
             Doc::Guide(start) => path.strip_prefix(GUIDE).is_some_and(|name| {
                 name.starts_with(start.as_str())
                     && !name.contains('/')
@@ -59,6 +67,9 @@ impl Doc {
                 )
             }
             Doc::Guide(start) => format!("the guide page {GUIDE}{start}*.md"),
+            Doc::Audit(feature) => {
+                format!("the rule to recheck in {feature}'s audit ({STORIES}*-{feature}-AUD-*.md)")
+            }
         }
     }
 }
@@ -135,7 +146,8 @@ pub fn story_files(log: &str, story: &str) -> Vec<String> {
 
 /// The docs a story brings when it changes a rule, from its story file's name
 /// (`E17-F18-EN-059-topic.md`): the Q row, then for a feature's story its VAL's decisions and its
-/// guide page, for an epic's story its guide page; `None` when the name is not the story's.
+/// guide page, or from F48 its audit, for an epic's story its guide page; `None` when the name is
+/// not the story's.
 #[must_use]
 pub fn docs_of(file_name: &str, story: &str) -> Option<Vec<Doc>> {
     let (place, _) = file_name.split_once(&format!("-{story}-"))?;
@@ -148,11 +160,17 @@ pub fn docs_of(file_name: &str, story: &str) -> Option<Vec<Doc>> {
     }
 
     Some(match feature {
-        Some(feature) if feature.starts_with('F') => vec![
-            Doc::QRow,
-            Doc::Decisions(feature.to_owned()),
-            Doc::Guide(format!("{}-", feature.to_ascii_lowercase())),
-        ],
+        Some(feature) if feature.starts_with('F') => match feature[1..].parse::<u32>() {
+            Ok(number) if number >= FIRST_AUDITED_FEATURE => {
+                vec![Doc::QRow, Doc::Audit(feature.to_owned())]
+            }
+            Ok(_) => vec![
+                Doc::QRow,
+                Doc::Decisions(feature.to_owned()),
+                Doc::Guide(format!("{}-", feature.to_ascii_lowercase())),
+            ],
+            Err(_) => return None,
+        },
         Some(_) => return None,
         None => vec![
             Doc::QRow,

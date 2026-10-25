@@ -44,7 +44,7 @@ The Product Owner's critiques of E01, E14, E15 and E17, written as habits: what 
 | refine a feature | ask only what the feature needs; write the Product Owner's other ideas in the domain for later |
 | name a term in a question | say it in plain words the first time ("the rounding of the corners") |
 | ask the Product Owner to test | name the branch checked out, check it is up to date, give the direct link to the step |
-| open a feature pull request | clean every status and branch first, say all is clean, wait for a yes; push nothing else meanwhile |
+| end a feature | once its audit is merged, clean every status and branch, then open its pull request into `develop` labelled `autonomous`: the auto-merge merges it by a merge commit, no yes awaited; push nothing else meanwhile (ADR-0100) |
 | design a page clicked over and over | put the controls first and large; check with the longest and shortest content |
 | write a test card | show why a choice exists, not only what it does |
 | upgrade a dependency | read its release notes first; adapt the configuration to new features and breaking changes |
@@ -60,7 +60,7 @@ The Product Owner's critiques of E01, E14, E15 and E17, written as habits: what 
 | write the same script again | make it a tool of the repository, tested, with its line in `docs/tooling/agent-tools.md` (E14) |
 | offer an option in the editor | offer only what it can measure and draw, and only when its use is clear (E15) |
 | finish an option | test the way back, the automatic path as well as the chosen one, a real computer's fonts, a turned object against a turned shape (E15) |
-| prepare a validation | one short checklist page, at most 12 lines per feature, one line per thing to see, each tried in a browser first, the panel beside the drawing (E15, EN-056) |
+| prepare what the Product Owner tries | a test card per user story, one thing to see per step, each tried in a browser first, the panel beside the drawing; at each return, the cards of what changed since the last merge into `main` alone (E15, EN-056, ADR-0100) |
 | run work in the background | say each worker's start and end with an estimate; the status line shows each running subagent (E15, EN-053) |
 | start subagents | one at a time, in the background, and one heavy command at a time, refused or queued by the tools (E15, ADR-0072, ADR-0086, EN-047) |
 | run work in parallel | keep branches on separate files; merge one at a time; never edit shared indexes and logs from a story branch (E15, ADR-0065) |
