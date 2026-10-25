@@ -10,7 +10,7 @@ The structure is **checked by a test** (`backlog.test.ts`): unique IDs, valid st
 
 | Done | Now | Next | Then |
 | --- | --- | --- | --- |
-| E01 — draw symbol shapes, E14 — curves, E15 — text, E17 — fast tooling, E02 — select and move shapes on one drawing | the epics not done regrouped into E21 to E48, small epics of one subject (SP-033, 2026-10-25) | E21 — resize shapes by their box | E22 — turn shapes about a chosen center, E23 — drag points and handles |
+| E01 — draw symbol shapes, E14 — curves, E15 — text, E17 — fast tooling, E02 — select and move shapes on one drawing | E49 — the agent's knowledge in a database, the docs light: refined (SP-034), the knowledge database next | E50 — the agent's setup shared with every coding agent | E21 — resize shapes by their box, E22 — turn shapes about a chosen center |
 
 The full order of the epics is the Product Owner's, in [epics](./epics/); each epic orders its features, each feature its stories.
 
