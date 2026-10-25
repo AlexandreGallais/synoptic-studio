@@ -9,7 +9,7 @@ import type { FreeShape } from "../free-shape";
  * @kind domain
  * @param shape - a shape of the model
  * @returns `true` for a free shape
- * @see docs/domain/shapes.md#round-shape-f10
+ * @see docs/domain/shapes.md#round-shape
  */
 export function isFreeShape(shape: Shape): shape is FreeShape {
   return "corners" in shape && typeof shape.corners !== "number";

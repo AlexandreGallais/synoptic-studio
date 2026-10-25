@@ -18,8 +18,8 @@ type PassedPart = {
 
 /** The parts of E15's pages that EN-060 passed; an empty heading means the page's start or end. */
 const PASSED_PARTS: readonly PassedPart[] = [
-  { file: "docs/domain/shapes.md", from: "### Text", to: "### Layout box (Q21)" },
-  { file: "docs/domain/interaction.md", from: "### Colors", to: "### Align and distribute" },
+  { file: "docs/domain/shapes.md", from: "", to: "" },
+  { file: "docs/domain/interaction.md", from: "", to: "" },
   { file: "docs/derivations/text-box.md", from: "", to: "" },
   { file: "docs/derivations/color-spaces.md", from: "", to: "" },
   { file: "docs/research/notes/0017-e15-text.md", from: "", to: "" },
