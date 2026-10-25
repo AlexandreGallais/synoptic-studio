@@ -33,5 +33,5 @@ The refinement of [E49](../epics/E49-keep-the-agents-knowledge-in-a-database.md)
 One task = one commit, referenced as `SP-034.Tn`.
 
 - [x] T1 — Inventory the docs, their readers and the checks that read them (1 h)
-- [ ] T2 — Read and record the sources of the database and the agents' context (1 h)
+- [x] T2 — Read and record the sources of the database and the agents' context (1 h)
 - [ ] T3 — Write the research note, cut the features, list the questions (1 h)

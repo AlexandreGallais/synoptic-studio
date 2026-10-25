@@ -59,3 +59,18 @@ What it means for the cost: the agent reads the finished stories, the features a
 | `page` | local | an id's page: `REF-` row, ADR, derivation, backlog item | kept for the pages that stay; a finished item read through the new tool |
 | `backlog-index`, `backlog-status`, `val-prepare`, `worktree-new`, `git-sequences` | local | the open items | kept |
 | `guard-bash`, `library-pages` and other hooks | local | none: their messages name a page | the names updated when a page moves |
+
+## The sources
+
+Read through the library on 2026-10-25, recorded in `docs/references.md` (A knowledge database for the agent), each claim of a behavior from two independent sources or one specification:
+
+| Question | Sources | What they settle |
+| --- | --- | --- |
+| several writers, the journal modes | `REF-SQLITE-WAL`, `REF-SQLITE-LOCKING`, `REF-SQLITE-TRANSACTION` | one writer at a time in every mode; WAL lets readers run beside the writer, on one machine only, with two files beside the database |
+| waiting for the other writer | `REF-SQLITE-BUSY-TIMEOUT`, `REF-RUSQLITE-CONNECTION` | a busy timeout waits, then `SQLITE_BUSY`; rusqlite sets 5,000 ms on each new connection |
+| a file on a synced or network folder | `REF-SQLITE-OVER-NETWORK`, `REF-SQLITE-CORRUPT` (§2.1), `REF-SQLITE-WAL` (§1) | never the working database there: locks may fail, WAL does not work across machines |
+| a clean copy of a database in use | `REF-SQLITE-BACKUP`, `REF-SQLITE-VACUUM`, `REF-SQLITE-CORRUPT` (§1.2), `REF-POSIX-RENAME` | `VACUUM INTO` or the backup API give a consistent snapshot; a plain copy during a transaction may be corrupt; a rename replaces the last snapshot in one step |
+| the schema across tool versions | `REF-SQLITE-PRAGMA` | `user_version` holds the schema's number |
+| full-text search | `REF-SQLITE-FTS5` | FTS5 over an external content table kept by triggers, ranked by `bm25()`, the `porter unicode61` tokenizer the library already uses |
+| rows of a branch never merged | `REF-GIT-BRANCH`, `REF-GIT-WORKTREE` | a branch merged or not is a fact Git gives; every worktree shares one common folder |
+| how coding agents load their context | `REF-CC-MEMORY`, `REF-AGENTS-MD`, `REF-CODEX-AGENTS-MD`, `REF-GH-COPILOT-INSTRUCTIONS`, `REF-ANTHROPIC-CONTEXT` | every agent loads its instruction file whole at start (Codex caps it at 32 KiB, Claude Code loads 200 lines or 25 KB of `MEMORY.md`); the rest is read on demand by a tool, "just in time" |
