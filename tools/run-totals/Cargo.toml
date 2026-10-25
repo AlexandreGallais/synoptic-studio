@@ -10,7 +10,6 @@ publish.workspace = true
 calendar = { path = "../calendar" }
 git-repository = { path = "../git-repository" }
 hooks = { path = "../hooks" }
-knowledge-call = { path = "../knowledge-call" }
 tool-use = { path = "../tool-use" }
 
 [dev-dependencies]

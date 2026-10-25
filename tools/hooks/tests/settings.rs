@@ -1,6 +1,6 @@
 //! Tests of `.claude/settings.json` (EN-104, ADR-0078): every hook and the status line call a
 //! binary of `tools/hooks` by its path in `target/release`, never through `cargo run` nor Node.js;
-//! the session's end alone calls `knowledge snapshot` (EN-153).
+//! the session's end alone calls `knowledge snapshot` (EN-153); the permissions of the tools in use only (AUD-051).
 
 use std::fs;
 use std::path::Path;
@@ -83,6 +83,30 @@ fn f21_ac1_every_hook_and_the_status_line_call_a_hooks_binary_by_its_path() {
         settings.get("statusLine").get("command").text(),
         "\"$(git rev-parse --show-toplevel)/target/release/status-line\""
     );
+    // Refreshed every second, so that its working dots move (AUD-051).
+    assert_eq!(
+        settings.get("statusLine").get("refreshInterval"),
+        &Value::Number(1.0)
+    );
+}
+
+#[test]
+fn aud_051_allows_no_push_without_a_prompt() {
+    let settings =
+        parse(&fs::read_to_string(root().join(".claude/settings.json")).expect("settings"))
+            .expect("JSON");
+    let pushes: Vec<&str> = settings
+        .get("permissions")
+        .get("allow")
+        .items()
+        .iter()
+        .map(Value::text)
+        .filter(|rule| rule.contains("git push"))
+        .collect();
+
+    // `git push --delete` runs the pre-push checks for nothing: a branch is deleted through the
+    // GitHub API, which stays allowed.
+    assert_eq!(pushes, [] as [&str; 0]);
 }
 
 #[test]
@@ -149,7 +173,7 @@ fn f48_ac3_takes_the_snapshot_when_a_session_ends_within_its_timeout() {
 /// publishes or deletes, by its subcommand (AUD-023): `heavy-lock` runs any command given after it,
 /// `branches-clean` deletes branches and worktrees, `git-hooks install` sets the hooks folder and
 /// `release publish` makes a release, so each of them asks.
-const ALLOWED_BINARIES: [&str; 22] = [
+const ALLOWED_BINARIES: [&str; 19] = [
     "activity",
     "backlog-status",
     "context-size",
@@ -163,14 +187,11 @@ const ALLOWED_BINARIES: [&str; 22] = [
     "library",
     "metrics",
     "page",
-    "records-save",
     "release check",
     "release notes",
     "replace",
     "run-totals",
-    "session-report",
     "stale-binaries",
-    "val-prepare",
     "worktree-new",
 ];
 

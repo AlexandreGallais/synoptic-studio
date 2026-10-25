@@ -27,4 +27,13 @@ mod tests {
         );
         assert!(status_refusal("").is_some());
     }
+
+    #[test]
+    fn f20_ac6_parks_a_story_waiting_for_an_answer_and_the_run_goes_on() {
+        // A question parks its own story (`parked`, its question in its row) and sets it `ready`
+        // again once answered; nothing stops the run, the week's usage no more (AUD-051).
+        assert_eq!(status_refusal("parked"), None);
+        assert_eq!(status_refusal("ready"), None);
+        assert!(status_refusal("stopped").is_some());
+    }
 }

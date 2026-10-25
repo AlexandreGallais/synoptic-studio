@@ -1,6 +1,6 @@
 //! `PreToolUse` hook on every tool, in the background (`docs/tooling/metrics.md`, EN-104): writes
-//! the tool call that starts to `.git/metrics/running/<id>.json`, so that the status line shows
-//! what is running and for how long; the `log-tool-call` hook removes it when the call ends.
+//! the tool call that starts to `.git/metrics/running/<id>.json`, so that the `log-tool-call` hook
+//! records when it started and how long it ran, then removes it.
 
 use std::fs;
 use std::path::Path;

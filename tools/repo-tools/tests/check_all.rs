@@ -731,6 +731,7 @@ fn owned(paths: &[&str]) -> Vec<String> {
 /// cargo-deny, a file inside one that the crates' tests read being named among the Rust inputs
 /// (`.github/workflows/`): a new entry fails `[F29.AC2]` until it is listed here or there.
 const NOT_RUST_INPUTS: &[&str] = &[
+    ".agents",
     ".claude",
     ".editorconfig",
     ".gitattributes",

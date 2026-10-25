@@ -88,6 +88,22 @@ fn is_prompt(line: &Value) -> bool {
         && has_text(line)
 }
 
+/// Whether a transcript line is the person stopping the agent (Escape): Claude Code writes it as a
+/// user message whose text opens with `[Request interrupted by user`, and no `end_turn` follows, so
+/// the turn ends here (AUD-051).
+fn is_interruption(line: &Value) -> bool {
+    let opens = |text: &str| text.starts_with("[Request interrupted by user");
+
+    line.get("type").text() == "user"
+        && match line.get("message").get("content") {
+            Value::String(text) => opens(text),
+            content => content
+                .items()
+                .iter()
+                .any(|block| block.get("type").text() == "text" && opens(block.get("text").text())),
+        }
+}
+
 /// A message's id as JavaScript's `String()` wrote it, `undefined` when missing.
 fn message_id(message: &Value) -> String {
     match message {
@@ -164,7 +180,7 @@ fn with_line(tally: Tally, line: &Value, raw: &str) -> Tally {
 
     let mut counted = with_usage(started, message);
 
-    if message.get("stop_reason").text() == "end_turn" {
+    if message.get("stop_reason").text() == "end_turn" || is_interruption(line) {
         counted.end = time_of(line);
         counted.is_waiting = true;
     }

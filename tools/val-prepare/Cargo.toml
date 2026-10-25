@@ -10,5 +10,8 @@ publish.workspace = true
 knowledge-call = { path = "../knowledge-call" }
 tool-use = { path = "../tool-use" }
 
+[dev-dependencies]
+test-support = { path = "../test-support" }
+
 [lints]
 workspace = true

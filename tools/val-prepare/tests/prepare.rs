@@ -3,7 +3,6 @@
 
 use std::fs;
 use std::path::{Path, PathBuf};
-use std::process::Command;
 
 use val_prepare::{
     Criterion, Feature, LINE_LIMIT, Plan, epic_number, feature_id, feature_statement,
@@ -343,7 +342,7 @@ fn refuses_an_unknown_feature_one_not_refined_and_lines_already_written() {
 fn f18_ac12_the_tool_writes_the_files_and_says_the_address() {
     let root = repository("run", &[("F18", "E17", 2)]);
     let tool = root.join("bin/val-prepare");
-    let output = Command::new(&tool)
+    let output = test_support::command(&tool)
         .args([root.to_str().unwrap(), "f18"])
         .output()
         .unwrap();
@@ -355,11 +354,11 @@ fn f18_ac12_the_tool_writes_the_files_and_says_the_address() {
     assert!(read(&root, "playground/checklists/checklists.ts").contains("EPIC_17_CHECKLIST"));
     assert!(!root.join("playground/guided-steps").exists());
 
-    let again = Command::new(&tool)
+    let again = test_support::command(&tool)
         .args([root.to_str().unwrap(), "F18"])
         .output()
         .unwrap();
-    let unknown = Command::new(&tool)
+    let unknown = test_support::command(&tool)
         .args([root.to_str().unwrap(), "F19"])
         .output()
         .unwrap();
@@ -368,7 +367,7 @@ fn f18_ac12_the_tool_writes_the_files_and_says_the_address() {
     assert_eq!(unknown.status.code(), Some(1));
     assert!(String::from_utf8_lossy(&unknown.stderr).contains("no feature F19 in the records"));
 
-    let usage = Command::new(env!("CARGO_BIN_EXE_val-prepare"))
+    let usage = test_support::command(env!("CARGO_BIN_EXE_val-prepare"))
         .output()
         .unwrap();
 

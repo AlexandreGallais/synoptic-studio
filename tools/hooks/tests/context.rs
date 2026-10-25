@@ -1,7 +1,6 @@
 //! Tests of what a subagent carries at its first request (EN-065).
 
 use std::fs;
-use std::process::Command;
 
 use hooks::context::{Start, first_request, page_tokens, pages_table, tables};
 use hooks::json::parse;
@@ -103,7 +102,7 @@ fn the_command_reads_a_session_folder() {
     .unwrap_or_default();
     fs::write(subagents.join("notes.txt"), "not a transcript").unwrap_or_default();
 
-    let output = Command::new(env!("CARGO_BIN_EXE_context-size"))
+    let output = test_support::command(env!("CARGO_BIN_EXE_context-size"))
         .arg(&folder)
         .output()
         .map(|output| String::from_utf8_lossy(&output.stdout).into_owned())
@@ -157,7 +156,7 @@ fn f32_ac2_the_command_counts_the_files_named() {
     fs::write(subagents.join("agent-a1.jsonl"), TRANSCRIPT).unwrap_or_default();
 
     let output = |arguments: &[&std::path::Path]| {
-        Command::new(env!("CARGO_BIN_EXE_context-size"))
+        test_support::command(env!("CARGO_BIN_EXE_context-size"))
             .args(arguments)
             .output()
             .map(|output| String::from_utf8_lossy(&output.stdout).into_owned())

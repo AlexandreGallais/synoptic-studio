@@ -510,7 +510,7 @@ fn the_set_up_leaves_the_repository_of_git_dir_alone() {
     let before = fs::read_to_string(&config).expect("config");
 
     // The set-up run as under the pre-push hook, `GIT_DIR` naming another repository.
-    let run = Command::new(std::env::current_exe().expect("test binary"))
+    let run = test_support::command(std::env::current_exe().expect("test binary"))
         .args(["--exact", "sets_up_a_project"])
         .env("GIT_DIR", decoy.join(".git"))
         .output()

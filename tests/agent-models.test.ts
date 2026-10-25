@@ -3,8 +3,8 @@ import { join } from "node:path";
 
 import { describe, expect, it } from "vitest";
 
-/** Folder of the project's agent types. */
-const AGENTS = join(import.meta.dirname, "..", ".claude", "agents");
+/** Folder of the project's agent types, which `.claude/agents` links to. */
+const AGENTS = join(import.meta.dirname, "..", ".agents", "agents");
 
 /** The model each agent type runs on, as decided at F20's second round (EN-066, 2026-10-17). */
 const MODELS: Readonly<Record<string, string>> = {

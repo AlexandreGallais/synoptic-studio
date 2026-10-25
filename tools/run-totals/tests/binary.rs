@@ -100,8 +100,8 @@ fn f20_ac4_opens_counts_shows_and_ends_a_run() {
     )
     .expect("transcript");
 
-    // No run yet: no status, no report, no end.
-    assert_eq!(stdout(&totals(&repo, &home, &["status"])), "");
+    // No run yet: no report, no end; the status line's `status` is gone (AUD-051).
+    assert!(!totals(&repo, &home, &["status"]).status.success());
     assert!(!totals(&repo, &home, &["report"]).status.success());
     assert!(!totals(&repo, &home, &["end"]).status.success());
     // No session id: refused.
@@ -114,16 +114,7 @@ fn f20_ac4_opens_counts_shows_and_ends_a_run() {
 
     assert!(marker.contains("\"sessions\":[\"s1\",\"s2\"]"));
 
-    fs::write(
-        repo.join(".git/metrics/usage.json"),
-        "{\"sevenDay\":{\"usedPercent\":33.6,\"resetsAt\":\"x\"},\"time\":1}",
-    )
-    .expect("usage");
     // The duration may have reached a second between two commands: only its form is checked.
-    assert_eq!(
-        seconds_hidden(&stdout(&totals(&repo, &home, &["status"]))),
-        "run _ s · 3,333 tokens · week 34 % used"
-    );
     assert!(
         seconds_hidden(&stdout(&totals(&repo, &home, &["report"])))
             .contains("| _ s, open | 3,333 |")
@@ -133,66 +124,8 @@ fn f20_ac4_opens_counts_shows_and_ends_a_run() {
     let ended = seconds_hidden(&stdout(&totals(&repo, &home, &["end"])));
 
     assert!(ended.contains("| _ s | 0 | 0 | 0 | 0 | 0 |"), "{ended}");
-    assert_eq!(stdout(&totals(&repo, &home, &["status"])), "");
     assert!(!totals(&repo, &home, &["unknown"]).status.success());
-}
-
-#[test]
-fn f20_ac6_should_stop_goes_on_at_any_usage_and_names_the_parked_stories_of_the_records() {
-    let (home, repo) = setup("stop");
-    let bin = home.join("bin");
-    let tool = bin.join("run-totals");
-
-    // A copy of the tool beside a `knowledge` script standing for the records (EN-154).
-    fs::create_dir_all(&bin).expect("bin");
-    fs::copy(env!("CARGO_BIN_EXE_run-totals"), &tool).expect("tool copied");
-
-    let stop = || {
-        clean(tool.to_str().expect("path"), &repo, &home)
-            .arg("should-stop")
-            .output()
-            .expect("runs")
-    };
-
-    // No `knowledge` beside it: the run goes on, the parked stories unknown.
-    let unread = stop();
-
-    assert!(unread.status.success());
-    assert!(
-        stdout(&unread).starts_with(
-            "go: the week's usage stops no run (2026-10-25)\nparked: unknown, the records cannot be read: "
-        ),
-        "{}",
-        stdout(&unread)
-    );
-
-    fs::write(
-        bin.join("knowledge"),
-        "#!/bin/sh\nprintf 'id\\nEN-101\\nUS-020\\n'\n",
-    )
-    .expect("script");
-    #[cfg(unix)]
-    {
-        use std::os::unix::fs::PermissionsExt;
-
-        fs::set_permissions(bin.join("knowledge"), fs::Permissions::from_mode(0o755))
-            .expect("script runs");
-    }
-    fs::create_dir_all(repo.join(".git/metrics")).expect("metrics");
-    // The week all but spent: no stop any more.
-    fs::write(
-        repo.join(".git/metrics/usage.json"),
-        "{\"sevenDay\":{\"usedPercent\":99.5,\"resetsAt\":\"x\"},\"time\":1}",
-    )
-    .expect("usage");
-
-    let spent = stop();
-
-    assert!(spent.status.success());
-    assert_eq!(
-        stdout(&spent),
-        "go: the week's usage stops no run (2026-10-25)\nparked: EN-101, US-020\n"
-    );
+    assert!(!totals(&repo, &home, &["should-stop"]).status.success());
 }
 
 #[test]
@@ -203,18 +136,9 @@ fn refuses_outside_a_repository() {
     let home = fs::canonicalize(&home).expect("home");
     let output = clean(env!("CARGO_BIN_EXE_run-totals"), &home, &home)
         .env("GIT_CEILING_DIRECTORIES", home.parent().expect("parent"))
-        .arg("status")
+        .arg("report")
         .output()
         .expect("runs");
 
     assert!(!output.status.success());
-
-    let stop = clean(env!("CARGO_BIN_EXE_run-totals"), &home, &home)
-        .env("GIT_CEILING_DIRECTORIES", home.parent().expect("parent"))
-        .arg("should-stop")
-        .output()
-        .expect("runs");
-
-    // 2, not 1: no answer is not a stop.
-    assert_eq!(stop.status.code(), Some(2));
 }
