@@ -8,7 +8,7 @@ How the project is built, checked, documented, versioned and released, and how t
 | [dependencies.md](./dependencies.md) | every package, crate, tool and asset, why it is there, how to add one |
 | [versions-and-security.md](./versions-and-security.md) | latest versions, upgrades, vulnerabilities |
 | [git-workflow.md](./git-workflow.md) | branches, pull requests, commits, hooks |
-| [ci.md](./ci.md) | the one CI into `main`, rulesets, repository settings |
+| [ci.md](./ci.md) | the CI into `main`, the `develop` CI, the auto-merges, the Rust caches, rulesets, repository settings |
 | [releases.md](./releases.md) | the features' texts, the version from the tags and the GitHub release by a button, by `tools/release` |
 | [documentation-site.md](./documentation-site.md) | VitePress site, API pages, playground |
 | [agent.md](./agent.md) | the agent's configuration: files, skills, agent types and models, hooks, parallel sessions |

@@ -11,13 +11,12 @@ Each moment has one owner and one output, so that nothing waits on an unnamed pe
 | any time | an idea, an irritant or a lesson, written in neutral words | both | a row in the [improvement log](./improvements.md) |
 | any time | a critique of how the agent worked: what happened, what it should have done, what now prevents it | agent | a row in the [feedback log](./feedback.md) |
 | start of each story and review | triage of open GitHub issues (`/triage`), each with a recommendation (ADR-0026) | agent, then Product Owner | decisions, backlog items, replies |
-| start of an epic | refinement: the Product Owner's account, the documentary research, the features cut, in an `SP` from `develop` (ADR-0086) | both, then agent | features, sources |
-| start of a feature | refinement interview; a short spike `SP` on its branch when questions remain | both, then agent | stories, sources |
+| start of an epic | refinement: the Product Owner's account, the whole documentary research, the code read, every question asked at once, the features and their stories counted, in an `SP` from `develop` (ADR-0100) | both, then agent | features, stories, sources |
+| start of a feature | its stories, known from the epic's refinement; a short spike `SP` only for a question nobody foresaw (ADR-0100) | agent | stories |
 | during a run (ADR-0072) | stories follow one another on the feature branch up to the scope the Product Owner set, a fresh worker each; a test card per user story | agent | stories merged into the feature branch, cards to run |
-| end of a feature | audit `AUD` (with a light evolvability check), validation `VAL` (demo page, checklist page) | agent, then Product Owner | findings, [guide](../guide/) page, feedback |
-| after `VAL` | local previews: what the Product Owner saw against what the demo meant to show | both | gaps recorded |
+| end of a feature | audit `AUD` (with a light evolvability check), then the feature into `develop` (ADR-0100) | agent | findings, the feature in `develop` |
 | release | the Product Owner runs `release.yml` on `main` from the Actions tab, when they choose (ADR-0086) | Product Owner | a tag and a GitHub release |
-| each return of the Product Owner | a feature under way finished first, then the review `REV` from `develop`: the features finished since the last merge into `main`, the naming pass over the code changed since, the tool cards fixed, the method and the docs; then `develop` → `main` (ADR-0086) | agent, then Product Owner | [review record](./retrospectives/), ADRs, stories, a merge into `main` |
+| each return of the Product Owner | a feature under way finished first, then the review `REV` from `develop`: the features finished since the last merge into `main`, which the Product Owner tries on `develop`, the naming pass over the code changed since, the tool cards fixed, the method and the docs; then `develop` → `main`, an epic finished or not (ADR-0086, ADR-0100) | agent, then Product Owner | [review record](./retrospectives/), ADRs, stories, a merge into `main` |
 | the review after an epic's last feature | fresh research on practices for agent-built projects | agent | [playbook](../playbook/) and starter kit updated |
 | every 4 to 5 epics, end of project | review of every rule ([agile.md](./agile.md#cadences)) | both | decisions, ADRs, a stricter configuration |
 

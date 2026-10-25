@@ -54,7 +54,7 @@ Test, never over-test: a claim proven twice doubles the cost of every change to 
 - **Two criteria proven by one test**: put both tags in one title (`[F02.AC1] [F07.AC1] …`), never two copies of the test.
 - **An example is a value computed by hand.** An example that checks the same oracle as a property beside it is merged into the property, whose generator is widened to cover the example's input. The bounds of a range stay as examples.
 - **A wider property contains a narrower one** (equal radii inside any radii): keep one property, its generator drawing both cases (`fc.boolean()` choosing equal radii).
-- **A Product Owner test card** is walked by the guided steps of its feature's `VAL`, not by a test repeating the panel tests one after the other. A walk keeps only the steps no other test proves.
+- **A Product Owner test card** is walked by the Product Owner on `develop`, not by a test repeating the panel tests one after the other. A walk kept in a test keeps only the steps no other test proves.
 - **A removed or merged test** is checked by `npm run mutate` on the code it covered (`-- npx vitest run {test}` for the file's own tests) and by the coverage gates.
 
 ## Shared fixtures and helpers
@@ -103,7 +103,7 @@ it("[F01.AC3] clamps a 100 × 25 rectangle with radius 100 to an effective radiu
 
 | Item | Rule |
 | --- | --- |
-| Levels | examples computed by hand; properties; criterion tests `[F01.ACn]`; the epic's checklist page in the playground (`VAL`, `REV`); regression and end-to-end suites once the applications exist (E48, ADR-0020) |
+| Levels | examples computed by hand; properties; criterion tests `[F01.ACn]`; the epic's checklist page in the playground (`REV`); regression and end-to-end suites once the applications exist (E48, ADR-0020) |
 | Environments | the core in Node.js without a DOM; `render` and the playground with happy-dom; browsers for end-to-end, later |
 | Independence | the `auditor`, `verifier` and `math-expert` agents re-derive, recompute and try mutations; the Product Owner tries the checklists |
 | Success | every test green, 100 % coverage of `src/`, no `.skip` nor `.only`, on every push and every release |

@@ -1,21 +1,21 @@
 ---
 name: review
-description: Run the review held at each return of the Product Owner (REV story) — the features finished since the last merge into `main`, the naming pass over the code changed since, the tool cards, the method, the docs. Use when the Product Owner comes back, or for a story of type REV. Also use for the demo page of a feature validation (VAL).
-argument-hint: "[REV id, or VAL id for a feature demo]"
+description: Run the review held at each return of the Product Owner (REV story) — the features finished since the last merge into `main`, the naming pass over the code changed since, the tool cards, the method, the docs. Use when the Product Owner comes back, or for a story of type REV. Also use for a feature's demo page.
+argument-hint: "[REV id, or a feature id for its demo]"
 ---
 
 # Review (and feature demo)
 
 Target: $ARGUMENTS. Decisions: ADR-0023, ADR-0086. Writing rules: `docs/conventions/writing.md`, and `docs/guide/README.md` for guide pages.
 
-## Feature demo (VAL)
+## Feature demo
 
 1. Write `docs/guide/<feature-slug>.md` from `docs/guide/_feature-demo.md`: what the user can do, the ideas with every term explained, pictures produced by the library, the checklist's address and its lines with what each shows, limits.
 2. Put the validation **in the playground** as lines of the epic's checklist (`playground/checklists/`, opened by `?checklist=<epic>`, US-051): one line per option kept and one per decision to confirm, each what to try and what to see in one short sentence, a check box before it; no guided steps, no Previous nor Next; test that the list names every option kept and none removed. Pictures of the demo page are drawn by the library (SVG files in `docs/guide/images/`); flows and structures are Mermaid blocks.
 3. List the page in `docs/guide/README.md`; open the pull request; ask the Product Owner to try the checklist's lines, in any order and over several sessions if they wish, and tell you what they see; write the result and each remark in neutral English, never their words (`docs/conventions/writing.md`): the **Validation** table of the page, remark by remark, with what was done or where it went. Read their messages for intent.
 4. Feedback that reveals a misunderstanding: record it, propose stories or domain changes, never adjust silently.
 5. Compare the Product Owner's account (often spoken) with what each test card and the demo meant to show: did they understand what you wanted to show? Record each gap as a misunderstood need (backlog) or an unclear demo (improve the cards and this skill).
-6. Then the feature pull request into `develop` (`/run`, Validation), the pull request `develop` → `main` after the next review (`/run`, Review), and the next feature prepared with the Product Owner: interview, feature branch, and a short spike first when questions remain (`/spike`).
+6. Then the feature pull request into `develop` (`/run`, A feature's end), the pull request `develop` → `main` at the next review (`/run`, Review); the next feature starts from `develop` with the stories its epic's refinement counted, a short spike only for a question nobody foresaw (`/spike`, ADR-0100).
 
 ## Review at a return (REV)
 

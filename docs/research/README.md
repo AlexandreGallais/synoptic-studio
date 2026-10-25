@@ -104,12 +104,12 @@ On receiving the answer, the agent:
 
 With the local library (`library_search`, `library_get`) and WebSearch / WebFetch, the agent may do levels 4 and 5 without a request. Same recording: note in `notes/`, dated entry in `docs/references.md`, **before** the code. Example: [note 0001](./notes/0001-tooling-practices.md).
 
-## 8. Feature research spike
+## 8. Research spike
 
-The `SP` story opening every feature (ADR-0020), done **before** its implementation stories (procedure: the `/spike` skill):
+The `SP` story opening every epic, from `develop`, done **before** the stories of its features (ADR-0100; procedure: the `/spike` skill); a feature's short spike, for a question nobody foresaw, follows the same steps:
 
-1. List every formula, algorithm, specification point and interface behavior the feature's stories need.
+1. List every formula, algorithm, specification point and interface behavior the stories need.
 2. For each one: an existing verified `REF-*` or `DERIV-*`, or a new source found and read (levels 4–5, recorded in `docs/references.md` with its date), or a derivation written, or a research request opened (§5) — never "to be found later".
-3. Write a research note `notes/NNNN-<feature>.md`: what was found, for which story, what remains open.
+3. Write a research note `notes/NNNN-<topic>.md`: what was found, for which story, what remains open.
 4. Update the stories: acceptance criteria from the sources' examples, `@see` targets in the tasks, blocked points.
-5. Ask the Product Owner the business questions found on the way (`docs/domain/README.md` open questions).
+5. Ask the Product Owner every business question found on the way at once (`docs/domain/README.md` open questions).

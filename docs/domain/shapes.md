@@ -515,7 +515,7 @@ F15, ADR-0053, ADR-0060; confirmed at VAL-017. An option of a symbol, off unless
 
 #### Not built
 
-- **HTML layer**: none. Built in F15 (ADR-0053), it was removed by the Product Owner at the validation of E15 (2026-10-15, ADR-0060): the library already computes the lines, about 3 µs per text, so the layer brings no speed, and its only purpose, Arabic and Indic scripts, lies outside the editor's target, the Latin script (the Product Owner's scope decision).
+- **HTML layer**: none (decided on 2026-10-15, ADR-0060): the library already computes the lines, about 3 µs per text, so the layer brings no speed, and its only purpose, Arabic and Indic scripts, lies outside the editor's target, the Latin script (the Product Owner's scope decision).
 - **HTML layer removed**: US-044 removes its code, its playground option and its guided steps; `DERIV-html-layer` and research note 0020 stay as a record.
 - **Not wanted**: lists (a dash typed by hand is enough), highlight shapes beyond a background color, CSS color names, RGB fields.
 - **Text styles**: named styles ("title", "body", "description") that predefine a text's options; in the free edition, templates kept locally that forbid nothing (`editions.md` for the pro edition); with the libraries' epic.

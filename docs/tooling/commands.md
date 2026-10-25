@@ -3,6 +3,7 @@
 | Command | Role |
 | --- | --- |
 | `npm run dev` | Vite server on `playground/` (`http://localhost:5173`) |
+| `npm run preview` | the playground's build served by Vite (`vite preview`) |
 | `npm run build` | `npm audit`, then the library (`dist/editor.js`) and its declarations (`dist/types/`, [build](#build)) |
 | `npm run test` | Vitest under the heavy lock, on half the machine's cores: the library, the playground, `tests/`, the scripts and hooks, but the timing tests; coverage of `src/` 100 %, of `playground/` a floor |
 | `npm run test:timings` | the timing tests alone, under the heavy lock: those tagged `timing` (`--tags-filter=timing`, `REF-VITEST-TAGS`) in the files the script names, about 4 s; `check:all` runs it after its lanes, and the CI after the tests in their job (REV-008) |
@@ -19,7 +20,7 @@
 | `prepare` (run by `npm install`) | `rust:build`, then `target/release/git-hooks install`: the hooks folder `.githooks` set once ([Git workflow](./git-workflow.md#hooks-githooks)) |
 | `npm run deps:audit` | `npm audit`: any severity fails |
 | `npm run deps:outdated` | lists each npm package, GitHub Action, Node.js major, crate and cargo tool behind its latest version at least 7 days old, each locked crate under 7 days, and each cargo tool written at two versions or without its row, then exits 1; exits 2 naming a source that does not answer (`dependencies outdated` of `tools/deps/`, [versions](./versions-and-security.md)) |
-| `npm run deps:unused` | the unused files, exports, exported types and dev packages, the unlisted packages and the unresolved imports, then exits 1 (`dependencies unused` of `tools/deps/`, on Oxc's parser, in place of knip, EN-109) |
+| `npm run deps:unused` | the unused files, exports, exported types and dev packages, the unlisted packages and the unresolved imports, then exits 1 (`dependencies unused` of `tools/deps/`, on Oxc's parser, EN-109) |
 | `npm run docs:dev` / `docs:build` | the documentation site, its API pages written first ([documentation site](./documentation-site.md)) |
 | `npm run docs:api` | `docs/api/` from the TSDoc |
 | `npm run playground:build` | the playground, built into the site (`docs/.vitepress/dist/playground/`) |
@@ -55,7 +56,7 @@ On a story branch (`<type>/<id>-<topic>`), the test lane runs only the tests the
 
 The base is the nearest of `origin/develop` and `origin/feature/*` for a story, `origin/develop` for a feature. When the base is unclear — `main`, `develop`, a detached head, the CI, a Git error — every lane runs: skipping is allowed only when it is certain the lane has nothing to check. A line says when the docs lane is skipped, another when the Rust lanes are: `- check:rust, rust:coverage skipped: nothing changed in their inputs against <base>`. The lanes run inside `check:all`'s heavy lock, and no release binary is built once they start: two lanes starting the same binary while `cargo run` rewrites it fail with `could not execute process`.
 
-`check:all` reads the main checkout's `.git/config` before the build and after the lanes, and compares the lines a test could break: every key of `[core]`, `[user]`, `[commit]`, `[url "…"]` (an `insteadOf` sends the pushes elsewhere), `[include]`, `[includeIf "…"]` (another file read) and `[extensions]`, and each remote's `url` and `pushurl`, names read without case and a key on its section's header line too (`[core] bare = true`, AUD-023) (`guarded_lines`). The rest is let through: a parallel worktree's `git push -u` writes its branch's `[branch "…"]` tracking lines into the same file while the lanes run, which failed CHK-022's run though no test leaked (EN-113). A lane that changed a guarded line fails the run, whatever its checks said: a line `✗ <path> changed while the checks ran, restored nothing:` names each line removed (`- `) and added (`+ `), and the last line names `.git/config` among the failures. Nothing is restored: the change is a test's leak to find (a `core.bare = true` written by a test that inherited the pre-push hook's `GIT_DIR`, 2026-10-17), and the report holds the lines to put back. The tool is `check-all` of `tools/repo-tools/` (EN-103); its own work outside the lanes, on a repository whose every script is `true`, takes about 120 ms in the CI's mode against 230 ms for its TypeScript predecessor (median of 20, load 7 to 9).
+`check:all` reads the main checkout's `.git/config` before the build and after the lanes, and compares the lines a test could break: every key of `[core]`, `[user]`, `[commit]`, `[url "…"]` (an `insteadOf` sends the pushes elsewhere), `[include]`, `[includeIf "…"]` (another file read) and `[extensions]`, and each remote's `url` and `pushurl`, names read without case and a key on its section's header line too (`[core] bare = true`, AUD-023) (`guarded_lines`). The rest is let through: a parallel worktree's `git push -u` writes its branch's `[branch "…"]` tracking lines into the same file while the lanes run (EN-113). A lane that changed a guarded line fails the run, whatever its checks said: a line `✗ <path> changed while the checks ran, restored nothing:` names each line removed (`- `) and added (`+ `), and the last line names `.git/config` among the failures. Nothing is restored: the change is a test's leak to find (a `core.bare = true` written by a test that inherited the pre-push hook's `GIT_DIR`, 2026-10-17), and the report holds the lines to put back. The tool is `check-all` of `tools/repo-tools/` (EN-103); its own work outside the lanes, on a repository whose every script is `true`, takes about 120 ms in the CI's mode (median of 20, load 7 to 9).
 
 ## Explicit targets
 
@@ -83,7 +84,7 @@ Never take the lock by hand (`mkdir`) nor wrap a command in a lock of one's own:
 
 ## Playground
 
-`playground/index.html` loads `playground/index.ts`, which imports the public API only (`../src`): the playground uses the library as a user would. It is published with the site at each release: <https://alexandregallais.github.io/synoptic-studio/playground/>.
+`playground/index.html` loads `playground/index.ts`, which imports the public API only (`../src`): the playground uses the library as a user would. It is published with the site at each push to `main` (`site.yml`): <https://alexandregallais.github.io/synoptic-studio/playground/>.
 
 ## Build
 

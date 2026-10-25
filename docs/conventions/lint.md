@@ -54,7 +54,7 @@ Turn a rule off for one line only, with its reason, and register the line ([regi
 
 - **One rule, one module** of `tools/lint/src/rules/`, with its tests beside it. A rule ported from a plugin keeps the plugin's name, message and options, and its tests run the cases of the plugin's documentation; the plugin's documentation is its reference. To add a rule: write the module, add its line in `rules::ALL`, and add its name to `ON_EVERYWHERE` or to a scope of `tools/lint/src/scopes.rs`. `rules::tests` fails when a rule is in no scope, or a scoped name has no rule.
 - **Each file once**: each file is read and parsed once, with its comments and semantic model, then every rule its scopes turn on runs over that tree. Markdown pages are parsed into an mdast tree (`REF-MARKDOWN-RS`). What the rules read beside a file, such as folder listings, the bibliography or the ADRs, is read once per run. The whole tree takes about 0.2 s.
-- **`--fix`** applies fixes as ESLint did: from the first range, a fix that touches one already applied waits for the next pass, and the file is linted again, ten passes at most.
+- **`--fix`** applies fixes as ESLint does: from the first range, a fix that touches one already applied waits for the next pass, and the file is linted again, ten passes at most.
 - **Project values** (kinds, layers, verbs, reference sources, the folder signal) are in `tools/lint/src/settings.rs`.
 - Every rule, by theme, with what it guards, is listed in [rules](./rules.md#every-rule-run-by-theme). Each rule dropped when ESLint left is listed with its reason in ADR-0075 and research note 0023.
 

@@ -23,4 +23,4 @@ Story: $ARGUMENTS (default: the next unfinished story of the started feature, pr
    - outside a run: `git push -u origin HEAD` (or `--push` on the last `target/release/git-sequences commit`), then `gh pr create --base feature/f<nn>-<topic> --title "<type>(<scope>): <summary>" --body-file <filled .github/pull_request_template.md>`, not a draft, without the `autonomous` label: the Product Owner merges it.
 9. **Stop**: a summary to the Product Owner in French (`AGENTS.md`, Definition of done), with the functions and their `@kind` and `@see`, the sources, what was checked and how, the pull request's link. Never merge it.
 
-After the merge, anything `story:finish` did not remove (a merge by the Product Owner, a stopped story's worktree) goes with `target/release/branches-clean`. The feature reaches `develop` through its pull request at `VAL`, then `main` with the next release.
+After the merge, anything `story:finish` did not remove (a merge by the Product Owner, a stopped story's worktree) goes with `target/release/branches-clean`. The feature reaches `develop` through its pull request once its audit ends (ADR-0100), then `main` at the next review.

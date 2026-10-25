@@ -14,15 +14,16 @@ TypeScript library `editor` that creates **SVG symbols** for **synoptic views**,
 
 A library of small named functions, each backed by a verified source, composed so that they read like formulas; the playground (`playground/`) shows each stage. Principles: schematic, orthogonal, integer, documented, dependency-free.
 
-**State** (2026-10-24), the details in each epic's file and retrospective:
+**State** (2026-10-25), the details in each epic's file and retrospective:
 
 | Epic | Where | Holds |
 | --- | --- | --- |
 | E01 shapes from numbers | delivered, RET-001 | rectangle, regular polygon, anchor, radius per corner, free shape, node editing, rotation, stretched polygon |
 | E14 curves | delivered, RET-002 | points with handles, the round shape as four cubic sides, every calculation named (ADR-0046 to ADR-0049) |
 | E15 text | delivered, RET-003 | font metrics from font files, a text in a box, colors, fonts embedded at export, the checklist page `?checklist=E15` (ADR-0052 to ADR-0062) |
-| E17 fast tooling, Oxc and Rust | in progress | F18 to F21 done: F18 and F19 validated (checks on Oxc, TypeScript 7 and Rust); F20 validated on 2026-10-18 (VAL-021: the context diet, a story worker's first request from 38,900 tokens to 10,600, the agent pages −20 %); F21 validated on 2026-10-18 (VAL-022: every tool of our own in Rust, a hook 3 ms instead of 59, `check:all` about 75 s, 13 dev packages, the release by our own tool); NAM-002, REV-004 and RET-004 done (ADR-0084 and ADR-0085; ADR-0083 removed: ADR-0101); F22 done, validated by the agent on 2026-10-18 (VAL-023: the CI green on GitHub's runner, the release by a button from the tags, one story at a time, a review at each return, ADR-0086); F24 done on 2026-10-18 (VAL-025: the CI in five parallel jobs, the tests shown as they run, the Rust cache saved from `develop`, ADR-0087); 0.3.0 once the CI of `develop` → `main` is green, then the button |
-| E02 select and move shapes | delivered, REV-008 | F35 to F47 (2026-10-22 to 24): several shapes, picking by the painted area in a layer above, selection by click and rectangle, the panel for several shapes, moves on integers, undo and redo by states (ADR-0095 to ADR-0097), the list of steps, zoom and pan by the `viewBox` (ADR-0098), the helps as a dashed line stroked in the layer above (ADR-0099), one rule for every number field; the way of work after it, ADR-0100 |
+| E17 fast tooling, Oxc and Rust | delivered, RET-004, 0.3.0 | F18 to F34: the checks on oxlint, TypeScript 7 and Rust (ADR-0075); every tool of our own in Rust, called by its binary (ADR-0073, ADR-0078); an agent type per task, a story worker's first request from 38,900 tokens to 10,600; one story at a time, the release by a button from the tags (ADR-0086); the CI in parallel jobs, one workflow per purpose, a `develop` CI blocking nothing (ADR-0088) |
+| E02 select and move shapes | delivered, REV-008 | F35 to F47: several shapes, picking by the painted area in a layer above, selection by click and rectangle, the panel for several shapes, moves on integers, undo and redo by states (ADR-0095 to ADR-0097), the list of steps, zoom and pan by the `viewBox` (ADR-0098), the helps as a dashed line stroked in the layer above (ADR-0099), one rule for every number field; the way of work after it, ADR-0100 |
+| E21 to E48 | E21 next | the epics not done, regrouped into small epics of one subject (SP-033), in the order of `docs/backlog/epics/` |
 
 **Scope** (ADR-0030): a finished free V1, then new features only in a paid pro edition. A request that looks pro: say so and ask; pro ideas go to `docs/domain/editions.md`. Only `ready` stories are implemented; the Product Owner's `/run` is the go-ahead, after which the agent sets its scope `ready` itself (ADR-0072).
 
@@ -86,7 +87,7 @@ Each is a step the project cannot take back cheaply; hooks refuse most of them, 
 | Review | at each return of the Product Owner, once or twice a day: a feature under way is finished first; the Product Owner tries on `develop` only what changed; a `REV` from `develop` holds the naming pass over the code changed since the last merge into `main`, the tool incident cards fixed, the telemetry read (`target/release/metrics --since`) and its improvements made, the method's changes and the docs brought up to date (ADR-0086, ADR-0100) |
 | Story | `T1` the interface and its tests, failing, `T2` the code that passes them, one commit per task (`Refs: <ID>.Tn`), `done` in the last (`Closes: <ID>`), a test card for a `US`, a pull request into its feature (ADR-0084) |
 | One agent at a time | one story at a time, a fresh worker for each in the background, never one agent chaining stories (its cost is its context re-read at each call, not its start); a review or a research alone too; one heavy command at a time; the shared files written by the main thread only, a story's log rows and cards in its `done` commit (ADR-0065, ADR-0072, ADR-0086, ADR-0091) |
-| Specialists | only where their independence pays: the `auditor`, and the `verifier` when tests need a second look, at a feature's audit; the `math-expert` and the `functional-analyst` only for a story holding mathematics or business rules to check, never by default; no agent for small tasks: the main thread writes the statuses, the journal, the `done` commits and the merges itself, the `clerk` unused (ADR-0086) |
+| Specialists | only where their independence pays: the `auditor`, and the `verifier` when tests need a second look, at a feature's audit; the `math-expert` and the `functional-analyst` only for a story holding mathematics or business rules to check, never by default; no agent for small tasks: the main thread writes the statuses, the journal, the `done` commits and the merges itself (ADR-0086) |
 | Checks | local on work branches (`pre-push` runs `check:all`); one CI, on the pull request into `main`, never waited for elsewhere; checks by level, the depth in the feature's audit (ADR-0064, ADR-0072) |
 
 ## Definition of done
@@ -114,7 +115,7 @@ Stop when going on would mean deciding what belongs to someone else, or guessing
 - Commits follow Conventional Commits with a scope of the closed list `SCOPES` in `tools/git-hooks/src/message.rs` (`docs/process/` takes `docs(docs)`, a derivation `docs(geometry)`); the subject starts with a verb, since an id first (`F11 …`) is refused as sentence case; a body line starting with `word:` is read as a footer, so the colon goes later in the line.
 - A commit refused by a hook leaves its files staged: check `git status` before retrying.
 - The pull request `develop` → `main` of a review has for body the features' text, drafted by `target/release/release notes` and checked by `target/release/release check <file>`; after its merge, bring `develop` up to `main` (`git merge --ff-only origin/main`, a merge if `develop` moved). A release is the Product Owner's button on `main`, `release publish` computing the version from the tags, with no commit (ADR-0086, `docs/tooling/releases.md`).
-- The release needs no personal token, `GITHUB_TOKEN` alone: remind the Product Owner to delete the secret `RELEASE_PLEASE_TOKEN` and its token on GitHub until they say it is done.
+- The release needs no personal token, `GITHUB_TOKEN` alone: remind the Product Owner to delete the secret `RELEASE_PLEASE_TOKEN` and its token on GitHub until they say it is done (`docs/tooling/releases.md`).
 
 ## Commands
 

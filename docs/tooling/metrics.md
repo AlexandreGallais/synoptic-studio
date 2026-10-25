@@ -80,7 +80,7 @@ Each tool of our own records its own use (EN-102), whoever calls it — the agen
 - **A session's tokens** are Claude Code's count of it, its subagents' included, when its transcripts hold one (`modelUsage`, as in [the session report](#session-report)) and its first request came in the period: a Sonnet subagent's transcript holds a small part of what it wrote (CHK-021). Otherwise, and for the features, stories and tasks, they are the requests' sums: the count holds the whole session and cannot be cut by time nor by branch (AUD-034).
 - **Failed** counts the calls that ended in an error: a failing check, a refused commit, a denied command.
 
-It is the binary `metrics` of `tools/metrics` (EN-107): on this session's transcripts and logs, its output is the TypeScript report's, the Findings section added, but for one row of the Tools section, `library stats`, which the script ran as a command, recording one use more, where the binary reads the library in its own process. Measured on 1.6 GB of transcripts (2026-10-18): 6.4 s without the cache, then 0.5 s, against 8.2 s for `metrics-report.ts` ([research note 0025](../research/notes/0025-f21-agent-tools-in-rust.md#the-tools-story-by-story)).
+It is the binary `metrics` of `tools/metrics` (EN-107), which reads the library in its own process. Measured on 1.6 GB of transcripts (2026-10-18): 6.4 s without the cache, then 0.5 s ([research note 0025](../research/notes/0025-f21-agent-tools-in-rust.md#the-tools-story-by-story)).
 
 ### Findings
 
@@ -186,7 +186,7 @@ One row: duration (wall and active, the unit chosen from the duration rounded as
 
 With `--all`, the tokens, by kind and per model, are Claude Code's own count of the session, its subagents' included, when its transcript holds one: the `modelUsage` of its last `cost-state` line, written when a session is left and again, grown, when a resumed one is (seen 2026-10-19 in 14 transcripts), `thinkingTokens` left out. A Sonnet subagent's transcript holds a small part of what it wrote: 657 tokens written where Claude Code counted 23,875, in session `48a404b1` (CHK-021, EN-120). Without such a line, or once a request came after it, the tokens are the requests' sums; and a turn alone is always counted from its requests, since the session's count cannot be cut to a turn.
 
-It is the binary `session-report` of `tools/metrics` (EN-107), the tokens per model included (EN-066's `model-tokens.ts` folded in), and reads the main checkout's transcripts from a worktree too: `scripts/session-report.ts` took the transcripts' folder from the folder it ran in, and failed in a worktree.
+It is the binary `session-report` of `tools/metrics` (EN-107), the tokens per model included (EN-066), and reads the main checkout's transcripts from a worktree too.
 
 ## Reading the transcripts
 
