@@ -31,7 +31,7 @@ flowchart LR
 | `/spike` | an epic's refinement from `develop`, or a feature's short spike when questions remain (ADR-0020, ADR-0086) |
 | `/derivation` | a `DERIV-*` from read sources |
 | `/audit` | the feature audit with the reviewing agents |
-| `/review` | a feature's demo page and checklist; the review at each return of the Product Owner (ADR-0023, ADR-0086) |
+| `/review` | the review at each return of the Product Owner, the test cards of the user stories merged since the last merge into `main` (ADR-0023, ADR-0086, ADR-0100) |
 | `/retro` | the method's part of each review: tool cards, logs, playbook (ADR-0023, ADR-0086) |
 | `/triage` | open issues, each with a recommendation (ADR-0026) |
 | `project-rules` | the digest of `AGENTS.md` and `CLAUDE.md`, preloaded by every agent type started without them |

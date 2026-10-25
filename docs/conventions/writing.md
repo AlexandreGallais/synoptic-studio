@@ -19,7 +19,7 @@ Pages people scan, not read: the point first, one purpose per page, and a table,
 
 | Type | Answers | Here |
 | --- | --- | --- |
-| Concept (explanation) | "Why is it like this?" | `domain/`, ADRs, derivations, `guide/` demo pages |
+| Concept (explanation) | "Why is it like this?" | `domain/`, ADRs, derivations, `guide/` pages |
 | Task (how-to) | "How do I do X?" | `tooling/`, skills, "Changing a rule" sections |
 | Reference | "What is it, exactly?" | API pages (TSDoc), `references.md`, tables in `conventions/` |
 | Decision | "What did we choose, and why?" | ADRs, settled questions |
@@ -119,7 +119,7 @@ The [glossary](../domain/) defines the domain terms; this list fixes the words u
 | ADR | Status; Context; Decision; Reasons (options table); Consequences; References |
 | derivation | statement and domain; steps, each citing a read source; cross-check; check table |
 | research note | date and origin; findings per topic with `REF-*`; retained table |
-| guide page | templates `docs/guide/_feature-demo.md`, `_epic-report.md` |
+| guide page | template `docs/guide/_epic-report.md` |
 | backlog item | templates `docs/backlog/_*.md` |
 
 ## Messages to the Product Owner
