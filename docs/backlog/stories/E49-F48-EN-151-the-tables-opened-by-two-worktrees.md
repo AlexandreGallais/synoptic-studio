@@ -3,7 +3,7 @@ id: EN-151
 epic: E49
 feature: F48
 title: The tables, opened by two worktrees
-status: ready
+status: done
 points: 3
 ---
 
@@ -29,11 +29,3 @@ One task = one commit, referenced as `EN-151.T1` in the commit footer.
 ## For the main thread
 
 The records folder's README (outside the repository) needs its layout row, which a worker cannot write: `| <project>/records.sqlite | the project's records, its knowledge tables first (target/release/knowledge, EN-151) |`. The binary `knowledge` is not in `.claude/settings.json`'s allow list nor in agent-tools.md's list of the binaries the agent calls: a permission change, left to the main thread for EN-152, when the agent starts calling it.
-
-### Journal
-
-- `#run` EN-151: `tools/knowledge` makes `$AGENT_RECORDS_ROOT/<repo>/records.sqlite` with note 0035's tables in WAL, each write in `BEGIN IMMEDIATE`, a newer schema refused for writing; `records-save` finds its folder through the same functions.
-
-### Improvements
-
-| 2026-10-25 | EN-151 | `f21_ac7_…` of `tools/tool-use/tests/binaries.rs` counts the workspace's binaries by hand, so a new binary fails the pre-push `rust:coverage` lane three minutes in rather than at `cargo test -p` of its crate: a check of the count by the binaries' names, or a note in agent-tools.md's Rust section | tool |
