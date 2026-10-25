@@ -71,7 +71,7 @@ export function hheaTable(fields: HheaFields): number[] {
  * @param glyphCount - number of glyphs of the font
  * @returns its bytes
  */
-export function maxpTable(glyphCount: number): number[] {
+function maxpTable(glyphCount: number): number[] {
   return tableOf({
     fields: [
       { at: 0, bytes: uint32(MAXP_VERSION) },
@@ -89,7 +89,7 @@ export function maxpTable(glyphCount: number): number[] {
  * @param remaining - number of glyphs past the records
  * @returns its bytes
  */
-export function hmtxTable(advances: readonly number[], remaining: number): number[] {
+function hmtxTable(advances: readonly number[], remaining: number): number[] {
   return tableOf({
     fields: advances.map((advance, glyph) => ({
       at: HMTX_RECORD_SIZE * glyph,
@@ -226,7 +226,7 @@ export function cmapTable(encodings: readonly CmapEncoding[]): number[] {
 }
 
 /** The values of the test font of `[F05.AC1]`: glyph 0 is 500 units wide, glyph 1 600, glyph 2 700. */
-export const TEST_FONT = {
+const TEST_FONT = {
   ascender: 800,
   capHeight: 700,
   descender: -200,

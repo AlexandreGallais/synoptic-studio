@@ -5,24 +5,22 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
   TRUE_TYPE_VERSION,
-  fontCollection,
-  secondFamilyFile,
-  testFaceFile,
-} from "../../../../../../tests";
-import {
   chooseFiles,
   chooseOption,
   chooseShapeKind,
+  fontCollection,
   openPage,
   readText,
   readValue,
+  secondFamilyFile,
   selectChoice,
   selectInput,
   selectPageElement,
+  testFaceFile,
   typeAndEnter,
 } from "../../../../../testing";
 
-import type { TestFace } from "../../../../../../tests";
+import type { TestFace } from "../../../../../testing";
 
 /** A second family built from Inter's tables, its units per em 1024: twice Inter's measures. */
 const OTHER_GROTESK = secondFamilyFile("Other Grotesk", TRUE_TYPE_VERSION);

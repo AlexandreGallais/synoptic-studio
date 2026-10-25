@@ -67,6 +67,10 @@ pub const TOOLING_FILES: &[&str] = &[
     "tests/*.ts",
     "docs/.vitepress/**/*.ts",
     "scripts/**/*.ts",
+    // The playground's copies of the root's fixtures and of its global setup (EN-176): tooling as
+    // `tests/` is, several exports to a module, so that its tests run on its install alone.
+    "playground/testing/*-fixtures.ts",
+    "playground/testing/*.setup.ts",
 ];
 
 /// The tests, where development packages may be imported.
@@ -113,7 +117,13 @@ pub const SCOPES: [Scope; 8] = [
     Scope {
         name: "single-export-modules",
         files: SINGLE_EXPORT_FILES,
-        ignores: &["**/index.ts", "**/*.test.ts"],
+        ignores: &[
+            "**/index.ts",
+            "**/*.test.ts",
+            // Several exports to a module, as their originals in `tests/` (EN-176).
+            "playground/testing/*-fixtures.ts",
+            "playground/testing/*.setup.ts",
+        ],
         rules: &[("local/one-export-per-file", true)],
     },
     Scope {
@@ -402,6 +412,26 @@ mod tests {
             assert!(rules_for(path).contains(&"local/folder-layout"), "{path}");
         }
         assert!(!rules_for("tests/folders.test.ts").contains(&"local/folder-layout"));
+    }
+
+    #[test]
+    fn lints_the_playground_s_copied_fixtures_as_the_root_s_tests() {
+        // Its copies of the root's fixtures and global setup (EN-176): several exports, no kinds.
+        for path in [
+            "playground/testing/font-fixtures.ts",
+            "playground/testing/font-files.setup.ts",
+        ] {
+            let rules = rules_for(path);
+
+            assert!(!rules.contains(&"local/one-export-per-file"), "{path}");
+            assert!(!rules.contains(&"local/require-kind"), "{path}");
+            assert!(rules.contains(&"local/folder-layout"), "{path}");
+        }
+        // Its actions keep the playground's rules.
+        let action = rules_for("playground/testing/press-key.ts");
+
+        assert!(action.contains(&"local/one-export-per-file"));
+        assert!(action.contains(&"local/require-kind"));
     }
 
     #[test]

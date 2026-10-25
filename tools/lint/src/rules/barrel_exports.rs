@@ -15,13 +15,15 @@ use crate::source::Source;
 pub struct BarrelExports;
 
 /// Whether a file name is a module of the folder's public surface: a `.ts` file other than the
-/// barrel, a test or a declaration file.
+/// barrel, a test, a declaration file or a test runner's global setup, which Vitest loads in its
+/// own process (EN-176).
 fn is_public_module(name: &str) -> bool {
     name.rsplit_once('.')
         .is_some_and(|(_, extension)| extension == "ts")
         && name != "index.ts"
         && !name.ends_with(".d.ts")
         && !name.ends_with(".test.ts")
+        && !name.ends_with(".setup.ts")
 }
 
 /// The order of a character in `localeCompare("en")`, for the names of modules: punctuation,
@@ -146,7 +148,8 @@ mod tests {
     use super::{BarrelExports, locale_order};
     use crate::testing::{NONE, fixed, fixture, lint_at, messages, write_files};
 
-    /// Two modules, a test, a barrelled sub-folder, a folder without a barrel and an image.
+    /// Two modules, a test, a global setup (EN-176), a barrelled sub-folder, a folder without a
+    /// barrel and an image.
     fn folder() -> PathBuf {
         let root = fixture("barrel");
         write_files(
@@ -156,6 +159,7 @@ mod tests {
                 "vector.ts",
                 "angle.ts",
                 "angle.test.ts",
+                "fonts.setup.ts",
                 "arc/index.ts",
                 "types.d.ts",
             ],

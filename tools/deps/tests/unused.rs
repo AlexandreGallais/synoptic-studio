@@ -425,9 +425,10 @@ fn f21_ac4_the_binary_reports_a_planted_file_in_a_git_checkout() {
 /// The playground's npm project of a planted checkout: an Angular app whose `src/main.ts` imports
 /// `@angular/core`, which asks `rxjs` as a peer and `zone.js` as an optional one; `@angular/build`
 /// named by `angular.json`'s builder, `sass` by its SCSS, `@angular/cli` by the `ng` of a script,
-/// `vitest` by its runner configuration, `@vitest/coverage-v8` by the coverage's floor and
-/// `@types/node` by the types of `tsconfig.spec.json` (EN-176); a test using a helper of `testing/`, the library by its name
-/// `editor` and a fixture of the root's `tests/` (EN-175); `left-pad`, a file and a helper unused.
+/// `vitest` by its runner configuration, which names its global setup, `@vitest/coverage-v8` by
+/// the coverage's floor and `@types/node` by the types of `tsconfig.spec.json` (EN-176); a test
+/// using a helper of `testing/`, the library by its name `editor` and a fixture of the root's
+/// `tests/` (EN-175); `left-pad`, a file and a helper unused.
 const PLAYGROUND: &[(&str, &str)] = &[
     (
         "playground/package.json",
@@ -460,7 +461,12 @@ const PLAYGROUND: &[(&str, &str)] = &[
     ("playground/src/app/orphan.ts", "export const ORPHAN = 1;\n"),
     (
         "playground/vitest-base.config.ts",
-        "import { defineConfig } from \"vitest/config\";\n\nexport default defineConfig({});\n",
+        "import { defineConfig } from \"vitest/config\";\n\nexport default defineConfig({ test: { globalSetup: [\"testing/font-files.setup.ts\"] } });\n",
+    ),
+    // The global setup the runner configuration names, an entry (EN-176).
+    (
+        "playground/testing/font-files.setup.ts",
+        "export function setup(): void {}\n",
     ),
     (
         "playground/src/app/app.component.test.ts",

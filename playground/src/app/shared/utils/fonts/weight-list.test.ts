@@ -2,7 +2,6 @@
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { testFaceFile } from "../../../../../../tests";
 import {
   chooseFiles,
   chooseOption,
@@ -14,9 +13,10 @@ import {
   readValue,
   selectChoice,
   selectPageElement,
+  testFaceFile,
 } from "../../../../../testing";
 
-import type { TestFace } from "../../../../../../tests";
+import type { TestFace } from "../../../../../testing";
 
 /** The test font named Test Sans, regular, installable. */
 const TEST_SANS: TestFace = { family: "Test Sans", fsType: 0, isItalic: false, weightClass: 400 };

@@ -1160,6 +1160,7 @@
         "./*.config.ts",
         "playground/*.config.ts",
         "./*.setup.ts",
+        "playground/testing/*.setup.ts",
         "./*.test.ts",
         "tests/*.ts",
         "docs/.vitepress/**/*.ts",

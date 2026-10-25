@@ -3,7 +3,6 @@
 import { add, halfSize, turnAbout, turnDirection } from "editor";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { testFaceFile } from "../../../../../../tests";
 import {
   chooseFiles,
   chooseOption,
@@ -14,11 +13,12 @@ import {
   readText,
   readValue,
   selectPageElement,
+  testFaceFile,
   typeAndEnter,
   typeInField,
 } from "../../../../../testing";
 
-import type { TestFace } from "../../../../../../tests";
+import type { TestFace } from "../../../../../testing";
 import type { Point, Size } from "editor";
 
 /** The test font named Test Sans, regular, installable. */

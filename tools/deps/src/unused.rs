@@ -59,15 +59,16 @@ pub const ROOT: Config = Config {
 };
 
 /// The playground, from `playground/`: `src/main.ts`, the `browser` entry of `angular.json`, and
-/// `vitest-base.config.ts`, the runner configuration of its `ng test`; its scripts and
-/// `angular.json`, whose builders, binaries and runner configurations name packages and files;
+/// `vitest-base.config.ts`, the runner configuration of its `ng test`; its scripts,
+/// `angular.json`, whose builders, binaries and runner configurations name packages and files,
+/// and that runner configuration, which names its global setup (EN-176);
 /// `@angular/build` named by those builders, `sass` by the components' SCSS, `vite` by the
 /// override that pins it, `@vitest/coverage-v8` by the coverage's floor, `@types/node` by the
 /// types of `tsconfig.spec.json`; the library imported by its name `editor` through the tsconfig's
 /// `paths` (ADR-0104). Not reported until their code comes: `@ngrx/signals`, the stores (F55).
 pub const PLAYGROUND: Config = Config {
     entries: &["src/main.ts", "vitest-base.config.ts"],
-    script_files: &["package.json", "angular.json"],
+    script_files: &["package.json", "angular.json", "vitest-base.config.ts"],
     plugin_uses: &[
         ("@angular/build", "angular.json", "\"@angular/build:"),
         ("sass", "angular.json", "\"style\": \"scss\""),

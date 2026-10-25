@@ -3,25 +3,26 @@
 import { DEFAULT_FONT, lineWidth, parseFontMetrics } from "editor";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { lettersMissingFaceFile, testFaceFile } from "../../../../../../tests";
 import {
   chooseFiles,
   chooseOption,
   chooseShapeKind,
   clickElement,
+  lettersMissingFaceFile,
   openPage,
   readDisabledState,
   readText,
   readValue,
   selectChoice,
   selectInput,
+  testFaceFile,
   waitForPageTasks,
 } from "../../../../../testing";
 
 import { DEFAULT_FONT_MISSING } from "./default-font-missing";
 import { NO_FONT_APPROVED } from "./no-font-approved";
 
-import type { TestFace } from "../../../../../../tests";
+import type { TestFace } from "../../../../../testing";
 import type { InstalledFont } from "../fonts";
 
 /** The test font named Test Sans, regular, embeddable. */

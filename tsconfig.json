@@ -33,14 +33,8 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["src", "playground", "docs/.vitepress/**/*.ts", "scripts", "tests", "*.ts"],
-  // The playground's Angular app is a project of its own, on its own tsconfig and TypeScript 6.0 (ADR-0104).
-  "exclude": [
-    "node_modules",
-    "playground/src",
-    "playground/testing",
-    "playground/node_modules",
-    "playground/.angular",
-    "playground/dist"
-  ]
+  // The playground is a project of its own, on its own tsconfigs and TypeScript 6.0 (ADR-0104),
+  // its runner configurations included: their Vitest is the playground's (EN-176).
+  "include": ["src", "docs/.vitepress/**/*.ts", "scripts", "tests", "*.ts"],
+  "exclude": ["node_modules"]
 }

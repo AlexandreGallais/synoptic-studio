@@ -2,13 +2,13 @@
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { testFaceFile } from "../../../../../../tests";
 import {
   chooseFiles,
   chooseShapeKind,
   clickElement,
   openPage,
   selectChoice,
+  testFaceFile,
   typeAndEnter,
   waitForPageTasks,
 } from "../../../../../testing";

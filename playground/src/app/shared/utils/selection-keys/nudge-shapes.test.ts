@@ -2,8 +2,8 @@ import { isDrawnText, shapePanelValues } from "editor";
 // @vitest-environment happy-dom
 import { beforeEach, describe, expect, it } from "vitest";
 
-import { HELLO_TEXT } from "../../../../../../tests";
 import {
+  HELLO_TEXT,
   clickElement,
   dispatchDrawingPointer,
   openPage,

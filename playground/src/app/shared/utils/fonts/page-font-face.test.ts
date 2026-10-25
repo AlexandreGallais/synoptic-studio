@@ -3,12 +3,13 @@
 import { parseFontFace } from "editor";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { fontCollection, testFaceFile } from "../../../../../../tests";
 import {
   chooseFiles,
   chooseShapeKind,
+  fontCollection,
   openPage,
   readText,
+  testFaceFile,
   waitForPageTasks,
 } from "../../../../../testing";
 

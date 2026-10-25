@@ -1,4 +1,6 @@
-// The test font of `testFontTables` with every letter of the ISO basic Latin alphabet mapped (US-056).
+// The test font of `testFontTables` with every letter of the ISO basic Latin alphabet mapped
+// (US-056). The playground's copy of the root's `tests/latin-font-table-fixtures.ts`, so that its
+// tests run on the playground's install alone (EN-176). Tests only: never part of the library.
 
 import {
   TEST_FONT,

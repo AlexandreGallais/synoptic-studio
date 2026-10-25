@@ -2,8 +2,8 @@ import { isDrawnText } from "editor";
 // @vitest-environment happy-dom
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { HELLO_TEXT } from "../../../../../../tests";
 import {
+  HELLO_TEXT,
   chooseOption,
   clickAt,
   clickElement,
