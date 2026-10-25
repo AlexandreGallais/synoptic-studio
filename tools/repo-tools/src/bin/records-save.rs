@@ -2,36 +2,23 @@
 //! every retrospective: the metrics logs, this project's transcripts and the source library copied
 //! into `<AGENT_RECORDS_ROOT>/<project>`, a local folder outside the repository, never sent
 //! anywhere. A missing source is skipped; the library is copied consistently by SQLite's `VACUUM
-//! INTO`, even while the library server holds it open.
+//! INTO`, even while the library server holds it open. Then it takes the day's snapshot of the
+//! records into the synced folder `AGENT_KNOWLEDGE_SNAPSHOT` names, as `knowledge snapshot` does
+//! (EN-153), saying so and failing nothing when the variable is not set.
 
 use std::env;
 use std::fs;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 use std::process::{Command, ExitCode, Stdio};
 use std::time::{SystemTime, UNIX_EPOCH};
 
 use calendar::temporal_instant;
-use git_repository::{Failure, stdout_of};
 use hooks::pages::library_file;
+use knowledge::records::{DATABASE_FILE, main_and_origin, project_records};
+use knowledge::snapshot::{NOT_SET, SNAPSHOT_VARIABLE, snapshot_folder, take_snapshot};
 use repo_tools::records_save::{
-    Kind, LAST_SAVE, ROOT_VARIABLE, RecordCopy, copy_file, copy_folder, project_name,
-    record_copies, records_folder,
+    Kind, LAST_SAVE, ROOT_VARIABLE, RecordCopy, copy_file, copy_folder, record_copies,
 };
-
-/// Runs Git in a folder, its standard error shown; its trimmed output.
-fn git(cwd: &Path, words: &[&str]) -> Result<String, String> {
-    match stdout_of(
-        Command::new("git")
-            .args(words)
-            .current_dir(cwd)
-            .stdin(Stdio::null())
-            .stderr(Stdio::inherit()),
-    ) {
-        Ok(output) => Ok(output.trim().to_owned()),
-        Err(failure @ Failure::NotStarted { .. }) => Err(failure.to_string()),
-        Err(Failure::Exited { words, .. }) => Err(format!("{words} failed in {}", cwd.display())),
-    }
-}
 
 /// A SQLite database copied consistently by `VACUUM INTO`, the source opened read-only.
 fn vacuum_into(from: &Path, to: &Path) -> Result<(), String> {
@@ -77,23 +64,8 @@ fn save(copy: &RecordCopy, folder: &Path) -> Result<bool, String> {
 }
 
 fn run() -> Result<(), String> {
-    let common = git(
-        Path::new("."),
-        &["rev-parse", "--path-format=absolute", "--git-common-dir"],
-    )?;
-    let main = Path::new(&common)
-        .parent()
-        .map_or_else(PathBuf::new, Path::to_path_buf);
-    // No remote: the project is named after its folder.
-    let origin = git(&main, &["config", "--get", "remote.origin.url"]).unwrap_or_default();
-    let root = env::var(ROOT_VARIABLE).ok();
-    let folder = records_folder(root.as_deref(), &project_name(&origin, &main))?;
-
-    if let Some(root) = root.filter(|root| !Path::new(root).is_dir()) {
-        return Err(format!(
-            "The records' folder {root} does not exist: create it, or correct {ROOT_VARIABLE}."
-        ));
-    }
+    let (main, origin) = main_and_origin(Path::new("."))?;
+    let folder = project_records(env::var(ROOT_VARIABLE).ok().as_deref(), &main, &origin)?;
 
     fs::create_dir_all(&folder).map_err(|error| format!("{}: {error}", folder.display()))?;
 
@@ -117,6 +89,13 @@ fn run() -> Result<(), String> {
 
     fs::write(folder.join(LAST_SAVE), format!("{instant}\n"))
         .map_err(|error| format!("{}: {error}", folder.join(LAST_SAVE).display()))?;
+
+    let snapshot = match snapshot_folder(env::var(SNAPSHOT_VARIABLE).ok().as_deref())? {
+        Some(synced) => take_snapshot(&folder.join(DATABASE_FILE), &synced, &calendar::today())?,
+        None => NOT_SET.to_owned(),
+    };
+
+    println!("{snapshot}");
     println!("Saved in {}.", folder.display());
     Ok(())
 }

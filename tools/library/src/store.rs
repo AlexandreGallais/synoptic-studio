@@ -252,6 +252,25 @@ fn matching_sections(
         .collect()
 }
 
+/// What a search finds for some words: `matching` run on their FTS5 query of every word, then, when
+/// it finds nothing, on the query of any; shared by the library's search and `knowledge search`.
+///
+/// # Errors
+///
+/// When `matching` fails.
+pub fn every_word_else_any<T>(
+    words: &str,
+    mut matching: impl FnMut(&str) -> rusqlite::Result<Vec<T>>,
+) -> rusqlite::Result<Vec<T>> {
+    let every = matching(&fts_query(words, "AND"))?;
+
+    if every.is_empty() {
+        matching(&fts_query(words, "OR"))
+    } else {
+        Ok(every)
+    }
+}
+
 /// Sections best matching some words, best first (BM25): every word if possible, else any.
 ///
 /// # Errors
@@ -262,13 +281,7 @@ pub fn search_library(
     words: &str,
     limit: &dyn ToSql,
 ) -> rusqlite::Result<Vec<Hit>> {
-    let all = matching_sections(database, &fts_query(words, "AND"), limit)?;
-
-    if all.is_empty() {
-        matching_sections(database, &fts_query(words, "OR"), limit)
-    } else {
-        Ok(all)
-    }
+    every_word_else_any(words, |query| matching_sections(database, query, limit))
 }
 
 /// Sections of a stored page, in page order.

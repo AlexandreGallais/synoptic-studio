@@ -1,15 +1,19 @@
 //! `local/see-references`: every `@see` of a `JSDoc` block points to an existing and verified
 //! reference — `REF-*` in the bibliography, `DERIV-*`, `ADR-NNNN` or a `docs/…` page — and every
-//! top-level function of a known kind has one (docs/conventions/documentation.md). It guards
-//! against invented references.
+//! top-level function of a kind that computes or rules has one (docs/conventions/documentation.md).
+//! It guards against invented references.
 
 use std::path::Path;
 
 use crate::finding::Finding;
 use crate::project::Project;
 use crate::rules::Rule;
-use crate::settings::kind_names;
 use crate::source::{Source, tag_values};
+
+/// The kinds whose functions cite a source: a calculation, a geometry or a business rule; a
+/// `format` or a `procedure`, the playground's clicks and displays among them, may cite one but
+/// need not (Product Owner, 2026-10-25).
+const KINDS_CITING: [&str; 3] = ["math", "geometry", "domain"];
 
 /// The rule.
 pub struct SeeReferences;
@@ -93,10 +97,9 @@ impl Rule for SeeReferences {
     }
 
     fn check_file(&self, source: &Source, findings: &mut Vec<Finding>) {
-        let kinds = kind_names();
         for function in source.top_level_functions() {
             let kind = source.kind(&function).unwrap_or_default();
-            if kinds.contains(&kind) && source.tags(&function, "see").is_empty() {
+            if KINDS_CITING.contains(&kind) && source.tags(&function, "see").is_empty() {
                 let message = format!(
                     "`{kind}` function without `@see`: cite a REF-*, DERIV-*, ADR-* or docs/ page."
                 );
@@ -177,6 +180,17 @@ mod tests {
     }
 
     #[test]
+    fn lets_a_procedure_or_a_format_go_without_a_see() {
+        for kind in ["procedure", "format"] {
+            assert_eq!(
+                found(&format!("/** @kind {kind} */\nfunction f(): void {{}}")),
+                NONE
+            );
+        }
+        assert_eq!(found("/** @kind domain */\nfunction f(): void {}").len(), 1);
+    }
+
+    #[test]
     fn reports_a_target_that_does_not_exist() {
         for target in ["REF-NOPE", "DERIV-nope", "ADR-0002", "docs/nope.md"] {
             assert_eq!(
@@ -222,11 +236,6 @@ mod tests {
         ] {
             assert_eq!(found(&citing(target)), NONE);
         }
-        // Every kind of the project asks for a `@see`, `procedure` included.
-        assert_eq!(
-            found("/** @kind procedure */\nfunction f(): void {}").len(),
-            1
-        );
     }
 
     #[test]

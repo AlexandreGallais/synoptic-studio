@@ -23,20 +23,18 @@ How a run's worker works one story in its own worktree. The `story-worker` and `
 
 ## Work
 
-- **Tests first** (ADR-0084): `T1` the interface and its tests from the criteria, seen failing, which stands for breaking each new test once; `T2` the code; the pre-push `check:all` runs on the head.
+- **Tests first** (ADR-0084): the tests from the criteria written before or with the code, each seen failing once, in one commit with the code or apart as is faster (2026-10-25); the pre-push `check:all` runs on the head, only the checks its change needs (`docs/tooling/commands.md`, The push of a story).
 - **One commit per task**, footer `Refs: <ID>.Tn` and the attribution lines, the message in a file of the scratch folder or a here-document (`-F -`), made by `target/release/git-sequences commit`.
 - **Before each commit**: `npm run fix`, which reports the type errors with the lint (EN-091), and the touched tests (`npx vitest run <paths>`, `cargo test -p <crate>`).
-- **Edge cases and mutations** (ADR-0064): no review checks a story, so its worker writes the story's edge cases into its tests and breaks each new test once on purpose to see it fail.
+- **Edge cases and mutations** (ADR-0064): no review checks a story, so its worker writes the story's edge cases into its tests; a library story breaks each new test once on purpose to see it fail, a tooling story leaves the mutations to its epic's final audit (2026-10-25).
 - **Docs in the same task as the code** they describe: domain, derivations, references, playground.
 - **A binary that runs a command given to it** (`heavy-lock`, `bench`, a wrapper): `guard-bash`'s reading of that command lands in a task before the one that builds the binary, and the worker hands back once that task is pushed, before building the binary, so that the main thread rebuilds the main checkout's `guard-bash` from the branch, whose judgment every call goes through (AUD-035).
 - **The current step**, one short line in French, goes to `.git/metrics/step` of the main checkout (`git rev-parse --git-common-dir` gives its folder): the status line shows it.
 - **Never a polling loop** (REV-008, the telemetry of E02: 45 `until` loops, 219 minutes, up to the 10-minute limit of a call): a command expected to last over a minute runs with `run_in_background`, and its end arrives as a notification; nothing waits on a file in a loop.
 
-## Shared files (ADR-0065, ADR-0091)
+## Shared files (ADR-0091, ADR-0102)
 
-The files every story touches are written only by the main thread, so that a story's pull request never conflicts with the rows the main thread wrote meanwhile: the indexes of `docs/backlog/`, the logs (`journal.md`, `improvements.md`, `feedback.md`, `tool-incidents.md`), the feature file and the checklists (`playground/checklists/epic-*`). The pre-push hook refuses a branch that changes one and names it (EN-050), except in the story's `done` commit, the main thread's.
-
-A row meant for a log goes in the story file, under `## For the main thread`, beneath `### Journal`, `### Improvements`, `### Feedback` or `### Incidents`, written as the log writes it; `move-rows` moves it in the story's `done` commit:
+The files every story touches — the indexes of `docs/backlog/`, the logs (`journal.md`, `improvements.md`, `feedback.md`, `tool-incidents.md`), the feature file and the checklists (`playground/checklists/epic-*`) — may be written by the worker too: no push is refused for them (ADR-0102). A row meant for a log goes into the log itself, or in the story file, under `## For the main thread`, beneath `### Journal`, `### Improvements`, `### Feedback` or `### Incidents`, written as the log writes it; `move-rows` moves it in the story's `done` commit:
 
 - under `### Journal`, a bullet opening with its tag: ``- `#run` EN-050: …``;
 - under `### Improvements` and `### Feedback`, a table row of the log's columns, its first cell the date (`| 2026-10-17 | EN-050 | … | tool |`), with no header nor separator;
@@ -53,7 +51,7 @@ Between heavy commands, run single test files only (`npx vitest run <paths>`), n
 ## Limits
 
 - **Push once the tasks are done**: `--push` on the last task's `target/release/git-sequences commit`, or `git push -u origin HEAD`. Never a force push; after a `git-sequences sync` that moved a pushed story branch, `--force-with-lease`.
-- **Stop before the pull request and the `done` commit**: the main thread makes that commit in the worktree, since it writes the shared files, then runs `story:finish`.
+- **Stop before the pull request and the `done` commit**: the main thread makes that commit in the worktree, with the story's status and the rows its file holds for the logs, then runs `story:finish`.
 - **A rule changed in `docs/domain/`** brings, in the story's tasks, the Q row of `docs/domain/README.md` and, from F48 (ADR-0100), a line of its feature's `AUD` story naming the rule to recheck; up to F47, the decisions to confirm of its feature's `VAL` and its guide page instead; the `done` commit's hook refuses the story otherwise (`tools/rule-docs`, EN-059). A doc the change does not affect: say so in the report, with its reason, for the footer `Rule-docs: none affected, <why>`.
 - **A tool that fails or does not do what was needed** is worked around, never fixed in the story: the report names it, how it was used, why it failed and what was done instead, for the main thread's incident card, fixed at the next review (ADR-0085, ADR-0086).
 - **A business question stops the story, not the run**: a rule missing, or code, domain and ADRs that contradict each other. Push what is done, then report the question, what was read and the options, without choosing; the main thread parks the story and goes on with independent work.

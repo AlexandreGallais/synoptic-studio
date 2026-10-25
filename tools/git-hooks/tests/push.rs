@@ -58,9 +58,8 @@ fn reads_any_other_push_as_one_to_check() {
     )));
 }
 
-/// A temporary copy of the hooks folder, its tools stubbed: `npm` and `refuse-shared-files` write
-/// what they got into `calls`, `git-hooks branch` passes, `git-hooks push-deletes-only` is the
-/// binary under test.
+/// A temporary copy of the hooks folder, its tools stubbed: `npm` writes what it got into
+/// `calls`, `git-hooks branch` passes, `git-hooks push-deletes-only` is the binary under test.
 struct Hook {
     root: PathBuf,
 }
@@ -80,10 +79,6 @@ impl Hook {
         for file in ["pre-push", "tool.sh"] {
             fs::copy(hooks.join(file), root.join(".githooks").join(file)).unwrap();
         }
-        Self::script(
-            &root.join("target/release/refuse-shared-files"),
-            "{ echo shared-files; cat; } >> calls\n",
-        );
         Self::script(
             &root.join("target/release/git-hooks"),
             &format!(
@@ -150,8 +145,8 @@ fn the_pre_push_hook_runs_no_check_for_a_push_that_only_deletes() {
     let (ok, calls) = hook.push(&refs);
 
     assert!(ok);
-    // The shared files' check read the refs; `check:all` never ran.
-    assert_eq!(calls, format!("shared-files\n{refs}"));
+    // `check:all` never ran.
+    assert_eq!(calls, "");
 }
 
 #[test]
@@ -161,5 +156,5 @@ fn the_pre_push_hook_runs_check_all_for_a_push_of_a_branch() {
     let (ok, calls) = hook.push(&refs);
 
     assert!(ok);
-    assert_eq!(calls, format!("shared-files\n{refs}npm run check:all\n"));
+    assert_eq!(calls, "npm run check:all\n");
 }

@@ -1,9 +1,8 @@
 #!/bin/sh
 set -e
 . "$(dirname "$0")/tool.sh"
-# The pushed refs, read once: two tools read them (`REF-GITHOOKS`, pre-push).
+# The pushed refs, read once (`REF-GITHOOKS`, pre-push).
 refs=$(cat)
-printf '%s\n' "$refs" | tool shared-files refuse-shared-files
 # The branch name, one pattern (`tools/git-hooks/src/branch.rs`).
 tool git-hooks git-hooks branch
 # A push that only deletes branches runs no check (`tools/git-hooks/src/push.rs`).

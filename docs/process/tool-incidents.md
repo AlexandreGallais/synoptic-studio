@@ -15,3 +15,15 @@ The cards met up to 2026-10-25 were fixed or decided at REV-009 (its story, the 
 - Used: `git push origin --delete <branch>` from the main checkout after a merge, 12 calls since 2026-10-24 (REV-009's telemetry).
 - Failed: a median of 3 min 15 s, though the pre-push skips its checks on a deletion-only push; the cause, a lock wait or another ref pushed with it, is not found.
 - Instead: `gh api -X DELETE repos/<owner>/<repo>/git/refs/heads/<branch>`, as `.claude/rules/tooling.md` says.
+
+## 2026-10-25 — the pre-push `check:all`, a test lane failing once
+
+- Used: `git push origin origin/develop:refs/heads/feature/f48-the-knowledge-database` from the main checkout, to create F48's feature branch.
+- Failed: `check:all failed in 189.2 s: test`, the one line printed; the failing test is not named, and `npm run test` alone then passed (640 files), as did the same push again.
+- Instead: the push run again in the background, its whole output kept in a file; the cause, a test slowed or racing under the full check, is not found.
+
+## 2026-10-25 — mutate, the mutation spot-checks of the knowledge crate
+
+- Used: `npm run mutate -- <the crate's eight source files> -- env CARGO_TARGET_DIR=<scratch>/target cargo test -q -p knowledge`, the target folder given so that the copy builds once.
+- Failed: it counts as caught a mutation that does not compile: `+` swapped to `-` in `text + "\n"` (`tools/knowledge/src/bin/knowledge.rs:61`), a `String`, failed the build, not a test, and was reported `caught`.
+- Instead: one mutation by hand in each function, the build checked apart by `cargo test --no-run` before the tests, each one that failed to compile made again another way; `lines` was caught so.

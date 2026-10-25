@@ -7,8 +7,8 @@ use std::path::{Path, PathBuf};
 
 use library::chunks::Chunk;
 use library::store::{
-    StoredPage, find_page, fts_query, list_pages, open_library, page_sections, save_page,
-    search_library, touch_page,
+    StoredPage, every_word_else_any, find_page, fts_query, list_pages, open_library, page_sections,
+    save_page, search_library, touch_page,
 };
 use rusqlite::Connection;
 
@@ -127,6 +127,27 @@ fn each_word_is_quoted_so_that_the_text_is_never_read_as_query_syntax() {
     assert_eq!(fts_query(" a\"b  OR ", "AND"), "\"a\"\"b\" AND \"OR\"");
     assert_eq!(fts_query("bm25 rank", "OR"), "\"bm25\" OR \"rank\"");
     assert_eq!(fts_query("", "AND"), "");
+}
+
+#[test]
+fn a_search_asks_for_every_word_then_for_any_when_none_holds_them_all() {
+    let mut asked = Vec::new();
+    // Nothing holds both words: the query of any is asked next, and its hits returned.
+    let any = every_word_else_any("bm25 rank", |query| {
+        asked.push(query.to_owned());
+        Ok(if query.contains(" OR ") {
+            vec![1]
+        } else {
+            Vec::new()
+        })
+    })
+    .unwrap();
+    // A hit holds both: returned, the query of any never asked.
+    let every = every_word_else_any("bm25 rank", |query| Ok(vec![query.to_owned()])).unwrap();
+
+    assert_eq!(any, [1]);
+    assert_eq!(asked, ["\"bm25\" AND \"rank\"", "\"bm25\" OR \"rank\""]);
+    assert_eq!(every, ["\"bm25\" AND \"rank\""]);
 }
 
 #[test]

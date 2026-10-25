@@ -11,7 +11,7 @@ Ordered by the Product Owner (2026-10-08; E13 added before E03, confirmed 2026-1
 | 3 | [E15](./E15-place-text.md) | Place text in symbols | done |
 | 4 | [E17](./E17-fast-tooling-with-oxc-and-rust.md) | Fast tooling with Oxc and Rust | done |
 | 5 | [E02](./E02-edit-shapes.md) | Select and move shapes on one drawing | done |
-| 6 | [E49](./E49-keep-the-agents-knowledge-in-a-database.md) | Keep the agent's knowledge in a database, the docs light | draft |
+| 6 | [E49](./E49-keep-the-agents-knowledge-in-a-database.md) | Keep the agent's knowledge in a database, the docs light | in-progress |
 | 7 | [E50](./E50-share-the-agents-setup-with-every-agent.md) | Share the agent's setup with every coding agent | draft |
 | 8 | [E21](./E21-resize-shapes-by-their-box.md) | Resize shapes by their box | draft |
 | 9 | [E22](./E22-turn-shapes-about-a-chosen-center.md) | Turn shapes about a chosen center | draft |

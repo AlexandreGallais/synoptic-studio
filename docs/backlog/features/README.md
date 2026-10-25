@@ -49,3 +49,4 @@
 | [F45](./E02-F45-a-handles-y-stepped-by-one.md) | E02 | A handle's Before y stepped by one | done |
 | [F46](./E02-F46-moves-on-integers-and-the-rectangle.md) | E02 | Moves on integers, the selection rectangle and the canvas resized | done |
 | [F47](./E02-F47-space-left-held-after-cmd.md) | E02 | Space never left held after Cmd | done |
+| [F48](./E49-F48-the-knowledge-database.md) | E49 | The knowledge database | done |

@@ -604,6 +604,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "knowledge"
+version = "0.1.0"
+dependencies = [
+ "backlog-index",
+ "calendar",
+ "git-repository",
+ "library",
+ "page",
+ "rusqlite",
+ "test-support",
+ "tool-use",
+]
+
+[[package]]
 name = "libc"
 version = "0.2.190"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1021,6 +1035,7 @@ dependencies = [
 name = "page"
 version = "0.1.0"
 dependencies = [
+ "test-support",
  "tool-use",
 ]
 
@@ -1191,6 +1206,7 @@ dependencies = [
  "calendar",
  "git-repository",
  "hooks",
+ "knowledge",
  "shared-files",
  "stale-binaries",
  "test-support",
