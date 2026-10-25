@@ -3,7 +3,6 @@ import { join } from "node:path";
 import { defineConfig } from "vitest/config";
 
 import type { BuildEnvironmentOptions } from "vite";
-import type { TestProjectInlineConfiguration } from "vitest/config";
 
 /** Absolute path of the repository root (this file's directory). */
 const ROOT = import.meta.dirname;
@@ -18,22 +17,6 @@ const PLAYGROUND_MODE = "playground";
  * named (`REF-VITEST-REPORTERS`).
  */
 const CI_REPORTERS = ["default", "github-actions", "junit"];
-
-/**
- * The playground's own npm project (ADR-0104): its Angular app and the helpers of its tests, its
- * packages, Angular's cache and its build, which the root's tests and coverage leave to the
- * playground's lanes (EN-159, EN-160).
- */
-const SECOND_PROJECT = [
-  "playground/src/**",
-  "playground/testing/**",
-  "playground/node_modules/**",
-  "playground/.angular/**",
-  "playground/dist/**",
-];
-
-/** Coverage floor of the playground (RET-001), measured then rounded down; raised, never lowered. */
-const PLAYGROUND_COVERAGE = { branches: 89, functions: 100, lines: 98, statements: 98 };
 
 /**
  * The tests whose limit under Vitest's 5 s measures a speed (`tests/fitness.test.ts`): left out of
@@ -63,34 +46,16 @@ const PLAYGROUND_BUILD: BuildEnvironmentOptions = {
 };
 
 /**
- * The two groups of tests: `shared`, whose files share a worker's loaded modules, the library
- * imported once per worker instead of once per file, where no test keeps state between files;
- * `isolated`, the playground's, whose page keeps its state in its
- * modules and whose tests mock the library (EN-090, ADR-0070).
+ * The root's tests: their files share a worker's loaded modules, the library imported once per
+ * worker instead of once per file, no test keeping state between files (EN-090, ADR-0070). The
+ * playground's tests, whose page keeps its state in its modules, run isolated by its own `ng test`
+ * (EN-160, EN-175).
  */
-const TEST_PROJECTS: readonly TestProjectInlineConfiguration[] = [
-  {
-    extends: true,
-    test: {
-      include: [
-        "src/**/*.test.ts",
-        "tests/*.test.ts",
-        "docs/.vitepress/**/*.test.ts",
-        "scripts/*.test.ts",
-      ],
-      isolate: false,
-      name: "shared",
-    },
-  },
-  {
-    extends: true,
-    test: {
-      exclude: [...SECOND_PROJECT],
-      include: ["playground/**/*.test.ts"],
-      isolate: true,
-      name: "isolated",
-    },
-  },
+const TEST_FILES = [
+  "src/**/*.test.ts",
+  "tests/*.test.ts",
+  "docs/.vitepress/**/*.test.ts",
+  "scripts/*.test.ts",
 ];
 
 /**
@@ -111,22 +76,22 @@ export default defineConfig(({ mode }) => {
     root: join(ROOT, "playground"),
     test: {
       coverage: {
-        exclude: ["**/index.ts", "**/*.test.ts", ...SECOND_PROJECT],
-        include: ["src/**/*.ts", "playground/**/*.ts"],
+        exclude: ["**/index.ts", "**/*.test.ts"],
+        include: ["src/**/*.ts"],
         provider: "v8",
         reporter: ["text-summary"],
         // The library at 95 % while it is developed, raised again at a later refinement (Product
-        // Owner, 2026-10-25); the playground, a demo shell, has a floor that only rises.
+        // Owner, 2026-10-25); the playground's floor is its own `ng test`'s (`angular.json`).
         thresholds: {
-          "playground/**/*.ts": PLAYGROUND_COVERAGE,
           "src/**/*.ts": { branches: 95, functions: 95, lines: 95, statements: 95 },
         },
       },
       // Each test font file read once per run, its bytes handed to every test file (EN-089).
       globalSetup: ["tests/font-files-setup.ts"],
+      include: TEST_FILES,
+      isolate: false,
       // Half the machine's cores: the other checks of `check:all` run beside the tests (EN-045).
       maxWorkers: "50%",
-      projects: [...TEST_PROJECTS],
       ...(junitFile !== undefined && {
         outputFile: { junit: junitFile },
         reporters: [...CI_REPORTERS],

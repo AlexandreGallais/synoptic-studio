@@ -14,7 +14,7 @@ import {
 } from "../src";
 
 import { CHECK_ALL_LANES } from "./check-all-lanes";
-import { isPlaygroundProject } from "./playground-project";
+import { CODE_FOLDERS } from "./code-folders";
 import { DECORATED_METRICS, HELLO_TEXT } from "./text-fixtures";
 
 import type { EmbeddedFace, Text } from "../src";
@@ -120,7 +120,7 @@ const SHARED_HELPERS = new Set(
 );
 
 /**
- * Text of every file of `src/` and `playground/` whose name ends as asked.
+ * Text of every file of the code folders whose name ends as asked.
  *
  * @param ending - end of the file name, such as `.test.ts`
  * @returns path from the repository root, and text, of each file
@@ -128,10 +128,10 @@ const SHARED_HELPERS = new Set(
 function sourcesEndingWith(
   ending: string,
 ): readonly { readonly path: string; readonly text: string }[] {
-  return ["src", "playground"].flatMap((root) =>
+  return CODE_FOLDERS.flatMap((root) =>
     readdirSync(join(ROOT, root), { recursive: true })
       .map(String)
-      .filter((name) => name.endsWith(ending) && !isPlaygroundProject(join(ROOT, root, name)))
+      .filter((name) => name.endsWith(ending))
       .map((name) => ({
         path: join(root, name),
         text: readFileSync(join(ROOT, root, name), "utf8"),
@@ -410,24 +410,20 @@ type TimingLimit = {
   readonly measure: number | undefined;
 };
 
-/** The playground's Angular app, whose tests the root does not run but whose limits it reads (EN-160). */
-const PLAYGROUND_APP = join("playground", "src");
+/** The playground, whose tests the root does not run but whose limits it reads (EN-160). */
+const PLAYGROUND = "playground";
 
 /**
  * Text of every test file of `src/`, `tests/` and `playground/`, the three folders holding a
- * per-test limit (AUD-031), the playground's Angular app included.
+ * per-test limit (AUD-031), the playground's app and test helpers included.
  *
  * @returns path from the repository root, and text, of each file
  */
 function timedTestFiles(): readonly { readonly path: string; readonly text: string }[] {
-  return ["src", "tests", "playground", PLAYGROUND_APP].flatMap((root) =>
+  return ["src", "tests", join(PLAYGROUND, "src"), join(PLAYGROUND, "testing")].flatMap((root) =>
     readdirSync(join(ROOT, root), { recursive: true })
       .map(String)
-      .filter(
-        (name) =>
-          name.endsWith(".test.ts") &&
-          (root === PLAYGROUND_APP || !isPlaygroundProject(join(ROOT, root, name))),
-      )
+      .filter((name) => name.endsWith(".test.ts"))
       .map((name) => ({
         path: join(root, name),
         text: readFileSync(join(ROOT, root, name), "utf8"),
@@ -576,8 +572,8 @@ describe("the timing tests (EN-129)", () => {
         text.split("\n").some((line) => TIMEOUT.test(line) && line.includes(TIMING_TAG)),
       )
       .map(({ path }) => path)
-      // The Angular app's tests run by its own `ng test` (EN-160).
-      .filter((path) => !path.startsWith(PLAYGROUND_APP));
+      // The playground's tests run by its own `ng test` (EN-160).
+      .filter((path) => !path.startsWith(PLAYGROUND));
 
     expect(named.toSorted(byName)).toEqual(tagged.toSorted(byName));
   });
