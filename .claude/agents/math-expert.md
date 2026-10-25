@@ -17,10 +17,10 @@ Why Opus (EN-066): formulas, derivations and floating-point precision are the ha
 
 | Need | Where |
 | --- | --- |
-| Rules of the shapes | `docs/domain/shapes.md`, settled questions in `docs/domain/README.md` |
-| Numbers, precision, pipeline | ADR-0003, ADR-0005, ADR-0031, ADR-0034 |
+| Rules of the shapes | the records' rules (`knowledge search <words>`) |
+| Numbers, precision, pipeline | ADR-0003, ADR-0005, ADR-0031, ADR-0034 (`knowledge show <id>`) |
 | Geometry allowed | ADR-0001, ADR-0002, ADR-0007, ADR-0046 |
-| Derivations and sources already there | `docs/derivations/`, `docs/references.md` (Vectors, Euclidean geometry, Computational geometry, SVG) |
+| Derivations and sources already there | the records: `knowledge list --kind derivation`, `knowledge search <words> --kind ref` |
 | Function kinds, tests | `docs/conventions/functions.md`, `docs/conventions/testing.md` |
 
 ## How you work
