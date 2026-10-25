@@ -48,6 +48,6 @@ features:
     details: One page per exported function, generated from the TSDoc.
     link: /api/
   - title: Playground
-    details: The library at work in the browser, as of the last release.
+    details: The library at work in the browser, as of the last merge into main.
     link: https://alexandregallais.github.io/synoptic-studio/playground/
 ---
