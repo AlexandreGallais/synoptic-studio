@@ -57,10 +57,9 @@ fn git(folder: &Path, arguments: &[&str]) -> String {
 const VITEST: &str = "[ -e .git/vitest-args ] || echo \"$*\" > .git/vitest-args";
 
 /// The programs the checks call: those found on `PATH`, then the release binaries by their path.
-const PROGRAMS: [&str; 14] = [
+const PROGRAMS: [&str; 13] = [
     "oxlint",
     "vitest",
-    "vite",
     "vitepress",
     "ngc",
     "ng",
@@ -82,8 +81,9 @@ fn repository(name: &str, stubs: &[(&str, &str)]) -> PathBuf {
     git(&folder, &["init", "-q"]);
     fs::write(folder.join(".git/info/exclude"), "target/\n").expect("exclude");
     fs::write(folder.join("package.json"), "{}\n").expect("manifest");
-    // The playground's folder, where its build runs; empty, Git lists nothing of it.
-    fs::create_dir_all(folder.join("playground")).expect("playground");
+    // The playground's folder, where its build runs, and the build's output the site copies; empty,
+    // Git lists nothing of them.
+    fs::create_dir_all(folder.join("playground/dist/browser")).expect("playground");
     for program in PROGRAMS {
         let body = stubs.iter().find(|(given, _)| *given == program).map_or(
             if program == "vitest" { VITEST } else { "true" },
@@ -164,7 +164,11 @@ fn prints_a_failed_check_with_its_output_and_runs_the_rest_of_its_lane() {
         "failed",
         &[
             ("vitepress", "echo out; echo err >&2; exit 2"),
-            ("vite", "echo built > built"),
+            // Angular's build, run from the playground's folder.
+            (
+                "ng",
+                "if [ \"$1\" = build ]; then echo built > ../built; fi",
+            ),
         ],
     );
     let output = check_all(&folder, true);
@@ -287,7 +291,7 @@ fn f19_ac8_skips_the_docs_lane_for_a_feature_that_changed_none_of_its_inputs() {
     fs::remove_dir_all(&folder).expect("cleaned");
     assert!(output.status.success(), "{text}");
     assert!(text.starts_with(
-        "- docs:build, playground:build, playground:app skipped: nothing changed in their inputs against origin/develop\n"
+        "- docs:build, playground:app skipped: nothing changed in their inputs against origin/develop\n"
     ));
     assert!(!text.contains("docs:build "), "{text}");
     assert_eq!(again.status.code(), Some(1));
@@ -842,7 +846,7 @@ fn f29_ac2_skips_the_rust_lanes_only_when_the_change_is_known_and_touches_none_o
     assert_eq!(
         skipped_lines(&script, "origin/develop"),
         [
-            format!("- docs:build, playground:build, playground:app {skipped}"),
+            format!("- docs:build, playground:app {skipped}"),
             format!("- check:rust, rust:coverage {skipped}")
         ]
     );

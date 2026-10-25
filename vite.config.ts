@@ -3,12 +3,10 @@ import { join } from "node:path";
 import { defineConfig } from "vitest/config";
 
 import type { BuildEnvironmentOptions } from "vite";
+import type { ViteUserConfig } from "vitest/config";
 
 /** Absolute path of the repository root (this file's directory). */
 const ROOT = import.meta.dirname;
-
-/** Vite mode building the playground app instead of the library. */
-const PLAYGROUND_MODE = "playground";
 
 /**
  * Reporters of the CI's test lane, `VITEST_JUNIT` set on every lane and read by Vitest alone, which asks a JUnit report by `VITEST_JUNIT`: each file as it
@@ -39,12 +37,6 @@ const LIBRARY_BUILD: BuildEnvironmentOptions = {
   outDir: join(ROOT, "dist"),
 };
 
-/** Playground build: the static app, published next to the docs site. */
-const PLAYGROUND_BUILD: BuildEnvironmentOptions = {
-  emptyOutDir: true,
-  outDir: join(ROOT, "docs", ".vitepress", "dist", "playground"),
-};
-
 /**
  * The root's tests: their files share a worker's loaded modules, the library imported once per
  * worker instead of once per file, no test keeping state between files (EN-090, ADR-0070). The
@@ -59,21 +51,17 @@ const TEST_FILES = [
 ];
 
 /**
- * Vite configuration: dev server on `playground/`, library build of `src/` (default mode) or
- * playground build (`--mode playground`), Vitest; the CI's reporters when it asks a JUnit report,
- * read at each call.
+ * Vite configuration: the library build of `src/` and Vitest, the CI's reporters when it asks a
+ * JUnit report, read at each call. The playground, an Angular app of its own, is served and built
+ * by its own `ng` (ADR-0104, EN-175).
  *
- * @param env - what Vite runs
- * @param env.mode - `playground` for the playground build, the library build otherwise
- * @returns the configuration of that mode
+ * @returns the configuration
  */
-export default defineConfig(({ mode }) => {
+export default defineConfig((): ViteUserConfig => {
   const junitFile = process.env["VITEST_JUNIT"];
 
   return {
-    base: mode === PLAYGROUND_MODE ? (process.env["PLAYGROUND_BASE"] ?? "/") : "/",
-    build: mode === PLAYGROUND_MODE ? PLAYGROUND_BUILD : LIBRARY_BUILD,
-    root: join(ROOT, "playground"),
+    build: LIBRARY_BUILD,
     test: {
       coverage: {
         exclude: ["**/index.ts", "**/*.test.ts"],

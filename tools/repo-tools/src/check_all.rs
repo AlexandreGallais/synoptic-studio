@@ -59,12 +59,12 @@ macro_rules! playground_missing {
 /// A command of Angular's `ng` run from the playground's folder, where `angular.json` is, its
 /// packages missing failing aloud.
 macro_rules! ng_in_playground {
-    ($arguments:literal) => {
+    ($($arguments:literal),+) => {
         concat!(
             "{ command -v ng > /dev/null || { echo '",
             playground_missing!(),
             "' >&2; exit 1; }; } && cd playground && ng ",
-            $arguments
+            $($arguments),+
         )
     };
 }
@@ -111,9 +111,15 @@ pub const CHECKS: &[(&str, &str)] = &[
         "docs:build",
         "target/release/api-pages src/index.ts docs/api /api/ editor && vitepress build docs",
     ),
-    ("playground:build", "vite build --mode playground"),
-    // Angular's build of the app into `playground/dist/browser` (EN-159).
-    (PLAYGROUND_APP, ng_in_playground!("build")),
+    // Angular's build of the app into `playground/dist/browser` (EN-159), at the site's
+    // `PLAYGROUND_BASE` as its base href, then copied into the site built before it (EN-175).
+    (
+        PLAYGROUND_APP,
+        ng_in_playground!(
+            "build --base-href \"${PLAYGROUND_BASE:-/}\" && rm -rf ../docs/.vitepress/dist/playground ",
+            "&& mkdir -p ../docs/.vitepress/dist && cp -R dist/browser ../docs/.vitepress/dist/playground"
+        ),
+    ),
     (
         "format:check",
         concat!(
@@ -175,9 +181,8 @@ const LINT_LANE: &[&str] = &["lint", PLAYGROUND_TYPES];
 /// The lane of the tests: the root's, then the playground's (EN-175).
 const TEST_LANE: &[&str] = &[TEST_SCRIPT, PLAYGROUND_TESTS];
 
-/// The lane of the documentation site and the playground built into it, then the playground's
-/// Angular app built by Angular.
-pub const DOCS_LANE: &[&str] = &["docs:build", "playground:build", PLAYGROUND_APP];
+/// The lane of the documentation site, then the playground's Angular app built by Angular into it.
+pub const DOCS_LANE: &[&str] = &["docs:build", PLAYGROUND_APP];
 
 /// The lane of the formatter, the secret scan and the dependencies.
 const FILES_LANE: &[&str] = &[
@@ -298,7 +303,6 @@ const DOCS_INPUTS: &[&str] = &[
     "rust-toolchain.toml",
     "package.json",
     "package-lock.json",
-    "vite.config.ts",
 ];
 
 /// Whether changed files touch an input of the docs lane: a file in one of its folders, or one of
@@ -904,7 +908,7 @@ mod tests {
         assert_eq!(lane_named("lint"), Some(&["lint", PLAYGROUND_TYPES][..]));
         assert_eq!(
             lane_named("docs"),
-            Some(&["docs:build", "playground:build", PLAYGROUND_APP][..])
+            Some(&["docs:build", PLAYGROUND_APP][..])
         );
         // Its own tsconfig, no file written; the build from its folder, where `angular.json` is.
         assert!(
@@ -912,11 +916,13 @@ mod tests {
                 .command
                 .ends_with("&& ngc -p playground/tsconfig.app.json --noEmit")
         );
-        assert!(
-            check_named(PLAYGROUND_APP)
-                .command
-                .ends_with("&& cd playground && ng build")
-        );
+        // The site's app (EN-175): built at the site's base, `/` by default, then copied from
+        // `playground/dist/browser` into the site, replacing the last copy.
+        assert!(check_named(PLAYGROUND_APP).command.ends_with(
+            "&& cd playground && ng build --base-href \"${PLAYGROUND_BASE:-/}\" && rm -rf \
+             ../docs/.vitepress/dist/playground && mkdir -p ../docs/.vitepress/dist && cp -R \
+             dist/browser ../docs/.vitepress/dist/playground"
+        ));
         // Its packages missing, each fails saying how to install them.
         for (name, program) in [(PLAYGROUND_TYPES, "ngc"), (PLAYGROUND_APP, "ng")] {
             assert!(
@@ -967,7 +973,7 @@ mod tests {
         assert_eq!(
             skipped_lines(&owned(&["tools/lint/src/lib.rs"]), "origin/develop"),
             [
-                "- docs:build, playground:build, playground:app skipped: nothing changed in their inputs against origin/develop"
+                "- docs:build, playground:app skipped: nothing changed in their inputs against origin/develop"
             ]
         );
     }
@@ -984,7 +990,8 @@ mod tests {
         assert!(touches_site(&owned(&["package-lock.json"])));
         // The playground's packages, a project of its own built into the site (ADR-0104).
         assert!(touches_site(&owned(&["playground/package-lock.json"])));
-        assert!(touches_site(&owned(&["vite.config.ts"])));
+        // Vite's configuration no longer builds the playground (EN-175).
+        assert!(!touches_site(&owned(&["vite.config.ts"])));
         assert!(touches_site(&owned(&["Cargo.lock"])));
         assert!(touches_site(&owned(&["Cargo.toml"])));
         assert!(touches_site(&owned(&["rust-toolchain.toml"])));

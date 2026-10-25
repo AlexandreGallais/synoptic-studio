@@ -618,9 +618,9 @@ mod tests {
             "✗ check:rust 4.1 s",
             "test heavy_lock_waits ... FAILED",
             "test heavy_lock_takes ... ok",
-            "✗ playground:build 3.0 s",
+            "✗ playground:app 3.0 s",
             "error during build",
-            "check:all failed in 30.1 s: test, check:rust, playground:build",
+            "check:all failed in 30.1 s: test, check:rust, playground:app",
         ]
         .join("\n");
 
@@ -629,7 +629,7 @@ mod tests {
             [
                 "test (lane test → playground:test): scripts/epic-check.test.ts > epic-check > lists the branches, src/math/unit.test.ts > unit > keeps a zero vector",
                 "check:rust (lane check:rust): heavy_lock_waits",
-                "playground:build (lane docs:build → playground:build → playground:app)",
+                "playground:app (lane docs:build → playground:app)",
             ]
         );
     }
