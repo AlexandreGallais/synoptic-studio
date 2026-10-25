@@ -17,6 +17,8 @@
     "@angular/build": "22.2.3",
     "@angular/cli": "22.2.3",
     "@angular/compiler-cli": "22.2.3",
+    "@types/node": "26.6.5",
+    "@vitest/coverage-v8": "5.0.5",
     "happy-dom": "21.0.4",
     "sass": "1.105.2",
     "typescript": "6.0.3",

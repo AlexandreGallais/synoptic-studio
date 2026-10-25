@@ -62,7 +62,8 @@ pub const ROOT: Config = Config {
 /// `vitest-base.config.ts`, the runner configuration of its `ng test`; its scripts and
 /// `angular.json`, whose builders, binaries and runner configurations name packages and files;
 /// `@angular/build` named by those builders, `sass` by the components' SCSS, `vite` by the
-/// override that pins it; the library imported by its name `editor` through the tsconfig's
+/// override that pins it, `@vitest/coverage-v8` by the coverage's floor, `@types/node` by the
+/// types of `tsconfig.spec.json`; the library imported by its name `editor` through the tsconfig's
 /// `paths` (ADR-0104). Not reported until their code comes: `@ngrx/signals`, the stores (F55).
 pub const PLAYGROUND: Config = Config {
     entries: &["src/main.ts", "vitest-base.config.ts"],
@@ -71,6 +72,14 @@ pub const PLAYGROUND: Config = Config {
         ("@angular/build", "angular.json", "\"@angular/build:"),
         ("sass", "angular.json", "\"style\": \"scss\""),
         ("vite", "package.json", "\"$vite\""),
+        // The coverage of `ng test --coverage`, its floor in `angular.json` (EN-176).
+        (
+            "@vitest/coverage-v8",
+            "angular.json",
+            "\"coverageThresholds\"",
+        ),
+        // The Node.js types of the tests' compiler options (EN-176).
+        ("@types/node", "tsconfig.spec.json", "\"node\""),
     ],
     ignored: &["@ngrx/signals"],
     folder: PLAYGROUND_FOLDER,

@@ -425,16 +425,21 @@ fn f21_ac4_the_binary_reports_a_planted_file_in_a_git_checkout() {
 /// The playground's npm project of a planted checkout: an Angular app whose `src/main.ts` imports
 /// `@angular/core`, which asks `rxjs` as a peer and `zone.js` as an optional one; `@angular/build`
 /// named by `angular.json`'s builder, `sass` by its SCSS, `@angular/cli` by the `ng` of a script,
-/// `vitest` by its runner configuration; a test using a helper of `testing/`, the library by its name
+/// `vitest` by its runner configuration, `@vitest/coverage-v8` by the coverage's floor and
+/// `@types/node` by the types of `tsconfig.spec.json` (EN-176); a test using a helper of `testing/`, the library by its name
 /// `editor` and a fixture of the root's `tests/` (EN-175); `left-pad`, a file and a helper unused.
 const PLAYGROUND: &[(&str, &str)] = &[
     (
         "playground/package.json",
-        "{\n  \"scripts\": { \"start\": \"ng serve\" },\n  \"dependencies\": {\n    \"@angular/core\": \"22.2.3\",\n    \"left-pad\": \"1.3.0\",\n    \"rxjs\": \"7.8.2\"\n  },\n  \"devDependencies\": {\n    \"@angular/build\": \"22.2.3\",\n    \"@angular/cli\": \"22.2.3\",\n    \"sass\": \"1.105.2\",\n    \"vitest\": \"5.0.5\"\n  }\n}\n",
+        "{\n  \"scripts\": { \"start\": \"ng serve\" },\n  \"dependencies\": {\n    \"@angular/core\": \"22.2.3\",\n    \"left-pad\": \"1.3.0\",\n    \"rxjs\": \"7.8.2\"\n  },\n  \"devDependencies\": {\n    \"@angular/build\": \"22.2.3\",\n    \"@angular/cli\": \"22.2.3\",\n    \"@types/node\": \"26.6.5\",\n    \"@vitest/coverage-v8\": \"5.0.5\",\n    \"sass\": \"1.105.2\",\n    \"vitest\": \"5.0.5\"\n  }\n}\n",
     ),
     (
         "playground/angular.json",
-        "{\n  \"builder\": \"@angular/build:application\",\n  \"style\": \"scss\"\n}\n",
+        "{\n  \"builder\": \"@angular/build:application\",\n  \"style\": \"scss\",\n  \"coverageThresholds\": { \"lines\": 98 }\n}\n",
+    ),
+    (
+        "playground/tsconfig.spec.json",
+        "{\n  \"compilerOptions\": { \"types\": [\"node\", \"vite/client\"] }\n}\n",
     ),
     (
         "playground/node_modules/@angular/core/package.json",
