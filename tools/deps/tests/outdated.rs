@@ -655,6 +655,11 @@ impl Recorded {
         let answers = [
             ("https://registry.npmjs.org/oxlint", "npm/oxlint.json"),
             ("https://registry.npmjs.org/vitepress", "npm/vitepress.json"),
+            // Written by hand, not recorded: its dates are made up, all over 7 days before NOW.
+            (
+                "https://registry.npmjs.org/typescript",
+                "npm/typescript.json",
+            ),
             (
                 "https://index.crates.io/se/rd/serde_json",
                 "crates/serde_json",
@@ -879,6 +884,32 @@ fn an_up_to_date_tree_lists_nothing_and_exits_0() {
 
     assert_eq!(report, Report::default());
     assert_eq!(report.exit_code(), 0);
+}
+
+#[test]
+fn f50_ac3_holds_the_playground_s_typescript_under_its_ceiling_and_not_the_root_s() {
+    let pins = Pins {
+        npm: vec![("typescript".to_owned(), "7.0.1".to_owned())],
+        playground_npm: vec![("typescript".to_owned(), "6.0.3".to_owned())],
+        actions: Vec::new(),
+        node: None,
+        crates: Vec::new(),
+        locked: Vec::new(),
+        tools: Vec::new(),
+    };
+    let report = outdated::outdated(&pins, &Recorded::new(), now());
+
+    // Every version of the fixture is old enough. The root, without a ceiling, takes the latest,
+    // 7.0.2 (2026-10-02); the playground stays under 6.1.0, its greatest below being 6.0.4
+    // (2026-09-20), not 7.0.2 nor 6.1.0.
+    assert_eq!(
+        report.lines,
+        [
+            "npm typescript 7.0.1 → 7.0.2, 2026-10-02",
+            "npm typescript 6.0.3 → 6.0.4, 2026-09-20 (playground)",
+        ]
+    );
+    assert_eq!(report.failures, Vec::<String>::new());
 }
 
 #[test]

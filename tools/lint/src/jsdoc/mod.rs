@@ -558,6 +558,50 @@ mod tests {
     }
 
     #[test]
+    fn f50_ac3_finds_the_block_before_a_default_export_s_and_a_property_s_decorators() {
+        let allocator = Allocator::default();
+        let code =
+            "/** E. */\n@Dec\nexport default class E {\n  /** P. */\n  @Input()\n  p = 1;\n}\n";
+        let program = Parser::new(&allocator, code, SourceType::ts())
+            .parse()
+            .program;
+        let semantic = SemanticBuilder::new()
+            .with_build_nodes(true)
+            .build(&program)
+            .semantic;
+        let project = Project::new(std::path::Path::new("/project"));
+        let source = Source::new("playground/src/a.ts", &program, &semantic, &[], &project);
+        let found: Vec<(&str, Option<String>)> = semantic
+            .nodes()
+            .iter()
+            .filter_map(|node| {
+                let name = match node.kind() {
+                    AstKind::Class(_) => "E",
+                    AstKind::PropertyDefinition(_) => "p",
+                    _ => return None,
+                };
+                let comment = comment_of(&source, node);
+
+                Some((
+                    name,
+                    comment.map(|each| comment_text(&source, &each).to_owned()),
+                ))
+            })
+            .collect();
+
+        assert_eq!(
+            found,
+            [
+                // Above a default-exported class's decorator.
+                ("E", Some("/** E. */".to_owned())),
+                // Above a property's decorator, as Angular's `@Input()`: Oxc's span of a
+                // property starts at its first decorator, which `decorator_start` finds too.
+                ("p", Some("/** P. */".to_owned())),
+            ]
+        );
+    }
+
+    #[test]
     fn reads_every_jsdoc_block_with_its_indent() {
         let allocator = Allocator::default();
         let code = "/** A. */\nconst a = 1;\n  /**\n   * B.\n   */\n/***/\n/**x*/\n";
