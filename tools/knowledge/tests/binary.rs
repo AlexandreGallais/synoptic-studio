@@ -7,14 +7,10 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use std::process::{Command, Output};
 
-use std::io::Write as _;
-use std::process::Stdio;
-
-use knowledge::add::{Origin, add_document};
 use knowledge::store::{SCHEMA_VERSION, open_store, write};
 
 /// The usage the binary prints for a wrong call.
-const USAGE: &str = "Usage: target/release/knowledge init | path | add <kind> <file or -> | search <words> [<filters>] | show <id> [<heading>] [<filters>] | list [<filters>] | sync | snapshot | sql \"<statement>\" [--purpose \"<text>\"] | import-backlog <folder> | export-criteria <file or -> | export-data [--check] | check-ids <paths> | link-ids <paths> | branch-state <branch> merged|dropped | import-decisions, import-research, import-derivations, import-rules, import-logs, import-guide, import-memories, import-metrics, import-archives, import-transcripts <folder> | import-sources, import-library, import-saves <file>; the filters: --kind, --epic, --feature, --status, --since, --branch, --state <value>, --all";
+const USAGE: &str = "Usage: target/release/knowledge init | path | search <words> [<filters>] | show <id> [<heading>] [--all] | list [<filters>] | sql \"<statement>\" [--purpose \"<text>\"] | add <kind> (refused: knowledge sql \"INSERT …\") | sync | snapshot | export-criteria <file or -> | export-data [--check] | check-ids <paths> | branch-state <branch> merged|dropped | import-memories, import-metrics, import-archives, import-transcripts <folder> | import-library, import-saves <file>; the filters: --kind, --epic, --feature, --status, --since, --branch, --state <value>, --all";
 
 /// A folder of its own: `records/` for the root, `repo/` a repository whose `origin` names
 /// `some-project`, `home/` for `HOME`.
@@ -101,7 +97,7 @@ fn f48_ac1_makes_records_sqlite_in_the_folder_named_after_origin() {
     let _ = fs::remove_dir_all(&place);
     assert!(output.status.success());
     assert!(made);
-    assert_eq!(stdout, format!("{}, schema 5", file.display()));
+    assert_eq!(stdout, format!("{}, schema 6", file.display()));
 }
 
 #[test]
@@ -220,7 +216,7 @@ fn f48_ac1_reads_a_newer_file_and_says_it_is_read_only() {
     assert_eq!(
         text(&output).0,
         format!(
-            "{}, schema 6, newer than this binary's 5: read only",
+            "{}, schema 7, newer than this binary's 6: read only",
             file.display()
         )
     );
@@ -283,118 +279,67 @@ fn records(place: &Path) -> PathBuf {
     place.join("records/some-project.sqlite")
 }
 
-/// A story with two sections under its title.
-const STORY: &str = "---
-id: EN-900
-epic: E49
-feature: F48
-title: Add, search, show and list
-status: ready
----
+/// Writes rows into the place's records, in one write.
+fn seed(place: &Path, statements: &str) {
+    let database = open_store(&records(place)).unwrap();
 
-# E49 · F48 · EN-900 — Add, search, show and list
+    write(&database, |transaction| {
+        transaction.execute_batch(statements)
+    })
+    .unwrap();
+}
 
-As ADR-0081 says.
-
-## Acceptance criteria
-
-- A busy timeout waits for the other writer.
-
-## Tasks
-
-- T1.
+/// A story of tasks and an item, a decision and a note of the epic E49.
+const RECORDS: &str = "
+  INSERT INTO epics (id, title, status, branch, state) VALUES
+    ('E49', 'Keep', 'in-progress', 'develop', 'merged');
+  INSERT INTO stories (id, epic, feature, kind, title, status, summary, criteria, branch, state) VALUES
+    ('EN-900', 'E49', 'F48', 'EN', 'Add, search, show and list', 'ready', 'As ADR-0900 says.',
+      '- A busy timeout waits for the other writer.', 'chore/en-900-read', 'draft');
+  INSERT INTO tasks (story, number, title, done) VALUES ('EN-900', 1, 'The tests', 0);
+  INSERT INTO story_items (story, section, n, kind, item) VALUES
+    ('EN-900', 'Findings', 1, 'bullet', 'One waits.');
+  INSERT INTO decisions (id, title, status, date, principle) VALUES
+    ('ADR-0900', 'One file', 'accepted', '2026-10-20', 'One file for all.');
+  INSERT INTO notes (id, kind, title, status, date) VALUES
+    ('NOTE-0900', 'note', 'The wait of a writer', 'done', '2026-10-24');
 ";
 
 #[test]
-fn f48_ac2_adds_a_story_as_a_draft_of_the_branch_and_shows_it_back_as_written() {
-    let place = on_branch("add", "chore/en-900-add");
-
-    fs::write(place.join("repo/story.md"), STORY).unwrap();
-
-    let added = run(&place, &["add", "story", "story.md"]);
-    let shown = run(&place, &["show", "EN-900"]);
-    let row: (String, String, String) = open_store(&records(&place))
-        .unwrap()
-        .query_row(
-            "SELECT branch, state, path FROM documents WHERE id = 'EN-900'",
-            [],
-            |row| Ok((row.get(0)?, row.get(1)?, row.get(2)?)),
-        )
-        .unwrap();
-
-    let _ = fs::remove_dir_all(&place);
-    assert_eq!(text(&added).0, "EN-900 added on chore/en-900-add, a draft");
-    assert!(shown.status.success());
-    assert_eq!(String::from_utf8_lossy(&shown.stdout), STORY);
-    assert_eq!(
-        row,
-        (
-            "chore/en-900-add".to_owned(),
-            "draft".to_owned(),
-            "story.md".to_owned()
-        )
-    );
-}
-
-#[test]
-fn f48_ac2_adds_a_note_read_from_the_standard_input() {
-    let place = on_branch("stdin", "chore/en-900-stdin");
-    let mut child = knowledge(&place, &place.join("repo"))
-        .args(["add", "note", "-"])
-        .env("AGENT_RECORDS_ROOT", place.join("records"))
-        .stdin(Stdio::piped())
-        .stdout(Stdio::piped())
-        .spawn()
-        .unwrap();
-
-    child
-        .stdin
-        .take()
-        .unwrap()
-        .write_all(b"- `#run` EN-050: done.\n")
-        .unwrap();
-
-    let added = child.wait_with_output().unwrap();
-    let id = format!("NOTE-{}-1", calendar::today());
-    let shown = run(&place, &["show", &id]);
-
-    let _ = fs::remove_dir_all(&place);
-    assert_eq!(
-        text(&added).0,
-        format!("{id} added on chore/en-900-stdin, a draft")
-    );
-    assert_eq!(text(&shown).0, "- `#run` EN-050: done.");
-}
-
-#[test]
-fn f48_ac2_searches_lists_and_shows_a_section() {
+fn f48_ac2_shows_searches_and_lists_the_records_from_their_tables() {
     let place = on_branch("read", "chore/en-900-read");
 
-    fs::write(place.join("repo/story.md"), STORY).unwrap();
-    run(&place, &["add", "story", "story.md"]);
+    seed(&place, RECORDS);
 
+    let shown = run(&place, &["show", "EN-900"]);
+    let section = run(&place, &["show", "EN-900", "Tasks"]);
     let found = run(&place, &["search", "busy", "timeout", "--kind", "story"]);
     let other_kind = run(&place, &["search", "busy", "--kind", "note"]);
     let listed = run(&place, &["list", "--epic", "E49"]);
-    let section = run(&place, &["show", "EN-900", "Acceptance criteria"]);
+    let decision = run(&place, &["show", "ADR-0900"]);
 
     let _ = fs::remove_dir_all(&place);
     assert_eq!(
+        text(&shown).0,
+        "# EN-900 — Add, search, show and list\n\nstory EN · epic E49 · feature F48 · status ready · draft on chore/en-900-read\n\n## Summary\n\nAs ADR-0900 says.\n\n## Acceptance criteria\n\n- A busy timeout waits for the other writer.\n\n## Tasks\n\n- [ ] T1 — The tests\n\n## Findings\n\n- One waits."
+    );
+    // `## Tasks` on line 13: the title, the facts and two parts of three lines and a blank one.
+    assert_eq!(
+        text(&section).0,
+        "EN-900:13\n## Tasks\n\n- [ ] T1 — The tests"
+    );
+    assert_eq!(
         text(&found).0,
-        "EN-900 › Acceptance criteria\n    ## Acceptance criteria - A [busy] [timeout] waits for the other writer."
+        "EN-900 › story\n    Add, search, show and list As ADR-0900 says. - A [busy] [timeout] waits for the other writer."
     );
     assert_eq!(text(&other_kind), (String::new(), String::new()));
     assert_eq!(
         text(&listed).0,
-        format!(
-            "EN-900 [story, ready, {}] Add, search, show and list — draft on chore/en-900-read",
-            calendar::today()
-        )
+        "E49 [epic, in-progress] Keep — merged on develop\nEN-900 [story, ready] Add, search, show and list — draft on chore/en-900-read"
     );
-    // Its heading on line 13 of the story.
     assert_eq!(
-        text(&section).0,
-        "EN-900:13\n## Acceptance criteria\n\n- A busy timeout waits for the other writer."
+        text(&decision).0,
+        "# ADR-0900 — One file\n\ndecision · status accepted · date 2026-10-20\n\n## Principle\n\nOne file for all."
     );
 }
 
@@ -434,30 +379,27 @@ fn f48_ac2_marks_merged_the_rows_of_the_branches_merged_into_develop_and_no_othe
     merge(&repo, "chore/m");
     git(&repo, &["checkout", "-q", "chore/c"]);
 
-    let database = open_store(&records(&place)).unwrap();
+    // The memories' documents of the schemas before 6, a draft of each branch.
+    let document = |id: &str, branch: &str| {
+        format!(
+            "INSERT INTO documents (id, kind, title, epic, feature, status, date, branch, state, private, path)
+            VALUES ('{id}', 'memory', '{id}', '', '', '', '2026-10-25', '{branch}', 'draft', 1, '');"
+        )
+    };
 
-    for (id, branch) in [
-        ("EN-901", "feature/a"),
-        ("EN-902", "develop"),
-        ("EN-903", "chore/c"),
-        ("EN-905", "chore/m"),
-    ] {
-        write(&database, |transaction| {
-            add_document(
-                transaction,
-                &format!("---\nid: {id}\n---\n# {id}\n"),
-                Origin {
-                    kind: "story",
-                    path: "",
-                    branch,
-                    today: "2026-10-25",
-                },
-            )
-        })
-        .unwrap();
-    }
+    seed(
+        &place,
+        &[
+            document("MEMORY-1", "feature/a"),
+            document("MEMORY-2", "develop"),
+            document("MEMORY-3", "chore/c"),
+            document("MEMORY-5", "chore/m"),
+        ]
+        .concat(),
+    );
 
     let synced = run(&place, &["sync"]);
+    let database = open_store(&records(&place)).unwrap();
     let states: Vec<String> = database
         .prepare("SELECT id || ' ' || state FROM documents ORDER BY id")
         .unwrap()
@@ -465,15 +407,8 @@ fn f48_ac2_marks_merged_the_rows_of_the_branches_merged_into_develop_and_no_othe
         .unwrap()
         .collect::<rusqlite::Result<_>>()
         .unwrap();
-    let of_c = run(&place, &["list"]);
 
-    git(&repo, &["checkout", "-q", "-b", "chore/d", "develop"]);
-
-    let of_d = run(&place, &["list"]);
-
-    git(&repo, &["checkout", "-q", "develop"]);
-    fs::write(repo.join("one.md"), "---\nid: EN-904\n---\n# EN-904\n").unwrap();
-    run(&place, &["add", "story", "one.md"]);
+    seed(&place, &document("MEMORY-4", "develop"));
 
     let one = run(&place, &["sync"]);
 
@@ -486,96 +421,42 @@ fn f48_ac2_marks_merged_the_rows_of_the_branches_merged_into_develop_and_no_othe
     assert_eq!(
         states,
         [
-            "EN-901 draft",
-            "EN-902 merged",
-            "EN-903 draft",
-            "EN-905 merged"
+            "MEMORY-1 draft",
+            "MEMORY-2 merged",
+            "MEMORY-3 draft",
+            "MEMORY-5 merged"
         ]
     );
-    // The row added on develop; develop and chore/m merged, never chore/d, made from develop.
+    // The row added on develop.
     assert_eq!(
         text(&one).0,
         "1 row marked merged, of the 2 branches merged into develop"
     );
-    assert_eq!(text(&of_c).0.lines().count(), 3);
-    // chore/d reads the merged rows, never chore/c's nor feature/a's draft.
-    assert_eq!(
-        text(&of_d)
-            .0
-            .lines()
-            .map(|line| line.split(' ').next().unwrap_or_default())
-            .collect::<Vec<_>>(),
-        ["EN-902", "EN-905"]
-    );
 }
 
 #[test]
-fn f48_ac2_keeps_a_merged_row_read_by_every_branch_while_its_branch_writes_a_new_draft_of_it() {
-    let place = on_branch("redraft", "story/b");
-    let repo = place.join("repo");
-    let adr = |title: &str| format!("---\nid: ADR-0900\n---\n# {title}\n");
-
-    git(&repo, &["checkout", "-q", "develop"]);
-    fs::write(repo.join("adr.md"), adr("First")).unwrap();
-    run(&place, &["add", "adr", "adr.md"]);
-    run(&place, &["sync"]);
-    fs::write(repo.join("adr.md"), adr("Second")).unwrap();
-    run(&place, &["add", "adr", "adr.md"]);
-
-    let on_develop = run(&place, &["show", "ADR-0900"]);
-
-    git(&repo, &["checkout", "-q", "story/b"]);
-
-    let before = run(&place, &["show", "ADR-0900"]);
-
-    git(&repo, &["checkout", "-q", "develop"]);
-    run(&place, &["sync"]);
-    git(&repo, &["checkout", "-q", "story/b"]);
-
-    let after = run(&place, &["show", "ADR-0900"]);
-    let rows: i64 = open_store(&records(&place))
-        .unwrap()
-        .query_row("SELECT count(*) FROM documents", [], |row| row.get(0))
-        .unwrap();
-
-    let _ = fs::remove_dir_all(&place);
-    // develop reads its new draft; story/b the merged row until that draft is merged.
-    assert_eq!(text(&on_develop).0, "---\nid: ADR-0900\n---\n# Second");
-    assert_eq!(
-        (before.status.code(), text(&before).0),
-        (Some(0), "---\nid: ADR-0900\n---\n# First".to_owned())
-    );
-    assert_eq!(text(&after).0, "---\nid: ADR-0900\n---\n# Second");
-    assert_eq!(rows, 1);
-}
-
-#[test]
-fn f48_ac2_fails_aloud_on_a_wrong_add_or_an_id_it_reads_nowhere() {
+fn f48_ac2_fails_aloud_on_a_kind_added_or_an_id_it_reads_nowhere() {
     let place = on_branch("wrong", "chore/en-900-wrong");
-
-    fs::write(place.join("repo/empty.md"), "\n").unwrap();
-
     let failures = [
         run(&place, &["show", "EN-999"]),
         run(&place, &["show", "EN-999", "Tasks"]),
-        run(&place, &["add", "Story", "empty.md"]),
-        run(&place, &["add", "story", "missing.md"]),
-        run(&place, &["add", "story", "empty.md"]),
-        // `output` gives the child an empty standard input.
-        run(&place, &["add", "note", "-"]),
-        // A journal row, an incident, an improvement or a feedback is a row of its table.
-        run(&place, &["add", "incident", "-"]),
         run(&place, &["list", "--colour", "red"]),
         run(&place, &["sync", "--kind", "story"]),
     ]
     .map(|output| (output.status.code(), text(&output).1));
+    // No record is a document: every kind is refused, named by its table.
+    let added = [
+        run(&place, &["add", "decision", "-"]),
+        run(&place, &["add", "incident"]),
+        run(&place, &["add", "anything", "file.md"]),
+    ]
+    .map(|output| (output.status.code(), text(&output).1));
 
-    fs::write(place.join("repo/story.md"), STORY).unwrap();
-    run(&place, &["add", "story", "story.md"]);
+    seed(&place, RECORDS);
 
     let no_heading = run(&place, &["show", "EN-900", "Missing"]);
     let usages = [
-        run(&place, &["add", "story"]),
+        run(&place, &["add"]),
         run(&place, &["search"]),
         run(&place, &["search", "--kind", "story"]),
         run(&place, &["show"]),
@@ -583,36 +464,31 @@ fn f48_ac2_fails_aloud_on_a_wrong_add_or_an_id_it_reads_nowhere() {
     ]
     .map(|output| (output.status.code(), text(&output).1));
 
-    git(&place.join("repo"), &["checkout", "-q", "--detach"]);
-
-    let detached = run(&place, &["add", "story", "story.md"]);
-    let detached_show = run(&place, &["show", "EN-999"]);
-
     // A repository without develop: sync cannot ask Git which branches are merged into it.
     git(&place.join("repo"), &["branch", "-m", "develop", "trunk"]);
 
     let no_develop = run(&place, &["sync"]);
-    let missing = fs::read_to_string(place.join("repo/missing.md"))
-        .unwrap_err()
-        .to_string();
 
     let _ = fs::remove_dir_all(&place);
 
     assert_eq!(
         failures,
         [
-            "knowledge: EN-999: no document of it read on chore/en-900-wrong".to_owned(),
-            "knowledge: EN-999: no document of it read on chore/en-900-wrong".to_owned(),
-            "knowledge: Story: a kind is one word of lower-case letters, as story or note"
-                .to_owned(),
-            format!("knowledge: missing.md: {missing}"),
-            "knowledge: empty.md: nothing to add".to_owned(),
-            "knowledge: the standard input: nothing to add".to_owned(),
-            "knowledge: incident: a row of the table incidents, with its columns, not a document: target/release/knowledge sql \"INSERT INTO incidents (…) VALUES (…)\"".to_owned(),
+            "knowledge: EN-999: no record of it in the records".to_owned(),
+            "knowledge: EN-999: no record of it in the records".to_owned(),
             "knowledge: --colour: no such filter".to_owned(),
             format!("knowledge: {USAGE}"),
         ]
         .map(|message| (Some(1), message))
+    );
+    assert_eq!(
+        added,
+        [
+            "knowledge: decision: a row of the table decisions, its text in rows of decision_items, not a document: target/release/knowledge sql \"INSERT INTO decisions (…) VALUES (…)\", then one per item, \"INSERT INTO decision_items (…) VALUES (…)\"",
+            "knowledge: incident: a row of the table incidents, not a document: target/release/knowledge sql \"INSERT INTO incidents (…) VALUES (…)\"",
+            "knowledge: anything: no document is added any more, every record is a row of its table: target/release/knowledge sql \"SELECT name, purpose FROM tables_registry\" names them, then knowledge sql \"INSERT INTO <table> …\"",
+        ]
+        .map(|message| (Some(1), message.to_owned()))
     );
     assert_eq!(
         (no_heading.status.code(), text(&no_heading).1),
@@ -624,17 +500,6 @@ fn f48_ac2_fails_aloud_on_a_wrong_add_or_an_id_it_reads_nowhere() {
     assert_eq!(
         usages,
         [(); 5].map(|()| (Some(1), format!("knowledge: {USAGE}")))
-    );
-    assert_eq!(
-        (detached.status.code(), text(&detached).1),
-        (
-            Some(1),
-            "knowledge: add writes on a branch: check one out".to_owned()
-        )
-    );
-    assert_eq!(
-        text(&detached_show).1,
-        "knowledge: EN-999: no document of it read on a detached HEAD"
     );
     assert_eq!(no_develop.status.code(), Some(1));
     assert!(
@@ -666,37 +531,23 @@ fn f48_ac1_names_the_file_after_the_main_checkouts_folder_without_a_remote() {
     );
 }
 
-/// A backlog of one epic, one done feature of two criteria and one story, under `repo/backlog`.
-fn backlog(place: &Path) {
-    for (path, text) in [
-        (
-            "backlog/epics/E49-keep.md",
-            "---\nid: E49\ntitle: Keep\nstatus: in-progress\n---\n\n# E49\n",
-        ),
-        (
-            "backlog/features/E49-F48-the-database.md",
-            "---\nid: F48\nepic: E49\ntitle: The database\nstatus: done\n---\n\n## Acceptance criteria\n\n1. One file.\n2. A snapshot.\n",
-        ),
-        (
-            "backlog/stories/E49-F48-EN-151-the-tables.md",
-            "---\nid: EN-151\nepic: E49\nfeature: F48\ntitle: The tables\nstatus: done\n---\n\n# EN-151\n",
-        ),
-    ] {
-        let file = place.join("repo").join(path);
-
-        fs::create_dir_all(file.parent().unwrap()).unwrap();
-        fs::write(file, text).unwrap();
-    }
-}
+/// One epic, one done feature of two criteria and one story, as the trunk holds them.
+const BACKLOG: &str = "
+  INSERT INTO epics (id, title, status, branch, state) VALUES ('E49', 'Keep', 'in-progress', 'develop', 'merged');
+  INSERT INTO features (id, epic, title, status, branch, state) VALUES
+    ('F48', 'E49', 'The database', 'done', 'develop', 'merged');
+  INSERT INTO criteria (id, feature, number, text) VALUES
+    ('F48.AC1', 'F48', 1, 'One file.'), ('F48.AC2', 'F48', 2, 'A snapshot.');
+  INSERT INTO stories (id, epic, feature, kind, title, status, branch, state) VALUES
+    ('EN-151', 'E49', 'F48', 'EN', 'The tables', 'done', 'develop', 'merged');
+";
 
 #[test]
-fn imports_the_backlog_reads_and_writes_it_by_sql_and_exports_its_criteria() {
+fn reads_and_writes_the_backlog_by_sql_and_exports_its_criteria() {
     let place = on_branch("backlog", "chore/en-154-x");
 
-    backlog(&place);
+    seed(&place, BACKLOG);
 
-    let imported = run(&place, &["import-backlog", "backlog"]);
-    let not_a_backlog = run(&place, &["import-backlog", "."]);
     let read = run(&place, &["sql", "SELECT id, status FROM stories"]);
     let created = run(
         &place,
@@ -720,17 +571,6 @@ fn imports_the_backlog_reads_and_writes_it_by_sql_and_exports_its_criteria() {
     let file = fs::read_to_string(place.join("repo/criteria.json")).unwrap_or_default();
 
     let _ = fs::remove_dir_all(&place);
-    assert_eq!(
-        text(&imported).0,
-        "1 epics, 1 features, 1 stories, 2 criteria and 0 tasks imported"
-    );
-    assert_eq!(
-        text(&not_a_backlog),
-        (
-            String::new(),
-            "knowledge: .: no stories folder, not a backlog".to_owned()
-        )
-    );
     assert_eq!(text(&read).0, "id\tstatus\nEN-151\tdone");
     assert_eq!(text(&created).0, "0 rows changed, ideas registered");
     assert_eq!(text(&inserted).0, "1 row changed");
@@ -760,84 +600,97 @@ fn imports_the_backlog_reads_and_writes_it_by_sql_and_exports_its_criteria() {
 }
 
 #[test]
-fn checks_the_ids_a_page_cites_and_writes_its_links_to_backlog_files_as_ids() {
+fn checks_the_ids_a_page_cites_against_every_table_of_ids() {
     let place = on_branch("ids", "chore/en-154-y");
 
-    backlog(&place);
-    run(&place, &["import-backlog", "backlog"]);
+    seed(&place, BACKLOG);
+    seed(
+        &place,
+        "INSERT INTO decisions (id, title, status, date, principle) VALUES
+          ('ADR-0081', 'Private records', 'accepted', '2026-10-15', 'Outside.');
+        INSERT INTO rules (id, page, section, name, rule, example, position) VALUES
+          ('RULE-shapes-box-wrap', 'shapes', 'RULE-shapes-box', 'Wrap', 'At spaces.', 'a b', 1);",
+    );
     fs::create_dir_all(place.join("repo/docs")).unwrap();
     fs::write(
         place.join("repo/docs/page.md"),
-        "[EN-151](../backlog/stories/E49-F48-EN-151-the-tables.md) and EN-999.\n",
+        "EN-151 and EN-999.\nADR-0081, ADR-9999, RULE-shapes-box and RULE-shapes-nope.\n",
     )
     .unwrap();
     // A test's made-up id is not read.
     fs::write(place.join("repo/docs/page.test.ts"), "// EN-998\n").unwrap();
 
     let missing = run(&place, &["check-ids", "docs"]);
-    let linked = run(&place, &["link-ids", "docs"]);
-    let page = fs::read_to_string(place.join("repo/docs/page.md")).unwrap();
 
-    fs::write(place.join("repo/docs/page.md"), "EN-151 and F48.\n").unwrap();
+    fs::write(
+        place.join("repo/docs/page.md"),
+        "EN-151, F48 and ADR-0081.\n",
+    )
+    .unwrap();
 
     let found = run(&place, &["check-ids", "docs"]);
     let nowhere = run(&place, &["check-ids", "none"]);
+    let gone = run(&place, &["link-ids", "docs"]);
 
     let _ = fs::remove_dir_all(&place);
     assert_eq!(missing.status.code(), Some(1));
     assert_eq!(
         text(&missing).1,
-        "knowledge: docs/page.md:1: EN-999 is not in the records"
+        "knowledge: docs/page.md:1: EN-999 is not in the records\ndocs/page.md:2: ADR-9999 is not in the records\ndocs/page.md:2: RULE-shapes-nope is not in the records"
     );
-    assert_eq!(text(&linked).0, "1 file written with ids");
-    assert_eq!(page, "EN-151 and EN-999.\n");
     assert_eq!(
         text(&found).0,
         "every id cited is in the records, 1 file read"
     );
     assert_eq!(text(&nowhere).1, "knowledge: none: no such file or folder");
+    // The one-shot rewrite of links is gone with the files it rewrote.
+    assert_eq!(text(&gone).1, format!("knowledge: {USAGE}"));
 }
 
 #[test]
-fn imports_what_moved_by_its_commands_a_missing_source_refused() {
+fn imports_the_private_records_by_their_commands_a_missing_source_refused() {
     let place = on_branch("imports", "chore/en-155-x");
     let repo = place.join("repo");
 
-    fs::create_dir_all(repo.join("adr")).unwrap();
+    fs::create_dir_all(repo.join("memory")).unwrap();
     fs::write(
-        repo.join("adr/0001-scope.md"),
-        "# ADR-0001 — Scope\n\n**Status**: Accepted (2026-10-08).\n\n## Decision\n\nGeometry only.\n",
+        repo.join("memory/feedback-x.md"),
+        "---\nname: feedback-x\ndescription: Short replies\n---\n\nBe terse.\n",
     )
     .unwrap();
     fs::write(repo.join("last-save.txt"), "2026-10-25T11:32:57Z\n").unwrap();
 
-    let imported = run(&place, &["import-decisions", "adr"]);
-    let again = run(&place, &["import-decisions", "adr"]);
+    let imported = run(&place, &["import-memories", "memory"]);
+    let again = run(&place, &["import-memories", "memory"]);
     let saves = run(&place, &["import-saves", "last-save.txt"]);
-    let shown = run(&place, &["show", "ADR-0001", "Decision"]);
-    let no_folder = run(&place, &["import-guide", "nowhere"]);
-    let no_file = run(&place, &["import-sources", "adr"]);
+    let shown = run(&place, &["show", "MEMORY-feedback-x", "Text"]);
+    let no_folder = run(&place, &["import-metrics", "nowhere"]);
+    let no_file = run(&place, &["import-library", "memory"]);
     let itself = run(
         &place,
         &["import-library", "../records/some-project.sqlite"],
     );
-    let two_words = run(&place, &["import-rules", "a", "b"]);
+    let two_words = run(&place, &["import-memories", "a", "b"]);
+    // The one-shot importers of the Markdown are gone with it.
+    let gone = run(&place, &["import-decisions", "memory"]);
 
     let _ = fs::remove_dir_all(&place);
-    assert_eq!(text(&imported).0, "1 row and 1 document imported from adr");
+    assert_eq!(text(&imported).0, "1 row imported from memory");
     assert_eq!(text(&again), text(&imported));
+    assert_eq!(text(&saves).0, "1 row imported from last-save.txt");
+    // The memory's file whole, its front matter in.
     assert_eq!(
-        text(&saves).0,
-        "1 row and 0 documents imported from last-save.txt"
+        text(&shown).0,
+        "MEMORY-feedback-x:5\n## Text\n\n---\nname: feedback-x\ndescription: Short replies\n---\n\nBe terse."
     );
-    assert_eq!(text(&shown).0, "ADR-0001:5\n## Decision\n\nGeometry only.");
     assert_eq!(text(&no_folder).1, "knowledge: nowhere: no such folder");
-    assert_eq!(text(&no_file).1, "knowledge: adr: no such file");
+    assert_eq!(text(&no_file).1, "knowledge: memory: no such file");
     assert_eq!(
         text(&itself).1,
         "knowledge: ../records/some-project.sqlite: the records themselves, nothing to import"
     );
     assert_eq!(text(&two_words).1, format!("knowledge: {USAGE}"));
+    assert_eq!(text(&gone).1, format!("knowledge: {USAGE}"));
 }
 
 #[test]

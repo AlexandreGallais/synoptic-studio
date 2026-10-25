@@ -4,13 +4,11 @@
 //! transaction, an attached file; a document's row deleted or updated. Every file is made in a
 //! folder of the temporary folder.
 
+use knowledge::sql::{is_added_column, is_reading, read, unescaped, write};
+use knowledge::store::{CORE_TABLES, open_store, write as store_write, write_or_refuse};
+use rusqlite::Connection;
 use std::fs;
 use std::path::PathBuf;
-
-use knowledge::add::{Origin, add_document};
-use knowledge::sql::{is_added_column, is_reading, read, unescaped, write};
-use knowledge::store::{CORE_TABLES, open_store, write_or_refuse};
-use rusqlite::Connection;
 
 /// A store in a folder of its own.
 fn place(name: &str) -> (PathBuf, Connection) {
@@ -105,7 +103,7 @@ fn lists_every_table_of_a_new_file_in_the_registry() {
     let (folder, database) = place("registry");
     let unlisted = run(
         &database,
-        "SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%' AND name NOT LIKE 'sections_index_%' AND name NOT LIKE 'chunks_%' AND name NOT IN (SELECT name FROM tables_registry)",
+        "SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%' AND name NOT LIKE 'sections_index_%' AND name NOT LIKE 'chunks_%' AND name NOT LIKE 'records_index_%' AND name NOT IN (SELECT name FROM tables_registry)",
         None,
     );
 
@@ -155,6 +153,11 @@ fn writes_the_backlogs_tables_and_refuses_to_drop_or_rewrite_any_core_table() {
     .map(|statement| run(&database, statement, None));
     let read_pragma = run(&database, "PRAGMA user_version", None);
     let kept = run(&database, "SELECT status, risk FROM stories", None);
+    let indexed = run(
+        &database,
+        "SELECT id, section FROM records_index WHERE records_index MATCH 'new'",
+        None,
+    );
 
     let _ = fs::remove_dir_all(&folder);
     assert_eq!(story.as_deref(), Ok("1 row changed\n"));
@@ -182,25 +185,23 @@ fn writes_the_backlogs_tables_and_refuses_to_drop_or_rewrite_any_core_table() {
             "{refused:?}"
         );
     }
-    assert_eq!(read_pragma.as_deref(), Ok("user_version\n5\n"));
+    assert_eq!(read_pragma.as_deref(), Ok("user_version\n6\n"));
     assert_eq!(kept.as_deref(), Ok("status\trisk\nparked\t\n"));
+    // The story written by `sql` indexed by its table's trigger, once, updated in place.
+    assert_eq!(indexed.as_deref(), Ok("id\tsection\nEN-160\tstory\n"));
 }
 
 #[test]
 fn deletes_a_document_with_its_rows_and_index_or_updates_its_columns() {
     let (folder, database) = place("documents");
-    let added = write_or_refuse(&database, |transaction| {
-        add_document(
-            transaction,
-            "---\nid: NOTE-9\n---\n\n# Gone\n\nzephyr text.\n",
-            Origin {
-                kind: "note",
-                path: "",
-                branch: "chore/en-154-x",
-                today: "2026-10-25",
-            },
+    // A document of the schemas before 6, a memory's, as the tool wrote one.
+    let added = store_write(&database, |transaction| {
+        transaction.execute_batch(
+            "INSERT INTO documents (id, kind, title, epic, feature, status, date, branch, state, private, path)
+              VALUES ('NOTE-9', 'note', 'Gone', '', '', '', '2026-10-25', 'chore/en-154-x', 'draft', 0, '');
+            INSERT INTO sections (document, branch, state, position, heading, text)
+              VALUES ('NOTE-9', 'chore/en-154-x', 'draft', 0, 'Gone', 'zephyr text.');",
         )
-        .map_err(|error| error.to_string())
     });
     let private = run(
         &database,
@@ -220,7 +221,7 @@ fn deletes_a_document_with_its_rows_and_index_or_updates_its_columns() {
     );
 
     let _ = fs::remove_dir_all(&folder);
-    assert_eq!(added.as_deref(), Ok("NOTE-9"));
+    assert_eq!(added, Ok(()));
     assert_eq!(private.as_deref(), Ok("1 row changed\n"));
     assert_eq!(flagged.as_deref(), Ok("private\n1\n"));
     // The row, its fields, its sections and its index's rows, the cascades counted.

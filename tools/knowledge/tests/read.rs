@@ -1,17 +1,15 @@
-//! Tests of what a branch adds, reads and marks merged (EN-152): the rows of three branches and
-//! their states, the filters, the search ranked by BM25 and the text read back. Every store is
-//! made in a folder of the system's temporary folder; the real records folder is never opened
-//! (`[F48.AC4]`).
+//! Tests of what the agent reads of the records (AUD-057): `show` rendering a record and its items
+//! from whichever table holds its id, `search` on the full-text index `records_index`, `list` a
+//! union of the tables, their filters. Every store is made in a folder of the system's temporary
+//! folder; the real records folder is never opened (`[F48.AC4]`).
 
 use std::fs;
 use std::path::{Path, PathBuf};
 
-use knowledge::add::{Origin, add_document, is_kind, next_id};
 use knowledge::read::{
     Filters, Hit, Listed, hit_lines, list, listed_line, parse_filters, search, section_of, show,
 };
 use knowledge::store::{open_store, write};
-use knowledge::sync::{mark_merged, merged_branches};
 use rusqlite::Connection;
 
 /// A store of its own in the temporary folder, emptied first.
@@ -27,92 +25,82 @@ fn clean(file: &Path) {
     let _ = fs::remove_dir_all(file.parent().unwrap());
 }
 
-/// A story of an id, a title and a line of text.
-fn story(id: &str, title: &str, line: &str) -> String {
-    format!(
-        "---\nid: {id}\nepic: E49\nfeature: F48\nstatus: ready\ndate: 2026-10-20\n---\n\n# {title}\n\n{line}\n"
-    )
-}
+/// A record of each table, and their items: an epic of two features, one of criteria in rows and
+/// one of criteria in its column; a story of tasks in rows and items, one dropped, one of no
+/// feature with its tasks in its column; a decision, two notes, a derivation, a source, two rules
+/// of one part, a retrospective, a memory and a convention.
+const RECORDS: &str = "
+  INSERT INTO epics (id, title, status, branch, state, vision) VALUES
+    ('E49', 'Keep the records', 'in-progress', 'develop', 'merged', 'One file for every record.');
+  INSERT INTO epic_items (epic, section, n, kind, item) VALUES
+    ('E49', 'Open points', 1, 'bullet', 'The snapshot''s age.');
+  INSERT INTO features (id, epic, title, status, position, branch, state, hypothesis, criteria) VALUES
+    ('F48', 'E49', 'The database', 'done', 1, 'develop', 'merged', 'One file serves every worktree.', ''),
+    ('F47', 'E49', 'The old files', 'ready', 2, 'develop', 'merged', '', '1. Gone.');
+  INSERT INTO criteria (id, feature, number, text, struck, retired) VALUES
+    ('F48.AC1', 'F48', 1, 'One file.', 0, ''),
+    ('F48.AC2', 'F48', 2, 'A snapshot.', 1, 'moved to F50');
+  INSERT INTO feature_items (feature, section, n, kind, item) VALUES
+    ('F48', 'Plan', 1, 'paragraph', 'The store first.');
+  INSERT INTO stories (id, epic, feature, kind, title, status, points, position, summary, criteria,
+      tasks, test_card, question, branch, state) VALUES
+    ('EN-900', 'E49', 'F48', 'EN', 'Add, search, show and list', 'ready', 3, 1, 'As ADR-0900 says.',
+      '- A busy timeout waits for the other writer.', '', 'Open the file.', '',
+      'chore/en-900-read', 'draft'),
+    ('EN-901', 'E49', 'F48', 'EN', 'Dropped work', 'ready', NULL, 2, 'Never merged.', '', '', '',
+      '', 'chore/en-901-gone', 'dropped'),
+    ('SP-030', 'E49', '', 'SP', 'A spike', 'parked', NULL, 1, '', '', '- [ ] T1 — Read', '',
+      'Which file?', 'develop', 'merged');
+  INSERT INTO tasks (story, number, title, done) VALUES
+    ('EN-900', 1, 'The tests', 1), ('EN-900', 2, 'The code', 0);
+  INSERT INTO story_items (story, section, n, kind, item) VALUES
+    ('EN-900', '', 1, 'paragraph', 'Read first.'),
+    ('EN-900', 'Findings', 2, 'paragraph', 'Two writers measured.'),
+    ('EN-900', 'Findings', 3, 'bullet', 'One waits.'),
+    ('EN-900', 'Findings', 4, 'row', 'Writer: second · Wait: 5 ms'),
+    ('EN-900', 'Findings', 5, 'code', '```text' || char(10) || 'busy' || char(10) || '```');
+  INSERT INTO decisions (id, title, status, date, principle, decision, reason, consequences,
+      status_note, replaces, replaced_by, removed_reason, changed, refs) VALUES
+    ('ADR-0900', 'One file', 'accepted', '2026-10-20', 'One file for all.',
+      'The records are one SQLite file.', 'Two files diverge.', '', '', 'ADR-0899', '', '',
+      '2026-10-25', 'REF-SQLITE-WAL');
+  INSERT INTO decision_items (decision, section, n, kind, item) VALUES
+    ('ADR-0900', 'Reasons', 1, 'bullet', 'No merge of two files.');
+  INSERT INTO notes (id, kind, title, status, date) VALUES
+    ('NOTE-0900', 'note', 'The wait of a writer', 'done', '2026-10-24'),
+    ('PAGE-research', 'page', 'Research protocol', 'accepted', '2026-10-01');
+  INSERT INTO note_findings (note, n, section, kind, finding, source) VALUES
+    ('NOTE-0900', 1, 'Findings', 'paragraph', 'SQLite waits within its busy timeout.',
+      'REF-SQLITE-BUSY-TIMEOUT'),
+    ('NOTE-0900', 2, 'Findings', 'bullet', 'No source for this.', '');
+  INSERT INTO derivations (id, title, used_by) VALUES
+    ('DERIV-setback', 'The setback of a fillet', 'EN-020');
+  INSERT INTO derivation_steps (derivation, n, section, kind, statement, source) VALUES
+    ('DERIV-setback', 1, 'Steps', 'paragraph', 't = r / tan(θ / 2)', 'REF-MATHWORLD');
+  INSERT INTO sources (id, title, url, used_for, status, verified, topic, notes) VALUES
+    ('REF-SQLITE-WAL', 'Write-Ahead Logging', 'https://sqlite.org/wal.html', 'Two writers.',
+      'verified', '2026-10-20', 'records', 'Readers do not block writers.');
+  INSERT INTO rules (id, page, section, name, rule, example, position) VALUES
+    ('RULE-shapes-box-two-kinds', 'shapes', 'RULE-shapes-box', 'Two kinds', 'A box is fixed or free.',
+      'A fixed box of 100 × 40.', 1),
+    ('RULE-shapes-box-wrap', 'shapes', 'RULE-shapes-box', 'Wrap', 'Text wraps at spaces.',
+      'a b wraps after a.', 2);
+  INSERT INTO rule_items (page, n, section, kind, item) VALUES
+    ('RULE-shapes-box', 1, '', 'paragraph', 'The box of a text.');
+  INSERT INTO retrospectives (id, epic, title) VALUES ('RETRO-E49', 'E49', 'Keep the records');
+  INSERT INTO retrospective_items (retrospective, section, n, kind, item) VALUES
+    ('RETRO-E49', 'Helped', 1, 'bullet', 'One file.');
+  INSERT INTO memories (name, description, type, private, modified, text) VALUES
+    ('feedback-x', 'Short replies', 'feedback', 1, '2026-10-16', 'Be terse.');
+  INSERT INTO conventions (area, topic, rule) VALUES ('records', 'ids', 'Code cites short ids.');
+";
 
-/// Adds a text of a kind on a branch, the day 2026-10-24; its id.
-fn add(database: &Connection, kind: &str, branch: &str, text: &str) -> String {
-    write(database, |transaction| {
-        add_document(
-            transaction,
-            text,
-            Origin {
-                kind,
-                path: "",
-                branch,
-                today: "2026-10-24",
-            },
-        )
-    })
-    .unwrap()
-}
-
-/// Sets the state of a branch's rows.
-fn set_state(database: &Connection, branch: &str, state: &str) {
-    database
-        .execute(
-            "UPDATE documents SET state = ? WHERE branch = ?",
-            [state, branch],
-        )
-        .unwrap();
-}
-
-/// The ids of the documents a branch lists, filtered.
-fn ids(database: &Connection, reader: &str, filters: &Filters) -> Vec<String> {
-    list(database, reader, filters)
-        .unwrap()
-        .into_iter()
-        .map(|listed| listed.id)
-        .collect()
-}
-
-/// The rows of three branches and a fourth dropped: `feature/a` merged, `chore/b` and `chore/c`
-/// drafts, `chore/d` dropped.
-fn three_branches(file: &Path) -> Connection {
+/// A store holding [`RECORDS`].
+fn records(file: &Path) -> Connection {
     let database = open_store(file).unwrap();
 
-    add(
-        &database,
-        "story",
-        "feature/a",
-        &story("EN-901", "Merged", "Busy."),
-    );
-    add(
-        &database,
-        "story",
-        "chore/b",
-        &story("EN-902", "Of b", "Busy."),
-    );
-    add(
-        &database,
-        "story",
-        "chore/c",
-        &story("EN-903", "Of c", "Busy."),
-    );
-    add(
-        &database,
-        "story",
-        "chore/d",
-        &story("EN-904", "Of d", "Busy."),
-    );
-    set_state(&database, "feature/a", "merged");
-    set_state(&database, "chore/d", "dropped");
+    write(&database, |transaction| transaction.execute_batch(RECORDS)).unwrap();
     database
-}
-
-/// The ids every document cites, sorted.
-fn cited(database: &Connection) -> Vec<String> {
-    database
-        .prepare("SELECT \"to\" FROM links ORDER BY \"to\"")
-        .unwrap()
-        .query_map([], |row| row.get(0))
-        .unwrap()
-        .collect::<rusqlite::Result<_>>()
-        .unwrap()
 }
 
 /// Filters of the words given.
@@ -122,374 +110,362 @@ fn filters(words: &[&str]) -> Filters {
     parse_filters(&words).unwrap().1
 }
 
+/// What `show` renders of an id, filtered.
+fn shown(database: &Connection, id: &str, words: &[&str]) -> Option<String> {
+    show(database, id, &filters(words)).unwrap()
+}
+
 #[test]
-fn f48_ac2_stores_an_added_story_as_a_draft_of_its_branch_with_its_tables() {
-    let file = place("added");
-    let database = open_store(&file).unwrap();
-    let text = story("EN-900", "E49 · F48 · EN-900 — Add", "As ADR-0081 says.");
-    let id = add(&database, "story", "chore/en-900", &text);
-    let row: (String, String, String, String, String, String, String, String, i64) = database
-        .query_row(
-            "SELECT kind, title, epic, feature, status, date, branch, state, private FROM documents WHERE id = ?",
-            [&id],
-            |row| {
-                Ok((
-                    row.get(0)?, row.get(1)?, row.get(2)?, row.get(3)?, row.get(4)?,
-                    row.get(5)?, row.get(6)?, row.get(7)?, row.get(8)?,
-                ))
-            },
-        )
-        .unwrap();
-    let count = |table: &str| -> i64 {
-        database
-            .query_row(&format!("SELECT count(*) FROM {table}"), [], |row| {
-                row.get(0)
-            })
-            .unwrap()
-    };
-    let links = cited(&database);
-    let shown = show(&database, "chore/en-900", "EN-900", &Filters::default()).unwrap();
-    let (fields, sections) = (count("fields"), count("sections"));
+fn f48_ac2_shows_a_story_its_facts_columns_tasks_and_items_as_markdown() {
+    let file = place("story");
+    let database = records(&file);
+    let story = shown(&database, "EN-900", &[]);
+    let spike = shown(&database, "SP-030", &[]);
+    let dropped = shown(&database, "EN-901", &[]);
+    let with_all = shown(&database, "EN-901", &["--all"]);
 
     clean(&file);
-    assert_eq!(id, "EN-900");
-    // No title in the front matter: the first heading's.
+    // The facts but the empty ones, the columns as parts, the tasks from their rows, the item of
+    // no section under the facts, the others under their section.
     assert_eq!(
-        row,
-        (
-            "story".into(),
-            "E49 · F48 · EN-900 — Add".into(),
-            "E49".into(),
-            "F48".into(),
-            "ready".into(),
-            "2026-10-20".into(),
-            "chore/en-900".into(),
-            "draft".into(),
-            0
+        story.as_deref(),
+        Some(
+            "# EN-900 — Add, search, show and list\n\nstory EN · epic E49 · feature F48 · status ready · points 3 · draft on chore/en-900-read\n\nRead first.\n\n## Summary\n\nAs ADR-0900 says.\n\n## Acceptance criteria\n\n- A busy timeout waits for the other writer.\n\n## Tasks\n\n- [x] T1 — The tests\n- [ ] T2 — The code\n\n## Product Owner test\n\nOpen the file.\n\n## Findings\n\nTwo writers measured.\n\n- One waits.\n- Writer: second · Wait: 5 ms\n\n```text\nbusy\n```\n"
         )
     );
-    // id, epic, feature, status, date; the front matter, then the title's section.
-    assert_eq!(fields, 5);
-    assert_eq!(sections, 2);
-    assert_eq!(links, ["ADR-0081", "E49", "F48"]);
-    assert_eq!(shown.as_deref(), Some(text.as_str()));
-}
-
-#[test]
-fn f48_ac2_makes_the_id_of_a_log_row_unique_across_branches() {
-    let file = place("log-rows");
-    let database = open_store(&file).unwrap();
-    let first = add(&database, "journal", "chore/b", "- `#run` EN-050: one.\n");
-    // Another branch's row of the same day takes the next number, though chore/b's is a draft.
-    let second = add(&database, "journal", "chore/c", "- `#run` EN-050: two.\n");
-    let other_day = next_id(&database, "journal", "2026-10-25").unwrap();
-    let date: String = database
-        .query_row(
-            "SELECT date FROM documents WHERE id = ?",
-            [&second],
-            |row| row.get(0),
+    // No task row: the tasks' column.
+    assert_eq!(
+        spike.as_deref(),
+        Some(
+            "# SP-030 — A spike\n\nstory SP · epic E49 · status parked · merged on develop\n\n## Tasks\n\n- [ ] T1 — Read\n\n## Question\n\nWhich file?\n"
         )
+    );
+    assert_eq!(dropped, None);
+    assert!(
+        with_all
+            .as_deref()
+            .is_some_and(|text| text.starts_with("# EN-901 — Dropped work\n")),
+        "{with_all:?}"
+    );
+}
+
+#[test]
+fn f48_ac2_shows_a_feature_and_an_epic_with_their_criteria_stories_and_features() {
+    let file = place("feature");
+    let database = records(&file);
+    let feature = shown(&database, "F48", &[]);
+    let in_column = shown(&database, "F47", &[]);
+    let epic = shown(&database, "E49", &[]);
+    let criterion = shown(&database, "F48.AC2", &[]);
+
+    database
+        .execute_batch("UPDATE features SET state = 'dropped' WHERE id = 'F47'; UPDATE epics SET state = 'dropped'")
         .unwrap();
 
-    clean(&file);
-    assert_eq!(first, "JOURNAL-2026-10-24-1");
-    assert_eq!(second, "JOURNAL-2026-10-24-2");
-    assert_eq!(other_day, "JOURNAL-2026-10-25-1");
-    assert_eq!(date, "2026-10-24");
-}
-
-#[test]
-fn f48_ac2_numbers_after_the_highest_not_the_count() {
-    let file = place("highest");
-    let database = open_store(&file).unwrap();
-
-    add(
-        &database,
-        "journal",
-        "chore/b",
-        "---\nid: JOURNAL-2026-10-24-9\n---\nrow\n",
-    );
-
-    let next = next_id(&database, "journal", "2026-10-24").unwrap();
+    let dropped = (shown(&database, "F47", &[]), shown(&database, "E49", &[]));
 
     clean(&file);
-    // One row, numbered 9: the next is 10, and "-10" sorts before "-9" as text, so the number is
-    // read as a number.
-    assert_eq!(next, "JOURNAL-2026-10-24-10");
-}
-
-#[test]
-fn f48_ac2_replaces_its_own_branchs_row_when_added_again() {
-    let file = place("again");
-    let database = open_store(&file).unwrap();
-
-    add(
-        &database,
-        "story",
-        "chore/b",
-        &story("EN-902", "First", "ADR-0001."),
-    );
-
-    let again = story("EN-902", "Second", "ADR-0002.");
-
-    add(&database, "story", "chore/b", &again);
-
-    let rows: i64 = database
-        .query_row("SELECT count(*) FROM documents", [], |row| row.get(0))
-        .unwrap();
-    let links = cited(&database);
-    let shown = show(&database, "chore/b", "EN-902", &Filters::default()).unwrap();
-
-    clean(&file);
-    assert_eq!(rows, 1);
-    // The first text's citation of ADR-0001 went with its row.
-    assert_eq!(links, ["ADR-0002", "E49", "F48"]);
-    assert_eq!(shown, Some(again));
-}
-
-#[test]
-fn f48_ac2_knows_a_kind_as_one_lower_case_word() {
-    for kind in ["story", "journal", "log-row"] {
-        assert!(is_kind(kind), "{kind}");
-    }
-    for kind in [
-        "",
-        "Story",
-        "two words",
-        "-story",
-        "story-",
-        "st0ry",
-        "log_row",
-    ] {
-        assert!(!is_kind(kind), "{kind}");
-    }
-}
-
-#[test]
-fn f48_ac2_reads_the_merged_rows_and_its_own_drafts_only() {
-    let file = place("three-branches");
-    let database = three_branches(&file);
-    let none = Filters::default();
-    let (of_b, of_c, of_other) = (
-        ids(&database, "chore/b", &none),
-        ids(&database, "chore/c", &none),
-        ids(&database, "feature/z", &none),
-    );
-    let all = ids(&database, "chore/b", &filters(&["--all"]));
-    let as_c = ids(&database, "chore/b", &filters(&["--branch", "chore/c"]));
-    let merged = ids(&database, "chore/b", &filters(&["--state", "merged"]));
-    let dropped = ids(&database, "chore/b", &filters(&["--state", "dropped"]));
-    let drafts_of_c = show(&database, "chore/b", "EN-903", &none).unwrap();
-    let dropped_shown = show(&database, "chore/b", "EN-904", &filters(&["--all"])).unwrap();
-
-    clean(&file);
-    assert_eq!(of_b, ["EN-901", "EN-902"]);
-    assert_eq!(of_c, ["EN-901", "EN-903"]);
-    assert_eq!(of_other, ["EN-901"]);
-    // `--all` adds the dropped row, never another branch's draft.
-    assert_eq!(all, ["EN-901", "EN-902", "EN-904"]);
-    assert_eq!(as_c, ["EN-903"]);
-    assert_eq!(merged, ["EN-901"]);
-    assert_eq!(dropped, ["EN-904"]);
-    assert_eq!(drafts_of_c, None);
-    assert!(dropped_shown.is_some());
-}
-
-#[test]
-fn f48_ac2_reads_its_own_draft_of_an_id_over_the_merged_row() {
-    let file = place("own-draft");
-    let database = three_branches(&file);
-    let draft = story("EN-901", "Changed on b", "Busy.");
-
-    add(&database, "story", "chore/b", &draft);
-
-    let none = Filters::default();
-    let (of_b, of_c) = (
-        show(&database, "chore/b", "EN-901", &none).unwrap(),
-        show(&database, "chore/c", "EN-901", &none).unwrap(),
-    );
-    let listed = list(&database, "chore/b", &none).unwrap();
-
-    clean(&file);
-    assert_eq!(of_b, Some(draft));
-    assert_eq!(of_c, Some(story("EN-901", "Merged", "Busy.")));
-    // Listed once, its draft.
+    // The criteria from their rows, a retired one with its reason; the stories but the dropped.
     assert_eq!(
-        listed
-            .iter()
-            .map(|row| (row.id.as_str(), row.state.as_str()))
-            .collect::<Vec<_>>(),
-        [("EN-901", "draft"), ("EN-902", "draft")]
+        feature.as_deref(),
+        Some(
+            "# F48 — The database\n\nfeature · epic E49 · status done · merged on develop\n\n## Hypothesis\n\nOne file serves every worktree.\n\n## Acceptance criteria\n\n1. One file.\n2. A snapshot. (retired: moved to F50)\n\n## Stories\n\n- EN-900 [ready] Add, search, show and list\n\n## Plan\n\nThe store first.\n"
+        )
     );
+    assert_eq!(
+        in_column.as_deref(),
+        Some(
+            "# F47 — The old files\n\nfeature · epic E49 · status ready · merged on develop\n\n## Acceptance criteria\n\n1. Gone.\n"
+        )
+    );
+    assert_eq!(
+        epic.as_deref(),
+        Some(
+            "# E49 — Keep the records\n\nepic · status in-progress · merged on develop\n\n## Vision\n\nOne file for every record.\n\n## Features\n\n- F48 [done] The database\n- F47 [ready] The old files\n\n## Stories of no feature\n\n- SP-030 [parked] A spike\n\n## Open points\n\n- The snapshot's age.\n"
+        )
+    );
+    assert_eq!(
+        criterion.as_deref(),
+        Some(
+            "# F48.AC2\n\ncriterion · feature F48 · struck · retired: moved to F50\n\n## Criterion\n\nA snapshot.\n"
+        )
+    );
+    assert_eq!(dropped, (None, None));
 }
 
 #[test]
-fn f48_ac2_marks_merged_the_drafts_of_the_merged_branches_each_replacing_its_merged_row() {
-    let file = place("sync");
-    let database = three_branches(&file);
-
-    add(
-        &database,
-        "story",
-        "chore/b",
-        &story("EN-901", "Changed on b", "Busy."),
-    );
-
-    let marked = write(&database, |transaction| {
-        mark_merged(transaction, &["chore/b".to_owned(), "develop".to_owned()])
-    })
-    .unwrap();
-    let again = write(&database, |transaction| {
-        mark_merged(transaction, &["chore/b".to_owned()])
-    })
-    .unwrap();
-    let rows: Vec<(String, String, String)> = database
-        .prepare("SELECT id, branch, state FROM documents ORDER BY id, branch")
-        .unwrap()
-        .query_map([], |row| Ok((row.get(0)?, row.get(1)?, row.get(2)?)))
-        .unwrap()
-        .collect::<rusqlite::Result<_>>()
-        .unwrap();
-    let of_c = show(&database, "chore/c", "EN-901", &Filters::default()).unwrap();
+fn f48_ac2_shows_a_decision_a_note_a_derivation_and_a_source() {
+    let file = place("decision");
+    let database = records(&file);
+    let decision = shown(&database, "ADR-0900", &[]);
+    let note = shown(&database, "NOTE-0900", &[]);
+    let derivation = shown(&database, "DERIV-setback", &[]);
+    let source = shown(&database, "REF-SQLITE-WAL", &[]);
 
     clean(&file);
-    // chore/b's two drafts; feature/a's merged EN-901 replaced by chore/b's; the dropped row kept.
-    assert_eq!(marked, 2);
-    assert_eq!(again, 0);
     assert_eq!(
-        rows,
-        [
-            ("EN-901", "chore/b", "merged"),
-            ("EN-902", "chore/b", "merged"),
-            ("EN-903", "chore/c", "draft"),
-            ("EN-904", "chore/d", "dropped"),
-        ]
-        .map(|(id, branch, state)| (id.to_owned(), branch.to_owned(), state.to_owned()))
+        decision.as_deref(),
+        Some(
+            "# ADR-0900 — One file\n\ndecision · status accepted · date 2026-10-20 · changed 2026-10-25\n\n## Principle\n\nOne file for all.\n\n## Decision\n\nThe records are one SQLite file.\n\n## Reason\n\nTwo files diverge.\n\n## Replaces\n\nADR-0899\n\n## References\n\nREF-SQLITE-WAL\n\n## Reasons\n\n- No merge of two files.\n"
+        )
     );
-    assert_eq!(of_c, Some(story("EN-901", "Changed on b", "Busy.")));
-}
-
-#[test]
-fn f48_ac2_keeps_the_draft_written_last_of_two_merged_at_once() {
-    let file = place("two-drafts");
-    let database = open_store(&file).unwrap();
-
-    add(
-        &database,
-        "story",
-        "chore/c",
-        &story("EN-905", "Written first", "Busy."),
-    );
-    add(
-        &database,
-        "story",
-        "chore/e",
-        &story("EN-905", "Written last", "Busy."),
-    );
-
-    // Given in either order, the row written last holds.
-    let marked = write(&database, |transaction| {
-        mark_merged(transaction, &["chore/e".to_owned(), "chore/c".to_owned()])
-    })
-    .unwrap();
-    let rows: i64 = database
-        .query_row("SELECT count(*) FROM documents", [], |row| row.get(0))
-        .unwrap();
-    let shown = show(&database, "develop", "EN-905", &Filters::default()).unwrap();
-
-    clean(&file);
-    assert_eq!(marked, 2);
-    assert_eq!(rows, 1);
-    assert_eq!(shown, Some(story("EN-905", "Written last", "Busy.")));
-}
-
-#[test]
-fn f48_ac2_reads_as_merged_develop_and_the_branches_a_merge_commit_brought_into_it() {
-    // The tips `git branch --merged develop` lists, then the parents of develop's merge commits:
-    // feature/f48-x's tip and chore/en-2's are a merge's second or third parent, chore/en-1's is
-    // reachable but no merge brought it, chore/en-3's is a first parent only, as a branch made at
-    // develop's tip without a commit of its own.
+    // Each finding with the source it cites, none for one that cites none.
     assert_eq!(
-        merged_branches(
-            "develop 1111\n(HEAD detached at 1a2b3c4) 3333\n\n  feature/f48-x 3333  \nchore/en-1 4444\nchore/en-2 6666\nchore/en-3 0000\n",
-            "0000 3333\n\n5555 7777 6666\n"
-        ),
-        ["develop", "feature/f48-x", "chore/en-2"]
+        note.as_deref(),
+        Some(
+            "# NOTE-0900 — The wait of a writer\n\nnote · status done · date 2026-10-24\n\n## Findings\n\nSQLite waits within its busy timeout. (REF-SQLITE-BUSY-TIMEOUT)\n\n- No source for this.\n"
+        )
     );
-    assert_eq!(merged_branches("", ""), Vec::<String>::new());
-    // develop is merged into itself, its rows the next sync's, whatever its merges.
-    assert_eq!(merged_branches("develop 1111\n", ""), ["develop"]);
+    assert_eq!(
+        derivation.as_deref(),
+        Some(
+            "# DERIV-setback — The setback of a fillet\n\nderivation\n\n## Used by\n\nEN-020\n\n## Steps\n\nt = r / tan(θ / 2) (REF-MATHWORLD)\n"
+        )
+    );
+    assert_eq!(
+        source.as_deref(),
+        Some(
+            "# REF-SQLITE-WAL — Write-Ahead Logging\n\nsource · verified 2026-10-20 · topic records\n\n## Address\n\nhttps://sqlite.org/wal.html\n\n## Used for\n\nTwo writers.\n\n## Notes\n\nReaders do not block writers.\n"
+        )
+    );
 }
 
 #[test]
-fn f48_ac2_lists_by_kind_epic_feature_status_and_date() {
-    let file = place("filters");
-    let database = open_store(&file).unwrap();
-
-    add(
-        &database,
-        "story",
-        "develop",
-        &story("EN-901", "A story", "Text."),
-    );
-    add(
-        &database,
-        "note",
-        "develop",
-        "---\nid: NOTE-0035\nepic: E49\ndate: 2026-10-25\n---\n\n# 0035 — Knowledge\n",
-    );
-    add(&database, "journal", "develop", "- `#run` EN-050: one.\n");
-
-    let found = |words: &[&str]| ids(&database, "develop", &filters(words));
-    let results = [
-        found(&[]),
-        found(&["--kind", "note"]),
-        found(&["--epic", "E49"]),
-        found(&["--feature", "F48"]),
-        found(&["--status", "ready"]),
-        // The story dated 2026-10-20, the journal's row the day it was added, 2026-10-24.
-        found(&["--since", "2026-10-24"]),
-        found(&["--kind", "story", "--since", "2026-10-21"]),
+fn f48_ac2_shows_a_rule_a_part_of_the_rules_a_retrospective_and_a_memory() {
+    let file = place("rule");
+    let database = records(&file);
+    let rule = shown(&database, "RULE-shapes-box-two-kinds", &[]);
+    let part = shown(&database, "RULE-shapes-box", &[]);
+    let retrospective = shown(&database, "RETRO-E49", &[]);
+    let memory = shown(&database, "MEMORY-feedback-x", &[]);
+    let nowhere = [
+        shown(&database, "EN-999", &[]),
+        shown(&database, "MEMORY-nope", &[]),
+        shown(&database, "RULE-nope", &[]),
+        shown(&database, "feedback-x", &[]),
     ];
 
     clean(&file);
     assert_eq!(
-        results,
+        rule.as_deref(),
+        Some(
+            "# RULE-shapes-box-two-kinds — Two kinds\n\nrule · page shapes · part RULE-shapes-box\n\n## Rule\n\nA box is fixed or free.\n\n## Example\n\nA fixed box of 100 × 40.\n"
+        )
+    );
+    // Its item of no section, then its rules by position.
+    assert_eq!(
+        part.as_deref(),
+        Some(
+            "# RULE-shapes-box\n\na part of the business rules\n\nThe box of a text.\n\n## Rules\n\n- **Two kinds** (RULE-shapes-box-two-kinds): A box is fixed or free. Example: A fixed box of 100 × 40.\n- **Wrap** (RULE-shapes-box-wrap): Text wraps at spaces. Example: a b wraps after a.\n"
+        )
+    );
+    assert_eq!(
+        retrospective.as_deref(),
+        Some(
+            "# RETRO-E49 — Keep the records\n\nretrospective · epic E49\n\n## Helped\n\n- One file.\n"
+        )
+    );
+    assert_eq!(
+        memory.as_deref(),
+        Some(
+            "# MEMORY-feedback-x — Short replies\n\nmemory · type feedback · modified 2026-10-16\n\n## Text\n\nBe terse.\n"
+        )
+    );
+    assert_eq!(nowhere, [None, None, None, None]);
+}
+
+#[test]
+fn f48_ac2_shows_one_part_of_a_record_as_page_does() {
+    let file = place("part");
+    let database = records(&file);
+    let text = shown(&database, "EN-900", &[]).unwrap_or_default();
+
+    clean(&file);
+    // `## Acceptance criteria` is the text's line 11: the title, a blank line, the facts, a blank
+    // line, the item of no section, a blank line, `## Summary`, a blank line, its text, a blank
+    // line.
+    assert_eq!(
+        section_of("EN-900", &text, "Acceptance criteria").as_deref(),
+        Some("EN-900:11\n## Acceptance criteria\n\n- A busy timeout waits for the other writer.\n")
+    );
+    assert_eq!(section_of("EN-900", &text, "Missing"), None);
+}
+
+/// The ids and headings of the hits of some words, filtered.
+fn found(database: &Connection, words: &str, filter: &[&str]) -> Vec<String> {
+    search(database, words, &filters(filter))
+        .unwrap()
+        .into_iter()
+        .map(|hit| format!("{} › {}", hit.id, hit.heading))
+        .collect()
+}
+
+#[test]
+fn f48_ac2_searches_the_index_of_every_table_filtered_by_the_record_each_row_belongs_to() {
+    let file = place("search");
+    let database = records(&file);
+    let story = search(&database, "busy timeout", &filters(&["--kind", "story"])).unwrap();
+    let of_a_note = found(&database, "within", &["--kind", "note"]);
+    let none_of_a_decision = found(&database, "busy", &["--kind", "decision"]);
+    // A task's row belongs to its story, a criterion's to its feature.
+    let task = found(&database, "code", &["--epic", "E49", "--kind", "story"]);
+    let criterion = found(
+        &database,
+        "snapshot",
+        &["--kind", "feature", "--status", "done"],
+    );
+    // A convention is no record: its table is its kind, and a filter of records leaves it out.
+    let convention = found(&database, "short ids", &["--kind", "conventions"]);
+    let filtered_out = found(&database, "short ids", &["--epic", "E49"]);
+    let dropped = found(&database, "never", &[]);
+    let with_all = found(&database, "never", &["--all"]);
+    let either = found(&database, "timeout zzz", &["--kind", "story"]);
+
+    clean(&file);
+    // The story's own row: its columns joined, every word between brackets.
+    assert_eq!(
+        story,
+        [Hit {
+            id: "EN-900".to_owned(),
+            heading: "story".to_owned(),
+            snippet: "Add, search, show and list\nAs ADR-0900 says.\n- A [busy] [timeout] waits for the other writer.\nOpen the file.\n".to_owned(),
+        }]
+    );
+    assert_eq!(of_a_note, ["NOTE-0900 › Findings"]);
+    assert_eq!(none_of_a_decision, Vec::<String>::new());
+    assert_eq!(task, ["EN-900.T2 › task"]);
+    assert_eq!(criterion, ["F48.AC2 › criterion"]);
+    assert_eq!(convention, ["conventions 1 › records › ids"]);
+    assert_eq!(filtered_out, Vec::<String>::new());
+    assert_eq!(dropped, Vec::<String>::new());
+    assert_eq!(with_all, ["EN-901 › story"]);
+    // No row holds both words: any of them.
+    assert_eq!(either, ["EN-900 › story"]);
+}
+
+#[test]
+fn f48_ac2_searches_at_most_eight_rows() {
+    let file = place("limit");
+    let database = open_store(&file).unwrap();
+
+    // Nine journal rows holding the word: eight printed, as the library's search.
+    for n in 1..=9 {
+        database
+            .execute(
+                "INSERT INTO journal (date, session, tag, text) VALUES ('2026-10-25', 'a', 'run', ?)",
+                [format!("Busy {n}.")],
+            )
+            .unwrap();
+    }
+
+    let hits = search(&database, "busy", &Filters::default()).unwrap();
+
+    clean(&file);
+    assert_eq!(hits.len(), 8);
+}
+
+/// The ids `list` reads, filtered.
+fn ids(database: &Connection, words: &[&str]) -> Vec<String> {
+    list(database, &filters(words))
+        .unwrap()
+        .into_iter()
+        .map(|listed| listed.id)
+        .collect()
+}
+
+#[test]
+fn f48_ac2_lists_the_records_of_every_table_by_kind_then_id_filtered() {
+    let file = place("list");
+    let database = records(&file);
+    let every = ids(&database, &[]);
+    let of_epic = ids(&database, &["--epic", "E49"]);
+    let of_feature = ids(&database, &["--feature", "F48", "--kind", "story"]);
+    let rules = ids(&database, &["--kind", "rule"]);
+    let since = ids(&database, &["--since", "2026-10-20"]);
+    let of_branch = ids(&database, &["--branch", "chore/en-900-read"]);
+    let drafts = ids(&database, &["--state", "draft"]);
+    let dropped = ids(&database, &["--state", "dropped"]);
+    let parked = ids(&database, &["--status", "parked", "--all"]);
+    let lines: Vec<String> = list(&database, &filters(&["--kind", "decision"]))
+        .unwrap()
+        .iter()
+        .map(listed_line)
+        .collect();
+
+    clean(&file);
+    assert_eq!(
+        every,
         [
-            vec!["EN-901", "JOURNAL-2026-10-24-1", "NOTE-0035"],
-            vec!["NOTE-0035"],
-            vec!["EN-901", "NOTE-0035"],
-            vec!["EN-901"],
-            vec!["EN-901"],
-            vec!["JOURNAL-2026-10-24-1", "NOTE-0035"],
-            vec![],
+            "ADR-0900",
+            "DERIV-setback",
+            "E49",
+            "F47",
+            "F48",
+            "MEMORY-feedback-x",
+            "NOTE-0900",
+            "PAGE-research",
+            "RETRO-E49",
+            "RULE-shapes-box",
+            "RULE-shapes-box-two-kinds",
+            "RULE-shapes-box-wrap",
+            "REF-SQLITE-WAL",
+            "EN-900",
+            "SP-030",
         ]
+    );
+    assert_eq!(
+        of_epic,
+        ["E49", "F47", "F48", "RETRO-E49", "EN-900", "SP-030"]
+    );
+    assert_eq!(of_feature, ["EN-900"]);
+    assert_eq!(
+        rules,
+        [
+            "RULE-shapes-box",
+            "RULE-shapes-box-two-kinds",
+            "RULE-shapes-box-wrap"
+        ]
+    );
+    // Dated on 2026-10-20 or later: the decision, the note, the source.
+    assert_eq!(since, ["ADR-0900", "NOTE-0900", "REF-SQLITE-WAL"]);
+    assert_eq!(of_branch, ["EN-900"]);
+    assert_eq!(drafts, ["EN-900"]);
+    assert_eq!(dropped, ["EN-901"]);
+    assert_eq!(parked, ["SP-030"]);
+    assert_eq!(
+        lines,
+        ["ADR-0900 [decision, accepted, 2026-10-20] One file — merged"]
     );
 }
 
 #[test]
-fn f48_ac2_prints_one_line_per_document_listed() {
-    let listed = Listed {
-        id: "EN-152".into(),
+fn f48_ac2_prints_one_line_per_record_listed() {
+    let story = Listed {
+        id: "EN-900".into(),
         kind: "story".into(),
         status: "ready".into(),
-        date: "2026-10-25".into(),
+        date: String::new(),
         state: "draft".into(),
-        branch: "chore/en-152".into(),
-        title: "Add, search".into(),
+        branch: "chore/en-900-read".into(),
+        title: "Add".into(),
     };
-    let no_status = Listed {
+    let memory = Listed {
+        id: "MEMORY-x".into(),
+        kind: "memory".into(),
         status: String::new(),
-        ..listed.clone()
+        date: "2026-10-16".into(),
+        state: "merged".into(),
+        branch: String::new(),
+        title: "Short".into(),
     };
 
     assert_eq!(
-        listed_line(&listed),
-        "EN-152 [story, ready, 2026-10-25] Add, search — draft on chore/en-152"
+        listed_line(&story),
+        "EN-900 [story, ready] Add — draft on chore/en-900-read"
     );
     assert_eq!(
-        listed_line(&no_status),
-        "EN-152 [story, 2026-10-25] Add, search — draft on chore/en-152"
+        listed_line(&memory),
+        "MEMORY-x [memory, 2026-10-16] Short — merged"
     );
 }
 
@@ -551,77 +527,11 @@ fn f48_ac2_parses_the_filters_and_keeps_the_other_words() {
 }
 
 #[test]
-fn f48_ac2_ranks_the_sections_holding_every_word_by_bm25() {
-    let file = place("search");
-    let database = open_store(&file).unwrap();
-
-    // The note's section holds "busy" four times and "timeout" thrice in 14 words, its heading's
-    // two counted; the story's holds each once among 40: BM25 grows with a word's count and falls
-    // with the section's length, so the note's comes first. The journal's row holds "busy" alone: every word being found in two
-    // sections, it is left out.
-    add(
-        &database,
-        "note",
-        "develop",
-        "---\nid: NOTE-0035\n---\n## Busy timeout\n\nThe busy timeout waits. A busy writer waits for the busy timeout.\n",
-    );
-    add(
-        &database,
-        "story",
-        "develop",
-        &story(
-            "EN-151",
-            "The tables",
-            "Two worktrees open one file in WAL, each write in one immediate transaction, the second writer waiting for the first within the busy timeout rusqlite sets, five seconds, on each new connection it opens, as the pages say.",
-        ),
-    );
-    add(&database, "journal", "develop", "- `#run` EN-050: busy.\n");
-    add(
-        &database,
-        "story",
-        "chore/c",
-        &story("EN-903", "Of c", "Busy timeout."),
-    );
-
-    let found = |words: &str, filters: &Filters| -> Vec<(String, String)> {
-        search(&database, "develop", words, filters)
-            .unwrap()
-            .into_iter()
-            .map(|hit| (hit.id, hit.heading))
-            .collect()
-    };
-    let every = found("busy timeout", &Filters::default());
-    let any = found("busy nothing", &Filters::default());
-    let of_kind = found("busy timeout", &filters(&["--kind", "story"]));
-    let first = search(&database, "develop", "busy timeout", &Filters::default()).unwrap();
-    let none = search(&database, "develop", "", &Filters::default());
-
-    clean(&file);
-    assert_eq!(
-        every,
-        [
-            ("NOTE-0035".to_owned(), "Busy timeout".to_owned()),
-            ("EN-151".to_owned(), "The tables".to_owned()),
-        ]
-    );
-    // No section holds "nothing": any word then, the note's still first, the journal's row in.
-    assert_eq!(any.len(), 3);
-    assert_eq!(any[0].0, "NOTE-0035");
-    assert_eq!(of_kind, [("EN-151".to_owned(), "The tables".to_owned())]);
-    // 14 words, under the snippet's 24: the whole section, each word found between brackets.
-    assert_eq!(
-        first[0].snippet,
-        "## [Busy] [timeout]\n\nThe [busy] [timeout] waits. A [busy] writer waits for the [busy] [timeout].\n"
-    );
-    assert!(none.is_err());
-}
-
-#[test]
 fn f48_ac2_prints_a_hit_on_two_lines() {
     let hit = Hit {
         id: "NOTE-0035".into(),
         heading: "Busy timeout".into(),
-        snippet: "## [Busy] timeout\n\nThe   [busy] one.\n".into(),
+        snippet: "[Busy] timeout\n\nThe   [busy] one.\n".into(),
     };
     let top = Hit {
         heading: String::new(),
@@ -630,80 +540,10 @@ fn f48_ac2_prints_a_hit_on_two_lines() {
 
     assert_eq!(
         hit_lines(&hit),
-        "NOTE-0035 › Busy timeout\n    ## [Busy] timeout The [busy] one."
+        "NOTE-0035 › Busy timeout\n    [Busy] timeout The [busy] one."
     );
     assert_eq!(
         hit_lines(&top),
-        "NOTE-0035\n    ## [Busy] timeout The [busy] one."
+        "NOTE-0035\n    [Busy] timeout The [busy] one."
     );
-}
-
-#[test]
-fn f48_ac2_shows_one_section_of_a_document_as_page_does() {
-    let text = "# Title\n\nIntro.\n\n## Decision\n\nWAL.\n\n### Detail\n\nMore.\n\n## Next\n";
-
-    // "Decision" from its line, 5, down to "Next", its sub-section in, its trailing blank line out.
-    assert_eq!(
-        section_of("ADR-0081", text, "Decision").as_deref(),
-        Some("ADR-0081:5\n## Decision\n\nWAL.\n\n### Detail\n\nMore.\n")
-    );
-    assert_eq!(section_of("ADR-0081", text, "Missing"), None);
-}
-
-#[test]
-fn f48_ac2_searches_at_most_eight_sections() {
-    let file = place("limit");
-    let database = open_store(&file).unwrap();
-
-    // Nine stories of one section each holding the word: eight printed, as the library's search.
-    for n in 1..=9 {
-        add(
-            &database,
-            "story",
-            "develop",
-            &story(&format!("EN-91{n}"), "Busy", "Busy."),
-        );
-    }
-
-    let hits = search(&database, "develop", "busy", &Filters::default()).unwrap();
-
-    clean(&file);
-    assert_eq!(hits.len(), 8);
-}
-
-#[test]
-fn f48_ac2_searches_a_branchs_new_draft_and_the_others_its_merged_row_never_both() {
-    let file = place("redraft");
-    let database = open_store(&file).unwrap();
-
-    add(
-        &database,
-        "story",
-        "develop",
-        &story("EN-950", "First", "Busy first."),
-    );
-    write(&database, |transaction| {
-        mark_merged(transaction, &["develop".to_owned()])
-    })
-    .unwrap();
-    add(
-        &database,
-        "story",
-        "develop",
-        &story("EN-950", "Second", "Busy second."),
-    );
-
-    let snippets = |reader: &str| -> Vec<String> {
-        search(&database, reader, "busy", &Filters::default())
-            .unwrap()
-            .into_iter()
-            .map(|hit| hit.snippet.split_whitespace().collect::<Vec<_>>().join(" "))
-            .collect()
-    };
-    let (of_develop, of_other) = (snippets("develop"), snippets("chore/x"));
-
-    clean(&file);
-    // Each reads one row of the id: develop its new draft, another branch the merged row.
-    assert_eq!(of_develop, ["# Second [Busy] second."]);
-    assert_eq!(of_other, ["# First [Busy] first."]);
 }

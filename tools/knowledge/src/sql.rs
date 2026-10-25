@@ -1,10 +1,10 @@
 //! `knowledge sql "<statement>"` (EN-154): one statement of SQL on the records, for the agent's own
 //! questions and its own tables. A reading prints its rows; a write runs in `BEGIN IMMEDIATE` and
 //! may create a table or an index, insert, update or delete, never drop nor rewrite a core table
-//! nor write a document's text, which `add` and `sync` keep with its index; a document's row may be
+//! nor write a document's text, which `sync` keeps with its index; a document's row may be
 //! deleted (its fields, sections and citations cascade, its index kept by its trigger) or its
-//! columns updated, a private memory or one that no longer holds. What a statement does is
-//! read from SQLite itself, by the authorizer it calls for each action while it compiles the
+//! columns updated. A row of a table `records_index` reads is indexed by that table's triggers.
+//! What a statement does is read from SQLite itself, by the authorizer it calls for each action while it compiles the
 //! statement (`REF-SQLITE-AUTHORIZER`), kept in place while the statement runs since a change of
 //! the schema compiles it again; never from its text but for `ALTER TABLE`, whose kind of change
 //! the authorizer does not say. A new table is registered in `tables_registry` with its purpose,
@@ -52,10 +52,12 @@ fn is_index_shadow(table: &str) -> bool {
     table.starts_with("sections_index_") || table.starts_with("chunks_")
 }
 
-/// Whether a table is one the tool keeps, its full-text index's own tables among them.
+/// Whether a table is one the tool keeps, its full-text indexes' own tables among them; those of
+/// `records_index` are written by the triggers of every table it reads, so a write to them is no
+/// refusal.
 #[must_use]
 pub fn is_core(table: &str) -> bool {
-    CORE_TABLES.contains(&table) || is_index_shadow(table)
+    CORE_TABLES.contains(&table) || is_index_shadow(table) || table.starts_with("records_index_")
 }
 
 /// Whether a table is written by the tool alone.
@@ -117,7 +119,7 @@ pub fn refusal(action: &AuthAction<'_>, statement: &str) -> Option<String> {
             if is_written_by_the_tool(table_name) =>
         {
             Some(format!(
-                "{table_name} is written by knowledge add, import-backlog and sync alone, so that its full-text index stays whole"
+                "{table_name} is written by the tool alone, so that its full-text index stays whole"
             ))
         }
         AuthAction::Pragma {
@@ -313,12 +315,17 @@ pub fn write(
                 tables.join(", ")
             ));
         }
-        // The rows the statement changed, read from the connection's total: `execute` returns the
-        // count of the last change, which a statement creating a table leaves as it was.
+        // The rows the statement changed: `execute`'s count, which leaves out the rows its
+        // triggers write (the full-text index's), but stays the last change's for a statement
+        // that changes no row, as one creating a table: none then, by the connection's total.
         let before = database.total_changes();
+        let counted = prepared.execute([]).map_err(failed)?;
 
-        prepared.execute([]).map_err(failed)?;
-        Ok(database.total_changes().saturating_sub(before))
+        Ok(if database.total_changes() == before {
+            0
+        } else {
+            u64::try_from(counted).unwrap_or(0)
+        })
     })?;
     let tables = created(&seen);
 

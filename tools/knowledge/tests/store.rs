@@ -69,7 +69,9 @@ fn f48_ac1_makes_every_table_of_note_0035_with_its_full_text_index_kept_by_trigg
     let file = place("tables");
     let database = open_store(&file).unwrap();
     let tables = names(&database, "table");
-    let triggers = names(&database, "trigger");
+    let (indexing, triggers): (Vec<String>, Vec<String>) = names(&database, "trigger")
+        .into_iter()
+        .partition(|name| name.starts_with("records_index_"));
 
     clean(&file);
     // The FTS5 table adds its shadow tables (`sections_index_data`, …): the note's tables are
@@ -85,6 +87,8 @@ fn f48_ac1_makes_every_table_of_note_0035_with_its_full_text_index_kept_by_trigg
     ] {
         assert!(tables.contains(&table.to_owned()), "{table} in {tables:?}");
     }
+    // Three triggers keep `records_index` in step with each of the 28 tables it reads.
+    assert_eq!(indexing.len(), 84);
     assert_eq!(
         triggers,
         [
@@ -187,10 +191,10 @@ fn f48_ac1_sets_user_version_to_the_schemas_number_and_keeps_the_rows_when_opene
         .unwrap();
 
     clean(&file);
-    // Schema 5 since the move into the records, its tables added.
-    assert_eq!(SCHEMA_VERSION, 5);
-    assert_eq!(version, 5);
-    assert_eq!(pragma, 5);
+    // Schema 6 since the records restructured, its items and full-text index added.
+    assert_eq!(SCHEMA_VERSION, 6);
+    assert_eq!(version, 6);
+    assert_eq!(pragma, 6);
     assert_eq!(rows, 1);
 }
 
@@ -307,11 +311,11 @@ fn f48_ac1_refuses_to_write_to_a_newer_file_and_still_reads_it() {
         .unwrap();
 
     clean(&file);
-    assert_eq!(version, 6);
+    assert_eq!(version, 7);
     assert_eq!(
         refused,
         Err(
-            "the file's schema is 6, newer than this binary's 5: rebuild the tools from your base, target/release/git-sequences sync"
+            "the file's schema is 7, newer than this binary's 6: rebuild the tools from your base, target/release/git-sequences sync"
                 .to_owned()
         )
     );
@@ -377,12 +381,15 @@ fn f48_ac1_brings_a_schema_1_file_up_to_the_last_its_rows_kept_with_their_branch
     .map(|query| count(&database, query));
     // The index still finds the section, whose rowid the rebuild kept.
     let indexed = found(&database, "worktrees");
-    let triggers = names(&database, "trigger");
+    let (indexing, triggers): (Vec<String>, Vec<String>) = names(&database, "trigger")
+        .into_iter()
+        .partition(|name| name.starts_with("records_index_"));
 
     clean(&file);
     assert_eq!(version, SCHEMA_VERSION);
     assert_eq!(kept, [1, 1, 1, 1]);
     assert_eq!(indexed, ["EN-151"]);
+    assert_eq!(indexing.len(), 84);
     assert_eq!(
         triggers,
         [
@@ -514,4 +521,229 @@ fn f48_ac1_puts_the_file_in_wal_while_another_connection_writes_it_in_its_old_mo
     writer.join().unwrap();
     clean(&file);
     assert_eq!(opened, Ok("wal".to_owned()));
+}
+
+/// The columns of a table, in their order.
+fn columns(database: &Connection, table: &str) -> Vec<String> {
+    database
+        .prepare("SELECT name FROM pragma_table_info(?)")
+        .unwrap()
+        .query_map([table], |row| row.get(0))
+        .unwrap()
+        .collect::<rusqlite::Result<_>>()
+        .unwrap()
+}
+
+/// The rows of `records_index` matching a query, `<id> <kind> <section>`, by their key.
+fn indexed(database: &Connection, query: &str) -> Vec<String> {
+    database
+        .prepare(
+            "SELECT id || ' ' || kind || ' ' || section FROM records_index
+            WHERE records_index MATCH ? ORDER BY ref",
+        )
+        .unwrap()
+        .query_map([query], |row| row.get(0))
+        .unwrap()
+        .collect::<rusqlite::Result<_>>()
+        .unwrap()
+}
+
+#[test]
+fn makes_the_records_items_and_their_full_text_index_kept_by_triggers_in_a_new_file() {
+    let file = place("schema-6");
+    let database = open_store(&file).unwrap();
+    let tables = names(&database, "table");
+    let shapes = [
+        "stories",
+        "features",
+        "epics",
+        "decisions",
+        "notes",
+        "derivations",
+        "retrospectives",
+    ]
+    .map(|table| columns(&database, table));
+
+    database
+        .execute_batch(
+            "INSERT INTO stories (id, epic, kind, title, status, summary) VALUES
+              ('EN-1', 'E49', 'EN', 'Busy writer', 'ready', 'Two worktrees.');
+            INSERT INTO story_items (story, section, n, kind, item) VALUES
+              ('EN-1', 'Findings', 1, 'bullet', 'A timeout of five seconds.');",
+        )
+        .unwrap();
+
+    let inserted = indexed(&database, "busy OR timeout");
+
+    database
+        .execute_batch(
+            "UPDATE stories SET title = 'Calm writer' WHERE id = 'EN-1';
+            DELETE FROM story_items WHERE story = 'EN-1';",
+        )
+        .unwrap();
+
+    let changed = (
+        indexed(&database, "busy OR timeout"),
+        indexed(&database, "calm"),
+    );
+
+    clean(&file);
+    for table in [
+        "story_items",
+        "feature_items",
+        "epic_items",
+        "decision_items",
+        "retrospective_items",
+        "rule_items",
+        "derivation_steps",
+        "note_findings",
+        "conventions",
+        "method_rules",
+        "preferences",
+        "tools",
+        "records_index",
+    ] {
+        assert!(tables.contains(&table.to_owned()), "{table} in {tables:?}");
+    }
+    // No Markdown copy: no `text` column; the columns schema 6 adds.
+    for shape in &shapes {
+        assert!(!shape.contains(&"text".to_owned()), "{shape:?}");
+    }
+    assert!(shapes[0].contains(&"summary".to_owned()));
+    assert!(shapes[1].contains(&"hypothesis".to_owned()));
+    assert!(shapes[2].contains(&"vision".to_owned()));
+    for column in ["consequences", "refs", "status_note", "decision", "reason"] {
+        assert!(shapes[3].contains(&column.to_owned()), "{column}");
+    }
+    // One index row per row, the story's under its kind, the item's under its section.
+    assert_eq!(
+        inserted,
+        ["EN-1 stories story", "EN-1 story_items Findings"]
+    );
+    assert_eq!(
+        changed,
+        (Vec::<String>::new(), vec!["EN-1 stories story".to_owned()])
+    );
+}
+
+/// A file of schema 5 as the records were before their restructuring: the backlog's and the
+/// decisions' tables with their `text` column, a story, a decision and a journal entry.
+fn schema_5_file(file: &std::path::Path) {
+    fs::create_dir_all(file.parent().unwrap()).unwrap();
+
+    let database = Connection::open(file).unwrap();
+
+    // As the store migrates, the foreign keys off while a table is rebuilt.
+    database.pragma_update(None, "foreign_keys", false).unwrap();
+
+    for migration in &MIGRATIONS[..3] {
+        database.execute_batch(migration).unwrap();
+    }
+    database
+        .execute_batch(
+            "CREATE TABLE stories (
+              id TEXT PRIMARY KEY, epic TEXT NOT NULL, feature TEXT NOT NULL DEFAULT '', kind TEXT NOT NULL,
+              title TEXT NOT NULL, status TEXT NOT NULL, points INTEGER, position INTEGER NOT NULL DEFAULT 0,
+              topic TEXT NOT NULL DEFAULT '', criteria TEXT NOT NULL DEFAULT '',
+              tasks TEXT NOT NULL DEFAULT '', test_card TEXT NOT NULL DEFAULT '',
+              question TEXT NOT NULL DEFAULT '', text TEXT NOT NULL DEFAULT '',
+              branch TEXT NOT NULL DEFAULT '', state TEXT NOT NULL DEFAULT 'draft'
+            );
+            CREATE TABLE decisions (
+              id TEXT PRIMARY KEY, title TEXT NOT NULL, status TEXT NOT NULL, date TEXT NOT NULL,
+              principle TEXT NOT NULL, text TEXT NOT NULL
+            );",
+        )
+        .unwrap();
+    for migration in &MIGRATIONS[3..] {
+        database.execute_batch(migration).unwrap();
+    }
+    database
+        .execute_batch(
+            "INSERT INTO stories (id, epic, kind, title, status, text) VALUES
+              ('EN-151', 'E49', 'EN', 'The tables', 'done', '# EN-151');
+            INSERT INTO decisions (id, title, status, date, principle, text) VALUES
+              ('ADR-0081', 'Private records', 'accepted', '2026-10-15', 'Outside the repository.', '# ADR');
+            INSERT INTO journal (date, session, tag, text) VALUES
+              ('2026-10-25', 'Morning', 'run', 'A busy timeout met.');",
+        )
+        .unwrap();
+    database.pragma_update(None, "user_version", 5).unwrap();
+}
+
+#[test]
+fn brings_a_schema_5_file_up_to_6_additively_its_rows_indexed_and_their_text_kept() {
+    let file = place("from-5");
+
+    schema_5_file(&file);
+
+    let database = open_store(&file).unwrap();
+    let version = schema_version(&database).unwrap();
+    let stories = columns(&database, "stories");
+    let decisions = columns(&database, "decisions");
+    let kept = count(
+        &database,
+        "SELECT count(*) FROM stories WHERE id = 'EN-151' AND text = '# EN-151'",
+    );
+    let rows = [
+        indexed(&database, "tables"),
+        indexed(&database, "repository"),
+        indexed(&database, "busy"),
+    ];
+
+    database
+        .execute(
+            "UPDATE stories SET summary = 'Two writers.' WHERE id = 'EN-151'",
+            [],
+        )
+        .unwrap();
+
+    let updated = indexed(&database, "writers");
+
+    clean(&file);
+    assert_eq!(version, SCHEMA_VERSION);
+    // The new columns after the old, the `text` column and its row kept.
+    assert_eq!(stories.last().map(String::as_str), Some("summary"));
+    assert!(stories.contains(&"text".to_owned()));
+    assert!(decisions.contains(&"consequences".to_owned()));
+    assert_eq!(kept, 1);
+    // The rows already held, indexed once by the migration.
+    assert_eq!(
+        rows,
+        [
+            vec!["EN-151 stories story".to_owned()],
+            vec!["ADR-0081 decisions decision".to_owned()],
+            vec!["journal 1 journal Morning".to_owned()],
+        ]
+    );
+    assert_eq!(updated, ["EN-151 stories story"]);
+}
+
+#[test]
+fn redoes_nothing_on_a_file_of_schema_5_that_already_has_the_shape_of_6() {
+    let file = place("shaped");
+    let database = open_store(&file).unwrap();
+
+    // The records restructured by hand: the shape of schema 6, the number 5.
+    database
+        .execute_batch(
+            "INSERT INTO stories (id, epic, kind, title, status) VALUES ('EN-1', 'E49', 'EN', 'Busy', 'ready');
+            PRAGMA user_version = 5;",
+        )
+        .unwrap();
+    drop(database);
+
+    let again = open_store(&file).unwrap();
+    let version = schema_version(&again).unwrap();
+    let rows = indexed(&again, "busy");
+    let triggers = count(
+        &again,
+        "SELECT count(*) FROM sqlite_master WHERE type = 'trigger' AND name LIKE 'records_index_%'",
+    );
+
+    clean(&file);
+    assert_eq!(version, SCHEMA_VERSION);
+    // Not filled again: the story indexed once, the triggers once each.
+    assert_eq!(rows, ["EN-1 stories story"]);
+    assert_eq!(triggers, 84);
 }

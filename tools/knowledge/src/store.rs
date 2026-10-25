@@ -1,6 +1,7 @@
 //! The store of the project's records (research note 0035, The database): one SQLite file shared
-//! by every branch and worktree, through `rusqlite` as the library's store (`REF-RUSQLITE`). Its
-//! knowledge tables hold every kind of document cut into sections, searched by FTS5
+//! by every branch and worktree, through `rusqlite` as the library's store (`REF-RUSQLITE`). Each
+//! record is a row of its table, its text cut into rows of an item table (schema 6), every text
+//! column searched by one FTS5 index, `records_index`, kept by triggers
 //! (`REF-SQLITE-FTS5`). Two worktrees write at once: the file in WAL (`REF-SQLITE-WAL`), each write
 //! in `BEGIN IMMEDIATE` (`REF-SQLITE-TRANSACTION`), a second writer waiting within rusqlite's busy
 //! timeout (`REF-RUSQLITE-CONNECTION`, `REF-SQLITE-BUSY-TIMEOUT`). The schema's number is
@@ -15,12 +16,13 @@ use library::store::make_library_tables;
 use rusqlite::{Connection, Transaction, TransactionBehavior};
 
 /// The number of the schema this binary writes, `PRAGMA user_version` of the file.
-pub const SCHEMA_VERSION: i64 = 5;
+pub const SCHEMA_VERSION: i64 = 6;
 
 /// The tables the tool keeps itself, which `knowledge sql` never drops nor rewrites: the
 /// documents and what is cut from them, the metrics, the backlog and the registry (EN-154), what
-/// moved from the Markdown and the library (schema 5).
-pub const CORE_TABLES: [&str; 34] = [
+/// moved from the Markdown and the library (schema 5), the records' items, the agent's tables the
+/// full-text index reads and that index (schema 6).
+pub const CORE_TABLES: [&str; 47] = [
     "documents",
     "fields",
     "sections",
@@ -55,11 +57,25 @@ pub const CORE_TABLES: [&str; 34] = [
     "pages",
     "chunks",
     "project_uses",
+    "story_items",
+    "feature_items",
+    "epic_items",
+    "decision_items",
+    "retrospective_items",
+    "rule_items",
+    "derivation_steps",
+    "note_findings",
+    "conventions",
+    "method_rules",
+    "preferences",
+    "tools",
+    "records_index",
 ];
 
 /// The core tables `knowledge sql` writes to by no statement at all: the documents and what is
-/// cut from them are written by `add`, `import-backlog` and `sync` alone, so that a section never
-/// leaves the full-text index behind; the library's pages and their index, written by the library.
+/// cut from them, the memories of the schemas before 6, are written by `sync` alone, so that a
+/// section never leaves its full-text index behind; the library's pages and their index, written
+/// by the library.
 pub const WRITTEN_BY_THE_TOOL: [&str; 7] = [
     "documents",
     "fields",
@@ -279,14 +295,13 @@ const SCHEMA_4: &str = "
   CREATE TABLE IF NOT EXISTS epics (
     id TEXT PRIMARY KEY, title TEXT NOT NULL, status TEXT NOT NULL,
     position INTEGER NOT NULL DEFAULT 0, topic TEXT NOT NULL DEFAULT '',
-    text TEXT NOT NULL DEFAULT '', branch TEXT NOT NULL DEFAULT '',
+    branch TEXT NOT NULL DEFAULT '',
     state TEXT NOT NULL DEFAULT 'draft' CHECK (state IN ('draft', 'merged', 'dropped'))
   );
   CREATE TABLE IF NOT EXISTS features (
     id TEXT PRIMARY KEY, epic TEXT NOT NULL, title TEXT NOT NULL, status TEXT NOT NULL,
     position INTEGER NOT NULL DEFAULT 0, topic TEXT NOT NULL DEFAULT '',
-    criteria TEXT NOT NULL DEFAULT '', text TEXT NOT NULL DEFAULT '',
-    branch TEXT NOT NULL DEFAULT '',
+    criteria TEXT NOT NULL DEFAULT '', branch TEXT NOT NULL DEFAULT '',
     state TEXT NOT NULL DEFAULT 'draft' CHECK (state IN ('draft', 'merged', 'dropped'))
   );
   CREATE INDEX IF NOT EXISTS features_by_epic ON features (epic, position);
@@ -295,8 +310,7 @@ const SCHEMA_4: &str = "
     title TEXT NOT NULL, status TEXT NOT NULL, points INTEGER, position INTEGER NOT NULL DEFAULT 0,
     topic TEXT NOT NULL DEFAULT '', criteria TEXT NOT NULL DEFAULT '',
     tasks TEXT NOT NULL DEFAULT '', test_card TEXT NOT NULL DEFAULT '',
-    question TEXT NOT NULL DEFAULT '', text TEXT NOT NULL DEFAULT '',
-    branch TEXT NOT NULL DEFAULT '',
+    question TEXT NOT NULL DEFAULT '', branch TEXT NOT NULL DEFAULT '',
     state TEXT NOT NULL DEFAULT 'draft' CHECK (state IN ('draft', 'merged', 'dropped'))
   );
   CREATE INDEX IF NOT EXISTS stories_by_feature ON stories (feature, position);
@@ -313,17 +327,17 @@ const SCHEMA_4: &str = "
   );
   CREATE INDEX IF NOT EXISTS criteria_by_feature ON criteria (feature, number);
   INSERT OR IGNORE INTO tables_registry (name, purpose) VALUES
-    ('documents', 'one row per document a branch wrote, its id, branch and state the key; read by search, show and list'),
+    ('documents', 'one row per document a branch wrote, its id, branch and state the key: the memories of schemas 1 to 5, read by nothing since schema 6'),
     ('fields', 'a document''s front-matter fields, by key and value'),
-    ('sections', 'a document cut at its headings, the text search reads'),
+    ('sections', 'a document cut at its headings'),
     ('sections_index', 'FTS5 over sections, kept by three triggers'),
     ('links', 'the ids a document cites'),
     ('calls', 'a tool call of tool-calls.jsonl'),
     ('turns', 'a turn of turns.jsonl'),
     ('tables_registry', 'every table of the file and what it holds'),
-    ('epics', 'one row per epic: its title, status, the Product Owner''s order (position) and text'),
-    ('features', 'one row per feature: its epic, order in it, status, criteria and text'),
-    ('stories', 'one row per story: its epic, feature, kind, status, points, order, topic, criteria, tasks, test card, question and text; branch and state of the work'),
+    ('epics', 'one row per epic: its title, status, the Product Owner''s order (position), topic and vision; other facts in epic_items'),
+    ('features', 'one row per feature: its epic, order, status, topic, criteria text and hypothesis; criteria in criteria, stories in stories, other facts in feature_items'),
+    ('stories', 'one row per story: its epic, feature, kind, status, points, order, topic, summary, criteria, tasks, test card, question; its other facts in story_items; branch and state of the work'),
     ('tasks', 'a story''s tasks, numbered, done or not'),
     ('criteria', 'a feature''s numbered criteria, struck through or retired with a reason; exported for the CI''s trace');
 ";
@@ -339,15 +353,15 @@ const SCHEMA_4: &str = "
 const SCHEMA_5: &str = "
   CREATE TABLE IF NOT EXISTS decisions (
     id TEXT PRIMARY KEY, title TEXT NOT NULL, status TEXT NOT NULL, date TEXT NOT NULL,
-    principle TEXT NOT NULL, text TEXT NOT NULL
+    principle TEXT NOT NULL
   );
   CREATE INDEX IF NOT EXISTS decisions_by_status ON decisions (status);
   CREATE TABLE IF NOT EXISTS notes (
     id TEXT PRIMARY KEY, kind TEXT NOT NULL, title TEXT NOT NULL, status TEXT NOT NULL,
-    date TEXT NOT NULL, text TEXT NOT NULL
+    date TEXT NOT NULL
   );
   CREATE TABLE IF NOT EXISTS derivations (
-    id TEXT PRIMARY KEY, title TEXT NOT NULL, used_by TEXT NOT NULL, text TEXT NOT NULL
+    id TEXT PRIMARY KEY, title TEXT NOT NULL, used_by TEXT NOT NULL
   );
   CREATE TABLE IF NOT EXISTS sources (
     id TEXT PRIMARY KEY, title TEXT NOT NULL, url TEXT NOT NULL, used_for TEXT NOT NULL,
@@ -373,7 +387,7 @@ const SCHEMA_5: &str = "
     failed TEXT NOT NULL, instead TEXT NOT NULL, UNIQUE (date, tool)
   );
   CREATE TABLE IF NOT EXISTS retrospectives (
-    id TEXT PRIMARY KEY, epic TEXT NOT NULL, title TEXT NOT NULL, text TEXT NOT NULL
+    id TEXT PRIMARY KEY, epic TEXT NOT NULL, title TEXT NOT NULL
   );
   CREATE TABLE IF NOT EXISTS memories (
     name TEXT PRIMARY KEY, description TEXT NOT NULL, type TEXT NOT NULL,
@@ -411,15 +425,15 @@ const SCHEMA_5: &str = "
     path TEXT PRIMARY KEY, size INTEGER NOT NULL, modified INTEGER NOT NULL
   );
   INSERT OR IGNORE INTO tables_registry (name, purpose) VALUES
-    ('decisions', 'one row per ADR: its title, status, date, principle in a sentence and text; edited in place'),
-    ('notes', 'one row per research note (NOTE-), research request (REQUEST-) or page of the research (PAGE-)'),
-    ('derivations', 'one row per derivation, DERIV-<name>: its title, the stories using it, its text'),
+    ('decisions', 'one row per ADR: title, status, date, principle, decision, reason, consequences, refs, status_note, replaces, replaced_by, removed_reason, changed; other sections in decision_items; edited in place'),
+    ('notes', 'one row per research note (NOTE-), research request (REQUEST-) or research page (PAGE-): kind, title, status, date; its findings in note_findings'),
+    ('derivations', 'one row per derivation, DERIV-<name>: its title and the stories using it; its steps in derivation_steps'),
     ('sources', 'the bibliography, one row per REF- id: title, address, use, verified or not and when, topic, reading notes'),
     ('journal', 'one row per entry of the journal: its session''s date and heading, its tag, its text'),
     ('improvements', 'one row per idea, irritant or lesson: date, from whom, item, kind'),
     ('feedback', 'one row per critique of the agent''s work: what happened, what it should have done, what prevents it'),
     ('incidents', 'one row per tool incident: date, tool and what for, how used, why it failed, what was done instead'),
-    ('retrospectives', 'one row per epic''s retrospective, RETRO-<epic>, with its text'),
+    ('retrospectives', 'one row per epic retrospective (RETRO-): its epic and title; its items in retrospective_items'),
     ('memories', 'the agent''s memories of Claude Code, one per file, private'),
     ('tool_uses', 'a use of an agent tool, of tool-uses.jsonl'),
     ('archives', 'a Git bundle of a branch archived, its bytes'),
@@ -434,9 +448,382 @@ const SCHEMA_5: &str = "
     ('project_uses', 'the library: each use of a page, by tool and project');
 ";
 
-/// The migrations, the one of index `n` bringing a file of schema `n` up to `n + 1`: a new file
-/// runs them all.
+/// The migrations of a batch each, the one of index `n` bringing a file of schema `n` up to
+/// `n + 1`: a new file runs them all, then [`schema_6`].
 pub const MIGRATIONS: [&str; 5] = [SCHEMA_1, SCHEMA_2, SCHEMA_3, SCHEMA_4, SCHEMA_5];
+
+/// Schema 6's tables (E49, AUD-057): each record's text cut into rows of its own, a section, a
+/// kind (`paragraph`, `bullet`, a table's `row`, `code`) and the item, rather than a Markdown
+/// copy; and the agent's tables the full-text index reads, made by `knowledge sql` on the records
+/// before schema 6, so that a new file holds them too.
+const SCHEMA_6_TABLES: &str = "
+  CREATE TABLE IF NOT EXISTS story_items (story TEXT NOT NULL, section TEXT NOT NULL, n INTEGER NOT NULL, kind TEXT NOT NULL CHECK (kind IN ('paragraph','bullet','row','code')), item TEXT NOT NULL, PRIMARY KEY (story, n));
+  CREATE TABLE IF NOT EXISTS feature_items (feature TEXT NOT NULL, section TEXT NOT NULL, n INTEGER NOT NULL, kind TEXT NOT NULL CHECK (kind IN ('paragraph','bullet','row','code')), item TEXT NOT NULL, PRIMARY KEY (feature, n));
+  CREATE TABLE IF NOT EXISTS epic_items (epic TEXT NOT NULL, section TEXT NOT NULL, n INTEGER NOT NULL, kind TEXT NOT NULL CHECK (kind IN ('paragraph','bullet','row','code')), item TEXT NOT NULL, PRIMARY KEY (epic, n));
+  CREATE TABLE IF NOT EXISTS decision_items (decision TEXT NOT NULL, section TEXT NOT NULL, n INTEGER NOT NULL, kind TEXT NOT NULL CHECK (kind IN ('paragraph','bullet','row','code')), item TEXT NOT NULL, PRIMARY KEY (decision, n));
+  CREATE TABLE IF NOT EXISTS retrospective_items (retrospective TEXT NOT NULL, section TEXT NOT NULL, n INTEGER NOT NULL, kind TEXT NOT NULL CHECK (kind IN ('paragraph','bullet','row','code')), item TEXT NOT NULL, PRIMARY KEY (retrospective, n));
+  CREATE TABLE IF NOT EXISTS rule_items (page TEXT NOT NULL, n INTEGER NOT NULL, section TEXT NOT NULL, kind TEXT NOT NULL CHECK (kind IN ('paragraph','bullet','row','code')), item TEXT NOT NULL, PRIMARY KEY (page, n));
+  CREATE TABLE IF NOT EXISTS derivation_steps (derivation TEXT NOT NULL, n INTEGER NOT NULL, section TEXT NOT NULL, kind TEXT NOT NULL CHECK (kind IN ('paragraph','bullet','row','code')), statement TEXT NOT NULL, source TEXT NOT NULL, PRIMARY KEY (derivation, n));
+  CREATE TABLE IF NOT EXISTS note_findings (note TEXT NOT NULL, n INTEGER NOT NULL, section TEXT NOT NULL, kind TEXT NOT NULL CHECK (kind IN ('paragraph','bullet','row','code')), finding TEXT NOT NULL, source TEXT NOT NULL, PRIMARY KEY (note, n));
+  CREATE TABLE IF NOT EXISTS conventions (id INTEGER PRIMARY KEY, area TEXT NOT NULL, topic TEXT NOT NULL, rule TEXT NOT NULL, example TEXT, checked_by TEXT, reason TEXT, source TEXT);
+  CREATE TABLE IF NOT EXISTS method_rules (id INTEGER PRIMARY KEY, area TEXT NOT NULL, rule TEXT NOT NULL, reason TEXT, since TEXT, source TEXT);
+  CREATE TABLE IF NOT EXISTS preferences (id INTEGER PRIMARY KEY, topic TEXT NOT NULL, rule TEXT NOT NULL, why TEXT, how_to_apply TEXT, since TEXT, private INTEGER NOT NULL DEFAULT 1, memory TEXT);
+  CREATE TABLE IF NOT EXISTS tools (name TEXT PRIMARY KEY, kind TEXT NOT NULL CHECK (kind IN ('binary', 'crate', 'hook', 'git-hook', 'script')), crate TEXT, run_by TEXT, does TEXT NOT NULL, replaces TEXT, source TEXT);
+  CREATE VIRTUAL TABLE IF NOT EXISTS records_index USING fts5(
+    ref UNINDEXED, kind UNINDEXED, id UNINDEXED, section UNINDEXED, text, tokenize = 'porter unicode61'
+  );
+  INSERT OR IGNORE INTO tables_registry (name, purpose) VALUES
+    ('story_items', 'a story''s facts beyond its columns, one per row (story, n): its H2 section, the kind (paragraph, bullet, table row as ''header: cell · …'', code) and the item'),
+    ('feature_items', 'a feature''s facts beyond its columns and the criteria and stories tables, one per row (feature, n)'),
+    ('epic_items', 'an epic''s facts beyond its columns, one per row (epic, n)'),
+    ('decision_items', 'an ADR''s facts beyond its columns, one per row (decision, n): mostly its Reasons and any other section'),
+    ('retrospective_items', 'a retrospective''s facts, one per row (retrospective, n)'),
+    ('rule_items', 'what a business-rule page (RULE-<page>-<section>) holds beyond the rows of rules, one per row (page, n)'),
+    ('derivation_steps', 'a derivation''s steps, one per row (derivation, n): its section, the statement and the ids of the sources it cites'),
+    ('note_findings', 'a research note''s, request''s or research page''s findings, one per row (note, n): its section, the finding and the ids of the sources it cites'),
+    ('conventions', 'one convention of the code, the tests, the tooling or the writing, a row: its area, topic, rule, example, check, reason and source'),
+    ('method_rules', 'the agent''s working method now, one rule a row: its area, the rule, its reason, since when, its source'),
+    ('preferences', 'the Product Owner''s preferences and the project''s standing facts, one a row: topic, rule, why, how to apply, since, private, the memory it came from'),
+    ('tools', 'one tool of the repository, a row: its name, kind, crate, who runs it, what it does, what it replaces, its source'),
+    ('records_index', 'FTS5 (porter unicode61) over every text field of the agent''s tables, one row per source row: ref ''<table>:<key>'', kind (table), id (the record to show), section, text; kept by three triggers per table; query with MATCH and bm25(records_index)');
+";
+
+/// The columns schema 6 adds to a table of schema 4 or 5, each added only where the file lacks
+/// it: the records restructured by hand before schema 6 already hold them.
+const SCHEMA_6_COLUMNS: [(&str, &str, &str); 19] = [
+    ("epics", "vision", "TEXT NOT NULL DEFAULT ''"),
+    ("features", "hypothesis", "TEXT NOT NULL DEFAULT ''"),
+    ("stories", "summary", "TEXT NOT NULL DEFAULT ''"),
+    ("decisions", "decision", "TEXT"),
+    ("decisions", "reason", "TEXT"),
+    ("decisions", "replaces", "TEXT"),
+    ("decisions", "replaced_by", "TEXT"),
+    ("decisions", "removed_reason", "TEXT"),
+    ("decisions", "changed", "TEXT"),
+    ("decisions", "status_note", "TEXT NOT NULL DEFAULT ''"),
+    ("decisions", "consequences", "TEXT NOT NULL DEFAULT ''"),
+    ("decisions", "refs", "TEXT NOT NULL DEFAULT ''"),
+    ("improvements", "status", "TEXT"),
+    ("improvements", "closed", "TEXT"),
+    ("improvements", "outcome", "TEXT"),
+    ("improvements", "reviews", "TEXT"),
+    ("incidents", "status", "TEXT"),
+    ("incidents", "closed", "TEXT"),
+    ("incidents", "outcome", "TEXT"),
+];
+
+/// A table the full-text index `records_index` reads, one index row per row of it: its key in
+/// `ref` (`<table>:<key>`), the id `show` opens, the section and the columns joined into the text,
+/// each expression written on the row `{r}`.
+pub struct Indexed {
+    /// The table.
+    pub table: &'static str,
+    /// The row's key, unique in the table.
+    pub key: &'static str,
+    /// The id of the record the row belongs to.
+    pub id: &'static str,
+    /// The section the row is under.
+    pub section: &'static str,
+    /// The columns of the text, joined by line feeds.
+    pub columns: &'static [&'static str],
+}
+
+/// The tables `records_index` reads, as the records restructured before schema 6 index them.
+pub const INDEXED: [Indexed; 28] = [
+    indexed(
+        "stories",
+        "{r}.id",
+        "{r}.id",
+        "'story'",
+        &["title", "summary", "criteria", "test_card", "question"],
+    ),
+    indexed(
+        "features",
+        "{r}.id",
+        "{r}.id",
+        "'feature'",
+        &["title", "hypothesis"],
+    ),
+    indexed("epics", "{r}.id", "{r}.id", "'epic'", &["title", "vision"]),
+    indexed("criteria", "{r}.id", "{r}.id", "'criterion'", &["text"]),
+    indexed(
+        "tasks",
+        "{r}.story || '.T' || {r}.number",
+        "{r}.story || '.T' || {r}.number",
+        "'task'",
+        &["title"],
+    ),
+    indexed(
+        "decisions",
+        "{r}.id",
+        "{r}.id",
+        "'decision'",
+        &[
+            "title",
+            "principle",
+            "decision",
+            "reason",
+            "consequences",
+            "status_note",
+        ],
+    ),
+    indexed("notes", "{r}.id", "{r}.id", "{r}.kind", &["title"]),
+    indexed(
+        "derivations",
+        "{r}.id",
+        "{r}.id",
+        "'derivation'",
+        &["title", "used_by"],
+    ),
+    indexed(
+        "sources",
+        "{r}.id",
+        "{r}.id",
+        "'source'",
+        &["title", "used_for", "topic", "notes"],
+    ),
+    indexed(
+        "rules",
+        "{r}.id",
+        "{r}.id",
+        "{r}.section",
+        &["name", "rule", "example"],
+    ),
+    indexed(
+        "conventions",
+        "{r}.id",
+        "'conventions ' || {r}.id",
+        "{r}.area || ' › ' || {r}.topic",
+        &["rule", "example", "reason"],
+    ),
+    indexed(
+        "method_rules",
+        "{r}.id",
+        "'method_rules ' || {r}.id",
+        "{r}.area",
+        &["rule", "reason"],
+    ),
+    indexed(
+        "preferences",
+        "{r}.id",
+        "'preferences ' || {r}.id",
+        "{r}.topic",
+        &["rule", "how_to_apply"],
+    ),
+    indexed(
+        "tools",
+        "{r}.name",
+        "{r}.name",
+        "{r}.kind",
+        &["does", "run_by", "replaces"],
+    ),
+    indexed(
+        "incidents",
+        "{r}.id",
+        "'incidents ' || {r}.id",
+        "{r}.tool",
+        &["used", "failed", "instead"],
+    ),
+    indexed(
+        "improvements",
+        "{r}.id",
+        "'improvements ' || {r}.id",
+        "{r}.kind",
+        &["item"],
+    ),
+    indexed(
+        "feedback",
+        "{r}.id",
+        "'feedback ' || {r}.id",
+        "'feedback'",
+        &["happened", "should_have", "prevented_by"],
+    ),
+    indexed(
+        "journal",
+        "{r}.id",
+        "'journal ' || {r}.id",
+        "{r}.session",
+        &["text"],
+    ),
+    indexed(
+        "memories",
+        "{r}.name",
+        "'MEMORY-' || {r}.name",
+        "{r}.type",
+        &["description", "text"],
+    ),
+    indexed(
+        "retrospectives",
+        "{r}.id",
+        "{r}.id",
+        "'retrospective'",
+        &["title"],
+    ),
+    indexed(
+        "story_items",
+        "{r}.story || ':' || {r}.n",
+        "{r}.story",
+        "{r}.section",
+        &["item"],
+    ),
+    indexed(
+        "feature_items",
+        "{r}.feature || ':' || {r}.n",
+        "{r}.feature",
+        "{r}.section",
+        &["item"],
+    ),
+    indexed(
+        "epic_items",
+        "{r}.epic || ':' || {r}.n",
+        "{r}.epic",
+        "{r}.section",
+        &["item"],
+    ),
+    indexed(
+        "decision_items",
+        "{r}.decision || ':' || {r}.n",
+        "{r}.decision",
+        "{r}.section",
+        &["item"],
+    ),
+    indexed(
+        "retrospective_items",
+        "{r}.retrospective || ':' || {r}.n",
+        "{r}.retrospective",
+        "{r}.section",
+        &["item"],
+    ),
+    indexed(
+        "rule_items",
+        "{r}.page || ':' || {r}.n",
+        "{r}.page",
+        "{r}.section",
+        &["item"],
+    ),
+    indexed(
+        "derivation_steps",
+        "{r}.derivation || ':' || {r}.n",
+        "{r}.derivation",
+        "{r}.section",
+        &["statement"],
+    ),
+    indexed(
+        "note_findings",
+        "{r}.note || ':' || {r}.n",
+        "{r}.note",
+        "{r}.section",
+        &["finding"],
+    ),
+];
+
+/// An [`Indexed`] table, written on one line in [`INDEXED`].
+const fn indexed(
+    table: &'static str,
+    key: &'static str,
+    id: &'static str,
+    section: &'static str,
+    columns: &'static [&'static str],
+) -> Indexed {
+    Indexed {
+        table,
+        key,
+        id,
+        section,
+        columns,
+    }
+}
+
+/// The values of an index row of `table`, `(ref, kind, id, section, text)`, written on the row
+/// named `row`: `new` in a trigger, the table's alias in a filling.
+fn index_values(table: &Indexed, row: &str) -> String {
+    let on_row = |expression: &str| expression.replace("{r}", row);
+    let text: Vec<String> = table
+        .columns
+        .iter()
+        .map(|column| format!("coalesce({row}.{column}, '')"))
+        .collect();
+
+    format!(
+        "'{name}:' || {key}, '{name}', {id}, {section}, {text}",
+        name = table.table,
+        key = on_row(table.key),
+        id = on_row(table.id),
+        section = on_row(table.section),
+        text = text.join(" || char(10) || ")
+    )
+}
+
+/// The three triggers that keep `records_index` in step with a table, each made unless the file
+/// holds it (`REF-SQLITE-FTS5`, §4.4.3, an external index kept by triggers).
+#[must_use]
+pub fn index_triggers(table: &Indexed) -> String {
+    let name = table.table;
+    let insert = format!(
+        "INSERT INTO records_index (ref, kind, id, section, text) VALUES ({});",
+        index_values(table, "new")
+    );
+    let delete = |row: &str| {
+        format!(
+            "DELETE FROM records_index WHERE ref = '{name}:' || {};",
+            table.key.replace("{r}", row)
+        )
+    };
+
+    format!(
+        "CREATE TRIGGER IF NOT EXISTS records_index_{name}_insert AFTER INSERT ON {name} BEGIN {insert} END;
+        CREATE TRIGGER IF NOT EXISTS records_index_{name}_delete AFTER DELETE ON {name} BEGIN {} END;
+        CREATE TRIGGER IF NOT EXISTS records_index_{name}_update AFTER UPDATE ON {name} BEGIN {} {insert} END;",
+        delete("old"),
+        delete("old")
+    )
+}
+
+/// Whether the file holds a table or a column of it.
+fn holds(database: &Connection, table: &str, column: Option<&str>) -> rusqlite::Result<bool> {
+    let query = match column {
+        None => "SELECT count(*) FROM sqlite_master WHERE name = ?1",
+        Some(_) => "SELECT count(*) FROM pragma_table_info(?1) WHERE name = ?2",
+    };
+    let count: i64 = match column {
+        None => database.query_row(query, [table], |row| row.get(0))?,
+        Some(column) => database.query_row(query, [table, column], |row| row.get(0))?,
+    };
+
+    Ok(count > 0)
+}
+
+/// Brings a file of schema 5 up to 6, additively: the item tables and the agent's tables made
+/// where missing, each column of [`SCHEMA_6_COLUMNS`] added where missing, `records_index` made
+/// and filled from every table it reads when the file lacks it, and its triggers made where
+/// missing. The records restructured by hand before schema 6 hold it all: nothing is redone. A
+/// `text` column of an older file stays, its rows kept, as no migration drops a column.
+///
+/// # Errors
+/// When SQLite fails.
+pub fn schema_6(database: &Connection) -> rusqlite::Result<()> {
+    let had_index = holds(database, "records_index", None)?;
+
+    database.execute_batch(SCHEMA_6_TABLES)?;
+    for (table, column, declaration) in SCHEMA_6_COLUMNS {
+        if !holds(database, table, Some(column))? {
+            database.execute_batch(&format!(
+                "ALTER TABLE {table} ADD COLUMN {column} {declaration}"
+            ))?;
+        }
+    }
+    for table in &INDEXED {
+        if !had_index {
+            database.execute_batch(&format!(
+                "INSERT INTO records_index (ref, kind, id, section, text) SELECT {} FROM {} AS r",
+                index_values(table, "r"),
+                table.table
+            ))?;
+        }
+        database.execute_batch(&index_triggers(table))?;
+    }
+    Ok(())
+}
 
 /// A failure of SQLite on the store's file, named by its path.
 fn on_file(path: &Path, error: &impl std::fmt::Display) -> String {
@@ -464,6 +851,9 @@ fn migrate(database: &Connection) -> rusqlite::Result<()> {
     }
     if version < 5 {
         make_library_tables(&transaction)?;
+    }
+    if version < 6 {
+        schema_6(&transaction)?;
     }
     if version < SCHEMA_VERSION {
         transaction.pragma_update(None, "user_version", SCHEMA_VERSION)?;
