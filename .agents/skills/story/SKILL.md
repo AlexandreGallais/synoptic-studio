@@ -13,7 +13,7 @@ Story: $ARGUMENTS (default: the next unfinished story of the feature in progress
 3. **Worktree**: `git fetch origin`, then `target/release/worktree-new <ID>` from the main checkout, which is never switched; the status set by `target/release/backlog-status <ID> in-progress`.
 4. **The worker** does the tasks, a commit each (`Refs: <ID>.Tn`), tests before or with the code, the records with the code, and pushes; the push runs only the checks the change needs.
 5. A **user story** gets its Product Owner test card in its row (`test_card`): the steps in the playground and what each shows.
-6. **Finish**: `npm run story:finish -- feature/f<nn>-<topic> "<title>" <body file>` in the worktree: it rebases the story on its feature branch, opens the pull request with the `autonomous` label, waits for GitHub's merge by a merge commit, sets the story `done` in the records and removes the worktree and branches.
+6. **Finish**: `target/release/heavy-lock --lock merge target/release/story-finish feature/f<nn>-<topic> "<title>" <body file>` in the worktree: it rebases the story on its feature branch, opens the pull request with the `autonomous` label, waits for GitHub's merge by a merge commit, sets the story `done` in the records and removes the worktree and branches.
 7. **Report** in French, short: what was built, the evidence, what the Product Owner must decide.
 
-What `story:finish` left behind goes with `target/release/branches-clean`.
+What `story-finish` left behind goes with `target/release/branches-clean`.

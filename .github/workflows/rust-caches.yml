@@ -59,9 +59,10 @@ jobs:
       # Every crate of Cargo.lock for every target, not the host's alone, which the build fetches:
       # the CI's `cargo metadata --offline` and `cargo deny --offline` read them all (EN-116).
       - run: cargo fetch --locked
-      # The compilations of `rust:build`, `check:rust` and `rust:coverage` (package.json): the release
-      # binaries, Clippy, the tests under coverage, the Windows check.
-      - run: npm run rust:build
+      # The compilations of `check:all`'s release build, `check:rust` and `rust:coverage`
+      # (tools/repo-tools/src/check_all.rs): the release binaries, Clippy, the tests under coverage,
+      # the Windows check.
+      - run: cargo build --release --workspace --locked
       - run: cargo clippy --workspace --all-targets --locked --quiet
       - run: cargo llvm-cov --workspace --locked --no-report -- --list
       - run: cargo check --workspace --all-targets --locked --quiet --target x86_64-pc-windows-msvc

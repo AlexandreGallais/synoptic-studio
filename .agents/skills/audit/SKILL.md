@@ -10,7 +10,7 @@ Audit: $ARGUMENTS. Checklist: `docs/conventions/audit.md` (A to H); the findings
 
 1. **Scope**: the feature's functions, tests, derivations, rules and sources in depth; the project in breadth.
 2. **Independent review**, in the background: the `auditor` first; the `math-expert` too for a feature holding mathematics. They return findings with evidence and edit nothing.
-3. **Mutations**, one per function at least: `npm run mutate -- <files>` lists the survivors; a mutation it cannot write is made by hand, its test run, the file restored. A tooling epic's mutations are all done here.
+3. **Mutations**, one per function at least: `target/release/heavy-lock target/release/mutate <files>` lists the survivors; a mutation it cannot write is made by hand, its test run, the file restored. A tooling epic's mutations are all done here.
 4. **Properties** added where a `math` or `geometry` function lacks one.
 5. **Each finding reproduced** before it is recorded; one that changes neither correctness nor a requirement is "no action", with its reason.
 6. **Fixed**: small findings in the audit's commits; larger ones become stories for the Product Owner to order.

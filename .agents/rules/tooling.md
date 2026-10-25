@@ -17,13 +17,14 @@ The traps of this repository's tooling that a check does not catch by itself. Th
 
 - **TypeScript 7 is the only TypeScript, VitePress 2.0 alpha** (ADR-0075): no tool imports `typescript`; the API pages come from `tools/api-pages`, the declarations from Oxc. Either changes only with a decision.
 - **oxlint, then our Rust linter `tools/lint`; oxfmt through `tools/format`**: a rule oxlint lacks is written in `tools/lint`, never with ESLint nor a JavaScript plugin. An oxlint upgrade may rename rules: `tests/oxlint-config.test.ts` fails on one it no longer has.
-- A new dev package, crate, Action or cargo tool: its row in `docs/tooling/dependencies.md`, its release notes read, a version at least 7 days old, `npm audit` clean; `npm run deps:outdated` checks them all.
+- A new dev package, crate, Action or cargo tool: its row in `docs/tooling/dependencies.md`, its release notes read, a version at least 7 days old, `npm audit` clean; `target/release/dependencies outdated` checks them all.
 - A check tool is given explicit targets, never `.` nor `**/*`: a new tracked folder joins the targets in `package.json`, or `tests/check-targets.test.ts` fails. A tooling change that makes existing files invalid is committed with their fix.
 
 ## Tools of our own
 
 - **Every script, hook or agent tool is a Rust crate of `tools/`** (ADR-0073): no crates.io dependency but those of `[workspace.dependencies]`, its tests beside it, `[lints] workspace = true`, checked by `check:rust` (fmt, Clippy with warnings denied, RustSec) and `rust:coverage` (95 % of lines and functions covered).
-- Scripts run a crate with `cargo run --release -q -p <crate> [--bin <binary>] --`; the hooks, the status line, the Git hooks and the agent call its release binary, `target/release/<binary>`, rebuilt at `prepare`, after `git-sequences sync`, after `story:finish` and after a pull that changed a Rust input; `npm run rust:fresh` fails on one older than its sources (ADR-0078).
+- The scripts of `package.json` run a crate with `cargo run --release -q -p <crate> [--bin <binary>] --`; the checks of `check:all`, the hooks, the status line, the Git hooks and the agent call its release binary, `target/release/<binary>`, rebuilt at `prepare`, after `git-sequences sync`, after `story-finish` and after a pull that changed a Rust input; `target/release/stale-binaries` fails on one older than its sources (ADR-0078).
+- A check's command lives in `CHECKS` of `tools/repo-tools/src/check_all.rs`, never in `package.json`, which keeps what a person or npm runs (ADR-0103); the CI runs each lane by `check-all --lane <name>`.
 - The one TypeScript script, `scripts/default-font-metrics.ts`, runs the library itself with `node`: a relative import names the `.ts` file, its side effects sit under `if (import.meta.main)`.
 - A tool porting a package's code names the package and its version in its module, with its rows in `NOTICE` and `THIRD-PARTY-LICENSES.md` (ADR-0076); only a permissive licence, never into `src/`.
 - Text written by `replace` or `replaceAll` is returned by a function (`() => text`), never passed as the replacement string, where `$'` and `$&` are patterns.

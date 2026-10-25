@@ -83,4 +83,6 @@ Stop when going on would mean deciding what belongs to the Product Owner, or gue
 
 ## Git
 
-Conventional Commits, a scope of `SCOPES` in `tools/git-hooks/src/message.rs`, a subject starting with a verb; commits made by `target/release/git-sequences commit -F <file> <paths>`, a story finished by `npm run story:finish`; `main` is never merged back into `develop`.
+Conventional Commits, a scope of `SCOPES` in `tools/git-hooks/src/message.rs`, a subject starting with a verb; commits made by `target/release/git-sequences commit -F <file> <paths>`, a story finished by `target/release/heavy-lock --lock merge target/release/story-finish <base> "<title>" <body file>`; `main` is never merged back into `develop`.
+
+`package.json` keeps only what a person or npm runs (`dev`, `docs:dev`, `test`, `fix`, `check:all`, `prepare`); the checks' commands live in `tools/repo-tools/src/check_all.rs` (`target/release/check-all --list`, one lane by `--lane <name>`), and the agent's heavy tools run by their binary under the heavy lock: `target/release/heavy-lock target/release/mutate <files>`, the golden check `target/release/heavy-lock npx vitest run tests/golden-results.test.ts --mode golden-check`.

@@ -3,6 +3,8 @@ import { join } from "node:path";
 
 import { describe, expect, it } from "vitest";
 
+import { CHECK_ALL_LANES } from "./check-all-lanes";
+
 /** Root of the repository. */
 const ROOT = join(import.meta.dirname, "..");
 
@@ -120,6 +122,19 @@ const SCRIPTS: ReadonlyMap<string, string> = new Map(
   ).map(([name, command]): [string, string] => [name, String(command)]),
 );
 
+/** The commands of each lane of `check:all`, by the name `check-all --lane` takes, one per line. */
+const LANE_COMMANDS: ReadonlyMap<string, string> = new Map(
+  Map.groupBy(CHECK_ALL_LANES, ({ lane }) => lane)
+    .entries()
+    .map(([lane, checks]): [string, string] => [
+      lane,
+      checks.map(({ command }) => command).join("\n"),
+    ]),
+);
+
+/** The build of every release binary, by `prepare` or a step of its own. */
+const BUILD_ALL = "cargo build --release --workspace --locked";
+
 /** The programs npm installs, by their command's name. */
 const NODE_PROGRAMS: ReadonlySet<string> = new Set(readdirSync(join(ROOT, "node_modules", ".bin")));
 
@@ -131,6 +146,7 @@ const NODE_PROGRAMS: ReadonlySet<string> = new Set(readdirSync(join(ROOT, "node_
  */
 const NODE_READERS: readonly RegExp[] = [
   /-p format\b/u,
+  /target\/release\/format\b/u,
   /target\/release\/dependencies unused\b/u,
   /cargo llvm-cov --workspace\b(?![^\n]*-- --list\b)/u,
 ];
@@ -165,7 +181,7 @@ const FETCHES: readonly (readonly [string, string])[] = [
   ["cargo fetch --locked", CRATES],
 ];
 
-/** Every release binary, built by `npm run rust:build` or by `npm ci`'s `prepare`. */
+/** Every release binary, built by their own step or by `npm ci`'s `prepare`. */
 const EVERY_BINARY = "target/release/*";
 
 /** An artifact a job uploads: the job and the path it uploads. */
@@ -250,7 +266,7 @@ const OFFLINE_READERS: readonly string[] = ["deny", "metadata"];
 const CACHE_MISSED = "steps.tools.outputs.cache-hit != 'true'";
 
 /** The fields of a matrix entry that name and run its lane, not ones a step chooses by. */
-const LANE_FIELDS: ReadonlySet<string> = new Set(["name", "scripts"]);
+const LANE_FIELDS: ReadonlySet<string> = new Set(["name", "lanes"]);
 
 /** One step of a job: its condition, empty when it has none, and its lines. */
 type Step = {
@@ -259,16 +275,16 @@ type Step = {
 };
 
 /**
- * Whether a step builds the release binaries: their own script, or `npm ci` when the manifest's
+ * Whether a step builds the release binaries: their own build, or `npm ci` when the manifest's
  * `prepare` runs it.
  *
  * @param step - a step of the lanes' job
  * @returns true when it builds them
  */
 function buildsBinaries(step: Step): boolean {
-  const prepareBuilds = (SCRIPTS.get("prepare") ?? "").includes("npm run rust:build");
+  const prepareBuilds = (SCRIPTS.get("prepare") ?? "").startsWith(BUILD_ALL);
 
-  return isRun(step, "npm run rust:build") || (prepareBuilds && isRun(step, "npm ci"));
+  return isRun(step, BUILD_ALL) || (prepareBuilds && isRun(step, "npm ci"));
 }
 
 /**
@@ -402,17 +418,21 @@ function runsIn(step: Step, entry: ReadonlyMap<string, string>): boolean {
 }
 
 /**
- * Commands with every script they run by `npm run`, in turn.
+ * Commands with every script they run by `npm run` and every lane they run by `check-all
+ * --lane`, in turn.
  *
  * @param commands - the commands, one per line
- * @returns them, then the commands of the scripts they run, one per line
+ * @returns them, then the commands of the scripts and lanes they run, one per line
  */
 function commandsIn(commands: string): string {
   const called = commands
     .matchAll(/npm run (?:--silent )?(?<name>[\w:-]+)/gu)
     .map((match) => expanded(match.groups?.["name"] ?? ""));
+  const lanes = commands
+    .matchAll(/check-all --lane "?(?<name>[\w-]+)/gu)
+    .map((match) => LANE_COMMANDS.get(match.groups?.["name"] ?? "") ?? "");
 
-  return [commands, ...called].join("\n");
+  return [commands, ...called, ...lanes].join("\n");
 }
 
 /**
@@ -736,8 +756,8 @@ function toolsGiven(
   return new Set([...own, ...(node ? [NODE] : []), ...executables]);
 }
 
-/** The step of the CI's lanes that runs a lane's scripts, read from its matrix entry. */
-const SCRIPTS_LOOP = 'for script in $SCRIPTS; do npm run "$script"; done';
+/** The step of the CI's lanes that runs a job's lanes, read from its matrix entry. */
+const SCRIPTS_LOOP = 'for lane in $LANES; do target/release/check-all --lane "$lane"; done';
 
 /** A step of a job's run, with the commands it runs there. */
 type RunStep = {
@@ -779,15 +799,15 @@ function runsOf(key: string, job: readonly string[]): readonly JobRun[] {
 }
 
 /**
- * The commands a lane's scripts' loop runs: `npm run` of each of its scripts, in turn.
+ * The commands a job's lanes' loop runs: `check-all --lane` of each of its lanes, in turn.
  *
- * @param entry - the lane's matrix entry
- * @returns one `npm run <script>` per line
+ * @param entry - the job's matrix entry
+ * @returns one `target/release/check-all --lane <lane>` per line
  */
 function scriptsRunBy(entry: ReadonlyMap<string, string>): string {
-  return (entry.get("scripts") ?? "")
+  return (entry.get("lanes") ?? "")
     .split(" ")
-    .map((script) => `npm run ${script}`)
+    .map((lane) => `target/release/check-all --lane ${lane}`)
     .join("\n");
 }
 
@@ -984,20 +1004,20 @@ describe("the steps of the CI's lanes (EN-133)", () => {
       "Rust coverage",
     ]);
 
-    expect(entries.map((entry) => entry.get("scripts")).at(-1)).toBe("rust:coverage");
+    expect(entries.map((entry) => entry.get("lanes")).at(-1)).toBe("rust-coverage");
 
     expect(
       matrixOf([
         "    include:",
         "      - name: A",
-        "        scripts: a b",
+        "        lanes: a b",
         "        x: true",
         "  y:",
       ]),
     ).toStrictEqual([
       new Map([
         ["name", "A"],
-        ["scripts", "a b"],
+        ["lanes", "a b"],
         ["x", "true"],
       ]),
     ]);
@@ -1019,10 +1039,10 @@ describe("the steps of the CI's lanes (EN-133)", () => {
 
     // A field the entry lacks is empty, so the step is left out.
     expect(runsIn({ condition: "matrix.a", text: "" }, new Map())).toBe(false);
-    expect(cargoCallsOf(new Map([["scripts", "rust:coverage"]]))).toContain("llvm-cov");
-    expect(cargoCallsOf(new Map([["scripts", "check:rust"]]))).not.toContain("llvm-cov");
-    // The test lane calls cargo-deny through `[F19.AC9]`'s test, not through its script.
-    expect(cargoCallsOf(new Map([["scripts", "test"]]))).toContain("deny");
+    expect(cargoCallsOf(new Map([["lanes", "rust-coverage"]]))).toContain("llvm-cov");
+    expect(cargoCallsOf(new Map([["lanes", "rust"]]))).not.toContain("llvm-cov");
+    // The test lane calls cargo-deny through `[F19.AC9]`'s test, not through its command.
+    expect(cargoCallsOf(new Map([["lanes", "test"]]))).toContain("deny");
   });
 
   it("[F28.AC3] chooses each step of a lane by a field of its matrix entry, never by its scripts' names", () => {
@@ -1206,15 +1226,16 @@ const LANE_ADVISORY_TOOLS = [
   "        run: cargo deny fetch db",
 ];
 
-/** The step of a matrix job that runs its lane's scripts, as `ci.yml` writes it. */
+/** The step of a matrix job that runs its lanes, as `ci.yml` writes it. */
 const LANE_SCRIPTS = [
   `      - run: ${SCRIPTS_LOOP}`,
   "        env:",
-  `          SCRIPTS: \${{ matrix.scripts }}`,
+  `          LANES: \${{ matrix.lanes }}`,
 ];
 
 /**
- * A workflow of one matrix job, lane A given cargo-deny's steps by its field, lane B none.
+ * A workflow of one matrix job, its release binaries built first, lane A given cargo-deny's steps
+ * by its field, lane B none.
  *
  * @param steps - the job's steps after its checkout
  * @returns what each lane lacks
@@ -1228,12 +1249,13 @@ function matrixLanes(steps: readonly string[]): readonly string[] {
     "      matrix:",
     "        include:",
     "          - name: A",
-    "            scripts: rust:advisories",
+    "            lanes: rust",
     "            cargo-deny: true",
     "          - name: B",
-    "            scripts: rust:advisories format:check",
+    "            lanes: rust files",
     "    steps:",
     "      - uses: actions/checkout@v7",
+    `      - run: ${BUILD_ALL}`,
     ...steps,
   ]);
 }
@@ -1272,12 +1294,14 @@ describe("the tools of each job (EN-136)", () => {
     expect(waitsFor(["    needs: [a, b]", "    steps:"])).toStrictEqual(["a", "b"]);
     expect(waitsFor(["    steps:"])).toStrictEqual([]);
 
-    // A tool by the commands its scripts run: `rust:advisories` runs `cargo deny --offline`,
-    // which reads the database and every crate; its fetch reads neither.
-    expect(toolsCalled(commandsIn("npm run rust:advisories"))).toStrictEqual([
+    // A tool by the commands its lane runs: the rust lane runs `cargo deny --offline`, which reads
+    // the database and every crate, and the freshness check's binary; the fetch reads neither.
+    expect(toolsCalled(commandsIn("target/release/check-all --lane rust"))).toStrictEqual([
       "cargo-deny",
       DATABASE,
       CRATES,
+      "target/release/check-all",
+      "target/release/stale-binaries",
     ]);
 
     expect(toolsCalled("cargo deny fetch db")).toStrictEqual(["cargo-deny"]);
@@ -1287,18 +1311,19 @@ describe("the tools of each job (EN-136)", () => {
       "cargo-llvm-cov",
     ]);
 
-    expect(toolsCalled(commandsIn("npm run rust:coverage"))).toStrictEqual([
+    expect(toolsCalled(commandsIn("target/release/check-all --lane rust-coverage"))).toStrictEqual([
       "cargo-llvm-cov",
       NODE,
+      "target/release/check-all",
     ]);
 
-    expect(toolsCalled(commandsIn("npm run playground:build"))).toStrictEqual([NODE]);
+    expect(toolsCalled("vite build --mode playground")).toStrictEqual([NODE]);
     expect(toolsCalled("node scripts/default-font-metrics.ts")).toStrictEqual([NODE]);
     expect(toolsCalled("echo node_modules")).toStrictEqual([]);
-    // npm itself runs a script that runs cargo alone: the runner's npm, no package.
-    expect(toolsCalled(commandsIn("npm run rust:build"))).toStrictEqual([]);
+    // The release build runs cargo alone.
+    expect(toolsCalled(BUILD_ALL)).toStrictEqual([]);
 
-    expect(toolsCalled(commandsIn("npm run deps:unused"))).toStrictEqual([
+    expect(toolsCalled(commandsIn("target/release/dependencies unused"))).toStrictEqual([
       NODE,
       "target/release/dependencies",
     ]);
@@ -1318,7 +1343,13 @@ describe("the tools of each job (EN-136)", () => {
 
     // The jobs AUD-030 named, and the develop CI's: each calls what its steps install or receive.
     expect(calledBy("rust-caches.yml", "rust-caches")).toStrictEqual(["cargo-llvm-cov"]);
-    expect(calledBy("site.yml", "site")).toStrictEqual([NODE]);
+
+    expect(calledBy("site.yml", "site")).toStrictEqual([
+      NODE,
+      "target/release/check-all",
+      "target/release/api-pages",
+    ]);
+
     expect(calledBy("release.yml", "release")).toStrictEqual(["target/release/release"]);
     expect(calledBy("ci.yml", "history")).toStrictEqual(["target/release/git-hooks"]);
 
@@ -1329,6 +1360,8 @@ describe("the tools of each job (EN-136)", () => {
       DATABASE,
       CRATES,
       NODE,
+      "target/release/check-all",
+      "target/release/stale-binaries",
     ]);
   });
 
@@ -1371,15 +1404,15 @@ describe("the tools of each job (EN-136)", () => {
       runs
         .at(-1)
         ?.steps.map((step) => step.commands)
-        .filter((commands) => commands.startsWith("npm run")),
-    ).toStrictEqual(["npm run rust:coverage"]);
+        .filter((commands) => commands.startsWith("target/release/check-all")),
+    ).toStrictEqual(["target/release/check-all --lane rust-coverage"]);
 
     // A job without a matrix is one run of every step.
     expect(runsOf("site", ["    steps:", "      - if: x", "        run: a"])).toHaveLength(1);
   });
 
   it("[F30.AC2] fails naming the job and the tool it lacks, or installs after its call", () => {
-    const advisories = ["      - run: npm run rust:advisories"];
+    const advisories = ["      - run: cargo deny --offline check advisories"];
 
     expect(missingTools(oneJob("checks", advisories))).toStrictEqual([
       "checks: cargo-deny",
@@ -1436,7 +1469,7 @@ describe("the tools of each job (EN-136)", () => {
     ).toStrictEqual(["release: target/release/release"]);
 
     expect(
-      missingTools(oneJob("release", ["      - run: npm run rust:build", ...publish])),
+      missingTools(oneJob("release", [`      - run: ${BUILD_ALL}`, ...publish])),
     ).toStrictEqual([]);
   });
 
@@ -1490,7 +1523,7 @@ describe("the tools of each job (EN-136)", () => {
   });
 
   it("[F30.AC2] fails naming the job and Node.js when no step sets it up and installs the packages", () => {
-    const build = ["      - run: npm run playground:build"];
+    const build = ["      - run: npx vite build --mode playground"];
     const install = ["      - run: npm ci"];
 
     expect(missingTools(oneJob("site", build))).toStrictEqual([`site: ${NODE}`]);
@@ -1503,11 +1536,11 @@ describe("the tools of each job (EN-136)", () => {
 
     expect(missingTools(oneJob("site", [...SETUP_NODE, ...install, ...build]))).toStrictEqual([]);
 
-    // Node.js itself, and a script npm runs that calls cargo alone, which needs neither.
+    // Node.js itself, and the release build, which calls cargo alone and needs neither.
     expect(
       missingTools(oneJob("fonts", ["      - run: node scripts/default-font-metrics.ts"])),
     ).toStrictEqual([`fonts: ${NODE}`]);
 
-    expect(missingTools(oneJob("build", ["      - run: npm run rust:build"]))).toStrictEqual([]);
+    expect(missingTools(oneJob("build", [`      - run: ${BUILD_ALL}`]))).toStrictEqual([]);
   });
 });

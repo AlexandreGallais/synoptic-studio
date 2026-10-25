@@ -24,7 +24,7 @@ The traps of this code that a check does not catch by itself. The conventions: `
 - Zero vectors and signed zeros: `atan2(+0, −0) = π`, `Math.sign(−0) = −0`, `toBe` tells `−0` from `0`; state the result for a zero-length edge, compare computed numbers with `toBeCloseTo`.
 - Scale to an integer by multiplying first, `o + size · (p − o) / span`: `29 · 7 / 7` is 29, `(29 / 7) · 7` is not.
 - A bisection in doubles stops at one unit in the last place: say "within a rounding error", never "at least".
-- Never change the floats of a shared math function for a new caller: `npm run golden:check` guards the results bit for bit; add a named function instead. The golden file is written only by the main thread, before a refactor.
+- Never change the floats of a shared math function for a new caller: the golden check (`target/release/heavy-lock npx vitest run tests/golden-results.test.ts --mode golden-check`, run by the pre-push hook once a golden file is written) guards the results bit for bit; add a named function instead. The golden file is written only by the main thread, before a refactor.
 
 ## Tests
 

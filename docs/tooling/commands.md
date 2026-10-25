@@ -3,7 +3,6 @@
 | Command | Role |
 | --- | --- |
 | `npm run dev` | Vite server on `playground/` (`http://localhost:5173`) |
-| `npm run preview` | the playground's build served by Vite (`vite preview`) |
 | `npm run build` | `npm audit`, then the library (`dist/editor.js`) and its declarations (`dist/types/`, [build](#build)) |
 | `npm run test` | Vitest under the heavy lock, on half the machine's cores: the library, the playground, `tests/`, the scripts and hooks, but the timing tests; coverage of `src/` 100 %, of `playground/` a floor |
 | `npm run test:timings` | the timing tests alone, under the heavy lock: those tagged `timing` (`--tags-filter=timing`, `REF-VITEST-TAGS`) in the files the script names, about 4 s; `check:all` runs it after its lanes, and the CI after the tests in their job (REV-008) |

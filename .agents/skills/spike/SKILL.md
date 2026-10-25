@@ -16,4 +16,4 @@ Spike: $ARGUMENTS. The protocol: `knowledge show PAGE-research` (the order of th
 3. **Read the source itself** through `library_get`, so that it is kept: spec > paper > book > official docs > code (read, never copied) > blog (never alone). An unreadable source is not cited: a derivation (`PAGE-derivations`: statement, steps each citing a read source, cross-check, check table, then `knowledge add derivation -`) or a research request.
 4. **Record**: each source a `REF-*` (`knowledge add source -`, what it says that we use, `[verified] YYYY-MM-DD`); the note (`knowledge add note -`): per story, the sources and what stays open.
 5. **The stories updated** in the records: criteria from the sources' examples, the `@see` targets, the business questions for the Product Owner.
-6. Finished as a story (`/story`, step 6); an epic's refinement into `develop`: `npm run story:finish -- develop …`.
+6. Finished as a story (`/story`, step 6); an epic's refinement into `develop`: `target/release/heavy-lock --lock merge target/release/story-finish develop …`.

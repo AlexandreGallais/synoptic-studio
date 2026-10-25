@@ -37,7 +37,7 @@ Scope: $ARGUMENTS. The main thread dispatches, finishes and answers; the chat st
    Its prompt: the story id, the feature branch, the worktree, and that every Bash call starts with `cd "<worktree>" || exit 9`. A rule a worker missed goes into the worker brief or `project-rules`.
 
 4. **A binary that runs a command given to it**: once its worker hands back the guard's task, build `guard-bash` in the worktree (`cargo build --release -p hooks --bin guard-bash`), copy it over the main checkout's, check a refused command is denied, then start a worker for the rest.
-5. **Finish it**: `npm run story:finish -- feature/f<nn>-<topic> "<title>" <body file>` in its worktree (`/story`, step 6). Not merged: `gh run view <run> --log-failed`; behind its base: `gh pr update-branch <n>`; "Dependencies not up-to-date": read the release notes, update on the story branch and on `develop`.
+5. **Finish it**: `target/release/heavy-lock --lock merge target/release/story-finish feature/f<nn>-<topic> "<title>" <body file>` in its worktree (`/story`, step 6). Not merged: `gh run view <run> --log-failed`; behind its base: `gh pr update-branch <n>`; "Dependencies not up-to-date": read the release notes, update on the story branch and on `develop`.
 
 ## The chat
 

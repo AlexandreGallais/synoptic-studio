@@ -33,39 +33,40 @@ jobs:
     strategy:
       # Each lane runs to its end, whichever other fails (`REF-GH-JOB-PERMISSIONS`).
       fail-fast: false
-      # The lanes of `check:all` (tools/repo-tools/src/check_all.rs), each its scripts in order; the
-      # library's build after the docs lane. One job per lane, as `[F24.AC1]` checks. The other
-      # fields choose the lane's steps, a field it lacks being empty (`REF-GH-CONTEXTS`): the npm
-      # packages or the release build alone, the cargo tools its scripts or tests call, and the
-      # artifact it keeps (`[F28.AC3]`, EN-133, EN-130).
+      # The lanes of `check:all` (tools/repo-tools/src/check_all.rs), each run by `check-all
+      # --lane <name>`, the timing tests after the tests. One job per lane, as `[F24.AC1]` checks;
+      # the docs job keeps its name, a check main's ruleset requires. The other fields choose the
+      # lane's steps, a field it lacks being empty (`REF-GH-CONTEXTS`): the npm packages or the
+      # release build alone, the cargo tools its checks or tests call, and the artifact it keeps
+      # (`[F28.AC3]`, EN-133, EN-130).
       matrix:
         include:
           - name: Lint and types
-            scripts: lint
+            lanes: lint
             node-packages: true
             git-hooks: true
           # cargo-deny for `[F19.AC9]`'s advisories test (EN-126).
           - name: TypeScript tests
-            scripts: test test:timings
+            lanes: test timings
             node-packages: true
             cargo-deny: true
             test-report: true
           - name: Docs, playground and build
-            scripts: docs:build playground:build build
+            lanes: docs
             node-packages: true
           - name: Format, secrets and dependencies
-            scripts: format:check lint:secrets deps:audit deps:unused deps:outdated
+            lanes: files
             node-packages: true
           # rustfmt, Clippy, the advisories, the check for Windows and the binaries' freshness run
           # no program npm installs: the release binaries built by their own step (EN-130).
           - name: Rust
-            scripts: check:rust
+            lanes: rust
             release-build: true
             cargo-deny: true
           # The workspace's tests under the coverage floor, a lane of its own (EN-130); the
           # formatter's tests among them run the project's oxfmt.
           - name: Rust coverage
-            scripts: rust:coverage
+            lanes: rust-coverage
             node-packages: true
             cargo-llvm-cov: true
     steps:
@@ -106,10 +107,10 @@ jobs:
         with:
           node-version-file: .nvmrc
           cache: npm
-      # The Rust lane runs no program npm installs: the release binaries `rust:fresh` reads are
-      # built by their own script (EN-130).
+      # The Rust lane runs no program npm installs: the release binaries `check-all` and the
+      # freshness check read are built by their own step (EN-130).
       - if: matrix.release-build
-        run: npm run rust:build
+        run: cargo build --release --workspace --locked
       # The other lanes run one: oxlint, Vitest, VitePress, the formatter's oxfmt, and in the Rust
       # coverage lane the formatter's tests, which run oxfmt. `npm ci`'s `prepare` builds the release
       # binaries those lanes' tools run from, its log naming every crate compiled.
@@ -132,11 +133,11 @@ jobs:
       # copy offline: by the Rust lane and the test lane, whose `[F19.AC9]` runs cargo deny (EN-126).
       - if: matrix.cargo-deny
         run: cargo deny fetch db
-      # The lane's scripts in turn, the first failing one ending the job; their output as it comes,
+      # The job's lanes in turn, the first failing one ending the job; their output as it comes,
       # the tests file by file, a failing test annotated at its line (`REF-VITEST-REPORTERS`).
-      - run: for script in $SCRIPTS; do npm run "$script"; done
+      - run: for lane in $LANES; do target/release/check-all --lane "$lane"; done
         env:
-          SCRIPTS: ${{ matrix.scripts }}
+          LANES: ${{ matrix.lanes }}
           GITHUB_TOKEN: ${{ github.token }}
           # Test report of the version, attached to its GitHub release by release.yml (ADR-0027).
           VITEST_JUNIT: test-report.xml

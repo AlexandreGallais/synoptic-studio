@@ -3,12 +3,18 @@
   "version": "0.0.0-development",
   "private": true,
   "description": "Integer, orthogonal, path-only SVG editing library for synoptic-view symbols.",
-  "license": "Apache-2.0",
   "homepage": "https://alexandregallais.github.io/synoptic-studio/",
+  "license": "Apache-2.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/AlexandreGallais/synoptic-studio.git"
   },
+  "files": [
+    "dist",
+    "LICENSE",
+    "NOTICE",
+    "src/model/font/inter-license.txt"
+  ],
   "type": "module",
   "sideEffects": false,
   "exports": {
@@ -17,42 +23,13 @@
       "import": "./dist/editor.js"
     }
   },
-  "files": [
-    "dist",
-    "LICENSE",
-    "NOTICE",
-    "src/model/font/inter-license.txt"
-  ],
-  "engines": {
-    "node": ">=24"
-  },
   "scripts": {
     "dev": "vite",
-    "build": "npm run deps:audit && vite build && cargo run --release -q -p declarations -- src dist/types",
-    "preview": "vite preview",
-    "fix": "cargo run --release -q -p format -- --write \"*\" .cargo .agents .claude/settings.json .githooks .github .vscode docs playground scripts src tests tools && oxlint --fix --deny-warnings --report-unused-disable-directives-severity=error *.ts docs playground scripts src tests && cargo run --release -q -p lint -- --fix *.ts *.md .agents .github docs playground scripts src tests && { [ -z \"$(git status --porcelain -- '*.rs' '*Cargo.toml' Cargo.lock)\" ] || cargo clippy --workspace --all-targets --locked --quiet --fix --allow-dirty --allow-staged; } && cargo fmt --all",
-    "check:rust": "cargo fmt --all --check && cargo clippy --workspace --all-targets --locked --quiet && npm run --silent rust:advisories && cargo check --workspace --all-targets --locked --quiet --target x86_64-pc-windows-msvc && npm run --silent rust:fresh",
-    "check:all": "cargo run --release -q -p heavy-lock -- cargo run --release -q -p repo-tools --bin check-all",
+    "docs:dev": "cargo run --release -q -p api-pages -- src/index.ts docs/api /api/ editor && vitepress dev docs",
     "test": "cargo run --release -q -p heavy-lock -- vitest run --coverage --tags-filter='!timing'",
-    "test:timings": "cargo run --release -q -p heavy-lock -- vitest run --tags-filter=timing playground/hover/helps-on-any-color.test.ts playground/listeners/remove-listeners.test.ts playground/mount/mount-playground.test.ts src/io/font-face/parse-font-face.test.ts src/math/sequence/scan.test.ts src/model/text-wrap/without-trailing-spaces.test.ts src/model/text-wrap/wrapped-paragraph.test.ts tests/history-timings.test.ts",
-    "lint": "oxlint --deny-warnings --report-unused-disable-directives-severity=error *.ts docs playground scripts src tests && cargo run --release -q -p lint -- *.ts *.md .agents .github docs playground scripts src tests",
-    "lint:secrets": "cargo run --release -q -p secret-scan",
-    "format:check": "cargo run --release -q -p format -- --check \"*\" .cargo .agents .claude/settings.json .githooks .github .vscode docs playground scripts src tests tools",
-    "deps:audit": "npm audit --audit-level=low",
-    "deps:outdated": "target/release/dependencies outdated",
-    "deps:unused": "target/release/dependencies unused",
-    "docs:api": "cargo run --release -q -p api-pages -- src/index.ts docs/api /api/ editor",
-    "docs:dev": "npm run docs:api && vitepress dev docs",
-    "docs:build": "cargo run --release -q -p heavy-lock -- sh -c \"npm run docs:api && vitepress build docs\"",
-    "playground:build": "vite build --mode playground",
-    "prepare": "npm run rust:build && target/release/git-hooks install",
-    "rust:coverage": "cargo llvm-cov --version > /dev/null 2>&1 || { echo 'cargo-llvm-cov is missing: rustup installs llvm-tools from rust-toolchain.toml, then run cargo install --locked cargo-llvm-cov@0.9.1 (docs/tooling/commands.md)' >&2; exit 1; }; cargo llvm-cov --workspace --locked --quiet --summary-only --fail-under-lines 95 --fail-under-functions 95 || { echo 'Rust tests failed, or their coverage fell under the floor of 95 % of lines and 95 % of functions (docs/tooling/commands.md)' >&2; exit 1; }",
-    "rust:advisories": "cargo deny --version > /dev/null 2>&1 || { echo 'cargo-deny is missing: run cargo install --locked cargo-deny@0.20.2, then cargo deny fetch db (docs/tooling/commands.md)' >&2; exit 1; }; cargo deny --offline check advisories || { echo 'A Rust crate has a RustSec advisory, or the advisory database is missing: cargo deny fetch db fetches it (docs/tooling/commands.md)' >&2; exit 1; }",
-    "rust:build": "cargo build --release --workspace --locked",
-    "rust:fresh": "cargo run --release -q -p stale-binaries",
-    "mutate": "cargo run --release -q -p heavy-lock -- cargo run --release -q -p mutate --",
-    "golden:check": "cargo run --release -q -p heavy-lock -- vitest run tests/golden-results.test.ts --mode golden-check",
-    "story:finish": "cargo run --release -q -p heavy-lock -- --lock merge cargo run --release -q -p repo-tools --bin story-finish --"
+    "fix": "cargo run --release -q -p format -- --write \"*\" .cargo .agents .claude/settings.json .githooks .github docs playground scripts src tests tools && oxlint --fix --deny-warnings --report-unused-disable-directives-severity=error *.ts docs playground scripts src tests && cargo run --release -q -p lint -- --fix *.ts *.md .agents .github docs playground scripts src tests && { [ -z \"$(git status --porcelain -- '*.rs' '*Cargo.toml' Cargo.lock)\" ] || cargo clippy --workspace --all-targets --locked --quiet --fix --allow-dirty --allow-staged; } && cargo fmt --all",
+    "check:all": "cargo run --release -q -p heavy-lock -- cargo run --release -q -p repo-tools --bin check-all",
+    "prepare": "cargo build --release --workspace --locked && target/release/git-hooks install"
   },
   "devDependencies": {
     "@fast-check/vitest": "0.5.0",
@@ -69,7 +46,7 @@
     "vitepress": "2.0.0-alpha.20",
     "vitest": "5.0.5"
   },
-  "overrides": {
-    "katex": "^0.19.0"
+  "engines": {
+    "node": ">=24"
   }
 }

@@ -5,6 +5,8 @@ import { join } from "node:path";
 
 import { describe, expect, it } from "vitest";
 
+import { CHECK_ALL_LANES } from "./check-all-lanes";
+
 /** Root of the repository. */
 const ROOT = join(import.meta.dirname, "..");
 
@@ -262,9 +264,9 @@ const STAGED_OXLINT = `oxlint ${(
   .filter((option) => option !== "")
   .join(" ")}`;
 
-/** Every oxlint command the repository runs: `lint`, `fix` and the pre-commit hook's. */
+/** Every oxlint command the repository runs: `check:all`'s `lint`, `fix` and the pre-commit hook's. */
 const OXLINT_COMMANDS: readonly string[] = [
-  String(propertyOf(SCRIPTS, "lint")),
+  CHECK_ALL_LANES.find(({ name }) => name === "lint")?.command ?? "",
   String(propertyOf(SCRIPTS, "fix")),
   STAGED_OXLINT,
 ].flatMap((command) => command.split(" && ").filter((part) => part.startsWith("oxlint ")));

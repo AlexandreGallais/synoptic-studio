@@ -1,15 +1,5 @@
 {
   "$schema": "./node_modules/oxfmt/configuration_schema.json",
-  "semi": true,
-  "singleQuote": false,
-  "quoteProps": "as-needed",
-  "trailingComma": "all",
-  "bracketSpacing": true,
-  "arrowParens": "always",
-  "objectWrap": "preserve",
-  "proseWrap": "preserve",
-  "printWidth": 100,
-  "sortPackageJson": false,
   "sortImports": {
     "groups": [
       "builtin",
