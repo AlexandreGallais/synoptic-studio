@@ -14,5 +14,8 @@ oxc_parser.workspace = true
 oxc_span.workspace = true
 tool-use = { path = "../tool-use" }
 
+[dev-dependencies]
+test-support = { path = "../test-support" }
+
 [lints]
 workspace = true

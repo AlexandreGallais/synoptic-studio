@@ -1,6 +1,6 @@
-//! Tests of the status line, its tally and the `status-line` binary (EN-104): the cases of
-//! `.claude/hooks/status-line.test.ts`, `status-place.test.ts` and `status-usage.test.ts` carried
-//! over, then a request counted from its last line.
+//! Tests of the status line, its tally and the `status-line` binary (EN-104, AUD-051): the turn
+//! read from a transcript, a request counted from its last line, then only `working` or
+//! `chat free` shown.
 
 use std::fs;
 use std::io::Write;
@@ -8,13 +8,8 @@ use std::path::{Path, PathBuf};
 use std::process::{Command, Output, Stdio};
 
 use hooks::json::{Value, parse, quote};
-use hooks::status::{
-    RunningCall, Status, background_lines, background_text, clock_duration, ended_calls, grouped,
-    is_run_open, is_turn_done, place_of, read_running_call, running_line, session_snapshot,
-    status_text, usage_snapshot,
-};
+use hooks::status::{session_snapshot, status_text};
 use hooks::tasks::{Kind, Task};
-use hooks::time::short_duration;
 use hooks::tokens::{Tally, add_tokens, cache_json, cached_tally, empty_tally, turn_tokens};
 
 /// 2026-10-13T08:00:00Z, 08:03:00Z and 09:00:00Z in epoch milliseconds: 09:00 is 31 h 33 min 05 s
@@ -49,23 +44,6 @@ const END: &str = r#"{"message": {"id": "z", "stop_reason": "end_turn"}}"#;
 /// Lines joined, each ended by a line feed.
 fn text(lines: &[&str]) -> String {
     lines.iter().flat_map(|line| [*line, "\n"]).collect()
-}
-
-/// What the status line shows, before a test changes some of it.
-fn status() -> Status {
-    Status {
-        background: Vec::new(),
-        context_percent: 10.0,
-        duration_ms: 60_000,
-        model: "Opus 5.5".into(),
-        place: "E14 › F12".into(),
-        run: String::new(),
-        is_running_long: false,
-        running: String::new(),
-        silent_ms: 1000,
-        step: String::new(),
-        tally: empty_tally(),
-    }
 }
 
 /// The ids of the tasks pending.
@@ -226,21 +204,15 @@ fn waits_for_background_tasks_after_the_end_of_the_turn() {
     // A subagent and a command in the background run on; their immediate results end nothing.
     assert_eq!(ids(&ended), ["toolu_A", "toolu_B"]);
     assert_eq!(ended.finished, ["toolu_A", "toolu_C"]);
-    assert!(!is_turn_done(&ended));
-    assert!(
-        status_text(&Status {
-            tally: ended.clone(),
-            ..status()
-        })
-        .contains("◌ chat free · 1 agent, 1 command in the background")
-    );
+    assert!(ended.is_waiting);
+    assert_eq!(status_text(&ended, 0), "\u{1b}[2mchat free\u{1b}[0m");
     let notified = add_tokens(
         ended,
         "{\"type\": \"queue-operation\", \"timestamp\": \"2026-10-13T08:30:00Z\", \"content\": \"<task-notification>\\n<tool-use-id>toolu_A</tool-use-id>\\n<tool-use-id>toolu_B</tool-use-id>\"}\n",
     );
 
     assert_eq!(notified.pending, []);
-    assert!(is_turn_done(&notified));
+    assert!(notified.is_waiting);
 }
 
 #[test]
@@ -309,13 +281,13 @@ fn f18_ac9_keeps_the_turn_open_while_a_resumed_subagent_runs() {
         ]),
     );
 
-    assert!(!is_turn_done(&running));
+    assert_eq!(running.pending.len(), 1);
     let notified = add_tokens(
         running,
         "{\"type\": \"queue-operation\", \"timestamp\": \"2026-10-15T12:22:26Z\", \"content\": \"<task-notification>\\n<task-id>a93498ccc604c403b</task-id>\\n<tool-use-id>toolu_013f</tool-use-id>\\n<status>completed</status>\"}\n",
     );
 
-    assert!(is_turn_done(&notified));
+    assert_eq!(notified.pending, []);
 }
 
 #[test]
@@ -334,78 +306,6 @@ fn counts_a_monitor_and_a_subagent_as_background_tasks_with_what_they_do() {
             (Kind::Command, "push F10"),
             (Kind::Agent, "auditor: Review EN-030"),
             (Kind::Command, "npm run check:all")
-        ]
-    );
-    assert_eq!(background_text(&tally), "1 agent, 2 commands");
-    assert_eq!(background_text(&empty_tally()), "");
-}
-
-#[test]
-fn f18_ac9_shows_a_worker_in_the_background_and_its_duration_never_waiting_nor_your_turn() {
-    let tally = Tally {
-        pending: vec![
-            task("w", Kind::Agent, "resumed: EN-039 audit findings to fix", 0),
-            task("m", Kind::Message, "resumed: other", 0),
-        ],
-        start: 1,
-        ..empty_tally()
-    };
-    let background = background_lines(&tally.pending, &[], 900_000, short_duration);
-    let shown = Status {
-        background,
-        tally,
-        ..status()
-    };
-    let text = status_text(&shown);
-    let lines: Vec<&str> = text.split('\n').collect();
-
-    // 900 000 ms = 15 min, the time the resumed EN-039 worker ran; a message still unanswered is
-    // neither a line nor counted.
-    assert_eq!(lines.len(), 3);
-    assert_eq!(lines[0], "\u{1b}[1mE14 › F12\u{1b}[0m");
-    assert!(lines[1].contains("◌ chat free · 1 agent in the background"));
-    assert_eq!(
-        lines[2],
-        "\u{1b}[2m↳ agent resumed: EN-039 audit findings to fix — 15 min\u{1b}[0m"
-    );
-    assert!(!text.contains("waiting") && !text.contains("your turn"));
-    let snapshot = parse(&session_snapshot(&shown, 0)).expect("JSON");
-
-    assert_eq!(snapshot.get("pendingAgents"), &Value::Number(1.0));
-    assert_eq!(snapshot.get("pendingCommands"), &Value::Number(0.0));
-}
-
-/// A call running.
-fn call(agent: &str, description: &str, start: i64, summary: &str, tool: &str) -> RunningCall {
-    RunningCall {
-        agent: agent.into(),
-        agent_id: String::new(),
-        description: description.into(),
-        session: String::new(),
-        start,
-        summary: summary.into(),
-        tool: tool.into(),
-    }
-}
-
-#[test]
-fn shows_each_background_task_a_subagent_with_the_call_it_makes_now() {
-    let tasks = [
-        task("a", Kind::Agent, "auditor: Review EN-030", 0),
-        task("b", Kind::Command, "Push", 60_000),
-    ];
-    let calls = [
-        call("auditor", "", 100, "src/a.ts", "Read"),
-        call("auditor", "List the files", 200, "", "Bash"),
-        call("main", "", 300, "", "Edit"),
-    ];
-
-    // 240 000 ms = 4 min; 180 000 ms = 3 min.
-    assert_eq!(
-        background_lines(&tasks, &calls, 240_000, short_duration),
-        [
-            "↳ agent auditor: Review EN-030 — 4 min · now Bash · List the files",
-            "↳ command Push — 3 min"
         ]
     );
 }
@@ -473,339 +373,6 @@ fn writes_the_cache_as_the_typescript_status_line_did_then_the_last_request_s_co
     );
 }
 
-#[test]
-fn writes_durations_to_the_second() {
-    assert_eq!(clock_duration(45_900), "45 s");
-    assert_eq!(clock_duration(12 * 60_000 + 5000), "12 min 05 s");
-    assert_eq!(clock_duration(125 * 60_000 + 9000), "2 h 05 min 09 s");
-    assert_eq!(clock_duration(-1500), "-2 s");
-}
-
-#[test]
-fn groups_thousands_as_en_us_does() {
-    assert_eq!(grouped(0), "0");
-    assert_eq!(grouped(999), "999");
-    assert_eq!(grouped(1234), "1,234");
-    assert_eq!(grouped(5_678_901), "5,678,901");
-    assert_eq!(grouped(-1_000), "-1,000");
-}
-
-#[test]
-fn shows_the_place_and_step_the_turn_and_the_call_running() {
-    let base = Status {
-        context_percent: 34.4,
-        place: "E01 › RET-001 retrospective e01".into(),
-        tally: Tally {
-            output: 1234,
-            total: 5_678_901,
-            ..empty_tally()
-        },
-        ..status()
-    };
-    let active = status_text(&Status {
-        step: "RET-001 · metrics".into(),
-        tally: Tally {
-            is_waiting: false,
-            ..base.tally.clone()
-        },
-        ..base.clone()
-    });
-    let silent = status_text(&Status {
-        is_running_long: true,
-        running: "▶ Bash · Run the checks — 12 s".into(),
-        silent_ms: 180_000,
-        ..base.clone()
-    });
-
-    assert!(active.contains("E01 › RET-001 retrospective e01"));
-    assert!(active.contains("RET-001 · metrics"));
-    assert!(active.contains("● working"));
-    assert!(active.contains("⏱ turn 1 min 00 s"));
-    assert!(active.contains("5,678,901 tokens this turn (1,234 written)"));
-    assert!(active.contains("conversation memory 34 % full"));
-    assert_eq!(active.split('\n').count(), 2);
-    assert_eq!(
-        silent.split('\n').next(),
-        Some("\u{1b}[1mE01 › RET-001 retrospective e01\u{1b}[0m")
-    );
-    assert!(silent.contains("◌ silent for 3 min"));
-    assert_eq!(
-        silent.split('\n').nth(2),
-        Some("\u{1b}[31m▶ Bash · Run the checks — 12 s\u{1b}[0m")
-    );
-    let done = status_text(&Status {
-        tally: Tally {
-            start: 1,
-            ..base.tally.clone()
-        },
-        ..base.clone()
-    });
-
-    assert!(done.contains("◌ your turn"));
-    assert!(done.contains("⏱ last turn 1 min 00 s"));
-    let working = status_text(&Status {
-        background: vec!["↳ command Push — 3 min".into()],
-        running: "▶ Read · a — 1 s".into(),
-        tally: Tally {
-            is_waiting: false,
-            pending: vec![task("b", Kind::Command, "Push", 0)],
-            ..base.tally.clone()
-        },
-        ..base
-    });
-    let lines: Vec<&str> = working.split('\n').collect();
-
-    assert!(lines[1].contains("● working · 1 command in the background"));
-    assert_eq!(lines[2], "\u{1b}[36m▶ Read · a — 1 s\u{1b}[0m");
-    assert_eq!(lines[3], "\u{1b}[2m↳ command Push — 3 min\u{1b}[0m");
-}
-
-#[test]
-fn shows_the_open_run_beside_the_turn_and_nothing_of_a_run_outside_one() {
-    let run = "run 2 h 05 · 43,100,000 tokens";
-    let shown = status_text(&Status {
-        run: run.into(),
-        ..status()
-    });
-
-    assert!(
-        shown
-            .split('\n')
-            .nth(1)
-            .unwrap_or_default()
-            .contains(&format!(
-                "tokens this turn (0 written)\u{1b}[2m · \u{1b}[0m\u{1b}[35m{run}\u{1b}[0m"
-            ))
-    );
-    assert!(!status_text(&status()).contains("run "));
-}
-
-#[test]
-fn tells_an_open_run_s_marker_from_a_closed_or_missing_one() {
-    assert!(is_run_open(r#"{"start":5,"end":0,"sessions":["a"]}"#));
-    assert!(!is_run_open(r#"{"start":5,"end":9,"sessions":["a"]}"#));
-    assert!(!is_run_open(r#"{"end":0}"#));
-    assert!(!is_run_open(""));
-}
-
-/// Backlog files, as the status line lists them.
-fn files() -> Vec<String> {
-    [
-        "E01-F04-US-018-turn-a-shape.md",
-        "E01-RET-001-retrospective-e01.md",
-        "E14-F11-code-base-ready-for-curves.md",
-        "E17-F21-EN-104-x.md",
-        "E02-F05-.md",
-    ]
-    .map(String::from)
-    .to_vec()
-}
-
-#[test]
-fn names_the_epic_feature_and_story_of_a_branch() {
-    assert_eq!(
-        place_of("feat/us-018-turn-a-shape", &files()),
-        "E01 › F04 › US-018 turn a shape"
-    );
-    assert_eq!(
-        place_of("docs/ret-001-retrospective-e01", &files()),
-        "E01 › RET-001 retrospective e01"
-    );
-    assert_eq!(
-        place_of("feature/f11-clean-up", &files()),
-        "E14 › F11 › F11 code base ready for curves"
-    );
-    assert_eq!(
-        place_of("chore/en-104-hooks", &files()),
-        "E17 › F21 › EN-104 x"
-    );
-}
-
-#[test]
-fn keeps_the_branch_when_it_names_no_backlog_item() {
-    assert_eq!(place_of("develop", &files()), "develop");
-    assert_eq!(
-        place_of("feat/us-099-unknown", &files()),
-        "feat/us-099-unknown"
-    );
-    // An id inside a word, or of four digits, is none.
-    assert_eq!(place_of("feat/xus-018", &files()), "feat/xus-018");
-    assert_eq!(place_of("feat/us-0180", &files()), "feat/us-0180");
-}
-
-#[test]
-fn reads_a_backlog_file_name_as_the_regular_expression_did() {
-    // A feature file without a slug after its feature: the feature read as the slug, its hyphen
-    // a space.
-    let names = vec!["E02-F05-.md".to_owned()];
-
-    assert_eq!(place_of("feature/f05-x", &names), "E02 › F05 F05 ");
-}
-
-#[test]
-fn reads_back_a_call_starting_and_shows_the_oldest() {
-    let record = parse(
-        r#"{"agent":"main","description":"Run the checks","start":1000,"summary":"npm run check","tool":"Bash"}"#,
-    )
-    .expect("JSON");
-
-    assert_eq!(
-        read_running_call(&record),
-        call("main", "Run the checks", 1000, "npm run check", "Bash")
-    );
-    assert_eq!(read_running_call(&Value::Null), call("main", "", 0, "", ""));
-    let calls = [
-        call("main", "", 5000, "ls", "Bash"),
-        call("main", "Run the checks", 1000, "npm run check", "Bash"),
-    ];
-    let seconds = |milliseconds: i64| format!("{} s", milliseconds / 1000);
-
-    assert_eq!(
-        running_line(&calls, 13_000, seconds),
-        "▶ Bash · Run the checks — 12 s"
-    );
-    assert_eq!(
-        running_line(&calls[..1], 6000, seconds),
-        "▶ Bash · ls — 1 s"
-    );
-    assert_eq!(running_line(&[], 0, seconds), "");
-}
-
-#[test]
-fn f32_ac1_reads_back_the_subagent_and_the_session_of_a_call() {
-    let record = parse(
-        r#"{"agent":"story-worker","agentId":"a1","description":"","session":"s","start":7,"summary":"ls","tool":"Bash"}"#,
-    )
-    .expect("JSON");
-
-    assert_eq!(
-        read_running_call(&record),
-        RunningCall {
-            agent_id: "a1".into(),
-            session: "s".into(),
-            ..call("story-worker", "", 7, "ls", "Bash")
-        }
-    );
-}
-
-/// A call of a subagent of session `s`, its file named after its id.
-fn of_agent(name: &str, agent: &str, start: i64, session: &str) -> (String, RunningCall) {
-    (
-        format!("{name}.json"),
-        RunningCall {
-            agent_id: format!("id-{name}"),
-            session: session.into(),
-            ..call(agent, "", start, "git log", "Bash")
-        },
-    )
-}
-
-#[test]
-fn f32_ac1_finds_the_calls_left_by_subagents_that_ended() {
-    // 2026-10-18: no agent ran, yet 169 files of `story-worker` calls stayed in `running/`, the
-    // latest shown as a story worker running for 9 min 20 (C5). Here one subagent runs, launched at
-    // 1 000; calls of ended subagents started at 100 and 900; one of this subagent at 1 500; one of
-    // another session at 200; the main agent's at 50.
-    let tasks = [
-        task("a", Kind::Agent, "story-worker: EN-120", 1000),
-        task("b", Kind::Command, "Push", 10),
-    ];
-    let calls = [
-        of_agent("old", "story-worker", 100, "s"),
-        of_agent("ended", "story-worker", 900, "s"),
-        of_agent("live", "story-worker", 1500, "s"),
-        of_agent("other", "story-worker", 200, "t"),
-        ("main.json".to_owned(), call("main", "", 50, "ls", "Bash")),
-    ];
-
-    assert_eq!(ended_calls(&calls, &tasks, "s"), ["old.json", "ended.json"]);
-    // No subagent runs: every subagent call of the session has ended; a command is no subagent.
-    assert_eq!(
-        ended_calls(&calls, &tasks[1..], "s"),
-        ["old.json", "ended.json", "live.json"]
-    );
-    // Launched exactly when the call started: the call may be its, it is kept.
-    assert_eq!(
-        ended_calls(&calls[2..3], &[task("c", Kind::Agent, "x", 1500)], "s"),
-        [] as [&str; 0]
-    );
-    // A resumed subagent counts as running from its resume.
-    assert_eq!(
-        ended_calls(
-            &calls,
-            &[task("r", Kind::Agent, "resumed: EN-120", 950)],
-            "s"
-        ),
-        ["old.json", "ended.json"]
-    );
-}
-
-#[test]
-fn f32_ac1_keeps_the_calls_of_a_subagent_a_message_resumes_and_of_an_agent_session() {
-    // AUD-034: a subagent stopped at 950 and resumed by `SendMessage` at 960, its result still to
-    // come, makes a call at 970: the message is a task running from 960, so that call stays.
-    let resumed = [
-        of_agent("old", "story-worker", 100, "s"),
-        of_agent("resumed", "story-worker", 970, "s"),
-    ];
-
-    assert_eq!(
-        ended_calls(
-            &resumed,
-            &[task("m", Kind::Message, "message: EN-120", 960)],
-            "s"
-        ),
-        ["old.json"]
-    );
-    // A session started with `--agent` writes its type and no subagent id: the main agent's calls,
-    // never a subagent's; and so is a file written before EN-120, with neither id nor session.
-    let main = [
-        (
-            "agent-session.json".to_owned(),
-            RunningCall {
-                session: "s".into(),
-                ..call("story-worker", "", 50, "ls", "Bash")
-            },
-        ),
-        (
-            "legacy.json".to_owned(),
-            call("story-worker", "", 60, "ls", "Bash"),
-        ),
-    ];
-
-    assert_eq!(ended_calls(&main, &[], "s"), [] as [&str; 0]);
-}
-
-#[test]
-fn keeps_the_weekly_and_five_hour_windows_with_their_reset_times() {
-    let input = parse(
-        r#"{"rate_limits": {"five_hour": {"used_percentage": 23.5, "resets_at": 1738425600}, "seven_day": {"used_percentage": 91, "resets_at": 1738857600}}}"#,
-    )
-    .expect("JSON");
-
-    assert_eq!(
-        usage_snapshot(&input, 5).as_deref(),
-        Some(
-            r#"{"fiveHour":{"resetsAt":"2025-02-01T16:00:00Z","usedPercent":23.5},"sevenDay":{"resetsAt":"2025-02-06T16:00:00Z","usedPercent":91},"time":5}"#
-        )
-    );
-    let weekly =
-        parse(r#"{"rate_limits": {"seven_day": {"used_percentage": 40, "resets_at": 0}}}"#)
-            .expect("JSON");
-
-    assert_eq!(
-        usage_snapshot(&weekly, 5).as_deref(),
-        Some(r#"{"sevenDay":{"resetsAt":"1970-01-01T00:00:00Z","usedPercent":40},"time":5}"#)
-    );
-    // No rate limits, or a window without its reset time: nothing, the last file kept.
-    for text in [
-        r#"{"model": {"display_name": "Opus 5.5"}}"#,
-        r#"{"rate_limits": {"five_hour": {"used_percentage": 10}}}"#,
-    ] {
-        assert_eq!(usage_snapshot(&parse(text).expect("JSON"), 5), None);
-    }
-}
-
 /// A command without the `GIT_*` variables of the process running the tests: under the pre-push
 /// hook, `GIT_DIR` names the repository itself (`.claude/rules/tooling.md`); started through the
 /// shared `test_support::command` (EN-103), with a home of its own.
@@ -816,28 +383,6 @@ fn clean(program: &str) -> Command {
     fs::create_dir_all(&home).expect("home");
     command.env("HOME", home).env("GIT_CONFIG_NOSYSTEM", "1");
     command
-}
-
-/// A repository on a story's branch, with its backlog's files and a transcript.
-fn project(name: &str) -> PathBuf {
-    let root = std::env::temp_dir().join(format!("status-line-{name}-{}", std::process::id()));
-
-    let _ = fs::remove_dir_all(&root);
-    for (folder, file) in [
-        ("docs/backlog/stories", "E17-F21-EN-104-hooks-in-rust.md"),
-        ("docs/backlog/features", "E17-F21-agent-tools.md"),
-    ] {
-        fs::create_dir_all(root.join(folder)).expect("folder");
-        fs::write(root.join(folder).join(file), "").expect("file");
-    }
-    let status = clean("git")
-        .args(["init", "-q", "-b", "chore/en-104-hooks-in-rust"])
-        .current_dir(&root)
-        .status()
-        .expect("git runs");
-
-    assert!(status.success());
-    root
 }
 
 /// The binary run in a folder on an input.
@@ -860,28 +405,126 @@ fn draw(folder: &Path, input: &str) -> Output {
 }
 
 #[test]
+fn aud_051_ends_the_turn_when_the_person_interrupts_the_agent() {
+    // The two lines Claude Code writes on Escape (transcripts of 2026-10-11): no `end_turn` follows.
+    for interruption in [
+        r#"{"type": "user", "timestamp": "2026-10-13T08:03:00Z", "message": {"content": [{"type": "text", "text": "[Request interrupted by user for tool use]"}]}}"#,
+        r#"{"type": "user", "timestamp": "2026-10-13T08:03:00Z", "message": {"content": "[Request interrupted by user]"}}"#,
+    ] {
+        let tally = add_tokens(
+            empty_tally(),
+            &text(&[&prompt("2026-10-13T08:00:00Z"), &line("a", 5), interruption]),
+        );
+
+        assert_eq!(
+            (tally.is_waiting, tally.end),
+            (true, AT_0803),
+            "{interruption}"
+        );
+        assert_eq!(status_text(&tally, 0), "\u{1b}[2mchat free\u{1b}[0m");
+    }
+    // The same words quoted inside a prompt's text, not at its start, keep the agent working.
+    let quoted = add_tokens(
+        empty_tally(),
+        &text(&[
+            &prompt("2026-10-13T08:00:00Z"),
+            r#"{"type": "user", "message": {"content": "why [Request interrupted by user]?"}}"#,
+        ]),
+    );
+
+    assert!(!quoted.is_waiting);
+}
+
+#[test]
+fn aud_051_shows_three_moving_dots_while_the_agent_works_and_chat_free_once_its_turn_ended() {
+    let working = add_tokens(
+        empty_tally(),
+        &text(&[&prompt("2026-10-13T08:00:00Z"), &line("a", 5)]),
+    );
+
+    // One dot at second 0, two at 1, three at 2, one again at 3: 0, 1 999 and 3 000 ms; padded to
+    // three characters so that the line keeps its width.
+    assert_eq!(status_text(&working, 0), "\u{1b}[32mworking.  \u{1b}[0m");
+    assert_eq!(
+        status_text(&working, 1_999),
+        "\u{1b}[32mworking.. \u{1b}[0m"
+    );
+    assert_eq!(
+        status_text(&working, 2_000),
+        "\u{1b}[32mworking...\u{1b}[0m"
+    );
+    assert_eq!(
+        status_text(&working, 3_000),
+        "\u{1b}[32mworking.  \u{1b}[0m"
+    );
+    // Before any prompt, and once the turn ended with a worker still in the background: free.
+    let ended = add_tokens(working, &text(&[&agent_launch(), END]));
+
+    assert_eq!(ended.pending.len(), 1);
+    for tally in [empty_tally(), ended] {
+        let shown = status_text(&tally, 5_000);
+
+        assert_eq!(shown, "\u{1b}[2mchat free\u{1b}[0m");
+        assert!(!shown.contains("token") && !shown.contains("agent"));
+    }
+}
+
+/// An assistant line launching a subagent in the background, then the result saying so.
+fn agent_launch() -> String {
+    text(&[
+        &format!(
+            r#"{{"type": "assistant", "message": {{"id": "b", "content": [{}]}}}}"#,
+            agent("w")
+        ),
+        r#"{"type": "user", "message": {"content": [{"tool_use_id": "w", "type": "tool_result", "content": "Async agent launched successfully."}]}, "toolUseResult": {"isAsync": true}}"#,
+    ])
+    .trim_end()
+    .to_owned()
+}
+
+#[test]
+fn writes_the_session_s_snapshot_for_each_tool_call_s_record() {
+    let tally = Tally {
+        output: 5,
+        pending: vec![
+            task("a", Kind::Agent, "auditor: Review", 0),
+            task("b", Kind::Command, "Push", 0),
+            task("c", Kind::Command, "Test", 0),
+            task("m", Kind::Message, "resumed: other", 0),
+        ],
+        start: AT_0800,
+        total: 116,
+        ..empty_tally()
+    };
+
+    assert_eq!(
+        session_snapshot(&tally, 34.5, "Opus \"5\"", 9),
+        r#"{"contextPercent":34.5,"isWaiting":true,"model":"Opus \"5\"","pendingAgents":1,"pendingCommands":2,"time":9,"turnOutputTokens":5,"turnStart":1791878400000,"turnTokens":116}"#
+    );
+}
+
+/// A repository with a transcript.
+fn project(name: &str) -> PathBuf {
+    let root = std::env::temp_dir().join(format!("status-line-{name}-{}", std::process::id()));
+
+    let _ = fs::remove_dir_all(&root);
+    fs::create_dir_all(&root).expect("folder");
+    let status = clean("git")
+        .args(["init", "-q", "-b", "chore/en-104-hooks-in-rust"])
+        .current_dir(&root)
+        .status()
+        .expect("git runs");
+
+    assert!(status.success());
+    root
+}
+
+#[test]
 fn draws_the_status_line_and_writes_its_files() {
     let root = project("draw");
     let metrics = root.join(".git/metrics");
     let transcript = root.join("t.jsonl");
 
-    fs::create_dir_all(metrics.join("running")).expect("running");
-    fs::write(metrics.join("step"), "  EN-104 · T3\n").expect("step");
-    // A main call started before the turn, one in it, a subagent's while none runs, one of another
-    // session's subagent, a file being written; the session's id is empty, as the input names none.
-    for (name, start, agent, id, session) in [
-        ("old", AT_0800 - 1, "main", "", ""),
-        ("now", AT_0800 + 1, "main", "", ""),
-        ("sub", 1, "auditor", "a1", ""),
-        ("other", 1, "auditor", "a2", "t"),
-    ] {
-        fs::write(
-            metrics.join(format!("running/{name}.json")),
-            format!(r#"{{"agent":"{agent}","agentId":"{id}","description":"","session":"{session}","start":{start},"summary":"{name}","tool":"Bash"}}"#),
-        )
-        .expect("running file");
-    }
-    fs::write(metrics.join("running/partial.json"), "{").expect("partial");
     fs::write(
         &transcript,
         text(&[
@@ -898,38 +541,21 @@ fn draws_the_status_line_and_writes_its_files() {
     );
     let output = draw(&root, &input);
     let shown = String::from_utf8_lossy(&output.stdout);
-    let lines: Vec<&str> = shown.split('\n').collect();
 
+    // One line, the agent working; nothing of the place, the tokens, the run nor the usage.
     assert!(output.status.success());
-    assert_eq!(
-        lines[0],
-        "\u{1b}[1mE17 › F21 › EN-104 hooks in rust\u{1b}[0m\u{1b}[2m · \u{1b}[0mEN-104 · T3"
-    );
-    // 34.5 % rounded half up; the last line, being written, not read yet.
-    assert!(
-        lines[1].contains("116 tokens this turn (5 written)"),
-        "{shown}"
-    );
-    assert!(lines[1].contains("conversation memory 35 % full"));
-    assert!(lines[2].contains("▶ Bash · now — "), "{shown}");
-    assert_eq!(lines.len(), 3);
-    assert!(!metrics.join("running/old.json").exists());
-    assert!(!metrics.join("running/sub.json").exists());
-    assert!(metrics.join("running/other.json").exists());
+    assert!(shown.starts_with("\u{1b}[32mworking."), "{shown}");
+    assert!(!shown.contains('\n'));
+    assert!(!metrics.join("usage.json").exists());
     let snapshot =
         parse(&fs::read_to_string(metrics.join("now.json")).expect("now")).expect("JSON");
 
+    // The last line, being written, not read yet: 116 tokens of the request `a`.
     assert_eq!(snapshot.get("turnTokens"), &Value::Number(116.0));
+    assert_eq!(snapshot.get("contextPercent"), &Value::Number(34.5));
     assert_eq!(
         snapshot.get("turnStart"),
         &Value::Number(1_791_878_400_000.0)
-    );
-    assert!(
-        fs::read_to_string(metrics.join("usage.json"))
-            .expect("usage")
-            .starts_with(
-                r#"{"sevenDay":{"resetsAt":"1970-01-01T00:00:00Z","usedPercent":60},"time":"#
-            )
     );
     // The cache kept the offset of the complete lines: a second draw reads nothing again.
     let cached = turn_tokens(
@@ -938,6 +564,15 @@ fn draws_the_status_line_and_writes_its_files() {
     );
 
     assert_eq!(cached.total, 116);
+    fs::write(
+        &transcript,
+        text(&[&prompt("2026-10-13T08:00:00Z"), &line("a", 5), END]),
+    )
+    .expect("transcript");
+    assert_eq!(
+        String::from_utf8_lossy(&draw(&root, &input).stdout),
+        "\u{1b}[2mchat free\u{1b}[0m"
+    );
     let _ = fs::remove_dir_all(&root);
 }
 

@@ -2,7 +2,7 @@
 
 use std::fs;
 use std::path::{Path, PathBuf};
-use std::process::{Command, Output};
+use std::process::Output;
 
 /// A temporary folder, removed when the test ends, even on a failure.
 struct Folder(PathBuf);
@@ -29,7 +29,7 @@ fn library(name: &str, modules: &[(&str, &str)]) -> Folder {
 
 /// Runs the tool from the library's `src` into its `types`.
 fn declarations(root: &Path) -> Output {
-    Command::new(env!("CARGO_BIN_EXE_declarations"))
+    test_support::command(env!("CARGO_BIN_EXE_declarations"))
         .arg(root.join("src"))
         .arg(root.join("types"))
         .output()
@@ -108,7 +108,7 @@ fn reports_a_syntax_error_with_its_module() {
 
 #[test]
 fn asks_for_both_folders() {
-    let output = Command::new(env!("CARGO_BIN_EXE_declarations"))
+    let output = test_support::command(env!("CARGO_BIN_EXE_declarations"))
         .arg("src")
         .output()
         .unwrap();

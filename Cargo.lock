@@ -35,6 +35,7 @@ dependencies = [
  "oxc_parser",
  "oxc_semantic",
  "oxc_span",
+ "test-support",
  "tool-use",
 ]
 
@@ -161,6 +162,7 @@ dependencies = [
  "oxc_isolated_declarations",
  "oxc_parser",
  "oxc_span",
+ "test-support",
  "tool-use",
 ]
 
@@ -661,6 +663,7 @@ dependencies = [
  "oxc_parser",
  "oxc_semantic",
  "oxc_span",
+ "test-support",
  "tool-use",
 ]
 
@@ -1255,7 +1258,6 @@ dependencies = [
  "calendar",
  "git-repository",
  "hooks",
- "knowledge-call",
  "test-support",
  "tool-use",
 ]
@@ -1579,6 +1581,7 @@ version = "0.1.0"
 dependencies = [
  "calendar",
  "git-repository",
+ "test-support",
 ]
 
 [[package]]
@@ -1664,6 +1667,7 @@ name = "val-prepare"
 version = "0.1.0"
 dependencies = [
  "knowledge-call",
+ "test-support",
  "tool-use",
 ]
 

@@ -18,16 +18,24 @@ fn inner_the_planted_variables_stay_out() {
         "GIT_INDEX_FILE planted"
     );
 
+    assert!(
+        env::var_os("AGENT_RECORDS_ROOT").is_some(),
+        "AGENT_RECORDS_ROOT planted"
+    );
+
     let output = command("sh")
         .args([
             "-c",
-            "printf '%s %s %s' \"${GIT_DIR-unset}\" \"${GIT_INDEX_FILE-unset}\" \"${OTHER-unset}\"",
+            "printf '%s %s %s %s %s' \"${GIT_DIR-unset}\" \"${GIT_INDEX_FILE-unset}\" \"${AGENT_RECORDS_ROOT-unset}\" \"${AGENT_KNOWLEDGE_SNAPSHOT-unset}\" \"${OTHER-unset}\"",
         ])
         .output()
         .expect("sh runs");
 
-    // Every GIT_* variable removed, any other inherited.
-    assert_eq!(String::from_utf8_lossy(&output.stdout), "unset unset kept");
+    // Every GIT_* variable and the real records' removed (AUD-051), any other inherited.
+    assert_eq!(
+        String::from_utf8_lossy(&output.stdout),
+        "unset unset unset unset kept"
+    );
 
     // Git itself, in a folder of its own, works on that folder's repository.
     let folder = env::temp_dir().join(format!("test-support-{}", std::process::id()));
@@ -70,6 +78,8 @@ fn f21_ac9_a_git_dir_set_by_the_caller_does_not_reach_the_command() {
         ])
         .env("GIT_DIR", decoy.join(".git"))
         .env("GIT_INDEX_FILE", decoy.join(".git/index"))
+        .env("AGENT_RECORDS_ROOT", &decoy)
+        .env("AGENT_KNOWLEDGE_SNAPSHOT", &decoy)
         .env("OTHER", "kept")
         .output()
         .expect("inner test runs");
@@ -100,6 +110,33 @@ fn rust_files(folder: &std::path::Path) -> Vec<std::path::PathBuf> {
         }
     }
     found
+}
+
+#[test]
+fn aud_051_no_rust_test_starts_a_command_but_through_test_support() {
+    // A binary started without `test_support::command` sees the real records root Claude Code
+    // exports, and opened `repo.sqlite` there (AUD-051). This file alone plants variables on
+    // purpose; the needle is built in two parts, so that the scan of this file stays clean.
+    let needle = ["Command::", "new("].concat();
+    let tools = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("..");
+    let mut test_files = Vec::new();
+
+    for tool in fs::read_dir(&tools).expect("tools/").flatten() {
+        test_files.extend(rust_files(&tool.path().join("tests")));
+    }
+    let direct: Vec<String> = test_files
+        .iter()
+        .filter(|path| !path.ends_with("test-support/tests/command.rs"))
+        .filter(|path| {
+            fs::read_to_string(path)
+                .unwrap_or_default()
+                .contains(&needle)
+        })
+        .map(|path| path.display().to_string())
+        .collect();
+
+    assert!(test_files.len() > 10);
+    assert_eq!(direct, [] as [String; 0]);
 }
 
 #[test]

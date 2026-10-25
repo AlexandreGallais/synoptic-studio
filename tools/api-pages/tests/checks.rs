@@ -4,7 +4,6 @@
 
 use std::fs;
 use std::path::{Path, PathBuf};
-use std::process::Command;
 
 /// A temporary copy of the fixture library and an output folder, removed when the test ends.
 struct Library(PathBuf);
@@ -47,7 +46,7 @@ fn planted(name: &str, module: &str) -> Library {
 /// The run's exit code and its error output; the output folder must stay unwritten.
 fn failure(library: &Library) -> (Option<i32>, String) {
     let out = library.0.join("api");
-    let output = Command::new(env!("CARGO_BIN_EXE_api-pages"))
+    let output = test_support::command(env!("CARGO_BIN_EXE_api-pages"))
         .arg(library.0.join("src/index.ts"))
         .arg(&out)
         .arg("/api/")

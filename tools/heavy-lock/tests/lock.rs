@@ -4,7 +4,6 @@
 use std::fs::{self, File};
 use std::io::{self, Write};
 use std::path::{Path, PathBuf};
-use std::process::Command;
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::mpsc::{self, Sender};
 use std::thread;
@@ -37,7 +36,7 @@ fn other(pid: u32) -> LockOwner {
 
 /// Process id of a process that has ended.
 fn dead_pid() -> u32 {
-    let mut child = Command::new("true").spawn().expect("true starts");
+    let mut child = test_support::command("true").spawn().expect("true starts");
 
     child.wait().expect("true ends");
     child.id()

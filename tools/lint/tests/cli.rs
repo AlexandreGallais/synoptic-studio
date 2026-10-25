@@ -1,11 +1,10 @@
 //! The binary as `npm run lint` runs it: from the root, on its targets, failing on a finding.
 
 use std::fs;
-use std::process::Command;
 
 /// Runs the linter in a folder on its targets: its output and whether it succeeded.
 fn lint(folder: &std::path::Path, targets: &[&str]) -> (String, bool) {
-    let output = Command::new(env!("CARGO_BIN_EXE_lint"))
+    let output = test_support::command(env!("CARGO_BIN_EXE_lint"))
         .args(targets)
         .current_dir(folder)
         .output()

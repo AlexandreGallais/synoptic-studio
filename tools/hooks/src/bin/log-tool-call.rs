@@ -78,7 +78,7 @@ fn hook() -> u8 {
             .write_all(line.as_bytes())
     });
 
-    // The call has ended: the status line no longer shows it (track-tool-call hook).
+    // The call has ended: its start, written by the track-tool-call hook, is no longer needed.
     let _ = fs::remove_file(&running);
     u8::from(appended.is_err())
 }

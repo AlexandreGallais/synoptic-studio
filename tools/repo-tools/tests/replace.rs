@@ -4,7 +4,7 @@ use std::env;
 use std::fs;
 use std::io::Write;
 use std::path::{Path, PathBuf};
-use std::process::{Command, Output, Stdio};
+use std::process::{Output, Stdio};
 
 /// A new folder holding `a.md` and `b.md`.
 fn folder(name: &str) -> PathBuf {
@@ -18,7 +18,7 @@ fn folder(name: &str) -> PathBuf {
 }
 
 fn replace(folder: &Path, spec: &str) -> Output {
-    let mut child = Command::new(env!("CARGO_BIN_EXE_replace"))
+    let mut child = test_support::command(env!("CARGO_BIN_EXE_replace"))
         .current_dir(folder)
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
@@ -114,7 +114,7 @@ fn says_when_it_read_no_block() {
 
 /// `replace` called with arguments, its standard input empty and closed.
 fn replace_with(arguments: &[&str]) -> Output {
-    Command::new(env!("CARGO_BIN_EXE_replace"))
+    test_support::command(env!("CARGO_BIN_EXE_replace"))
         .args(arguments)
         .stdin(Stdio::null())
         .output()

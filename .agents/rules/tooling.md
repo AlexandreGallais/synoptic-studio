@@ -31,8 +31,7 @@ The traps of this repository's tooling that a check does not catch by itself. Th
 ## Tests of tooling
 
 - A timing test never reads the clock: it bounds the time with Vitest's per-test `timeout`, at least four times the test's duration alone, written beside it as `alone: 210 ms` (the median of 5 runs of its file); `tests/fitness.test.ts` checks it. A limit under 5 s takes the tag `timing`.
-- Every test removes each inherited `GIT_*` variable from the commands it starts (a Rust test through `test_support::command`): the `pre-push` hook sets `GIT_DIR`, and a leaked one writes to the real repository.
-- A test never writes into the real records: its records root is a temporary folder.
+- A Rust test starts every command through `test_support::command`, which removes the inherited `GIT_*` variables and `AGENT_RECORDS_ROOT` and `AGENT_KNOWLEDGE_SNAPSHOT`: the `pre-push` hook sets `GIT_DIR`, Claude Code exports the records' root, and a leaked one writes to the real repository or records. A test needing records sets its own temporary root.
 
 ## Git and the shell
 

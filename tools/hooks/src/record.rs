@@ -1,5 +1,5 @@
 //! What the `track-tool-call` and `log-tool-call` hooks write of a tool call (RET-001,
-//! `docs/tooling/metrics.md`): the call starting, read by the status line, and one line per call
+//! `docs/tooling/metrics.md`): the call starting, read back when it ends, and one line per call
 //! ended in `.git/metrics/tool-calls.jsonl`, with the session's state the status line last saw.
 //! Rewritten from `.claude/hooks/log-tool-call.ts` and `status-place.ts` (EN-104): the same fields in
 //! the same order, written as `JSON.stringify` writes them.
@@ -164,7 +164,7 @@ pub fn is_call_of(record: &Value, agent_id: &str) -> bool {
     !agent_id.is_empty() && record.get("agentId").text() == agent_id
 }
 
-/// The call starting, as the `track-tool-call` hook writes it for the status line:
+/// The call starting, as the `track-tool-call` hook writes it for `log-tool-call`:
 /// `{"agent":…,"agentId":…,"description":…,"session":…,"start":…,"summary":…,"tool":…}`.
 #[must_use]
 pub fn running_call(input: &Value, start: i64) -> String {

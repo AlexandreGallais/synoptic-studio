@@ -3,7 +3,7 @@
 use std::fs;
 use std::io::Write;
 use std::path::{Path, PathBuf};
-use std::process::{Command, Stdio};
+use std::process::Stdio;
 
 use hooks::json::{parse, quote};
 use hooks::pages::{
@@ -253,7 +253,7 @@ fn the_hook_never_reads_the_library_at_library_path() {
     let line = r#"{"tool_name":"WebFetch","tool_input":{"url":"https://x.org/app"}}"#;
     // The empty page is in the file `LIBRARY_PATH` names, as Apple's python3 sets that variable;
     // the hook reads the home's library, which has none, and refuses.
-    let mut child = Command::new(env!("CARGO_BIN_EXE_library-pages"))
+    let mut child = test_support::command(env!("CARGO_BIN_EXE_library-pages"))
         .env_remove("AGENT_LIBRARY_FILE")
         .env_remove("AGENT_RECORDS_ROOT")
         .env("LIBRARY_PATH", &file)
@@ -279,7 +279,7 @@ fn the_hook_never_reads_the_library_at_library_path() {
 /// Output of the hook for one tool call, run against a library file.
 fn hook(tool: &str, input: &str, library: &Path) -> String {
     let line = format!(r#"{{"tool_name":{},"tool_input":{input}}}"#, quote(tool));
-    let mut child = Command::new(env!("CARGO_BIN_EXE_library-pages"))
+    let mut child = test_support::command(env!("CARGO_BIN_EXE_library-pages"))
         .env("AGENT_LIBRARY_FILE", library)
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
@@ -309,7 +309,7 @@ fn library(folder: &Path) -> PathBuf {
         INSERT INTO pages VALUES ('https://x.org/app', 'App', 1, 0, '', '', 'Loading');
         INSERT INTO uses VALUES (1, 'get', 'https://x.org/refused', '', 'failed');"
     );
-    let status = Command::new("sqlite3")
+    let status = test_support::command("sqlite3")
         .arg(&file)
         .arg(script)
         .status()
@@ -372,7 +372,7 @@ fn f20_ac7_the_hook_sends_web_fetch_and_curl_to_the_library_unless_the_page_came
 
 #[test]
 fn the_hook_lets_the_call_through_when_it_cannot_read_its_input() {
-    let mut child = Command::new(env!("CARGO_BIN_EXE_library-pages"))
+    let mut child = test_support::command(env!("CARGO_BIN_EXE_library-pages"))
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
         .spawn()
@@ -409,7 +409,7 @@ fn hook_as(agent_type: &str, project: &Path, library: &Path) -> String {
         r#"{{"tool_name":"Bash","tool_input":{{"command":"curl https://x.org/full"}},"agent_type":{}}}"#,
         quote(agent_type)
     );
-    let mut child = Command::new(env!("CARGO_BIN_EXE_library-pages"))
+    let mut child = test_support::command(env!("CARGO_BIN_EXE_library-pages"))
         .env("AGENT_LIBRARY_FILE", library)
         .env("CLAUDE_PROJECT_DIR", project)
         .stdin(Stdio::piped())
