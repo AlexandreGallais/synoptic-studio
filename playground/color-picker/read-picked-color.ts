@@ -9,7 +9,7 @@ import type { PickedColor } from "../../src";
  * @kind procedure
  * @param document - page document
  * @returns the values; `NaN` for a picker never opened
- * @see docs/backlog/stories/E15-F16-US-035-pick-a-color.md
+ * @see US-035
  */
 export function readPickedColor(document: Document): PickedColor {
   const { hue, level, saturation } = selectElement(document, "color-picker").dataset;

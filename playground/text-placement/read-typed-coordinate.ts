@@ -10,7 +10,7 @@ import { readNumber } from "../page";
  * @param document - page document
  * @param id - `shape-x` or `shape-y`
  * @returns the integer typed, `NaN` for a field showing no number
- * @see docs/backlog/stories/E15-F05-US-038-a-turned-text-grows-in-place.md
+ * @see US-038
  */
 export function readTypedCoordinate(document: Document, id: string): number {
   return nearestInteger(readNumber(document, id));

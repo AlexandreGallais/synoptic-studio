@@ -11,7 +11,7 @@ const SHAPE_SECTIONS = ["size-section", "corners-section", "straight-box", "tool
  * @kind procedure
  * @param document - page document
  * @param isText - whether the Text tool is chosen
- * @see docs/backlog/stories/E15-F05-US-031-place-a-text.md
+ * @see US-031
  */
 export function writeTextSections(document: Document, isText: boolean): void {
   selectElement(document, "text-options").hidden = !isText;

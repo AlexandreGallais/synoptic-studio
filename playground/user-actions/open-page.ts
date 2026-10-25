@@ -8,7 +8,7 @@ import { loadPage } from "./load-page";
  *
  * @kind procedure
  * @param search - query of the address, `?step=10`, or empty
- * @see docs/backlog/stories/E14-F11-EN-021-shared-test-helpers.md
+ * @see EN-021
  */
 export function openPage(search: string): void {
   loadPage(search);

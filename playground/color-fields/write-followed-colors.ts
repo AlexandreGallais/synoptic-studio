@@ -11,7 +11,7 @@ import { writeKeptColor } from "./write-kept-color";
  * @param document - page document
  * @param id - the field's id
  * @param value - the value written
- * @see docs/backlog/stories/E15-F16-US-041-underline-and-strike-through-colors.md
+ * @see US-041
  */
 function writeUnfocusedValue(document: Document, id: string, value: string): void {
   const field = readColorInput(document, id);
@@ -31,7 +31,7 @@ function writeUnfocusedValue(document: Document, id: string, value: string): voi
  *
  * @kind procedure
  * @param document - page document
- * @see docs/backlog/stories/E15-F16-US-041-underline-and-strike-through-colors.md
+ * @see US-041
  */
 export function writeFollowedColors(document: Document): void {
   const color = readShownColor(document, "text-color");

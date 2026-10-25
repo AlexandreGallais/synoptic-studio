@@ -31,7 +31,7 @@ const PLACEMENT_AND_PAINT: ReadonlySet<string> = new Set([
  * @param metrics - the metrics of its face, as `readTextMetrics` keeps them
  * @param text - the text read from the fields
  * @returns its lines shown and its block
- * @see docs/backlog/stories/E15-F17-US-048-fluid-changes-held-keys.md
+ * @see US-048
  */
 export function readTextMeasure(metrics: FontMetrics, text: Text): MeasuredText {
   const measuredValues = Object.entries(text).filter(([name]) => !PLACEMENT_AND_PAINT.has(name));

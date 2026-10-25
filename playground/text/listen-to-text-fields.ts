@@ -17,7 +17,7 @@ import { readTextModel } from "./read-text-model";
  *
  * @kind procedure
  * @param document - page document
- * @see docs/backlog/stories/E15-F17-US-057-box-size-kept.md
+ * @see US-057
  */
 function listenToBoxChoice(document: Document): void {
   const fit = selectElement(document, "text-fit");
@@ -58,7 +58,7 @@ function listenToOptions(document: Document, update: () => void): void {
  * @kind procedure
  * @param document - page document
  * @param update - redraws the playground
- * @see docs/backlog/stories/E15-F05-US-037-bold-gives-back-the-weight-and-no-sentence-case.md
+ * @see US-037
  */
 function listenToBold(document: Document, update: () => void): void {
   selectElement(document, "text-bold").addEventListener("click", () => {
@@ -85,7 +85,7 @@ function listenToBold(document: Document, update: () => void): void {
  * @kind procedure
  * @param document - page document
  * @param update - redraws the playground
- * @see docs/backlog/stories/E15-F05-US-031-place-a-text.md
+ * @see US-031
  */
 export function listenToTextFields(document: Document, update: () => void): void {
   const italic = selectElement(document, "text-italic");

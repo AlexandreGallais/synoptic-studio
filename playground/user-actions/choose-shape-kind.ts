@@ -7,7 +7,7 @@ import { chooseOption } from "./choose-option";
  *
  * @kind procedure
  * @param kind - `rectangle`, `polygon`, `round` or `text`
- * @see docs/backlog/stories/E02-F35-EN-142-playground-tests-without-tool-buttons.md
+ * @see EN-142
  */
 export function chooseShapeKind(kind: string): void {
   chooseOption("shape", kind);

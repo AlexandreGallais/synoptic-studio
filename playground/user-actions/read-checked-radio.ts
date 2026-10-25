@@ -5,7 +5,7 @@
  * @kind procedure
  * @param name - `name` of the group
  * @returns the value checked, empty when none is
- * @see docs/backlog/stories/E14-F11-EN-021-shared-test-helpers.md
+ * @see EN-021
  */
 export function readCheckedRadio(name: string): string {
   return (

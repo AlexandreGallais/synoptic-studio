@@ -31,4 +31,4 @@
 
 ## References
 
-ADR-0023, ADR-0065, ADR-0069, ADR-0072, ADR-0073, ADR-0101 (ADR-0051, removed), [EN-094](../backlog/stories/E17-F19-EN-094-adrs-reviewed-with-the-product-owner.md)
+ADR-0023, ADR-0065, ADR-0069, ADR-0072, ADR-0073, ADR-0101 (ADR-0051, removed), EN-094

@@ -28,4 +28,4 @@
 
 ## References
 
-ADR-0053, ADR-0060, ADR-0061, `DERIV-font-embedding`, `REF-WIKI-ISO-BASIC-LATIN`, [US-059](../backlog/stories/E15-F17-US-059-approved-fonts-only.md)
+ADR-0053, ADR-0060, ADR-0061, `DERIV-font-embedding`, `REF-WIKI-ISO-BASIC-LATIN`, US-059

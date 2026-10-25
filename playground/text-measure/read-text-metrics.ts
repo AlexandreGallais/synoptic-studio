@@ -15,7 +15,7 @@ import type { FontMetrics, Text } from "../../src";
  * @param document - page document
  * @param text - the text read from the fields
  * @returns the metrics of its face; undefined for a font without metrics nor fallback
- * @see docs/backlog/stories/E15-F17-US-048-fluid-changes-held-keys.md
+ * @see US-048
  */
 export function readTextMetrics(document: Document, text: Text): FontMetrics | undefined {
   const { kept } = readFontSession(document);

@@ -32,7 +32,7 @@ type HalfSizes = {
  * @kind procedure
  * @param corners - its four corners, in order
  * @returns the closed path data
- * @see docs/backlog/stories/E14-F12-US-022-handles-in-points-mode.md
+ * @see US-022
  */
 function createQuadrilateralPathData(corners: readonly Point[]): string {
   return `M${corners.map((corner) => formatCoordinatePair(corner)).join(" L")} Z`;
@@ -46,7 +46,7 @@ function createQuadrilateralPathData(corners: readonly Point[]): string {
  * @param end - where it ends, the control point
  * @param half - half the width of its stem and half the side of its square, in user units
  * @returns the path data of the bar and the square
- * @see docs/backlog/stories/E14-F12-US-022-handles-in-points-mode.md
+ * @see US-022
  */
 function createHandlePathData(point: Point, end: Point, half: HalfSizes): string {
   const along = subtract(end, point);
@@ -77,7 +77,7 @@ function createHandlePathData(point: Point, end: Point, half: HalfSizes): string
  * @param document - page document
  * @param corners - the corners as drawn
  * @returns one path per handle drawn
- * @see docs/backlog/stories/E14-F12-US-022-handles-in-points-mode.md
+ * @see US-022
  */
 export function createCurveHandleElements(
   document: Document,

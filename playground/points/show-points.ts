@@ -19,7 +19,7 @@ import type { ShapeReading } from "../shape";
  * @param document - page document
  * @param reading - valid shape
  * @param selection - vertices selected
- * @see docs/backlog/stories/E14-F10-US-029-round-tool.md
+ * @see US-029
  */
 function writeRadiusFields(
   document: Document,
@@ -49,7 +49,7 @@ function writeRadiusFields(
  * @param document - page document
  * @param reading - valid shape
  * @returns the handles to draw over the shape, none in Shape mode
- * @see docs/backlog/stories/E01-F03-US-013-points-list-selection.md
+ * @see US-013
  */
 export function showPoints(document: Document, reading: ShapeReading): readonly SVGPathElement[] {
   const contour = reading.corners.map((corner) => corner.point);

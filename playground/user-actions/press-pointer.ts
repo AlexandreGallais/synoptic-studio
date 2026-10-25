@@ -18,7 +18,7 @@ export type PointerPress = {
  * @param selector - CSS selector of the element
  * @param type - `pointerdown` or `pointermove`
  * @param press - where, and the buttons held
- * @see docs/backlog/stories/E15-F16-US-035-pick-a-color.md
+ * @see US-035
  */
 export function pressPointer(selector: string, type: string, press: PointerPress): void {
   selectPageElement(selector).dispatchEvent(

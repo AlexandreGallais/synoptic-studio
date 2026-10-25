@@ -76,7 +76,7 @@ The review was the Product Owner's tour of the whole Text tool in Chrome on 2026
 
 ## Limits and next epic
 
-- **The Direction field is to be removed.** Right to left is of no use for the Latin target, as for fonts; it stays for now and goes at the later epic on the editor's ease of use, where options that make no sense are dropped, the aim being the fewest options doing the most ([E02, ideas](../backlog/epics/E02-edit-shapes.md)).
+- **The Direction field is to be removed.** Right to left is of no use for the Latin target, as for fonts; it stays for now and goes at the later epic on the editor's ease of use, where options that make no sense are dropped, the aim being the fewest options doing the most (E02, ideas).
 - No hyphenation, no balanced wrap, no single-line option yet; Arabic and Indic scripts are not supported (ADR-0060).
 - Installed fonts only in Chrome and Edge; fonts forgotten at a reload until the editor keeps files (E02).
 - Apple Color Emoji must not be chosen yet: its 192 MB collection exhausts the page's memory.
@@ -94,6 +94,6 @@ Held with the Product Owner on 2026-10-16 (`REV-003`), as a tour of the whole Te
 | Remark | Where it went |
 | --- | --- |
 | Italic leaves the box as it is; the Product Owner prefers it so. | kept as built |
-| The text direction, right to left, is of no use: the target is the Latin script only, a strict choice as for fonts. Kept for now; it must be removed at the later UI/UX epic. | to-do in [E02, ideas](../backlog/epics/E02-edit-shapes.md); `docs/domain/shapes.md`, Text |
+| The text direction, right to left, is of no use: the target is the Latin script only, a strict choice as for fonts. Kept for now; it must be removed at the later UI/UX epic. | to-do in E02, ideas; `docs/domain/shapes.md`, Text |
 
 **Closure criteria.** The text cases of `docs/domain/shapes.md` render as specified in the playground: the four features validated on 2026-10-15, F17 on 2026-10-16, and the tour above. E15 is closed; its retrospective (RET-003) follows.

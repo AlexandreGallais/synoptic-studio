@@ -36,4 +36,4 @@
 
 ## References
 
-ADR-0022, ADR-0027, ADR-0049, ADR-0069, [EN-089](../backlog/stories/E17-F19-EN-089-font-files-read-once-per-test-run.md), [EN-090](../backlog/stories/E17-F19-EN-090-tests-without-over-testing.md)
+ADR-0022, ADR-0027, ADR-0049, ADR-0069, EN-089, EN-090

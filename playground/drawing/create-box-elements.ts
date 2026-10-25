@@ -16,7 +16,7 @@ import type { BoundingBox, Shape } from "../../src";
  * @param model - shape read from the inputs
  * @param straight - straight box of the drawn shape
  * @returns the polygon's box and, for a turned shape, its straight box and its frame
- * @see docs/backlog/stories/E01-F04-US-018-turn-a-shape.md
+ * @see US-018
  */
 export function createBoxElements(
   document: Document,

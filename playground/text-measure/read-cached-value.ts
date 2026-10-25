@@ -23,7 +23,7 @@ type CachedInput<S extends object> = {
  * @param input - the object and the plain inputs it is computed from
  * @param compute - computes it from them
  * @returns the value kept, or computed now
- * @see docs/backlog/stories/E15-F17-US-048-fluid-changes-held-keys.md
+ * @see US-048
  */
 export function readCachedValue<S extends object, T>(
   cache: WeakMap<S, CachedValue<T>>,

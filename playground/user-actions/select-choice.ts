@@ -7,7 +7,7 @@ import { selectPageElement } from "./select-page-element";
  * @param id - its id, without `#`
  * @returns the select element carrying that id
  * @throws {Error} when the page has no element of that id, or one that is not a select
- * @see docs/backlog/stories/E14-F11-EN-021-shared-test-helpers.md
+ * @see EN-021
  */
 export function selectChoice(id: string): HTMLSelectElement {
   const found = selectPageElement(`#${id}`);

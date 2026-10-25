@@ -8,7 +8,7 @@ import { selectElement, writeText } from "../page";
  *
  * @kind procedure
  * @param document - page document
- * @see docs/backlog/stories/E01-F03-US-013-points-list-selection.md
+ * @see US-013
  */
 export function showRefusedShape(document: Document): void {
   const list = selectElement(document, "points");

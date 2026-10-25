@@ -15,7 +15,7 @@ const DEFAULT_SHAPE = {
  *
  * @kind procedure
  * @param document - page document
- * @see docs/backlog/stories/E01-RET-001-retrospective-e01.md
+ * @see RET-001
  */
 export function writeDefaultShape(document: Document): void {
   writeStepValues(document, DEFAULT_SHAPE);

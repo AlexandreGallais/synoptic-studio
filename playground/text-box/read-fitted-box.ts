@@ -14,7 +14,7 @@ import type { Text } from "../../src";
  * @param document - page document
  * @param text - the text read from the fields, valid or not
  * @returns the fitted box's width and height, nothing when the text cannot be measured
- * @see docs/backlog/stories/E15-F17-US-057-box-size-kept.md
+ * @see US-057
  */
 export function readFittedBox(
   document: Document,

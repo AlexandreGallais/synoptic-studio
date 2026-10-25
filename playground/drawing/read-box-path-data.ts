@@ -11,7 +11,7 @@ import type { TurnedBox } from "../../src";
  * @param box - the box: its position, size and angle
  * @param inset - distance from the box's sides, in user units
  * @returns the `d` of the closed contour
- * @see docs/backlog/stories/E01-F04-US-018-turn-a-shape.md
+ * @see US-018
  */
 export function readBoxPathData(box: TurnedBox, inset: number): string {
   const corners = turnedBoxCorners(insetBox(box, inset), box);

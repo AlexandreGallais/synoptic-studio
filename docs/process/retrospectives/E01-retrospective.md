@@ -68,7 +68,7 @@ The improvement log held 88 rows and the feedback log 17; the retrospective open
 | Tools | a dev container | not now: one machine, Node.js pinned | — |
 | Tools | published previews of feature branches | not now: local previews suffice | — |
 | Tools | generated pages: board, traceability, commits per story; tests in a real browser | later: E12 | E12 |
-| Code | shared test helpers, one path writer, one pass per corner, folders of `model/` | planned: F11, first feature of E14 | `docs/backlog/features/E14-F11-code-base-ready-for-curves.md` |
+| Code | shared test helpers, one path writer, one pass per corner, folders of `model/` | planned: F11, first feature of E14 | `F11` |
 | Code | separate tests from code, folders that make sense | researched by SP-010 before any move | F11 |
 | Code | a state module for the playground, radii per shape kind, `boundingBox` on large lists, concave free shapes, old files without an anchor | later, with the features that need them | improvement log |
 | Code | references verified without a date | dated when their features come | `docs/references.md` |

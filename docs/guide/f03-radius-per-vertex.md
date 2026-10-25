@@ -36,7 +36,7 @@ Each corner of a rectangle or a regular polygon can have its own **rounding** (i
 
 ## Try it
 
-Run `npm run dev` and open `http://localhost:5173/?guide=epic&step=29`: the **Guided test** opens on the first step of F03 (steps 29 to 33). **Next** types the shape for you; the clicks on the points are yours, as each step says. The same steps are listed in the test cards of [US-012](../backlog/stories/E01-F03-US-012-points-mode.md#product-owner-test) and [US-013](../backlog/stories/E01-F03-US-013-points-list-selection.md#product-owner-test).
+Run `npm run dev` and open `http://localhost:5173/?guide=epic&step=29`: the **Guided test** opens on the first step of F03 (steps 29 to 33). **Next** types the shape for you; the clicks on the points are yours, as each step says. The same steps are listed in the test cards of US-012 and US-013.
 
 ## Limits
 

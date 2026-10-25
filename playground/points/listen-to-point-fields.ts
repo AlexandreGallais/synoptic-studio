@@ -24,7 +24,7 @@ type Target = {
  * @param axis - `x` or `y`, the coordinate typed
  * @param drawn - the point where it is drawn, `undefined` when there is none
  * @returns its new place, `undefined` when nothing moves
- * @see docs/backlog/stories/E01-F08-US-014-convert-and-move.md
+ * @see US-014
  */
 function readTypedPoint(
   document: Document,
@@ -45,7 +45,7 @@ function readTypedPoint(
  * @param document - page document
  * @param shape - free shape shown (the rectangle included)
  * @param target - the point and the coordinate typed
- * @see docs/backlog/stories/E01-F08-US-014-convert-and-move.md
+ * @see US-014
  */
 function writeMovedPoint(document: Document, shape: FreeShape, target: Target): void {
   const point = readTypedPoint(
@@ -65,7 +65,7 @@ function writeMovedPoint(document: Document, shape: FreeShape, target: Target): 
  * @kind procedure
  * @param document - page document
  * @returns its number from 0, `undefined` when none or several are selected
- * @see docs/backlog/stories/E01-F08-US-014-convert-and-move.md
+ * @see US-014
  */
 function readOnlySelected(document: Document): number | undefined {
   const { selected } = readSelection(document);
@@ -79,7 +79,7 @@ function readOnlySelected(document: Document): number | undefined {
  * @kind procedure
  * @param document - page document
  * @param axis - `x` or `y`, the field typed in
- * @see docs/backlog/stories/E01-F08-US-014-convert-and-move.md
+ * @see US-014
  */
 function movePointTyped(document: Document, axis: "x" | "y"): void {
   const shape = readEditedFreeShape(document);
@@ -99,7 +99,7 @@ function movePointTyped(document: Document, axis: "x" | "y"): void {
  * @kind procedure
  * @param document - page document
  * @param update - redraws the playground
- * @see docs/backlog/stories/E14-F10-US-030-convert-round-shape.md
+ * @see US-030
  */
 function listenToConvertButtons(document: Document, update: () => void): void {
   selectElement(document, "convert").addEventListener("click", () => {
@@ -116,7 +116,7 @@ function listenToConvertButtons(document: Document, update: () => void): void {
  * @kind procedure
  * @param document - page document
  * @param update - redraws the playground
- * @see docs/backlog/stories/E01-F08-US-014-convert-and-move.md
+ * @see US-014
  */
 export function listenToPointFields(document: Document, update: () => void): void {
   for (const axis of ["x", "y"] as const) {

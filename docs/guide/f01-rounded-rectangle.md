@@ -34,7 +34,7 @@ Type a width, a height and a corner radius: the rectangle is drawn with its corn
 
 ## Try it
 
-Run `npm run dev` and open `http://localhost:5173/?guide=epic&step=1`: the **Guided test** card at the bottom of the drawing takes you through the nine steps of the test card one at a time — **Next** types the values for you, the card says what happens and what to look at. The same steps are listed in the test card of [US-003](../backlog/stories/E01-F01-US-003-round-rectangle-corners.md#product-owner-test).
+Run `npm run dev` and open `http://localhost:5173/?guide=epic&step=1`: the **Guided test** card at the bottom of the drawing takes you through the nine steps of the test card one at a time — **Next** types the values for you, the card says what happens and what to look at. The same steps are listed in the test card of US-003.
 
 ## Limits
 

@@ -10,7 +10,7 @@ import type { BoundingBox } from "../../src";
  * @kind procedure
  * @param document - page document
  * @param box - straight box of the drawn shape or text
- * @see docs/backlog/stories/E15-F14-US-039-straight-box-of-a-turned-text.md
+ * @see US-039
  */
 export function writeStraightBoxLine(document: Document, box: BoundingBox): void {
   const size = boxSize(box);

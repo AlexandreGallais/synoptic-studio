@@ -44,7 +44,7 @@ The library's server is still started through `cargo run` by `.mcp.json`, about 
 
 ## Fewer packages
 
-The dev packages went from 38 at E17's start to 23 at F21's (F19 removed ESLint, Prettier and TypeDoc) and to 13 now. F21 rewrote and removed husky, lint-staged, the three of commitlint, validate-branch-name, secretlint and its preset, npm-check-updates and knip; release-please, a GitHub Action, went too. What is left is each kept with its reason in [F21's table](../backlog/features/E17-F21-agent-tools-in-rust.md#the-dev-packages-one-by-one): Vite, Vitest and VitePress, TypeScript, oxlint and oxfmt, happy-dom, fast-check, the Node.js types and Mermaid. The library itself still has no dependency. Every package whose code or test cases were ported is named with its licence in `NOTICE` and `THIRD-PARTY-LICENSES.md` (ADR-0076).
+The dev packages went from 38 at E17's start to 23 at F21's (F19 removed ESLint, Prettier and TypeDoc) and to 13 now. F21 rewrote and removed husky, lint-staged, the three of commitlint, validate-branch-name, secretlint and its preset, npm-check-updates and knip; release-please, a GitHub Action, went too. What is left is each kept with its reason in F21's table: Vite, Vitest and VitePress, TypeScript, oxlint and oxfmt, happy-dom, fast-check, the Node.js types and Mermaid. The library itself still has no dependency. Every package whose code or test cases were ported is named with its licence in `NOTICE` and `THIRD-PARTY-LICENSES.md` (ADR-0076).
 
 ## The release, by our own tool
 
@@ -58,7 +58,7 @@ The notes of 0.2.0, drafted again by the tool and rewritten by the agent (EN-112
 | the tool's draft | 23: one per story, the tooling, tests and backlog left out | 34 | 302 |
 | the draft rewritten | 14: related stories merged, a change undone within the release dropped | 24 | 236 |
 
-The first lines of each, to compare (release-please's whole section is in the GitHub release of 0.2.0, `CHANGELOG.md` being gone since EN-117, ours in [EN-112](../backlog/stories/E17-F21-EN-112-release-tool-in-rust.md)):
+The first lines of each, to compare (release-please's whole section is in the GitHub release of 0.2.0, `CHANGELOG.md` being gone since EN-117, ours in EN-112):
 
 | release-please's 0.2.0 | Ours |
 | --- | --- |

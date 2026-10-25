@@ -15,7 +15,7 @@ import type { Text } from "../../src";
  * @param side - the side as the text holds it, `NaN` when emptied, and as measured
  * @param side.fitted - the side measured, rounded up
  * @param side.typed - the side the field holds
- * @see docs/backlog/stories/E15-F17-US-057-box-size-kept.md
+ * @see US-057
  */
 function writeFittedSide(
   document: Document,
@@ -40,7 +40,7 @@ function writeFittedSide(
  * @kind procedure
  * @param document - page document
  * @param text - the text read from the fields, valid or not
- * @see docs/backlog/stories/E15-F17-US-057-box-size-kept.md
+ * @see US-057
  */
 export function writeFittedBox(document: Document, text: Text): void {
   const box = text.isInBox ? readFittedBox(document, text) : undefined;

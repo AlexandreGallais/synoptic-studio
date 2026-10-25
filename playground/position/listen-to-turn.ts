@@ -17,7 +17,7 @@ type TurnButton = {
  * @kind procedure
  * @param document - page document
  * @returns the angle kept from 0 to 359
- * @see docs/backlog/stories/E01-F04-US-018-turn-a-shape.md
+ * @see US-018
  */
 function readShownAngle(document: Document): number {
   return Number.isSafeInteger(readNumber(document, "angle")) ? readAngle(document) : 0;
@@ -30,7 +30,7 @@ function readShownAngle(document: Document): number {
  * @param document - page document
  * @param button - id of the button and the degrees it turns, clockwise when positive
  * @param update - redraws the page
- * @see docs/backlog/stories/E01-F04-US-018-turn-a-shape.md
+ * @see US-018
  */
 function listenToTurnButton(document: Document, button: TurnButton, update: () => void): void {
   selectElement(document, button.id).addEventListener("click", () => {
@@ -47,7 +47,7 @@ function listenToTurnButton(document: Document, button: TurnButton, update: () =
  * @kind procedure
  * @param document - page document
  * @param update - redraws the page
- * @see docs/backlog/stories/E01-F04-US-018-turn-a-shape.md
+ * @see US-018
  */
 export function listenToTurn(document: Document, update: () => void): void {
   const angle = selectElement(document, "angle");

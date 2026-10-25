@@ -16,7 +16,7 @@ import type { GuidedStep } from "../guided-steps";
  * @kind procedure
  * @param document - page document
  * @param shape - `rectangle`, `polygon`, `round` or `text`
- * @see docs/backlog/stories/E01-F02-US-007-shape-selector-playground.md
+ * @see US-007
  */
 function writeShapeValue(document: Document, shape: string): void {
   const select = selectElement(document, "shape");
@@ -32,7 +32,7 @@ function writeShapeValue(document: Document, shape: string): void {
  *
  * @kind procedure
  * @param document - page document
- * @see docs/backlog/stories/E01-F08-VAL-005-validate-node-editing.md
+ * @see VAL-005
  */
 function writeKeptShapeCleared(document: Document): void {
   // A step types one radius for every vertex (F03.AC2), and selects no vertex.
@@ -57,7 +57,7 @@ function writeKeptShapeCleared(document: Document): void {
  * @kind procedure
  * @param document - page document
  * @param step - step whose shape and numbers are typed
- * @see docs/backlog/stories/E01-F02-VAL-002-validate-polygon.md
+ * @see VAL-002
  */
 export function writeStepValues(document: Document, step: GuidedStep): void {
   writeKeptShapeCleared(document);

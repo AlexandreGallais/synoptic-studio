@@ -12,7 +12,7 @@
 ## Decision
 
 1. **Prettier keeps padding Markdown tables** until F19: `proseWrap` is unchanged, no plugin is added.
-2. **F19's formatter prints Markdown tables without padding and keeps paragraphs as written**: a criterion of F19 ([feature](../backlog/features/E17-F19-oxc-and-rust-tools.md)).
+2. **F19's formatter prints Markdown tables without padding and keeps paragraphs as written**: a criterion of F19 (feature F19).
 3. **F18.AC4** keeps only the logs merged by union, rows kept unique (EN-048, `tests/logs.test.ts`).
 
 ## Reasons
@@ -30,4 +30,4 @@
 
 ## References
 
-ADR-0065, `REF-PRETTIER-TABLE-CODE`, [EN-048](../backlog/stories/E17-F18-EN-048-tables-without-padding-and-union-logs.md), [note 0022](../research/notes/0022-f18-parallel-run.md)
+ADR-0065, `REF-PRETTIER-TABLE-CODE`, EN-048, [note 0022](../research/notes/0022-f18-parallel-run.md)

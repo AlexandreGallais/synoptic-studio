@@ -16,7 +16,7 @@ const SHAPE_VALUE_FIELDS =
  * @kind procedure
  * @param document - page document
  * @param reading - shape read from the inputs
- * @see docs/backlog/stories/E01-F01-US-002-sharp-rectangle-in-playground.md
+ * @see US-002
  */
 export function writeValidity(document: Document, reading: ShapeReading): void {
   for (const input of document.querySelectorAll(SHAPE_VALUE_FIELDS)) {

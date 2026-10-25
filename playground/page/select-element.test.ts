@@ -33,7 +33,7 @@ describe("selectElement, by the document's map of ids (EN-150, REF-HAPPY-DOM-QUE
     const own = documentWith('<p id="a"></p>');
 
     expect(() => selectElement(own, "missing")).toThrow(
-      "Playground page without #missing (docs/backlog/stories/E01-F02-US-007-shape-selector-playground.md).",
+      "Playground page without #missing (US-007).",
     );
   });
 });

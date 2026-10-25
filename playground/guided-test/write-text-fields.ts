@@ -10,7 +10,7 @@ import type { GuidedText } from "../guided-steps";
  * @param document - page document
  * @param id - its `id` attribute, without `#`
  * @param value - the value written
- * @see docs/backlog/stories/E15-F05-VAL-014-validate-f05.md
+ * @see VAL-014
  */
 function writeFieldValue(document: Document, id: string, value: string): void {
   // An input, a text area and a select each hold their value in `value`.
@@ -24,7 +24,7 @@ function writeFieldValue(document: Document, id: string, value: string): void {
  * @param document - page document
  * @param id - its `id` attribute, without `#`
  * @param isChecked - whether it is ticked
- * @see docs/backlog/stories/E15-F05-VAL-014-validate-f05.md
+ * @see VAL-014
  */
 function writeCheckedValue(document: Document, id: string, isChecked: boolean): void {
   const box = selectElement(document, id);
@@ -42,7 +42,7 @@ function writeCheckedValue(document: Document, id: string, isChecked: boolean): 
  * @kind procedure
  * @param document - page document
  * @param text - the fields typed
- * @see docs/backlog/stories/E15-F14-VAL-015-validate-f14.md
+ * @see VAL-015
  */
 function writeTextBoxValues(document: Document, text: GuidedText): void {
   for (const [id, value] of [
@@ -66,7 +66,7 @@ function writeTextBoxValues(document: Document, text: GuidedText): void {
  * @kind procedure
  * @param document - page document
  * @param text - the fields typed
- * @see docs/backlog/stories/E15-F16-US-041-underline-and-strike-through-colors.md
+ * @see US-041
  */
 function writeTextStrokeColorValues(document: Document, text: GuidedText): void {
   writeCheckedValue(document, "text-underline-follows", !text.hasUnderlineColor);
@@ -85,7 +85,7 @@ function writeTextStrokeColorValues(document: Document, text: GuidedText): void 
  * @kind procedure
  * @param document - page document
  * @param text - the fields typed
- * @see docs/backlog/stories/E15-F15-US-036-import-choose-and-embed-a-font.md
+ * @see US-036
  */
 function writeTextStyleValues(document: Document, text: GuidedText): void {
   writeCheckedValue(document, "text-underline", text.isUnderlined);
@@ -106,7 +106,7 @@ function writeTextStyleValues(document: Document, text: GuidedText): void {
  * @kind procedure
  * @param document - page document
  * @param text - every field of a text but its fallback
- * @see docs/backlog/stories/E15-F05-VAL-014-validate-f05.md
+ * @see VAL-014
  */
 export function writeTextFields(document: Document, text: GuidedText): void {
   for (const [id, value] of [

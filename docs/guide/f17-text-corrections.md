@@ -4,7 +4,7 @@
 
 The text has three fewer options and five fewer defects, all found when E15 was validated on 2026-10-15. A word too long for its box always stays whole, the lines of a box always fill the same way, and no text is written with an HTML layer. Fonts held in a collection file are read, a weight such as 450 is drawn with the face it is measured with, values held down with an arrow key redraw without lag, a background band ends with its line, and a turned text shows its frames as a turned shape does.
 
-Feature: [F17](../backlog/features/E15-F17-text-corrections-after-the-e15-validation.md); causes of the defects: [research note 0021](../research/notes/0021-f17-latin-script-and-defects.md); decision on the HTML layer and embedded fonts: [ADR-0060](../adr/0060-no-html-layer-and-fonts-embedded-at-export.md).
+Feature: F17; causes of the defects: [research note 0021](../research/notes/0021-f17-latin-script-and-defects.md); decision on the HTML layer and embedded fonts: [ADR-0060](../adr/0060-no-html-layer-and-fonts-embedded-at-export.md).
 
 ## What changed and why
 
@@ -45,7 +45,7 @@ Feature: [F17](../backlog/features/E15-F17-text-corrections-after-the-e15-valida
 
 ## Readings to confirm
 
-The agent's readings, written in the domain as provisional ([VAL-018](../backlog/stories/E15-F17-VAL-018-validate-f17.md)); each has its line on the checklist, marked "Reading to confirm".
+The agent's readings, written in the domain as provisional (VAL-018); each has its line on the checklist, marked "Reading to confirm".
 
 | Story | Reading | Example |
 | --- | --- | --- |
@@ -55,7 +55,7 @@ The agent's readings, written in the domain as provisional ([VAL-018](../backlog
 
 ## Questions from the audit
 
-Found by [AUD-019](../backlog/stories/E15-F17-AUD-019-audit-f17.md); nothing is built for them yet.
+Found by AUD-019; nothing is built for them yet.
 
 | Point | What was seen | Options |
 | --- | --- | --- |

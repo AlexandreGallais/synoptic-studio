@@ -27,4 +27,4 @@
 
 ## References
 
-ADR-0078, ADR-0080, ADR-0087, `REF-GITHOOKS`, [EN-131](../backlog/stories/E17-F29-EN-131-binaries-rebuilt-after-a-pull.md), [AUD-031](../backlog/stories/E17-F29-AUD-031-audit-f29.md), `docs/tooling/git-workflow.md`
+ADR-0078, ADR-0080, ADR-0087, `REF-GITHOOKS`, EN-131, AUD-031, `docs/tooling/git-workflow.md`

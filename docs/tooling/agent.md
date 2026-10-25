@@ -47,7 +47,7 @@ flowchart LR
 | `researcher` | a research spike (`SP`) | the story worker's, `WebFetch`, `WebSearch` | `project-rules`, `worker-brief`, `spike` |
 
 - **A fresh worker per story**, never one agent chaining stories: an agent's cost is its growing context re-read at each call, not its start (EN-122's worker ended near 255,000 tokens, a start costs about 10,600; ADR-0086).
-- **No agent for small tasks**: the main thread writes the statuses, the journal, the `done` commits and the merges itself (ADR-0086).
+- **No agent for small tasks**: the main thread writes the statuses, the journal and the merges itself (ADR-0086); a story has no `done` commit since its status lives in the records (EN-154).
 - A task no type fits runs on `general-purpose`, given the brief's path inside its worktree.
 - A rule a typed worker misses goes into its brief or `project-rules`, not into every agent's context.
 - A story's merge and finish stay with the main thread (`story:finish`).

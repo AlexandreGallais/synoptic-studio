@@ -33,7 +33,7 @@ type TextBoxOptions = Pick<
  * @kind procedure
  * @param document - page document
  * @returns the options of its box, valid or not
- * @see docs/backlog/stories/E15-F14-US-033-put-a-text-in-a-box.md
+ * @see US-033
  */
 export function readTextBoxOptions(document: Document): TextBoxOptions {
   // oxlint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-type-assertion -- the page offers only the values of this type

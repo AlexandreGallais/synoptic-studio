@@ -14,7 +14,7 @@ import { readDrawingPoint } from "./read-drawing-point";
  * @kind procedure
  * @param document - page document
  * @param update - redraws the page from the values typed
- * @see docs/backlog/stories/E02-F35-US-063-a-click-adds-a-shape.md
+ * @see US-063
  */
 export function listenToPlacing(document: Document, update: () => void): void {
   selectElement(document, "canvas").addEventListener("click", (event) => {

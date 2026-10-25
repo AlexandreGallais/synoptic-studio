@@ -31,7 +31,7 @@ At the validation, rule C was compared with rule B, equal sides at any cost, dra
 
 ## Try it
 
-Run `npm run dev` and open `http://localhost:5173/?guide=epic&step=58`: the **Guided test** opens on the first step of F06 (steps 58 to 66). **Next** types the polygon for you, ticked or not as the step says; the clicks are yours. The same steps are in the test card of [US-021](../backlog/stories/E01-F06-US-021-stretched-option.md#product-owner-test).
+Run `npm run dev` and open `http://localhost:5173/?guide=epic&step=58`: the **Guided test** opens on the first step of F06 (steps 58 to 66). **Next** types the polygon for you, ticked or not as the step says; the clicks are yours. The same steps are in the test card of US-021.
 
 ## Limits
 

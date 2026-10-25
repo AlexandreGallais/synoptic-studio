@@ -12,7 +12,7 @@ import { selectElement } from "./select-element";
  * @param document - page document
  * @param id - `corners`, `width`, `height` or `radius`
  * @param value - number to show in the input
- * @see docs/backlog/stories/E01-F01-VAL-001-validate-rectangle.md
+ * @see VAL-001
  */
 export function writeInputValue(document: Document, id: string, value: number): void {
   const input = selectElement(document, id);

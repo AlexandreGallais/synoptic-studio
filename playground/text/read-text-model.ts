@@ -19,7 +19,7 @@ const FALLBACK = "sans-serif";
  * @kind procedure
  * @param document - page document
  * @returns whether each is on
- * @see docs/backlog/stories/E15-F05-US-031-place-a-text.md
+ * @see US-031
  */
 function readTextSwitches(
   document: Document,
@@ -51,7 +51,7 @@ type TextStrokeColors = Pick<
  * @kind procedure
  * @param document - page document
  * @returns the strokes' colors, valid or not
- * @see docs/backlog/stories/E15-F16-US-041-underline-and-strike-through-colors.md
+ * @see US-041
  */
 function readTextStrokeColors(document: Document): TextStrokeColors {
   return {
@@ -74,7 +74,7 @@ function readTextStrokeColors(document: Document): TextStrokeColors {
  * @kind procedure
  * @param document - page document
  * @returns the text, valid or not
- * @see docs/backlog/stories/E15-F05-US-031-place-a-text.md
+ * @see US-031
  */
 export function readTextModel(document: Document): Text {
   // oxlint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-type-assertion -- the page offers only the values of this type

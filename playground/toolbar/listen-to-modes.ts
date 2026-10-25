@@ -12,7 +12,7 @@ const MODES = ["mode-shape", "mode-points"];
  * @kind procedure
  * @param document - page document
  * @param pressed - id of the button pressed
- * @see docs/backlog/stories/E01-F03-US-012-points-mode.md
+ * @see US-012
  */
 function writePressedMode(document: Document, pressed: string): void {
   for (const id of MODES) {
@@ -27,7 +27,7 @@ function writePressedMode(document: Document, pressed: string): void {
  * @kind procedure
  * @param document - page document
  * @param update - redraws the playground
- * @see docs/backlog/stories/E01-F03-US-012-points-mode.md
+ * @see US-012
  */
 export function listenToModes(document: Document, update: () => void): void {
   for (const id of MODES) {

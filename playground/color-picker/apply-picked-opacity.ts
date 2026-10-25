@@ -13,7 +13,7 @@ import { showColorPicker } from "./show-color-picker";
  * @param document - page document
  * @param opacity - the opacity, an integer from 0 to 100
  * @param update - redraws the playground
- * @see docs/backlog/stories/E15-F16-US-035-pick-a-color.md
+ * @see US-035
  */
 export function applyPickedOpacity(document: Document, opacity: number, update: () => void): void {
   const swatch = readOpenSwatch(document);

@@ -4,8 +4,8 @@
 
 ## Context
 
-- F21's table of dev packages (2026-10-17) rewrites husky: "a Rust `hooks install` sets the hooks folder once; the guard on `core.hooksPath` stays for the agent's commands, the install named in the ADR" ([F21](../backlog/features/E17-F21-agent-tools-in-rust.md)).
-- EN-108 removed husky, lint-staged, commitlint and validate-branch-name: the hooks became tracked shell files of `.githooks/` that call the release binaries by their path through `.githooks/tool.sh`, and `git-hooks install` (`tools/git-hooks/src/install.rs`) sets `core.hooksPath` ([EN-108](../backlog/stories/E17-F21-EN-108-git-hooks-in-rust.md)). It left the ADR to the main thread.
+- F21's table of dev packages (2026-10-17) rewrites husky: "a Rust `hooks install` sets the hooks folder once; the guard on `core.hooksPath` stays for the agent's commands, the install named in the ADR" (F21).
+- EN-108 removed husky, lint-staged, commitlint and validate-branch-name: the hooks became tracked shell files of `.githooks/` that call the release binaries by their path through `.githooks/tool.sh`, and `git-hooks install` (`tools/git-hooks/src/install.rs`) sets `core.hooksPath` (EN-108). It left the ADR to the main thread.
 - ADR-0078, written by EN-104 before EN-108, names `.husky/` as the Git hooks that call the binaries, and `.husky/pre-push` and `.husky/commit-msg` among its consequences.
 - husky 9.1.7 set `core.hooksPath` to `.husky/_` and wrote a stub for each of 14 hook names there, in an ignored folder, each stub running `.husky/<name>` (`REF-HUSKY-INSTALL`).
 - Git runs the hooks of the folder `core.hooksPath` names, and "a relative path is taken as relative to the directory where the hooks are run": the root of the working tree in a non-bare repository (`REF-GIT-HOOKS-PATH`). The setting lives in the common `.git/config`, so the main checkout and every linked worktree read the same value (`REF-GIT-WORKTREE`).
@@ -33,4 +33,4 @@
 
 ## References
 
-ADR-0021, ADR-0073, ADR-0078, `REF-GIT-HOOKS-PATH`, `REF-GIT-WORKTREE`, `REF-HUSKY-INSTALL`, [EN-108](../backlog/stories/E17-F21-EN-108-git-hooks-in-rust.md), [EN-113](../backlog/stories/E17-F21-EN-113-clean-up-of-e17.md), `docs/tooling/git-workflow.md`
+ADR-0021, ADR-0073, ADR-0078, `REF-GIT-HOOKS-PATH`, `REF-GIT-WORKTREE`, `REF-HUSKY-INSTALL`, EN-108, EN-113, `docs/tooling/git-workflow.md`

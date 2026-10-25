@@ -40,7 +40,7 @@ function createCirclePathData(center: Point, radius: number): string {
  * @param vertices - vertices of the contour, in drawing order (Q11)
  * @param selected - numbers of the selected vertices, from 0
  * @returns the rings, then one `<path>` per vertex, vertex 1 last
- * @see docs/backlog/stories/E01-F03-US-012-points-mode.md
+ * @see US-012
  */
 export function createHandleElements(
   document: Document,

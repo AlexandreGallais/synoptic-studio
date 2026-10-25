@@ -17,7 +17,7 @@ import { showColorPicker, updateColorPicker } from "../color-picker";
  * @kind procedure
  * @param document - page document
  * @param update - redraws the playground
- * @see docs/backlog/stories/E15-F16-US-035-pick-a-color.md
+ * @see US-035
  */
 export function listenToColorFields(document: Document, update: () => void): void {
   for (const swatch of document.querySelectorAll<HTMLElement>(".swatch")) {

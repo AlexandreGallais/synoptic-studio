@@ -50,7 +50,7 @@ type ChangedHandles = {
  * @kind procedure
  * @param document - page document
  * @returns the shape and the point, or `undefined`
- * @see docs/backlog/stories/E14-F12-US-022-handles-in-points-mode.md
+ * @see US-022
  */
 function readEditedPoint(document: Document): EditedPoint | undefined {
   const shape = readEditedFreeShape(document);
@@ -67,7 +67,7 @@ function readEditedPoint(document: Document): EditedPoint | undefined {
  * @param change - how the handles change
  * @param edited - the shape and the point selected
  * @returns what to store, or `undefined` when nothing changes
- * @see docs/backlog/stories/E14-F12-US-022-handles-in-points-mode.md
+ * @see US-022
  */
 function readAppliedChange(
   document: Document,
@@ -88,7 +88,7 @@ function readAppliedChange(
  * @param document - page document
  * @param change - how the handles change
  * @returns what to store, or `undefined` when nothing changes
- * @see docs/backlog/stories/E14-F12-US-022-handles-in-points-mode.md
+ * @see US-022
  */
 function readChangedHandles(document: Document, change: HandlesChange): ChangedHandles | undefined {
   const edited = readEditedPoint(document);
@@ -104,7 +104,7 @@ function readChangedHandles(document: Document, change: HandlesChange): ChangedH
  * @param document - page document
  * @param change - how the handles change
  * @param update - the page's redraw
- * @see docs/backlog/stories/E14-F12-US-022-handles-in-points-mode.md
+ * @see US-022
  */
 function writeChangedHandles(document: Document, change: HandlesChange, update: () => void): void {
   const changed = readChangedHandles(document, change);
@@ -149,7 +149,7 @@ type TypedField = {
  * @param document - page document
  * @param field - which handle and which of its two values were typed
  * @returns the handles after the typing, or `undefined`
- * @see docs/backlog/stories/E14-F12-US-024-handles-as-angle-and-length.md
+ * @see US-024
  */
 function readTypedHandles(
   handles: Handles,
@@ -183,7 +183,7 @@ function readTypedHandles(
  * @param frame - what it is read against
  * @param move - which value, its new value, the angle kept, the way chosen
  * @returns the two values to type
- * @see docs/backlog/stories/E14-F12-US-024-handles-as-angle-and-length.md
+ * @see US-024
  */
 function readTypedValues(
   handle: Vector,
@@ -204,7 +204,7 @@ function readTypedValues(
  * @param frame - what that handle is read against
  * @param move - the handle, which value, its new value, the angle kept, the way chosen
  * @returns the handles after the move, or `undefined` when the values are refused
- * @see docs/backlog/stories/E14-F12-US-024-handles-as-angle-and-length.md
+ * @see US-024
  */
 function readMovedHandle(
   handles: Handles,
@@ -223,7 +223,7 @@ function readMovedHandle(
  * @param handles - handles as drawn
  * @param document - page document
  * @returns the handles in that mode, or `undefined`
- * @see docs/backlog/stories/E14-F12-US-022-handles-in-points-mode.md
+ * @see US-022
  */
 function readChosenMode(handles: Handles, document: Document): Handles | undefined {
   const list = selectElement(document, "handle-mode");
@@ -241,7 +241,7 @@ function readChosenMode(handles: Handles, document: Document): Handles | undefin
  * @kind procedure
  * @param document - page document
  * @param field - which handle and which of its two values were typed
- * @see docs/backlog/stories/E14-F12-US-024-handles-as-angle-and-length.md
+ * @see US-024
  */
 function writeTypedAngle(document: Document, field: TypedField): void {
   const selected = readSelectedCorner(document, readShape(document));
@@ -265,7 +265,7 @@ function writeTypedAngle(document: Document, field: TypedField): void {
  * @kind procedure
  * @param document - page document
  * @param update - the page's redraw
- * @see docs/backlog/stories/E14-F12-US-022-handles-in-points-mode.md
+ * @see US-022
  */
 export function listenToHandleFields(document: Document, update: () => void): void {
   const fields = (["before", "after"] as const).flatMap((end) =>

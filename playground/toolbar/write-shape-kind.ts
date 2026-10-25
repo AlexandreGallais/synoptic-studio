@@ -16,7 +16,7 @@ const TITLES = new Map([
  *
  * @kind procedure
  * @param document - page document
- * @see docs/backlog/stories/E02-F35-US-063-a-click-adds-a-shape.md
+ * @see US-063
  */
 export function writeShapeKind(document: Document): void {
   const kind = readShapeKind(document);

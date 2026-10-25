@@ -8,7 +8,7 @@ import { selectElement } from "../page";
  * @param document - page document
  * @param id - the control's `id`, without `#`
  * @param isDisabled - whether it cannot be used
- * @see docs/backlog/stories/E15-F17-US-059-approved-fonts-only.md
+ * @see US-059
  */
 function writeDisabled(document: Document, id: string, isDisabled: boolean): void {
   selectElement(document, id).toggleAttribute("disabled", isDisabled);
@@ -24,7 +24,7 @@ function writeDisabled(document: Document, id: string, isDisabled: boolean): voi
  *
  * @kind procedure
  * @param document - page document
- * @see docs/backlog/stories/E15-F17-US-059-approved-fonts-only.md
+ * @see US-059
  */
 export function writeFontAvailability(document: Document): void {
   const session = readFontSession(document);

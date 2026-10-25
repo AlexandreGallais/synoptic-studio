@@ -6,7 +6,7 @@ import { selectInput } from "./select-input";
  * @kind procedure
  * @param id - input id
  * @param value - typed text
- * @see docs/backlog/stories/E14-F11-EN-021-shared-test-helpers.md
+ * @see EN-021
  */
 export function typeValue(id: string, value: string): void {
   const input = selectInput(id);

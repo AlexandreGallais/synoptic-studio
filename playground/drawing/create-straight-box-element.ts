@@ -51,7 +51,7 @@ type DashSizes = {
  * @param from - its first coordinate along the side
  * @param sizes - the dashes' length and thickness, in user units
  * @returns the rectangle's path data
- * @see docs/backlog/stories/E01-F04-US-018-turn-a-shape.md
+ * @see US-018
  */
 function readDash(side: Side, from: number, sizes: DashSizes): string {
   const to = Math.min(from + sizes.length, side.end);
@@ -70,7 +70,7 @@ function readDash(side: Side, from: number, sizes: DashSizes): string {
  * @param side - one of the four sides of the box
  * @param sizes - the dashes' length, period and thickness, in user units
  * @returns the dashes' path data
- * @see docs/backlog/stories/E01-F04-US-018-turn-a-shape.md
+ * @see US-018
  */
 function readSideDashes(side: Side, sizes: DashSizes): string {
   const count = Math.max(ceiling((side.end - side.start) / sizes.period), 0);
@@ -93,7 +93,7 @@ function readSideDashes(side: Side, sizes: DashSizes): string {
  * @param document - page document
  * @param box - straight box of the drawn shape
  * @returns the dashed frame's `<path>`
- * @see docs/backlog/stories/E01-F04-US-018-turn-a-shape.md
+ * @see US-018
  */
 export function createStraightBoxElement(document: Document, box: BoundingBox): SVGPathElement {
   const { scale } = readView(document);

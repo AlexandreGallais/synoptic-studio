@@ -48,7 +48,7 @@ Rules: [domain, "Text"](../domain/shapes.md#text) (Fonts from files, Embedded fo
 
 ## Decided by the agent, to confirm
 
-Each is built as written and shown by its step; the full list, with its examples, is in [VAL-017](../backlog/stories/E15-F15-VAL-017-validate-f15.md#decisions-to-confirm). Steps saying “Nothing to try” need a font file not at hand: the tests prove them, the step asks to confirm the rule.
+Each is built as written and shown by its step; the full list, with its examples, is in VAL-017. Steps saying “Nothing to try” need a font file not at hand: the tests prove them, the step asks to confirm the rule.
 
 | # | Question | As built | Step |
 | --- | --- | --- | --- |

@@ -5,7 +5,7 @@ import { openPage } from "./open-page";
  *
  * @kind procedure
  * @param step - number of the step, from 1
- * @see docs/backlog/stories/E14-F11-EN-021-shared-test-helpers.md
+ * @see EN-021
  */
 export function openOnStep(step: number): void {
   openPage(`?step=${String(step)}`);

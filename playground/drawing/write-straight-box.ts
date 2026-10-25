@@ -11,7 +11,7 @@ import type { BoundingBox } from "../../src";
  * @param document - page document
  * @param id - id of the field
  * @param value - value to show
- * @see docs/backlog/stories/E01-F04-US-018-turn-a-shape.md
+ * @see US-018
  */
 function writeUntypedValue(document: Document, id: string, value: number): void {
   if (document.activeElement?.id !== id) {
@@ -26,7 +26,7 @@ function writeUntypedValue(document: Document, id: string, value: number): void 
  * @kind procedure
  * @param document - page document
  * @param box - straight box of the drawn shape
- * @see docs/backlog/stories/E01-F04-US-018-turn-a-shape.md
+ * @see US-018
  */
 export function writeStraightBox(document: Document, box: BoundingBox): void {
   writeUntypedValue(document, "shape-x", box.minX);

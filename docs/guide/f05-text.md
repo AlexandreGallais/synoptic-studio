@@ -75,7 +75,7 @@ The two browser checks: "HH" in Inter 16 with letter spacing 10 measures 33.7812
 
 ## Decided by the agent, to confirm
 
-Each was built as the first option and is shown by its step; the full list, with every option, is in [VAL-014](../backlog/stories/E15-F05-VAL-014-validate-f05.md#decisions-to-confirm).
+Each was built as the first option and is shown by its step; the full list, with every option, is in VAL-014.
 
 | Question | As built | Step |
 | --- | --- | --- |

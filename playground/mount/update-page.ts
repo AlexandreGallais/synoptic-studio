@@ -14,7 +14,7 @@ import { updatePlayground } from "./update-playground";
  * @kind procedure
  * @param document - the playground's document, its fields read
  * @param isText - whether the shape edited is a text
- * @see docs/backlog/stories/E01-F01-US-002-sharp-rectangle-in-playground.md
+ * @see US-002
  */
 function updateEditedShape(document: Document, isText: boolean): void {
   selectElement(document, "shape-panel").hidden = false;
@@ -56,7 +56,7 @@ function showNoShapeEdited(document: Document, kind: string): void {
  *
  * @kind procedure
  * @param document - the playground's document, its fields read
- * @see docs/backlog/stories/E01-F01-US-002-sharp-rectangle-in-playground.md
+ * @see US-002
  */
 export function updatePage(document: Document): void {
   applyWheelZoom(document);

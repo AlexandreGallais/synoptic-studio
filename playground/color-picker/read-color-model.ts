@@ -6,7 +6,7 @@ import type { ColorModel } from "../../src";
  * @kind procedure
  * @param document - page document
  * @returns `hsl` when HSL is chosen, else `hsb`
- * @see docs/backlog/stories/E15-F16-US-035-pick-a-color.md
+ * @see US-035
  */
 export function readColorModel(document: Document): ColorModel {
   return document.querySelector<HTMLSelectElement>("#color-model")?.value === "hsl" ? "hsl" : "hsb";

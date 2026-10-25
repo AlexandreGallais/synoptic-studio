@@ -57,7 +57,7 @@ Rules: [domain, "Colors"](../domain/interaction.md#colors) and Q38; formulas: [`
 
 ## Decided by the agent, to confirm
 
-Each is built as written and shown by its step; the full list, with its examples, is in [VAL-016](../backlog/stories/E15-F16-VAL-016-validate-f16.md#decisions-to-confirm).
+Each is built as written and shown by its step; the full list, with its examples, is in VAL-016.
 
 | # | Question | As built | Step |
 | --- | --- | --- | --- |

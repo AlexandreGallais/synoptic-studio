@@ -15,7 +15,7 @@ import type { FontSession } from "./font-session";
  * @kind procedure
  * @param session - the session's fonts
  * @returns the families' names, in the list's order
- * @see docs/backlog/stories/E15-F17-US-059-approved-fonts-only.md
+ * @see US-059
  */
 function readFontListNames(session: FontSession): readonly string[] {
   return distinctFamilyNames(session.kept.map((family) => family.name));
@@ -31,7 +31,7 @@ function readFontListNames(session: FontSession): readonly string[] {
  * @param family - the family asked
  * @param measured - the family the text is measured with
  * @returns the name of the family chosen, as listed
- * @see docs/backlog/stories/E15-F15-US-036-import-choose-and-embed-a-font.md
+ * @see US-036
  */
 function readFontChoice(names: readonly string[], family: string, measured: string): string {
   const [first = ""] = names;
@@ -48,7 +48,7 @@ function readFontChoice(names: readonly string[], family: string, measured: stri
  * @kind procedure
  * @param document - page document
  * @param family - the family to choose, matched without regard to case; empty to keep the one chosen
- * @see docs/backlog/stories/E15-F15-US-036-import-choose-and-embed-a-font.md
+ * @see US-036
  */
 export function writeFontOptions(document: Document, family: string): void {
   const session = readFontSession(document);

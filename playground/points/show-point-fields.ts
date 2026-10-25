@@ -21,7 +21,7 @@ type FieldState = {
  * @param document - page document
  * @param id - id of the input
  * @param state - text shown and whether it is greyed
- * @see docs/backlog/stories/E01-F08-US-014-convert-and-move.md
+ * @see US-014
  */
 function writeFieldState(document: Document, id: string, state: FieldState): void {
   const field = selectElement(document, id);
@@ -41,7 +41,7 @@ function writeFieldState(document: Document, id: string, state: FieldState): voi
  * @param reading - valid shape
  * @param selection - vertices selected
  * @returns the point as drawn, `undefined` when none or several are selected
- * @see docs/backlog/stories/E01-F08-US-014-convert-and-move.md
+ * @see US-014
  */
 function readSelectedPoint(reading: ShapeReading, selection: VertexSelection): Point | undefined {
   const [only] = selection.selected;
@@ -59,7 +59,7 @@ function readSelectedPoint(reading: ShapeReading, selection: VertexSelection): P
  * @param document - page document
  * @param point - point selected, `undefined` when not exactly one is
  * @param isTyped - whether its coordinates can be typed
- * @see docs/backlog/stories/E01-F08-US-014-convert-and-move.md
+ * @see US-014
  */
 function writePointFields(document: Document, point: Point | undefined, isTyped: boolean): void {
   if (point === undefined) {
@@ -82,7 +82,7 @@ function writePointFields(document: Document, point: Point | undefined, isTyped:
  * @param document - page document
  * @param reading - valid shape
  * @param selection - vertices selected
- * @see docs/backlog/stories/E01-F08-US-014-convert-and-move.md
+ * @see US-014
  */
 export function showPointFields(
   document: Document,

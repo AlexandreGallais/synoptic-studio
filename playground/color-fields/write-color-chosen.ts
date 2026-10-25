@@ -11,7 +11,7 @@ import type { ColorField } from "./color-field";
  * @kind procedure
  * @param document - page document
  * @param ids - the color's fields
- * @see docs/backlog/stories/E15-F16-US-041-underline-and-strike-through-colors.md
+ * @see US-041
  */
 export function writeColorChosen(document: Document, ids: ColorField): void {
   if (ids.follows !== "") {

@@ -281,4 +281,4 @@ What became of each of the 854 rules the 55 theme files of `eslint/rules/` decid
 
 ## References
 
-ADR-0014, ADR-0066, ADR-0068, ADR-0069, ADR-0071, ADR-0073, ADR-0101 (ADR-0009, ADR-0010 and ADR-0013, removed), [research note 0023](../research/notes/0023-f19-oxc-and-rust-tools.md), `REF-OXLINT`, `REF-OXLINT-TYPE-AWARE`, `REF-TSGOLINT`, `REF-OXFMT`, `REF-TS7-ANNOUNCEMENT`, [dependencies](../tooling/dependencies.md), [EN-085](../backlog/stories/E17-F19-EN-085-docs-build-on-change-eslint-out-oxc-adr.md)
+ADR-0014, ADR-0066, ADR-0068, ADR-0069, ADR-0071, ADR-0073, ADR-0101 (ADR-0009, ADR-0010 and ADR-0013, removed), [research note 0023](../research/notes/0023-f19-oxc-and-rust-tools.md), `REF-OXLINT`, `REF-OXLINT-TYPE-AWARE`, `REF-TSGOLINT`, `REF-OXFMT`, `REF-TS7-ANNOUNCEMENT`, [dependencies](../tooling/dependencies.md), EN-085

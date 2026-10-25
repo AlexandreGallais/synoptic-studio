@@ -29,7 +29,7 @@ import type { PickedColor } from "../../src";
  * @param picked - the hue, the saturation and the lightness or brightness, integers, one or two
  * of them changed
  * @param update - redraws the playground
- * @see docs/backlog/stories/E15-F16-US-040-whole-numbers-in-the-picker.md
+ * @see US-040
  */
 export function applyPickedColor(
   document: Document,

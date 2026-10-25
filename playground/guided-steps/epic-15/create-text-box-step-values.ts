@@ -12,7 +12,7 @@ const BOX_TEXT = { boxHeight: 100, boxWidth: 200, content: "Hello World", size: 
  * @kind procedure
  * @param fields - the fields that differ from that text
  * @returns the values Next types
- * @see docs/backlog/stories/E15-F14-VAL-015-validate-f14.md
+ * @see VAL-015
  */
 export function createTextBoxStepValues(fields: Partial<GuidedText>): GuidedStep["values"] {
   return createTextStepValues({ ...BOX_TEXT, ...fields });

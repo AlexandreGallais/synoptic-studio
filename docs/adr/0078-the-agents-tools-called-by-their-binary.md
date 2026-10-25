@@ -33,4 +33,4 @@
 
 ## References
 
-ADR-0021, ADR-0069, ADR-0072, ADR-0073, `REF-CC-HOOKS`, [research note 0025](../research/notes/0025-f21-agent-tools-in-rust.md), [EN-104](../backlog/stories/E17-F21-EN-104-claude-code-hooks-in-rust.md), `docs/tooling/agent-tools.md`
+ADR-0021, ADR-0069, ADR-0072, ADR-0073, `REF-CC-HOOKS`, [research note 0025](../research/notes/0025-f21-agent-tools-in-rust.md), EN-104, `docs/tooling/agent-tools.md`
