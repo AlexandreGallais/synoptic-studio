@@ -16,6 +16,8 @@ use std::time::SystemTime;
 
 use calendar::now_ms;
 use hooks::json::{Value, parse};
+use knowledge::backlog::epic_items;
+use knowledge::project::open_records;
 use knowledge::records::main_and_origin;
 use repo_tools::epic_check::{
     Finding, check_all_finding, failed_calls, left_branches, lost_calls, main_ci, open_items, table,
@@ -87,32 +89,19 @@ fn running_calls(metrics: &Path) -> Vec<(i64, Value)> {
         .collect()
 }
 
-/// The features' and stories' files, with their text.
-fn backlog_files(root: &Path) -> Vec<(String, String)> {
-    ["features", "stories"]
-        .iter()
-        .flat_map(|folder| {
-            let folder = root.join("docs").join("backlog").join(folder);
-            let mut names: Vec<String> = fs::read_dir(&folder)
-                .map(|entries| {
-                    entries
-                        .filter_map(Result::ok)
-                        .map(|entry| entry.file_name().to_string_lossy().into_owned())
-                        .collect()
-                })
-                .unwrap_or_default();
+/// The backlog of an epic, from the records (EN-154): its open items, or the records' error.
+fn backlog_finding(root: &Path, epic: &str) -> Finding {
+    let items = open_records(root)
+        .and_then(|database| epic_items(&database, epic).map_err(|error| error.to_string()));
 
-            names.sort();
-            names
-                .into_iter()
-                .map(|name| {
-                    let text = fs::read_to_string(folder.join(&name)).unwrap_or_default();
-
-                    (name, text)
-                })
-                .collect::<Vec<_>>()
-        })
-        .collect()
+    match items {
+        Ok(items) => open_items(epic, &items),
+        Err(error) => Finding {
+            what: format!("backlog of {epic}"),
+            is_ok: false,
+            detail: format!("the records cannot be read: {error}"),
+        },
+    }
 }
 
 /// What GitHub holds: the pull requests and issues open, the code scanning alerts, the CI of the
@@ -239,7 +228,7 @@ fn work() -> u8 {
     findings.extend([
         failed_calls(&metrics_log(&metrics), since),
         lost_calls(&running),
-        open_items(epic, &backlog_files(&root)),
+        backlog_finding(&root, epic),
         records_finding(&root),
         Finding {
             what: "golden file of refactors".to_owned(),

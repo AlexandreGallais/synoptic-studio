@@ -1,4 +1,4 @@
-//! Tests of `worktree-new` (EN-052): the plan from a story's file name, then the tool run in a
+//! Tests of `worktree-new` (EN-052): the plan from a story the records hold (EN-154), then the tool run in a
 //! repository of its own. `[F18.AC8]` marks a test proving the feature's criterion.
 
 use std::fs;
@@ -6,19 +6,28 @@ use std::path::{Path, PathBuf};
 use std::process::{Command, Output};
 
 use worktree::{
-    Request, base_branch, branch_refusal, branch_type, plan, story_id, story_of_branch,
-    story_of_file, story_on_branches,
+    Request, Story, base_branch, branch_refusal, branch_type, plan, story_id, story_of_branch,
+    story_of_row, story_statement,
 };
 
-const FILE: &str = "E17-F18-US-061-font-list-held-while-the-default-font-is-read.md";
+/// US-061 as the records hold it.
+fn us_061() -> Story {
+    Story {
+        id: "US-061".to_owned(),
+        kind: "US".to_owned(),
+        feature: Some("F18".to_owned()),
+        topic: "font-list-held-while-the-default-font-is-read".to_owned(),
+    }
+}
 
-fn files() -> Vec<String> {
-    vec![
-        "README.md".to_owned(),
-        "E17-F18-EN-052-worktrees-named-after-their-story.md".to_owned(),
-        FILE.to_owned(),
-        "E15-REV-003-review-e15.md".to_owned(),
-    ]
+/// A story of an epic alone, as the records hold a review or an epic's spike.
+fn of_epic(id: &str, topic: &str) -> Story {
+    Story {
+        id: id.to_owned(),
+        kind: id.split_once('-').map_or("", |(kind, _)| kind).to_owned(),
+        feature: None,
+        topic: topic.to_owned(),
+    }
 }
 
 fn remotes() -> Vec<String> {
@@ -55,21 +64,30 @@ fn reads_the_story_of_a_branch() {
 }
 
 #[test]
-fn reads_the_feature_and_topic_from_a_file_name() {
-    let story = story_of_file("US-061", FILE).expect("the story's file");
+fn reads_the_story_of_a_row_of_the_records() {
+    let row = |cells: [&str; 3]| cells.map(str::to_owned).to_vec();
 
-    assert_eq!(story.kind, "US");
-    assert_eq!(story.feature.as_deref(), Some("F18"));
-    assert_eq!(story.topic, "font-list-held-while-the-default-font-is-read");
-
-    let review = story_of_file("REV-003", "E15-REV-003-review-e15.md").expect("an epic's story");
-
-    assert_eq!(review.feature, None);
-    assert_eq!(review.topic, "review-e15");
-    // Another story, a file without topic, a file that is not Markdown.
-    assert_eq!(story_of_file("US-062", FILE), None);
-    assert_eq!(story_of_file("US-061", "E17-F18-US-061.md"), None);
-    assert_eq!(story_of_file("US-061", "E17-F18-US-061-topic.txt"), None);
+    assert_eq!(
+        story_of_row(
+            "US-061",
+            &row(["US", "F18", "font-list-held-while-the-default-font-is-read"])
+        ),
+        Some(us_061())
+    );
+    assert_eq!(
+        story_of_row("REV-003", &row(["REV", "", "review-e15"])),
+        Some(of_epic("REV-003", "review-e15"))
+    );
+    // A row without topic or kind, or of another shape: none.
+    assert_eq!(story_of_row("US-061", &row(["US", "F18", ""])), None);
+    assert_eq!(story_of_row("US-061", &row(["", "F18", "x"])), None);
+    assert_eq!(story_of_row("US-061", &["US".to_owned()]), None);
+    assert_eq!(
+        story_statement("US-061").as_deref(),
+        Some("SELECT kind, feature, topic FROM stories WHERE id = 'US-061'")
+    );
+    // Nothing but an id enters a statement.
+    assert_eq!(story_statement("US-061' OR '1'='1"), None);
 }
 
 #[test]
@@ -141,15 +159,14 @@ fn f22_ac4_starts_from_the_one_feature_branch_on_github_a_review_from_develop() 
 
 #[test]
 fn plans_the_worktree_of_a_story() {
-    let files = files();
     let remotes = remotes();
+    let story = us_061();
     let request = Request {
         id: "us-061",
         branch_type: None,
         topic: None,
-        story_files: &files,
+        story: Some(&story),
         remote_branches: &remotes,
-        branch_files: &[],
         main: Path::new("/work/repo"),
     };
     let made = plan(&request, |_| false).expect("a plan");
@@ -164,9 +181,16 @@ fn plans_the_worktree_of_a_story() {
     );
     assert_eq!(made.base, "origin/feature/f18-safe-and-cheap-parallel-run");
 
+    let enabler = Story {
+        id: "EN-052".to_owned(),
+        kind: "EN".to_owned(),
+        topic: "worktrees-named-after-their-story".to_owned(),
+        ..us_061()
+    };
     let typed = Request {
         id: "EN-052",
         branch_type: Some("refactor"),
+        story: Some(&enabler),
         ..request
     };
 
@@ -178,15 +202,14 @@ fn plans_the_worktree_of_a_story() {
 
 #[test]
 fn refuses_what_it_cannot_make() {
-    let files = files();
     let remotes = remotes();
+    let story = us_061();
     let request = Request {
         id: "US-061",
         branch_type: None,
         topic: None,
-        story_files: &files,
+        story: Some(&story),
         remote_branches: &remotes,
-        branch_files: &[],
         main: Path::new("/work/repo"),
     };
     let refusal = |request: &Request| plan(request, |_| false).expect_err("a refusal");
@@ -199,9 +222,10 @@ fn refuses_what_it_cannot_make() {
     assert!(
         refusal(&Request {
             id: "US-999",
+            story: None,
             ..request
         })
-        .contains("no file")
+        .contains("no story US-999 in the records")
     );
     assert!(
         refusal(&Request {
@@ -226,48 +250,19 @@ fn refuses_what_it_cannot_make() {
     );
 }
 
-/// A story file written on a feature branch only, never on `develop`.
-const ONLY_ON_THE_FEATURE: &str = "E17-F18-EN-200-only-on-the-feature.md";
-
-/// The story files of two feature branches of `origin`, the second holding `EN-200` or not.
-fn branch_files(second_holds_it: bool) -> Vec<(String, Vec<String>)> {
-    let second = if second_holds_it {
-        vec!["README.md".to_owned(), ONLY_ON_THE_FEATURE.to_owned()]
-    } else {
-        vec!["README.md".to_owned()]
-    };
-
-    vec![
-        (
-            "origin/feature/f17-text-fixes".to_owned(),
-            vec!["README.md".to_owned()],
-        ),
-        (
-            "origin/feature/f18-safe-and-cheap-parallel-run".to_owned(),
-            vec![FILE.to_owned(), ONLY_ON_THE_FEATURE.to_owned()],
-        ),
-        ("origin/feature/f19-other".to_owned(), second),
-    ]
-}
-
 #[test]
 fn f23_ac2_starts_a_review_or_an_epics_spike_from_develop() {
     // [F23.AC2] A story attached to `develop`, a `REV` or an epic's refinement `SP`, has no
-    // feature in its file name: its worktree starts from `origin/develop`, on a `docs/` branch.
-    let files = [
-        "E17-REV-006-review-2026-10-18.md".to_owned(),
-        "E18-SP-030-refinement-of-e18.md".to_owned(),
-    ];
+    // feature in the records: its worktree starts from `origin/develop`, on a `docs/` branch.
     let remotes = remotes();
-    let made = |id: &str| {
+    let made = |id: &str, story: &Story| {
         plan(
             &Request {
                 id,
                 branch_type: None,
                 topic: None,
-                story_files: &files,
+                story: Some(story),
                 remote_branches: &remotes,
-                branch_files: &[],
                 main: Path::new("/work/repo"),
             },
             |_| false,
@@ -276,102 +271,19 @@ fn f23_ac2_starts_a_review_or_an_epics_spike_from_develop() {
     };
 
     assert_eq!(
-        made("REV-006"),
+        made("REV-006", &of_epic("REV-006", "review-2026-10-18")),
         Ok((
             "docs/rev-006-review-2026-10-18".to_owned(),
             "origin/develop".to_owned()
         ))
     );
     assert_eq!(
-        made("sp-030"),
+        made("sp-030", &of_epic("SP-030", "refinement-of-e18")),
         Ok((
             "docs/sp-030-refinement-of-e18".to_owned(),
             "origin/develop".to_owned()
         ))
     );
-}
-
-#[test]
-fn f23_ac2_finds_a_story_missing_from_the_checkout_on_the_one_feature_branch_holding_it() {
-    // [F23.AC2] The main checkout on `develop` lacks EN-200's file, which only F18's branch
-    // holds: the story is read from there and its worktree starts from that branch.
-    let files = files();
-    let remotes = remotes();
-    let held = branch_files(false);
-    let request = Request {
-        id: "EN-200",
-        branch_type: None,
-        topic: None,
-        story_files: &files,
-        remote_branches: &remotes,
-        branch_files: &held,
-        main: Path::new("/work/repo"),
-    };
-    let made = plan(&request, |_| false).expect("a plan");
-
-    assert_eq!(made.branch, "chore/en-200-only-on-the-feature");
-    assert_eq!(made.base, "origin/feature/f18-safe-and-cheap-parallel-run");
-    assert_eq!(
-        story_on_branches("EN-200", &held).map(|(story, branch)| (story.topic, branch)),
-        Ok((
-            "only-on-the-feature".to_owned(),
-            "origin/feature/f18-safe-and-cheap-parallel-run".to_owned()
-        ))
-    );
-    // A story the checkout holds is read there, whatever the branches hold.
-    assert_eq!(
-        plan(
-            &Request {
-                id: "US-061",
-                ..request
-            },
-            |_| false
-        )
-        .map(|made| made.branch)
-        .as_deref(),
-        Ok("feat/us-061-font-list-held-while-the-default-font-is-read")
-    );
-}
-
-#[test]
-fn f23_ac2_refuses_a_story_two_feature_branches_hold_naming_them() {
-    let files = files();
-    let remotes = remotes();
-    let twice = branch_files(true);
-    let request = Request {
-        id: "EN-200",
-        branch_type: None,
-        topic: None,
-        story_files: &files,
-        remote_branches: &remotes,
-        branch_files: &twice,
-        main: Path::new("/work/repo"),
-    };
-    let refusal = plan(&request, |_| false).expect_err("a refusal");
-
-    assert!(
-        refusal.contains("EN-200")
-            && refusal.contains("several feature branches")
-            && refusal.contains(
-                "origin/feature/f18-safe-and-cheap-parallel-run, origin/feature/f19-other"
-            ),
-        "{refusal}"
-    );
-    // Held nowhere: the checkout and the branches both named.
-    let nowhere = plan(
-        &Request {
-            id: "EN-201",
-            ..request
-        },
-        |_| false,
-    )
-    .expect_err("a refusal");
-
-    assert!(
-        nowhere.contains("no file") && nowhere.contains("feature branch of origin"),
-        "{nowhere}"
-    );
-    assert!(story_on_branches("EN-201", &twice).is_err());
 }
 
 /// A command cut off from the Git repository running the tests: a hook (`pre-push` running
@@ -415,7 +327,7 @@ fn write_hook(path: &Path, name: &str) {
     }
 }
 
-/// A main checkout with a story file, `node_modules` and a `pre-push` hook naming its checkout,
+/// A main checkout with `node_modules` and a `pre-push` hook naming its checkout,
 /// its remote holding the feature branch.
 fn repository(name: &str) -> PathBuf {
     repository_with(name, &[])
@@ -431,7 +343,7 @@ fn repository_with(name: &str, files: &[(&str, &str)]) -> PathBuf {
     let main = root.join("main");
 
     let _ = fs::remove_dir_all(&root);
-    fs::create_dir_all(main.join("docs/backlog/stories")).unwrap();
+    fs::create_dir_all(main.join("docs")).unwrap();
     fs::create_dir_all(main.join(".githooks")).unwrap();
     // Unix-only, as the tool's own link: Windows makes a folder link by another call.
     #[cfg(unix)]
@@ -443,7 +355,6 @@ fn repository_with(name: &str, files: &[(&str, &str)]) -> PathBuf {
         "node_modules\n.claude/worktrees/\n/target/\n",
     )
     .unwrap();
-    fs::write(main.join("docs/backlog/stories").join(FILE), "# US-061\n").unwrap();
     write_hook(&main.join(".githooks/pre-push"), "main");
     for (path, text) in files {
         let path = main.join(path);
@@ -473,13 +384,44 @@ fn repository_with(name: &str, files: &[(&str, &str)]) -> PathBuf {
     main
 }
 
+/// A copy of `worktree-new` in a folder of its own beside a `knowledge` script standing for the
+/// records: it holds US-061 of F18 and EN-200 of F18, a story written on the feature branch
+/// alone, and fails as records without `AGENT_RECORDS_ROOT` do for EN-300.
+fn worktree_new_beside_records(main: &Path) -> PathBuf {
+    let folder = main.parent().unwrap().join("bin");
+    let binary = folder.join("worktree-new");
+    let knowledge = folder.join("knowledge");
+
+    fs::create_dir_all(&folder).unwrap();
+    // Copied once: a binary written again over one just run is killed on macOS, its signature
+    // read from the first copy.
+    if !binary.exists() {
+        fs::copy(env!("CARGO_BIN_EXE_worktree-new"), &binary).unwrap();
+    }
+    fs::write(
+        &knowledge,
+        "#!/bin/sh\ncase \"$2\" in\n  *\"'US-061'\"*) printf 'kind\\tfeature\\ttopic\\nUS\\tF18\\tfont-list-held-while-the-default-font-is-read\\n';;\n  *\"'EN-200'\"*) printf 'kind\\tfeature\\ttopic\\nEN\\tF18\\tonly-on-the-feature\\n';;\n  *\"'EN-300'\"*) echo 'knowledge: AGENT_RECORDS_ROOT is not set' >&2; exit 1;;\n  *) printf 'kind\\tfeature\\ttopic\\n';;\nesac\n",
+    )
+    .unwrap();
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        fs::set_permissions(&knowledge, fs::Permissions::from_mode(0o755)).unwrap();
+    }
+    binary
+}
+
 fn worktree_new(dir: &Path, id: &str) -> Output {
-    isolated(env!("CARGO_BIN_EXE_worktree-new"), dir)
+    let main = dir
+        .ancestors()
+        .find(|folder| folder.file_name().is_some_and(|name| name == "main"))
+        .unwrap();
+
+    isolated(worktree_new_beside_records(main).to_str().unwrap(), dir)
         .arg(id)
         .output()
         .unwrap()
 }
-
 #[test]
 fn f18_ac8_makes_a_worktree_named_after_its_story() {
     // [F18.AC8] `worktree-new US-061` gives `.claude/worktrees/us-061` on the story's branch.
@@ -594,51 +536,13 @@ fn f18_ac8_a_push_from_a_new_worktree_runs_its_own_pre_push() {
 }
 
 /// A story file committed on F18's branch of `origin` only, then pushed to each other branch
-/// named; the main checkout back on `develop`, without the file.
-fn story_only_on_feature_branches(main: &Path, others: &[&str]) {
-    let feature = "feature/f18-safe-and-cheap-parallel-run";
-
-    git(
-        main,
-        &[
-            "switch",
-            "--quiet",
-            "-c",
-            "side",
-            &format!("origin/{feature}"),
-        ],
-    );
-    fs::write(
-        main.join("docs/backlog/stories").join(ONLY_ON_THE_FEATURE),
-        "# EN-200\n",
-    )
-    .unwrap();
-    git(main, &["add", "--all"]);
-    git(main, &["commit", "--quiet", "-m", "docs: write EN-200"]);
-    for branch in [feature].iter().chain(others) {
-        git(
-            main,
-            &["push", "--quiet", "origin", &format!("side:{branch}")],
-        );
-    }
-    git(main, &["switch", "--quiet", "develop"]);
-    git(main, &["branch", "--quiet", "-D", "side"]);
-    assert!(
-        !main
-            .join("docs/backlog/stories")
-            .join(ONLY_ON_THE_FEATURE)
-            .exists()
-    );
-}
 
 #[test]
-fn f23_ac2_worktree_new_in_the_main_checkout_finds_a_story_only_on_its_feature_branch() {
-    // [F23.AC2] Run in the main checkout on `develop`, which lacks the file: found by
-    // `git ls-tree` on the feature branches of `origin`, the worktree made from that branch.
-    let main = repository("ls-tree");
-
-    story_only_on_feature_branches(&main, &[]);
-
+fn f23_ac2_worktree_new_in_the_main_checkout_finds_in_the_records_a_story_written_on_its_feature_branch()
+ {
+    // [F23.AC2] EN-200 is written in the records on F18's branch, which `develop` lacks: the main
+    // checkout on `develop` finds it there, and makes its worktree from that feature branch.
+    let main = repository("records");
     let made = worktree_new(&main, "EN-200");
     let dir = main.join(".claude/worktrees/en-200");
 
@@ -657,61 +561,38 @@ fn f23_ac2_worktree_new_in_the_main_checkout_finds_a_story_only_on_its_feature_b
             ]
         )
     );
+
+    // A story the records lack, and records that cannot be read: refused, nothing made.
+    let unknown = worktree_new(&main, "EN-201");
+    let unread = worktree_new(&main, "EN-300");
+
+    assert!(!unknown.status.success());
     assert!(
-        dir.join("docs/backlog/stories")
-            .join(ONLY_ON_THE_FEATURE)
-            .exists()
+        String::from_utf8_lossy(&unknown.stderr).contains("no story EN-201 in the records"),
+        "{unknown:?}"
     );
+    assert!(!unread.status.success());
+    assert!(
+        String::from_utf8_lossy(&unread.stderr).contains("AGENT_RECORDS_ROOT is not set"),
+        "{unread:?}"
+    );
+    assert!(!main.join(".claude/worktrees/en-201").exists());
 
     let _ = fs::remove_dir_all(main.parent().unwrap());
-}
-
-#[test]
-fn f23_ac2_worktree_new_refuses_a_story_two_feature_branches_hold() {
-    let main = repository("ls-tree-twice");
-
-    story_only_on_feature_branches(&main, &["feature/f19-other"]);
-
-    let made = worktree_new(&main, "EN-200");
-    let said = String::from_utf8_lossy(&made.stderr);
-
-    assert!(!made.status.success());
-    assert!(
-        said.contains("origin/feature/f18-safe-and-cheap-parallel-run, origin/feature/f19-other"),
-        "{made:?}"
-    );
-    assert!(!main.join(".claude/worktrees/en-200").exists());
-
-    let _ = fs::remove_dir_all(main.parent().unwrap());
-}
-
-#[test]
-fn lists_the_story_files_of_a_checkout() {
-    let top = std::env::temp_dir().join(format!("worktree-stories-{}", std::process::id()));
-    let _ = fs::remove_dir_all(&top);
-
-    // No backlog: an error each caller reads its own way.
-    assert!(worktree::story_files(&top).is_err());
-    fs::create_dir_all(top.join(worktree::STORIES)).expect("folders");
-    fs::write(top.join(worktree::STORIES).join(FILE), "").expect("story");
-
-    assert_eq!(worktree::story_files(&top).expect("listed"), [FILE]);
-    fs::remove_dir_all(&top).expect("cleaned");
 }
 
 #[test]
 fn rev009_names_a_bubble_s_branch_by_its_own_type_and_topic_from_develop() {
     // A review's bubble, `build/rev-009-tool-cards-and-telemetry`, was made by hand: the branch
-    // took the story file's topic (four worktrees of REV-008 and REV-009, 2026-10-24).
-    let files = vec!["E02-REV-009-review-of-2026-10-25.md".to_owned()];
+    // took the story's topic (four worktrees of REV-008 and REV-009, 2026-10-24).
     let remotes = remotes();
+    let story = of_epic("REV-009", "review-of-2026-10-25");
     let request = Request {
         id: "REV-009",
         branch_type: Some("build"),
         topic: Some("tool-cards-and-telemetry"),
-        story_files: &files,
+        story: Some(&story),
         remote_branches: &remotes,
-        branch_files: &[],
         main: Path::new("/work/repo"),
     };
     let made = plan(&request, |_| false).expect("a plan");
@@ -736,24 +617,22 @@ fn rev009_names_a_bubble_s_branch_by_its_own_type_and_topic_from_develop() {
 }
 
 #[test]
-fn rev009_starts_an_epic_s_spike_without_its_file_from_develop_when_given_its_topic() {
-    // SP-033's file is written in its own branch: neither `develop` nor a feature branch holds it.
+fn rev009_starts_an_epic_s_spike_the_records_lack_from_develop_when_given_its_topic() {
+    // SP-033 is not in the records yet: given its topic, it starts from `develop`.
     let remotes = remotes();
     let request = Request {
         id: "SP-033",
         branch_type: None,
         topic: Some("regroup-the-epics"),
-        story_files: &[],
+        story: None,
         remote_branches: &remotes,
-        branch_files: &[],
         main: Path::new("/work/repo"),
     };
     let made = plan(&request, |_| false).expect("a plan");
 
     assert_eq!(made.branch, "docs/sp-033-regroup-the-epics");
     assert_eq!(made.base, "origin/develop");
-    // Without a topic it is refused as before; a user story belongs to a feature, whose branch
-    // holds its file.
+    // Without a topic it is refused; a user story belongs to a feature the records give.
     assert!(
         plan(
             &Request {
@@ -762,7 +641,7 @@ fn rev009_starts_an_epic_s_spike_without_its_file_from_develop_when_given_its_to
             },
             |_| false
         )
-        .is_err_and(|reason| reason.contains("no file"))
+        .is_err_and(|reason| reason.contains("no story SP-033 in the records"))
     );
     assert!(
         plan(
@@ -772,6 +651,6 @@ fn rev009_starts_an_epic_s_spike_without_its_file_from_develop_when_given_its_to
             },
             |_| false
         )
-        .is_err_and(|reason| reason.contains("no file"))
+        .is_err_and(|reason| reason.contains("no story US-099 in the records"))
     );
 }

@@ -1,11 +1,12 @@
 //! `val-prepare <repository root> <feature>` (EN-056): writes the feature's lines in its epic's
-//! checklist and prints the address that opens it. `target/release/val-prepare . F18`.
+//! checklist and prints the address that opens it, the feature read from the records by
+//! `knowledge sql` (EN-154). `target/release/val-prepare . F18`.
 
 use std::fs;
 use std::path::Path;
 use std::process::ExitCode;
 
-use val_prepare::{feature_id, plan};
+use val_prepare::{feature_id, feature_statement, feature_text_of, plan};
 
 /// The usage, printed on `--help` or `-h` (REV-009).
 const USAGE: &str = "usage: target/release/val-prepare . <feature, F18>";
@@ -27,7 +28,11 @@ fn prepare(args: &[String]) -> u8 {
     };
     let root = Path::new(root);
 
-    let prepared = match plan(root, &id) {
+    let text = feature_statement(&id)
+        .ok_or_else(|| format!("{id}: not a feature id"))
+        .and_then(|statement| knowledge_call::rows(root, &statement))
+        .and_then(|rows| feature_text_of(&id, &rows));
+    let prepared = match text.and_then(|text| plan(root, &id, &text)) {
         Ok(prepared) => prepared,
         Err(message) => {
             eprintln!("val-prepare: {message}");

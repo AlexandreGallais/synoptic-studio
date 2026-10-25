@@ -45,13 +45,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f2032f911046de80f0a198e0901378627c33f59ea0ac00e363d481118bd70a53"
 
 [[package]]
-name = "backlog-index"
-version = "0.1.0"
-dependencies = [
- "tool-use",
-]
-
-[[package]]
 name = "base64-simd"
 version = "0.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -439,6 +432,7 @@ version = "0.1.0"
 dependencies = [
  "calendar",
  "git-repository",
+ "knowledge-call",
  "stale-binaries",
  "test-support",
  "tool-use",
@@ -607,14 +601,21 @@ dependencies = [
 name = "knowledge"
 version = "0.1.0"
 dependencies = [
- "backlog-index",
  "calendar",
  "git-repository",
+ "knowledge-call",
  "library",
  "page",
  "rusqlite",
  "test-support",
  "tool-use",
+]
+
+[[package]]
+name = "knowledge-call"
+version = "0.1.0"
+dependencies = [
+ "test-support",
 ]
 
 [[package]]
@@ -632,7 +633,6 @@ dependencies = [
  "rmcp",
  "rusqlite",
  "serde_json",
- "shared-files",
  "test-support",
  "tokio",
  "tool-use",
@@ -697,6 +697,7 @@ dependencies = [
  "calendar",
  "git-repository",
  "hooks",
+ "knowledge-call",
  "library",
  "run-totals",
  "serde_json",
@@ -1194,6 +1195,7 @@ checksum = "d6f6ff9a378485b298a5286656da665ba74413d36db0979633275d2e708145d4"
 name = "release"
 version = "0.1.0"
 dependencies = [
+ "knowledge-call",
  "regex",
  "test-support",
  "tool-use",
@@ -1245,21 +1247,13 @@ dependencies = [
 ]
 
 [[package]]
-name = "rule-docs"
-version = "0.1.0"
-dependencies = [
- "git-repository",
- "test-support",
- "tool-use",
-]
-
-[[package]]
 name = "run-totals"
 version = "0.1.0"
 dependencies = [
  "calendar",
  "git-repository",
  "hooks",
+ "knowledge-call",
  "test-support",
  "tool-use",
 ]
@@ -1396,12 +1390,6 @@ dependencies = [
 [[package]]
 name = "shared-files"
 version = "0.1.0"
-dependencies = [
- "calendar",
- "git-repository",
- "test-support",
- "tool-use",
-]
 
 [[package]]
 name = "shlex"
@@ -1673,6 +1661,7 @@ dependencies = [
 name = "val-prepare"
 version = "0.1.0"
 dependencies = [
+ "knowledge-call",
  "tool-use",
 ]
 
@@ -1798,7 +1787,7 @@ version = "0.1.0"
 dependencies = [
  "git-hooks",
  "git-repository",
- "shared-files",
+ "knowledge-call",
  "stale-binaries",
  "test-support",
  "tool-use",

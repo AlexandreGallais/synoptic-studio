@@ -352,19 +352,14 @@ pub fn check_all_finding(is_ok: bool, out: &str) -> Finding {
 }
 
 /// The backlog items of an epic neither `done` nor `dropped` (I110), its retrospective left out:
-/// each file's name, without `.md`, and its text.
+/// each item's id and status, as the records hold the epic's features and stories (EN-154).
 #[must_use]
-pub fn open_items(epic: &str, files: &[(String, String)]) -> Finding {
-    let start = format!("{epic}-");
-    let open: Vec<&str> = files
+pub fn open_items(epic: &str, items: &[(String, String)]) -> Finding {
+    let open: Vec<&str> = items
         .iter()
-        .filter(|(name, _)| name.starts_with(&start) && !name.contains("-RET-"))
-        .filter(|(_, text)| {
-            !text
-                .lines()
-                .any(|line| line == "status: done" || line == "status: dropped")
-        })
-        .map(|(name, _)| name.strip_suffix(".md").unwrap_or(name))
+        .filter(|(id, _)| !id.starts_with("RET-"))
+        .filter(|(_, status)| !matches!(status.as_str(), "done" | "dropped"))
+        .map(|(id, _)| id.as_str())
         .collect();
 
     Finding {
@@ -789,20 +784,19 @@ mod tests {
         );
     }
 
+    /// Items of the records, an id and a status each.
+    fn items(rows: &[(&str, &str)]) -> Vec<(String, String)> {
+        rows.iter()
+            .map(|(id, status)| ((*id).to_owned(), (*status).to_owned()))
+            .collect()
+    }
+
     #[test]
     fn lists_the_open_items_of_an_epic_and_writes_the_table() {
-        let files = [
-            ("E14-F01-x.md".to_owned(), "status: done\n".to_owned()),
-            (
-                "E14-F01-US-001-a.md".to_owned(),
-                "status: ready\n".to_owned(),
-            ),
-            ("E14-RET-002-r.md".to_owned(), "status: draft\n".to_owned()),
-            ("E15-F02-y.md".to_owned(), "status: draft\n".to_owned()),
-        ];
+        let files = items(&[("F01", "done"), ("US-001", "ready"), ("RET-002", "draft")]);
         let open = open_items("E14", &files);
 
-        assert_eq!(open.detail, "E14-F01-US-001-a");
+        assert_eq!(open.detail, "US-001");
         assert!(!open.is_ok);
         assert_eq!(
             open_items("E14", &files[..1]).detail,
@@ -817,29 +811,20 @@ mod tests {
                     detail: "a | b".to_owned()
                 }
             ]),
-            "| Check | Result | Detail |\n| --- | --- | --- |\n| backlog of E14 | **to look at** | E14-F01-US-001-a |\n| w | ok | a \\| b |"
+            "| Check | Result | Detail |\n| --- | --- | --- |\n| backlog of E14 | **to look at** | US-001 |\n| w | ok | a \\| b |"
         );
     }
 
     #[test]
     fn f32_ac2_counts_a_dropped_story_as_closed() {
         // EN-064 was `dropped` in E17 and listed among the backlog to look at (I110).
-        let files = [
-            (
-                "E17-F20-EN-064-x.md".to_owned(),
-                "---\nstatus: dropped\n---\n".to_owned(),
-            ),
-            (
-                "E17-F20-EN-065-y.md".to_owned(),
-                "---\nstatus: done\n---\n".to_owned(),
-            ),
-            (
-                "E17-F20-EN-066-z.md".to_owned(),
-                "---\nstatus: in-progress\n---\n".to_owned(),
-            ),
-        ];
+        let files = items(&[
+            ("EN-064", "dropped"),
+            ("EN-065", "done"),
+            ("EN-066", "in-progress"),
+        ]);
 
-        assert_eq!(open_items("E17", &files).detail, "E17-F20-EN-066-z");
+        assert_eq!(open_items("E17", &files).detail, "EN-066");
         assert_eq!(
             open_items("E17", &files[..2]),
             Finding {
@@ -848,13 +833,8 @@ mod tests {
                 detail: "every feature and story done or dropped".to_owned(),
             }
         );
-        // A status only written in a story's text is not its front matter's line.
-        let quoted = [(
-            "E17-F20-EN-067-q.md".to_owned(),
-            "status: dropped later\n".to_owned(),
-        )];
-
-        assert!(!open_items("E17", &quoted).is_ok);
+        // A status that only starts like a closed one is open.
+        assert!(!open_items("E17", &items(&[("EN-067", "dropped later")])).is_ok);
     }
 
     /// A check run of a workflow, as `statusCheckRollup` gives it.

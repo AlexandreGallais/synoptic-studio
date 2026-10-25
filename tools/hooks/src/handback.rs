@@ -6,7 +6,7 @@
 
 use std::path::{Path, PathBuf};
 
-use worktree::{base_branch, story_id, story_of_branch, story_of_file};
+use worktree::{Story, base_branch, story_id, story_of_branch};
 
 use crate::json::{Value, quote, write};
 
@@ -122,13 +122,11 @@ pub fn story_of(branch: &str, folder: &str) -> Option<String> {
 }
 
 /// The branch a story's commits are counted from: its feature branch on `origin`, or
-/// `origin/develop` for an epic's own story; `None` when its file or that branch is not found,
-/// never the whole history.
+/// `origin/develop` for an epic's own story; `None` when the records hold no such story (EN-154)
+/// or that branch is not found, never the whole history.
 #[must_use]
-pub fn base_of(story: &str, story_files: &[String], remote_branches: &[String]) -> Option<String> {
-    let story = story_files
-        .iter()
-        .find_map(|file| story_of_file(story, file))?;
+pub fn base_of(story: &str, stories: &[Story], remote_branches: &[String]) -> Option<String> {
+    let story = stories.iter().find(|recorded| recorded.id == story)?;
 
     base_branch(story.feature.as_deref(), remote_branches).ok()
 }

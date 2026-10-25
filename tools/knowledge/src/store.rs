@@ -14,7 +14,31 @@ use std::path::Path;
 use rusqlite::{Connection, Transaction, TransactionBehavior};
 
 /// The number of the schema this binary writes, `PRAGMA user_version` of the file.
-pub const SCHEMA_VERSION: i64 = 3;
+pub const SCHEMA_VERSION: i64 = 4;
+
+/// The tables the tool keeps itself, which `knowledge sql` never drops nor rewrites: the
+/// documents and what is cut from them, the metrics, the backlog and the registry (EN-154).
+pub const CORE_TABLES: [&str; 13] = [
+    "documents",
+    "fields",
+    "sections",
+    "sections_index",
+    "links",
+    "calls",
+    "turns",
+    "tables_registry",
+    "epics",
+    "features",
+    "stories",
+    "criteria",
+    "tasks",
+];
+
+/// The core tables `knowledge sql` writes to by no statement at all: the documents and what is
+/// cut from them are written by `add`, `import-backlog` and `sync` alone, so that a section never
+/// leaves the full-text index behind.
+pub const WRITTEN_BY_THE_TOOL: [&str; 5] =
+    ["documents", "fields", "sections", "sections_index", "links"];
 
 /// The tables of schema 1 (research note 0035, Its tables). A document is any former file or
 /// record, cut into sections at its headings; `sections_index` indexes the sections without a copy
@@ -213,9 +237,70 @@ const SCHEMA_3: &str = "
   END;
 ";
 
+/// Schema 4 holds the backlog in tables of its own, shaped for the agent's questions — which
+/// stories of a feature are open, which story a branch works on, which criteria a done feature
+/// holds — rather than as files (E49, EN-154): `epics`, `features`, `stories`, their `tasks` and
+/// the features' numbered `criteria`, each row's `branch` the branch whose work it is and its
+/// `state` that branch's, `draft` until merged; and `tables_registry`, one row per table and what
+/// it holds, every table of the file listed there. Only tables and indexes are added: an older
+/// binary still reads the file.
+const SCHEMA_4: &str = "
+  CREATE TABLE IF NOT EXISTS tables_registry (name TEXT PRIMARY KEY, purpose TEXT NOT NULL);
+  CREATE TABLE IF NOT EXISTS epics (
+    id TEXT PRIMARY KEY, title TEXT NOT NULL, status TEXT NOT NULL,
+    position INTEGER NOT NULL DEFAULT 0, topic TEXT NOT NULL DEFAULT '',
+    text TEXT NOT NULL DEFAULT '', branch TEXT NOT NULL DEFAULT '',
+    state TEXT NOT NULL DEFAULT 'draft' CHECK (state IN ('draft', 'merged', 'dropped'))
+  );
+  CREATE TABLE IF NOT EXISTS features (
+    id TEXT PRIMARY KEY, epic TEXT NOT NULL, title TEXT NOT NULL, status TEXT NOT NULL,
+    position INTEGER NOT NULL DEFAULT 0, topic TEXT NOT NULL DEFAULT '',
+    criteria TEXT NOT NULL DEFAULT '', text TEXT NOT NULL DEFAULT '',
+    branch TEXT NOT NULL DEFAULT '',
+    state TEXT NOT NULL DEFAULT 'draft' CHECK (state IN ('draft', 'merged', 'dropped'))
+  );
+  CREATE INDEX IF NOT EXISTS features_by_epic ON features (epic, position);
+  CREATE TABLE IF NOT EXISTS stories (
+    id TEXT PRIMARY KEY, epic TEXT NOT NULL, feature TEXT NOT NULL DEFAULT '', kind TEXT NOT NULL,
+    title TEXT NOT NULL, status TEXT NOT NULL, points INTEGER, position INTEGER NOT NULL DEFAULT 0,
+    topic TEXT NOT NULL DEFAULT '', criteria TEXT NOT NULL DEFAULT '',
+    tasks TEXT NOT NULL DEFAULT '', test_card TEXT NOT NULL DEFAULT '',
+    question TEXT NOT NULL DEFAULT '', text TEXT NOT NULL DEFAULT '',
+    branch TEXT NOT NULL DEFAULT '',
+    state TEXT NOT NULL DEFAULT 'draft' CHECK (state IN ('draft', 'merged', 'dropped'))
+  );
+  CREATE INDEX IF NOT EXISTS stories_by_feature ON stories (feature, position);
+  CREATE INDEX IF NOT EXISTS stories_by_epic ON stories (epic, status);
+  CREATE INDEX IF NOT EXISTS stories_by_status ON stories (status);
+  CREATE INDEX IF NOT EXISTS stories_by_branch ON stories (branch, state);
+  CREATE TABLE IF NOT EXISTS tasks (
+    story TEXT NOT NULL, number INTEGER NOT NULL, title TEXT NOT NULL,
+    done INTEGER NOT NULL DEFAULT 0 CHECK (done IN (0, 1)), PRIMARY KEY (story, number)
+  );
+  CREATE TABLE IF NOT EXISTS criteria (
+    id TEXT PRIMARY KEY, feature TEXT NOT NULL, number INTEGER NOT NULL, text TEXT NOT NULL,
+    struck INTEGER NOT NULL DEFAULT 0 CHECK (struck IN (0, 1)), retired TEXT NOT NULL DEFAULT ''
+  );
+  CREATE INDEX IF NOT EXISTS criteria_by_feature ON criteria (feature, number);
+  INSERT OR IGNORE INTO tables_registry (name, purpose) VALUES
+    ('documents', 'one row per document a branch wrote, its id, branch and state the key; read by search, show and list'),
+    ('fields', 'a document''s front-matter fields, by key and value'),
+    ('sections', 'a document cut at its headings, the text search reads'),
+    ('sections_index', 'FTS5 over sections, kept by three triggers'),
+    ('links', 'the ids a document cites'),
+    ('calls', 'a tool call of tool-calls.jsonl'),
+    ('turns', 'a turn of turns.jsonl'),
+    ('tables_registry', 'every table of the file and what it holds'),
+    ('epics', 'one row per epic: its title, status, the Product Owner''s order (position) and text'),
+    ('features', 'one row per feature: its epic, order in it, status, criteria and text'),
+    ('stories', 'one row per story: its epic, feature, kind, status, points, order, topic, criteria, tasks, test card, question and text; branch and state of the work'),
+    ('tasks', 'a story''s tasks, numbered, done or not'),
+    ('criteria', 'a feature''s numbered criteria, struck through or retired with a reason; exported for the CI''s trace');
+";
+
 /// The migrations, the one of index `n` bringing a file of schema `n` up to `n + 1`: a new file
 /// runs them all.
-pub const MIGRATIONS: [&str; 3] = [SCHEMA_1, SCHEMA_2, SCHEMA_3];
+pub const MIGRATIONS: [&str; 4] = [SCHEMA_1, SCHEMA_2, SCHEMA_3, SCHEMA_4];
 
 /// A failure of SQLite on the store's file, named by its path.
 fn on_file(path: &Path, error: &impl std::fmt::Display) -> String {
@@ -340,6 +425,20 @@ pub fn write<T>(
     database: &Connection,
     work: impl FnOnce(&Transaction<'_>) -> rusqlite::Result<T>,
 ) -> Result<T, String> {
+    write_or_refuse(database, |transaction| {
+        work(transaction).map_err(|error| error.to_string())
+    })
+}
+
+/// [`write`] of a work that may refuse with a reason of its own, rolled back as a failure of
+/// SQLite is (EN-154).
+///
+/// # Errors
+/// As [`write`], and the work's own reason.
+pub fn write_or_refuse<T>(
+    database: &Connection,
+    work: impl FnOnce(&Transaction<'_>) -> Result<T, String>,
+) -> Result<T, String> {
     let failed = |error: rusqlite::Error| error.to_string();
     let transaction =
         Transaction::new_unchecked(database, TransactionBehavior::Immediate).map_err(failed)?;
@@ -351,7 +450,7 @@ pub fn write<T>(
         ));
     }
 
-    let done = work(&transaction).map_err(failed)?;
+    let done = work(&transaction)?;
 
     transaction.commit().map_err(failed)?;
     Ok(done)

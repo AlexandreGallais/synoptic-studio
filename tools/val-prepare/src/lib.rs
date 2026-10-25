@@ -11,7 +11,7 @@ use std::path::{Path, PathBuf};
 /// above it.
 pub const LINE_LIMIT: usize = 12;
 
-/// A feature as its backlog file gives it.
+/// A feature as its text in the records gives it, the text its backlog file held (EN-154).
 #[derive(Debug, PartialEq, Eq)]
 pub struct Feature {
     /// `F18`.
@@ -53,7 +53,6 @@ pub struct Plan {
     pub warning: Option<String>,
 }
 
-const FEATURES: &str = "docs/backlog/features";
 const CHECKLISTS: &str = "playground/checklists";
 
 /// Markdown's strikethrough, opening a criterion dropped from its feature.
@@ -312,33 +311,34 @@ fn read(root: &Path, path: &Path) -> Result<String, String> {
     fs::read_to_string(root.join(path)).map_err(|error| format!("{}: {error}", path.display()))
 }
 
-/// The feature's backlog file, `E17-F18-….md`.
-fn feature_file(root: &Path, id: &str) -> Result<PathBuf, String> {
-    let folder = Path::new(FEATURES);
-    let marker = format!("-{id}-");
-    let entries =
-        fs::read_dir(root.join(folder)).map_err(|error| format!("{FEATURES}: {error}"))?;
-
-    entries
-        .filter_map(Result::ok)
-        .map(|entry| entry.file_name().to_string_lossy().into_owned())
-        .find(|name| {
-            name.contains(&marker)
-                && Path::new(name)
-                    .extension()
-                    .is_some_and(|extension| extension.eq_ignore_ascii_case("md"))
-        })
-        .map(|name| folder.join(name))
-        .ok_or(format!("no feature file for {id} in {FEATURES}"))
+/// The statement `knowledge sql` runs for a feature's text, `None` for a word that is no feature
+/// id.
+#[must_use]
+pub fn feature_statement(id: &str) -> Option<String> {
+    feature_id(id).map(|id| format!("SELECT text FROM features WHERE id = '{id}'"))
 }
 
-/// What `val-prepare` writes for a feature, read from the repository at `root`.
+/// The feature's text, from the rows of [`feature_statement`].
 ///
 /// # Errors
 ///
-/// When the feature is unknown, its lines already written, or a checklist module unreadable.
-pub fn plan(root: &Path, id: &str) -> Result<Plan, String> {
-    let feature = parse_feature(&read(root, &feature_file(root, id)?)?)?;
+/// When the records hold no feature of that id.
+pub fn feature_text_of(id: &str, rows: &[Vec<String>]) -> Result<String, String> {
+    rows.first()
+        .and_then(|row| row.first())
+        .filter(|text| !text.is_empty())
+        .cloned()
+        .ok_or(format!("no feature {id} in the records"))
+}
+
+/// What `val-prepare` writes for a feature, given its text, in the repository at `root`.
+///
+/// # Errors
+///
+/// When the feature's text lacks a field, its lines are already written, or a checklist module is
+/// unreadable.
+pub fn plan(root: &Path, id: &str, text: &str) -> Result<Plan, String> {
+    let feature = parse_feature(text)?;
     let folder = Path::new(CHECKLISTS);
     let (lines_file, lines_constant) = lines_names(&feature);
     let (checklist_file, _) = checklist_names(&feature.epic);

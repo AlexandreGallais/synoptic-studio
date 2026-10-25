@@ -14,7 +14,7 @@ use knowledge::add::{Origin, add_document};
 use knowledge::store::{SCHEMA_VERSION, open_store, write};
 
 /// The usage the binary prints for a wrong call.
-const USAGE: &str = "Usage: target/release/knowledge init | path | add <kind> <file or -> | search <words> [<filters>] | show <id> [<heading>] [<filters>] | list [<filters>] | sync | snapshot; the filters: --kind, --epic, --feature, --status, --since, --branch, --state <value>, --all";
+const USAGE: &str = "Usage: target/release/knowledge init | path | add <kind> <file or -> | search <words> [<filters>] | show <id> [<heading>] [<filters>] | list [<filters>] | sync | snapshot | sql \"<statement>\" [--purpose \"<text>\"] | import-backlog <folder> | export-criteria <file or -> | check-ids <paths> | link-ids <paths> | branch-state <branch> merged|dropped; the filters: --kind, --epic, --feature, --status, --since, --branch, --state <value>, --all";
 
 /// A folder of its own: `records/` for the root, `repo/` a repository whose `origin` names
 /// `some-project`, `home/` for `HOME`.
@@ -101,7 +101,7 @@ fn f48_ac1_makes_records_sqlite_in_the_folder_named_after_origin() {
     let _ = fs::remove_dir_all(&place);
     assert!(output.status.success());
     assert!(made);
-    assert_eq!(stdout, format!("{}, schema 3", file.display()));
+    assert_eq!(stdout, format!("{}, schema 4", file.display()));
 }
 
 #[test]
@@ -220,7 +220,7 @@ fn f48_ac1_reads_a_newer_file_and_says_it_is_read_only() {
     assert_eq!(
         text(&output).0,
         format!(
-            "{}, schema 4, newer than this binary's 3: read only",
+            "{}, schema 5, newer than this binary's 4: read only",
             file.display()
         )
     );
@@ -664,4 +664,127 @@ fn f48_ac1_names_the_file_after_the_main_checkouts_folder_without_a_remote() {
             .display()
             .to_string()
     );
+}
+
+/// A backlog of one epic, one done feature of two criteria and one story, under `repo/backlog`.
+fn backlog(place: &Path) {
+    for (path, text) in [
+        (
+            "backlog/epics/E49-keep.md",
+            "---\nid: E49\ntitle: Keep\nstatus: in-progress\n---\n\n# E49\n",
+        ),
+        (
+            "backlog/features/E49-F48-the-database.md",
+            "---\nid: F48\nepic: E49\ntitle: The database\nstatus: done\n---\n\n## Acceptance criteria\n\n1. One file.\n2. A snapshot.\n",
+        ),
+        (
+            "backlog/stories/E49-F48-EN-151-the-tables.md",
+            "---\nid: EN-151\nepic: E49\nfeature: F48\ntitle: The tables\nstatus: done\n---\n\n# EN-151\n",
+        ),
+    ] {
+        let file = place.join("repo").join(path);
+
+        fs::create_dir_all(file.parent().unwrap()).unwrap();
+        fs::write(file, text).unwrap();
+    }
+}
+
+#[test]
+fn imports_the_backlog_reads_and_writes_it_by_sql_and_exports_its_criteria() {
+    let place = on_branch("backlog", "chore/en-154-x");
+
+    backlog(&place);
+
+    let imported = run(&place, &["import-backlog", "backlog"]);
+    let not_a_backlog = run(&place, &["import-backlog", "."]);
+    let read = run(&place, &["sql", "SELECT id, status FROM stories"]);
+    let created = run(
+        &place,
+        &[
+            "sql",
+            "CREATE TABLE notes (id TEXT, branch TEXT NOT NULL DEFAULT '', state TEXT NOT NULL DEFAULT 'draft')",
+            "--purpose",
+            "a note",
+        ],
+    );
+    let inserted = run(&place, &["sql", "INSERT INTO notes (id) VALUES ('a')"]);
+    let refused = run(&place, &["sql", "DROP TABLE stories"]);
+    let purpose_on_a_reading = run(&place, &["sql", "SELECT 1", "--purpose", "x"]);
+    let wrong_flag = run(&place, &["sql", "SELECT 1", "--kind", "x"]);
+    let merged = run(&place, &["branch-state", "chore/en-154-x", "merged"]);
+    let dropped = run(&place, &["branch-state", "chore/en-154-x", "dropped"]);
+    let wrong_state = run(&place, &["branch-state", "chore/en-154-x", "gone"]);
+    let notes = run(&place, &["sql", "SELECT id, branch, state FROM notes"]);
+    let printed = run(&place, &["export-criteria", "-"]);
+    let written = run(&place, &["export-criteria", "criteria.json"]);
+    let file = fs::read_to_string(place.join("repo/criteria.json")).unwrap_or_default();
+
+    let _ = fs::remove_dir_all(&place);
+    assert_eq!(
+        text(&imported).0,
+        "1 epics, 1 features, 1 stories, 2 criteria and 0 tasks imported"
+    );
+    assert_eq!(
+        text(&not_a_backlog),
+        (String::new(), "knowledge: .: no stories folder, not a backlog".to_owned())
+    );
+    assert_eq!(text(&read).0, "id\tstatus\nEN-151\tdone");
+    assert_eq!(text(&created).0, "0 rows changed, notes registered");
+    assert_eq!(text(&inserted).0, "1 row changed");
+    assert_eq!(
+        text(&refused).1,
+        "knowledge: refused: DROP TABLE stories: a core table of the records, kept by the tool"
+    );
+    assert_eq!(
+        text(&purpose_on_a_reading).1,
+        "knowledge: --purpose names a table a statement creates"
+    );
+    assert_eq!(text(&wrong_flag).1, format!("knowledge: {USAGE}"));
+    // The note's draft merged; dropping the branch after leaves its merged rows alone.
+    assert_eq!(text(&merged).0, "1 row of chore/en-154-x marked merged");
+    assert_eq!(text(&dropped).0, "0 rows of chore/en-154-x marked dropped");
+    assert_eq!(text(&wrong_state).1, format!("knowledge: {USAGE}"));
+    assert_eq!(text(&notes).0, "id\tbranch\tstate\na\tchore/en-154-x\tmerged");
+    assert_eq!(
+        text(&printed).0,
+        "[\n  { \"id\": \"F48.AC1\" },\n  { \"id\": \"F48.AC2\" }\n]"
+    );
+    assert_eq!(text(&written).0, "criteria.json written: 2 criteria");
+    assert_eq!(file, format!("{}\n", text(&printed).0));
+}
+
+#[test]
+fn checks_the_ids_a_page_cites_and_writes_its_links_to_backlog_files_as_ids() {
+    let place = on_branch("ids", "chore/en-154-y");
+
+    backlog(&place);
+    run(&place, &["import-backlog", "backlog"]);
+    fs::create_dir_all(place.join("repo/docs")).unwrap();
+    fs::write(
+        place.join("repo/docs/page.md"),
+        "[EN-151](../backlog/stories/E49-F48-EN-151-the-tables.md) and EN-999.\n",
+    )
+    .unwrap();
+    // A test's made-up id is not read.
+    fs::write(place.join("repo/docs/page.test.ts"), "// EN-998\n").unwrap();
+
+    let missing = run(&place, &["check-ids", "docs"]);
+    let linked = run(&place, &["link-ids", "docs"]);
+    let page = fs::read_to_string(place.join("repo/docs/page.md")).unwrap();
+
+    fs::write(place.join("repo/docs/page.md"), "EN-151 and F48.\n").unwrap();
+
+    let found = run(&place, &["check-ids", "docs"]);
+    let nowhere = run(&place, &["check-ids", "none"]);
+
+    let _ = fs::remove_dir_all(&place);
+    assert_eq!(missing.status.code(), Some(1));
+    assert_eq!(
+        text(&missing).1,
+        "knowledge: docs/page.md:1: EN-999 is not in the records"
+    );
+    assert_eq!(text(&linked).0, "1 file written with ids");
+    assert_eq!(page, "EN-151 and EN-999.\n");
+    assert_eq!(text(&found).0, "every id cited is in the records, 1 file read");
+    assert_eq!(text(&nowhere).1, "knowledge: none: no such file or folder");
 }

@@ -5,7 +5,7 @@
 //! they run is decided here, without Git.
 
 use git_hooks::branch::is_valid_branch;
-use worktree::{base_branch, branch_refusal, story_of_branch, story_of_file};
+use worktree::{Story, base_branch, branch_refusal, story_of_branch};
 
 /// The remote every sequence talks to.
 pub const REMOTE: &str = "origin";
@@ -159,11 +159,11 @@ pub enum Target {
 /// # Errors
 ///
 /// On `main` or a detached head; a base typed on a branch that is not a story's; a story branch
-/// whose story file or feature branch is not found.
+/// whose story the records lack, or whose feature branch is not found.
 pub fn sync_target(
     branch: &Branch,
     base: Option<&str>,
-    story_files: &[String],
+    stories: &[Story],
     remote_branches: &[String],
 ) -> Result<Target, String> {
     match (branch, base) {
@@ -179,12 +179,10 @@ pub fn sync_target(
         (Branch::Story(name), None) => {
             let id = story_of_branch(name)
                 .ok_or_else(|| format!("`{name}` names no story id such as en-100"))?;
-            let story = story_files
+            let story = stories
                 .iter()
-                .find_map(|file| story_of_file(&id, file))
-                .ok_or_else(|| {
-                    format!("no file `E…-{id}-<topic>.md` in docs/backlog/stories/: give --base")
-                })?;
+                .find(|story| story.id == id)
+                .ok_or_else(|| format!("no story {id} in the records: give --base"))?;
 
             base_branch(story.feature.as_deref(), remote_branches).map(Target::Rebase)
         }
@@ -318,18 +316,18 @@ pub struct State {
 
 /// The base `git-sequences state` counts a branch's commits from: a story's feature branch on
 /// `origin` (`origin/develop` for an epic's own story), as `sync` rebases it; another branch's
-/// upstream; `None` for a detached head, a story whose file or feature branch is not found, or a
-/// branch without upstream.
+/// upstream; `None` for a detached head, a story the records lack or whose feature branch is not
+/// found, or a branch without upstream.
 #[must_use]
 pub fn state_base(
     branch: &Branch,
-    story_files: &[String],
+    stories: &[Story],
     remote_branches: &[String],
     upstream: Option<&str>,
 ) -> Option<String> {
     match branch {
         Branch::Detached => None,
-        Branch::Story(_) => match sync_target(branch, None, story_files, remote_branches) {
+        Branch::Story(_) => match sync_target(branch, None, stories, remote_branches) {
             Ok(Target::Rebase(base)) => Some(base),
             _ => None,
         },

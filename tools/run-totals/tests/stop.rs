@@ -1,34 +1,13 @@
-//! Tests of when a run must stop on its own and which stories wait for an answer (EN-086).
+//! Tests of what `should-stop` says (EN-086, EN-154): the run goes on whatever the week's usage,
+//! and the stories waiting for an answer are named, read from the records' rows.
 
-use run_totals::stop::{WEEK_LIMIT_PERCENT, parked_story, stop_text};
-
-#[test]
-fn f20_ac6_the_week_limit_is_ninety_percent() {
-    assert_eq!(WEEK_LIMIT_PERCENT, 90);
-}
+use run_totals::stop::{GO, PARKED, parked_of, stop_text};
 
 #[test]
-fn f20_ac6_stops_at_ninety_percent_of_the_week_and_not_below() {
-    // 89 < 90: the run goes on; 90 and 100 ≥ 90: it stops.
-    assert_eq!(
-        stop_text(Some(89), &[]),
-        (false, "go: week 89 % used, the limit is 90 %\n".to_owned())
-    );
-    assert_eq!(
-        stop_text(Some(90), &[]),
-        (true, "stop: week 90 % used, the limit is 90 %\n".to_owned())
-    );
-    assert!(stop_text(Some(100), &[]).0);
-    assert!(!stop_text(Some(0), &[]).0);
-}
-
-#[test]
-fn f20_ac6_goes_on_when_the_usage_is_unknown() {
-    // No `usage.json` yet (before the session's first response): nothing says to stop.
-    assert_eq!(
-        stop_text(None, &[]),
-        (false, "go: week usage unknown\n".to_owned())
-    );
+fn f20_ac6_never_stops_for_the_weeks_usage_any_more() {
+    // The stop at 90 % of the week was dropped on 2026-10-25: the first word is always `go`.
+    assert_eq!(stop_text(&[]), format!("{GO}\n"));
+    assert!(GO.starts_with("go: "));
 }
 
 #[test]
@@ -36,33 +15,23 @@ fn f20_ac6_names_the_parked_stories_without_stopping_for_them() {
     let parked = ["EN-101".to_owned(), "US-020".to_owned()];
 
     assert_eq!(
-        stop_text(Some(55), &parked),
-        (
-            false,
-            "go: week 55 % used, the limit is 90 %\nparked: EN-101, US-020\n".to_owned()
-        )
+        stop_text(&parked),
+        format!("{GO}\nparked: EN-101, US-020\n")
     );
 }
 
 #[test]
-fn f20_ac6_reads_a_parked_story_from_its_front_matter() {
-    let parked = "---\nid: EN-101\nepic: E17\nstatus: parked\n---\n\n# EN-101\n";
+fn f20_ac6_reads_the_parked_stories_from_the_records_rows() {
+    let rows = vec![
+        vec!["EN-101".to_owned()],
+        vec![String::new()],
+        Vec::new(),
+        vec!["US-020".to_owned()],
+    ];
 
-    assert_eq!(parked_story(parked), Some("EN-101".to_owned()));
-}
-
-#[test]
-fn f20_ac6_ignores_a_story_not_parked_or_without_front_matter() {
-    assert_eq!(parked_story("---\nid: EN-102\nstatus: ready\n---\n"), None);
-    // `status: parked` in the body, not in the front matter.
+    assert_eq!(parked_of(&rows), ["EN-101", "US-020"]);
     assert_eq!(
-        parked_story("---\nid: EN-103\nstatus: done\n---\n\nstatus: parked\n"),
-        None
+        PARKED,
+        "SELECT id FROM stories WHERE status = 'parked' ORDER BY id"
     );
-    assert_eq!(parked_story("# A page\n\nstatus: parked\n"), None);
-    assert_eq!(parked_story(""), None);
-    // Parked, but no id: nothing to name.
-    assert_eq!(parked_story("---\nstatus: parked\n---\n"), None);
-    // A front matter never closed is none (AUD-022).
-    assert_eq!(parked_story("---\nid: EN-104\nstatus: parked\n"), None);
 }

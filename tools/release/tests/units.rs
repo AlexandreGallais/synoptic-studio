@@ -5,7 +5,7 @@
 
 use std::collections::HashMap;
 
-use release::backlog::{Backlog, Item, item};
+use release::backlog::{Backlog, Item, backlog_of_rows};
 use release::body::{Text, joined, release_text, text, written};
 use release::commit::{Commit, header, merged_branch, merged_pull_request};
 use release::draft::{
@@ -507,23 +507,33 @@ fn hints_list_each_line_s_feature_story_commits_and_break() {
 }
 
 #[test]
-fn reads_an_item_from_its_front_matter() {
-    let read = item("---\nid: US-1\nepic: E1\nfeature: F2\ntitle: \"A: \\\"b\\\"\"\n---\n\n# x\n");
+fn reads_the_stories_and_features_from_the_records_rows() {
+    let row = |cells: [&str; 3]| cells.map(str::to_owned).to_vec();
+    let read = backlog_of_rows(&[
+        row(["US-001", "A: \"b\"", "F02"]),
+        row(["REV-009", "A review", ""]),
+        row(["F02", "plain", ""]),
+        vec!["short".to_owned()],
+    ]);
 
     assert_eq!(
-        read,
-        Some(Item {
-            id: "US-1".to_owned(),
+        read.stories.get("US-001"),
+        Some(&Item {
+            id: "US-001".to_owned(),
             title: "A: \"b\"".to_owned(),
-            feature: Some("F2".to_owned()),
+            feature: Some("F02".to_owned()),
         })
     );
+    // A story of no feature, and a feature, have none.
     assert_eq!(
-        item("---\nid: F2\ntitle: plain\n---\n").unwrap().feature,
-        None
+        read.stories.get("REV-009").map(|item| &item.feature),
+        Some(&None)
     );
-    assert_eq!(item("# no front matter\n"), None);
-    assert_eq!(item("---\ntitle: no id\n---\n"), None);
+    assert_eq!(
+        read.features.get("F02").map(|item| item.title.as_str()),
+        Some("plain")
+    );
+    assert_eq!((read.stories.len(), read.features.len()), (2, 1));
 }
 
 #[test]
