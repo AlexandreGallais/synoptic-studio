@@ -162,7 +162,7 @@ fn is_pure_call(source: &Source, expression: &Expression) -> bool {
     };
     let Some(names) = PURE_EXPORTS
         .iter()
-        .find(|(module, _)| *module == import.source.value.as_str())
+        .find(|(module, _)| import.source.value == *module)
         .map(|(_, names)| *names)
     else {
         return false;
@@ -193,7 +193,10 @@ fn is_pure_call(source: &Source, expression: &Expression) -> bool {
             specifier.import_kind != ImportOrExportKind::Type
                 && match &specifier.imported {
                     ModuleExportName::IdentifierName(name) => names.contains(&name.name.as_str()),
-                    ModuleExportName::StringLiteral(name) => names.contains(&name.value.as_str()),
+                    ModuleExportName::StringLiteral(name) => name
+                        .value
+                        .as_str()
+                        .is_some_and(|name| names.contains(&name)),
                     ModuleExportName::IdentifierReference(_) => false,
                 }
         }

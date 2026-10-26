@@ -128,7 +128,12 @@ fn pattern_names(pattern: &ObjectPattern) -> Vec<String> {
         .properties
         .iter()
         .filter(|property| !property.computed)
-        .filter_map(|property| property.key.static_name().map(|name| name.to_string()))
+        .filter_map(|property| {
+            property
+                .key
+                .static_name()
+                .and_then(|name| name.as_str().map(str::to_owned))
+        })
         .collect()
 }
 
@@ -144,7 +149,10 @@ fn target_names(target: &ObjectAssignmentTarget) -> Vec<String> {
             oxc_ast::ast::AssignmentTargetProperty::AssignmentTargetPropertyProperty(property)
                 if !property.computed =>
             {
-                property.name.static_name().map(|name| name.to_string())
+                property
+                    .name
+                    .static_name()
+                    .and_then(|name| name.as_str().map(str::to_owned))
             }
             oxc_ast::ast::AssignmentTargetProperty::AssignmentTargetPropertyProperty(_) => None,
         })

@@ -35,7 +35,9 @@ pub fn is_process_exit(expression: &Expression) -> bool {
     };
     !call.optional
         && !member.optional()
-        && member.static_property_name() == Some("exit")
+        && member
+            .static_property_name()
+            .is_some_and(|name| name == "exit")
         && member.object().is_specific_id("process")
 }
 

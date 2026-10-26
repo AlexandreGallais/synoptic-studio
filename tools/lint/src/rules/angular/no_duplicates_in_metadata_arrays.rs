@@ -55,9 +55,10 @@ impl Rule for NoDuplicatesInMetadataArrays {
         for element in &array.elements {
             let (text, at) = match element {
                 ArrayExpressionElement::Identifier(name) => (name.name.as_str(), name.span.start),
-                ArrayExpressionElement::StringLiteral(text) => {
-                    (text.value.as_str(), text.span.start)
-                }
+                ArrayExpressionElement::StringLiteral(text) => match text.value.as_str() {
+                    Some(value) => (value, text.span.start),
+                    None => continue,
+                },
                 _ => continue,
             };
             if seen.contains(&text) {

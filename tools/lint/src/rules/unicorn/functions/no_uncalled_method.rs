@@ -259,9 +259,10 @@ impl Rule for NoUncalledMethod {
                 member.property.span.start,
             ),
             AstKind::ComputedMemberExpression(member) => match &member.expression {
-                Expression::StringLiteral(key) => {
-                    (&member.object, key.value.as_str(), key.span.start)
-                }
+                Expression::StringLiteral(key) => match key.value.as_str() {
+                    Some(name) => (&member.object, name, key.span.start),
+                    None => return,
+                },
                 _ => return,
             },
             _ => return,

@@ -148,7 +148,7 @@ fn needs_break(statement: &Statement) -> bool {
 /// The key of a case's value, to find a repeated one.
 fn case_key(source: &Source, value: &Expression) -> String {
     match value {
-        Expression::StringLiteral(each) => format!("value:string:{}", each.value),
+        Expression::StringLiteral(each) => format!("value:string:{}", each.value.display()),
         Expression::NumericLiteral(each) => format!("value:number:{}", each.value),
         Expression::BooleanLiteral(each) => format!("value:boolean:{}", each.value),
         Expression::NullLiteral(_) => "value:object:null".to_owned(),

@@ -25,7 +25,7 @@ fn is_word(character: Option<char>) -> bool {
 
 /// The finding on a string that could be an identifier.
 fn finding(rule: &'static str, source: &Source, literal: &StringLiteral) -> Option<Finding> {
-    let identifier = literal.value.as_str();
+    let identifier = literal.value.as_str()?;
     if !is_identifier_name(identifier) {
         return None;
     }

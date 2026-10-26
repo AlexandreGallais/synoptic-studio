@@ -166,7 +166,7 @@ impl PreferSingleObjectDestructuring {
         {
             return None;
         }
-        let keys: Vec<Option<std::borrow::Cow<str>>> = first
+        let keys: Vec<_> = first
             .pattern
             .properties
             .iter()

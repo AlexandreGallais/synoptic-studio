@@ -89,11 +89,16 @@ impl Rule for BarrelExports {
         for statement in &source.program.body {
             match statement {
                 Statement::ExportAllDeclaration(export)
-                    if export.exported.is_none() && export.source.value.starts_with("./") =>
+                    if export.exported.is_none()
+                        && export
+                            .source
+                            .value
+                            .as_str()
+                            .is_some_and(|specifier| specifier.starts_with("./")) =>
                 {
-                    actual.push(export.source.value.as_str());
+                    actual.extend(export.source.value.as_str());
                     if export.export_kind.is_type() {
-                        types_only.push(export.source.value.as_str());
+                        types_only.extend(export.source.value.as_str());
                     }
                 }
                 _ => {

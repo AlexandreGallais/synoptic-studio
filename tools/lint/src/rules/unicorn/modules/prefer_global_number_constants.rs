@@ -116,7 +116,10 @@ impl Rule for PreferGlobalNumberConstants {
                         PropertyKey::StaticIdentifier(key) if !property.computed => {
                             key.name.as_str()
                         }
-                        PropertyKey::StringLiteral(key) => key.value.as_str(),
+                        PropertyKey::StringLiteral(key) => match key.value.as_str() {
+                            Some(name) => name,
+                            None => continue,
+                        },
                         _ => continue,
                     };
                     findings.extend(self.report(source, node, (name, property.span), false));

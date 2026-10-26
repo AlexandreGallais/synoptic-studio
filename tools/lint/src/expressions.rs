@@ -265,9 +265,9 @@ fn is_boolean_static_call(source: &Source, callee: &Expression) -> bool {
         return false;
     };
     is_global(source, object)
-        && BOOLEAN_STATIC_METHODS
-            .iter()
-            .any(|(name, methods)| *name == object.name.as_str() && methods.contains(&property))
+        && BOOLEAN_STATIC_METHODS.iter().any(|(name, methods)| {
+            *name == object.name.as_str() && methods.iter().any(|method| property == *method)
+        })
 }
 
 /// Whether a local function, by its name, is written to return a boolean or returns one.

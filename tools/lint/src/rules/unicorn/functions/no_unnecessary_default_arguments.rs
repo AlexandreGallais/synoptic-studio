@@ -54,7 +54,7 @@ fn property_names<'s, 'a>(
         let ObjectPropertyKind::ObjectProperty(property) = each else {
             return None;
         };
-        let name = property.key.static_name()?.to_string();
+        let name = property.key.static_name()?.as_str()?.to_owned();
         if property.computed
             || property.method
             || property.kind != PropertyKind::Init
@@ -80,7 +80,11 @@ fn defaults(parameters: &FormalParameters) -> Vec<Default> {
             BindingPattern::ObjectPattern(pattern) => {
                 let mut found: Vec<(String, Option<Primitive>)> = Vec::new();
                 for property in &pattern.properties {
-                    let Some(name) = property.key.static_name().map(|name| name.to_string()) else {
+                    let Some(name) = property
+                        .key
+                        .static_name()
+                        .and_then(|name| name.as_str().map(str::to_owned))
+                    else {
                         return Default::Properties(Vec::new());
                     };
                     if property.computed

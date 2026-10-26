@@ -59,7 +59,7 @@ fn is_static_reference(expression: &Expression) -> bool {
 /// `undefined`.
 fn value_key(expression: &Expression) -> Option<String> {
     match expression {
-        Expression::StringLiteral(each) => Some(format!("string:{}", each.value)),
+        Expression::StringLiteral(each) => Some(format!("string:{}", each.value.as_str()?)),
         Expression::NumericLiteral(each) => Some(format!("number:{}", each.value)),
         Expression::BooleanLiteral(each) => Some(format!("boolean:{}", each.value)),
         Expression::NullLiteral(_) => Some("object:null".to_owned()),

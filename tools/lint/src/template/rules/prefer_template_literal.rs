@@ -10,6 +10,7 @@ use oxc_ast::AstKind;
 use oxc_ast::ast::{BinaryExpression, BinaryOperator, Expression};
 use oxc_ast_visit::Visit;
 use oxc_span::GetSpan;
+use oxc_str::JSStr;
 use regex::Regex;
 
 use super::r3::{merged, replace, slice};
@@ -69,7 +70,7 @@ fn chain_contains_string(binary: &BinaryExpression) -> bool {
 /// A literal's value as JavaScript's `String` writes it, `None` when not a literal.
 fn literal_text(expression: &Expression) -> Option<String> {
     match expression {
-        Expression::StringLiteral(string) => Some(string.value.to_string()),
+        Expression::StringLiteral(string) => Some(string.value.as_str()?.to_owned()),
         Expression::NumericLiteral(number) => Some(format!("{}", number.value)),
         Expression::BooleanLiteral(boolean) => Some(boolean.value.to_string()),
         Expression::NullLiteral(_) => Some("null".to_owned()),
@@ -91,8 +92,8 @@ fn flatten(expression: &Expression, bound: &Bound, parts: &mut Vec<Part>) {
             let text = quasi
                 .value
                 .cooked
-                .as_ref()
-                .map_or_else(|| quasi.value.raw.to_string(), ToString::to_string);
+                .and_then(JSStr::as_str)
+                .map_or_else(|| quasi.value.raw.to_string(), str::to_owned);
             if !text.is_empty() {
                 parts.push(Part::Literal(text));
             }

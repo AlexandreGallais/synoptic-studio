@@ -74,14 +74,19 @@ fn is_file_read(source: &Source, expression: &Expression, awaited: bool) -> bool
         }
         let imported = match &specifier.imported {
             ModuleExportName::IdentifierName(name) => name.name.as_str(),
-            ModuleExportName::StringLiteral(name) => name.value.as_str(),
+            ModuleExportName::StringLiteral(name) => match name.value.as_str() {
+                Some(name) => name,
+                None => return false,
+            },
             ModuleExportName::IdentifierReference(name) => name.name.as_str(),
         };
         if imported != "default" {
             properties.insert(0, imported);
         }
     }
-    let module = import.source.value.as_str();
+    let Some(module) = import.source.value.as_str() else {
+        return false;
+    };
     let module = module.strip_prefix("node:").unwrap_or(module);
     let method = properties.join(".");
     if awaited {

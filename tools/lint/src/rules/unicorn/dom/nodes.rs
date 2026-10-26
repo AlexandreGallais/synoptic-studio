@@ -33,12 +33,12 @@ pub fn is_not_dom_node(expression: &Expression) -> bool {
 #[must_use]
 pub fn static_string(expression: &Expression) -> Option<String> {
     match expression {
-        Expression::StringLiteral(literal) => Some(literal.value.to_string()),
+        Expression::StringLiteral(literal) => Some(literal.value.as_str()?.to_owned()),
         Expression::TemplateLiteral(template) if template.expressions.is_empty() => template
             .quasis
             .first()
             .and_then(|quasi| quasi.value.cooked)
-            .map(|cooked| cooked.to_string()),
+            .and_then(|cooked| cooked.as_str().map(str::to_owned)),
         _ => None,
     }
 }

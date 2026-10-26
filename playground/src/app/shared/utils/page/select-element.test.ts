@@ -33,5 +33,6 @@ describe("selectElement, by the document's map of ids (REF-HAPPY-DOM-QUERY)", ()
     const own = documentWith('<p id="a"></p>');
 
     expect(() => selectElement(own, "missing")).toThrow("Playground page without #missing.");
+    expect(() => selectElement(own, "missing")).toThrow(TypeError);
   });
 });

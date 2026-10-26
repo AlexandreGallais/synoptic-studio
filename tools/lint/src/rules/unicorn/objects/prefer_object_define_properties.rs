@@ -66,8 +66,10 @@ fn key_text(source: &Source, key: &Expression) -> String {
         Expression::StringLiteral(literal) if literal.value == "__proto__" => {
             format!("[{written}]")
         }
-        Expression::StringLiteral(literal) if is_identifier_name(&literal.value) => {
-            literal.value.to_string()
+        Expression::StringLiteral(literal)
+            if literal.value.as_str().is_some_and(is_identifier_name) =>
+        {
+            literal.value.display().to_string()
         }
         Expression::StringLiteral(_) | Expression::NumericLiteral(_) => written.to_owned(),
         _ => format!("[{written}]"),

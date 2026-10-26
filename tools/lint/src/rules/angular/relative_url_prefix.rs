@@ -27,7 +27,7 @@ fn is_relative(url: &str) -> bool {
 /// negated).
 fn is_relative_url(value: &Expression) -> bool {
     match value {
-        Expression::StringLiteral(literal) => is_relative(&literal.value),
+        Expression::StringLiteral(literal) => literal.value.as_str().is_some_and(is_relative),
         Expression::TemplateLiteral(template) => template
             .quasis
             .first()

@@ -39,7 +39,7 @@ impl TemplateRule for PreferClassBinding {
                                         ObjectPropertyKind::ObjectProperty(property) => property
                                             .key
                                             .static_name()
-                                            .is_some_and(|key| key.trim().contains(char::is_whitespace)),
+                                            .is_some_and(|key| key.as_js_str().display().to_string().trim().contains(char::is_whitespace)),
                                         ObjectPropertyKind::SpreadProperty(_) => false,
                                     }))
                             }

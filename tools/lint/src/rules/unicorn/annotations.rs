@@ -150,7 +150,7 @@ fn declared(
         }
         AstKind::ImportSpecifier(specifier) => {
             let module = match nodes.parent_kind(declaration) {
-                AstKind::ImportDeclaration(import) => Some(import.source.value.as_str()),
+                AstKind::ImportDeclaration(import) => import.source.value.as_str(),
                 _ => None,
             };
             let imported = specifier.imported.name();

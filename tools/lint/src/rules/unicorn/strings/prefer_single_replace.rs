@@ -111,7 +111,7 @@ fn replaced_character(call: &CallExpression) -> Option<char> {
 /// The string a call replaces with, when it is a literal.
 fn replacement<'a>(call: &CallExpression<'a>) -> Option<&'a str> {
     match call.arguments.get(1)? {
-        Argument::StringLiteral(literal) => Some(literal.value.as_str()),
+        Argument::StringLiteral(literal) => literal.value.as_str(),
         _ => None,
     }
 }

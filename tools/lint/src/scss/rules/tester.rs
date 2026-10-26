@@ -119,7 +119,7 @@ fn tagged_value(tagged: &TaggedTemplateExpression, source: &str, env: &Env) -> O
     if matches!(&tagged.tag, Expression::Identifier(name) if name.name == "stripIndent") {
         let mut text = String::new();
         for (index, quasi) in tagged.quasi.quasis.iter().enumerate() {
-            text.push_str(quasi.value.cooked.as_ref()?.as_str());
+            text.push_str(quasi.value.cooked?.as_str()?);
             if let Some(inner) = tagged.quasi.expressions.get(index) {
                 text.push_str(&eval(inner, source, env)?.display());
             }
@@ -147,7 +147,7 @@ fn tagged_value(tagged: &TaggedTemplateExpression, source: &str, env: &Env) -> O
 /// The value an expression writes, `None` when it is built otherwise.
 fn eval(expression: &Expression, source: &str, env: &Env) -> Option<Js> {
     match expression {
-        Expression::StringLiteral(string) => Some(Js::Text(string.value.to_string())),
+        Expression::StringLiteral(string) => Some(Js::Text(string.value.as_str()?.to_owned())),
         Expression::NumericLiteral(number) => Some(Js::Number(number.value)),
         Expression::BooleanLiteral(boolean) => Some(Js::Bool(boolean.value)),
         Expression::NullLiteral(_) => Some(Js::Null),
@@ -169,7 +169,7 @@ fn eval(expression: &Expression, source: &str, env: &Env) -> Option<Js> {
         Expression::TemplateLiteral(template) => {
             let mut text = String::new();
             for (index, quasi) in template.quasis.iter().enumerate() {
-                text.push_str(quasi.value.cooked.as_ref()?.as_str());
+                text.push_str(quasi.value.cooked?.as_str()?);
                 if let Some(inner) = template.expressions.get(index) {
                     text.push_str(&eval(inner, source, env)?.display());
                 }
@@ -201,7 +201,7 @@ fn eval(expression: &Expression, source: &str, env: &Env) -> Option<Js> {
                         let key = if property.computed {
                             eval(property.key.as_expression()?, source, env)?.display()
                         } else {
-                            property.key.static_name()?.to_string()
+                            property.key.static_name()?.as_str()?.to_owned()
                         };
                         // An unread value is kept as `undefined`, read again by the case.
                         let value = eval(&property.value, source, env)
@@ -402,7 +402,9 @@ impl<'a> Visit<'a> for Calls<'_> {
             let mut taken = Vec::new();
             for property in &names.properties {
                 if let Some(key) = property.key.static_name() {
-                    let key = key.to_string();
+                    let Some(key) = key.as_str().map(str::to_owned) else {
+                        continue;
+                    };
                     let value = item.get(&key).cloned().unwrap_or(Js::Undefined);
                     let name = property
                         .value

@@ -94,7 +94,7 @@ pub fn angular_decorator<'a>(class: &Class<'a>) -> Option<&'a str> {
 #[must_use]
 pub fn method_name<'a>(method: &MethodDefinition<'a>) -> Option<&'a str> {
     match &method.key {
-        PropertyKey::StringLiteral(key) => Some(key.value.as_str()),
+        PropertyKey::StringLiteral(key) => key.value.as_str(),
         PropertyKey::StaticIdentifier(key) => Some(key.name.as_str()),
         _ => None,
     }
