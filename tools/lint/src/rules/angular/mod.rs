@@ -1,12 +1,16 @@
-//! The rules of `@angular-eslint/eslint-plugin` 22.6.0 that catch the framework's bugs (EN-161,
-//! F51), each one module with the cases of the plugin's own tests, read from the tree alone
-//! (REF-ANGULAR-ESLINT-SOURCE); on for the playground's Angular app only (`scopes::SCOPES`, its
-//! `angular-app` scope).
+//! The rules of `@angular-eslint/eslint-plugin` 22.6.0 that catch the framework's bugs (EN-161)
+//! and keep each construct in its current form (EN-162), F51: each one module with the cases of
+//! the plugin's own tests, read from the tree alone (REF-ANGULAR-ESLINT-SOURCE); on for the
+//! playground's Angular app only (`scopes::SCOPES`, its `angular-app` scope).
 
 pub mod classes;
 pub mod computed_must_return;
+pub mod consistent_component_styles;
+pub mod contextual_decorator;
 pub mod contextual_lifecycle;
 pub mod declarations;
+pub mod inject_at_top;
+pub mod metadata;
 pub mod no_async_lifecycle_method;
 pub mod no_developer_preview;
 pub mod no_duplicates_in_metadata_arrays;
@@ -15,17 +19,34 @@ pub mod no_implicit_take_until_destroyed;
 pub mod no_lifecycle_call;
 pub mod no_pipe_impure;
 pub mod no_uncalled_signals;
+pub mod prefer_host_metadata_property;
+pub mod prefer_inject;
+pub mod prefer_on_push_component_change_detection;
+pub mod prefer_output_emitter_ref;
+pub mod prefer_output_readonly;
+pub mod prefer_signal_model;
+pub mod prefer_signals;
+pub mod prefer_standalone;
 pub mod reactive_context_must_read_signal;
+pub mod relative_url_prefix;
 pub mod require_lifecycle_on_prototype;
 pub mod signals;
+pub mod sort_keys_in_type_decorator;
+pub mod sort_lifecycle_methods;
 pub mod tagged_use;
+pub mod use_injectable_provided_in;
+pub mod use_lifecycle_interface;
+pub mod use_pipe_transform_interface;
 
 use super::Rule;
 
 /// The rules, in the order of their names.
 pub const RULES: &[&dyn Rule] = &[
     &computed_must_return::ComputedMustReturn,
+    &consistent_component_styles::ConsistentComponentStyles,
+    &contextual_decorator::ContextualDecorator,
     &contextual_lifecycle::ContextualLifecycle,
+    &inject_at_top::InjectAtTop,
     &no_async_lifecycle_method::NoAsyncLifecycleMethod,
     &no_developer_preview::NoDeveloperPreview,
     &no_duplicates_in_metadata_arrays::NoDuplicatesInMetadataArrays,
@@ -34,14 +55,31 @@ pub const RULES: &[&dyn Rule] = &[
     &no_lifecycle_call::NoLifecycleCall,
     &no_pipe_impure::NoPipeImpure,
     &no_uncalled_signals::NoUncalledSignals,
+    &prefer_host_metadata_property::PreferHostMetadataProperty,
+    &prefer_inject::PreferInject,
+    &prefer_on_push_component_change_detection::PreferOnPushComponentChangeDetection,
+    &prefer_output_emitter_ref::PreferOutputEmitterRef,
+    &prefer_output_readonly::PreferOutputReadonly,
+    &prefer_signal_model::PreferSignalModel,
+    &prefer_signals::PreferSignals,
+    &prefer_standalone::PreferStandalone,
     &reactive_context_must_read_signal::ReactiveContextMustReadSignal,
+    &relative_url_prefix::RelativeUrlPrefix,
     &require_lifecycle_on_prototype::RequireLifecycleOnPrototype,
+    &sort_keys_in_type_decorator::SortKeysInTypeDecorator,
+    &sort_lifecycle_methods::SortLifecycleMethods,
+    &use_injectable_provided_in::UseInjectableProvidedIn,
+    &use_lifecycle_interface::UseLifecycleInterface,
+    &use_pipe_transform_interface::UsePipeTransformInterface,
 ];
 
 /// Their names, which the Angular app's scope turns on.
 pub const NAMES: &[&str] = &[
     "@angular-eslint/computed-must-return",
+    "@angular-eslint/consistent-component-styles",
+    "@angular-eslint/contextual-decorator",
     "@angular-eslint/contextual-lifecycle",
+    "@angular-eslint/inject-at-top",
     "@angular-eslint/no-async-lifecycle-method",
     "@angular-eslint/no-developer-preview",
     "@angular-eslint/no-duplicates-in-metadata-arrays",
@@ -50,8 +88,22 @@ pub const NAMES: &[&str] = &[
     "@angular-eslint/no-lifecycle-call",
     "@angular-eslint/no-pipe-impure",
     "@angular-eslint/no-uncalled-signals",
+    "@angular-eslint/prefer-host-metadata-property",
+    "@angular-eslint/prefer-inject",
+    "@angular-eslint/prefer-on-push-component-change-detection",
+    "@angular-eslint/prefer-output-emitter-ref",
+    "@angular-eslint/prefer-output-readonly",
+    "@angular-eslint/prefer-signal-model",
+    "@angular-eslint/prefer-signals",
+    "@angular-eslint/prefer-standalone",
     "@angular-eslint/reactive-context-must-read-signal",
+    "@angular-eslint/relative-url-prefix",
     "@angular-eslint/require-lifecycle-on-prototype",
+    "@angular-eslint/sort-keys-in-type-decorator",
+    "@angular-eslint/sort-lifecycle-methods",
+    "@angular-eslint/use-injectable-provided-in",
+    "@angular-eslint/use-lifecycle-interface",
+    "@angular-eslint/use-pipe-transform-interface",
 ];
 
 #[cfg(test)]
