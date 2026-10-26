@@ -1,0 +1,98 @@
+<!-- should require <map> ancestor -->
+<area>
+
+<map name="foo">
+	<!-- should not allow end tag -->
+	<area></area>
+
+	<!-- should not allow content -->
+	<area>
+		<span>foo</span>
+	</area>
+</map>
+
+<!-- should not allow invalid shape attribute -->
+<map id="invalid-shape" name="invalid-shape">
+	<area shape="" coords>
+	<area shape="foobar" coords>
+</map>
+
+<!-- missing alt when required -->
+<map id="missing-alt" name="missing-alt">
+	<area href="target">
+</map>
+
+<!-- empty alt when required -->
+<map id="empty-alt" name="empty-alt">
+	<area href="target" alt="">
+</map>
+
+<!-- alt must be mitted when href is not present -->
+<map id="omit-alt" name="omit-alt">
+	<area alt="">
+	<area alt="lorem ipsum">
+</map>
+
+<!-- should not allow invalid type keywords -->
+<map id="invalid-target" name="invalid-target">
+	<area href="target" target="_invalid" alt="lorem ipsum">
+</map>
+
+<!-- target cannot be used without href -->
+<map id="target-missing-href" name="target-missing-href">
+	<area target="_blank">
+</map>
+
+<!-- should not be allowed if href is omitted -->
+<map id="invalid-without-href" name="invalid-without-href">
+	<area target="_blank" download ping rel referrerpolicy="" itemprop>
+</map>
+
+<!-- should not allow "coords" attribute when shape is "default" -->
+<map name="invalid-with-coords">
+	<area shape="default" coords="..">
+</map>
+
+<!-- should not allow obsolete aliases for shape attribute -->
+<map id="obsolete-shapes" name="obsolete-shapes">
+	<area shape="circ" coords>
+	<area shape="polygon" coords>
+	<area shape="rectangle" coords>
+</map>
+
+<!-- should require "coords" -->
+<map id="missing-coords" name="missing-coords">
+	<!-- [html-validate-disable-block attribute-allowed-values -- obsolete aliases are tested above] -->
+	<area shape>
+	<area shape="circ">
+	<area shape="circle">
+	<area shape="poly">
+	<area shape="polygon">
+	<area shape="rect">
+	<area shape="rectangle">
+</map>
+
+<!-- should not allow omitted or invalid referrerpolicy -->
+<map id="invalid-referrerpolicy" name="invalid-referrerpolicy">
+	<area href="target" alt=".." referrerpolicy>
+	<area href="target" alt=".." referrerpolicy="invalid">
+</map>
+
+<map id="disallowed-rel-keywords" name="disallowed-rel-keywords">
+	<!-- disallowed rel keywords -->
+	<area href="target" alt=".." rel="canonical">
+	<area href="target" alt=".." rel="dns-prefetch">
+	<area href="target" alt=".." rel="expect">
+	<area href="target" alt=".." rel="icon">
+	<area href="target" alt=".." rel="manifest">
+	<area href="target" alt=".." rel="modulepreload">
+	<area href="target" alt=".." rel="pingback">
+	<area href="target" alt=".." rel="preconnect">
+	<area href="target" alt=".." rel="prefetch">
+	<area href="target" alt=".." rel="preload">
+	<area href="target" alt=".." rel="stylesheet">
+	<area href="target" alt=".." rel="dcterms.creator">
+
+	<!-- should handle disallowed keywords in a list of many -->
+	<area href="target" alt=".." rel="alternate external canonical">
+</map>

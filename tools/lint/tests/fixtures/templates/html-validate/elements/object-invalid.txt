@@ -1,0 +1,28 @@
+<!-- should be transparent -->
+<span>
+	<object data="resource">
+		<div>foo</div>
+	</object>
+</span>
+
+<!-- invalid data attribute -->
+<object></object>
+<object data=""></object>
+
+<!-- should not allow flow before <param> -->
+<object data="resource">
+	<div></div>
+	<param>
+</object>
+
+<!-- should be interactive if usemap is set -->
+<button type="button">
+	foo
+	<object data="resource" usemap></object>
+</button>
+
+<!-- should not allow invalid width and height -->
+<object data="resource" width="" height=""></object>
+<object data="resource" width="foo" height="foo"></object>
+<object data="resource" width="-1" height="-1"></object>
+<object data="resource" width="1.5" height="1.5"></object>

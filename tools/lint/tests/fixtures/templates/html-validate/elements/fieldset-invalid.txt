@@ -1,0 +1,17 @@
+<!-- must have <legend> -->
+<fieldset>
+</fieldset>
+
+<!-- should not allow legend and flow content out-of-order -->
+<fieldset>
+	<div>bar</div>
+	<legend>foo</legend>
+</fieldset>
+
+<!-- should not allow empty or omitted name -->
+<fieldset name>
+	<legend>foo</legend>
+</fieldset>
+<fieldset name="">
+	<legend>foo</legend>
+</fieldset>

@@ -1,0 +1,79 @@
+<map name="foo">
+	<!-- should have omitted end tag -->
+	<area>
+
+	<!-- require <map> ancestor but not as direct parent -->
+	<span>
+		<area>
+	</span>
+
+	<!-- should allow shape attribute -->
+	<area shape="rect" coords>
+	<area shape="circle" coords>
+	<area shape="poly" coords>
+	<area shape="default">
+</map>
+
+<!-- has alt when required -->
+<map name="have-alt">
+	<area href="target" alt="lorem ipsum">
+</map>
+
+<!-- should allow type keywords and custom name (must not start with _) -->
+<map name="valid-target">
+	<area href="target" target="_blank" alt="lorem ipsum">
+	<area href="target" target="_parent" alt="lorem ipsum">
+	<area href="target" target="_self" alt="lorem ipsum">
+	<area href="target" target="_top" alt="lorem ipsum">
+	<area href="target" target="foobar" alt="lorem ipsum">
+</map>
+
+<!-- should be allowed if href is present -->
+<map name="valid-with-href">
+	<area href="target" target="_blank" download ping rel referrerpolicy="" itemprop alt="lorem ipsum">
+</map>
+
+<!-- should allow "coords" attribute when shape is unset, "circle", "poly" or "rect" -->
+<map name="valid-with-coords">
+	<area coords="..">
+	<area shape="circle" coords="..">
+	<area shape="poly" coords="..">
+	<area shape="rect" coords="..">
+</map>
+
+<!-- should not require "coords" when shape is "default"-->
+<map name="default-shape">
+	<area shape="default">
+</map>
+
+<!-- should allow referrerpolicy attribute -->
+<map name="valid-referrerpolicy">
+	<area href="target" alt="lorem ipsum" referrerpolicy="">
+	<area href="target" alt="lorem ipsum" referrerpolicy="no-referrer">
+	<area href="target" alt="lorem ipsum" referrerpolicy="no-referrer-when-downgrade">
+	<area href="target" alt="lorem ipsum" referrerpolicy="same-origin">
+	<area href="target" alt="lorem ipsum" referrerpolicy="origin">
+	<area href="target" alt="lorem ipsum" referrerpolicy="strict-origin">
+	<area href="target" alt="lorem ipsum" referrerpolicy="origin-when-cross-origin">
+	<area href="target" alt="lorem ipsum" referrerpolicy="strict-origin-when-cross-origin">
+	<area href="target" alt="lorem ipsum" referrerpolicy="unsafe-url">
+</map>
+
+<!-- should allow empty rel attribute -->
+<map name="empty-rel">
+	<area href="target" alt="lorem ipsum" rel>
+	<area href="target" alt="lorem ipsum" rel="">
+</map>
+
+<!-- should allow rel attribute -->
+<map name="valid-rel">
+	<area href="target" alt="lorem ipsum" rel="next">
+</map>
+
+<!-- should work under <map> and <template> elements -->
+<map name="valid-ancestor-map">
+	<area>
+</map>
+<template name="valid-ancestor-template">
+	<area>
+</template>

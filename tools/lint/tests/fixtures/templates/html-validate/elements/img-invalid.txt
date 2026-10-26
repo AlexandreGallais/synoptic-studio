@@ -1,0 +1,29 @@
+<!-- must have src attribute -->
+<img>
+
+<!-- src must be non-empty -->
+<img src="">
+
+<!-- srcset must be non-empty -->
+<img src="foo.png" srcset="">
+
+<!-- should not allow end tag -->
+<img src="foo.png"></img>
+
+<!-- should be interactive if usemap is set -->
+<button type="button">
+	<img src="foo.png" usemap aria-label="Picture of a foo">
+</button>
+
+<!-- should not allow omitted or invalid referrerpolicy -->
+<img src="foo.png" referrerpolicy>
+<img src="foo.png" referrerpolicy="invalid">
+
+<!-- should not allow invalid width and height -->
+<img src="foo.png" width="" height="">
+<img src="foo.png" width="foo" height="foo">
+<img src="foo.png" width="-1" height="-1">
+<img src="foo.png" width="1.5" height="1.5">
+<!-- invalid loading and fetchpriority values -->
+<img src="foo.png" loading="invalid">
+<img src="foo.png" fetchpriority="invalid">

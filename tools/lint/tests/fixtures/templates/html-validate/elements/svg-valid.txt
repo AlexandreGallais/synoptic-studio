@@ -1,0 +1,16 @@
+<!-- foreign element should allow unknown children -->
+<svg focusable="false">
+	<g></g>
+</svg>
+
+<!-- foreign should always allow self-closed -->
+<svg focusable="false"/>
+
+<!-- should allow camelcase attributes -->
+<svg focusable="false" viewBox="1 2 3 4"></svg>
+
+<!-- should allow nesting -->
+<svg focusable="false">
+	<svg></svg>
+	<svg/>
+</svg>

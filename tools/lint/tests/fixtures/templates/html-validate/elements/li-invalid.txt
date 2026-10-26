@@ -1,0 +1,4 @@
+<!-- should require <ul>, <ol> or <menu> -->
+<div>
+	<li>foo</li>
+</div>
