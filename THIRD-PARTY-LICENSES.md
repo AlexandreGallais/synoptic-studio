@@ -42,6 +42,7 @@ The project's tools (`tools/`) port code from, or copy test cases of, the packag
 | `postcss-value-parser` | 4.2.0 | MIT | its reading of a value and of a number's unit, ported to `tools/lint/src/scss/value.rs`; its test files `test/parse.js` and `test/unit.js`, copied into `tools/lint/tests/fixtures/scss/postcss-value-parser/` |
 | `stylelint` | 17.16.0 | MIT | the test files of the rules the catalogue keeps, copied into `tools/lint/tests/fixtures/scss/stylelint/` |
 | `stylelint-scss` | 7.3.0 | MIT | the test files of the rules the catalogue keeps, copied into `tools/lint/tests/fixtures/scss/stylelint-scss/` |
+| `stylelint-config-recess-order` | 7.9.0 | ISC | its property groups (`groups.js`), copied as data into `tools/lint/src/scss/rules/recess_order.rs` and as it is into `tools/lint/tests/fixtures/scss/stylelint-config-recess-order/` |
 
 ## eslint-plugin-unicorn 78.0.0
 
@@ -1504,4 +1505,26 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+```
+
+## stylelint-config-recess-order 7.9.0
+
+From `https://registry.npmjs.org/stylelint-config-recess-order/-/stylelint-config-recess-order-7.9.0.tgz`, `package/LICENSE.txt`, read on 2026-10-26; `groups.js` comes from the same tarball.
+
+```text
+ISC License
+
+Copyright Jeff Nelson
+
+Permission to use, copy, modify, and/or distribute this software for any
+purpose with or without fee is hereby granted, provided that the above
+copyright notice and this permission notice appear in all copies.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 ```

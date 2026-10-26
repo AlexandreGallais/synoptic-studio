@@ -59,6 +59,7 @@ pub mod prefixed;
 pub mod project;
 pub mod property_no_deprecated;
 pub mod property_no_vendor_prefix;
+pub mod recess_order;
 pub mod reference;
 pub mod rule_empty_line_before;
 pub mod scss_ampersand;
