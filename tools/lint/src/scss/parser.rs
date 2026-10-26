@@ -22,7 +22,9 @@ pub struct ParseError {
 /// The result of a step of the reading.
 type Read<T> = Result<T, ParseError>;
 
-/// A sheet's tree, or the first error of its reading.
+/// A sheet's tree, or the first error of its reading. The text is read as given: a byte order
+/// mark, which `PostCSS`'s `Input` drops before parsing, is dropped by the caller
+/// (`scss::lint_text`), whose places and fixes take it into account.
 ///
 /// # Errors
 ///
