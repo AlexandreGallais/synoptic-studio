@@ -1,7 +1,8 @@
 //! `element-permitted-parent` of `html-validate` 11.17.0
 //! (`src/rules/element-permitted-parent.ts`, REF-HTML-VALIDATE-SOURCE): an element whose parent
 //! its metadata does not permit; neither at a root, nor under an element of its own name, which
-//! `element-permitted-content` reports.
+//! `element-permitted-content` reports, nor (our own case) under a component, a custom element
+//! whose content Angular projects elsewhere.
 
 use super::super::elements::{Entry, natural_join};
 use super::super::validator::permitted;
@@ -48,7 +49,10 @@ impl TemplateRule for ElementPermittedParent {
             let Some(parent) = element.parent else {
                 continue;
             };
-            if doc.el(parent).tag == element.tag {
+            // Our own case: Angular projects content: an element written inside a component (a
+            // custom element, its name holding a dash) lands where the component's template puts
+            // it, which this template does not show.
+            if doc.el(parent).tag == element.tag || doc.el(parent).tag.contains('-') {
                 continue;
             }
             let Some(rules) = element.meta.and_then(|meta| meta.permitted_parent) else {
@@ -67,7 +71,20 @@ impl TemplateRule for ElementPermittedParent {
 #[cfg(test)]
 mod tests {
     use super::ElementPermittedParent;
-    use crate::template::html::cases::run;
+    use crate::template::html::cases::{messages, run};
+
+    #[test]
+    fn leaves_an_element_projected_into_a_component() {
+        // Our own case: Angular projects content: `<li>` written inside `<app-list>` lands where
+        // the component's template puts its `<ng-content>`, a list; under `<div>` it is reported.
+        assert_eq!(
+            messages(
+                &ElementPermittedParent,
+                "<app-list><li>a</li></app-list><div><li>b</li></div>"
+            ),
+            ["1:38 <li> element requires a <ul>, <ol>, <menu> or <template> element as parent"]
+        );
+    }
 
     #[test]
     fn f53_ac1_passes_the_cases_of_html_validate() {
