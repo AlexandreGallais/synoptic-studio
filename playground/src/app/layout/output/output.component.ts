@@ -4,9 +4,9 @@ import { PipelineComponent } from "../../features/debug/pipeline/pipeline.compon
 
 /** The debug panel: the pipeline's output, shown or hidden by the toolbar. */
 @Component({
-  imports: [PipelineComponent],
   selector: "app-output",
-  styleUrl: "./output.component.scss",
+  imports: [PipelineComponent],
   templateUrl: "./output.component.html",
+  styleUrl: "./output.component.scss",
 })
 export class OutputComponent {}

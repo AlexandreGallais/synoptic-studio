@@ -4,9 +4,9 @@ import { PropertiesComponent } from "../../features/properties/properties.compon
 
 /** The right panel: the properties of what is edited. */
 @Component({
-  imports: [PropertiesComponent],
   selector: "app-panel",
-  styleUrl: "./panel.component.scss",
+  imports: [PropertiesComponent],
   templateUrl: "./panel.component.html",
+  styleUrl: "./panel.component.scss",
 })
 export class PanelComponent {}

@@ -11,8 +11,8 @@ import type { AfterViewInit } from "@angular/core";
  */
 @Component({
   selector: "app-canvas",
-  styleUrl: "./canvas.component.scss",
   templateUrl: "./canvas.component.html",
+  styleUrl: "./canvas.component.scss",
 })
 export class CanvasComponent implements AfterViewInit {
   /** The page's document, which the mount listens to and draws into. */
