@@ -62,7 +62,7 @@ use regex::Regex;
 
 use super::bindings::{
     AttributeKind, TemplateBinding, Value, attribute_kind, block_parameters, interpolations,
-    read_attribute,
+    is_non_bindable, read_attribute,
 };
 use super::expressions::{Bound, read};
 use super::lexer::{Span, TokenType};
@@ -184,11 +184,19 @@ impl<'t> Template<'t> {
         found
     }
 
-    /// Every expression of the template, read; what cannot be read was reported by the reader.
+    /// Every expression of the template, read, none under an `ngNonBindable` element, which binds
+    /// nothing; what cannot be read was reported by the reader.
     #[must_use]
     pub fn expressions(&self) -> Vec<Written<'t>> {
         let mut found = Vec::new();
-        self.walk(&mut |node, _| self.read_node(node, &mut found));
+        self.walk(&mut |node, ancestors| {
+            let bound = ancestors.iter().all(
+                |ancestor| !matches!(ancestor, Node::Element(element) if is_non_bindable(element)),
+            );
+            if bound {
+                self.read_node(node, &mut found);
+            }
+        });
         found
     }
 

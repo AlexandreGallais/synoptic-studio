@@ -180,6 +180,32 @@ mod tests {
     }
 
     #[test]
+    fn f52_ac1_reads_nothing_under_ng_non_bindable_but_its_own_attributes() {
+        let rules = |text: &str| {
+            lint_text("a.component.html", text)
+                .iter()
+                .map(|finding| (finding.line, finding.column, finding.rule))
+                .collect::<Vec<_>>()
+        };
+
+        // Angular 22.2.3 reads the children of `ngNonBindable` as text (run by the auditor):
+        // no error, no rule on their expressions.
+        let skipped = "<div ngNonBindable>{{ a + }} <p [x]=\"b +\">{{ ) }}</p> @if (x) {y}</div>";
+        assert_eq!(rules(skipped), []);
+        assert_eq!(rules("<div ngNonBindable><p>{{ a == 'b' }}</p></div>"), []);
+        // Its own attributes are read, `b +` from byte 24, Oxc stopping at its end, 27 (column
+        // 28); the name is compared as written, ` a + ` from byte 21 to 26 (column 27).
+        assert_eq!(
+            rules("<div ngNonBindable [x]=\"b +\"></div>"),
+            [(1, 28, "lint/parse")]
+        );
+        assert_eq!(
+            rules("<div ngnonbindable>{{ a + }}</div>"),
+            [(1, 27, "lint/parse")]
+        );
+    }
+
+    #[test]
     fn runs_no_call_expression_by_the_product_owner_s_choice() {
         // A signal read is a call: `no-call-expression` is off, so it passes.
         assert_eq!(lint_text("a.component.html", "<p>{{ zoom() }}</p>\n"), []);

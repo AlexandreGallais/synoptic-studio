@@ -13,7 +13,7 @@ use oxc_allocator::Allocator;
 use super::expressions::{Bound, expression_end, read, read_action, split_top_level};
 use super::lexer::{ParseError, Span, Token, TokenType, offset};
 use super::tags::split_ns_name;
-use super::tree::{Attribute, Block, Node, Parsed};
+use super::tree::{Attribute, Block, Element, Node, Parsed};
 
 /// What an attribute is.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -486,6 +486,18 @@ fn keyword<'t>(text: &'t str, word: &str) -> Option<&'t str> {
         .map(str::trim_start)
 }
 
+/// Whether an element carries `ngNonBindable`, its name compared as written: Angular reads its
+/// children as plain text and attributes, binding nothing (`preparseElement` and
+/// `NonBindableVisitor` of `render3/r3_template_transform.ts`), so none of their expressions is
+/// read; its own attributes are.
+#[must_use]
+pub fn is_non_bindable(element: &Element) -> bool {
+    element
+        .attrs
+        .iter()
+        .any(|attribute| attribute.name == "ngNonBindable")
+}
+
 /// Every expression of a template read; the errors met, the tree's first.
 #[must_use]
 pub fn check(parsed: &Parsed) -> Vec<ParseError> {
@@ -517,7 +529,9 @@ fn check_nodes(allocator: &Allocator, nodes: &[Node], errors: &mut Vec<ParseErro
                         errors.push(error);
                     }
                 }
-                check_nodes(allocator, &element.children, errors);
+                if !is_non_bindable(element) {
+                    check_nodes(allocator, &element.children, errors);
+                }
                 Ok(())
             }
             Node::Text(text) => interpolations(allocator, &text.tokens).map(|_| ()),
