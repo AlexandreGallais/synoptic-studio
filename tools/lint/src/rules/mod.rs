@@ -2,6 +2,7 @@
 //! reads the parsed file once (`check_file`) or each node of the one walk the linter makes over
 //! the AST (`check_node`), never parsing again.
 
+pub mod angular;
 pub mod barrel_exports;
 pub mod canonical_import_path;
 pub mod folder_has_index;
@@ -79,11 +80,12 @@ pub const ALL: &[&dyn Rule] = &[
     &type_declaration_immutability::TypeDeclarationImmutability,
 ];
 
-/// The rules of a list of names, in the registry's order, then the other plugins' (EN-084), then
-/// Unicorn's, its DOM and web rules, then those of `eslint-plugin-jsdoc`.
+/// The rules of a list of names, in the registry's order, then Angular's (EN-161), the other
+/// plugins' (EN-084), then Unicorn's, its DOM and web rules, then those of `eslint-plugin-jsdoc`.
 #[must_use]
 pub fn named(names: &[&str]) -> Vec<&'static dyn Rule> {
     ALL.iter()
+        .chain(angular::RULES)
         .chain(functional::RULES)
         .chain(imports::RULES)
         .chain(stylistic::RULES)
@@ -98,17 +100,18 @@ pub fn named(names: &[&str]) -> Vec<&'static dyn Rule> {
 
 #[cfg(test)]
 mod tests {
-    use super::{ALL, Rule, functional, imports, jsdoc, named, stylistic, unicorn};
+    use super::{ALL, Rule, angular, functional, imports, jsdoc, named, stylistic, unicorn};
     use crate::scopes::linted_by;
 
-    /// One path of each scope: the functional core, a barrel, the DOM layers, the playground, the
-    /// documentation's theme, a script, a test and a root configuration.
-    const PATHS: [&str; 10] = [
+    /// One path of each scope: the functional core, a barrel, the DOM layers, the playground and
+    /// its Angular app, the documentation's theme, a script, a test and a root configuration.
+    const PATHS: [&str; 11] = [
         "src/math/a.ts",
         "src/math/a/index.ts",
         "src/render/a.ts",
         "playground/a/b.ts",
         "playground/a/index.ts",
+        "playground/src/app/a.component.ts",
         "docs/.vitepress/theme/a.ts",
         "scripts/a.ts",
         "scripts/a/b.ts",
@@ -135,6 +138,7 @@ mod tests {
         let on: Vec<&str> = PATHS.iter().flat_map(|path| linted_by(path)).collect();
         let never: Vec<&str> = ALL
             .iter()
+            .chain(angular::RULES)
             .chain(functional::RULES)
             .chain(imports::RULES)
             .chain(stylistic::RULES)

@@ -28,6 +28,8 @@ The project's tools (`tools/`) port code from, or copy test cases of, the packag
 | `@secretlint/core` | 13.0.7 | MIT | the clean-up of a file's findings (the comment filter applied, duplicates dropped, sorted) and the masking of their values, in `tools/secret-scan/src/rules/mod.rs` and `report.rs` |
 | `@secretlint/secretlint-rule-preset-recommend` | 13.0.7 | MIT | its 27 rules and its comment filter, ported to `tools/secret-scan/src/`, and its test snapshots, copied into `tools/secret-scan/tests/fixtures/preset/` |
 | `structured-source` | 4.0.0 | BSD-2-Clause | its line and column of an index, in `tools/secret-scan/src/source.rs` |
+| `@angular-eslint/eslint-plugin` | 22.6.0 | MIT | its rules on the framework's bugs, ported to `tools/lint/src/rules/angular/`, with the cases of their tests |
+| `@angular-eslint/utils` | 22.6.0 | MIT | its reading of Angular's decorators and lifecycle methods, ported to `tools/lint/src/rules/angular/classes.rs` |
 
 ## eslint-plugin-unicorn 78.0.0
 
@@ -733,4 +735,60 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
 ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+```
+
+## @angular-eslint/eslint-plugin 22.6.0
+
+From `https://registry.npmjs.org/@angular-eslint/eslint-plugin/-/eslint-plugin-22.6.0.tgz`, `package/LICENSE`, read through unpkg.com on 2026-10-26; the test cases come from the repository angular-eslint at the tag v22.6.0, under the same licence.
+
+```text
+MIT License
+
+Copyright (c) 2020 James Henry
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
+
+## @angular-eslint/utils 22.6.0
+
+From `https://registry.npmjs.org/@angular-eslint/utils/-/utils-22.6.0.tgz`, `package/LICENSE`, read through unpkg.com on 2026-10-26.
+
+```text
+MIT License
+
+Copyright (c) 2020 James Henry
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
 ```
