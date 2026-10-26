@@ -44,6 +44,7 @@ fn succeeds_on_a_clean_tree_and_fails_on_a_finding() {
 
 /// A formatted sheet whose fixes move a declaration, drop an overridden longhand and join a
 /// redundant nesting.
+#[cfg(unix)]
 const UNSORTED: &str = ".a {\n  color: var(--c);\n  margin-top: 0;\n  margin: 8px;\n  display: block;\n\n  .d {\n    .e {\n      display: none;\n    }\n  }\n}\n";
 
 #[cfg(unix)]
