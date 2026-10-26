@@ -6,8 +6,11 @@
 pub mod classes;
 pub mod computed_must_return;
 pub mod contextual_lifecycle;
+pub mod declarations;
 pub mod no_async_lifecycle_method;
+pub mod no_developer_preview;
 pub mod no_duplicates_in_metadata_arrays;
+pub mod no_experimental;
 pub mod no_implicit_take_until_destroyed;
 pub mod no_lifecycle_call;
 pub mod no_pipe_impure;
@@ -15,6 +18,7 @@ pub mod no_uncalled_signals;
 pub mod reactive_context_must_read_signal;
 pub mod require_lifecycle_on_prototype;
 pub mod signals;
+pub mod tagged_use;
 
 use super::Rule;
 
@@ -23,7 +27,9 @@ pub const RULES: &[&dyn Rule] = &[
     &computed_must_return::ComputedMustReturn,
     &contextual_lifecycle::ContextualLifecycle,
     &no_async_lifecycle_method::NoAsyncLifecycleMethod,
+    &no_developer_preview::NoDeveloperPreview,
     &no_duplicates_in_metadata_arrays::NoDuplicatesInMetadataArrays,
+    &no_experimental::NoExperimental,
     &no_implicit_take_until_destroyed::NoImplicitTakeUntilDestroyed,
     &no_lifecycle_call::NoLifecycleCall,
     &no_pipe_impure::NoPipeImpure,
@@ -37,7 +43,9 @@ pub const NAMES: &[&str] = &[
     "@angular-eslint/computed-must-return",
     "@angular-eslint/contextual-lifecycle",
     "@angular-eslint/no-async-lifecycle-method",
+    "@angular-eslint/no-developer-preview",
     "@angular-eslint/no-duplicates-in-metadata-arrays",
+    "@angular-eslint/no-experimental",
     "@angular-eslint/no-implicit-take-until-destroyed",
     "@angular-eslint/no-lifecycle-call",
     "@angular-eslint/no-pipe-impure",
