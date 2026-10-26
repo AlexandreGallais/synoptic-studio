@@ -1,6 +1,6 @@
 //! The repository the linter runs in: its root, and what the rules read from the disk beside the
 //! file, read once per run and shared by the threads (ADR-0069: work done once) — folder
-//! listings and the packages of `package.json`.
+//! listings, the packages of `package.json` and the tags of a package's declarations (EN-161).
 
 use std::collections::HashMap;
 use std::fs;
@@ -27,7 +27,11 @@ pub struct Project {
     pub root: PathBuf,
     folders: Mutex<HashMap<PathBuf, Arc<Vec<Entry>>>>,
     dependencies: OnceLock<Dependencies>,
+    declarations: Mutex<HashMap<PathBuf, Arc<Declarations>>>,
 }
+
+/// Each name a declaration file exports and the `JSDoc` tags of its declarations.
+pub type Declarations = HashMap<String, Vec<String>>;
 
 impl Project {
     /// A repository at a root.
@@ -37,6 +41,7 @@ impl Project {
             root: root.to_path_buf(),
             folders: Mutex::new(HashMap::new()),
             dependencies: OnceLock::new(),
+            declarations: Mutex::new(HashMap::new()),
         }
     }
 
@@ -77,6 +82,20 @@ impl Project {
             .iter()
             .find(|entry| entry.name == name)
             .cloned()
+    }
+
+    /// The tags of what a declaration file exports, read once by `read`.
+    pub fn declarations(&self, entry: &Path, read: fn(&Path) -> Declarations) -> Arc<Declarations> {
+        let mut read_ones = self
+            .declarations
+            .lock()
+            .unwrap_or_else(PoisonError::into_inner);
+
+        Arc::clone(
+            read_ones
+                .entry(entry.to_path_buf())
+                .or_insert_with(|| Arc::new(read(entry))),
+        )
     }
 
     /// The packages `package.json` names, none when it cannot be read.
