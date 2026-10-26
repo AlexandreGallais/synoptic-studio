@@ -1,0 +1,222 @@
+import { beforeAll, describe, expect, it } from "@jest/globals";
+import { HtmlValidate } from "../../htmlvalidate";
+import "html-validate/jest";
+import { defineMetadata } from "../../meta";
+
+describe("wcag/h32", () => {
+	let htmlvalidate: HtmlValidate;
+
+	beforeAll(() => {
+		htmlvalidate = new HtmlValidate({
+			root: true,
+			elements: [
+				"html5",
+				{
+					"my-form": {
+						form: true,
+					},
+				},
+			],
+			rules: { "wcag/h32": "error" },
+		});
+	});
+
+	it("should not report when form has nested submit button (button)", async () => {
+		expect.assertions(1);
+		const markup = '<form><button type="submit"></button></form>';
+		const report = await htmlvalidate.validateString(markup);
+		expect(report).toBeValid();
+	});
+
+	it("should not report when form has nested submit button (button without type)", async () => {
+		expect.assertions(1);
+		const markup = /* HTML */ ` <form><button></button></form> `;
+		const report = await htmlvalidate.validateString(markup);
+		expect(report).toBeValid();
+	});
+
+	it("should not report when form has nested submit button (input)", async () => {
+		expect.assertions(1);
+		const markup = '<form><input type="submit"></form>';
+		const report = await htmlvalidate.validateString(markup);
+		expect(report).toBeValid();
+	});
+
+	it("should not report when form has nested submit button (image)", async () => {
+		expect.assertions(1);
+		const markup = '<form><input type="image"></form>';
+		const report = await htmlvalidate.validateString(markup);
+		expect(report).toBeValid();
+	});
+
+	it("should not report when form has associated submit button", async () => {
+		expect.assertions(1);
+		const markup = '<form id="foo"></form><button form="foo" type="submit"></button>';
+		const report = await htmlvalidate.validateString(markup);
+		expect(report).toBeValid();
+	});
+
+	it("should not report when form has both nested and associated submit button", async () => {
+		expect.assertions(1);
+		const markup = '<form id="foo"><button form="foo" type="submit"></button></form>';
+		const report = await htmlvalidate.validateString(markup);
+		expect(report).toBeValid();
+	});
+
+	it("should report error when form is missing submit button", async () => {
+		expect.assertions(2);
+		const markup = "<form></form>";
+		const report = await htmlvalidate.validateString(markup);
+		expect(report).toBeInvalid();
+		expect(report).toMatchInlineCodeframe(`
+			"error: <form> element must have a submit button (wcag/h32)
+			> 1 | <form></form>
+			    |  ^^^^
+			Selector: form"
+		`);
+	});
+
+	it("should report error when form only has regular button", async () => {
+		expect.assertions(2);
+		const markup = '<form><button type="button"></button></form>';
+		const report = await htmlvalidate.validateString(markup);
+		expect(report).toBeInvalid();
+		expect(report).toMatchInlineCodeframe(`
+			"error: <form> element must have a submit button (wcag/h32)
+			> 1 | <form><button type="button"></button></form>
+			    |  ^^^^
+			Selector: form"
+		`);
+	});
+
+	it("should report error when form is associated with regular button", async () => {
+		expect.assertions(2);
+		const markup = '<form id="foo"></form><button form="foo" type="button"></button>';
+		const report = await htmlvalidate.validateString(markup);
+		expect(report).toBeInvalid();
+		expect(report).toMatchInlineCodeframe(`
+			"error: <form> element must have a submit button (wcag/h32)
+			> 1 | <form id="foo"></form><button form="foo" type="button"></button>
+			    |  ^^^^
+			Selector: #foo"
+		`);
+	});
+
+	it("should report error when form nested button is associated with another form", async () => {
+		expect.assertions(2);
+		const markup = '<form id="foo"><button form="bar" type="submit"></button></form>';
+		const report = await htmlvalidate.validateString(markup);
+		expect(report).toBeInvalid();
+		expect(report).toMatchInlineCodeframe(`
+			"error: <form> element must have a submit button (wcag/h32)
+			> 1 | <form id="foo"><button form="bar" type="submit"></button></form>
+			    |  ^^^^
+			Selector: #foo"
+		`);
+	});
+
+	it("should support custom form elements", async () => {
+		expect.assertions(2);
+		const markup = "<my-form></my-form>";
+		const report = await htmlvalidate.validateString(markup);
+		expect(report).toBeInvalid();
+		expect(report).toMatchInlineCodeframe(`
+			"error: <my-form> element must have a submit button (wcag/h32)
+			> 1 | <my-form></my-form>
+			    |  ^^^^^^^
+			Selector: my-form"
+		`);
+	});
+
+	it("should not report when form has nested custom submit button", async () => {
+		expect.assertions(1);
+		const customHtmlValidate = new HtmlValidate({
+			root: true,
+			elements: [
+				"html5",
+				{
+					"my-submit-button": {
+						submitButton: true,
+					},
+				},
+			],
+			rules: { "wcag/h32": "error" },
+		});
+		const markup = /* HTML */ `
+			<form>
+				<my-submit-button></my-submit-button>
+			</form>
+		`;
+		const report = await customHtmlValidate.validateString(markup);
+		expect(report).toBeValid();
+	});
+
+	it("should support custom submit button with callback", async () => {
+		expect.assertions(2);
+		const customHtmlValidate = new HtmlValidate({
+			root: true,
+			elements: [
+				"html5",
+				defineMetadata({
+					"my-button": {
+						submitButton(node) {
+							const buttonType = node.getAttribute("button-type");
+							return buttonType === "submit";
+						},
+					},
+				}),
+			],
+			rules: { "wcag/h32": "error" },
+		});
+		const markup = /* HTML */ `
+			<!-- this should not yield an error, button is a submit button -->
+			<form>
+				<my-button button-type="submit"></my-button>
+			</form>
+
+			<!-- this should yield an error, button is not a submit button -->
+			<form>
+				<my-button button-type="button"></my-button>
+			</form>
+		`;
+		const report = await customHtmlValidate.validateString(markup);
+		expect(report).toBeInvalid();
+		expect(report).toMatchInlineCodeframe(`
+			"error: <form> element must have a submit button (wcag/h32)
+			   6 |
+			   7 | 			<!-- this should yield an error, button is not a submit button -->
+			>  8 | 			<form>
+			     | 			 ^^^^
+			   9 | 				<my-button button-type="button"></my-button>
+			  10 | 			</form>
+			  11 |
+			Selector: form:nth-child(2)"
+		`);
+	});
+
+	it("smoketest", async () => {
+		expect.assertions(1);
+		const report = await htmlvalidate.validateFile("test-files/rules/wcag/h32.html");
+		expect(report).toMatchInlineCodeframe(`
+			"error: <form> element must have a submit button (wcag/h32)
+			  15 |
+			  16 | <!-- should yield error: no submit button present -->
+			> 17 | <form id="missing-submit" aria-label="Missing submit button">
+			     |  ^^^^
+			  18 | 	<input type="text">
+			  19 | 	<button type="button">Bar</button>
+			  20 | </form>
+			Selector: #missing-submit"
+		`);
+	});
+
+	it("should contain documentation", async () => {
+		expect.assertions(1);
+		htmlvalidate = new HtmlValidate({
+			rules: { "wcag/h32": "error" },
+		});
+		/* eslint-disable-next-line @typescript-eslint/no-deprecated -- technical debt */
+		const docs = await htmlvalidate.getRuleDocumentation("wcag/h32");
+		expect(docs).toMatchSnapshot();
+	});
+});
