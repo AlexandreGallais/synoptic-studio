@@ -6,7 +6,8 @@ import { defineConfig } from "vitest/config";
  * What Angular's unit-test builder leaves to Vitest (EN-160): the library, which the test build
  * leaves out of its bundle so that `vi.mock("editor")` replaces it, resolved to its source; the
  * test font files read once per run and handed to every test file by its own copy of the root's
- * global setup, `testing/font-files.setup.ts` (EN-089, EN-176); and the tag of the tests whose
+ * global setup, `testing/font-files.setup.ts` (EN-089, EN-176); the page's global style, read once by
+ * `testing/page-style.setup.ts` for `loadPage` (EN-162); and the tag of the tests whose
  * limit measures their speed, as the root names it, skipped here: `ng test` runs beside the other checks, and `vitest-timings.config.ts` runs those
  * tests alone after them (EN-175, `REF-VITEST-TAGS`).
  */
@@ -15,7 +16,7 @@ export default defineConfig({
     alias: { editor: fileURLToPath(new URL("../src/index.ts", import.meta.url)) },
   },
   test: {
-    globalSetup: ["testing/font-files.setup.ts"],
+    globalSetup: ["testing/font-files.setup.ts", "testing/page-style.setup.ts"],
     tags: [
       {
         description: "A test whose limit measures its speed, run alone.",

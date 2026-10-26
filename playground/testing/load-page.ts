@@ -7,6 +7,7 @@ import { AppComponent } from "../src/app/app.component";
 import { appConfig } from "../src/app/app.config";
 
 import { createResizeObserver } from "./create-resize-observer";
+import { pageStyle } from "./page-style-fixtures";
 
 import type { ComponentRef } from "@angular/core";
 
@@ -34,10 +35,13 @@ export function loadPage(search: string): ComponentRef<AppComponent> {
     teardown: { destroyAfterEach: false },
   });
 
-  // The page loaded before replaced, its style with it, so that each id is the new page's alone.
+  // The page loaded before replaced, its style with it, so that each id is the new page's alone;
+  // the page's global style first, as the app's `styles` entry is in the browser.
   const root = document.createElement("app-root");
+  const style = document.createElement("style");
 
-  document.head.replaceChildren();
+  style.textContent = pageStyle();
+  document.head.replaceChildren(style);
   document.body.replaceChildren(root);
 
   // A test reads the page right after acting on it: its animation frames run at once, so that

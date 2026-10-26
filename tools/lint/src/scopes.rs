@@ -102,9 +102,9 @@ const RELAXED: &[(&str, bool)] = &[
 /// The playground's Angular app, which follows Angular's usage rather than the library's
 /// (ADR-0104, NOTE-0036, findings 52 and 77): a component is a class, a file keeps Angular's
 /// suffixed name (`app.component.ts`), a folder has no barrel and is imported by its file, and a
-/// module constant keeps Angular's camelCase name (`appConfig`). Angular's own rules for these come
-/// with F51. The project's configuration files beside it, such as its test runner's, sit at the
-/// project's root as Angular's do (EN-160).
+/// module constant keeps Angular's camelCase name (`appConfig`); `@angular-eslint`'s rules run
+/// there (F51). The project's configuration files beside it, such as its test runner's, sit at
+/// the project's root as Angular's do (EN-160).
 pub const ANGULAR_APP_FILES: &[&str] = &["playground/src/**/*.ts", "playground/*.config.ts"];
 
 /// The old page's folders inside the Angular app, kept unchanged as its utils (EN-160): they keep
@@ -185,10 +185,60 @@ pub const SCOPES: [Scope; 8] = [
         files: ANGULAR_APP_FILES,
         ignores: ANGULAR_APP_IGNORES,
         rules: &[
+            ("@angular-eslint/component-max-inline-declarations", true),
+            ("@angular-eslint/component-selector", true),
+            ("@angular-eslint/computed-must-return", true),
+            ("@angular-eslint/consistent-component-styles", true),
+            ("@angular-eslint/contextual-decorator", true),
+            ("@angular-eslint/contextual-lifecycle", true),
+            ("@angular-eslint/directive-selector", true),
+            ("@angular-eslint/inject-at-top", true),
+            ("@angular-eslint/no-async-lifecycle-method", true),
+            ("@angular-eslint/no-attribute-decorator", true),
+            ("@angular-eslint/no-developer-preview", true),
+            ("@angular-eslint/no-duplicates-in-metadata-arrays", true),
+            ("@angular-eslint/no-empty-lifecycle-method", true),
+            ("@angular-eslint/no-experimental", true),
+            ("@angular-eslint/no-forward-ref", true),
+            ("@angular-eslint/no-implicit-take-until-destroyed", true),
+            ("@angular-eslint/no-input-prefix", true),
+            ("@angular-eslint/no-input-rename", true),
+            ("@angular-eslint/no-inputs-metadata-property", true),
+            ("@angular-eslint/no-lifecycle-call", true),
+            ("@angular-eslint/no-output-native", true),
+            ("@angular-eslint/no-output-on-prefix", true),
+            ("@angular-eslint/no-output-rename", true),
+            ("@angular-eslint/no-outputs-metadata-property", true),
+            ("@angular-eslint/no-pipe-impure", true),
+            ("@angular-eslint/no-queries-metadata-property", true),
+            ("@angular-eslint/no-uncalled-signals", true),
+            ("@angular-eslint/pipe-prefix", true),
+            ("@angular-eslint/prefer-host-metadata-property", true),
+            ("@angular-eslint/prefer-inject", true),
+            (
+                "@angular-eslint/prefer-on-push-component-change-detection",
+                true,
+            ),
+            ("@angular-eslint/prefer-output-emitter-ref", true),
+            ("@angular-eslint/prefer-output-readonly", true),
+            ("@angular-eslint/prefer-signal-model", true),
+            ("@angular-eslint/prefer-signals", true),
+            ("@angular-eslint/prefer-standalone", true),
+            ("@angular-eslint/reactive-context-must-read-signal", true),
+            ("@angular-eslint/relative-url-prefix", true),
+            ("@angular-eslint/require-lifecycle-on-prototype", true),
+            ("@angular-eslint/sort-keys-in-type-decorator", true),
+            ("@angular-eslint/sort-lifecycle-methods", true),
+            ("@angular-eslint/use-component-selector", true),
+            ("@angular-eslint/use-component-view-encapsulation", true),
+            ("@angular-eslint/use-injectable-provided-in", true),
+            ("@angular-eslint/use-lifecycle-interface", true),
+            ("@angular-eslint/use-pipe-transform-interface", true),
             ("@typescript-eslint/naming-convention", false),
             ("functional/no-classes", false),
             ("functional/no-this-expressions", false),
             ("local/canonical-import-path", false),
+            ("local/component-files", true),
             ("local/folder-has-index", false),
             ("local/folder-layout", false),
             ("local/one-export-per-file", false),
@@ -481,6 +531,27 @@ mod tests {
             assert!(util.contains(&rule), "{rule}");
         }
         assert!(barrel.contains(&"local/barrel-exports"));
+    }
+
+    #[test]
+    fn f51_ac1_runs_angular_s_rules_on_the_angular_app_only() {
+        let app = rules_for("playground/src/app/app.component.ts");
+
+        for rule in crate::rules::angular::NAMES {
+            assert!(app.contains(rule), "{rule}");
+        }
+        // The app's utils, the old page, the library and the tools are plain TypeScript.
+        for path in [
+            "playground/src/app/shared/utils/points/show-delete-button.ts",
+            "playground/points/delete-points.ts",
+            "src/render/a.ts",
+            "scripts/a.ts",
+        ] {
+            let rules = rules_for(path);
+            for rule in crate::rules::angular::NAMES {
+                assert!(!rules.contains(rule), "{path} {rule}");
+            }
+        }
     }
 
     #[test]

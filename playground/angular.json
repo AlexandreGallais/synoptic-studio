@@ -58,7 +58,7 @@
                 "input": "public"
               }
             ],
-            "styles": [],
+            "styles": ["src/app/shared/styles/page.scss"],
             "outputPath": "dist"
           },
           "configurations": {

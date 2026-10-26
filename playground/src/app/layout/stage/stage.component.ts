@@ -5,9 +5,9 @@ import { ToolbarComponent } from "../../features/toolbar/toolbar.component";
 
 /** The stage: the canvas, with the toolbar floating over it. */
 @Component({
-  imports: [CanvasComponent, ToolbarComponent],
   selector: "app-stage",
-  styleUrl: "./stage.component.scss",
+  imports: [CanvasComponent, ToolbarComponent],
   templateUrl: "./stage.component.html",
+  styleUrl: "./stage.component.scss",
 })
 export class StageComponent {}

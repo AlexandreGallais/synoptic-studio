@@ -48,3 +48,7 @@ of, the packages below, each under its licence; the full texts are in THIRD-PART
 - @secretlint/secretlint-rule-preset-recommend 13.0.7, MIT: Copyright (c) 2020 azu; its test
   snapshots, from secretlint's repository at the tag v13.0.7, under the same licence
 - structured-source 4.0.0, BSD-2-Clause: Copyright (C) 2014 Yusuke Suzuki
+- @angular-eslint/eslint-plugin 22.6.0, MIT: Copyright (c) 2020 James Henry; its test cases, from
+  angular-eslint's repository at the tag v22.6.0, under the same licence
+- @angular-eslint/utils 22.6.0, MIT: Copyright (c) 2020 James Henry
+- @angular/compiler 22.2.3, MIT: Copyright (c) 2010-2026 Google LLC. https://angular.dev/license
