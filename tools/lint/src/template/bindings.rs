@@ -10,7 +10,7 @@
 
 use oxc_allocator::Allocator;
 
-use super::expressions::{Bound, read, read_action, split_top_level};
+use super::expressions::{Bound, expression_end, read, read_action, split_top_level};
 use super::lexer::{ParseError, Span, Token, TokenType, offset};
 use super::tags::split_ns_name;
 use super::tree::{Attribute, Block, Node, Parsed};
@@ -280,18 +280,21 @@ pub fn template_bindings<'a>(
             } else {
                 let (key, after_key) = take_key(rest);
                 let after = after_key.trim_start();
-                if let Some(alias) = strip_as(after) {
+                if let Some((alias, remainder)) = as_alias(after) {
                     bindings.push(TemplateBinding::Variable {
                         name: alias.to_owned(),
                         value: key.to_owned(),
                     });
-                    break;
+                    rest_at += rest.len() - remainder.len();
+                    rest = remainder;
+                    first = false;
+                    continue;
                 }
                 let after = after.strip_prefix(':').unwrap_or(after);
                 (format!("{directive}{}", capitalized(key)), after)
             };
             let expression_at = rest_at + rest.len() - expression.len();
-            let (expression, alias) = split_alias(expression);
+            let (expression, mut remainder) = expression.split_at(expression_end(expression));
             let value = if expression.trim().is_empty() {
                 None
             } else {
@@ -301,13 +304,16 @@ pub fn template_bindings<'a>(
                 key: key.clone(),
                 value,
             });
-            if let Some(alias) = alias {
+            if let Some((alias, after_alias)) = as_alias(remainder.trim_start()) {
                 bindings.push(TemplateBinding::Variable {
                     name: alias.to_owned(),
                     value: key,
                 });
+                remainder = after_alias;
             }
-            break;
+            rest_at += rest.len() - remainder.len();
+            rest = remainder;
+            first = false;
         }
     }
     Ok(bindings)
@@ -323,25 +329,19 @@ fn take_key(text: &str) -> (&str, &str) {
 
 /// The alias of `as alias`, when the text is only that.
 fn strip_as(text: &str) -> Option<&str> {
-    let alias = text
-        .strip_prefix("as")
-        .filter(|after| after.starts_with(char::is_whitespace))?
-        .trim();
-    let (key, rest) = take_key(alias);
-    (!key.is_empty() && rest.is_empty()).then_some(key)
+    as_alias(text)
+        .filter(|(_, rest)| rest.trim().is_empty())
+        .map(|(alias, _)| alias)
 }
 
-/// An expression and the alias of its trailing ` as alias`.
-fn split_alias(text: &str) -> (&str, Option<&str>) {
-    let trimmed = text.trim_end();
-    if let Some(at) = trimmed.rfind(" as ") {
-        let alias = trimmed[at + 4..].trim();
-        let (key, rest) = take_key(alias);
-        if !key.is_empty() && rest.is_empty() {
-            return (&text[..at], Some(key));
-        }
-    }
-    (text, None)
+/// The alias of a text starting with `as alias`, and the text after it.
+fn as_alias(text: &str) -> Option<(&str, &str)> {
+    let after = text
+        .strip_prefix("as")
+        .filter(|after| after.starts_with(char::is_whitespace))?
+        .trim_start();
+    let (alias, rest) = take_key(after);
+    (!alias.is_empty()).then_some((alias, rest))
 }
 
 /// A key with its first letter capitalised (`of` gives `Of`).

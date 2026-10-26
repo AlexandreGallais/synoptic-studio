@@ -237,6 +237,50 @@ pub fn read<'a>(allocator: &'a Allocator, text: &str, start: u32) -> Result<Boun
     Ok(bound)
 }
 
+/// Where an expression of a template binding's microsyntax ends: at the first top-level space
+/// after a whole operand that a key follows (`condition then foo`, `items index as i`), as
+/// `parseTemplateBindings` stops at a token that cannot go on with the expression; `in` and
+/// `instanceof` go on with it, and `typeof`, `void`, `new`, `delete` and `await` ask for one.
+#[must_use]
+pub fn expression_end(text: &str) -> usize {
+    /// Whether a character belongs to a word.
+    fn is_word(character: char) -> bool {
+        character.is_ascii_alphanumeric() || matches!(character, '_' | '$')
+    }
+    let Ok(found) = scan(text) else {
+        return text.len();
+    };
+    for (at, character) in &found.top {
+        if !character.is_whitespace() {
+            continue;
+        }
+        let before = text[..*at].trim_end();
+        let after = text[*at..].trim_start();
+        let (Some(last), Some(next)) = (before.chars().last(), after.chars().next()) else {
+            continue;
+        };
+        let previous_word = before
+            .rsplit(|each| !is_word(each))
+            .next()
+            .unwrap_or_default();
+        let next_word = after
+            .split(|each| !is_word(each))
+            .next()
+            .unwrap_or_default();
+        let operand_end = is_word(last) || matches!(last, ')' | ']' | '}' | '\'' | '"' | '`');
+        let key_start = (next.is_ascii_alphabetic() || matches!(next, '_' | '$'))
+            && !matches!(next_word, "in" | "instanceof");
+        let operator_word = matches!(
+            previous_word,
+            "typeof" | "void" | "new" | "delete" | "await" | "in" | "instanceof"
+        );
+        if operand_end && key_start && !operator_word {
+            return *at;
+        }
+    }
+    text.len()
+}
+
 /// An action's text read: its statements split at `;`, none with a pipe.
 ///
 /// # Errors
@@ -512,6 +556,18 @@ mod tests {
         );
         assert!(read(&allocator, "'a", 0).is_err());
         assert!(read(&allocator, "a)", 0).is_err());
+        // An argument whose brackets do not close, a nested pipe without a name, a nested
+        // expression Oxc refuses: each is reported.
+        assert_eq!(
+            read(&allocator, "a | p: (b", 0)
+                .err()
+                .map(|error| (error.message, error.span.start)),
+            Some(("Missing closing bracket".to_owned(), 9))
+        );
+        assert!(read(&allocator, "f(a | )", 0).is_err());
+        assert!(read(&allocator, "f(a + | p)", 0).is_err());
+        // Brackets that do not close inside a group are left to Oxc, which reports them.
+        assert!(read(&allocator, "f([a | p)", 0).is_err());
         assert!(read(&allocator, "  ", 0).is_ok_and(|bound| bound.expression.is_none()));
     }
 
