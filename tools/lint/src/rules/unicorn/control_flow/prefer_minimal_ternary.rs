@@ -152,7 +152,10 @@ fn properties<'s, 'a>(
                     && !property.computed
                     && !property.method =>
             {
-                let name = property.key.static_name().map(|name| name.to_string());
+                let name = property
+                    .key
+                    .static_name()
+                    .and_then(|name| name.as_str().map(str::to_owned));
                 (name.as_deref() != Some("__proto__") || property.shorthand).then_some((
                     name,
                     &property.value,

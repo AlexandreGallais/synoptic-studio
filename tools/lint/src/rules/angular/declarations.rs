@@ -125,7 +125,12 @@ fn read_module(path: &Path) -> Module {
         };
         match statement {
             Statement::ImportDeclaration(import) => {
-                let Some(file) = target(folder, &import.source.value) else {
+                let Some(file) = import
+                    .source
+                    .value
+                    .as_str()
+                    .and_then(|specifier| target(folder, specifier))
+                else {
                     continue;
                 };
                 for specifier in import.specifiers.iter().flatten() {
@@ -155,7 +160,12 @@ fn read_module(path: &Path) -> Module {
                 }
             }
             Statement::ExportFromDeclaration(export) => {
-                let Some(file) = target(folder, &export.source.value) else {
+                let Some(file) = export
+                    .source
+                    .value
+                    .as_str()
+                    .and_then(|specifier| target(folder, specifier))
+                else {
                     continue;
                 };
                 for specifier in &export.specifiers {
@@ -166,7 +176,13 @@ fn read_module(path: &Path) -> Module {
                 }
             }
             Statement::ExportAllDeclaration(export) if export.exported.is_none() => {
-                module.stars.extend(target(folder, &export.source.value));
+                module.stars.extend(
+                    export
+                        .source
+                        .value
+                        .as_str()
+                        .and_then(|specifier| target(folder, specifier)),
+                );
             }
             other => {
                 if let Some(declaration) = other.as_declaration() {

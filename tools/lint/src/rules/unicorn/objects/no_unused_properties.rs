@@ -42,7 +42,7 @@ fn key_name(key: &PropertyKey) -> Option<Name> {
     match key {
         PropertyKey::StaticIdentifier(identifier) => Some(Name::Text(identifier.name.to_string())),
         PropertyKey::Identifier(identifier) => Some(Name::Text(identifier.name.to_string())),
-        PropertyKey::StringLiteral(literal) => Some(Name::Text(literal.value.to_string())),
+        PropertyKey::StringLiteral(literal) => Some(Name::Text(literal.value.as_str()?.to_owned())),
         PropertyKey::NumericLiteral(literal) => Some(Name::Number(literal.value)),
         _ => None,
     }
@@ -65,7 +65,7 @@ fn is_dynamic(key: &PropertyKey, computed: bool) -> bool {
 /// The name a literal used as a member's computed key gives, when it is one.
 fn literal_name(expression: &Expression) -> Option<Name> {
     match expression {
-        Expression::StringLiteral(literal) => Some(Name::Text(literal.value.to_string())),
+        Expression::StringLiteral(literal) => Some(Name::Text(literal.value.as_str()?.to_owned())),
         Expression::NumericLiteral(literal) => Some(Name::Number(literal.value)),
         _ => None,
     }

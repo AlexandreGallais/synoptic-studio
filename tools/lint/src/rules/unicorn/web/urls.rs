@@ -58,7 +58,7 @@ fn is_url_import(source: &Source, symbol: SymbolId) -> bool {
     let AstKind::ImportDeclaration(import) = nodes.parent_kind(declaration) else {
         return false;
     };
-    is_url_module(&import.source.value)
+    import.source.value.as_str().is_some_and(is_url_module)
         && specifier.imported.name() == "URL"
         && !specifier.import_kind.is_type()
         && !import.import_kind.is_type()
@@ -141,7 +141,7 @@ fn kind_of_type(source: &Source, written: &TSType, depth: u8) -> UrlKind {
                 .qualifier
                 .as_ref()
                 .is_some_and(|qualifier| matches!(qualifier, oxc_ast::ast::TSImportTypeQualifier::Identifier(name) if name.name == "URL"));
-            if is_url_module(&import.source.value) && named_url {
+            if import.source.value.as_str().is_some_and(is_url_module) && named_url {
                 UrlKind::Url
             } else {
                 UrlKind::Other

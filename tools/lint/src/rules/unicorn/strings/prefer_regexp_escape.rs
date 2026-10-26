@@ -98,7 +98,9 @@ fn tracked_bindings(source: &Source) -> (Vec<SymbolId>, Vec<SymbolId>) {
     for node in source.semantic.nodes().iter() {
         match node.kind() {
             AstKind::ImportDeclaration(import) => {
-                let package = import.source.value.as_str();
+                let Some(package) = import.source.value.as_str() else {
+                    continue;
+                };
                 for specifier in import.specifiers.iter().flatten() {
                     match specifier {
                         ImportDeclarationSpecifier::ImportDefaultSpecifier(default) => {
@@ -139,7 +141,10 @@ fn tracked_bindings(source: &Source) -> (Vec<SymbolId>, Vec<SymbolId>) {
                     (Expression::Identifier(callee), [Argument::StringLiteral(name)])
                         if callee.name == "require" =>
                     {
-                        name.value.as_str()
+                        match name.value.as_str() {
+                            Some(required) => required,
+                            None => continue,
+                        }
                     }
                     _ => continue,
                 };

@@ -15,7 +15,7 @@ pub struct PreferNgsrc;
 
 /// Whether an expression is a string starting with `data:` (`isDataStringPrimitive`).
 fn is_data(expression: &Expression) -> bool {
-    matches!(expression, Expression::StringLiteral(string) if string.value.trim().starts_with("data:"))
+    matches!(expression, Expression::StringLiteral(string) if string.value.display().to_string().trim().starts_with("data:"))
 }
 
 /// Whether a `src` holds an inline image (`isSrcBase64Image`).

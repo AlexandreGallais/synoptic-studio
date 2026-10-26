@@ -55,10 +55,11 @@ fn problem(source: &Source, argument: &Expression) -> Option<&'static str> {
     let whitespace = match (&value, token) {
         (Some(text), _) => text.chars().any(is_ascii_whitespace),
         (None, Expression::TemplateLiteral(template)) => template.quasis.iter().any(|quasi| {
-            quasi
-                .value
-                .cooked
-                .is_some_and(|cooked| cooked.chars().any(is_ascii_whitespace))
+            quasi.value.cooked.is_some_and(|cooked| {
+                cooked
+                    .chars()
+                    .any(|each| each.to_char().is_some_and(is_ascii_whitespace))
+            })
         }),
         _ => false,
     };

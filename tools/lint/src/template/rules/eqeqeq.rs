@@ -37,7 +37,7 @@ fn is_nil(expression: &Expression) -> bool {
 
 /// Whether an expression is a string that is not a number (`isStringNonNumericValue`).
 fn is_string_not_number(expression: &Expression) -> bool {
-    matches!(expression, Expression::StringLiteral(string) if !is_numeric(&string.value))
+    matches!(expression, Expression::StringLiteral(string) if !string.value.as_str().is_some_and(is_numeric))
 }
 
 impl TemplateRule for Eqeqeq {

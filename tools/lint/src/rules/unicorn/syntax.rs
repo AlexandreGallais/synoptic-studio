@@ -538,13 +538,15 @@ pub fn static_member<'b, 'a>(
             Some((&member.object, member.property.name.to_string()))
         }
         Expression::ComputedMemberExpression(member) => match &member.expression {
-            Expression::StringLiteral(literal) => Some((&member.object, literal.value.to_string())),
+            Expression::StringLiteral(literal) => {
+                Some((&member.object, literal.value.as_str()?.to_owned()))
+            }
             Expression::NumericLiteral(literal) => {
                 Some((&member.object, literal.value.to_string()))
             }
             Expression::TemplateLiteral(template) if template.expressions.is_empty() => Some((
                 &member.object,
-                template.quasis.first()?.value.cooked?.to_string(),
+                template.quasis.first()?.value.cooked?.as_str()?.to_owned(),
             )),
             _ => None,
         },
@@ -699,13 +701,13 @@ pub fn static_value(source: &Source, expression: &Expression) -> Option<Value> {
 /// `static_value`, a binding followed at most a few times.
 fn value_at_depth(source: &Source, expression: &Expression, depth: u8) -> Option<Value> {
     match unwrap(expression) {
-        Expression::StringLiteral(literal) => Some(Value::Text(literal.value.to_string())),
+        Expression::StringLiteral(literal) => Some(Value::Text(literal.value.as_str()?.to_owned())),
         Expression::NumericLiteral(literal) => Some(Value::Number(literal.value)),
         Expression::BooleanLiteral(literal) => Some(Value::Boolean(literal.value)),
         Expression::NullLiteral(_) => Some(Value::Null),
         Expression::BigIntLiteral(literal) => Some(Value::BigInt(literal.value.to_string())),
         Expression::TemplateLiteral(template) if template.expressions.is_empty() => Some(
-            Value::Text(template.quasis.first()?.value.cooked?.to_string()),
+            Value::Text(template.quasis.first()?.value.cooked?.as_str()?.to_owned()),
         ),
         Expression::Identifier(identifier)
             if matches!(identifier.name.as_str(), "undefined" | "NaN" | "Infinity") =>

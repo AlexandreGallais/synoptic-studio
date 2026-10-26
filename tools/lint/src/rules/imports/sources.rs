@@ -39,27 +39,27 @@ pub fn module_sources<'a>(source: &Source<'_, 'a>) -> Vec<ModuleSource<'a>> {
                         matches!(each, ImportDeclarationSpecifier::ImportSpecifier(specifier) if specifier.import_kind.is_type())
                     });
                 Some(ModuleSource {
-                    specifier: declaration.source.value.as_str(),
+                    specifier: declaration.source.value.as_str()?,
                     literal: declaration.source.span.start,
                     node: declaration.span.start,
                     types_only: declaration.import_kind.is_type() || every_type,
                 })
             }
             AstKind::ExportAllDeclaration(declaration) => Some(ModuleSource {
-                specifier: declaration.source.value.as_str(),
+                specifier: declaration.source.value.as_str()?,
                 literal: declaration.source.span.start,
                 node: declaration.span.start,
                 types_only: declaration.export_kind.is_type(),
             }),
             AstKind::ExportFromDeclaration(declaration) => Some(ModuleSource {
-                specifier: declaration.source.value.as_str(),
+                specifier: declaration.source.value.as_str()?,
                 literal: declaration.source.span.start,
                 node: declaration.span.start,
                 types_only: declaration.export_kind.is_type(),
             }),
             AstKind::ImportExpression(call) => match &call.source {
                 Expression::StringLiteral(literal) => Some(ModuleSource {
-                    specifier: literal.value.as_str(),
+                    specifier: literal.value.as_str()?,
                     literal: literal.span.start,
                     node: call.span.start,
                     types_only: false,
@@ -71,7 +71,7 @@ pub fn module_sources<'a>(source: &Source<'_, 'a>) -> Vec<ModuleSource<'a>> {
                     if callee.name == "require" =>
                 {
                     Some(ModuleSource {
-                        specifier: literal.value.as_str(),
+                        specifier: literal.value.as_str()?,
                         literal: literal.span.start,
                         node: call.span.start,
                         types_only: false,

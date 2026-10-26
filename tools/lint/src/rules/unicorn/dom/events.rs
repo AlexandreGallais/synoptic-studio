@@ -313,7 +313,7 @@ pub fn option<'b, 'a>(
         if property.computed {
             return None;
         }
-        if property.key.static_name().as_deref() == Some(name) {
+        if property.key.is_specific_static_name(name) {
             found = Some(&property.value);
         }
     }

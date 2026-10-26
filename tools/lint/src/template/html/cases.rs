@@ -19,6 +19,7 @@ use std::fs;
 use std::path::Path;
 
 use oxc_allocator::Allocator;
+use oxc_ast::StaticPropertyName;
 use oxc_ast::ast::{
     Argument, ArrayExpressionElement, ArrowFunctionBody, BindingPattern, CallExpression,
     Expression, FormalParameters, ObjectExpression, ObjectPropertyKind, Statement,
@@ -95,7 +96,10 @@ fn custom_elements(elements: &Expression) -> Result<Vec<String>, &'static str> {
             ArrayExpressionElement::ObjectExpression(object) => {
                 for property in &object.properties {
                     let name = match property {
-                        ObjectPropertyKind::ObjectProperty(property) => property.key.static_name(),
+                        ObjectPropertyKind::ObjectProperty(property) => property
+                            .key
+                            .static_name()
+                            .and_then(StaticPropertyName::into_cow_str),
                         ObjectPropertyKind::SpreadProperty(_) => None,
                     };
                     match name {
@@ -240,7 +244,7 @@ fn config_object(object: &ObjectExpression, rule: &str, scope: &Scope) -> Config
         let key = property
             .key
             .static_name()
-            .map(|name| name.to_string())
+            .and_then(|name| name.as_str().map(str::to_owned))
             .unwrap_or_default();
         match key.as_str() {
             "root" => {}
@@ -256,7 +260,7 @@ fn config_object(object: &ObjectExpression, rule: &str, scope: &Scope) -> Config
                     let name = each
                         .key
                         .static_name()
-                        .map(|name| name.to_string())
+                        .and_then(|name| name.as_str().map(str::to_owned))
                         .unwrap_or_default();
                     let setting = value(&each.value, &strings(scope));
                     let (severity, given) = match &setting {

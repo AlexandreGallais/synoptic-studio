@@ -108,7 +108,7 @@ fn method_name<'b, 'a>(
         )),
         Expression::ComputedMemberExpression(member) => match &member.expression {
             Expression::StringLiteral(literal) => {
-                Some((literal.value.as_str(), literal.span, &member.object))
+                Some((literal.value.as_str()?, literal.span, &member.object))
             }
             _ => None,
         },

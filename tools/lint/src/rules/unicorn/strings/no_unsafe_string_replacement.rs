@@ -7,6 +7,7 @@ use oxc_ast::AstKind;
 use oxc_ast::ast::{Argument, Expression, ObjectPropertyKind, PropertyKind};
 use oxc_semantic::AstNode;
 use oxc_span::GetSpan;
+use oxc_str::JSStr;
 
 use crate::finding::Finding;
 use crate::rules::Rule;
@@ -20,13 +21,13 @@ pub struct NoUnsafeStringReplacement;
 /// The string a literal or a template without expressions holds.
 fn static_string<'a>(expression: &Expression<'a>) -> Option<&'a str> {
     match expression {
-        Expression::StringLiteral(literal) => Some(literal.value.as_str()),
+        Expression::StringLiteral(literal) => literal.value.as_str(),
         Expression::TemplateLiteral(template) if template.expressions.is_empty() => template
             .quasis
             .first()?
             .value
             .cooked
-            .map(|cooked| cooked.as_str()),
+            .and_then(JSStr::as_str),
         _ => None,
     }
 }
@@ -63,7 +64,7 @@ fn is_plain_object(source: &Source, expression: &Expression) -> bool {
                 && !property.method
                 && property.kind == PropertyKind::Init
                 && !property.key.static_name().is_some_and(|name| {
-                    matches!(name.as_ref(), "__proto__" | "toString" | "valueOf")
+                    matches!(name.as_str(), Some("__proto__" | "toString" | "valueOf"))
                 })
         }
         ObjectPropertyKind::SpreadProperty(_) => false,

@@ -198,7 +198,7 @@ fn options_fix(
                 if property.computed {
                     return None;
                 }
-                if property.key.static_name().as_deref() == Some("passive") {
+                if property.key.is_specific_static_name("passive") {
                     passive = Some(&property.value);
                 }
             }
@@ -243,7 +243,12 @@ impl Rule for RequirePassiveEvents {
         let Some(listener) = call.arguments[1].as_expression() else {
             return;
         };
-        if !PASSIVE_EVENTS.contains(&event.value.as_str()) || !is_event_safe(source, listener) {
+        if !event
+            .value
+            .as_str()
+            .is_some_and(|name| PASSIVE_EVENTS.contains(&name))
+            || !is_event_safe(source, listener)
+        {
             return;
         }
         let options = call.arguments.get(2).and_then(Argument::as_expression);

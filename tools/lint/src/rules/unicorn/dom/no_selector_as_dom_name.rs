@@ -7,6 +7,7 @@ use oxc_ast::AstKind;
 use oxc_ast::ast::{Argument, Expression};
 use oxc_semantic::AstNode;
 use oxc_span::GetSpan;
+use oxc_str::JSStr;
 
 use super::nodes::{is_not_dom_node, static_string};
 use crate::finding::{Finding, Fix};
@@ -96,7 +97,7 @@ impl Rule for NoSelectorAsDomName {
                     .quasis
                     .first()
                     .and_then(|quasi| quasi.value.cooked)
-                    .map(|cooked| cooked.to_string()),
+                    .and_then(|cooked| cooked.as_str().map(str::to_owned)),
                 _ => None,
             });
             let Some(value) = value.filter(|value| value.starts_with(['.', '#'])) else {
@@ -108,9 +109,11 @@ impl Rule for NoSelectorAsDomName {
                 && match name {
                     Expression::TemplateLiteral(template) if !template.expressions.is_empty() => {
                         template.expressions.len() == 1
-                            && template.quasis[0].value.cooked.as_deref()
-                                == Some(&prefix.to_string())
-                            && template.quasis[1].value.cooked.as_deref() == Some("")
+                            && template.quasis[0]
+                                .value
+                                .cooked
+                                .is_some_and(|cooked| cooked == prefix.to_string().as_str())
+                            && template.quasis[1].value.cooked.is_some_and(JSStr::is_empty)
                     }
                     _ => is_simple(&value),
                 };

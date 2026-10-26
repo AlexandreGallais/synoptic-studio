@@ -72,7 +72,7 @@ fn is_custom_shape(source: &Source, object: &Expression, property: &str) -> bool
     };
     let value = literal.properties.iter().rev().find_map(|each| match each {
         ObjectPropertyKind::ObjectProperty(entry)
-            if entry.key.static_name().as_deref() == Some(property) =>
+            if entry.key.is_specific_static_name(property) =>
         {
             Some(
                 static_number(&entry.value)

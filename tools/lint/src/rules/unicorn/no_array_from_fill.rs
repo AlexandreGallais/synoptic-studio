@@ -30,7 +30,7 @@ fn is_array_from_length(source: &Source, expression: &Expression) -> bool {
             !property.computed
                 && !property.method
                 && property.kind == PropertyKind::Init
-                && property.key.static_name().as_deref() == Some("length")
+                && property.key.is_specific_static_name("length")
         }
         _ => false,
     };

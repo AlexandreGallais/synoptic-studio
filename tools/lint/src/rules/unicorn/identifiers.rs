@@ -122,7 +122,7 @@ fn imported_module<'a>(source: &Source<'_, 'a>, symbol: SymbolId) -> Option<(&'a
         nodes
             .ancestors(declaration)
             .find_map(|node| match node.kind() {
-                AstKind::ImportDeclaration(import) => Some(import.source.value.as_str()),
+                AstKind::ImportDeclaration(import) => import.source.value.as_str(),
                 _ => None,
             })
     };
@@ -149,7 +149,7 @@ fn imported_module<'a>(source: &Source<'_, 'a>, symbol: SymbolId) -> Option<(&'a
                 (Expression::Identifier(callee), [oxc_ast::ast::Argument::StringLiteral(name)])
                     if callee.name == "require" && !call.optional =>
                 {
-                    Some((name.value.as_str(), false))
+                    Some((name.value.as_str()?, false))
                 }
                 _ => None,
             }

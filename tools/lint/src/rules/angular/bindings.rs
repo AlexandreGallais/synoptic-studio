@@ -85,7 +85,7 @@ pub fn decorator<'b, 'a>(member: &Member<'b, 'a>, name: &str) -> Option<&'b Deco
 pub fn written<'a>(expression: &Expression<'a>) -> Option<Written<'a>> {
     match expression {
         Expression::StringLiteral(literal) => Some(Written {
-            text: literal.value.as_str(),
+            text: literal.value.as_str()?,
             at: literal.span.start,
         }),
         Expression::TemplateLiteral(template) => Some(Written {
@@ -193,7 +193,7 @@ pub fn member_name<'a>(member: &Member<'_, 'a>) -> Option<Written<'a>> {
             at: key.span.start,
         }),
         PropertyKey::StringLiteral(key) if !member.computed => Some(Written {
-            text: key.value.as_str(),
+            text: key.value.as_str()?,
             at: key.span.start,
         }),
         _ => None,

@@ -73,7 +73,10 @@ impl TemplateRule for PreferStaticStringProperties {
                     '"'
                 };
                 let escaped = if quote == '"' { "&quot;" } else { "&#39;" };
-                let literal = string.value.replace('&', "&amp;").replace(quote, escaped);
+                let Some(value) = string.value.as_str() else {
+                    continue;
+                };
+                let literal = value.replace('&', "&amp;").replace(quote, escaped);
                 let span = each.attribute.span;
                 reports.push(Report {
                     fix: Some(replace(

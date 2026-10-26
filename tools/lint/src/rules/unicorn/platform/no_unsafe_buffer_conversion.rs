@@ -208,7 +208,7 @@ fn buffer_import<'a>(
     else {
         return None;
     };
-    if !matches!(import.source.value.as_str(), "buffer" | "node:buffer") {
+    if !matches!(import.source.value.as_str(), Some("buffer" | "node:buffer")) {
         return None;
     }
     import.specifiers.as_ref()?.iter().find(|each| {

@@ -22,7 +22,7 @@ fn key_name<'a>(key: &PropertyKey<'a>) -> Option<(&'a str, u32)> {
     match key {
         PropertyKey::StaticIdentifier(key) => Some((key.name.as_str(), key.span.start)),
         PropertyKey::Identifier(key) => Some((key.name.as_str(), key.span.start)),
-        PropertyKey::StringLiteral(key) => Some((key.value.as_str(), key.span.start)),
+        PropertyKey::StringLiteral(key) => Some((key.value.as_str()?, key.span.start)),
         _ => None,
     }
 }
@@ -31,7 +31,7 @@ fn key_name<'a>(key: &PropertyKey<'a>) -> Option<(&'a str, u32)> {
 fn member_name<'a>(property: &'a Expression<'a>) -> Option<(&'a str, u32)> {
     match property {
         Expression::Identifier(name) => Some((name.name.as_str(), name.span.start)),
-        Expression::StringLiteral(name) => Some((name.value.as_str(), name.span.start)),
+        Expression::StringLiteral(name) => Some((name.value.as_str()?, name.span.start)),
         _ => None,
     }
 }

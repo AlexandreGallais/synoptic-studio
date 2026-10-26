@@ -21,12 +21,12 @@ pub struct NoInvalidCharacterComparison;
 /// The text of a string literal, or of a template without expressions.
 fn static_string(expression: &Expression) -> Option<String> {
     match expression {
-        Expression::StringLiteral(literal) => Some(literal.value.to_string()),
+        Expression::StringLiteral(literal) => Some(literal.value.as_str()?.to_owned()),
         Expression::TemplateLiteral(template) if template.expressions.is_empty() => template
             .quasis
             .first()
             .and_then(|quasi| quasi.value.cooked)
-            .map(|cooked| cooked.to_string()),
+            .and_then(|cooked| cooked.as_str().map(str::to_owned)),
         _ => None,
     }
 }
@@ -36,10 +36,10 @@ fn static_string(expression: &Expression) -> Option<String> {
 fn is_static_index(expression: &Expression) -> bool {
     match expression {
         Expression::NumericLiteral(_) => true,
-        Expression::StringLiteral(literal) => literal
-            .value
-            .parse::<u64>()
-            .is_ok_and(|index| index < (1 << 53) && index.to_string() == literal.value.as_str()),
+        Expression::StringLiteral(literal) => literal.value.as_str().is_some_and(|text| {
+            text.parse::<u64>()
+                .is_ok_and(|index| index < (1 << 53) && index.to_string() == text)
+        }),
         _ => false,
     }
 }
