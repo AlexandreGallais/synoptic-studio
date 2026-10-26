@@ -173,6 +173,8 @@ pub struct Case {
     pub suggestions: usize,
     /// What could not be read: an option, a datum or an error not built from a literal.
     pub unresolved: Vec<String>,
+    /// The file the case names, when it names one.
+    pub filename: Option<String>,
 }
 
 /// A string literal's or a template literal's value, its `${name}` and `${'text'.repeat(n)}`
@@ -519,6 +521,7 @@ fn case_of(origin: &str, object: &ObjectExpression, annotated: bool, values: &Va
         output,
         suggestions,
         unresolved,
+        filename: property(object, "filename").and_then(|each| text(each, values)),
     }
 }
 
@@ -635,6 +638,7 @@ fn add_element(corpus: &mut Corpus, origin: &str, expression: &Expression, value
                     output: Vec::new(),
                     suggestions: 0,
                     unresolved: Vec::new(),
+                    filename: None,
                 });
                 corpus.templates.push((origin.to_owned(), text));
             }

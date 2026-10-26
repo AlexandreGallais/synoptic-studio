@@ -73,13 +73,13 @@ pub fn run(file: &str, constants: &[(&str, &str)], build: Build) -> Tally {
 }
 
 /// The reports of a rule on a template, or why it could not be read.
-fn lint(rule: &dyn TemplateRule, text: &str) -> Result<Vec<Report>, String> {
+fn lint(rule: &dyn TemplateRule, path: &str, text: &str) -> Result<Vec<Report>, String> {
     let parsed = parse(text);
     let errors = super::super::bindings::check(&parsed);
     if let Some(error) = errors.first() {
         return Err(format!("unreadable: {}", error.message));
     }
-    Ok(reports(rule, text, &parsed.nodes))
+    Ok(reports(rule, path, text, &parsed.nodes))
 }
 
 /// A report as the case reads it: its message's id, its message, its places.
@@ -99,7 +99,8 @@ fn check_case(rule: &dyn TemplateRule, case: &Case) -> Result<(), String> {
     if !case.unresolved.is_empty() {
         return Err(format!("unresolved {:?}", case.unresolved));
     }
-    let found = lint(rule, &case.code)?;
+    let path = case.filename.as_deref().unwrap_or("a.component.html");
+    let found = lint(rule, path, &case.code)?;
     let described: Vec<String> = found
         .iter()
         .map(|report| describe(rule, &case.code, report))
@@ -147,7 +148,7 @@ fn check_case(rule: &dyn TemplateRule, case: &Case) -> Result<(), String> {
     // `RuleTester` fixes pass by pass until a pass changes nothing, at most 10 passes; a
     // string `output` is the one pass expected, an array each pass, none no pass at all.
     for _ in 0..crate::FIX_PASSES {
-        let fixes: Vec<_> = lint(rule, &text)?
+        let fixes: Vec<_> = lint(rule, path, &text)?
             .into_iter()
             .filter_map(|report| report.fix)
             .collect();

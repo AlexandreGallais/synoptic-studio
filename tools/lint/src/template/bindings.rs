@@ -74,6 +74,12 @@ pub enum TemplateBinding<'a> {
         key: String,
         /// Its expression.
         value: Option<Bound<'a>>,
+        /// Where its key starts in the template; `None` for the first binding, keyed by the
+        /// directive, whose key is the attribute's name.
+        key_start: Option<u32>,
+        /// Where the next binding starts, past this one's `;` or `,` and the whitespace after:
+        /// the end of its source span, as `parseTemplateBindings` spans it.
+        end: u32,
     },
     /// `let name = key` or `key as name`: a variable and the context's key it reads.
     Variable {
@@ -156,7 +162,9 @@ pub fn read_attribute<'a>(
     let (mut kind, name) = attribute_kind(&attribute.name);
     let start = attribute
         .value_span
-        .map_or(attribute.span.end, |span| span.start);
+        // The value's first byte, its leading whitespace included, as Angular's binding parser
+        // offsets an expression from `valueSpan.fullStart`.
+        .map_or(attribute.span.end, |span| span.full_start);
     let text = attribute.value.as_str();
     let value = match kind {
         AttributeKind::Property | AttributeKind::TwoWay => {
@@ -237,6 +245,8 @@ pub fn template_bindings<'a>(
         bindings.push(TemplateBinding::Expression {
             key: directive.to_owned(),
             value: None,
+            key_start: None,
+            end: start + offset(text.len()),
         });
     }
     for (index, (at, piece)) in pieces.into_iter().enumerate() {
@@ -300,9 +310,17 @@ pub fn template_bindings<'a>(
             } else {
                 Some(read(allocator, expression, start + offset(expression_at))?)
             };
+            let next = next_binding(
+                text,
+                at + piece.len(),
+                expression_at + expression.len(),
+                remainder,
+            );
             bindings.push(TemplateBinding::Expression {
                 key: key.clone(),
                 value,
+                key_start: (!first).then(|| start + offset(rest_at)),
+                end: start + offset(next),
             });
             if let Some((alias, after_alias)) = as_alias(remainder.trim_start()) {
                 bindings.push(TemplateBinding::Variable {
@@ -317,6 +335,19 @@ pub fn template_bindings<'a>(
         }
     }
     Ok(bindings)
+}
+
+/// Where the binding after an expression starts: past the whitespace after it when more of
+/// its piece follows (`as alias`, `else block`), else past its piece's `;` or `,` and the
+/// whitespace after, or the value's end; a binding's source span ends there.
+fn next_binding(text: &str, piece_end: usize, expression_end: usize, remainder: &str) -> usize {
+    if !remainder.trim().is_empty() {
+        return expression_end + remainder.len() - remainder.trim_start().len();
+    }
+    match text.get(piece_end + 1..) {
+        Some(after) => piece_end + 1 + after.len() - after.trim_start().len(),
+        None => text.len(),
+    }
 }
 
 /// A key of the microsyntax: letters, digits, `_`, `$` and `-`; and the text after it.
@@ -578,6 +609,35 @@ mod tests {
     }
 
     #[test]
+    fn f52_ac2_places_a_value_from_its_first_byte_its_leading_whitespace_included() {
+        let parsed = parse("<a [b]=\"\n  c\" *ngIf=\"d; else e\"></a>");
+        let Some(Node::Element(element)) = parsed.nodes.first() else {
+            panic!("an element");
+        };
+        let allocator = Allocator::default();
+        let read: Vec<_> = element
+            .attrs
+            .iter()
+            .map(|attribute| read_attribute(&allocator, &element.name, attribute))
+            .collect();
+
+        // `"` at byte 7, the value from byte 8, its line end and two spaces before `c` at 11.
+        assert!(
+            matches!(&read[0], Ok(attribute) if matches!(&attribute.value,
+            Value::Binding(bound) if bound.start == 8))
+        );
+        // `*ngIf` at byte 14, its value from 21: `d`, its binding ending past `; ` at 24, where
+        // `else` starts; `e` at 29, the last binding ending with the value, at 30.
+        assert!(
+            matches!(&read[1], Ok(attribute) if matches!(&attribute.value,
+            Value::TemplateBindings(bindings) if matches!(&bindings[..], [
+                TemplateBinding::Expression { key_start: None, end: 24, .. },
+                TemplateBinding::Expression { key_start: Some(24), end: 30, .. },
+            ])))
+        );
+    }
+
+    #[test]
     fn reads_each_attributes_value_by_its_kind() {
         let parsed = parse(
             "<a [x]=\"a | p\" (click)=\"f(); g()\" title=\"t {{ u }}\" *ngFor=\"let item of items; index as i; trackBy: id\" #r></a>",
@@ -610,7 +670,7 @@ mod tests {
         let shown: Vec<String> = bindings
             .iter()
             .map(|binding| match binding {
-                TemplateBinding::Expression { key, value } => {
+                TemplateBinding::Expression { key, value, .. } => {
                     format!("{key} {}", value.is_some())
                 }
                 TemplateBinding::Variable { name, value } => format!("let {name} = {value}"),
@@ -644,13 +704,13 @@ mod tests {
             panic!("template bindings");
         };
         assert!(
-            matches!(&bindings[0], TemplateBinding::Expression { key, value: Some(bound) } if key == "ngIf" && bound.pipes[0].name == "async")
+            matches!(&bindings[0], TemplateBinding::Expression { key, value: Some(bound), .. } if key == "ngIf" && bound.pipes[0].name == "async")
         );
         assert!(
             matches!(&bindings[1], TemplateBinding::Variable { name, value } if name == "user" && value == "ngIf")
         );
         assert!(
-            matches!(&bindings[2], TemplateBinding::Expression { key, value: Some(_) } if key == "ngIfElse")
+            matches!(&bindings[2], TemplateBinding::Expression { key, value: Some(_), .. } if key == "ngIfElse")
         );
         assert!(read_attribute(&allocator, &element.name, &element.attrs[1]).is_ok());
     }

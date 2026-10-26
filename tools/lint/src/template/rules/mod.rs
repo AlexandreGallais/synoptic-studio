@@ -6,20 +6,39 @@
 //! that does not read is reported under `lint/parse` instead. Each rule is tested on every case
 //! of its file of the plugin's tests (`tester`), counted.
 
+pub mod attributes_order;
 pub mod banana_in_box;
 pub mod button_has_type;
+pub mod conditional_complexity;
+pub mod cyclomatic_complexity;
 pub mod dom;
 pub mod eqeqeq;
 pub mod no_any;
+pub mod no_call_expression;
 pub mod no_duplicate_attributes;
 pub mod no_empty_control_flow;
+pub mod no_inline_styles;
+pub mod no_interpolation_in_attributes;
 pub mod no_negated_async;
 pub mod no_nested_tags;
 pub mod no_non_null_assertion;
 pub mod no_outerhtml;
+pub mod prefer_at_else;
+pub mod prefer_at_empty;
+pub mod prefer_built_in_pipes;
+pub mod prefer_class_binding;
+pub mod prefer_contextual_for_variables;
+pub mod prefer_control_flow;
+pub mod prefer_ngsrc;
+pub mod prefer_self_closing_tags;
+pub mod prefer_static_string_properties;
+pub mod prefer_style_binding;
+pub mod prefer_template_literal;
+pub mod r3;
 pub mod require_switch_default;
 #[cfg(test)]
 pub mod tester;
+pub mod use_track_by_function;
 
 use oxc_allocator::Allocator;
 use oxc_ast::AstKind;
@@ -75,6 +94,8 @@ impl Report {
 
 /// A template read cleanly: its text, its tree, and the arena its expressions are read into.
 pub struct Template<'t> {
+    /// The file, from the root.
+    pub path: &'t str,
     /// The text.
     pub text: &'t str,
     /// The nodes at its root.
@@ -86,8 +107,10 @@ pub struct Template<'t> {
 /// Where an expression is written.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Site {
-    /// An attribute's value: a binding, an event's statement, an interpolation.
+    /// An attribute's value: a binding or an interpolation.
     Attribute,
+    /// An event's statement.
+    Event,
     /// A template binding's expression (`*ngIf="…"`).
     TemplateBinding,
     /// An interpolation of a text.
@@ -113,6 +136,24 @@ impl<'t> Template<'t> {
     /// Visits every node, each with its ancestors from the root, in the order written.
     pub fn walk(&self, visit: &mut dyn FnMut(&'t Node, &[&'t Node])) {
         walk_nodes(self.nodes, &mut Vec::new(), visit);
+    }
+
+    /// Every list of siblings: the root's, then each element's, block's and expansion case's
+    /// children, in the order written.
+    #[must_use]
+    pub fn lists(&self) -> Vec<&'t [Node]> {
+        let mut found = vec![self.nodes];
+        self.walk(&mut |node, _| match node {
+            Node::Element(element) => found.push(&element.children),
+            Node::Block(block) => found.push(&block.children),
+            Node::Expansion(expansion) => {
+                for case in &expansion.cases {
+                    found.push(&case.expression);
+                }
+            }
+            Node::Text(_) | Node::Comment(_) | Node::LetDeclaration(_) => {}
+        });
+        found
     }
 
     /// Every element, with its ancestors.
@@ -147,7 +188,12 @@ impl<'t> Template<'t> {
                     };
                     match read.value {
                         Value::Binding(bound) => push(bound, Site::Attribute),
-                        Value::Action(bounds) | Value::Interpolations(bounds) => {
+                        Value::Action(bounds) => {
+                            for bound in bounds {
+                                push(bound, Site::Event);
+                            }
+                        }
+                        Value::Interpolations(bounds) => {
                             for bound in bounds {
                                 push(bound, Site::Attribute);
                             }
@@ -313,6 +359,100 @@ pub fn key_span(attribute: &Attribute) -> Span {
     Span::new(start, start + inner.len())
 }
 
+/// A bound attribute of Angular's tree (`BoundAttribute`): an input of an element or a
+/// template, or a binding of a structural directive's microsyntax (`*ngIf="…"`).
+#[derive(Debug)]
+pub struct BoundAttribute<'t> {
+    /// Its name: the input's (`property_name`), or the binding's key (`ngIf`, `ngForOf`).
+    pub name: String,
+    /// Its source span: the attribute, or the binding from its key to the next binding.
+    pub span: Span,
+    /// The attribute written.
+    pub attribute: &'t Attribute,
+    /// Whether a binding of a microsyntax.
+    pub microsyntax: bool,
+}
+
+/// The bound attributes of an element, its inputs first, then its microsyntax's bindings.
+#[must_use]
+pub fn bound_attributes<'t>(
+    allocator: &Allocator,
+    element: &'t Element,
+) -> Vec<BoundAttribute<'t>> {
+    let mut found: Vec<BoundAttribute> = bound3(element)
+        .into_iter()
+        .filter(|each| each.role == Role::Input)
+        .map(|each| BoundAttribute {
+            name: each.name,
+            span: each.attribute.span,
+            attribute: each.attribute,
+            microsyntax: false,
+        })
+        .collect();
+    found.extend(
+        template_attrs(allocator, element)
+            .into_iter()
+            .filter(|each| each.value.is_some())
+            .map(|each| BoundAttribute {
+                name: each.name,
+                span: each.span,
+                attribute: each.attribute,
+                microsyntax: true,
+            }),
+    );
+    found
+}
+
+/// A binding of a structural directive's microsyntax (`templateAttrs` of Angular's template):
+/// a bound attribute when it has an expression, a plain one otherwise.
+#[derive(Debug)]
+pub struct TemplateAttr<'t, 'a> {
+    /// Its key: the directive's name first, then `ngForOf`, `ngForTrackBy`…
+    pub name: String,
+    /// From its key to the next binding.
+    pub span: Span,
+    /// Its expression.
+    pub value: Option<Bound<'a>>,
+    /// The attribute written.
+    pub attribute: &'t Attribute,
+}
+
+/// The bindings of an element's structural directive, in the order written; a reading error
+/// was reported by the reader.
+#[must_use]
+pub fn template_attrs<'t, 'a>(
+    allocator: &'a Allocator,
+    element: &'t Element,
+) -> Vec<TemplateAttr<'t, 'a>> {
+    let mut found = Vec::new();
+    for attribute in &element.attrs {
+        let Ok(read) = read_attribute(allocator, &element.name, attribute) else {
+            continue;
+        };
+        let Value::TemplateBindings(bindings) = read.value else {
+            continue;
+        };
+        for binding in bindings {
+            if let TemplateBinding::Expression {
+                key,
+                value,
+                key_start,
+                end,
+            } = binding
+            {
+                let start = key_start.unwrap_or(attribute.key_span.start + 1);
+                found.push(TemplateAttr {
+                    name: key,
+                    span: Span::new(start as usize, end as usize),
+                    value,
+                    attribute,
+                });
+            }
+        }
+    }
+    found
+}
+
 /// Whether an attribute's value holds a closed interpolation, which makes it an input.
 fn interpolates(attribute: &Attribute) -> bool {
     attribute
@@ -381,21 +521,6 @@ pub fn switch_groups(block: &Block) -> Switch<'_> {
         }
     }
     Switch { groups, exhaustive }
-}
-
-/// The nodes under a node: an element's or a block's children, an expansion's cases' content.
-#[must_use]
-pub fn children(node: &Node) -> Vec<&Node> {
-    match node {
-        Node::Element(element) => element.children.iter().collect(),
-        Node::Block(block) => block.children.iter().collect(),
-        Node::Expansion(expansion) => expansion
-            .cases
-            .iter()
-            .flat_map(|case| &case.expression)
-            .collect(),
-        Node::Text(_) | Node::Comment(_) | Node::LetDeclaration(_) => Vec::new(),
-    }
 }
 
 /// Visits nodes and their descendants, depth first.
@@ -551,9 +676,10 @@ pub fn message(rule: &dyn TemplateRule, report: &Report) -> String {
 
 /// The reports of a rule on a template read cleanly, sorted by place as `ESLint` sorts them.
 #[must_use]
-pub fn reports(rule: &dyn TemplateRule, text: &str, nodes: &[Node]) -> Vec<Report> {
+pub fn reports(rule: &dyn TemplateRule, path: &str, text: &str, nodes: &[Node]) -> Vec<Report> {
     let allocator = Allocator::default();
     let template = Template {
+        path,
         text,
         nodes,
         allocator: &allocator,
@@ -566,17 +692,35 @@ pub fn reports(rule: &dyn TemplateRule, text: &str, nodes: &[Node]) -> Vec<Repor
 
 /// The rules, in the order of their names, as the project runs them.
 pub const RULES: &[&dyn TemplateRule] = &[
+    &attributes_order::AttributesOrder::PROJECT,
     &banana_in_box::BananaInBox,
     &button_has_type::ButtonHasType::PROJECT,
+    &conditional_complexity::ConditionalComplexity::PROJECT,
+    &cyclomatic_complexity::CyclomaticComplexity::PROJECT,
     &eqeqeq::Eqeqeq::PROJECT,
     &no_any::NoAny,
+    &no_call_expression::NoCallExpression::PROJECT,
     &no_duplicate_attributes::NoDuplicateAttributes::PROJECT,
     &no_empty_control_flow::NoEmptyControlFlow,
+    &no_inline_styles::NoInlineStyles::PROJECT,
+    &no_interpolation_in_attributes::NoInterpolationInAttributes::PROJECT,
     &no_negated_async::NoNegatedAsync,
     &no_nested_tags::NoNestedTags,
     &no_non_null_assertion::NoNonNullAssertion,
     &no_outerhtml::NoOuterhtml,
+    &prefer_at_else::PreferAtElse,
+    &prefer_at_empty::PreferAtEmpty,
+    &prefer_built_in_pipes::PreferBuiltInPipes::PROJECT,
+    &prefer_class_binding::PreferClassBinding,
+    &prefer_contextual_for_variables::PreferContextualForVariables::PROJECT,
+    &prefer_control_flow::PreferControlFlow,
+    &prefer_ngsrc::PreferNgsrc,
+    &prefer_self_closing_tags::PreferSelfClosingTags,
+    &prefer_static_string_properties::PreferStaticStringProperties::PROJECT,
+    &prefer_style_binding::PreferStyleBinding,
+    &prefer_template_literal::PreferTemplateLiteral,
     &require_switch_default::RequireSwitchDefault,
+    &use_track_by_function::UseTrackByFunction::PROJECT,
 ];
 
 #[cfg(test)]

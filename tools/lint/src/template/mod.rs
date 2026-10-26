@@ -60,7 +60,7 @@ pub fn lint_with(path: &str, text: &str, rules: &[&dyn rules::TemplateRule]) -> 
     }
     let mut findings = Vec::new();
     for rule in rules {
-        for report in rules::reports(*rule, text, &parsed.nodes) {
+        for report in rules::reports(*rule, path, text, &parsed.nodes) {
             findings.push(Finding {
                 fix: report.fix.clone(),
                 ..finding(
