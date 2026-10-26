@@ -2,7 +2,8 @@
 //! lacks, run after oxlint by `npm run lint` on the same targets. Each file is read and parsed
 //! once, its semantic model built once, and every rule its scopes turn on runs over that one AST;
 //! the files are spread over the machine's threads. A Markdown page is parsed into its own tree
-//! and read by the Markdown rules (`markdown`, EN-077).
+//! and read by the Markdown rules (`markdown`, EN-077); a component's template is read into its
+//! own tree, every expression parsed, and reported where it cannot be read (`template`, EN-163).
 
 pub mod deep_readonly;
 pub mod directives;
@@ -11,6 +12,7 @@ pub mod expressions;
 pub mod finding;
 pub mod glob;
 pub mod jsdoc;
+pub mod lines;
 pub mod markdown;
 pub mod package;
 pub mod project;
@@ -18,6 +20,7 @@ pub mod rules;
 pub mod scopes;
 pub mod settings;
 pub mod source;
+pub mod template;
 #[cfg(test)]
 pub mod testing;
 pub mod walk;
@@ -132,20 +135,16 @@ fn lint_path(project: &Project, path: &str, allocator: &Allocator) -> Vec<Findin
     if markdown::is_page(path) {
         return markdown::lint_path(project, path);
     }
+    if template::is_template(path) {
+        return template::lint_path(project, path);
+    }
     let rules = rules::named(&scopes::linted_by(path));
     if rules.is_empty() {
         return Vec::new();
     }
     match fs::read_to_string(project.root.join(path)) {
         Ok(text) => lint_text(project, path, &text, &rules, allocator),
-        Err(error) => vec![Finding {
-            path: path.to_owned(),
-            line: 1,
-            column: 1,
-            rule: PARSE_RULE,
-            message: format!("Cannot read the file: {error}."),
-            fix: None,
-        }],
+        Err(error) => vec![finding::unreadable(path, &error)],
     }
 }
 
@@ -493,6 +492,30 @@ mod tests {
                 "/** One. */\nconst A = new Set([1]);\n/** Two. */\nconst B = new Set([2]);\n\n/** One without two. */\nexport const C = A.difference(B);\n"
             )
         );
+    }
+
+    #[test]
+    fn f52_ac1_walks_the_component_templates_and_reports_their_errors() {
+        let root = fixture("run-templates");
+        let folder = root.join("playground/src/app");
+        let written = fs::create_dir_all(&folder)
+            .and_then(|()| fs::write(folder.join("a.component.html"), "<p>\n  {{ a + }}\n</p>\n"))
+            .and_then(|()| fs::write(folder.join("index.html"), "<p>{{ a + }}</p>\n"));
+
+        let (report, clean) = run(&root, &["playground".into()]);
+
+        assert!(written.is_ok());
+        // Only the component's template is read: `{{ a + }}`, the expression ` a + ` from
+        // column 5 of line 2, Oxc stopping at its end, column 5 + 5 = 10.
+        assert!(
+            report.starts_with("playground/src/app/a.component.html:2:10 lint/parse "),
+            "{report}"
+        );
+        assert!(
+            report.ends_with("lint: 1 finding(s) in 1 file(s)\n"),
+            "{report}"
+        );
+        assert!(!clean);
     }
 
     #[test]

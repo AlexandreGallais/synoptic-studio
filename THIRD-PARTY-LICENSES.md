@@ -30,7 +30,9 @@ The project's tools (`tools/`) port code from, or copy test cases of, the packag
 | `structured-source` | 4.0.0 | BSD-2-Clause | its line and column of an index, in `tools/secret-scan/src/source.rs` |
 | `@angular-eslint/eslint-plugin` | 22.6.0 | MIT | its rules on the framework's bugs, the current form of each construct and the names, ported to `tools/lint/src/rules/angular/`, with the cases of their tests |
 | `@angular-eslint/utils` | 22.6.0 | MIT | its reading of Angular's decorators, lifecycle methods, metadata, bindings and selectors, ported to `tools/lint/src/rules/angular/classes.rs`, `metadata.rs`, `bindings.rs` and `selector_names.rs` |
-| `@angular/compiler` | 22.2.3 | MIT | its `CssSelector.parse`, ported to `tools/lint/src/rules/angular/selector_names.rs` |
+| `@angular-eslint/eslint-plugin-template` | 22.6.0 | MIT | the test cases of its template rules, copied into `tools/lint/tests/fixtures/templates/angular-eslint/` as the corpus the template reader is held to |
+| `@angular-eslint/test-utils` | 22.6.0 | MIT | its cleaning of an annotated source (`parseInvalidSource`), followed in `tools/lint/src/template/corpus.rs` |
+| `@angular/compiler` | 22.2.3 | MIT | its `CssSelector.parse`, ported to `tools/lint/src/rules/angular/selector_names.rs`; its template lexer and parser (`ml_parser`: the lexer, the tag definitions, the named entities, the tree builder), ported to `tools/lint/src/template/` |
 
 ## eslint-plugin-unicorn 78.0.0
 
@@ -769,6 +771,62 @@ SOFTWARE.
 ## @angular-eslint/utils 22.6.0
 
 From `https://registry.npmjs.org/@angular-eslint/utils/-/utils-22.6.0.tgz`, `package/LICENSE`, read through unpkg.com on 2026-10-26.
+
+```text
+MIT License
+
+Copyright (c) 2020 James Henry
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
+
+## @angular-eslint/eslint-plugin-template 22.6.0
+
+From `https://registry.npmjs.org/@angular-eslint/eslint-plugin-template/-/eslint-plugin-template-22.6.0.tgz`, `package/LICENSE`, read through unpkg.com on 2026-10-26; the test cases (`tests/rules/*/cases.ts`) come from the repository angular-eslint at the tag v22.6.0, under the same licence.
+
+```text
+MIT License
+
+Copyright (c) 2020 James Henry
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
+
+## @angular-eslint/test-utils 22.6.0
+
+From `https://registry.npmjs.org/@angular-eslint/test-utils/-/test-utils-22.6.0.tgz`, `package/LICENSE`, read through unpkg.com on 2026-10-26.
 
 ```text
 MIT License

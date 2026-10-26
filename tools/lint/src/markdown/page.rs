@@ -7,6 +7,7 @@ use markdown::mdast::Node;
 use markdown::{Constructs, ParseOptions};
 
 use crate::finding::{Finding, Fix};
+use crate::lines::Lines;
 
 /// A parsed page.
 pub struct Page<'s> {
@@ -16,8 +17,8 @@ pub struct Page<'s> {
     pub text: &'s str,
     /// Its tree.
     pub root: Node,
-    /// The offset of each line's start.
-    lines: Vec<usize>,
+    /// Where each line starts.
+    lines: Lines,
 }
 
 /// GitHub-flavored Markdown with YAML front matter, as `@eslint/markdown`'s `markdown/gfm`
@@ -41,9 +42,7 @@ impl<'s> Page<'s> {
     /// When the parser refuses the text (only MDX can fail, which these options leave off).
     pub fn parse(path: &'s str, text: &'s str) -> Result<Self, String> {
         let root = markdown::to_mdast(text, &options()).map_err(|message| message.to_string())?;
-        let lines = std::iter::once(0)
-            .chain(text.match_indices('\n').map(|(at, _)| at + 1))
-            .collect();
+        let lines = Lines::new(text);
 
         Ok(Self {
             path,
@@ -57,15 +56,7 @@ impl<'s> Page<'s> {
     /// counts them.
     #[must_use]
     pub fn place(&self, offset: usize) -> (usize, usize) {
-        let line = self.lines.partition_point(|start| *start <= offset);
-        let start = self.lines[line - 1];
-        let end = offset.min(self.text.len());
-        let column = self
-            .text
-            .get(start..end)
-            .map_or(0, |before| before.encode_utf16().count());
-
-        (line, column + 1)
+        self.lines.place(self.text, offset)
     }
 
     /// A finding of a rule at a byte offset.

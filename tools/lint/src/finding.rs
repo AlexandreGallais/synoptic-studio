@@ -31,6 +31,20 @@ pub struct Finding {
     pub fix: Option<Fix>,
 }
 
+/// The finding of a file that cannot be read, under `lint/parse`, so that it never passes
+/// silently.
+#[must_use]
+pub fn unreadable(path: &str, error: &std::io::Error) -> Finding {
+    Finding {
+        path: path.to_owned(),
+        line: 1,
+        column: 1,
+        rule: crate::PARSE_RULE,
+        message: format!("Cannot read the file: {error}."),
+        fix: None,
+    }
+}
+
 impl fmt::Display for Finding {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(

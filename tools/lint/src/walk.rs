@@ -1,13 +1,14 @@
-//! The files a run lints: the TypeScript files and the Markdown pages of its targets, each a file
-//! or a folder walked down, the ignored paths left out, as oxlint and `ESLint` take the same
-//! targets.
+//! The files a run lints: the TypeScript files, the Markdown pages and the components' templates
+//! of its targets, each a file or a folder walked down, the ignored paths left out, as oxlint and
+//! `ESLint` take the same targets.
 
 use std::fs;
 use std::path::Path;
 
 use crate::scopes::is_ignored;
 
-/// The TypeScript files and the Markdown pages of the targets, from the root, `/`-separated, sorted and once each.
+/// The TypeScript files, the Markdown pages and the templates of the targets, from the root,
+/// `/`-separated, sorted and once each.
 #[must_use]
 pub fn files(root: &Path, targets: &[String]) -> Vec<String> {
     let mut found = Vec::new();
@@ -30,7 +31,7 @@ pub fn files(root: &Path, targets: &[String]) -> Vec<String> {
     found
 }
 
-/// Adds the TypeScript files and the Markdown pages under a path, unless it is ignored.
+/// Adds the TypeScript files, the Markdown pages and the templates under a path, unless it is ignored.
 fn collect(root: &Path, path: &str, found: &mut Vec<String>) {
     let absolute = root.join(path);
     if is_ignored(path) || is_ignored(&format!("{path}/.")) {
@@ -52,7 +53,8 @@ fn collect(root: &Path, path: &str, found: &mut Vec<String>) {
     } else if (absolute
         .extension()
         .is_some_and(|extension| extension == "ts")
-        || crate::markdown::is_page(path))
+        || crate::markdown::is_page(path)
+        || crate::template::is_template(path))
         && absolute.is_file()
     {
         found.push(path.to_owned());
