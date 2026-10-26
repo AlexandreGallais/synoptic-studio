@@ -201,7 +201,7 @@ fn is_safe_type(
         | TSType::TSTupleType(_) => true,
         TSType::TSLiteralType(literal) => {
             let value = match &literal.literal {
-                TSLiteral::StringLiteral(text) => Value::Text(text.value.to_string()),
+                TSLiteral::StringLiteral(text) => Value::Text(text.value.display().to_string()),
                 TSLiteral::NumericLiteral(number) => Value::Number(number.value),
                 TSLiteral::BooleanLiteral(boolean) => Value::Boolean(boolean.value),
                 TSLiteral::BigIntLiteral(digits) => Value::BigInt(digits.value.to_string()),
@@ -214,7 +214,7 @@ fn is_safe_type(
                         .quasis
                         .first()
                         .and_then(|quasi| quasi.value.cooked)
-                        .map(|cooked| cooked.to_string())
+                        .map(|cooked| cooked.display().to_string())
                         .unwrap_or_default(),
                 ),
             };

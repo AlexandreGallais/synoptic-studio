@@ -25,6 +25,7 @@ use oxc_ast::ast::{
 };
 use oxc_parser::Parser;
 use oxc_span::SourceType;
+use oxc_str::JSStr;
 
 use super::bindings::check;
 use super::tree::parse;
@@ -179,19 +180,14 @@ pub struct Case {
 
 /// A string literal's or a template literal's value, its `${name}` and `${'text'.repeat(n)}`
 /// built; `Err(())` for any other `${…}`, `None` for anything else.
-fn literal(expression: &Expression, values: &Values) -> Option<Result<String, ()>> {
+#[must_use]
+pub fn literal(expression: &Expression, values: &Values) -> Option<Result<String, ()>> {
     match expression {
-        Expression::StringLiteral(string) => Some(Ok(string.value.to_string())),
+        Expression::StringLiteral(string) => Some(Ok(string.value.as_str()?.to_owned())),
         Expression::TemplateLiteral(template) => {
             let mut text = String::new();
             for (index, quasi) in template.quasis.iter().enumerate() {
-                text.push_str(
-                    quasi
-                        .value
-                        .cooked
-                        .as_ref()
-                        .map_or("", |cooked| cooked.as_str()),
-                );
+                text.push_str(quasi.value.cooked.and_then(JSStr::as_str).unwrap_or(""));
                 if let Some(inner) = template.expressions.get(index) {
                     match substitution(inner, values) {
                         Some(value) => text.push_str(&value),
@@ -359,7 +355,7 @@ type Place = ((usize, usize), (usize, usize));
 
 /// The value an expression of a test file writes, its names given their values; `None` when it
 /// is built otherwise.
-fn value(expression: &Expression, values: &Values) -> Option<Value> {
+pub fn value(expression: &Expression, values: &Values) -> Option<Value> {
     match expression {
         Expression::NullLiteral(_) => Some(Value::Null),
         Expression::BooleanLiteral(boolean) => Some(Value::Bool(boolean.value)),
@@ -389,7 +385,7 @@ fn value(expression: &Expression, values: &Values) -> Option<Value> {
                     let key = if property.computed {
                         text(property.key.as_expression()?, values)?
                     } else {
-                        property.key.static_name()?.to_string()
+                        property.key.static_name()?.as_str()?.to_owned()
                     };
                     Some((key, value(&property.value, values)?))
                 }
@@ -705,7 +701,7 @@ fn input(expression: &Expression, values: &Values) -> Option<Input> {
             .iter()
             .map(|each| match each {
                 ObjectPropertyKind::ObjectProperty(property) => Some((
-                    property.key.static_name()?.to_string(),
+                    property.key.static_name()?.as_str()?.to_owned(),
                     text(&property.value, values)?,
                 )),
                 ObjectPropertyKind::SpreadProperty(_) => None,
@@ -830,7 +826,7 @@ fn bound_values(pattern: &BindingPattern, input: &Input) -> Option<Vec<(String, 
             .properties
             .iter()
             .map(|name| {
-                let key = name.key.static_name()?.to_string();
+                let key = name.key.static_name()?.as_str()?.to_owned();
                 let value = object.iter().find(|(each, _)| *each == key)?.1.clone();
                 Some((key, value))
             })
@@ -912,8 +908,10 @@ pub fn read_rule_cases(text: &str, constants: &[(&str, &str)]) -> Corpus {
             let Some(name) = declarator.id.get_identifier_name() else {
                 continue;
             };
-            if let Some(Expression::StringLiteral(string)) = &declarator.init {
-                base.push((name.to_string(), string.value.to_string()));
+            if let Some(Expression::StringLiteral(string)) = &declarator.init
+                && let Some(value) = string.value.as_str()
+            {
+                base.push((name.to_string(), value.to_owned()));
             }
             let is_cases = is_exported && (name == "valid" || name == "invalid");
             match declarator.init.as_ref().and_then(cases_array) {

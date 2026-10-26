@@ -1,0 +1,45 @@
+<!-- should allow flow content -->
+<form>
+	<div></div>
+</form>
+
+<!-- should allow method get/post/dialog -->
+<form method="get">
+	<button type="submit">submit</button>
+</form>
+<form method="post">
+	<button type="submit">submit</button>
+</form>
+<form method="dialog">
+	<button type="submit">submit</button>
+</form>
+
+<!-- should allow action attribute -->
+<form action="/target"></form>
+
+<!-- should allow action surrounded by whitespace -->
+<form action=" /target "></form>
+
+<!-- should allow only ? (to discard query parameters) -->
+<form action="?"></form>
+
+<!-- should allow target keywords and custom name (must not start with _) -->
+<form target="_blank"></form>
+<form target="_parent"></form>
+<form target="_self"></form>
+<form target="_top"></form>
+<form target="foobar"></form>
+
+<!-- should allow empty rel attribute -->
+<form rel></form>
+<form rel=""></form>
+
+<!-- should allow rel attribute -->
+<form rel="next"></form>
+
+<!-- accept-charset, enctype, name -->
+<form accept-charset="UTF-8"></form>
+<form enctype="application/x-www-form-urlencoded"></form>
+<form enctype="multipart/form-data"></form>
+<form enctype="text/plain"></form>
+<form name="myform"></form>

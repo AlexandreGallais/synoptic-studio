@@ -1,0 +1,44 @@
+<!-- should not allow <audio> or <video> descendant -->
+<video>
+	<audio></audio>
+	<video></video>
+</video>
+
+<!-- should be transparent -->
+<span><video><div>foo</div></video></span>
+
+<!-- should now allow children in wrong order -->
+<video>
+	<div>foo</div>
+	<source>
+</video>
+<video src="">
+	<div>foo</div>
+	<track src="video.vtt">
+</video>
+
+<!-- should be interactive if missing controls attribute (and thus not allowed as content in button) -->
+<button type="button">
+	Video:
+	<video controls="foo"></video>
+</button>
+
+<!-- should not allow preload attribute -->
+<video preload="foobar"></video>
+
+<!-- should not allow empty or omitted src -->
+<video src></video>
+<video src=""></video>
+
+<!-- should not allow empty or omitted poster -->
+<video poster></video>
+<video poster=""></video>
+
+<!-- should not be allowed if src is omitted -->
+<video itemprop></video>
+
+<!-- should not allow invalid width and height -->
+<video width="" height=""></video>
+<video width="foo" height="foo"></video>
+<video width="-1" height="-1"></video>
+<video width="1.5" height="1.5"></video>

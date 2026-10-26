@@ -117,7 +117,9 @@ impl<'s, 'a> Reader<'s, 'a> {
         match literal {
             TSLiteral::BooleanLiteral(boolean) => Type::Literal(boolean.value.to_string()),
             TSLiteral::NumericLiteral(number) => Type::Literal(number_text(number.value)),
-            TSLiteral::StringLiteral(string) => Type::Literal(format!("\"{}\"", string.value)),
+            TSLiteral::StringLiteral(string) => {
+                Type::Literal(format!("\"{}\"", string.value.display()))
+            }
             TSLiteral::UnaryExpression(unary) => match (&unary.operator, &unary.argument) {
                 (UnaryOperator::UnaryNegation, Expression::NumericLiteral(number)) => {
                     Type::Literal(format!("-{}", number_text(number.value)))
@@ -297,7 +299,7 @@ impl<'s, 'a> Reader<'s, 'a> {
             };
             let name = match &property.key {
                 PropertyKey::StaticIdentifier(identifier) => identifier.name.to_string(),
-                PropertyKey::StringLiteral(string) => string.value.to_string(),
+                PropertyKey::StringLiteral(string) => string.value.display().to_string(),
                 _ => {
                     self.unsupported(property.span.start, "a computed property name");
                     continue;
@@ -353,7 +355,7 @@ impl<'s, 'a> Reader<'s, 'a> {
                 None,
             ),
             Some(Expression::StringLiteral(string)) => (
-                Type::Literal(format!("\"{}\"", string.value)),
+                Type::Literal(format!("\"{}\"", string.value.display())),
                 Some(raw(string.span)),
                 None,
             ),
@@ -383,7 +385,7 @@ impl<'s, 'a> Reader<'s, 'a> {
                             .iter()
                             .map(|element| match element.as_expression() {
                                 Some(Expression::StringLiteral(string)) => {
-                                    Type::Literal(format!("\"{}\"", string.value))
+                                    Type::Literal(format!("\"{}\"", string.value.display()))
                                 }
                                 Some(Expression::NumericLiteral(number)) => {
                                     Type::Literal(number_text(number.value))
@@ -482,7 +484,9 @@ pub fn module(source: &str, file: &str) -> Module {
     for statement in &program.body {
         match statement {
             Statement::ExportAllDeclaration(all) if all.exported.is_none() => {
-                module.re_exports.push(all.source.value.to_string());
+                module
+                    .re_exports
+                    .push(all.source.value.display().to_string());
             }
             Statement::ExportDeclaration(export) => {
                 let doc = reader.doc(export.span.start);

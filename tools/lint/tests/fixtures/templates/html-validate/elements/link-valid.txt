@@ -1,0 +1,120 @@
+<html lang="en">
+	<head>
+		<title>link element</title>
+
+		<!-- should omit end tag -->
+		<link href="my-url">
+
+		<!-- should allow "as" if "rel" is "preload" or "modulepreload" -->
+		<link href="my-url" rel="preload" as="script">
+		<link href="my-url" rel="modulepreload" as="script">
+
+		<!-- should allow "as" with valid values  -->
+		<link href="my-url" rel="preload" as="audio">
+		<link href="my-url" rel="preload" as="audioworklet">
+		<link href="my-url" rel="preload" as="document">
+		<link href="my-url" rel="preload" as="embed">
+		<link href="my-url" rel="preload" as="fetch">
+		<link href="my-url" rel="preload" as="font">
+		<link href="my-url" rel="preload" as="frame">
+		<link href="my-url" rel="preload" as="iframe">
+		<link href="my-url" rel="preload" as="image">
+		<link href="my-url" rel="preload" as="manifest">
+		<link href="my-url" rel="preload" as="object">
+		<link href="my-url" rel="preload" as="paintworklet">
+		<link href="my-url" rel="preload" as="report">
+		<link href="my-url" rel="preload" as="script">
+		<link href="my-url" rel="preload" as="serviceworker">
+		<link href="my-url" rel="preload" as="sharedworker">
+		<link href="my-url" rel="preload" as="style">
+		<link href="my-url" rel="preload" as="track">
+		<link href="my-url" rel="preload" as="video">
+		<link href="my-url" rel="preload" as="webidentity">
+		<link href="my-url" rel="preload" as="worker">
+		<link href="my-url" rel="preload" as="xslt">
+
+		<!-- should allow integrity if rel is stylesheet, preload or modulepreload -->
+		<link href="my-url" rel="stylesheet" integrity="sha384-...">
+		<link href="my-url" rel="preload" integrity="sha384-...">
+		<link href="my-url" rel="modulepreload" integrity="sha384-...">
+
+		<!-- should allow "blocking" with valid values -->
+		<link href="my-url" rel="stylesheet" blocking="render render render">
+
+		<!-- should allow "blocking" if "rel" is "expect" or "stylesheet" -->
+		<link href="my-url" rel="expect" blocking="render">
+		<link href="my-url" rel="stylesheet" blocking="render">
+
+		<!-- should allow "disabled" if "rel" is "stylesheet" -->
+		<link href="my-url" rel="stylesheet" disabled>
+
+		<!-- should allow referrerpolicy attribute -->
+		<link href="my-url" referrerpolicy="">
+		<link href="my-url" referrerpolicy="no-referrer">
+		<link href="my-url" referrerpolicy="no-referrer-when-downgrade">
+		<link href="my-url" referrerpolicy="same-origin">
+		<link href="my-url" referrerpolicy="origin">
+		<link href="my-url" referrerpolicy="strict-origin">
+		<link href="my-url" referrerpolicy="origin-when-cross-origin">
+		<link href="my-url" referrerpolicy="strict-origin-when-cross-origin">
+		<link href="my-url" referrerpolicy="unsafe-url">
+
+		<!-- should allow type attribute -->
+		<link href="my-url" rel="icon" type="image/x-icon">
+
+		<!-- should allow media attribute -->
+		<link href="my-url" rel="stylesheet" media="print">
+
+		<!-- should allow hreflang attribute -->
+		<link href="my-url" rel="alternate" hreflang="en">
+
+		<!-- should allow sizes attribute -->
+		<link href="my-url" rel="icon" sizes="16x16 32x32">
+
+		<!-- should allow color attribute -->
+		<link href="my-url" rel="mask-icon" color="#ff0000">
+
+		<!-- should allow fetchpriority attribute -->
+		<link href="my-url" rel="preload" fetchpriority="high">
+		<link href="my-url" rel="preload" fetchpriority="low">
+		<link href="my-url" rel="preload" fetchpriority="auto">
+
+		<!-- always allowed under head -->
+		<link href="my-url" itemprop>
+
+		<!-- should allow empty rel attribute -->
+		<link href="my-url" rel>
+		<link href="my-url" rel="">
+
+		<!-- - should be valid with either or both href and imagesrcset -->
+		<link rel="preload" as="image" href="foo.png">
+		<link rel="preload" as="image" imagesrcset="foo.png, bar.png 600w" imagesizes="50vw">
+		<link
+			rel="preload"
+			as="image"
+			href="foo.png"
+			imagesrcset="foo.png, bar.png 600w"
+			imagesizes="50vw"
+		>
+
+		<!-- should allow imagesrcset with density descriptors without imagesizes -->
+		<link rel="preload" as="image" imagesrcset="foo.png, bar.png 2x">
+		<link rel="preload" as="image" href="foo.png" imagesrcset="foo.png, bar.png 2x">
+	</head>
+	<body>
+		<!-- allowed under body when rel is set to a "body ok" keyword -->
+		<link href="my-url" rel="dns-prefetch">
+		<link href="my-url" rel="modulepreload">
+		<link href="my-url" rel="pingback">
+		<link href="my-url" rel="preconnect">
+		<link href="my-url" rel="prefetch">
+		<link href="my-url" rel="preload">
+		<link href="my-url" rel="stylesheet">
+
+		<!-- allowed if one of the "body ok" keywords are present -->
+		<link href="my-url" rel="alternate dns-prefetch">
+
+		<!-- allowed under body if itemprop is also present -->
+		<link href="my-url" itemprop>
+	</body>
+</html>

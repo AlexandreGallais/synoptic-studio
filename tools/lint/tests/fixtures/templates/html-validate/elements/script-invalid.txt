@@ -1,0 +1,29 @@
+<!-- src attribute cannot be empty -->
+<script src=""></script>
+
+<!-- type attribute should be omitted when empty or js -->
+<script type=""></script>
+<script type="text/javascript"></script>
+
+<!-- deprecated attribute -->
+<script language="vbscript"></script>
+
+<!-- must not omit end tag in any way, because the way the scripttag is tokenized both according to spec and this tool it must explicitly be ended with </>. Dragons ahead if not obeyed -->
+<script/>
+
+<!-- should not allow invalid blocking tokens -->
+<script blocking="invalid"></script>
+
+<!-- should not allow invalid fetchpriority attribute -->
+<script fetchpriority="invalid"></script>
+
+<!-- integrity attribute should not be empty -->
+<script src="script.js" integrity></script>
+<script src="script.js" integrity=""></script>
+
+<!-- integrity attribute must not be specified without src -->
+<script integrity="sha384-..."></script>
+
+<!-- should not allow omitted or invalid referrerpolicy -->
+<script src="script.js" referrerpolicy></script>
+<script src="script.js" referrerpolicy="invalid"></script>

@@ -4,6 +4,7 @@
 //! TypeScript's wrappers.
 
 use oxc_ast::ast::{Expression, UnaryOperator};
+use oxc_str::JSStr;
 
 use crate::expressions::unwrapped;
 
@@ -26,13 +27,13 @@ pub enum Primitive {
 #[must_use]
 pub fn primitive(expression: &Expression) -> Option<Primitive> {
     match unwrapped(expression) {
-        Expression::StringLiteral(each) => Some(Primitive::Text(each.value.to_string())),
+        Expression::StringLiteral(each) => Some(Primitive::Text(each.value.as_str()?.to_owned())),
         Expression::TemplateLiteral(each) if each.expressions.is_empty() => Some(Primitive::Text(
             each.quasis
                 .iter()
-                .filter_map(|quasi| quasi.value.cooked.as_ref())
-                .map(ToString::to_string)
-                .collect(),
+                .filter_map(|quasi| quasi.value.cooked)
+                .map(JSStr::as_str)
+                .collect::<Option<String>>()?,
         )),
         Expression::NumericLiteral(each) => Some(Primitive::Number(each.value.to_bits())),
         Expression::BigIntLiteral(each) => Some(Primitive::BigInt(each.value.to_string())),

@@ -110,7 +110,7 @@ impl NoErrorPropertyAssignment {
             }
             oxc_ast::ast::MemberExpression::ComputedMemberExpression(each) => {
                 match &each.expression {
-                    Expression::StringLiteral(key) => (key.value.as_str(), key.span.start),
+                    Expression::StringLiteral(key) => (key.value.as_str()?, key.span.start),
                     _ => return None,
                 }
             }
@@ -163,13 +163,14 @@ impl Rule for NoErrorPropertyAssignment {
                         let ObjectPropertyKind::ObjectProperty(property) = property else {
                             continue;
                         };
-                        if let Some(name) = property.key.static_name()
-                            && forbidden(constructor, &name)
+                        if let Some(key) = property.key.static_name()
+                            && let Some(name) = key.as_str()
+                            && forbidden(constructor, name)
                         {
                             findings.push(source.finding(
                                 self.name(),
                                 property.key.span().start,
-                                message(&name),
+                                message(name),
                             ));
                         }
                     }

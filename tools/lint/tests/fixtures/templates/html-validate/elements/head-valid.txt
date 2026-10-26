@@ -1,0 +1,19 @@
+<!-- should be allowed under <html> -->
+<html lang="en">
+	<head>
+		<title>foo</title>
+	</head>
+	<body></body>
+</html>
+
+<!-- should allow meta elements -->
+<html lang="en">
+	<head>
+		<meta>
+		<script></script>
+		<link href="my-url">
+		<title>lorem ipsum</title>
+		<base>
+	</head>
+	<body></body>
+</html>

@@ -116,8 +116,13 @@ pub fn repository_tasks() -> Vec<Task> {
             pattern: "*.md".to_owned(),
             steps: vec![format(), lint()],
         },
+        // The templates and the style sheets, which the project's linter reads and fixes.
         Task {
-            pattern: "*.{cjs,css,html,json,scss,toml,yaml,yml}".to_owned(),
+            pattern: "*.{html,scss}".to_owned(),
+            steps: vec![format(), lint()],
+        },
+        Task {
+            pattern: "*.{cjs,css,json,toml,yaml,yml}".to_owned(),
             steps: vec![format()],
         },
         Task {

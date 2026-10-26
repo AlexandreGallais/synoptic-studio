@@ -35,10 +35,20 @@ impl Rule for NoExpressionStatements {
         let start = match node.kind() {
             AstKind::ExpressionStatement(statement) => match &statement.expression {
                 Expression::YieldExpression(_) => return,
-                Expression::StringLiteral(literal) if is_directive(&literal.value) => return,
+                Expression::StringLiteral(literal)
+                    if literal.value.as_str().is_some_and(is_directive) =>
+                {
+                    return;
+                }
                 _ => statement.span.start,
             },
-            AstKind::Directive(directive) if !is_directive(&directive.expression.value) => {
+            AstKind::Directive(directive)
+                if !directive
+                    .expression
+                    .value
+                    .as_str()
+                    .is_some_and(is_directive) =>
+            {
                 directive.span.start
             }
             _ => return,

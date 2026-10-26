@@ -1,0 +1,8 @@
+<!-- should not allow flow content -->
+<h3>
+	<div>Lorem ipsum</div>
+</h3>
+
+<!-- cannot be empty (or whitespace only) -->
+<h3></h3>
+<h3> </h3>

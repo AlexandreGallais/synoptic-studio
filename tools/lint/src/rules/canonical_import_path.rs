@@ -96,7 +96,9 @@ pub fn canonical(project: &Project, folder: &Path, specifier: &str) -> Canonical
 impl CanonicalImportPath {
     /// Checks a module specifier written as a string.
     fn check(&self, literal: &StringLiteral, source: &Source, findings: &mut Vec<Finding>) {
-        let value = literal.value.as_str();
+        let Some(value) = literal.value.as_str() else {
+            return;
+        };
         if !value.starts_with('.') {
             return;
         }

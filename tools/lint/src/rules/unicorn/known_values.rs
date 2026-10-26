@@ -159,7 +159,7 @@ pub fn key_name(
     {
         return Some(KeyName::Text(match key {
             oxc_ast::ast::PropertyKey::NumericLiteral(literal) => number_text(literal.value),
-            _ => name.into_owned(),
+            _ => name.into_cow_str()?.into_owned(),
         }));
     }
     let expression = key.as_expression()?;

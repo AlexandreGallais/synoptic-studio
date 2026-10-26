@@ -1,0 +1,16 @@
+<!-- should allow phrasing -->
+<label>
+	<span>foo</span>
+</label>
+
+<!-- should allow associating by nesting -->
+<label>
+	<input type="checkbox">
+	lorem ipsum
+</label>
+
+<!-- should allow associating by id -->
+<input id="my-input" type="checkbox">
+<label for="my-input">
+	lorem ipsum
+</label>

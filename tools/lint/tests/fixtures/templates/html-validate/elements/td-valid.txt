@@ -1,0 +1,40 @@
+<!-- should be allowed under <tr> -->
+<table>
+	<tbody>
+		<tr>
+			<td>foo</td>
+		</tr>
+	</tbody>
+</table>
+
+<!-- should allow flow content -->
+<table>
+	<tbody>
+		<tr>
+			<td>
+				<div>foo</div>
+			</td>
+		</tr>
+	</tbody>
+</table>
+
+<!-- should allow integer colspan/rowspan -->
+<table>
+	<tbody>
+		<tr>
+			<td colspan="2" rowspan="2"></td>
+		</tr>
+	</tbody>
+</table>
+
+<!-- should allow headers attribute -->
+<table>
+	<tbody>
+		<tr>
+			<th id="h1"></th>
+		</tr>
+		<tr>
+			<td headers="h1"></td>
+		</tr>
+	</tbody>
+</table>

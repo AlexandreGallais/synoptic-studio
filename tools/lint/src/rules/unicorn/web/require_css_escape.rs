@@ -8,6 +8,7 @@ use oxc_ast::AstKind;
 use oxc_ast::ast::{Expression, TemplateLiteral};
 use oxc_semantic::AstNode;
 use oxc_span::GetSpan;
+use oxc_str::JSStr;
 
 use crate::finding::{Finding, Fix};
 use crate::rules::Rule;
@@ -22,7 +23,7 @@ pub struct RequireCssEscape;
 fn cooked(template: &TemplateLiteral, range: std::ops::Range<usize>) -> String {
     template.quasis[range]
         .iter()
-        .filter_map(|quasi| quasi.value.cooked.map(|text| text.to_string()))
+        .filter_map(|quasi| quasi.value.cooked.and_then(JSStr::as_str))
         .collect()
 }
 

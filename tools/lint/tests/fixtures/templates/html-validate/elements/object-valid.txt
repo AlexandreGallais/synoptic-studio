@@ -1,0 +1,37 @@
+<!-- should allow flow content -->
+<object data="resource">
+	<div>foo</div>
+</object>
+
+<!-- should allow <param> -->
+<object data="resource">
+	<param>
+</object>
+
+<!-- should be transparent -->
+<span>
+	<object data="resource">
+		<span>foo</span>
+	</object>
+</span>
+<div>
+	<object data="resource">
+		<div>foo</div>
+	</object>
+</div>
+
+<!-- should allow <param> before flow -->
+<object data="resource">
+	<param>
+	<div></div>
+</object>
+
+<!-- should not be interactive unless usemap is set -->
+<button type="button">
+	foo
+	<object data="resource"></object>
+</button>
+
+<!-- should allow non-negative integer width and height -->
+<object data="resource" width="100" height="100"></object>
+<object data="resource" width="0" height="0"></object>

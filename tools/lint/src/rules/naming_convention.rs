@@ -413,7 +413,7 @@ fn key_name(key: &PropertyKey, computed: bool) -> Option<(String, bool)> {
     }
     let name = match key {
         PropertyKey::StaticIdentifier(identifier) => identifier.name.to_string(),
-        PropertyKey::StringLiteral(literal) => literal.value.to_string(),
+        PropertyKey::StringLiteral(literal) => literal.value.as_str()?.to_owned(),
         PropertyKey::NumericLiteral(literal) => literal.value.to_string(),
         _ => return None,
     };

@@ -35,7 +35,7 @@ fn bound_string(allocator: &Allocator, element: &Element, each: &Bound3) -> Opti
     let read = read_attribute(allocator, &element.name, each.attribute).ok()?;
     match read.value {
         Value::Binding(bound) if bound.pipes.is_empty() => match bound.expression {
-            Some(Expression::StringLiteral(string)) => Some(string.value.to_string()),
+            Some(Expression::StringLiteral(string)) => Some(string.value.as_str()?.to_owned()),
             _ => None,
         },
         _ => None,

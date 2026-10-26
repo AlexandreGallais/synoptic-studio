@@ -130,7 +130,7 @@ impl Rule for PreferStringRepeat {
             }
             _ => return,
         };
-        let Some((character, count)) = repeated_whitespace(value) else {
+        let Some((character, count)) = value.and_then(repeated_whitespace) else {
             return;
         };
         if is_required(source, node.id(), span) {

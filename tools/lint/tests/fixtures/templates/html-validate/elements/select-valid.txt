@@ -1,0 +1,45 @@
+<!-- should allow option and optgroup -->
+<select>
+	<option></option>
+	<optgroup>
+		<option></option>
+	</optgroup>
+</select>
+
+<!-- should allow script and template -->
+<select>
+	<script></script>
+	<template></template>
+</select>
+
+<!-- should allow integer size -->
+<select size="10"></select>
+
+<!-- should allow button with selectedcontent -->
+<select>
+  <button>
+    <selectedcontent></selectedcontent>
+  </button>
+	<option>foo</option>
+</select>
+
+<!-- should allow nested <hr> -->
+<select>
+  <option></option>
+  <hr>
+  <option></option>
+</select>
+
+<!-- should allow label with for attribute -->
+<label for="label-for">Lorem ipsum</label>
+<select id="label-for"></select>
+
+<!-- should allow any non-empty name -->
+<select name="country"></select>
+
+<!-- should allow valid autocomplete -->
+<select autocomplete="country"></select>
+
+<!-- form attribute referencing a form by id -->
+<form id="selectform"></form>
+<select form="selectform"></select>

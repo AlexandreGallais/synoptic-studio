@@ -23,10 +23,10 @@ const MESSAGE: &str =
     "This export is redundant because the same module is already exported with `export *`.";
 
 /// A name as written, an identifier or a string.
-fn name_of<'a>(name: &ModuleExportName<'a>) -> &'a str {
+fn name_of<'a>(name: &ModuleExportName<'a>) -> Option<&'a str> {
     match name {
-        ModuleExportName::IdentifierName(name) => name.name.as_str(),
-        ModuleExportName::IdentifierReference(name) => name.name.as_str(),
+        ModuleExportName::IdentifierName(name) => Some(name.name.as_str()),
+        ModuleExportName::IdentifierReference(name) => Some(name.name.as_str()),
         ModuleExportName::StringLiteral(name) => name.value.as_str(),
     }
 }
@@ -57,7 +57,11 @@ impl Rule for NoUselessReExport {
             .filter_map(|statement| match statement {
                 Statement::ExportAllDeclaration(export) if export.exported.is_none() => Some((
                     &**export,
-                    request(source, &export.source.value, export.with_clause.as_deref()),
+                    request(
+                        source,
+                        &export.source.value.display().to_string(),
+                        export.with_clause.as_deref(),
+                    ),
                 )),
                 _ => None,
             })
@@ -72,11 +76,15 @@ impl Rule for NoUselessReExport {
             let Statement::ExportFromDeclaration(export) = statement else {
                 continue;
             };
-            let wanted = request(source, &export.source.value, export.with_clause.as_deref());
+            let wanted = request(
+                source,
+                &export.source.value.display().to_string(),
+                export.with_clause.as_deref(),
+            );
             for specifier in &export.specifiers {
                 let exported = name_of(&specifier.exported);
                 let renamed = specifier.local.span() != specifier.exported.span();
-                if exported == "default" || name_of(&specifier.local) != exported || renamed {
+                if exported == Some("default") || name_of(&specifier.local) != exported || renamed {
                     continue;
                 }
                 let typed = specifier.export_kind == ImportOrExportKind::Type

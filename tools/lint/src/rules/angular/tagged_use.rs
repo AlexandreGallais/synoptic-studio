@@ -73,7 +73,7 @@ pub fn tagged_use<'a>(
             let from = nodes
                 .ancestors(declaration)
                 .find_map(|ancestor| match ancestor.kind() {
-                    AstKind::ImportDeclaration(import) => Some(import.source.value.as_str()),
+                    AstKind::ImportDeclaration(import) => import.source.value.as_str(),
                     _ => None,
                 })?;
             let entry = entry_of(&source.folder(), from)?;
@@ -109,7 +109,9 @@ pub fn report_unread_declarations(
     let AstKind::ImportDeclaration(import) = node.kind() else {
         return;
     };
-    let specifier = import.source.value.as_str();
+    let Some(specifier) = import.source.value.as_str() else {
+        return;
+    };
     if specifier.starts_with("@angular/") && entry_of(&source.folder(), specifier).is_none() {
         findings.push(source.finding(
             rule,

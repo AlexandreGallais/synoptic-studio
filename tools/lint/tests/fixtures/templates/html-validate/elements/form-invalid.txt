@@ -1,0 +1,47 @@
+<!-- should not allow nesting -->
+<form>
+	<form></form>
+</form>
+
+<!-- should not allow nesting with custom elements -->
+<form>
+	<custom-form></custom-form>
+</form>
+
+<!-- should not allow arbitrary form methods -->
+<form method="foobar">
+	<button type="submit">submit</button>
+</form>
+
+<!-- should not allow empty action attribute -->
+<form action></form>
+<form action=""></form>
+<form action=" "></form>
+
+<!-- should not allow multiple urls -->
+<form action="/foo /bar"></form>
+
+<!-- should not allow invalid target keywords -->
+<form target="_invalid"></form>
+
+<!-- disallowed rel keywords -->
+<form rel="alternate"></form>
+<form rel="canonical"></form>
+<form rel="author"></form>
+<form rel="bookmark"></form>
+<form rel="dns-prefetch"></form>
+<form rel="expect"></form>
+<form rel="icon"></form>
+<form rel="manifest"></form>
+<form rel="modulepreload"></form>
+<form rel="pingback"></form>
+<form rel="preconnect"></form>
+<form rel="prefetch"></form>
+<form rel="preload"></form>
+<form rel="privacy-policy"></form>
+<form rel="stylesheet"></form>
+<form rel="tag"></form>
+<form rel="terms-of-service"></form>
+
+<!-- should handle disallowed keywords in a list of many -->
+<form rel="external canonical next"></form>

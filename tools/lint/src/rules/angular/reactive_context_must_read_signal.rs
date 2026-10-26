@@ -186,10 +186,10 @@ fn read_node(source: &Source, node: &AstNode, analysis: &mut Analysis) {
                 && pattern.rest.is_none()
                 && pattern.properties.iter().all(|property| {
                     !property.computed
-                        && property
-                            .key
-                            .static_name()
-                            .is_some_and(|name| !is_getter(source, id, &name))
+                        && property.key.static_name().is_some_and(|name| {
+                            name.as_str()
+                                .is_some_and(|name| !is_getter(source, id, name))
+                        })
                 });
             analysis.unknown |= !known;
         }

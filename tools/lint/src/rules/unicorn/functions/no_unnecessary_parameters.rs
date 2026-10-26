@@ -178,7 +178,12 @@ where
                     .iter()
                     .map(|property| {
                         (!property.computed)
-                            .then(|| property.key.static_name().map(|name| name.to_string()))
+                            .then(|| {
+                                property
+                                    .key
+                                    .static_name()
+                                    .and_then(|name| name.as_str().map(str::to_owned))
+                            })
                             .flatten()
                     })
                     .collect();
@@ -246,7 +251,7 @@ fn object_properties<'s, 'a>(
                 property
                     .key
                     .static_name()
-                    .map(|name| (name.to_string(), &property.value))
+                    .and_then(|name| Some((name.as_str()?.to_owned(), &property.value)))
             }
             _ => None,
         })

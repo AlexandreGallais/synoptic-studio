@@ -9,7 +9,7 @@
 
 use oxc_ast::ast::{
     Argument, ArrayExpressionElement, CallExpression, ChainElement, Expression, LogicalOperator,
-    ObjectPropertyKind, UnaryOperator,
+    ObjectPropertyKind, PropertyKey, UnaryOperator,
 };
 use oxc_span::GetSpan;
 
@@ -227,6 +227,11 @@ fn of_chain(element: &ChainElement, bound: &Bound) -> Ng {
     }
 }
 
+/// A key's name as text: none for a computed key or one holding a lone surrogate.
+fn static_key(key: &PropertyKey) -> Option<String> {
+    key.static_name()?.as_str().map(str::to_owned)
+}
+
 /// An Oxc expression of a bound as Angular reads it; a masked pipe expression its nested bound.
 #[must_use]
 pub fn of_expression(expression: &Expression, bound: &Bound) -> Ng {
@@ -284,7 +289,9 @@ pub fn of_expression(expression: &Expression, bound: &Bound) -> Ng {
             boxed(&conditional.consequent),
             boxed(&conditional.alternate),
         ),
-        Expression::StringLiteral(string) => Ng::Literal(Literal::Text(string.value.to_string())),
+        Expression::StringLiteral(string) => {
+            Ng::Literal(Literal::Text(string.value.display().to_string()))
+        }
         Expression::NumericLiteral(number) => Ng::Literal(Literal::Number(number.value)),
         Expression::BooleanLiteral(boolean) => Ng::Literal(Literal::Bool(boolean.value)),
         Expression::NullLiteral(_) => Ng::Literal(Literal::Null),
@@ -307,7 +314,7 @@ pub fn of_expression(expression: &Expression, bound: &Bound) -> Ng {
             for property in &object.properties {
                 match property {
                     ObjectPropertyKind::ObjectProperty(property) => {
-                        keys.push(property.key.static_name().map(|name| name.to_string()));
+                        keys.push(static_key(&property.key));
                         values.push(of_expression(&property.value, bound));
                     }
                     ObjectPropertyKind::SpreadProperty(spread) => {

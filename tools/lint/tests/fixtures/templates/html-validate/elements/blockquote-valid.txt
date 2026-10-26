@@ -1,0 +1,8 @@
+<!-- should allow flow as content -->
+<blockquote><div>foo</div></blockquote>
+
+<!-- should allow flow parent -->
+<div><blockquote>foo</blockquote></div>
+
+<!-- cite attribute -->
+<blockquote cite="https://example.com/">foo</blockquote>

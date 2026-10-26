@@ -204,7 +204,7 @@ fn has_search_params(source: &Source, node: &AstNode) -> bool {
         AstKind::TSTypeAliasDeclaration(_) | AstKind::TSInterfaceDeclaration(_) => true,
         AstKind::ImportSpecifier(specifier) => {
             matches!(nodes.parent_kind(declaration), AstKind::ImportDeclaration(import)
-                if matches!(import.source.value.as_str(), "url" | "node:url") && !import.import_kind.is_type())
+                if matches!(import.source.value.as_str(), Some("url" | "node:url")) && !import.import_kind.is_type())
                 && !specifier.import_kind.is_type()
                 && specifier.imported.name() == "URLSearchParams"
         }

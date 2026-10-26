@@ -40,7 +40,7 @@ const PROTOTYPE_PROPERTIES: [&str; 12] = [
 fn key_name(key: &PropertyKey) -> Option<String> {
     match key {
         PropertyKey::StaticIdentifier(identifier) => Some(identifier.name.to_string()),
-        PropertyKey::StringLiteral(literal) => Some(literal.value.to_string()),
+        PropertyKey::StringLiteral(literal) => Some(literal.value.as_str()?.to_owned()),
         PropertyKey::NumericLiteral(literal) => Some(
             crate::rules::unicorn::known_values::number_text(literal.value),
         ),
