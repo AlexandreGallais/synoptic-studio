@@ -161,6 +161,17 @@ mod tests {
     }
 
     #[test]
+    fn runs_no_call_expression_by_the_product_owner_s_choice() {
+        // A signal read is a call: `no-call-expression` is off, so it passes.
+        assert_eq!(lint_text("a.component.html", "<p>{{ zoom() }}</p>\n"), []);
+        assert!(
+            super::rules::RULES
+                .iter()
+                .all(|rule| rule.name() != "@angular-eslint/template/no-call-expression")
+        );
+    }
+
+    #[test]
     fn reads_only_component_templates() {
         assert!(is_template("playground/src/app/app.component.html"));
         assert!(!is_template("playground/src/index.html"));

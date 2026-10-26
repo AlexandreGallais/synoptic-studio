@@ -397,6 +397,28 @@ fn value(expression: &Expression, values: &Values) -> Option<Value> {
             })
             .collect::<Option<_>>()
             .map(Value::Object),
+        // `['a', 'b'].join(', ')`, as role-has-required-aria writes its data.
+        Expression::CallExpression(call) => {
+            let Expression::StaticMemberExpression(member) = &call.callee else {
+                return None;
+            };
+            let [separator] = call.arguments.as_slice() else {
+                return None;
+            };
+            let separator = text(separator.as_expression()?, values)?;
+            match (
+                member.property.name.as_str(),
+                value(&member.object, values)?,
+            ) {
+                ("join", Value::List(list)) => Some(Value::Text(
+                    list.iter()
+                        .map(Value::display)
+                        .collect::<Vec<_>>()
+                        .join(&separator),
+                )),
+                _ => None,
+            }
+        }
         Expression::TSAsExpression(cast) => value(&cast.expression, values),
         Expression::TSSatisfiesExpression(cast) => value(&cast.expression, values),
         Expression::ParenthesizedExpression(inner) => value(&inner.expression, values),

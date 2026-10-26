@@ -2,8 +2,8 @@
 //! statements, a call running at every change detection (`@angular-eslint/eslint-plugin-template`
 //! 22.6.0, `src/rules/no-call-expression.ts`): each call, `$any(…)` and optional calls
 //! (`f?.()`) aside, is reported over itself, unless its callee's name is in `allowList`, starts
-//! with `allowPrefix` or ends with `allowSuffix`. The project runs the plugin's defaults, no
-//! call allowed.
+//! with `allowPrefix` or ends with `allowSuffix`. The project does not run it: off by the
+//! Product Owner's choice, a signal read in a template (`zoom()`) being a call.
 
 use oxc_ast::AstKind;
 use oxc_ast::ast::Expression;
@@ -21,8 +21,8 @@ pub struct NoCallExpression {
 }
 
 impl NoCallExpression {
-    /// The plugin's defaults, which the project runs.
-    pub const PROJECT: Self = Self {
+    /// The plugin's defaults, no call allowed; the project does not run the rule.
+    pub const DEFAULTS: Self = Self {
         allow_list: &[],
         allow_prefix: None,
         allow_suffix: None,
