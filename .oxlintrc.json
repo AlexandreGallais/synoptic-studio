@@ -21,6 +21,9 @@
     "docs/.vitepress/.temp/**",
     ".claude/worktrees/**",
     "target/**",
+    "playground/node_modules/**",
+    "playground/.angular/**",
+    "playground/dist/**",
     "**/*.{js,cjs,mjs}"
   ],
   "overrides": [
@@ -1155,7 +1158,9 @@
     {
       "files": [
         "./*.config.ts",
+        "playground/*.config.ts",
         "./*.setup.ts",
+        "playground/testing/*.setup.ts",
         "./*.test.ts",
         "tests/*.ts",
         "docs/.vitepress/**/*.ts",
@@ -1204,12 +1209,48 @@
       "plugins": ["typescript", "jsdoc", "vitest"]
     },
     {
-      "files": ["./*.config.ts", "docs/.vitepress/config.ts", "docs/.vitepress/theme/index.ts"],
+      "files": [
+        "./*.config.ts",
+        "playground/*.config.ts",
+        "docs/.vitepress/config.ts",
+        "docs/.vitepress/theme/index.ts"
+      ],
       "rules": {
         "import/no-default-export": "off",
         "no-restricted-exports": "off"
       },
       "plugins": ["import"]
+    },
+    {
+      "files": ["playground/src/**/*.ts"],
+      "rules": {
+        "new-cap": [
+          "error",
+          {
+            "capIsNew": true,
+            "capIsNewExceptions": ["Component", "Directive", "Injectable", "Pipe"],
+            "newIsCap": true,
+            "properties": true
+          }
+        ],
+        "no-restricted-imports": [
+          "error",
+          {
+            "paths": [
+              {
+                "message": "The playground's state and reactions are signals and @ngrx/signals: no RxJS in its code (NOTE-0036, finding 28).",
+                "name": "rxjs"
+              }
+            ],
+            "patterns": [
+              {
+                "group": ["rxjs/*"],
+                "message": "The playground's state and reactions are signals and @ngrx/signals: no RxJS in its code (NOTE-0036, finding 28)."
+              }
+            ]
+          }
+        ]
+      }
     }
   ]
 }

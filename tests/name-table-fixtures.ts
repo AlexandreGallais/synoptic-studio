@@ -6,7 +6,6 @@ import { lineCodePoints } from "../src";
 
 import { TRUE_TYPE_VERSION, fontFile, tableOf, uint16 } from "./font-fixtures";
 import { testFontTables } from "./font-table-fixtures";
-import { latinTestFontTables } from "./latin-font-table-fixtures";
 import { os2Table } from "./metrics-table-fixtures";
 
 import type { Os2Fields } from "./metrics-table-fixtures";
@@ -155,7 +154,7 @@ const ITALIC_SELECTION = 0x00_01;
 /** `fsSelection` with bit 6 set, regular. */
 const REGULAR_SELECTION = 0x00_40;
 
-/** A face of the test font, as a playground test imports it (US-036). */
+/** A face of the test font: its family, weight, style and permissions (US-036). */
 export type TestFace = {
   /** How its `name` table names its family. */
   readonly family: string;
@@ -186,23 +185,7 @@ function testFaceOs2(face: TestFace): number[] {
 }
 
 /**
- * The test font of `[F05.AC1]` as a whole file, every letter of the ISO basic Latin alphabet
- * mapped (`latinTestFontTables`), named by the `name` table given.
- *
- * @param face - its weight, style and permissions
- * @param name - the bytes of its `name` table
- * @returns the file's bytes
- */
-function testFaceNamed(face: TestFace, name: readonly number[]): Uint8Array {
-  return fontFile(TRUE_TYPE_VERSION, {
-    ...latinTestFontTables(),
-    name,
-    "OS/2": testFaceOs2(face),
-  });
-}
-
-/**
- * The test font of `testFaceFile` mapping A, B, C and `a` alone (`testFontTables`), as a font
+ * The test font of `[F05.AC1]` mapping A, B, C and `a` alone (`testFontTables`), as a font
  * lacking the Latin letters is, such as Apple Color Emoji (US-056).
  *
  * @param face - its family, weight, style and permissions
@@ -214,47 +197,4 @@ export function lettersMissingFaceFile(face: TestFace): Uint8Array {
     name: familyNameTable(face.family),
     "OS/2": testFaceOs2(face),
   });
-}
-
-/**
- * The test font of `[F05.AC1]` as a whole file (1000 units per em, ascender 800, descender −200,
- * line gap 90; A 600 units wide, B, C and a 700, any other character 500, every Latin letter
- * mapped; no kerning), named,
- * weighted and styled by a `name` and an `OS/2` table, for the playground's tests (US-036).
- *
- * @param face - its family, weight, style and permissions
- * @returns the file's bytes
- */
-export function testFaceFile(face: TestFace): Uint8Array {
-  return testFaceNamed(face, familyNameTable(face.family));
-}
-
-/**
- * The test font of `testFaceFile` with a PostScript name too (name ID 6), as an installed face is
- * found in its collection (US-046).
- *
- * @param face - its family, weight, style and permissions
- * @param postScriptName - its name ID 6, such as `TestSans-Bold`
- * @returns the file's bytes
- */
-export function postScriptFaceFile(face: TestFace, postScriptName: string): Uint8Array {
-  return testFaceNamed(
-    face,
-    nameTable([
-      {
-        encoding: 1,
-        language: ENGLISH_US,
-        nameId: 1,
-        platform: WINDOWS_PLATFORM,
-        text: face.family,
-      },
-      {
-        encoding: 1,
-        language: ENGLISH_US,
-        nameId: 6,
-        platform: WINDOWS_PLATFORM,
-        text: postScriptName,
-      },
-    ]),
-  );
 }

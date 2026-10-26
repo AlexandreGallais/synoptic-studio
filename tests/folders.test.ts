@@ -3,6 +3,8 @@ import { join, relative } from "node:path";
 
 import { describe, expect, it } from "vitest";
 
+import { CODE_FOLDERS } from "./code-folders";
+
 /** Repository root. */
 const ROOT = join(import.meta.dirname, "..");
 /** The lint's settings, which hold the signal and the folders let past it (`tools/lint`). */
@@ -57,34 +59,32 @@ function listedFolders(settings: string): ReadonlyMap<string, string> {
 const LISTED = listedFolders(SETTINGS);
 
 /**
- * Folders of `src/` and `playground/` holding more modules than the signal, counted by walking
+ * Folders of the code folders holding more modules than the signal, counted by walking
  * the disk rather than by the lint.
  *
  * @returns paths from the repository root
  */
 function foldersPastSignal(): readonly string[] {
-  return ["src", "playground"]
-    .flatMap((root) => [
-      root,
-      ...readdirSync(join(ROOT, root), { recursive: true, withFileTypes: true })
-        .filter((entry) => entry.isDirectory())
-        .map((entry) => relative(ROOT, join(entry.parentPath, entry.name))),
-    ])
-    .filter((folder) => moduleCount(folder) > FOLDER_SIGNAL);
+  return CODE_FOLDERS.flatMap((root) => [
+    root,
+    ...readdirSync(join(ROOT, root), { recursive: true, withFileTypes: true })
+      .filter((entry) => entry.isDirectory())
+      .map((entry) => relative(ROOT, join(entry.parentPath, entry.name))),
+  ]).filter((folder) => moduleCount(folder) > FOLDER_SIGNAL);
 }
 
-/** Files allowed beside domain folders: the barrel, and the playground's page; hidden files (`.DS_Store`) are skipped. */
-const BESIDE_FOLDERS = new Set(["index.ts", "index.html"]);
+/** Files allowed beside domain folders: the barrel; hidden files (`.DS_Store`) are skipped. */
+const BESIDE_FOLDERS = new Set(["index.ts"]);
 
 /**
- * Files of `src/` and `playground/` that sit beside folders, the barrel and the page left out.
+ * Files of the code folders that sit beside folders, the barrel left out.
  *
  * The lint sees TypeScript files only; this walk covers every other file (`.css`, `.json`…).
  *
  * @returns paths from the repository root
  */
 function filesBesideFolders(): readonly string[] {
-  const entries = ["src", "playground"].flatMap((root) =>
+  const entries = CODE_FOLDERS.flatMap((root) =>
     readdirSync(join(ROOT, root), { recursive: true, withFileTypes: true }),
   );
   const parents = new Set(

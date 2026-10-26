@@ -10,8 +10,11 @@ import { sharedSansTables } from "./inter-face-fixtures";
 /** Repository root. */
 const ROOT = join(import.meta.dirname, "..");
 
-/** The only file that reads a test font file: Vitest's global setup. */
-const READER = "tests/font-files-setup.ts";
+/**
+ * The only files that read a test font file: Vitest's global setups, the root's and the
+ * playground's copy of it, which reads its own copy of the font (EN-176).
+ */
+const READERS = ["playground/testing/font-files.setup.ts", "tests/font-files-setup.ts"];
 
 /** The extensions of a font file or a collection. */
 const FONT_FILE = /\.(?:otf|ttc|ttf|woff2?)$/u;
@@ -39,12 +42,12 @@ function filesNaming(fonts: readonly string[]): string[] {
 }
 
 describe("the test font files, read once per run (EN-089)", () => {
-  it("are named by the global setup alone: no test reads a font file itself", () => {
+  it("are named by the global setups alone: no test reads a font file itself", () => {
     const fonts = readdirSync(import.meta.dirname).filter((file) => FONT_FILE.test(file));
 
     // One font file in tests/, Inter Regular (REF-INTER-REGULAR-FILE): its name is left out here.
     expect(fonts).toHaveLength(1);
-    expect(filesNaming(fonts)).toEqual([READER]);
+    expect(filesNaming(fonts)).toEqual(READERS);
   });
 
   it("reads Inter Regular 4.1 whole: 411 640 bytes, its SHA-256 that of the release", () => {

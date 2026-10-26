@@ -8,15 +8,18 @@ import config from "../vite.config";
 /** Root of the repository. */
 const ROOT = join(import.meta.dirname, "..");
 
+/** The playground, an npm project of its own whose tests its `ng test` runs (ADR-0104). */
+const PLAYGROUND = "playground/";
+
 /** Vitest's configuration, as `vitest run` resolves it. */
 const RESOLVED = config({ command: "serve", mode: "test" });
 
 /**
- * Whether a file matches one of a project's globs.
+ * Whether a file matches one of the root run's globs.
  *
  * @param file - a path from the repository's root
- * @param include - the project's globs
- * @returns true when Vitest's project runs the file
+ * @param include - the globs of the files it runs
+ * @returns true when the root's Vitest runs the file
  */
 function runs(file: string, include: readonly string[]): boolean {
   return include.some((glob) => matchesGlob(file, glob));
@@ -27,22 +30,17 @@ describe("Vitest's workers (EN-047)", () => {
     expect(RESOLVED.test?.maxWorkers).toBe("50%");
   });
 
-  it("runs each test file in exactly one project, none with a setup file (the rules' tests are Rust's since EN-075)", () => {
-    const projects = (RESOLVED.test?.projects ?? []).flatMap((project) =>
-      typeof project === "object" && "test" in project ? [project.test] : [],
-    );
+  it("runs each test file in exactly one run, the root's or the playground's, none with a setup file (the rules' tests are Rust's since EN-075)", () => {
+    const include = RESOLVED.test?.include ?? [];
     const files = execFileSync("git", ["ls-files", "*.test.ts"], { cwd: ROOT, encoding: "utf8" })
       .split("\n")
       .filter((path) => path !== "");
 
-    expect(
-      files.filter(
-        (file) => projects.filter((test) => runs(file, test.include ?? [])).length !== 1,
-      ),
-    ).toEqual([]);
+    // The playground's tests run by its own `ng test` (EN-160, EN-175), never by the root's.
+    expect(files.filter((file) => runs(file, include) === file.startsWith(PLAYGROUND))).toEqual([]);
+    expect(files.filter((file) => file.startsWith(PLAYGROUND)).length).toBeGreaterThan(0);
 
-    expect(
-      projects.filter((test) => test.setupFiles !== undefined).map((test) => test.name),
-    ).toEqual([]);
+    expect(RESOLVED.test?.projects).toBeUndefined();
+    expect(RESOLVED.test?.setupFiles).toBeUndefined();
   });
 });

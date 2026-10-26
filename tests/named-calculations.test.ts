@@ -4,12 +4,10 @@ import { basename, join } from "node:path";
 import { describe, expect, it } from "vitest";
 
 import { builtOnce } from "./built-once";
+import { CODE_FOLDERS } from "./code-folders";
 
 /** Repository root. */
 const ROOT = join(import.meta.dirname, "..");
-
-/** Folders whose code is read. */
-const CODE_FOLDERS = ["src", "playground"];
 
 /** A source file: its name and its lines of code, comments left out. */
 type SourceFile = {

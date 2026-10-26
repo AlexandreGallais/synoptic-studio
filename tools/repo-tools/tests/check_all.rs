@@ -57,11 +57,12 @@ fn git(folder: &Path, arguments: &[&str]) -> String {
 const VITEST: &str = "[ -e .git/vitest-args ] || echo \"$*\" > .git/vitest-args";
 
 /// The programs the checks call: those found on `PATH`, then the release binaries by their path.
-const PROGRAMS: [&str; 12] = [
+const PROGRAMS: [&str; 13] = [
     "oxlint",
     "vitest",
-    "vite",
     "vitepress",
+    "ngc",
+    "ng",
     "npm",
     "cargo",
     "target/release/lint",
@@ -80,6 +81,9 @@ fn repository(name: &str, stubs: &[(&str, &str)]) -> PathBuf {
     git(&folder, &["init", "-q"]);
     fs::write(folder.join(".git/info/exclude"), "target/\n").expect("exclude");
     fs::write(folder.join("package.json"), "{}\n").expect("manifest");
+    // The playground's folder, where its build runs, and the build's output the site copies; empty,
+    // Git lists nothing of them.
+    fs::create_dir_all(folder.join("playground/dist/browser")).expect("playground");
     for program in PROGRAMS {
         let body = stubs.iter().find(|(given, _)| *given == program).map_or(
             if program == "vitest" { VITEST } else { "true" },
@@ -160,7 +164,11 @@ fn prints_a_failed_check_with_its_output_and_runs_the_rest_of_its_lane() {
         "failed",
         &[
             ("vitepress", "echo out; echo err >&2; exit 2"),
-            ("vite", "echo built > built"),
+            // Angular's build, run from the playground's folder.
+            (
+                "ng",
+                "if [ \"$1\" = build ]; then echo built > ../built; fi",
+            ),
         ],
     );
     let output = check_all(&folder, true);
@@ -283,7 +291,7 @@ fn f19_ac8_skips_the_docs_lane_for_a_feature_that_changed_none_of_its_inputs() {
     fs::remove_dir_all(&folder).expect("cleaned");
     assert!(output.status.success(), "{text}");
     assert!(text.starts_with(
-        "- docs:build, playground:build skipped: nothing changed in their inputs against origin/develop\n"
+        "- docs:build, playground:app skipped: nothing changed in their inputs against origin/develop\n"
     ));
     assert!(!text.contains("docs:build "), "{text}");
     assert_eq!(again.status.code(), Some(1));
@@ -350,6 +358,57 @@ fn runs_on_a_story_branch_changing_a_checks_input_only_the_tests_related_to_its_
     assert!(!stdout(&whole).contains("- test: only"));
     assert_eq!(all, "run --coverage --tags-filter=!timing\n");
     assert_eq!(feature, all);
+}
+
+#[test]
+fn f50_ac3_runs_the_playground_s_tests_without_coverage_on_a_story_s_full_run() {
+    let root = scratch("playground-tests");
+    let origin = root.join("origin.git");
+    // Each call of `ng`, run from the playground's folder, appended to `.git/ng-args`.
+    let folder = repository(
+        "playground-tests-work",
+        &[("ng", "echo \"$*\" >> ../.git/ng-args")],
+    );
+    let calls = |folder: &Path| -> Vec<String> {
+        let text = fs::read_to_string(folder.join(".git/ng-args")).expect("args");
+
+        fs::remove_file(folder.join(".git/ng-args")).expect("removed");
+        text.lines()
+            .filter(|line| line.starts_with("test --no-watch") && !line.contains("timings"))
+            .map(str::to_owned)
+            .collect()
+    };
+
+    git(
+        &root,
+        &["init", "-q", "--bare", origin.to_str().expect("path")],
+    );
+    git(&folder, &["add", "package.json"]);
+    git(&folder, &["commit", "-q", "-m", "start"]);
+    git(
+        &folder,
+        &["remote", "add", "origin", origin.to_str().expect("path")],
+    );
+    git(&folder, &["push", "-q", "origin", "HEAD:develop"]);
+    git(&folder, &["fetch", "-q", "origin"]);
+    git(&folder, &["switch", "-q", "-c", "fix/us-001-scan"]);
+    // oxlint's configuration changed: the full run, not the scoped checks (AUD-050).
+    fs::write(folder.join(".oxlintrc.json"), "{}\n").expect("config");
+
+    let story = check_all(&folder, false);
+    let on_story = calls(&folder);
+
+    git(&folder, &["switch", "-q", "-c", "feature/f1-scan"]);
+    let feature = check_all(&folder, false);
+    let on_feature = calls(&folder);
+
+    fs::remove_dir_all(&root).expect("cleaned");
+    fs::remove_dir_all(&folder).expect("cleaned");
+    assert!(story.status.success(), "{}", stdout(&story));
+    assert!(feature.status.success(), "{}", stdout(&feature));
+    // A story's push leaves the coverage floor to its feature branch, as the root's tests do.
+    assert_eq!(on_story, ["test --no-watch"]);
+    assert_eq!(on_feature, ["test --no-watch --coverage"]);
 }
 
 #[test]
@@ -838,7 +897,7 @@ fn f29_ac2_skips_the_rust_lanes_only_when_the_change_is_known_and_touches_none_o
     assert_eq!(
         skipped_lines(&script, "origin/develop"),
         [
-            format!("- docs:build, playground:build {skipped}"),
+            format!("- docs:build, playground:app {skipped}"),
             format!("- check:rust, rust:coverage {skipped}")
         ]
     );

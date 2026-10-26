@@ -378,7 +378,12 @@ fn lists_the_project_files_git_lists() {
     );
     assert!(unused::is_project("docs/.vitepress/theme/index.ts"));
     assert!(!unused::is_project(".claude/hooks/x.ts"));
+    // The whole playground is a project of its own (EN-175), listed for its own check.
+    assert!(!unused::is_project("playground/testing/press-key.ts"));
+    assert!(!unused::is_project("playground/src/main.ts"));
+    assert!(!unused::is_project("playground/vitest-base.config.ts"));
     assert!(unused::ls_files_arguments().contains(&":(glob)*.ts".to_owned()));
+    assert!(unused::ls_files_arguments().contains(&"playground/".to_owned()));
     fs::remove_dir_all(&root).expect("removed");
 }
 
@@ -413,6 +418,256 @@ fn f21_ac4_the_binary_reports_a_planted_file_in_a_git_checkout() {
     assert_eq!(
         String::from_utf8_lossy(&output.stdout),
         "Unused files (1)\nsrc/math/orphan.ts\nUnused devDependencies (1)\nis-number  package.json:12:6\n"
+    );
+    fs::remove_dir_all(&root).expect("removed");
+}
+
+/// The playground's npm project of a planted checkout: an Angular app whose `src/main.ts` imports
+/// `@angular/core`, which asks `rxjs` as a peer and `zone.js` as an optional one; `@angular/build`
+/// named by `angular.json`'s builder, `sass` by its SCSS, `@angular/cli` by the `ng` of a script,
+/// `vitest` by its runner configuration, which names its global setup, `@vitest/coverage-v8` by
+/// the coverage's floor and `@types/node` by the types of `tsconfig.spec.json` (EN-176); a test
+/// using a helper of `testing/`, the library by its name `editor` and a fixture of the root's
+/// `tests/`, which leaves its folder (EN-176); `left-pad`, a file and a helper unused.
+const PLAYGROUND: &[(&str, &str)] = &[
+    (
+        "playground/package.json",
+        "{\n  \"scripts\": { \"start\": \"ng serve\" },\n  \"dependencies\": {\n    \"@angular/core\": \"22.2.3\",\n    \"left-pad\": \"1.3.0\",\n    \"rxjs\": \"7.8.2\"\n  },\n  \"devDependencies\": {\n    \"@angular/build\": \"22.2.3\",\n    \"@angular/cli\": \"22.2.3\",\n    \"@types/node\": \"26.6.5\",\n    \"@vitest/coverage-v8\": \"5.0.5\",\n    \"sass\": \"1.105.2\",\n    \"vitest\": \"5.0.5\"\n  }\n}\n",
+    ),
+    (
+        "playground/angular.json",
+        "{\n  \"builder\": \"@angular/build:application\",\n  \"style\": \"scss\",\n  \"coverageThresholds\": { \"lines\": 98 }\n}\n",
+    ),
+    (
+        "playground/tsconfig.spec.json",
+        "{\n  \"compilerOptions\": { \"types\": [\"node\", \"vite/client\"] }\n}\n",
+    ),
+    (
+        "playground/node_modules/@angular/core/package.json",
+        "{ \"peerDependencies\": { \"rxjs\": \"^7.4.0\", \"zone.js\": \"~0.16.0\" }, \"peerDependenciesMeta\": { \"zone.js\": { \"optional\": true } } }",
+    ),
+    (
+        "playground/node_modules/@angular/cli/package.json",
+        "{ \"bin\": { \"ng\": \"bin/ng.js\" } }",
+    ),
+    (
+        "playground/src/main.ts",
+        "import { Component } from \"@angular/core\";\n\nimport { AppComponent } from \"./app/app.component\";\n\nexport const APP = [Component, AppComponent];\n",
+    ),
+    (
+        "playground/src/app/app.component.ts",
+        "export class AppComponent {}\n",
+    ),
+    ("playground/src/app/orphan.ts", "export const ORPHAN = 1;\n"),
+    (
+        "playground/vitest-base.config.ts",
+        "import { defineConfig } from \"vitest/config\";\n\nexport default defineConfig({ test: { globalSetup: [\"testing/font-files.setup.ts\"] } });\n",
+    ),
+    // The global setup the runner configuration names, an entry (EN-176).
+    (
+        "playground/testing/font-files.setup.ts",
+        "export function setup(): void {}\n",
+    ),
+    (
+        "playground/src/app/app.component.test.ts",
+        "import { SCALE } from \"editor\";\nimport { expect, it } from \"vitest\";\n\nimport { FIXTURE } from \"../../../tests/fixture\";\nimport { pressKey } from \"../../testing/press-key\";\n\nit(\"a\", () => expect([SCALE, FIXTURE, pressKey]).toHaveLength(3));\n",
+    ),
+    (
+        "playground/testing/press-key.ts",
+        "export const pressKey = 1;\n",
+    ),
+    (
+        "playground/testing/orphan-helper.ts",
+        "export const HELPER = 1;\n",
+    ),
+    // The root's side: a fixture and an export of the library only the playground imports.
+    (
+        "tests/fixture.ts",
+        "export const FIXTURE = 1;\nexport const UNUSED_FIXTURE = 2;\n",
+    ),
+    (
+        "src/math/index.ts",
+        "export * from \"./add\";\nexport * from \"./scale\";\n",
+    ),
+    ("src/math/scale.ts", "export const SCALE = 2;\n"),
+];
+
+#[test]
+fn f50_ac3_the_binary_checks_the_playground_as_a_project_of_its_own() {
+    let files: Vec<(&str, &str)> = BASE.iter().chain(PLAYGROUND).copied().collect();
+    let root = plant("playground", &files);
+
+    assert!(
+        test_support::command("git")
+            .args(["init", "--quiet"])
+            .current_dir(&root)
+            .status()
+            .expect("git runs")
+            .success()
+    );
+    let output = test_support::command(env!("CARGO_BIN_EXE_dependencies"))
+        .arg("unused")
+        .current_dir(&root)
+        .output()
+        .expect("the binary runs");
+
+    fs::remove_dir_all(&root).expect("removed");
+    // The playground's findings named from the root: its file, and `left-pad` at line 5, column
+    // 6 of its `package.json` (four spaces, the quote, then the name); `rxjs` used through
+    // `@angular/core`, `zone.js` not listed; the root's `is-number` beside them. The playground's
+    // helper unused.
+    assert_eq!(output.status.code(), Some(1));
+    assert!(
+        String::from_utf8_lossy(&output.stdout).contains(
+            "playground/src/app/orphan.ts\nplayground/testing/orphan-helper.ts\nUnused dependencies (1)\nleft-pad  playground/package.json:5:6\nUnused devDependencies (1)\nis-number  package.json:12:6\n"
+        ),
+        "{}",
+        String::from_utf8_lossy(&output.stdout)
+    );
+}
+
+#[test]
+fn f50_ac1_the_playground_imports_nothing_outside_its_folder_but_the_library_by_its_name() {
+    let files: Vec<(&str, &str)> = BASE.iter().chain(PLAYGROUND).copied().collect();
+    let root = plant("playground-alone", &files);
+
+    assert!(
+        test_support::command("git")
+            .args(["init", "--quiet"])
+            .current_dir(&root)
+            .status()
+            .expect("git runs")
+            .success()
+    );
+    let output = test_support::command(env!("CARGO_BIN_EXE_dependencies"))
+        .arg("unused")
+        .current_dir(&root)
+        .output()
+        .expect("the binary runs");
+
+    fs::remove_dir_all(&root).expect("removed");
+    // The playground's test importing the root's `tests/fixture`: unresolved at line 4, column 25
+    // (`import { FIXTURE } from ` is 24 characters), as the playground's install alone runs its
+    // tests (EN-176), and counted for nothing in the root's check: its fixture unused as a whole.
+    // `editor`, a name of its tsconfig's `paths`, neither unlisted nor unresolved: the library's
+    // `SCALE` used through it, its public API (ADR-0104).
+    let report = String::from_utf8_lossy(&output.stdout);
+
+    assert_eq!(output.status.code(), Some(1));
+    assert!(
+        report.starts_with("Unused files (3)\ntests/fixture.ts\n"),
+        "{report}"
+    );
+    assert!(
+        report.ends_with(
+            "Unresolved imports (1)\n../../../tests/fixture  playground/src/app/app.component.test.ts:4:25\n"
+        ),
+        "{report}"
+    );
+    assert!(!report.contains("Unlisted"), "{report}");
+}
+
+#[test]
+fn f50_ac3_the_binary_checks_the_root_alone_without_the_playground_s_manifest() {
+    let files: Vec<(&str, &str)> = BASE
+        .iter()
+        .chain(PLAYGROUND)
+        .filter(|(path, _)| *path != "playground/package.json")
+        .copied()
+        .collect();
+    let root = plant("no-playground-manifest", &files);
+
+    assert!(
+        test_support::command("git")
+            .args(["init", "--quiet"])
+            .current_dir(&root)
+            .status()
+            .expect("git runs")
+            .success()
+    );
+    let output = test_support::command(env!("CARGO_BIN_EXE_dependencies"))
+        .arg("unused")
+        .current_dir(&root)
+        .output()
+        .expect("the binary runs");
+
+    fs::remove_dir_all(&root).expect("removed");
+    // No playground project: none of its files nor packages is named, and its imports count for
+    // nothing in the root's check: the fixture file unused as a whole, and the library's `SCALE`
+    // (line 1, column 14 after `export const `), beside the root's `is-number`.
+    assert_eq!(output.status.code(), Some(1));
+    assert_eq!(
+        String::from_utf8_lossy(&output.stdout),
+        "Unused files (1)\ntests/fixture.ts\nUnused devDependencies (1)\nis-number  package.json:12:6\nUnused exports (1)\nSCALE  src/math/scale.ts:1:14\n"
+    );
+}
+
+#[test]
+fn f50_ac3_does_not_count_a_package_asked_only_as_an_optional_peer() {
+    // The playground listing `zone.js`, which `@angular/core` asks as an optional peer only.
+    let manifest = "{\n  \"scripts\": { \"start\": \"ng serve\" },\n  \"dependencies\": {\n    \"@angular/core\": \"22.2.3\",\n    \"left-pad\": \"1.3.0\",\n    \"rxjs\": \"7.8.2\",\n    \"zone.js\": \"0.16.0\"\n  },\n  \"devDependencies\": {\n    \"@angular/build\": \"22.2.3\",\n    \"@angular/cli\": \"22.2.3\",\n    \"sass\": \"1.105.2\",\n    \"vitest\": \"5.0.5\"\n  }\n}\n";
+    let files: Vec<(&str, &str)> = BASE
+        .iter()
+        .chain(PLAYGROUND)
+        .map(|&(path, text)| {
+            if path == "playground/package.json" {
+                (path, manifest)
+            } else {
+                (path, text)
+            }
+        })
+        .collect();
+    let root = plant("optional-peer", &files);
+
+    assert!(
+        test_support::command("git")
+            .args(["init", "--quiet"])
+            .current_dir(&root)
+            .status()
+            .expect("git runs")
+            .success()
+    );
+    let output = test_support::command(env!("CARGO_BIN_EXE_dependencies"))
+        .arg("unused")
+        .current_dir(&root)
+        .output()
+        .expect("the binary runs");
+
+    fs::remove_dir_all(&root).expect("removed");
+    // `zone.js` unused at line 7, column 6 of the playground's `package.json` (four spaces, the
+    // quote, then the name), beside `left-pad` at line 5; `rxjs`, a required peer, still used.
+    assert!(
+        String::from_utf8_lossy(&output.stdout).contains(
+            "Unused dependencies (2)\nleft-pad  playground/package.json:5:6\nzone.js  playground/package.json:7:6\n"
+        ),
+        "{}",
+        String::from_utf8_lossy(&output.stdout)
+    );
+}
+
+#[test]
+fn f50_ac3_lists_the_playground_s_files_from_its_folder() {
+    let root = plant(
+        "playground-files",
+        &[
+            ("playground/src/main.ts", ""),
+            ("playground/src/app/a.component.ts", ""),
+            ("playground/src/app/a.component.html", ""),
+            ("playground/testing/b.ts", ""),
+            ("playground/vitest-base.config.ts", ""),
+        ],
+    );
+    let listed = "playground/src/main.ts\0playground/src/app/a.component.ts\0playground/src/app/a.component.html\0playground/testing/b.ts\0playground/vitest-base.config.ts\0playground/src/gone.ts\0src/a.ts\0";
+
+    // Its app, the helpers of its tests and its runner configuration (EN-175).
+    assert_eq!(
+        unused::playground_files(&root, listed),
+        [
+            "src/app/a.component.ts",
+            "src/main.ts",
+            "testing/b.ts",
+            "vitest-base.config.ts"
+        ]
     );
     fs::remove_dir_all(&root).expect("removed");
 }

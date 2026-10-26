@@ -65,6 +65,10 @@ jobs:
         with:
           node-version-file: .nvmrc
           cache: npm
+          # One npm cache for both projects, keyed on both lockfiles (ADR-0104, REF-SETUP-NODE-CACHE).
+          cache-dependency-path: |
+            package-lock.json
+            playground/package-lock.json
       # The npm packages: their `prepare` builds the release binaries `check-all` and the freshness
       # check read, and the formatter's tests, run under coverage, run the project's oxfmt.
       - run: npm ci

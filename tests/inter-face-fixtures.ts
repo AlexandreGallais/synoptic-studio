@@ -1,19 +1,13 @@
 // Faces built from Inter Regular's tables, renamed and restyled, for the tests that once read
-// the fonts of macOS (EN-067): a collection of faces sharing tables, a second family beside Inter.
+// the fonts of macOS (EN-067): a collection of faces sharing tables.
 // Tests only: never part of the library.
 
 import { builtOnce } from "./built-once";
-import { fileTables, tablesFile } from "./collection-fixtures";
+import { fileTables } from "./collection-fixtures";
 import { interRegularFile, tableOf, uint16 } from "./font-fixtures";
 import { ENGLISH_US, WINDOWS_PLATFORM, nameTable } from "./name-table-fixtures";
 
 import type { FontTables } from "./collection-fixtures";
-
-/** Where `head` holds `unitsPerEm` (`REF-OT-HEAD`). */
-const UNITS_PER_EM_AT = 18;
-
-/** The units per em of `secondFamilyFile`, half Inter's 2048. */
-const SECOND_FAMILY_UNITS_PER_EM = 1024;
 
 /** Where `OS/2` holds `usWeightClass` and `fsSelection` (`REF-OT-OS2`). */
 const OS2_AT = { fsSelection: 62, weightClass: 4 };
@@ -114,21 +108,6 @@ function interFaceTables(face: InterFace): FontTables {
 }
 
 /**
- * Tables with `head`'s `unitsPerEm` written anew: every advance, kerning value and line metric
- * then measures `2048 / unitsPerEm` times Inter's.
- *
- * @param tables - the tables of a face built from Inter's
- * @param unitsPerEm - from 16 to 16 384
- * @returns a copy, its `head` changed
- */
-function withUnitsPerEm(tables: FontTables, unitsPerEm: number): FontTables {
-  return {
-    ...tables,
-    head: patchedTable(interTables()["head"] ?? [], UNITS_PER_EM_AT, uint16(unitsPerEm)),
-  };
-}
-
-/**
  * Three faces built from Inter Regular's tables, the family Shared Sans: 400, 700 and 400 italic,
  * named `SharedSans-Regular`, `SharedSans-Bold` and `SharedSans-Italic` (name tables of 88, 82
  * and 86 bytes: 6 + 2 × 12 of header and records, 22 bytes for the family, 2 bytes a letter of the
@@ -164,24 +143,3 @@ const SHARED_SANS_FACES: readonly InterFace[] = [
 export const sharedSansTables: () => readonly FontTables[] = builtOnce(() =>
   Object.freeze(SHARED_SANS_FACES.map((face) => frozenTables(interFaceTables(face)))),
 );
-
-/**
- * A second family beside Inter, built from Inter Regular's tables: named anew, 400 upright, its
- * `unitsPerEm` 1024 rather than 2048, so that each text measures twice as wide and as tall as in
- * Inter. Tagged `OTTO`, it stands for a file with CFF outlines: the editor reads that tag alone to
- * embed it as `font/otf` (`parseFontFormat`, `REF-OT-OTFF`), never its outlines.
- *
- * @param family - its family, name ID 1
- * @param sfntVersion - `TRUE_TYPE_VERSION`, or `OPEN_TYPE_VERSION` for CFF outlines
- * @returns the file's bytes
- */
-export function secondFamilyFile(family: string, sfntVersion: number): Uint8Array {
-  const face = interFaceTables({
-    family,
-    fsSelection: 0x00_c0,
-    postScriptName: family.replaceAll(" ", ""),
-    weightClass: 400,
-  });
-
-  return tablesFile(sfntVersion, withUnitsPerEm(face, SECOND_FAMILY_UNITS_PER_EM));
-}

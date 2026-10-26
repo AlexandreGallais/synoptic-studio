@@ -11,8 +11,13 @@ type PackageManifest = {
   readonly overrides?: Readonly<Record<string, string>>;
 };
 
-/** A dependency of the records' `dependencies`: its name, kind and version. */
-type Dependency = { readonly kind: string; readonly name: string; readonly version: string };
+/** A dependency of the records' `dependencies`: its project, name, kind and version. */
+type Dependency = {
+  readonly kind: string;
+  readonly name: string;
+  readonly project: string;
+  readonly version: string;
+};
 
 /**
  * A field of a parsed row, as text.
@@ -40,6 +45,7 @@ const DEPENDENCIES: readonly Dependency[] = (() => {
   return (Array.isArray(parsed) ? parsed : []).map((row: unknown) => ({
     kind: textField(row, "kind"),
     name: textField(row, "name"),
+    project: textField(row, "project"),
     version: textField(row, "version"),
   }));
 })();
@@ -90,13 +96,14 @@ function byText(first: string, second: string): number {
 }
 
 /**
- * The dependencies of a kind, each `name@version`.
+ * The root project's dependencies of a kind, each `name@version`: the playground's are its own
+ * project's (ADR-0104).
  *
  * @param kind - `npm`, `crate`, `action`…
- * @returns each row of that kind, sorted
+ * @returns each root row of that kind, sorted
  */
 function documented(kind: string): readonly string[] {
-  return DEPENDENCIES.filter((row) => row.kind === kind)
+  return DEPENDENCIES.filter((row) => row.project === "root" && row.kind === kind)
     .map((row) => `${row.name}@${row.version}`)
     .toSorted(byText);
 }
@@ -191,5 +198,76 @@ describe("package.json", () => {
 describe("the workflows", () => {
   it("document every Action they use, and only those, at its major", () => {
     expect(documented("action")).toEqual(workflowActions());
+  });
+});
+
+/** The root's scripts: ADR-0103's list and the playground's, which ADR-0104 adds. */
+const ROOT_SCRIPTS = ["check:all", "dev", "docs:dev", "fix", "playground", "prepare", "test"];
+
+/**
+ * A manifest's field, read without a type: `workspaces` and `scripts` are checked here alone.
+ *
+ * @param path - the manifest's path from the repository's root
+ * @param key - the field's name
+ * @returns the field's value, or `undefined`
+ */
+function manifestField(path: string, key: string): unknown {
+  const parsed: unknown = JSON.parse(readFileSync(join(import.meta.dirname, "..", path), "utf8"));
+
+  return typeof parsed === "object" && parsed !== null ? Reflect.get(parsed, key) : undefined;
+}
+
+/**
+ * The keys of a manifest's field holding an object.
+ *
+ * @param path - the manifest's path from the repository's root
+ * @param key - the field's name
+ * @returns its keys, sorted, or none when it holds no object
+ */
+function manifestKeys(path: string, key: string): readonly string[] {
+  const field = manifestField(path, key);
+
+  return typeof field === "object" && field !== null ? Object.keys(field).toSorted(byText) : [];
+}
+
+describe("the two npm projects", () => {
+  it("[F50.AC1] keeps the playground a project of its own beside the root's", () => {
+    const installed = manifestKeys("playground/package-lock.json", "packages");
+
+    // Neither manifest is a workspace: the playground has its own lockfile, Angular zoneless.
+    expect(manifestField("package.json", "workspaces")).toBeUndefined();
+    expect(manifestField("playground/package.json", "workspaces")).toBeUndefined();
+    expect(installed).toContain("node_modules/@angular/core");
+    expect(installed.filter((name) => name.endsWith("/zone.js"))).toEqual([]);
+    // The root keeps TypeScript 7.0.2 and gains the script `playground` alone.
+    expect(manifest().devDependencies?.["typescript"]).toBe("7.0.2");
+    expect(manifestKeys("package.json", "scripts")).toEqual(ROOT_SCRIPTS);
+  });
+});
+
+/**
+ * The playground's `package.json`, an npm project of its own (ADR-0104).
+ *
+ * @returns its dependency fields
+ */
+function playgroundManifest(): PackageManifest {
+  const parsed: unknown = JSON.parse(
+    readFileSync(join(import.meta.dirname, "..", "playground", "package.json"), "utf8"),
+  );
+
+  return typeof parsed === "object" && parsed !== null ? parsed : {};
+}
+
+describe("playground/package.json", () => {
+  it("[F50.AC1] documents every package of the playground, and only those, at its version", () => {
+    const { dependencies, devDependencies } = playgroundManifest();
+    const installed = Object.entries({ ...dependencies, ...devDependencies })
+      .map(([name, version]) => `${name}@${version}`)
+      .toSorted(byText);
+    const rows = DEPENDENCIES.filter((row) => row.project === "playground" && row.kind === "npm")
+      .map((row) => `${row.name}@${row.version}`)
+      .toSorted(byText);
+
+    expect(rows).toEqual(installed);
   });
 });

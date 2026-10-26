@@ -3,8 +3,10 @@
 //! imports, unused exports and exported types — for its layout, written anew rather than ported:
 //! one export per file (ADR-0019) and barrels of `export *`; imports by relative path, joined to
 //! the importing file's folder (`.ts`, then `/index.ts`, tried after the path itself), or by bare
-//! package name (research note 0025, no `oxc_resolver`). Its configuration is [`ENTRIES`],
-//! [`PROJECT`], [`PLUGIN_USES`] and [`IGNORED`], in place of `knip.json` and knip's plugins.
+//! package name (research note 0025, no `oxc_resolver`). Its configuration is [`PROJECT`] and a
+//! [`Config`] per npm project, [`ROOT`] and [`PLAYGROUND`] (ADR-0104), in place of `knip.json`
+//! and knip's plugins; each project read from its own folder, its `package.json` and its
+//! `node_modules`.
 
 use std::collections::{BTreeSet, HashMap};
 use std::fmt::Write as _;
@@ -14,21 +16,82 @@ use std::path::{Component, Path, PathBuf};
 use crate::modules::{self, Import, Module, Taken};
 
 /// The folders and root files whose `.ts` files are checked: knip's `project`.
-pub const PROJECT: &[&str] = &[
-    "*.ts",
-    "docs/.vitepress/",
-    "playground/",
-    "scripts/",
-    "src/",
-    "tests/",
-];
+pub const PROJECT: &[&str] = &["*.ts", "docs/.vitepress/", "scripts/", "src/", "tests/"];
+
+/// The playground, a second npm project with its own `package.json` (ADR-0104): its Angular app,
+/// the helpers of its tests and its runner configurations, left out of [`PROJECT`] and checked from
+/// its own folder by [`PLAYGROUND`] (EN-159, EN-175).
+pub const SECOND_PROJECT: &str = "playground/";
+
+/// The folder of the playground's npm project, its `package.json` and `node_modules` inside.
+pub const PLAYGROUND_FOLDER: &str = "playground";
+
+/// What the check reads of one npm project, in place of knip's configuration: its entry files
+/// besides its tests, the files whose words name an entry or a binary, the packages a tool's
+/// configuration uses, the packages never reported, and the names its `tsconfig.json`'s `paths`
+/// map to a source file; each path from the project's folder, which no relative import leaves
+/// (EN-176).
+#[derive(Debug, Clone, Copy)]
+pub struct Config {
+    /// The entry files besides the tests (`*.test.ts`).
+    pub entries: &'static [&'static str],
+    /// The files whose words may name an entry file or a package's binary, a folder by its `/`.
+    pub script_files: &'static [&'static str],
+    /// Each package a tool's configuration uses: the package, the file, the text naming it.
+    pub plugin_uses: &'static [(&'static str, &'static str, &'static str)],
+    /// The packages never reported.
+    pub ignored: &'static [&'static str],
+    /// Each bare name imported as a source file through the `paths` of `tsconfig.json`, no
+    /// package, with that file from the checkout's root: a [`Use`] of it, neither listed nor
+    /// unlisted.
+    pub aliases: &'static [(&'static str, &'static str)],
+}
+
+/// The root's project: the library, its tests and its tools.
+pub const ROOT: Config = Config {
+    entries: ENTRIES,
+    script_files: SCRIPT_FILES,
+    plugin_uses: PLUGIN_USES,
+    ignored: IGNORED,
+    aliases: &[],
+};
+
+/// The playground, from `playground/`: `src/main.ts`, the `browser` entry of `angular.json`, and
+/// `vitest-base.config.ts`, the runner configuration of its `ng test`; its scripts,
+/// `angular.json`, whose builders, binaries and runner configurations name packages and files,
+/// and that runner configuration, which names its global setup (EN-176);
+/// `@angular/build` named by those builders, `sass` by the components' SCSS, `vite` by the
+/// override that pins it, `@vitest/coverage-v8` by the coverage's floor, `@types/node` by the
+/// types of `tsconfig.spec.json`; the library imported by its name `editor` through the tsconfig's
+/// `paths` (ADR-0104), the only import leaving its folder: a relative import that leaves it is
+/// unresolved, as the playground's tests run on its install alone (EN-176). Not reported until
+/// their code comes: `@ngrx/signals`, the stores (F55).
+pub const PLAYGROUND: Config = Config {
+    entries: &["src/main.ts", "vitest-base.config.ts"],
+    script_files: &["package.json", "angular.json", "vitest-base.config.ts"],
+    plugin_uses: &[
+        ("@angular/build", "angular.json", "\"@angular/build:"),
+        ("sass", "angular.json", "\"style\": \"scss\""),
+        ("vite", "package.json", "\"$vite\""),
+        // The coverage of `ng test --coverage`, its floor in `angular.json` (EN-176).
+        (
+            "@vitest/coverage-v8",
+            "angular.json",
+            "\"coverageThresholds\"",
+        ),
+        // The Node.js types of the tests' compiler options (EN-176).
+        ("@types/node", "tsconfig.spec.json", "\"node\""),
+    ],
+    ignored: &["@ngrx/signals"],
+    aliases: &[("editor", "src/index.ts")],
+};
 
 /// The entry files besides the tests (`*.test.ts`) and the files the scripts name: Vite's and
-/// Vitest's configuration, the playground's page script (`playground/index.html`), the site's
-/// configuration and theme.
+/// Vitest's configuration, the library's entry (`exports` of `package.json`), which the playground
+/// imports by its name `editor` (ADR-0104), the site's configuration and theme.
 pub const ENTRIES: &[&str] = &[
     "vite.config.ts",
-    "playground/index.ts",
+    "src/index.ts",
     "docs/.vitepress/config.ts",
     "docs/.vitepress/theme/index.ts",
 ];
@@ -145,6 +208,32 @@ impl Findings {
     pub fn is_empty(&self) -> bool {
         self.report().is_empty()
     }
+
+    /// The findings of another project added, each of its paths read from `folder`: the
+    /// playground's `src/main.ts` becomes `playground/src/main.ts`.
+    pub fn add(&mut self, other: Findings, folder: &str) {
+        let moved = |finding: Finding| Finding {
+            file: format!("{folder}/{}", finding.file),
+            ..finding
+        };
+
+        self.files.extend(
+            other
+                .files
+                .into_iter()
+                .map(|file| format!("{folder}/{file}")),
+        );
+        for (target, found) in [
+            (&mut self.dependencies, other.dependencies),
+            (&mut self.dev_dependencies, other.dev_dependencies),
+            (&mut self.unlisted, other.unlisted),
+            (&mut self.unresolved, other.unresolved),
+            (&mut self.exports, other.exports),
+            (&mut self.types, other.types),
+        ] {
+            target.extend(found.into_iter().map(moved));
+        }
+    }
 }
 
 /// A checkout's text files, read once.
@@ -155,16 +244,29 @@ pub struct Tree {
     pub files: Vec<String>,
 }
 
-/// Whether a path from the root is a project file: a `.ts` file at the root or in a project folder.
+/// Whether a path from the root is a project file: a `.ts` file at the root or in a project folder,
+/// outside [`SECOND_PROJECT`].
 #[must_use]
 pub fn is_project(path: &str) -> bool {
     Path::new(path)
         .extension()
         .is_some_and(|extension| extension == "ts")
+        && !path.starts_with(SECOND_PROJECT)
         && PROJECT.iter().any(|entry| match entry.strip_prefix("*") {
             Some(_) => !path.contains('/'),
             None => path.starts_with(entry),
         })
+}
+
+/// What a project takes of the library through its name (ADR-0104): the playground's import of
+/// `editor`, the library's public API, which the root's check counts as an import of it; a
+/// relative import never leaves a project's folder (EN-176).
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Use {
+    /// The path imported, from the checkout's root, without its extension when written without.
+    pub path: String,
+    /// What the import takes.
+    pub taken: Taken,
 }
 
 /// A path joined to a folder, its `.` and `..` resolved, `/`-separated from the root; `None` when
@@ -272,10 +374,10 @@ fn read_modules(tree: &Tree) -> HashMap<String, (String, Module)> {
 }
 
 /// The texts of the script files, the files of a listed folder included, sorted.
-fn script_texts(root: &Path) -> Vec<(String, String)> {
+fn script_texts(root: &Path, config: &Config) -> Vec<(String, String)> {
     let mut texts = Vec::new();
 
-    for entry in SCRIPT_FILES {
+    for entry in config.script_files {
         if entry.ends_with('/') {
             let mut paths: Vec<PathBuf> = fs::read_dir(root.join(entry))
                 .map(|entries| {
@@ -321,10 +423,11 @@ fn script_texts(root: &Path) -> Vec<(String, String)> {
     texts
 }
 
-/// The entry files: [`ENTRIES`], the tests, and every project file a script file names.
-fn entries(tree: &Tree, scripts: &[(String, String)]) -> BTreeSet<String> {
+/// The entry files: the configuration's, the tests, and every project file a script file names.
+fn entries(tree: &Tree, scripts: &[(String, String)], config: &Config) -> BTreeSet<String> {
     let files: BTreeSet<&str> = tree.files.iter().map(String::as_str).collect();
-    let mut entries: BTreeSet<String> = ENTRIES
+    let mut entries: BTreeSet<String> = config
+        .entries
         .iter()
         .filter(|entry| files.contains(**entry))
         .map(|entry| (*entry).to_owned())
@@ -560,13 +663,16 @@ fn listed(package_json: &str, section: &str) -> Vec<(String, u32)> {
 }
 
 /// Reads the imports of the reached files: marks what they take, and records the packages they
-/// name, the packages listed nowhere and the relative imports that name no file.
+/// name, the packages listed nowhere, the relative imports that name no file of the project, those
+/// leaving its folder among them, and what its aliases take of the library.
 fn read_imports(
     graph: &mut Graph,
     reached: &BTreeSet<String>,
     listed: &BTreeSet<&str>,
+    config: &Config,
     used_packages: &mut BTreeSet<String>,
     findings: &mut Findings,
+    uses: &mut Vec<Use>,
 ) {
     let modules = graph.modules;
     let mut seen: BTreeSet<(String, u32)> = BTreeSet::new();
@@ -585,7 +691,12 @@ fn read_imports(
             offset,
         } in &module.imports
         {
-            if let Some(package) = package_of(specifier) {
+            if let Some((_, path)) = config.aliases.iter().find(|(name, _)| *name == specifier) {
+                uses.push(Use {
+                    path: (*path).to_owned(),
+                    taken: taken.clone(),
+                });
+            } else if let Some(package) = package_of(specifier) {
                 used_packages.insert(package.to_owned());
                 if !listed.contains(package) && seen.insert((file.clone(), *offset)) {
                     findings
@@ -593,42 +704,71 @@ fn read_imports(
                         .push(finding(file, text, *offset, package, ""));
                 }
             } else if is_relative(specifier) {
-                match graph.target(file, specifier) {
-                    Some(target) => graph.take(&target, taken),
-                    None if resolve(graph.root, file, specifier).is_none()
-                        && seen.insert((file.clone(), *offset)) =>
-                    {
-                        findings
-                            .unresolved
-                            .push(finding(file, text, *offset, specifier, ""));
-                    }
-                    None => {}
+                if let Some(target) = graph.target(file, specifier) {
+                    graph.take(&target, taken);
+                } else if resolve(graph.root, file, specifier).is_none()
+                    && seen.insert((file.clone(), *offset))
+                {
+                    findings
+                        .unresolved
+                        .push(finding(file, text, *offset, specifier, ""));
                 }
             }
         }
     }
 }
 
-/// The listed packages nothing uses: no import, no `tsconfig.json` type, no plugin, no binary a
-/// script file names, and not [`IGNORED`].
+/// The packages a used package asks as peers, its optional peers left out (`peerDependencies`
+/// and `peerDependenciesMeta` of its installed `package.json`), and in turn theirs: such a package
+/// is used through the one asking it, as `@angular/core` asks `rxjs` (EN-159).
+fn add_peers(root: &Path, used_packages: &mut BTreeSet<String>) {
+    let mut pending: Vec<String> = used_packages.iter().cloned().collect();
+
+    while let Some(package) = pending.pop() {
+        let manifest: serde_json::Value = fs::read_to_string(
+            root.join("node_modules")
+                .join(&package)
+                .join("package.json"),
+        )
+        .ok()
+        .and_then(|text| serde_json::from_str(&text).ok())
+        .unwrap_or_default();
+        let Some(peers) = manifest["peerDependencies"].as_object() else {
+            continue;
+        };
+
+        for peer in peers.keys() {
+            let is_optional = manifest["peerDependenciesMeta"][peer]["optional"] == true;
+
+            if !is_optional && used_packages.insert(peer.clone()) {
+                pending.push(peer.clone());
+            }
+        }
+    }
+}
+
+/// The listed packages nothing uses: no import, no `tsconfig.json` type, no plugin, no package
+/// asking it as a peer, no binary a script file names, and not ignored by the configuration.
 fn unused_packages(
     root: &Path,
     scripts: &[(String, String)],
     mut used_packages: BTreeSet<String>,
     package_json: &str,
+    config: &Config,
     findings: &mut Findings,
 ) {
     let script_words: BTreeSet<&str> = scripts.iter().flat_map(|(_, text)| words(text)).collect();
 
     used_packages.extend(tsconfig_types(root));
-    for (package, file, needle) in PLUGIN_USES {
+    for (package, file, needle) in config.plugin_uses {
         if fs::read_to_string(root.join(file)).is_ok_and(|text| text.contains(needle)) {
             used_packages.insert((*package).to_owned());
         }
     }
+    add_peers(root, &mut used_packages);
     let is_unused = |name: &str| {
         !used_packages.contains(name)
-            && !IGNORED.contains(&name)
+            && !config.ignored.contains(&name)
             && !binaries(root, name)
                 .iter()
                 .any(|binary| script_words.contains(binary.as_str()))
@@ -673,14 +813,40 @@ fn unused_exports(
     }
 }
 
-/// The findings of a tree.
+/// The findings of the root's tree.
 #[must_use]
 pub fn check(tree: &Tree) -> Findings {
+    check_project(tree, &ROOT)
+}
+
+/// The findings of a project's tree, read by its configuration.
+#[must_use]
+pub fn check_project(tree: &Tree, config: &Config) -> Findings {
+    check_with_uses(tree, config, &[]).0
+}
+
+/// The findings of a project's tree, read by its configuration, another project's [`Use`]s of the
+/// library counted as imports from outside; with the project's own uses of it.
+#[must_use]
+pub fn check_with_uses(tree: &Tree, config: &Config, given: &[Use]) -> (Findings, Vec<Use>) {
     let modules = read_modules(tree);
-    let scripts = script_texts(&tree.root);
-    let entries = entries(tree, &scripts);
+    let scripts = script_texts(&tree.root, config);
+    let entries = entries(tree, &scripts, config);
     let mut graph = Graph::new(&modules, &tree.root);
-    let reached = reached(&graph, &entries);
+    let imported: Vec<(String, &Taken)> = given
+        .iter()
+        .filter_map(|each| {
+            resolve(&tree.root, "", &format!("./{}", each.path))
+                .filter(|path| modules.contains_key(path))
+                .map(|path| (path, &each.taken))
+        })
+        .collect();
+    let starts: BTreeSet<String> = entries
+        .iter()
+        .cloned()
+        .chain(imported.iter().map(|(path, _)| path.clone()))
+        .collect();
+    let reached = reached(&graph, &starts);
     let mut findings = Findings {
         files: tree
             .files
@@ -697,19 +863,26 @@ pub fn check(tree: &Tree) -> Findings {
         .collect();
     let names: BTreeSet<&str> = all_listed.iter().map(|(name, _)| name.as_str()).collect();
     let mut used_packages = BTreeSet::new();
+    let mut uses = Vec::new();
 
     read_imports(
         &mut graph,
         &reached,
         &names,
+        config,
         &mut used_packages,
         &mut findings,
+        &mut uses,
     );
+    for (path, taken) in &imported {
+        graph.take(path, taken);
+    }
     unused_packages(
         &tree.root,
         &scripts,
         used_packages,
         &package_json,
+        config,
         &mut findings,
     );
     unused_exports(&graph, &reached, &entries, &mut findings);
@@ -721,7 +894,7 @@ pub fn check(tree: &Tree) -> Findings {
     ] {
         list.sort();
     }
-    findings
+    (findings, uses)
 }
 
 /// The project files of a checkout: tracked or untracked and not ignored, as `git ls-files` lists
@@ -738,6 +911,27 @@ pub fn project_files(root: &Path, listed: &str) -> Vec<String> {
 
     files.sort();
     files
+}
+
+/// The files of the playground's Angular app among those `git ls-files` lists, that exist and are
+/// `.ts` files of [`SECOND_PROJECT`]: each from the playground's folder (`src/main.ts`), sorted.
+#[must_use]
+pub fn playground_files(root: &Path, listed: &str) -> Vec<String> {
+    let prefix = format!("{PLAYGROUND_FOLDER}/");
+
+    listed
+        .split('\0')
+        .filter(|path| {
+            path.starts_with(SECOND_PROJECT)
+                && Path::new(path)
+                    .extension()
+                    .is_some_and(|extension| extension == "ts")
+                && root.join(path).is_file()
+        })
+        .filter_map(|path| path.strip_prefix(&prefix).map(str::to_owned))
+        .collect::<BTreeSet<_>>()
+        .into_iter()
+        .collect()
 }
 
 /// The Git arguments that list the project's files with `-z`.
@@ -761,5 +955,7 @@ pub fn ls_files_arguments() -> Vec<String> {
             (*entry).to_owned()
         }
     }));
+    // The playground's files, checked as a project of its own (ADR-0104).
+    arguments.push(SECOND_PROJECT.to_owned());
     arguments
 }

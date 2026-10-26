@@ -4,8 +4,9 @@
 
 use crate::glob::matches_any;
 
-/// Generated, vendored or copied paths, never linted (once `eslint/settings/files.ts`).
-pub const IGNORED: [&str; 11] = [
+/// Generated, vendored or copied paths, never linted (once `eslint/settings/files.ts`), the
+/// packages, cache and build of the playground's npm project among them (ADR-0104).
+pub const IGNORED: [&str; 14] = [
     "dist/**",
     "coverage/**",
     "node_modules/**",
@@ -17,6 +18,9 @@ pub const IGNORED: [&str; 11] = [
     "target/**",
     "tools/*/tests/fixtures/**",
     ".git/**",
+    "playground/node_modules/**",
+    "playground/.angular/**",
+    "playground/dist/**",
 ];
 
 /// The rules on for every TypeScript file before the scopes, with the plugins' own lists
@@ -57,11 +61,16 @@ pub struct Scope {
 /// The tools and their configurations: Node.js code, where development packages may be imported.
 pub const TOOLING_FILES: &[&str] = &[
     "*.config.ts",
+    "playground/*.config.ts",
     "*.setup.ts",
     "*.test.ts",
     "tests/*.ts",
     "docs/.vitepress/**/*.ts",
     "scripts/**/*.ts",
+    // The playground's copies of the root's fixtures and of its global setup (EN-176): tooling as
+    // `tests/` is, several exports to a module, so that its tests run on its install alone.
+    "playground/testing/*-fixtures.ts",
+    "playground/testing/*.setup.ts",
 ];
 
 /// The tests, where development packages may be imported.
@@ -90,13 +99,31 @@ const RELAXED: &[(&str, bool)] = &[
     ("local/see-references", false),
 ];
 
+/// The playground's Angular app, which follows Angular's usage rather than the library's
+/// (ADR-0104, NOTE-0036, findings 52 and 77): a component is a class, a file keeps Angular's
+/// suffixed name (`app.component.ts`), a folder has no barrel and is imported by its file, and a
+/// module constant keeps Angular's camelCase name (`appConfig`). Angular's own rules for these come
+/// with F51. The project's configuration files beside it, such as its test runner's, sit at the
+/// project's root as Angular's do (EN-160).
+pub const ANGULAR_APP_FILES: &[&str] = &["playground/src/**/*.ts", "playground/*.config.ts"];
+
+/// The old page's folders inside the Angular app, kept unchanged as its utils (EN-160): they keep
+/// the library's rules, as `tests/code-folders.ts` says, until F57 to F59 move them.
+pub const ANGULAR_APP_IGNORES: &[&str] = &["playground/src/app/shared/utils/**"];
+
 /// The scopes, in the order `ESLint`'s configuration applied them; only those that set a rule of
 /// this linter.
-pub const SCOPES: [Scope; 7] = [
+pub const SCOPES: [Scope; 8] = [
     Scope {
         name: "single-export-modules",
         files: SINGLE_EXPORT_FILES,
-        ignores: &["**/index.ts", "**/*.test.ts"],
+        ignores: &[
+            "**/index.ts",
+            "**/*.test.ts",
+            // Several exports to a module, as their originals in `tests/` (EN-176).
+            "playground/testing/*-fixtures.ts",
+            "playground/testing/*.setup.ts",
+        ],
         rules: &[("local/one-export-per-file", true)],
     },
     Scope {
@@ -152,6 +179,20 @@ pub const SCOPES: [Scope; 7] = [
         files: TEST_FILES,
         ignores: &[],
         rules: RELAXED,
+    },
+    Scope {
+        name: "angular-app",
+        files: ANGULAR_APP_FILES,
+        ignores: ANGULAR_APP_IGNORES,
+        rules: &[
+            ("@typescript-eslint/naming-convention", false),
+            ("functional/no-classes", false),
+            ("functional/no-this-expressions", false),
+            ("local/canonical-import-path", false),
+            ("local/folder-has-index", false),
+            ("local/folder-layout", false),
+            ("local/one-export-per-file", false),
+        ],
     },
 ];
 
@@ -374,11 +415,72 @@ mod tests {
     }
 
     #[test]
+    fn lints_the_playground_s_copied_fixtures_as_the_root_s_tests() {
+        // Its copies of the root's fixtures and global setup (EN-176): several exports, no kinds.
+        for path in [
+            "playground/testing/font-fixtures.ts",
+            "playground/testing/font-files.setup.ts",
+        ] {
+            let rules = rules_for(path);
+
+            assert!(!rules.contains(&"local/one-export-per-file"), "{path}");
+            assert!(!rules.contains(&"local/require-kind"), "{path}");
+            assert!(rules.contains(&"local/folder-layout"), "{path}");
+        }
+        // Its actions keep the playground's rules.
+        let action = rules_for("playground/testing/press-key.ts");
+
+        assert!(action.contains(&"local/one-export-per-file"));
+        assert!(action.contains(&"local/require-kind"));
+    }
+
+    #[test]
     fn ignores_generated_and_copied_paths() {
         assert!(is_ignored("docs/api/index.ts"));
         assert!(is_ignored("tools/api-pages/tests/fixtures/a.ts"));
         assert!(is_ignored("node_modules/a/b.ts"));
+        assert!(is_ignored("playground/node_modules/a/b.d.ts"));
+        assert!(is_ignored("playground/.angular/cache/a.ts"));
+        assert!(is_ignored("playground/dist/a.ts"));
         assert!(!is_ignored("src/index.ts"));
+        assert!(!is_ignored("playground/points/index.ts"));
+        assert!(!is_ignored("playground/src/app/app.component.ts"));
+    }
+
+    #[test]
+    fn f50_ac3_lints_the_angular_app_by_angular_s_usage() {
+        let app = rules_for("playground/src/app/app.component.ts");
+
+        // A class with Angular's suffixed name, in a folder without a barrel, imported by its file.
+        for rule in [
+            "@typescript-eslint/naming-convention",
+            "functional/no-classes",
+            "functional/no-this-expressions",
+            "local/canonical-import-path",
+            "local/folder-has-index",
+            "local/folder-layout",
+            "local/one-export-per-file",
+        ] {
+            assert!(!app.contains(&rule), "{rule}");
+        }
+        // The rest of the playground's rules stay on.
+        assert!(app.contains(&"import-x/no-restricted-paths"));
+        assert!(app.contains(&"local/require-kind"));
+        // The old page's folders, the app's utils, keep the library's rules (EN-160).
+        let util = rules_for("playground/src/app/shared/utils/points/show-delete-button.ts");
+        let barrel = rules_for("playground/src/app/shared/utils/points/index.ts");
+        for rule in [
+            "@typescript-eslint/naming-convention",
+            "functional/no-classes",
+            "functional/no-this-expressions",
+            "local/canonical-import-path",
+            "local/folder-has-index",
+            "local/folder-layout",
+            "local/one-export-per-file",
+        ] {
+            assert!(util.contains(&rule), "{rule}");
+        }
+        assert!(barrel.contains(&"local/barrel-exports"));
     }
 
     #[test]

@@ -1,0 +1,4 @@
+// The layout component places its content as if it were not there (EN-160).
+:host {
+  display: contents;
+}

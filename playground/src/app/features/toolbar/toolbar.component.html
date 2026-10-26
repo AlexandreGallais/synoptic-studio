@@ -1,0 +1,129 @@
+<nav id="toolbar" aria-label="Tools">
+  <p role="group" aria-label="Tool">
+    <button id="tool-selector" type="button" aria-pressed="true" title="Selector">
+      <svg viewBox="0 0 16 16" aria-hidden="true">
+        <path d="M3 1.5v12l3.2-3 2.3 4.8 2-1-2.3-4.7H12.5z" />
+      </svg>
+      Selector
+    </button>
+    <button id="tool-rectangle" type="button" aria-pressed="false" title="Rectangle">
+      <svg viewBox="0 0 16 16" aria-hidden="true">
+        <path d="M2 3h12v10H2zM3.5 4.5v7h9v-7z" fill-rule="evenodd" />
+      </svg>
+      Rectangle
+    </button>
+    <button id="tool-polygon" type="button" aria-pressed="false" title="Polygon">
+      <svg viewBox="0 0 16 16" aria-hidden="true">
+        <path
+          d="M8 1.5 14.5 6 12 14H4L1.5 6zM8 3.3 3.3 6.6 5.1 12.5h5.8l1.8-5.9z"
+          fill-rule="evenodd"
+        />
+      </svg>
+      Polygon
+    </button>
+    <button id="tool-round" type="button" aria-pressed="false" title="Round shape">
+      <svg viewBox="0 0 16 16" aria-hidden="true">
+        <path
+          d="M8 2.5a6 5.5 0 1 1 0 11 6 5.5 0 0 1 0-11zm0 1.5a4.5 4 0 1 0 0 8 4.5 4 0 0 0 0-8z"
+          fill-rule="evenodd"
+        />
+      </svg>
+      Round
+    </button>
+    <button id="tool-text" type="button" aria-pressed="false" title="Text">
+      <svg viewBox="0 0 16 16" aria-hidden="true">
+        <path d="M2.5 2.5h11v3H12V4H9v8.5h1.5V14h-5v-1.5H7V4H4v1.5H2.5z" />
+      </svg>
+      Text
+    </button>
+  </p>
+  <p id="tools" role="group" aria-label="Mode">
+    <button id="mode-shape" type="button" aria-pressed="true" title="Edit the shape">Shape</button>
+    <button id="mode-points" type="button" aria-pressed="false" title="Edit its points">
+      Points
+    </button>
+  </p>
+  <div role="group" aria-label="History">
+    <button id="history-undo" type="button" title="Undo (Ctrl + Z, Cmd + Z on macOS)" disabled>
+      Undo
+    </button>
+    <button
+      id="history-redo"
+      type="button"
+      title="Redo (Ctrl + Shift + Z or Ctrl + Y, Cmd for Ctrl on macOS)"
+      disabled
+    >
+      Redo
+    </button>
+    <details
+      id="history-steps-box"
+      title="The last steps, the oldest first: click one to go back to the drawing after it; the steps after it stay to redo until the next change."
+    >
+      <summary>Steps</summary>
+      <ol id="history-list" aria-label="The history's steps"></ol>
+    </details>
+    <label
+      title="The memory the history keeps for Undo and Redo, from 0 to 1,000 MB: beyond it, the oldest steps are dropped first, never fewer than the steps kept. A move of a rectangle 100 × 50 alone adds about 1,244 bytes, of the 120 × 80 the page opens with 1,248."
+      >Memory
+      <input
+        id="history-memory"
+        type="text"
+        autocomplete="off"
+        data-number-field="own"
+        value="100"
+      />
+      MB</label
+    >
+    <label
+      title="The last steps kept whatever their memory, from 0 to 100: a change of many shapes may take more than the whole memory and stays undoable."
+      >Steps kept
+      <input id="history-steps" type="text" autocomplete="off" data-number-field="own" value="5"
+    /></label>
+    <span id="history-size"></span>
+    <span
+      id="history-moves"
+      title="About how many moves of a rectangle 100 × 50 alone the memory holds, each adding about 1,244 bytes; a larger shape, or a change of more shapes, takes more."
+    ></span>
+  </div>
+  <div role="group" aria-label="View">
+    <details
+      id="zoom-box"
+      title="The zoom of the drawing: zoom in and out, back to 100 %, fit the drawing or the selection, or type a percentage."
+    >
+      <summary id="zoom-percentage">100 %</summary>
+      <div id="zoom-menu">
+        <button id="zoom-in" type="button" aria-keyshortcuts="+">Zoom in <kbd>+</kbd></button>
+        <button id="zoom-out" type="button" aria-keyshortcuts="-">Zoom out <kbd>-</kbd></button>
+        <button id="zoom-actual" type="button" aria-keyshortcuts="Shift+0">
+          Zoom to 100 % <kbd>Shift + 0</kbd>
+        </button>
+        <button id="zoom-fit-drawing" type="button" aria-keyshortcuts="Shift+1">
+          Fit the drawing <kbd>Shift + 1</kbd>
+        </button>
+        <button id="zoom-fit-selection" type="button" aria-keyshortcuts="Shift+2">
+          Fit the selection <kbd>Shift + 2</kbd>
+        </button>
+        <label
+          title="A percentage from 1 to 25,600, applied by Enter or by leaving the field, about the canvas's centre"
+          >Zoom
+          <input
+            id="zoom-field"
+            type="text"
+            autocomplete="off"
+            data-number-field="own"
+            value="100"
+          />
+          %</label
+        >
+      </div>
+    </details>
+  </div>
+  <p role="group" aria-label="Page">
+    <button id="tool-reset" type="button" title="Back to the shape the page opens with">
+      Reset
+    </button>
+    <button id="tool-output" type="button" aria-pressed="true" title="Show the pipeline output">
+      Pipeline
+    </button>
+  </p>
+</nav>

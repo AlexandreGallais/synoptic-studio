@@ -1,7 +1,7 @@
 //! `deps outdated`: every version the repository pins against its latest version at least 7 days
-//! old (ADR-0072) — the npm packages of `package.json`, the GitHub Actions of the workflows,
-//! Node.js's major in `.nvmrc`, the crates of `[workspace.dependencies]`, the cargo tools the Rust
-//! checks install (EN-121) — and every crate of `Cargo.lock` published less than 7 days ago, which
+//! old (ADR-0072) — the npm packages of `package.json` and of the playground's (ADR-0104), the
+//! GitHub Actions of the workflows, Node.js's major in `.nvmrc`, the crates of
+//! `[workspace.dependencies]`, the cargo tools the Rust checks install (EN-121) — and every crate of `Cargo.lock` published less than 7 days ago, which
 //! Cargo picks by itself (research note 0025, The crates, checked). One line per finding, with the
 //! version and its date, and one per cargo tool whose places disagree or whose version is under 7
 //! days old, yanked or missing from the index (AUD-035).
@@ -15,6 +15,7 @@ use crate::actions::{self, ActionUse};
 use crate::cargo_tools::{self, CHECKS_SOURCE, DEPENDENCIES_PAGE, ToolPin};
 use crate::crates::Release;
 use crate::fetch::Answer;
+use crate::version::Version;
 use crate::{Behind, crates, node, npm};
 
 /// The npm registry's address of a package's full metadata (`REF-NPM-PACKAGE-METADATA`).
@@ -25,6 +26,14 @@ const CRATES_INDEX: &str = "https://index.crates.io/";
 
 /// Node.js's index of its releases (`REF-NODE-DIST-INDEX`).
 const NODE_INDEX: &str = "https://nodejs.org/dist/index.json";
+
+/// The playground's `package.json`, its npm project's (ADR-0104).
+const PLAYGROUND_PACKAGE: &str = "playground/package.json";
+
+/// The playground's packages held under a version another of its packages refuses, each with the
+/// version it stays below: `typescript` under 6.1, `@angular/compiler-cli` 22 asking
+/// `>=6.0 <6.1` (ADR-0104, `REF-NPM-ANGULAR-PACKAGES`).
+pub const PLAYGROUND_CEILINGS: &[(&str, &str)] = &[("typescript", "6.1.0")];
 
 /// The source of `Cargo.lock`'s packages that come from crates.io.
 const CRATES_SOURCE: &str = "registry+https://github.com/rust-lang/crates.io-index";
@@ -42,6 +51,8 @@ pub trait Network: Sync {
 pub struct Pins {
     /// The npm packages of `package.json`, name and version.
     pub npm: Vec<(String, String)>,
+    /// The npm packages of the playground's `package.json`, a project of its own (ADR-0104).
+    pub playground_npm: Vec<(String, String)>,
     /// The actions of the workflows, each repository and major once.
     pub actions: Vec<ActionUse>,
     /// The major of `.nvmrc`.
@@ -179,6 +190,7 @@ fn tool_pins(root: &Path, workflows: &[std::path::PathBuf]) -> Vec<ToolPin> {
 pub fn read_pins(root: &Path) -> Pins {
     let read = |path: &str| fs::read_to_string(root.join(path)).unwrap_or_default();
     let package = serde_json::from_str(&read("package.json")).unwrap_or_default();
+    let playground = serde_json::from_str(&read(PLAYGROUND_PACKAGE)).unwrap_or_default();
     let workflows = files_of(root, ".github/workflows", "yml");
     let actions: BTreeSet<ActionUse> = workflows
         .iter()
@@ -187,6 +199,7 @@ pub fn read_pins(root: &Path) -> Pins {
 
     Pins {
         npm: npm_pins(&package),
+        playground_npm: npm_pins(&playground),
         actions: actions.into_iter().collect(),
         node: read(".nvmrc").trim().trim_start_matches('v').parse().ok(),
         crates: crate_pins(&read("Cargo.toml")),
@@ -224,19 +237,54 @@ fn index_address(name: &str) -> String {
     format!("{CRATES_INDEX}{}", crates::index_path(name))
 }
 
-/// The npm packages' lines and failures.
-fn npm_report(pins: &Pins, answers: &[Answer], now_ms: i64, report: &mut Report) {
-    // Each package's metadata read on a thread of its own: `vite`'s is 39 MB of JSON.
-    let results: Vec<Result<Option<String>, String>> = thread::scope(|scope| {
-        let handles: Vec<_> = pins
-            .npm
+/// The npm packages of both projects, each name once: the root's in their order, then the
+/// playground's it lacks (`vite`, `vitest` and `happy-dom` are both projects').
+fn npm_names(pins: &Pins) -> Vec<String> {
+    let mut names: Vec<String> = Vec::new();
+
+    for (name, _) in pins.npm.iter().chain(&pins.playground_npm) {
+        if !names.contains(name) {
+            names.push(name.clone());
+        }
+    }
+    names
+}
+
+/// The version a project pins a package at, when it pins it.
+fn pinned<'a>(list: &'a [(String, String)], name: &str) -> Option<&'a str> {
+    list.iter()
+        .find(|(known, _)| known == name)
+        .map(|(_, version)| version.as_str())
+}
+
+/// The npm packages' lines and failures: the root's, then the playground's, marked so.
+fn npm_report(pins: &Pins, names: &[String], answers: &[Answer], now_ms: i64, report: &mut Report) {
+    // Each package's metadata read once, on a thread of its own: `vite`'s is 39 MB of JSON.
+    type Lines = (Option<String>, Option<String>);
+    let results: Vec<Result<Lines, String>> = thread::scope(|scope| {
+        let handles: Vec<_> = names
             .iter()
             .zip(answers)
-            .map(|((name, current), answer)| {
+            .map(|(name, answer)| {
                 scope.spawn(move || {
                     json(answer).map(|metadata| {
-                        npm::behind(name, current, &metadata, now_ms)
-                            .map(|b| behind_line("npm", &b))
+                        let line = |list: &[(String, String)], ceiling: Option<&Version>| {
+                            pinned(list, name)
+                                .and_then(|current| {
+                                    npm::behind_below(name, current, &metadata, now_ms, ceiling)
+                                })
+                                .map(|b| behind_line("npm", &b))
+                        };
+                        let ceiling = PLAYGROUND_CEILINGS
+                            .iter()
+                            .find(|(held, _)| held == name)
+                            .and_then(|(_, below)| Version::parse(below));
+
+                        (
+                            line(&pins.npm, None),
+                            line(&pins.playground_npm, ceiling.as_ref())
+                                .map(|line| format!("{line} (playground)")),
+                        )
                     })
                 })
             })
@@ -247,15 +295,20 @@ fn npm_report(pins: &Pins, answers: &[Answer], now_ms: i64, report: &mut Report)
             .map(|handle| handle.join().unwrap_or_else(|_| Err("not read".to_owned())))
             .collect()
     });
+    let mut playground_lines = Vec::new();
 
-    for ((name, _), result) in pins.npm.iter().zip(results) {
+    for (name, result) in names.iter().zip(results) {
         match result {
-            Ok(line) => report.lines.extend(line),
+            Ok((root, playground)) => {
+                report.lines.extend(root);
+                playground_lines.extend(playground);
+            }
             Err(error) => report
                 .failures
                 .push(format!("npm registry: {name}: {error}")),
         }
     }
+    report.lines.extend(playground_lines);
 }
 
 /// The Node.js line or failure.
@@ -439,10 +492,10 @@ pub fn outdated(pins: &Pins, network: &impl Network, now_ms: i64) -> Report {
         .collect::<BTreeSet<_>>()
         .into_iter()
         .collect();
-    let mut addresses: Vec<String> = pins
-        .npm
+    let npm_names = npm_names(pins);
+    let mut addresses: Vec<String> = npm_names
         .iter()
-        .map(|(name, _)| format!("{NPM_REGISTRY}{name}"))
+        .map(|name| format!("{NPM_REGISTRY}{name}"))
         .collect();
 
     addresses.extend(names.iter().map(|name| index_address(name)));
@@ -463,11 +516,11 @@ pub fn outdated(pins: &Pins, network: &impl Network, now_ms: i64) -> Report {
 
         (network.urls(&addresses), github.join().unwrap_or_default())
     });
-    let (npm_answers, rest) = answers.split_at(pins.npm.len().min(answers.len()));
+    let (npm_answers, rest) = answers.split_at(npm_names.len().min(answers.len()));
     let (crate_answers, node_answers) = rest.split_at(names.len().min(rest.len()));
     let mut report = Report::default();
 
-    npm_report(pins, npm_answers, now_ms, &mut report);
+    npm_report(pins, &npm_names, npm_answers, now_ms, &mut report);
     action_report(pins, network, &references, now_ms, &mut report);
     if let (Some(pinned), Some(answer)) = (pins.node, node_answers.first()) {
         node_report(pinned, answer, now_ms, &mut report);

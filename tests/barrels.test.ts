@@ -3,23 +3,19 @@ import { dirname, join } from "node:path";
 
 import { describe, expect, it } from "vitest";
 
-/** Library root: every `index.ts` below it is a barrel. */
-const ROOTS = ["src", "playground"].map((folder) => join(import.meta.dirname, "..", folder));
-
-/** The playground's entry, which mounts the page: not a barrel. */
-const PLAYGROUND_ENTRY = join(import.meta.dirname, "..", "playground", "index.ts");
+import { CODE_FOLDERS } from "./code-folders";
 
 /**
- * Every barrel file of the library.
+ * Every barrel file of the code folders, the library's and the playground's plain TypeScript.
  *
- * @returns absolute paths of the `index.ts` files under `src/`
+ * @returns absolute paths of their `index.ts` files
  */
 function barrels(): string[] {
-  return ROOTS.flatMap((root) =>
-    readdirSync(root, { recursive: true, withFileTypes: true })
+  return CODE_FOLDERS.flatMap((folder) =>
+    readdirSync(join(import.meta.dirname, "..", folder), { recursive: true, withFileTypes: true })
       .filter((entry) => entry.isFile() && entry.name === "index.ts")
       .map((entry) => join(entry.parentPath, entry.name)),
-  ).filter((barrel) => barrel !== PLAYGROUND_ENTRY);
+  );
 }
 
 /**
@@ -52,13 +48,24 @@ describe("barrels", () => {
   it("re-export as types only the modules that export no runtime value", async () => {
     const targets = barrels().flatMap((barrel) => typeOnlyTargets(barrel));
 
-    // Not vacuous: nested barrels of the library and of the playground are read.
+    // Not vacuous: nested barrels of the library, the playground's utils and its test helpers.
     expect(targets.length).toBeGreaterThanOrEqual(19);
 
     expect(targets).toEqual(
       expect.arrayContaining([
         join(import.meta.dirname, "..", "src", "math", "vector", "vector"),
-        join(import.meta.dirname, "..", "playground", "user-actions", "keys"),
+        join(
+          import.meta.dirname,
+          "..",
+          "playground",
+          "src",
+          "app",
+          "shared",
+          "utils",
+          "view",
+          "pan-drag",
+        ),
+        join(import.meta.dirname, "..", "playground", "testing", "keys"),
       ]),
     );
 

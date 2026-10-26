@@ -60,7 +60,14 @@ jobs:
         with:
           node-version-file: .nvmrc
           cache: npm
+          # One npm cache for both projects, keyed on both lockfiles (ADR-0104, REF-SETUP-NODE-CACHE).
+          cache-dependency-path: |
+            package-lock.json
+            playground/package-lock.json
       - run: npm ci
+      # The playground's packages, for Angular's build in the docs lane (ADR-0104), their install
+      # scripts left unrun.
+      - run: npm --prefix playground ci --ignore-scripts
       # The docs lane of `check:all`: the site, then the playground built into it.
       - run: target/release/check-all --lane docs
         env:

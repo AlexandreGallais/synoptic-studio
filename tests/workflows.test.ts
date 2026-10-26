@@ -151,6 +151,21 @@ const NODE_READERS: readonly RegExp[] = [
   /cargo llvm-cov --workspace\b(?![^\n]*-- --list\b)/u,
 ];
 
+/** The install of the playground's packages, an npm project of its own (ADR-0104). */
+const PLAYGROUND_INSTALL = "npm --prefix playground ci --ignore-scripts";
+
+/**
+ * The commands that read the playground's packages: Angular's compiler, build and tests, the playground's
+ * audit, which reads its lockfile alone, left out, and `dependencies unused`, which reads its
+ * installed manifests.
+ */
+const PLAYGROUND_READERS: readonly RegExp[] = [
+  /\bngc -p playground\//u,
+  /&& ng build\b/u,
+  /&& ng test\b/u,
+  /target\/release\/dependencies unused\b/u,
+];
+
 /** A command that runs Node.js itself, at the start of a command: `node` or `npx`. */
 const NODE_ITSELF = /(?:^|&&|\|\||[;|])\s*(?:node|npx)\s/mu;
 
@@ -1069,6 +1084,20 @@ describe("the steps of the CI's lanes (EN-133)", () => {
     expect(twice.map((entry) => entry.get("name"))).toStrictEqual([]);
   });
 
+  it("[F50.AC3] installs the playground's packages only in the lanes that read them, after the root's", () => {
+    const installs = misplaced(
+      (step) => isRun(step, PLAYGROUND_INSTALL),
+      (entry) => PLAYGROUND_READERS.some((reader) => reader.test(commandsOf(entry))),
+    );
+    const steps = stepsOf(LANES);
+    const root = steps.findIndex((step) => isRun(step, "npm ci"));
+    const playground = steps.findIndex((step) => isRun(step, PLAYGROUND_INSTALL));
+
+    expect(installs).toStrictEqual([]);
+    expect(root).toBeGreaterThan(-1);
+    expect(playground).toBeGreaterThan(root);
+  });
+
   it("[F28.AC3] installs the Node.js packages only in the lanes that run a program npm installs", () => {
     expect(misplaced((step) => isRun(step, "npm ci"), runsNode)).toStrictEqual([]);
   });
@@ -1541,5 +1570,20 @@ describe("the tools of each job (EN-136)", () => {
     ).toStrictEqual([`fonts: ${NODE}`]);
 
     expect(missingTools(oneJob("build", [`      - run: ${BUILD_ALL}`]))).toStrictEqual([]);
+  });
+});
+
+describe("the npm cache of both projects (EN-159)", () => {
+  it("[F50.AC3] keys each npm cache on the root's lockfile and the playground's", () => {
+    const keyed = FILES.map((file) => readFileSync(join(WORKFLOWS, file), "utf8"))
+      .filter((text) => text.includes("cache: npm"))
+      .map((text) =>
+        text.includes(
+          "cache: npm\n          # One npm cache for both projects, keyed on both lockfiles (ADR-0104, REF-SETUP-NODE-CACHE).\n          cache-dependency-path: |\n            package-lock.json\n            playground/package-lock.json\n",
+        ),
+      );
+
+    // ci.yml, develop-ci.yml and site.yml: one cache, whichever saves it.
+    expect(keyed).toStrictEqual([true, true, true]);
   });
 });

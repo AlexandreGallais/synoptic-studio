@@ -13,7 +13,7 @@ pub mod params;
 pub mod text;
 
 use oxc_ast::AstKind;
-use oxc_ast::ast::{Comment, FunctionType};
+use oxc_ast::ast::{Comment, Declaration, ExportDefaultDeclarationKind, FunctionType};
 use oxc_semantic::AstNode;
 use oxc_span::GetSpan;
 
@@ -393,10 +393,37 @@ fn value_documented_node<'s, 'a>(
     }
 }
 
-/// The `JSDoc` comment a node carries (`getJSDocComment`).
+/// Where the first decorator of a node starts (`getDecorator`): an exported class's, a class's, a
+/// method's or a property's.
+fn decorator_start(kind: &AstKind) -> Option<u32> {
+    let decorators = match kind {
+        AstKind::ExportDeclaration(export) => match &export.declaration {
+            Declaration::ClassDeclaration(class) => &class.decorators,
+            _ => return None,
+        },
+        AstKind::ExportDefaultDeclaration(export) => match &export.declaration {
+            ExportDefaultDeclarationKind::ClassDeclaration(class) => &class.decorators,
+            _ => return None,
+        },
+        AstKind::Class(class) => &class.decorators,
+        AstKind::MethodDefinition(method) => &method.decorators,
+        AstKind::PropertyDefinition(property) => &property.decorators,
+        _ => return None,
+    };
+
+    decorators.first().map(|decorator| decorator.span.start)
+}
+
+/// The `JSDoc` comment a node carries (`getJSDocComment`), read before its decorators when it has
+/// some, its own or its parent's (`findJSDocComment`, `REF-JSDOCCOMMENT-SOURCE`).
 #[must_use]
 pub fn comment_of(source: &Source, node: &AstNode) -> Option<Comment> {
-    comment_before(source, documented_node(source, node).kind().span().start)
+    let documented = documented_node(source, node);
+    let start = documented.kind().span().start;
+    let parent = source.semantic.nodes().parent_kind(documented.id());
+    let decorator = decorator_start(&documented.kind()).or_else(|| decorator_start(&parent));
+
+    comment_before(source, decorator.map_or(start, |at| at.min(start)))
 }
 
 /// Whether a node is one of the functions the rules read by default: an arrow function, a
@@ -478,6 +505,98 @@ mod tests {
                 ("arrow".to_owned(), Some("/** D. */".to_owned())),
                 // `/*` is no `JSDoc` block.
                 ("e".to_owned(), None),
+            ]
+        );
+    }
+
+    #[test]
+    fn f50_ac3_finds_the_block_before_the_decorators() {
+        let allocator = Allocator::default();
+        let code = "/** A. */\n@Component({ selector: \"a\" })\nexport class A {\n  /** M. */\n  @Input()\n  m(): void {}\n}\n\n/** B. */\n@Dec\nclass B {}\n\n@Dec\n/** C. */\nexport class C {}\n\n/** D. */\n@Dec\n\n\nclass D {}\n";
+        let program = Parser::new(&allocator, code, SourceType::ts())
+            .parse()
+            .program;
+        let semantic = SemanticBuilder::new()
+            .with_build_nodes(true)
+            .build(&program)
+            .semantic;
+        let project = Project::new(std::path::Path::new("/project"));
+        let source = Source::new("playground/src/a.ts", &program, &semantic, &[], &project);
+        let found: Vec<(String, Option<String>)> = semantic
+            .nodes()
+            .iter()
+            .filter_map(|node| {
+                let name = match node.kind() {
+                    AstKind::Class(class) => class.id.as_ref().map(|id| id.name.to_string()),
+                    AstKind::Function(_) => Some("m".to_owned()),
+                    _ => None,
+                }?;
+                let comment = comment_of(&source, node);
+
+                Some((
+                    name,
+                    comment.map(|each| comment_text(&source, &each).to_owned()),
+                ))
+            })
+            .collect();
+
+        assert_eq!(
+            found,
+            [
+                // Above an exported class's decorator, as Angular writes a component.
+                ("A".to_owned(), Some("/** A. */".to_owned())),
+                // Above a method's decorator.
+                ("m".to_owned(), Some("/** M. */".to_owned())),
+                ("B".to_owned(), Some("/** B. */".to_owned())),
+                // Between the decorator and the class: the block before the decorator is read,
+                // and there is none.
+                ("C".to_owned(), None),
+                // The block ends three lines above the class but right above its decorator.
+                ("D".to_owned(), Some("/** D. */".to_owned())),
+            ]
+        );
+    }
+
+    #[test]
+    fn f50_ac3_finds_the_block_before_a_default_export_s_and_a_property_s_decorators() {
+        let allocator = Allocator::default();
+        let code =
+            "/** E. */\n@Dec\nexport default class E {\n  /** P. */\n  @Input()\n  p = 1;\n}\n";
+        let program = Parser::new(&allocator, code, SourceType::ts())
+            .parse()
+            .program;
+        let semantic = SemanticBuilder::new()
+            .with_build_nodes(true)
+            .build(&program)
+            .semantic;
+        let project = Project::new(std::path::Path::new("/project"));
+        let source = Source::new("playground/src/a.ts", &program, &semantic, &[], &project);
+        let found: Vec<(&str, Option<String>)> = semantic
+            .nodes()
+            .iter()
+            .filter_map(|node| {
+                let name = match node.kind() {
+                    AstKind::Class(_) => "E",
+                    AstKind::PropertyDefinition(_) => "p",
+                    _ => return None,
+                };
+                let comment = comment_of(&source, node);
+
+                Some((
+                    name,
+                    comment.map(|each| comment_text(&source, &each).to_owned()),
+                ))
+            })
+            .collect();
+
+        assert_eq!(
+            found,
+            [
+                // Above a default-exported class's decorator.
+                ("E", Some("/** E. */".to_owned())),
+                // Above a property's decorator, as Angular's `@Input()`: Oxc's span of a
+                // property starts at its first decorator, which `decorator_start` finds too.
+                ("p", Some("/** P. */".to_owned())),
             ]
         );
     }

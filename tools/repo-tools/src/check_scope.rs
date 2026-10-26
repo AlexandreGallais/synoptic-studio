@@ -12,7 +12,10 @@ use std::path::Path;
 
 use stale_binaries::touches;
 
-use crate::check_all::quoted;
+use crate::check_all::{
+    PLAYGROUND_TESTS, PLAYGROUND_TESTS_WITHOUT_COVERAGE, PLAYGROUND_TIMINGS, PLAYGROUND_TYPES,
+    check_named, quoted,
+};
 
 /// A check of a scoped push: its name in the report and the shell command it runs.
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -44,11 +47,37 @@ pub const FULL_INPUTS: &[&str] = &[
     "deny.toml",
     "package.json",
     "package-lock.json",
+    // The playground's packages, an npm project of its own (ADR-0104).
+    "playground/package.json",
+    "playground/package-lock.json",
     "tsconfig.json",
     "vite.config.ts",
     ".oxlintrc.json",
     "tests/font-files-setup.ts",
     "tests/inter-regular.ttf",
+];
+
+/// What Angular's compiler reads of the playground's app: its code, templates and styles, and its
+/// project's settings (EN-159).
+pub const PLAYGROUND_APP_INPUTS: &[&str] = &[
+    "playground/src/",
+    "playground/angular.json",
+    "playground/tsconfig.json",
+    "playground/tsconfig.app.json",
+];
+
+/// What the playground's tests read: the library it imports by its name `editor` (ADR-0104), its
+/// app, the helpers of its tests with their fixtures, global setup and font, never the root's
+/// `tests/` (EN-176), and the settings of its `ng test` (EN-175).
+pub const PLAYGROUND_TEST_INPUTS: &[&str] = &[
+    "src/",
+    "playground/src/",
+    "playground/testing/",
+    "playground/angular.json",
+    "playground/tsconfig.json",
+    "playground/tsconfig.spec.json",
+    "playground/vitest-base.config.ts",
+    "playground/vitest-timings.config.ts",
 ];
 
 /// The checks a story's push gives up whatever it changed, on the full run too: the dependency
@@ -172,8 +201,8 @@ fn words(paths: &[&str]) -> String {
 pub struct Scope {
     /// Lanes of checks: in order within a lane, the lanes at the same time.
     pub lanes: Vec<Vec<Check>>,
-    /// The timing tests related to the change, run alone once the lanes ended.
-    pub after: Option<Check>,
+    /// The timing tests related to the change, run alone once the lanes ended, one after the other.
+    pub after: Vec<Check>,
 }
 
 /// The checks of a story's push on its change (decided 2026-10-25, AUD-050): `paths` every file
@@ -181,10 +210,13 @@ pub struct Scope {
 /// workspace's, `repository_tests` the test files of `tests/` and `scripts/`, which read the
 /// repository's files beside their imports.
 ///
+/// - the playground's app or its settings changed: Angular's type check of it (EN-159);
 /// - TypeScript changed: oxlint on its files, `tsc --noEmit` on the project, the unused exports;
 /// - TypeScript or Markdown changed: the project's linter on their files;
 /// - a file changed outside `tools/`: the Vitest tests related to it, and the repository's own;
 /// - a crate changed: rustfmt on it, Clippy and the tests of it and of the crates depending on it;
+/// - the library, the playground's app, its test helpers or its test settings changed: the
+///   playground's `ng test` without its coverage, and its timing tests after the lanes (EN-175);
 /// - TypeScript changed: its related timing tests after the lanes.
 #[must_use]
 pub fn scope(
@@ -229,6 +261,9 @@ pub fn scope(
         ));
         lanes.push(lane);
     }
+    if touches(paths, PLAYGROUND_APP_INPUTS) {
+        lanes.push(vec![check_named(PLAYGROUND_TYPES)]);
+    }
     if !typescript.is_empty() {
         lanes.push(vec![
             check("tsc", "tsc --noEmit".to_owned()),
@@ -252,6 +287,12 @@ pub fn scope(
             ),
         )]);
     }
+    if touches(paths, PLAYGROUND_TEST_INPUTS) {
+        lanes.push(vec![check(
+            PLAYGROUND_TESTS,
+            PLAYGROUND_TESTS_WITHOUT_COVERAGE.to_owned(),
+        )]);
+    }
     if !rust.is_empty() {
         let packages = rust
             .iter()
@@ -272,15 +313,20 @@ pub fn scope(
         ]);
     }
 
-    let after = (!typescript.is_empty()).then(|| {
-        check(
+    let mut after = Vec::new();
+
+    if !typescript.is_empty() {
+        after.push(check(
             "test:timings",
             format!(
                 "vitest related --run --passWithNoTests --tags-filter=timing {}",
                 words(&typescript)
             ),
-        )
-    });
+        ));
+    }
+    if touches(paths, PLAYGROUND_TEST_INPUTS) {
+        after.push(check("playground:timings", PLAYGROUND_TIMINGS.to_owned()));
+    }
 
     Scope { lanes, after }
 }
@@ -404,6 +450,55 @@ mod tests {
     }
 
     #[test]
+    fn f50_ac3_runs_the_full_check_for_the_playground_s_packages() {
+        for input in ["playground/package.json", "playground/package-lock.json"] {
+            assert!(needs_full_check(&owned(&[input])), "{input}");
+        }
+        assert!(!needs_full_check(&owned(&[
+            "playground/src/main.ts",
+            "playground/angular.json"
+        ])));
+    }
+
+    #[test]
+    fn f50_ac3_checks_the_playground_s_app_by_angular_s_compiler() {
+        let types = check_named(PLAYGROUND_TYPES);
+
+        // A template: Angular's check, the related tests, then the playground's own (EN-175).
+        let template = owned(&["playground/src/app/app.component.html"]);
+        let scope_of_template = scope(&template, &template, &crates(), &[]);
+
+        assert_eq!(scope_of_template.lanes[0], vec![types.clone()]);
+        assert_eq!(scope_of_template.lanes.len(), 3);
+        // Its settings, even removed from the working tree.
+        for input in [
+            "playground/angular.json",
+            "playground/tsconfig.json",
+            "playground/tsconfig.app.json",
+        ] {
+            let change = owned(&[input]);
+
+            assert_eq!(
+                scope(&change, &[], &crates(), &[]).lanes[0],
+                vec![types.clone()]
+            );
+        }
+        // The old page and a folder only starting like the app's: not Angular's.
+        for path in ["playground/points/a.ts", "playground/srcx/a.ts"] {
+            let change = owned(&[path]);
+
+            assert!(
+                !scope(&change, &change, &crates(), &[])
+                    .lanes
+                    .iter()
+                    .flatten()
+                    .any(|check| check.name == PLAYGROUND_TYPES),
+                "{path}"
+            );
+        }
+    }
+
+    #[test]
     fn aud050_checks_a_markdown_change_by_its_lint_and_the_repositorys_tests() {
         let change = owned(&["docs/a.md"]);
         let scope = scope(&change, &change, &crates(), &owned(&["tests/r.test.ts"]));
@@ -420,7 +515,7 @@ mod tests {
                 )],
             ]
         );
-        assert_eq!(scope.after, None);
+        assert_eq!(scope.after, Vec::<Check>::new());
         assert_eq!(
             scope_line("origin/feature/f48-x", &scope),
             "- scoped push: only what the change against origin/feature/f48-x needs (lint, \
@@ -463,17 +558,99 @@ mod tests {
                      'src/gone.ts' 'tests/r.test.ts'"
                         .to_owned()
                 )],
+                // The library, which the playground imports: its tests too (EN-175).
+                vec![check(
+                    PLAYGROUND_TESTS,
+                    PLAYGROUND_TESTS_WITHOUT_COVERAGE.to_owned()
+                )],
             ]
         );
         assert_eq!(
             scope.after,
-            Some(check(
-                "test:timings",
-                "vitest related --run --passWithNoTests --tags-filter=timing 'src/x.ts' \
-                 'tests/r.test.ts'"
-                    .to_owned()
-            ))
+            [
+                check(
+                    "test:timings",
+                    "vitest related --run --passWithNoTests --tags-filter=timing 'src/x.ts' \
+                     'tests/r.test.ts'"
+                        .to_owned()
+                ),
+                check("playground:timings", PLAYGROUND_TIMINGS.to_owned()),
+            ]
         );
+    }
+
+    #[test]
+    fn f50_ac4_runs_the_playground_s_tests_without_coverage_for_what_they_read() {
+        let tests = check(
+            PLAYGROUND_TESTS,
+            PLAYGROUND_TESTS_WITHOUT_COVERAGE.to_owned(),
+        );
+        let timings = check("playground:timings", PLAYGROUND_TIMINGS.to_owned());
+
+        // Its app, its helpers, its test settings, the library; even removed from the tree.
+        for input in [
+            "playground/src/app/shared/utils/view/pan-drag.ts",
+            "playground/testing/press-key.ts",
+            "playground/angular.json",
+            "playground/tsconfig.spec.json",
+            "playground/vitest-base.config.ts",
+            "playground/vitest-timings.config.ts",
+            "src/math/sequence/scan.ts",
+        ] {
+            let scope = scope(&owned(&[input]), &[], &crates(), &[]);
+
+            assert!(scope.lanes.contains(&vec![tests.clone()]), "{input}");
+            assert_eq!(scope.after.last(), Some(&timings), "{input}");
+        }
+        // The docs, the tests of the root, a folder only starting like the library's: not read.
+        for path in ["docs/a.md", "tests/r.test.ts", "srcx/a.ts"] {
+            let scope = scope(&owned(&[path]), &[], &crates(), &[]);
+
+            assert!(
+                !scope.lanes.iter().flatten().any(|each| *each == tests),
+                "{path}"
+            );
+            assert!(!scope.after.contains(&timings), "{path}");
+        }
+        // Without coverage, then its timing tests alone, from its own folder.
+        assert!(
+            PLAYGROUND_TESTS_WITHOUT_COVERAGE.ends_with("&& cd playground && ng test --no-watch")
+        );
+        assert!(
+            PLAYGROUND_TIMINGS
+                .ends_with("&& cd playground && ng test --no-watch --configuration timings")
+        );
+    }
+
+    #[test]
+    fn f50_ac3_runs_the_playground_s_tests_for_its_own_fixtures_not_the_root_s() {
+        let tests = check(
+            PLAYGROUND_TESTS,
+            PLAYGROUND_TESTS_WITHOUT_COVERAGE.to_owned(),
+        );
+        let runs_them = |path: &str| {
+            scope(&owned(&[path]), &[], &crates(), &[])
+                .lanes
+                .contains(&vec![tests.clone()])
+        };
+
+        // Its copies of the root's fixtures, its global setup and the font it reads (EN-176).
+        for path in [
+            "playground/testing/font-fixtures.ts",
+            "playground/testing/text-fixtures.ts",
+            "playground/testing/font-files.setup.ts",
+            "playground/testing/inter-regular.ttf",
+        ] {
+            assert!(runs_them(path), "{path}");
+        }
+        // The root's fixtures, which it no longer imports.
+        for path in [
+            "tests/font-fixtures.ts",
+            "tests/text-fixtures.ts",
+            "tests/index.ts",
+        ] {
+            assert!(!runs_them(path), "{path}");
+        }
     }
 
     #[test]
@@ -496,7 +673,7 @@ mod tests {
                 ),
             ]]
         );
-        assert_eq!(scope.after, None);
+        assert_eq!(scope.after, Vec::<Check>::new());
     }
 
     #[test]
@@ -506,7 +683,7 @@ mod tests {
             let scope = scope(&change, &[], &crates(), &owned(&["tests/r.test.ts"]));
 
             assert!(scope.lanes.is_empty(), "{change:?}");
-            assert_eq!(scope.after, None);
+            assert_eq!(scope.after, Vec::<Check>::new());
             assert!(scope_line("b", &scope).contains("needs (none)"));
         }
     }

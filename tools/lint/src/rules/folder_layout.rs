@@ -195,7 +195,7 @@ mod tests {
     fn uses_the_project_signal_and_list() {
         let root = fixture("folder-layout-project");
         let modules: Vec<String> = (0..16)
-            .map(|index| format!("playground/user-actions/m{index}.ts"))
+            .map(|index| format!("playground/testing/m{index}.ts"))
             .collect();
         let names: Vec<&str> = modules.iter().map(String::as_str).collect();
         write_files(&root, &names);
@@ -204,7 +204,7 @@ mod tests {
             messages(&lint_at(
                 &FolderLayout,
                 &root,
-                "playground/user-actions/m1.ts",
+                "playground/testing/m1.ts",
                 "export {};"
             )),
             NONE
