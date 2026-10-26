@@ -306,7 +306,7 @@ pub struct Bound3<'t> {
 
 /// The inputs, outputs and plain attributes of an element, in Angular's order: the inputs, then
 /// the outputs, then the plain attributes, each in the order written; a two-way binding gives
-/// an input, then an output of the same source span.
+/// an input, then an output of the same source span. The `i18n` marks are none of them.
 #[must_use]
 pub fn bound3(element: &Element) -> Vec<Bound3<'_>> {
     let (mut inputs, mut outputs, mut texts) = (Vec::new(), Vec::new(), Vec::new());
@@ -340,6 +340,9 @@ pub fn bound3(element: &Element) -> Vec<Bound3<'_>> {
                 let name = inner.rsplit(':').next().unwrap_or(&inner).to_owned();
                 outputs.push(each(Role::Output, name, inner.clone()));
             }
+            // Angular's i18n pass takes the `i18n` and `i18n-x` marks out of the attributes before
+            // the tree is built (`I18nMetaVisitor`).
+            AttributeKind::Plain if inner == "i18n" || inner.starts_with("i18n-") => {}
             AttributeKind::Plain if interpolates(attribute) => {
                 inputs.push(each(Role::Input, inner.clone(), inner.clone()));
             }
