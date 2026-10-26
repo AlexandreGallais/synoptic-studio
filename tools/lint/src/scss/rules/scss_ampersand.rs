@@ -8,6 +8,7 @@
 //! (`&-suffix`), building a class no search finds whole.
 
 use super::{Context, Matcher, Report, SheetRule, matches_any};
+use crate::javascript::JsText;
 use crate::scss::selector::{self, Kind as Part};
 use crate::scss::tree::Kind;
 
@@ -34,7 +35,7 @@ fn has_nested_parent(selectors: &str) -> bool {
     selectors.split(',').any(|selector| {
         selector
             .match_indices('&')
-            .any(|(at, _)| !selector[..at].trim_end().is_empty())
+            .any(|(at, _)| !selector[..at].js_trim_end().is_empty())
     })
 }
 
@@ -101,7 +102,7 @@ impl AmpersandRules {
                     .and_then(|at| parsed.next(at))
                     .map(|at| parsed.part(at));
                 if after.is_some_and(|after| {
-                    (after.kind == Part::Tag && matches_any(ignored, after.value.trim()))
+                    (after.kind == Part::Tag && matches_any(ignored, after.value.js_trim()))
                         || after.kind == Part::Combinator
                 }) {
                     continue;

@@ -9,6 +9,7 @@ use super::prefixed::prefix;
 use super::{
     Context, Report, SheetRule, is_standard_declaration, is_standard_property, is_standard_value,
 };
+use crate::javascript::{JsText, is_js_space};
 use crate::scss::tree::Kind;
 use crate::scss::value::{self, Kind as Part};
 
@@ -115,7 +116,7 @@ fn radius(parsed: &value::Value, value: &str) -> Option<String> {
     };
     Some(
         format!("{} / {}", condensed(&sides[0]), condensed(&sides[1]))
-            .trim()
+            .js_trim()
             .to_owned(),
     )
 }
@@ -156,7 +157,7 @@ impl SheetRule for ShorthandPropertyNoRedundantValues {
     fn check(&self, sheet: &Context, reports: &mut Vec<Report>) {
         for (index, node) in sheet.all(Kind::Declaration) {
             let value = &node.value;
-            if !value.contains(char::is_whitespace)
+            if !value.contains(is_js_space)
                 || !is_standard_declaration(sheet, index)
                 || !is_standard_property(&node.prop)
                 || !is_standard_value(value)
@@ -185,9 +186,9 @@ impl SheetRule for ShorthandPropertyNoRedundantValues {
                 && let Some(shortest) = radius(&parsed, value)
             {
                 let normalized: String = value
-                    .trim()
+                    .js_trim()
                     .to_lowercase()
-                    .split_whitespace()
+                    .js_split_whitespace()
                     .collect::<Vec<_>>()
                     .join(" ");
                 if normalized != shortest.to_lowercase() {

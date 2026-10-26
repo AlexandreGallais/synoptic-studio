@@ -7,6 +7,7 @@
 
 use super::elements::js_number;
 use super::view::{Child, Doc, Value};
+use crate::javascript::{JsText, is_js_space};
 use crate::template::lexer::TokenType;
 
 /// Whether hidden by itself and by its parent.
@@ -67,10 +68,10 @@ pub fn inert(doc: &Doc, index: usize) -> Hidden {
 #[must_use]
 pub fn css_declarations(value: &str) -> Vec<(String, String)> {
     let mut found: Vec<(String, String)> = Vec::new();
-    for declaration in value.trim().split(';').filter(|each| !each.is_empty()) {
+    for declaration in value.js_trim().split(';').filter(|each| !each.is_empty()) {
         let mut parts = declaration.splitn(3, ':');
-        let property = parts.next().unwrap_or_default().trim().to_owned();
-        let value = parts.next().unwrap_or_default().trim().to_owned();
+        let property = parts.next().unwrap_or_default().js_trim().to_owned();
+        let value = parts.next().unwrap_or_default().js_trim().to_owned();
         found.retain(|(each, _)| *each != property);
         found.push((property, value));
     }
@@ -190,7 +191,7 @@ pub fn classify_text(
     let mut text = String::new();
     if find_text(doc, index, accessible, &mut text) {
         TextClass::Dynamic
-    } else if text.chars().any(|character| !character.is_whitespace()) {
+    } else if text.chars().any(|character| !is_js_space(character)) {
         TextClass::Static
     } else {
         TextClass::Empty
@@ -211,7 +212,7 @@ fn has_alt_text(doc: &Doc, index: usize) -> bool {
 fn has_img_alt_text(doc: &Doc, index: usize, reference: Option<usize>) -> bool {
     match doc.el(index).tag.as_str() {
         "img" => return has_alt_text(doc, index),
-        "svg" => return !doc.text_content(index).0.trim().is_empty(),
+        "svg" => return !doc.text_content(index).0.js_trim().is_empty(),
         _ => {}
     }
     doc.descendants(index)
@@ -226,7 +227,7 @@ fn has_label(doc: &Doc, index: usize) -> bool {
         .is_some_and(|attr| match &attr.value {
             Value::Omitted => false,
             Value::Dynamic => true,
-            Value::Static(text) => !text.trim().is_empty(),
+            Value::Static(text) => !text.js_trim().is_empty(),
         })
 }
 
@@ -242,7 +243,7 @@ fn is_labelledby(doc: &Doc, index: usize, reference: Option<usize>) -> bool {
     let ids = match &attr.value {
         Value::Dynamic => return true,
         Value::Omitted => return false,
-        Value::Static(ids) => ids.split_whitespace().collect::<Vec<_>>(),
+        Value::Static(ids) => ids.js_split_whitespace().collect::<Vec<_>>(),
     };
     ids.iter().any(|id| {
         (0..doc.elements.len())

@@ -5,6 +5,7 @@
 //! `*` and its attribute conditions, `[name]` or `[name="value"]`.
 
 use super::view::Doc;
+use crate::javascript::JsText;
 
 /// A condition on an attribute.
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -74,7 +75,7 @@ impl Selector {
                 let spaced = complex.replace('>', " > ");
                 let mut compounds = Vec::new();
                 let mut child = false;
-                for part in spaced.split_whitespace() {
+                for part in spaced.js_split_whitespace() {
                     if part == ">" {
                         child = true;
                     } else {

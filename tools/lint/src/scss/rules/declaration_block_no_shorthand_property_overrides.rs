@@ -21,6 +21,16 @@ impl SheetRule for DeclarationBlockNoShorthandPropertyOverrides {
         &[("rejected", "Overridden property \"{}\" by shorthand \"{}\"")]
     }
 
+    fn computed(&self, key: &str, args: &[String]) -> Option<String> {
+        // The original's arguments are the shorthand, then the property it overrides, which its
+        // message names first.
+        let [shorthand, original] = args else {
+            return None;
+        };
+        (key == "rejected")
+            .then(|| format!("Overridden property \"{original}\" by shorthand \"{shorthand}\""))
+    }
+
     fn check(&self, sheet: &Context, reports: &mut Vec<Report>) {
         for block in sheet.declaration_blocks() {
             let mut declared: Vec<(String, String)> = Vec::new();

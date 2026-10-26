@@ -7,6 +7,7 @@
 //! fixed by dropping it. CSS files, URLs and `url()` left alone.
 
 use super::{Context, Report, SheetRule};
+use crate::javascript::{JsText, is_js_space};
 use crate::scss::tree::Kind;
 
 /// Which of the two rules, with its option.
@@ -45,11 +46,11 @@ fn is_css(path: &str) -> bool {
 
 /// A path without its quotes and the spaces around them.
 fn stripped(path: &str) -> &str {
-    let trimmed = path.trim_start();
+    let trimmed = path.js_trim_start();
     let trimmed = trimmed
         .strip_prefix(['"', '\''])
         .map_or(trimmed, str::trim_start);
-    let trimmed = trimmed.trim_end();
+    let trimmed = trimmed.js_trim_end();
     trimmed
         .strip_suffix(['"', '\''])
         .map_or(trimmed, str::trim_end)
@@ -80,7 +81,7 @@ fn split_paths(params: &str) -> Vec<String> {
         if at < from || !matches!(character, '"' | '\'') {
             continue;
         }
-        let after = params[at + 1..].trim_start();
+        let after = params[at + 1..].js_trim_start();
         if after.starts_with(',') {
             parts.push(params[from..at].to_owned());
             from = params.len() - after.len() + 1;
@@ -101,7 +102,7 @@ fn extension(path: &str) -> &str {
 
 /// Whether a path ends with a media type, as `@import`'s do (`(?:all|print|screen…)$`).
 fn ends_with_media(path: &str) -> bool {
-    let lower = path.trim().to_lowercase();
+    let lower = path.js_trim().to_lowercase();
     [
         "all",
         "print",
@@ -132,7 +133,7 @@ impl LoadRules {
         }
         let bytes = path.as_bytes();
         let trailing_word = path
-            .rfind(|c: char| c.is_whitespace() || matches!(c, ',' | ')' | '"' | '\''))
+            .rfind(|c: char| is_js_space(c) || matches!(c, ',' | ')' | '"' | '\''))
             .is_some_and(|at| {
                 at + 1 < bytes.len()
                     && path[at + 1..]

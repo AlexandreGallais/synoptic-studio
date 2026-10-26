@@ -1,8 +1,9 @@
 //! What JavaScript's built-ins read in a text, for the rules that port a plugin's JavaScript:
-//! white space as `\s` counts it, `Number(text)`, `parseInt(text, 10)`, `parseFloat(text)` and
-//! the `isNumeric` the plugins write with them, each after ECMAScript's conversions
-//! (`StringToNumber`, `parseInt`, `parseFloat`). Shared by the Markdown pages and the templates;
-//! the tests are this module's own cases.
+//! white space as `\s` counts it and `trim` takes it off, `Number(text)`, `parseInt(text, 10)`,
+//! `parseFloat(text)` and the `isNumeric` the plugins write with them, each after ECMAScript's
+//! conversions
+//! (`StringToNumber`, `parseInt`, `parseFloat`). Shared by the Markdown pages, the templates and
+//! the style sheets; the tests are this module's own cases.
 
 /// Whether a character is white space as JavaScript's `\s` counts it.
 #[must_use]
@@ -18,6 +19,44 @@ pub const fn is_js_space(character: char) -> bool {
                 | '\u{3000}'
                 | '\u{feff}'
     )
+}
+
+/// A text without the white space at its ends, as JavaScript's `trim` takes it off (the
+/// characters of `\s`, the byte order mark among them; not U+0085, which Rust's `trim` takes).
+#[must_use]
+pub fn js_trim(text: &str) -> &str {
+    text.trim_matches(is_js_space)
+}
+
+/// JavaScript's reading of white space on a text, for the ports of its code: `trim`,
+/// `trimStart`, `trimEnd` and `split(/\s+/)` without the empty parts.
+pub trait JsText {
+    /// The text without the white space at its ends (`trim`).
+    fn js_trim(&self) -> &str;
+    /// The text without the white space at its start (`trimStart`).
+    fn js_trim_start(&self) -> &str;
+    /// The text without the white space at its end (`trimEnd`).
+    fn js_trim_end(&self) -> &str;
+    /// The words of the text between runs of white space.
+    fn js_split_whitespace(&self) -> impl Iterator<Item = &str>;
+}
+
+impl JsText for str {
+    fn js_trim(&self) -> &str {
+        js_trim(self)
+    }
+
+    fn js_trim_start(&self) -> &str {
+        self.trim_start_matches(is_js_space)
+    }
+
+    fn js_trim_end(&self) -> &str {
+        self.trim_end_matches(is_js_space)
+    }
+
+    fn js_split_whitespace(&self) -> impl Iterator<Item = &str> {
+        self.split(is_js_space).filter(|word| !word.is_empty())
+    }
 }
 
 /// A text as JavaScript's `Number(text)` reads it: its whitespace trimmed, empty as 0, a decimal
@@ -138,13 +177,27 @@ pub fn is_numeric(text: &str) -> bool {
 
 #[cfg(test)]
 mod tests {
-    use super::{is_js_space, is_numeric, parse_float, parse_int, to_number};
+    use super::{JsText, is_js_space, is_numeric, js_trim, parse_float, parse_int, to_number};
 
     #[test]
     fn reads_whitespace_as_javascript_does() {
         assert!(is_js_space('\u{feff}') && is_js_space('\u{2009}'));
         // NEL is whitespace for Rust, not for `\s`.
         assert!(!is_js_space('\u{85}') && '\u{85}'.is_whitespace());
+    }
+
+    #[test]
+    fn trims_and_splits_as_javascript_does() {
+        // `"\u{feff} a \u{85}".trim()` is `"a \u{85}"`: the mark is `\s`, NEL is not.
+        assert_eq!(js_trim("\u{feff} a \u{85}"), "a \u{85}");
+        assert_eq!(" a ".js_trim_start(), "a ");
+        assert_eq!("\u{feff}a\u{feff}".js_trim_end(), "\u{feff}a");
+        assert_eq!(
+            "a\u{feff} b\u{85}c  "
+                .js_split_whitespace()
+                .collect::<Vec<_>>(),
+            ["a", "b\u{85}c"]
+        );
     }
 
     #[test]

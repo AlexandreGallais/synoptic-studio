@@ -13,6 +13,7 @@
 //! Angular's parser refuses (`<div/>`, an end tag on a void element), which never reaches the
 //! rules.
 
+use crate::javascript::JsText;
 use std::collections::BTreeMap;
 use std::fs;
 use std::path::Path;
@@ -331,7 +332,7 @@ fn frame(text: &str) -> Vec<Expected> {
     let mut found: Vec<Expected> = Vec::new();
     let mut pending: Option<Expected> = None;
     for line in text.lines() {
-        let trimmed = line.trim_start().trim_start_matches('"');
+        let trimmed = line.js_trim_start().trim_start_matches('"');
         if let Some(rest) = trimmed
             .strip_prefix("error: ")
             .or_else(|| trimmed.strip_prefix("warning: "))
@@ -353,11 +354,11 @@ fn frame(text: &str) -> Vec<Expected> {
         let Some((gutter, after)) = line.split_once('|') else {
             continue;
         };
-        if let Some(number) = gutter.trim_start().strip_prefix('>') {
+        if let Some(number) = gutter.js_trim_start().strip_prefix('>') {
             if expected.line.is_none() {
-                expected.line = number.trim().parse().ok();
+                expected.line = number.js_trim().parse().ok();
             }
-        } else if gutter.trim().is_empty() && expected.column.is_none() && after.contains('^') {
+        } else if gutter.js_trim().is_empty() && expected.column.is_none() && after.contains('^') {
             let marks = after.strip_prefix(' ').unwrap_or(after);
             let spacing = marks.find('^').unwrap_or(0);
             expected.column = Some(marks[..spacing].chars().count() + 1);
@@ -802,7 +803,7 @@ fn table_rows(tagged: &TaggedTemplateExpression, scope: &Scope) -> Option<Vec<Va
     let header = tagged.quasi.quasis.first()?.value.raw.as_str();
     let columns: Vec<String> = header
         .split('|')
-        .map(|each| each.trim().to_owned())
+        .map(|each| each.js_trim().to_owned())
         .filter(|each| !each.is_empty())
         .collect();
     if columns.is_empty() {

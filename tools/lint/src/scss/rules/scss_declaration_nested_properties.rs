@@ -6,6 +6,7 @@
 //! `except: "only-of-namespace"` a namespace of one property nested.
 
 use super::{Context, Report, SheetRule, is_standard_property};
+use crate::javascript::JsText;
 use crate::scss::tree::Kind;
 
 /// The rule and its options.
@@ -53,15 +54,15 @@ fn nested_name(selector: &str) -> Option<String> {
         let name: String = characters[..at].iter().collect();
         let value: String = characters[at + 1..].iter().collect();
         if !value.is_empty() {
-            let spaces = value.len() - value.trim_start().len();
-            let trimmed = value.trim();
+            let spaces = value.len() - value.js_trim_start().len();
+            let trimmed = value.js_trim();
             let starts_value = trimmed
                 .starts_with(|c: char| c.is_ascii_digit() || matches!(c, '.' | '$' | '\'' | '"'));
             if spaces == 0 && !starts_value {
                 return None;
             }
         }
-        return Some(name.trim().to_owned());
+        return Some(name.js_trim().to_owned());
     }
     None
 }

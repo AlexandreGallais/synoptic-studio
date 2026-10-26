@@ -6,6 +6,7 @@
 //! by the parent (its compound inlined, a list as `:is(…)`), an implicit `& ` added, compounds
 //! sorted by kind, lists sorted and deduplicated, comments and spaces dropped.
 
+use crate::javascript::JsText;
 use crate::scss::selector::{Kind, Selectors};
 
 /// An item of a selector.
@@ -77,10 +78,10 @@ fn read_selector(parsed: &Selectors, text: &str, selector: usize) -> Selector {
             match part.kind {
                 Kind::Comment => None,
                 Kind::Nesting => Some(Item::Nesting),
-                Kind::Combinator => Some(Item::Combinator(if part.value.trim().is_empty() {
+                Kind::Combinator => Some(Item::Combinator(if part.value.js_trim().is_empty() {
                     " ".to_owned()
                 } else {
-                    part.value.trim().to_owned()
+                    part.value.js_trim().to_owned()
                 })),
                 Kind::Pseudo => Some(Item::Pseudo(
                     part.value.clone(),
@@ -93,7 +94,7 @@ fn read_selector(parsed: &Selectors, text: &str, selector: usize) -> Selector {
                 Kind::Attribute => Some(Item::Simple(
                     Kind::Attribute,
                     part.attribute.as_ref().map_or_else(
-                        || format!("[{}]", part.value.trim()),
+                        || format!("[{}]", part.value.js_trim()),
                         |attribute| {
                             let flag = attribute
                                 .flag
@@ -111,7 +112,7 @@ fn read_selector(parsed: &Selectors, text: &str, selector: usize) -> Selector {
                 )),
                 kind => Some(Item::Simple(
                     kind,
-                    parsed.text(text, index).trim().to_owned(),
+                    parsed.text(text, index).js_trim().to_owned(),
                 )),
             }
         })

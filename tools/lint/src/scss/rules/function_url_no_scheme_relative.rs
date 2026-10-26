@@ -3,6 +3,7 @@
 //! declaration or an `@import` whose address starts `//`, reported over its argument.
 
 use super::{Context, Report, SheetRule, function_arguments, has_interpolation};
+use crate::javascript::JsText;
 use crate::scss::tree::Kind;
 
 /// The rule.
@@ -60,7 +61,7 @@ impl SheetRule for FunctionUrlNoSchemeRelative {
             }
             let source = sheet.source(node).to_lowercase();
             for (argument, at, _) in function_arguments(&source, &|name| name == "url") {
-                let url = argument.trim().trim_matches(|c| c == '\'' || c == '"');
+                let url = argument.js_trim().trim_matches(|c| c == '\'' || c == '"');
                 if is_standard_url(url) && url.starts_with("//") {
                     let from = node.start + at;
                     reports.push(Report::new(from, from + argument.len(), "rejected"));

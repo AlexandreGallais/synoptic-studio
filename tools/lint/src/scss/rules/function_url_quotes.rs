@@ -7,6 +7,7 @@
 
 use super::function_url_no_scheme_relative::is_standard_url;
 use super::{Context, Report, SheetRule, function_arguments, is_standard_declaration};
+use crate::javascript::{JsText, is_js_space};
 use crate::scss::tree::Kind;
 use crate::scss::value::{self, Kind as Part};
 
@@ -63,8 +64,7 @@ fn has_modifier(source: &str, start: usize) -> bool {
                 match argument.kind {
                     Part::String | Part::Space => false,
                     Part::Word => argument.value.char_indices().any(|(at, character)| {
-                        character.is_whitespace()
-                            && (at == 0 || !argument.value[..at].ends_with('\\'))
+                        is_js_space(character) && (at == 0 || !argument.value[..at].ends_with('\\'))
                     }),
                     _ => true,
                 }
@@ -91,11 +91,11 @@ impl FunctionUrlQuotes {
             if has_modifier(source, start) {
                 continue;
             }
-            let left_trimmed = argument.trim_start();
+            let left_trimmed = argument.js_trim_start();
             if !is_standard_url(left_trimmed) {
                 continue;
             }
-            let empty = matches!(argument.trim(), "" | "''" | "\"\"");
+            let empty = matches!(argument.js_trim(), "" | "''" | "\"\"");
             let expect = self.always != (self.except_empty && empty);
             let quoted = left_trimmed.starts_with(['\'', '"']);
             if (quoted && requires_quotes(left_trimmed)) || expect == quoted {
@@ -103,7 +103,7 @@ impl FunctionUrlQuotes {
             }
             let from = offset + start + argument.len() - left_trimmed.len();
             let to = offset + start + argument.len();
-            let inner = left_trimmed.trim_end();
+            let inner = left_trimmed.js_trim_end();
             let (key, replacement) = if expect {
                 ("expected", format!("\"{inner}\""))
             } else {

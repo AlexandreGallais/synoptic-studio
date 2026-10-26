@@ -5,6 +5,7 @@
 //! them, its `using (…)` clause kept, reported over the mixin's name and fixed.
 
 use super::{Context, Report, SheetRule};
+use crate::javascript::{JsText, is_js_space};
 use crate::scss::tree::Kind;
 
 /// The rule and its option.
@@ -22,24 +23,24 @@ impl AtMixinArgumentlessCallParentheses {
 fn split_using(params: &str) -> (String, String) {
     let found = params.match_indices("using").find(|(at, _)| {
         let before = &params[..*at];
-        let rest = params[at + 5..].trim_start();
+        let rest = params[at + 5..].js_trim_start();
         before.ends_with([')', ' '])
             && rest.starts_with('(')
-            && rest.trim_end().ends_with(')')
-            && !rest[1..].trim_end().trim_end_matches(')').contains(')')
+            && rest.js_trim_end().ends_with(')')
+            && !rest[1..].js_trim_end().trim_end_matches(')').contains(')')
     });
     match found {
-        Some((at, _)) => (params[..at].trim().to_owned(), params[at..].to_owned()),
-        None => (params.trim().to_owned(), String::new()),
+        Some((at, _)) => (params[..at].js_trim().to_owned(), params[at..].to_owned()),
+        None => (params.js_trim().to_owned(), String::new()),
     }
 }
 
 /// Whether a call ends with empty parentheses (`/\(\s*\)\s*$/`).
 fn ends_empty(call: &str) -> bool {
-    let trimmed = call.trim_end();
+    let trimmed = call.js_trim_end();
     trimmed
         .strip_suffix(')')
-        .is_some_and(|inner| inner.trim_end().ends_with('('))
+        .is_some_and(|inner| inner.js_trim_end().ends_with('('))
 }
 
 impl SheetRule for AtMixinArgumentlessCallParentheses {
@@ -70,7 +71,7 @@ impl SheetRule for AtMixinArgumentlessCallParentheses {
                 format!("{call}()")
             } else {
                 let open = call.rfind('(').unwrap_or(call.len());
-                call[..open].trim_end().to_owned()
+                call[..open].js_trim_end().to_owned()
             };
             let fixed = if using.is_empty() {
                 fixed_call
@@ -78,7 +79,7 @@ impl SheetRule for AtMixinArgumentlessCallParentheses {
                 format!("{fixed_call} {using}")
             };
             let name_end = call
-                .find(|c: char| c.is_whitespace() || c == '(')
+                .find(|c: char| is_js_space(c) || c == '(')
                 .unwrap_or(call.len());
             let name = &call[..name_end];
             let (start, end) = sheet.word_range(node, name);

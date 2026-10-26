@@ -8,6 +8,7 @@ use super::keyframe_block_no_duplicate_selectors::stripped;
 use super::keyframes_name_pattern::is_keyframes;
 use super::nested::{Selector, normalize, print, print_list, read, resolve};
 use super::{Context, Matcher, Report, SheetRule, is_standard_rule, matches_any};
+use crate::javascript::JsText;
 use crate::scss::selector;
 use crate::scss::tree::Kind;
 
@@ -189,7 +190,7 @@ impl SheetRule for NoDuplicateSelectors {
             match contexts[at].1.iter().find(|(key, _)| *key == normal) {
                 Some((_, line)) => {
                     let line = *line;
-                    let written = text.trim();
+                    let written = text.js_trim();
                     complain(0, written, line);
                 }
                 None => contexts[at].1.push((normal, rule_line)),

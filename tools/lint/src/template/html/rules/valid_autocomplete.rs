@@ -6,6 +6,7 @@
 
 use super::super::view::{Doc, Value};
 use super::super::{MESSAGES, report, tokens};
+use crate::javascript::JsText;
 use crate::template::lexer::Span;
 use crate::template::rules::{Report, Template, TemplateRule};
 
@@ -247,7 +248,7 @@ impl TemplateRule for ValidAutocomplete {
             }
             match element.tag.as_str() {
                 "form" => {
-                    let trimmed = lower.trim();
+                    let trimmed = lower.js_trim();
                     if !matches!(trimmed, "on" | "off") {
                         reports.push(report(
                             attr.value_span(),

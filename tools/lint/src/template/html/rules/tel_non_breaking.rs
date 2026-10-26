@@ -7,6 +7,7 @@ use super::super::a11y::css_declarations;
 use super::super::view::{Child, Doc};
 use super::super::{MESSAGES, fixed, tokens};
 use crate::finding::Fix;
+use crate::javascript::JsText;
 use crate::template::lexer::{Span, TokenType, offset};
 use crate::template::rules::{Report, Template, TemplateRule};
 use crate::template::tree::Text;
@@ -64,12 +65,12 @@ fn check_text(source: &str, text: &Text, reports: &mut Vec<Report>) {
     let raw = source
         .get(start..text.span.end as usize)
         .unwrap_or_default();
-    let leading = raw.len() - raw.trim_start().len();
+    let leading = raw.len() - raw.js_trim_start().len();
     let rest = &raw[leading..];
     if rest.contains(['\n', '\r', '\u{2028}', '\u{2029}']) {
         return;
     }
-    let trimmed = rest.trim_end();
+    let trimmed = rest.js_trim_end();
     let expressions: Vec<(usize, usize)> = text
         .tokens
         .iter()

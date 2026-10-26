@@ -5,6 +5,7 @@
 //! `removeEmptyLinesBefore`; REF-STYLELINT-SOURCE, MIT, under ADR-0076) and their options.
 
 use super::{Context, Matcher, Report, matches_any};
+use crate::javascript::is_js_space;
 use crate::scss::tree::Kind;
 
 /// An empty-line rule's options: its primary, `ignore` and `except` words, and the at-rules and
@@ -292,7 +293,7 @@ fn remove_empty_lines(before: &str, newline: &str) -> String {
             at
         };
         let run = rest[at + 1..]
-            .find(|c: char| !c.is_whitespace())
+            .find(|c: char| !is_js_space(c))
             .map_or(rest.len(), |end| at + 1 + end);
         if let Some(last) = rest[at + 1..run].rfind('\n') {
             result.push_str(&rest[..start]);

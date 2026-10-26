@@ -8,6 +8,7 @@
 
 use super::tokenizer::{Kind as TokenKind, Token, Tokenizer, js_or};
 use super::tree::{Kind, Node, Sheet};
+use crate::javascript::{JsText, is_js_space};
 use crate::template::NESTING_LIMIT;
 
 /// An error of the reading: its message, `PostCSS`'s, and the byte it is reported at.
@@ -22,7 +23,9 @@ pub struct ParseError {
 /// The result of a step of the reading.
 type Read<T> = Result<T, ParseError>;
 
-/// A sheet's tree, or the first error of its reading.
+/// A sheet's tree, or the first error of its reading. The text is read as given: a byte order
+/// mark, which `PostCSS`'s `Input` drops before parsing, is dropped by the caller
+/// (`scss::lint_text`), whose places and fixes take it into account.
 ///
 /// # Errors
 ///
@@ -62,11 +65,6 @@ const fn is_trivia(token: &Token) -> bool {
 /// Whether a token is a space.
 const fn is_space(token: &Token) -> bool {
     matches!(token.kind, TokenKind::Space)
-}
-
-/// The text of a JavaScript `\s` class: white space or the byte order mark.
-fn is_js_space(character: char) -> bool {
-    character.is_whitespace() || character == '\u{feff}'
 }
 
 /// A comment's text split as `/^(\s*)([^]*\S)(\s*)$/` splits it: the spaces before, the text,
@@ -459,14 +457,14 @@ impl Parser<'_> {
                 let mut inner = index;
                 while inner > 0 {
                     let kind = cache[inner].kind;
-                    if string.trim().starts_with('!') && kind != TokenKind::Space {
+                    if string.js_trim().starts_with('!') && kind != TokenKind::Space {
                         break;
                     }
                     let popped = cache.pop().map(|each| self.text(&each).to_owned());
                     string = format!("{}{string}", popped.unwrap_or_default());
                     inner -= 1;
                 }
-                if string.trim().starts_with('!') {
+                if string.js_trim().starts_with('!') {
                     *tokens = cache;
                     return (true, Some(string));
                 }
@@ -647,7 +645,7 @@ impl Parser<'_> {
     /// A rule, or in SCSS a declaration with nested properties, from its tokens up to `{`.
     fn rule(&mut self, mut tokens: Vec<Token>) -> Read<()> {
         if let Some(value) = self.nested_value(&tokens)
-            && !value.trim().is_empty()
+            && !value.js_trim().is_empty()
             && !value.starts_with(|first: char| {
                 first == '#' || first == ':' || first == '-' || first.is_ascii_alphabetic()
             })
@@ -1108,6 +1106,66 @@ mod tests {
         assert_eq!(
             sheet.ancestors(sheet.walk()[14]),
             [sheet.walk()[13], sheet.walk()[8], 0]
+        );
+    }
+
+    #[test]
+    fn splits_a_comment_s_spaces_as_javascript_s_s_class_reads_them() {
+        // Own cases: `/^(\s*)([^]*\S)(\s*)$/` takes the byte order mark as a space, not NEL
+        // (U+0085), which Rust's white space holds.
+        let sheet = read("/*\u{feff}a\u{85}*/");
+        let comment = at(&sheet, &[0]);
+        assert_eq!(
+            (
+                comment.left.as_str(),
+                comment.text.as_str(),
+                comment.right.as_str()
+            ),
+            ("\u{feff}", "a\u{85}", "")
+        );
+    }
+
+    #[test]
+    fn reads_a_word_before_a_colon_comments_in_a_value_and_a_spaced_nested_declaration() {
+        // Own cases. A word of `\w` between a property and its `:` is an unknown word, `_` too;
+        // `%` is not, and goes to `between` with the spaces after the colon.
+        assert_eq!(
+            parse("a { b _: c }"),
+            Err(ParseError {
+                message: "Unknown word _".to_owned(),
+                offset: 6
+            })
+        );
+        assert_eq!(at(&read("a { b %: c }"), &[0, 0]).between, " %: ");
+        // A comment after a space leaves the value, kept in the raw text (`a /**/b`); one
+        // between two words stays in it (`a/**/b`).
+        let sheet = read("a { b: c /**/d; e: f/**/g }");
+        assert_eq!(
+            (
+                at(&sheet, &[0, 0]).value.as_str(),
+                at(&sheet, &[0, 0]).raw.as_deref()
+            ),
+            ("c d", Some("c /**/d"))
+        );
+        assert_eq!(
+            (
+                at(&sheet, &[0, 1]).value.as_str(),
+                at(&sheet, &[0, 1]).raw.as_deref()
+            ),
+            ("f/**/g", None)
+        );
+        // `margin :0 {`: a space before the colon on the same line, still a nested declaration
+        // (postcss-scss's `rule`), its value `0`.
+        let sheet = read("a { margin :0 { left: 1px } }");
+        let nested = at(&sheet, &[0, 0]);
+        assert_eq!(
+            (
+                nested.is(Kind::Declaration),
+                nested.prop.as_str(),
+                nested.between.as_str(),
+                nested.value.as_str()
+            ),
+            (true, "margin", " :", "0")
         );
     }
 

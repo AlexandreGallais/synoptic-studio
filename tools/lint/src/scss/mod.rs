@@ -30,9 +30,27 @@ pub fn is_sheet(path: &str) -> bool {
 }
 
 /// The findings of a sheet's text: its first reading error, under `lint/parse`, else those of
-/// the project's rules that run on it, its `lint-disable-next-line` directives applied.
+/// the project's rules that run on it, its `lint-disable-next-line` directives applied. A leading
+/// byte order mark is dropped before the reading, as `PostCSS`'s `Input` drops it: the places are
+/// those of the text after it, as Stylelint gives them, and each fix is moved past it.
 #[must_use]
 pub fn lint_text(path: &str, text: &str) -> Vec<Finding> {
+    let mark = if text.starts_with('\u{feff}') {
+        '\u{feff}'.len_utf8()
+    } else {
+        0
+    };
+    let mut findings = lint_body(path, &text[mark..]);
+    let shift = u32::try_from(mark).unwrap_or(0);
+    for fix in findings.iter_mut().filter_map(|each| each.fix.as_mut()) {
+        fix.start += shift;
+        fix.end += shift;
+    }
+    findings
+}
+
+/// The findings of a sheet's text without its byte order mark.
+fn lint_body(path: &str, text: &str) -> Vec<Finding> {
     match parser::parse(text) {
         Ok(sheet) => lint_sheet(path, text, &sheet),
         Err(error) => {
@@ -188,6 +206,41 @@ mod tests {
         // The first directive silences its line; the second gives no reason, so it is reported
         // and silences its line still, as in the TypeScript code.
         assert_eq!(places(&findings), [("lint/disable-directive", 5, 3)]);
+    }
+
+    #[test]
+    fn reads_a_sheet_after_its_byte_order_mark_as_postcss_does() {
+        // Own cases: PostCSS's `Input` drops the mark, so nothing is reported of it and the
+        // places are those of the text after it. `.b { color: #fff; }`: `#fff` is the 13th
+        // character after the mark; `@import` at 1:1; a mark alone an empty source.
+        assert_eq!(
+            lint_text("a.scss", "\u{feff}a {\n  display: block;\n}\n"),
+            []
+        );
+        assert_eq!(
+            places(&lint_text("a.scss", "\u{feff}.b { color: #fff; }\n")),
+            [("stylelint/color-no-hex", 1, 13)]
+        );
+        assert_eq!(
+            places(&lint_text("a.scss", "\u{feff}@import \"x\";\n")),
+            [("stylelint/at-rule-disallowed-list", 1, 1)]
+        );
+        assert_eq!(
+            places(&lint_text("a.scss", "\u{feff}")),
+            [("stylelint/no-empty-source", 1, 1)]
+        );
+        // `margin` at 1:5 after the mark, the unit of its `0px` at 1:14 (`a { margin: 0` is 13
+        // characters), fixed three bytes later in the file: the mark is kept.
+        let text = "\u{feff}a { margin: 0px; }\n";
+        let findings = lint_text("a.scss", text);
+        assert_eq!(
+            places(&findings),
+            [("stylelint/length-zero-no-unit", 1, 14)]
+        );
+        assert_eq!(
+            crate::testing::fixed(text, &findings),
+            "\u{feff}a { margin: 0; }\n"
+        );
     }
 
     #[test]

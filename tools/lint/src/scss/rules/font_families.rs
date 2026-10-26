@@ -8,6 +8,7 @@ use super::reference::{
     BASIC_KEYWORDS, FONT_FAMILY_KEYWORDS, FONT_SHORTHAND_KEYWORDS, FONT_SIZE_KEYWORDS,
     LENGTH_UNITS, has,
 };
+use crate::javascript::JsText;
 use crate::scss::value::{self, Kind as Part, Value};
 
 /// A family found: its text, joined, where its first part starts and ends, its quote, and
@@ -49,7 +50,7 @@ pub fn is_font_size(word: &str) -> bool {
 
 /// Whether a text is a number as `Number(value) == value` reads it (`isNumbery`).
 fn is_numbery(text: &str) -> bool {
-    !text.trim().is_empty() && !crate::javascript::to_number(text).is_nan()
+    !text.js_trim().is_empty() && !crate::javascript::to_number(text).is_nan()
 }
 
 /// The families of a value.

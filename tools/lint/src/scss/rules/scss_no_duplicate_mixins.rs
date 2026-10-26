@@ -3,6 +3,7 @@
 //! of them at the root, reported over its name: the second replaces the first.
 
 use super::{Context, Report, SheetRule};
+use crate::javascript::JsText;
 use crate::scss::tree::Kind;
 
 /// The rule.
@@ -17,7 +18,7 @@ fn base_name(params: &str) -> String {
         },
         None => params.to_owned(),
     };
-    base.trim().to_owned()
+    base.js_trim().to_owned()
 }
 
 impl SheetRule for NoDuplicateMixins {

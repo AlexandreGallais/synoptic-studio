@@ -7,6 +7,7 @@
 
 use super::empty_lines::Lines;
 use super::{Context, Report, SheetRule};
+use crate::javascript::JsText;
 use crate::scss::tree::Kind;
 
 /// The rule and its options.
@@ -102,7 +103,7 @@ impl SheetRule for DollarVariableEmptyLineBefore {
             let fixed = if expected {
                 let mut text = replace_start(before, newline, &format!("{newline}{newline}"));
                 if options.excepts("first-nested") && !before.contains(newline) {
-                    let spaces = text.len() - text.trim_start().len();
+                    let spaces = text.len() - text.js_trim_start().len();
                     if spaces > 0 {
                         text = format!("{newline}{newline}{}", &text[spaces..]);
                     }

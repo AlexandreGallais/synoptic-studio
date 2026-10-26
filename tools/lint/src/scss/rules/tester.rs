@@ -11,6 +11,7 @@
 //! information, a case skipped upstream, a value built at run time, or a code `PostCSS`'s CSS parser
 //! reads and the SCSS reader refuses.
 
+use crate::javascript::JsText;
 use std::collections::BTreeMap;
 use std::fs;
 use std::path::Path;
@@ -279,7 +280,7 @@ fn is_messages(expression: &Expression) -> bool {
 fn strip_indent(text: &str) -> String {
     let indent = text
         .lines()
-        .filter(|line| !line.trim().is_empty())
+        .filter(|line| !line.js_trim().is_empty())
         .map(|line| line.len() - line.trim_start_matches([' ', '\t']).len())
         .min()
         .unwrap_or(0);
@@ -290,7 +291,7 @@ fn strip_indent(text: &str) -> String {
         })
         .collect::<Vec<_>>()
         .join("\n")
-        .trim()
+        .js_trim()
         .to_owned()
 }
 
@@ -336,7 +337,7 @@ fn call_value(call: &CallExpression, source: &str, env: &Env) -> Option<Js> {
         ("repeat", Js::Text(text), [Js::Number(count)]) => {
             Some(Js::Text(text.repeat(format!("{count}").parse().ok()?)))
         }
-        ("trim", Js::Text(text), []) => Some(Js::Text(text.trim().to_owned())),
+        ("trim", Js::Text(text), []) => Some(Js::Text(text.js_trim().to_owned())),
         _ => None,
     }
 }

@@ -8,6 +8,7 @@ use super::reference::{
     A_NPLUS_BNOTATION_PSEUDO_CLASSES, A_NPLUS_BOF_SNOTATION_PSEUDO_CLASSES, has,
 };
 use super::{Context, Report, SheetRule, is_standard_rule};
+use crate::javascript::is_js_space;
 use crate::scss::selector::{self, Kind as Part};
 use crate::scss::tree::Kind;
 
@@ -25,7 +26,7 @@ fn is_unmatchable(argument: &str) -> Option<bool> {
         lower.replace_range(open..close, " ");
     }
     let formula = lower.split(" of ").next().unwrap_or_default();
-    let compact: String = formula.chars().filter(|c| !c.is_whitespace()).collect();
+    let compact: String = formula.chars().filter(|c| !is_js_space(*c)).collect();
     if compact.is_empty() || compact == "odd" || compact == "even" {
         return None;
     }

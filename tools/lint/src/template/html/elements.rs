@@ -11,6 +11,7 @@
 //! only `no-unknown-attributes` reads, a rule the catalogue skips.
 
 use super::view::{Doc, Value};
+use crate::javascript::JsText;
 
 /// A category of content, or another property of an element, known or computed.
 #[derive(Clone, Copy, Debug)]
@@ -506,9 +507,9 @@ fn is_inside_landmark(doc: &Doc, index: usize) -> bool {
 
 /// Whether an `srcset` uses a width descriptor (`parseImageCandidateString`).
 fn has_width_descriptor(srcset: &str) -> bool {
-    srcset.trim() != ""
+    srcset.js_trim() != ""
         && srcset.split(',').any(|candidate| {
-            let parts: Vec<&str> = candidate.split_whitespace().collect();
+            let parts: Vec<&str> = candidate.js_split_whitespace().collect();
             parts.len() >= 2
                 && parts.last().is_some_and(|descriptor| {
                     let digits = descriptor.strip_suffix(['w', 'W']).unwrap_or("");
@@ -531,7 +532,7 @@ fn link_body_ok(doc: &Doc, index: usize) -> bool {
     if rel.is_empty() {
         return false;
     }
-    rel.to_lowercase().split_whitespace().any(|keyword| {
+    rel.to_lowercase().js_split_whitespace().any(|keyword| {
         matches!(
             keyword,
             "dns-prefetch"
@@ -557,7 +558,7 @@ fn refused_rel(
         return None;
     };
     rel.to_lowercase()
-        .split_whitespace()
+        .js_split_whitespace()
         .find(|keyword| {
             disallowed.contains(keyword) || (dcterms && keyword.starts_with("dcterms."))
         })
@@ -707,7 +708,7 @@ fn link_image(doc: &Doc, index: usize, _: Option<&Value>) -> Option<String> {
             if rel.is_empty()
                 || !rel
                     .to_lowercase()
-                    .split_whitespace()
+                    .js_split_whitespace()
                     .any(|it| it == "preload") =>
         {
             return Some("\"rel\" attribute must be \"preload\"".to_owned());
@@ -963,7 +964,7 @@ fn select_role(doc: &Doc, index: usize) -> &'static str {
 /// JavaScript's `Number` of a string, `None` for `NaN`.
 #[must_use]
 pub fn js_number(text: &str) -> Option<f64> {
-    let trimmed = text.trim();
+    let trimmed = text.js_trim();
     if trimmed.is_empty() {
         return Some(0.0);
     }

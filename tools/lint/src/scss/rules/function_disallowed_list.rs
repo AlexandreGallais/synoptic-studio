@@ -1,8 +1,9 @@
 //! `function-disallowed-list` of Stylelint 17.16.0 (`lib/rules/function-disallowed-list/index.mjs`,
 //! REF-STYLELINT-SOURCE): a function of a declaration's value whose name matches one of the
 //! option's names or patterns, reported over its name. The project refuses the colour functions
-//! outside the tokens' files, so that every colour is a token (`color-mix()` still blends them);
-//! the tokens' files are left out by the project's scope.
+//! outside the tokens' files, so that every colour is a token, `color-mix()` and `contrast-color()`
+//! too, which make one from others (AUD-060); the tokens' files are left out by the project's
+//! scope.
 
 use super::color_named::is_standard_function;
 use super::{Context, Matcher, Report, SheetRule, matches_any};
@@ -21,7 +22,7 @@ impl FunctionDisallowedList {
     pub fn project() -> Self {
         Self {
             names: vec![Matcher::new(
-                "/^(rgba?|hsla?|hwb|lab|lch|oklab|oklch|color|device-cmyk)$/i",
+                "/^(rgba?|hsla?|hwb|lab|lch|oklab|oklch|color|color-mix|contrast-color|device-cmyk)$/i",
             )],
         }
     }
@@ -86,7 +87,9 @@ mod tests {
         let project = FunctionDisallowedList::project();
         assert!(
             super::matches_any(&project.names, "RGBA")
-                && !super::matches_any(&project.names, "color-mix")
+                && super::matches_any(&project.names, "color-mix")
+                && super::matches_any(&project.names, "Contrast-Color")
+                && !super::matches_any(&project.names, "light-dark")
         );
     }
 }

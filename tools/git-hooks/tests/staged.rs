@@ -34,7 +34,14 @@ fn matches_a_pattern_without_a_slash_on_the_base_name_dot_files_included() {
 #[test]
 fn f21_ac4_plans_the_tasks_of_lint_staged_s_configuration() {
     let tasks = repository_tasks();
-    let files = strings(&["src/a.ts", "README.md", "package.json", "logo.png"]);
+    let files = strings(&[
+        "src/a.ts",
+        "README.md",
+        "a.component.html",
+        "a.component.scss",
+        "package.json",
+        "logo.png",
+    ]);
     let planned = plan(&tasks, &files);
     let patterns: Vec<(&str, Vec<String>)> = planned
         .iter()
@@ -47,9 +54,10 @@ fn f21_ac4_plans_the_tasks_of_lint_staged_s_configuration() {
             ("*.ts", strings(&["src/a.ts"])),
             ("*.md", strings(&["README.md"])),
             (
-                "*.{cjs,css,html,json,scss,toml,yaml,yml}",
-                strings(&["package.json"])
+                "*.{html,scss}",
+                strings(&["a.component.html", "a.component.scss"])
             ),
+            ("*.{cjs,css,json,toml,yaml,yml}", strings(&["package.json"])),
             ("*", files.clone()),
         ]
     );
@@ -68,6 +76,8 @@ fn f21_ac4_plans_the_tasks_of_lint_staged_s_configuration() {
                  --report-unused-disable-directives-severity=error --no-error-on-unmatched-pattern",
                 "lint --fix",
             ]),
+            strings(&["format --write", "lint --fix"]),
+            // The templates and the style sheets, which the linter reads and fixes (AUD-060).
             strings(&["format --write", "lint --fix"]),
             strings(&["format --write"]),
             strings(&["secret-scan"]),

@@ -5,6 +5,7 @@
 //! and the character after it dropped.
 
 use super::{Context, Report, SheetRule};
+use crate::javascript::{JsText, is_js_space};
 use crate::scss::tree::Kind;
 
 /// The rule.
@@ -34,15 +35,15 @@ fn split(params: &str) -> Vec<String> {
     let mut rest = bare.as_str();
     loop {
         let found = rest.char_indices().find_map(|(at, c)| {
-            if !c.is_whitespace() {
+            if !is_js_space(c) {
                 return None;
             }
-            let after = rest[at..].trim_start();
+            let after = rest[at..].js_trim_start();
             ["as", "with"].iter().find_map(|word| {
                 after
                     .strip_prefix(word)
-                    .filter(|tail| tail.starts_with(char::is_whitespace))
-                    .map(|tail| (at, rest.len() - tail.trim_start().len()))
+                    .filter(|tail| tail.starts_with(is_js_space))
+                    .map(|tail| (at, rest.len() - tail.js_trim_start().len()))
             })
         });
         if let Some((cut, next)) = found {
@@ -74,28 +75,28 @@ impl SheetRule for AtUseNoRedundantAlias {
             let Some(at) = params
                 .match_indices("as")
                 .find(|(at, _)| {
-                    params[at + 2..].starts_with(char::is_whitespace)
-                        && !params[at + 2..].trim_start().is_empty()
+                    params[at + 2..].starts_with(is_js_space)
+                        && !params[at + 2..].js_trim_start().is_empty()
                 })
                 .map(|(at, _)| at)
             else {
                 continue;
             };
-            let spaces = params[at + 2..].len() - params[at + 2..].trim_start().len();
+            let spaces = params[at + 2..].len() - params[at + 2..].js_trim_start().len();
             let name = params[at + 2 + spaces..]
-                .split_whitespace()
+                .js_split_whitespace()
                 .next()
                 .unwrap_or_default();
             let start = sheet.params_start(node) + at;
             let end = start + 2 + spaces + name.len();
             // `\s*as\s* [^\s*]+\s*` made one space, in the at-rule's text before its `;`.
-            let before = params[..at].len() - params[..at].trim_end().len();
+            let before = params[..at].len() - params[..at].js_trim_end().len();
             let after = params[at + 2 + spaces + name.len()..].len()
-                - params[at + 2 + spaces + name.len()..].trim_start().len();
+                - params[at + 2 + spaces + name.len()..].js_trim_start().len();
             let fix_start = start - before;
             let fix_end = end + after;
             // The new at-rule takes the old one's spaces: a space left at its end is dropped.
-            let at_end = params[at + 2 + spaces + name.len()..].trim().is_empty();
+            let at_end = params[at + 2 + spaces + name.len()..].js_trim().is_empty();
             let replacement = if at_end { "" } else { " " };
             reports.push(Report::new(start, end, "rejected").fixed(
                 fix_start,

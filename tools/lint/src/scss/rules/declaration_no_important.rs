@@ -3,6 +3,7 @@
 //! `!\s*important` in the declaration's text.
 
 use super::{Context, Report, SheetRule};
+use crate::javascript::JsText;
 use crate::scss::tree::Kind;
 
 /// The rule.
@@ -13,7 +14,7 @@ fn important_position(text: &str) -> Option<(usize, usize)> {
     let lower = text.to_ascii_lowercase();
     lower.match_indices('!').find_map(|(at, _)| {
         let rest = &lower[at + 1..];
-        let spaces = rest.len() - rest.trim_start().len();
+        let spaces = rest.len() - rest.js_trim_start().len();
         let word = &rest[spaces..];
         let bounded = word.strip_prefix("important").is_some_and(|after| {
             !after

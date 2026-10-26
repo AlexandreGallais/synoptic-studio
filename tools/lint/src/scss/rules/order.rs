@@ -11,8 +11,7 @@
 use regex::Regex;
 
 use super::ordering::{
-    attached_comments, blocks, changes_meaning, insertion_sort, is_sortable, is_standard_property,
-    rewrite,
+    attached_comments, blocks, insertion_sort, is_sortable, is_standard_property, rewrite, settle,
 };
 use super::{Context, Report, SheetRule};
 use crate::scss::tree::{Kind, Node};
@@ -238,7 +237,7 @@ impl Order {
     /// places, those without one last, each keeping its rank among equals, the comments on their
     /// own lines before a node and on its line after it moving with it, the others last; every
     /// declaration then ends with `;`. None when the block cannot be sorted, or when the new order
-    /// would change what the sheet means (`changes_meaning`, our own guard).
+    /// would change what the sheet means (`settle`, our own guard).
     fn fix(&self, sheet: &Context, block: usize) -> Option<(usize, usize, String)> {
         let node = sheet.node(block);
         if !is_sortable(node) {
@@ -278,9 +277,7 @@ impl Order {
         }
         insertion_sort(&mut keyed, |one, two| (one.0, one.1).cmp(&(two.0, two.1)));
         let order: Vec<usize> = keyed.iter().map(|each| each.2).collect();
-        if changes_meaning(sheet, block, &order) {
-            return None;
-        }
+        let order = settle(sheet, block, &order)?;
         rewrite(sheet, block, &order, true)
     }
 }
@@ -485,19 +482,22 @@ mod tests {
     #[test]
     fn f53_ac3_passes_the_cases_of_stylelint_order() {
         let tally = cases();
-        // Our own departure: 12 fixes the guard refuses, each moving a node across an
-        // `@include` or `@extend`, whose declarations it cannot read, or a declaration across a
-        // nested rule setting the same property (`changes_meaning`).
+        // Our own departure: 11 fixes the guard refuses, each moving a node across an
+        // `@include` or `@extend`, whose declarations it cannot read (`settle`). The
+        // declaration moved before `a { color: blue }` is fixed: the nested rule sets another
+        // element's `color`.
         let (refused, failures): (Vec<&String>, Vec<&String>) = tally
             .failures
             .iter()
             .partition(|each| each.starts_with("unfixed "));
 
         assert_eq!(failures, Vec::<&String>::new());
-        assert_eq!(refused.len(), 12);
-        assert!(refused.iter().all(|each| each.contains("@include")
-            || each.contains("@extend")
-            || each.contains("color: tomato")));
+        assert_eq!(refused.len(), 11);
+        assert!(
+            refused
+                .iter()
+                .all(|each| each.contains("@include") || each.contains("@extend"))
+        );
         assert_eq!(
             (tally.accepted, tally.rejected, tally.apart_count()),
             (31, 29, 16),

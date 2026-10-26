@@ -8,6 +8,7 @@ use super::scss_selectors::{
     has_interpolating_ampersand, is_standard_rule, is_standard_syntax_selector, resolve,
 };
 use super::{Context, Pattern, Report, SheetRule};
+use crate::javascript::JsText;
 use crate::scss::selector::{self, Kind as Part};
 use crate::scss::tree::Kind;
 
@@ -39,7 +40,7 @@ impl SelectorClassPattern {
             if part.kind != Part::Class || self.pattern.matches(&part.value) {
                 continue;
             }
-            let shown = parsed.text(text, each).trim();
+            let shown = parsed.text(text, each).js_trim();
             let at = start + part.start;
             reports.push(
                 Report::new(at, at + shown.len(), "expected").with(&[shown, &self.pattern.text]),

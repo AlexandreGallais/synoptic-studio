@@ -3,8 +3,8 @@
 //! union of lists written as the lists it unites; the HTML tags of `html-tags` 5.1.0, the SVG
 //! tags of `svg-tags` 1.0.0 and the `MathML` tags of `mathml-tag-names` 4.0.0 that
 //! `selector-type-no-unknown` reads; the properties of `known-css-properties` 0.37.0 that
-//! stylelint-scss's `property-no-unknown` reads. The maps of the layout mappings, which no rule
-//! the catalogue keeps reads, are left out.
+//! stylelint-scss's `property-no-unknown` reads. The maps of the layout mappings are read by our own
+//! guard of the order's fix (`ordering.rs`), no rule of the catalogue.
 
 /// A set of names: the lists it unites.
 pub type Set = &'static [&'static [&'static str]];
@@ -1664,6 +1664,94 @@ const PREVIOUSLY_KNOWN_PREFIXED_PROPERTIES_OWN: &[&str] = &[
     "-webkit-wrap",
 ];
 pub const PREVIOUSLY_KNOWN_PREFIXED_PROPERTIES: Set = &[PREVIOUSLY_KNOWN_PREFIXED_PROPERTIES_OWN];
+pub const PHYSICAL_TO_FLOW_RELATIVE_PROPERTIES: &[(&str, &str)] = &[
+    // Margin properties
+    ("margin-left", "margin-inline-start"),
+    ("margin-right", "margin-inline-end"),
+    ("margin-top", "margin-block-start"),
+    ("margin-bottom", "margin-block-end"),
+    // Padding properties
+    ("padding-left", "padding-inline-start"),
+    ("padding-right", "padding-inline-end"),
+    ("padding-top", "padding-block-start"),
+    ("padding-bottom", "padding-block-end"),
+    // Border properties
+    ("border-left", "border-inline-start"),
+    ("border-right", "border-inline-end"),
+    ("border-top", "border-block-start"),
+    ("border-bottom", "border-block-end"),
+    ("border-left-width", "border-inline-start-width"),
+    ("border-right-width", "border-inline-end-width"),
+    ("border-top-width", "border-block-start-width"),
+    ("border-bottom-width", "border-block-end-width"),
+    ("border-left-style", "border-inline-start-style"),
+    ("border-right-style", "border-inline-end-style"),
+    ("border-top-style", "border-block-start-style"),
+    ("border-bottom-style", "border-block-end-style"),
+    ("border-left-color", "border-inline-start-color"),
+    ("border-right-color", "border-inline-end-color"),
+    ("border-top-color", "border-block-start-color"),
+    ("border-bottom-color", "border-block-end-color"),
+    // Inset properties
+    ("left", "inset-inline-start"),
+    ("right", "inset-inline-end"),
+    ("top", "inset-block-start"),
+    ("bottom", "inset-block-end"),
+    // Size properties
+    ("width", "inline-size"),
+    ("height", "block-size"),
+    ("min-width", "min-inline-size"),
+    ("min-height", "min-block-size"),
+    ("max-width", "max-inline-size"),
+    ("max-height", "max-block-size"),
+    // Scroll margin properties
+    ("scroll-margin-left", "scroll-margin-inline-start"),
+    ("scroll-margin-right", "scroll-margin-inline-end"),
+    ("scroll-margin-top", "scroll-margin-block-start"),
+    ("scroll-margin-bottom", "scroll-margin-block-end"),
+    // Scroll padding properties
+    ("scroll-padding-left", "scroll-padding-inline-start"),
+    ("scroll-padding-right", "scroll-padding-inline-end"),
+    ("scroll-padding-top", "scroll-padding-block-start"),
+    ("scroll-padding-bottom", "scroll-padding-block-end"),
+    // Border radius properties
+    ("border-top-left-radius", "border-start-start-radius"),
+    ("border-top-right-radius", "border-start-end-radius"),
+    ("border-bottom-left-radius", "border-end-start-radius"),
+    ("border-bottom-right-radius", "border-end-end-radius"),
+    // Overflow properties
+    ("overflow-x", "overflow-inline"),
+    ("overflow-y", "overflow-block"),
+    // Overscroll behavior properties
+    ("overscroll-behavior-x", "overscroll-behavior-inline"),
+    ("overscroll-behavior-y", "overscroll-behavior-block"),
+    // Contain intrinsic size properties
+    ("contain-intrinsic-width", "contain-intrinsic-inline-size"),
+    ("contain-intrinsic-height", "contain-intrinsic-block-size"),
+];
+/// Flow-relative shorthand properties with no 1:1 physical equivalent; with the values of
+/// `PHYSICAL_TO_FLOW_RELATIVE_PROPERTIES`, `flowRelativeProperties`.
+pub const FLOW_RELATIVE_SHORTHAND_PROPERTIES: &[&str] = &[
+    "margin-inline",
+    "margin-block",
+    "padding-inline",
+    "padding-block",
+    "border-inline",
+    "border-block",
+    "border-inline-width",
+    "border-block-width",
+    "border-inline-style",
+    "border-block-style",
+    "border-inline-color",
+    "border-block-color",
+    "inset",
+    "inset-inline",
+    "inset-block",
+    "scroll-margin-inline",
+    "scroll-margin-block",
+    "scroll-padding-inline",
+    "scroll-padding-block",
+];
 
 // units.mjs
 const LENGTH_UNITS_OWN: &[&str] = &[

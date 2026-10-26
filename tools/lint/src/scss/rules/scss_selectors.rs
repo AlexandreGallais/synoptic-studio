@@ -4,6 +4,7 @@
 //! resolves a selector's `&` against the rules around it as text.
 
 use super::Context;
+use crate::javascript::{JsText, is_js_space};
 use crate::scss::tree::Kind;
 
 /// Whether a selector is plain for stylelint-scss (`isStandardSyntaxSelector` of its utils).
@@ -42,13 +43,13 @@ pub fn is_standard_rule(sheet: &Context, index: usize) -> bool {
 fn is_less_guard(selector: &str) -> bool {
     selector.match_indices("when").any(|(at, _)| {
         let mut rest = &selector[at + 4..];
-        if !rest.starts_with(char::is_whitespace) {
+        if !rest.starts_with(is_js_space) {
             return false;
         }
         loop {
-            rest = rest.trim_start();
+            rest = rest.js_trim_start();
             match rest.strip_prefix("not") {
-                Some(after) if after.starts_with(char::is_whitespace) => rest = after,
+                Some(after) if after.starts_with(is_js_space) => rest = after,
                 _ => return rest.starts_with('('),
             }
         }
@@ -60,7 +61,7 @@ fn is_less_guard(selector: &str) -> bool {
 #[must_use]
 pub fn has_interpolating_ampersand(selector: &str) -> bool {
     let characters: Vec<char> = selector.chars().collect();
-    let is_combinator = |c: char| c.is_whitespace() || matches!(c, '+' | '>' | '~');
+    let is_combinator = |c: char| is_js_space(c) || matches!(c, '+' | '>' | '~');
     characters.iter().enumerate().any(|(at, &c)| {
         c == '&'
             && (at
@@ -133,7 +134,7 @@ pub fn resolve(sheet: &Context, selector: &str, index: usize) -> Vec<String> {
     let parents: Vec<String> = if nest {
         split(&outer.params, ',', false)
             .into_iter()
-            .map(|each| each.trim().to_owned())
+            .map(|each| each.js_trim().to_owned())
             .collect()
     } else {
         super::selectors::comma_list(&outer.selector)

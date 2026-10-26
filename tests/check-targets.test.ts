@@ -303,6 +303,16 @@ describe("heavy commands and Rust tools (AUD-020)", () => {
     );
   });
 
+  it("formats again after the project's linter in fix, so that its fixes pass format:check", () => {
+    const steps = SCRIPTS.get("fix")?.split(" && ") ?? [];
+    const linter = steps.findIndex((step) => step.startsWith(`${PROJECT_LINT} `));
+
+    // The linter's fixes (a sorted block, a joined nesting) are written as the original's,
+    // which the formatter may write otherwise: the same formatting runs again after them.
+    expect(linter).toBeGreaterThan(0);
+    expect(steps[linter + 1]).toBe(steps[0]);
+  });
+
   it("fixes the Rust code in fix too: Clippy's fixes when a Rust file changed, then rustfmt (EN-113)", () => {
     const steps = SCRIPTS.get("fix")?.split(" && ") ?? [];
 

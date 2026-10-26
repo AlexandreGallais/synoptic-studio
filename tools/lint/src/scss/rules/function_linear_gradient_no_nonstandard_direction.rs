@@ -6,6 +6,7 @@
 
 use super::prefixed::prefix;
 use super::{Context, Report, SheetRule, function_arguments, is_standard_value};
+use crate::javascript::JsText;
 use crate::scss::tree::Kind;
 use crate::scss::value::{self, Kind as Part};
 
@@ -93,7 +94,7 @@ impl SheetRule for FunctionLinearGradientNoNonstandardDirection {
                 let printed = node.value[part.start..part.end].to_lowercase();
                 for (expression, at, _) in function_arguments(&printed, &is_linear_gradient) {
                     let first_raw = expression.split(',').next().unwrap_or_default();
-                    let first = first_raw.trim();
+                    let first = first_raw.js_trim();
                     if !is_standard_value(first) || first.starts_with("var(") || holds_in(first) {
                         continue;
                     }
@@ -107,7 +108,7 @@ impl SheetRule for FunctionLinearGradientNoNonstandardDirection {
                         let from = start + part.start + at;
                         reports.push(Report::new(
                             from,
-                            from + first_raw.trim_end().len(),
+                            from + first_raw.js_trim_end().len(),
                             "rejected",
                         ));
                     }

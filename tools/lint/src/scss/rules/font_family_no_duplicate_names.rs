@@ -5,6 +5,7 @@
 
 use super::font_families::find;
 use super::{Context, Matcher, Report, SheetRule, matches_any};
+use crate::javascript::JsText;
 use crate::scss::tree::Kind;
 
 /// The rule and its option.
@@ -37,7 +38,7 @@ impl SheetRule for FontFamilyNoDuplicateNames {
             let mut keywords: Vec<String> = Vec::new();
             let mut names: Vec<String> = Vec::new();
             for family in find(&node.value) {
-                let name = family.value.trim().to_owned();
+                let name = family.value.js_trim().to_owned();
                 if matches_any(&self.ignore, &name) {
                     continue;
                 }
