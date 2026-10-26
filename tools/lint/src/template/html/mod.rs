@@ -14,6 +14,8 @@ pub mod selector;
 pub mod validator;
 pub mod view;
 
+use regex::Regex;
+
 use super::lexer::{self, Span};
 use super::rules::Report;
 use crate::finding::Fix;
@@ -101,6 +103,40 @@ pub fn remove(text: &str, span: Span, trim_start: bool, trim_end: bool) -> Fix {
         end: lexer::offset(end),
         text: String::new(),
     }
+}
+
+/// Whether a keyword matches one of a list of patterns (`keywordPatternMatcher`): `/…/` a
+/// regular expression, any other text with `*` standing for one character or more, anchored.
+#[must_use]
+pub fn matches_pattern(list: &[String], keyword: &str) -> bool {
+    list.iter().any(|pattern| {
+        let source = match pattern
+            .strip_prefix('/')
+            .and_then(|rest| rest.strip_suffix('/'))
+        {
+            Some(inner) => format!("^{inner}$"),
+            None => format!(
+                "^{}$",
+                Regex::new(r"\*+").map_or_else(
+                    |_| pattern.clone(),
+                    |stars| stars.replace_all(pattern, ".+").into_owned()
+                )
+            ),
+        };
+        Regex::new(&source).is_ok_and(|regex| regex.is_match(keyword))
+    })
+}
+
+/// Whether a keyword is left out by `include` and `exclude` options read as patterns
+/// (`isKeywordIgnored` with `keywordPatternMatcher`).
+#[must_use]
+pub fn is_pattern_ignored(
+    include: Option<&[String]>,
+    exclude: Option<&[String]>,
+    keyword: &str,
+) -> bool {
+    include.is_some_and(|list| !matches_pattern(list, keyword))
+        || exclude.is_some_and(|list| matches_pattern(list, keyword))
 }
 
 /// Whether a keyword is left out by a rule's `include` and `exclude` options

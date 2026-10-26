@@ -19,13 +19,16 @@ use std::path::Path;
 
 use oxc_allocator::Allocator;
 use oxc_ast::ast::{
-    Argument, ArrowFunctionBody, BindingPattern, CallExpression, Expression, FormalParameters,
-    ObjectExpression, ObjectPropertyKind, Statement, TaggedTemplateExpression,
+    Argument, ArrayExpressionElement, ArrowFunctionBody, BindingPattern, CallExpression,
+    Expression, FormalParameters, ObjectExpression, ObjectPropertyKind, Statement,
+    TaggedTemplateExpression,
 };
 use oxc_parser::Parser;
 use oxc_span::SourceType;
 use regex::Regex;
 
+use super::elements::meta_for;
+use super::view::Doc;
 use crate::finding::apply;
 use crate::lines::Lines;
 use crate::template::bindings::check as read_errors;
@@ -59,10 +62,56 @@ enum Check {
     Frame(Vec<Expected>),
     /// These errors, in order, by `objectContaining`.
     Errors(Vec<Expected>),
+    /// A helper of the rule called on the first element of a tag gives this.
+    Helper(String, String, bool),
 }
 
+/// A helper of a rule a test calls on an element (`isSimpleTable`), by its name.
+pub type Helpers<'h> = &'h [(&'h str, &'h dyn Fn(&Doc, usize) -> bool)];
+
 /// How a test configures the rule: its options, or why the case is set apart.
-type Config = Result<Option<Value>, &'static str>;
+type Config = Result<Options, &'static str>;
+
+/// A rule's configuration: its options, and the elements the test defines itself.
+#[derive(Clone, Debug)]
+struct Options {
+    /// The rule's options.
+    value: Option<Value>,
+    /// The names of the elements given metadata of their own, none of HTML's.
+    custom: Vec<String>,
+}
+
+/// The names of the elements a configuration's `elements` defines beside `"html5"`, or why the
+/// configuration is set apart: metadata changing an HTML element, or not read.
+fn custom_elements(elements: &Expression) -> Result<Vec<String>, &'static str> {
+    let Expression::ArrayExpression(array) = elements else {
+        return Err("element metadata of its own");
+    };
+    let mut custom = Vec::new();
+    for element in &array.elements {
+        match element {
+            ArrayExpressionElement::StringLiteral(name) if name.value == "html5" => {}
+            ArrayExpressionElement::ObjectExpression(object) => {
+                for property in &object.properties {
+                    let name = match property {
+                        ObjectPropertyKind::ObjectProperty(property) => property.key.static_name(),
+                        ObjectPropertyKind::SpreadProperty(_) => None,
+                    };
+                    match name {
+                        Some(name)
+                            if meta_for(&name.to_lowercase()).is_none() && !name.contains('*') =>
+                        {
+                            custom.push(name.to_lowercase());
+                        }
+                        _ => return Err("element metadata of its own"),
+                    }
+                }
+            }
+            _ => return Err("element metadata of its own"),
+        }
+    }
+    Ok(custom)
+}
 
 /// A case: its title, the markups it validates and what it expects of each report.
 #[derive(Debug)]
@@ -97,13 +146,13 @@ impl Tally {
 
     /// Runs a case's checks and counts it, or sets it apart when Angular's parser refuses one
     /// of its markups.
-    fn run_case(&mut self, file: &str, case: Case, build: Build) {
+    fn run_case(&mut self, file: &str, case: Case, build: Build, helpers: Helpers) {
         let outcomes: Vec<_> = case
             .checks
             .iter()
             .map(|(markup, options, check)| {
                 let rule = build(options.as_ref());
-                run_check(rule.as_ref(), markup, check).map_err(|why| (markup, why))
+                run_check(rule.as_ref(), markup, check, helpers).map_err(|why| (markup, why))
             })
             .collect();
         if outcomes.iter().any(|each| matches!(each, Err((_, None)))) {
@@ -182,6 +231,7 @@ fn config_of(call: &Expression, rule: &str, scope: &Scope) -> Option<Config> {
 /// See `config_of`.
 fn config_object(object: &ObjectExpression, rule: &str, scope: &Scope) -> Config {
     let mut options = Err("the rule not configured");
+    let mut custom = Vec::new();
     for property in &object.properties {
         let ObjectPropertyKind::ObjectProperty(property) = property else {
             return Err("a configuration spread");
@@ -193,10 +243,7 @@ fn config_object(object: &ObjectExpression, rule: &str, scope: &Scope) -> Config
             .unwrap_or_default();
         match key.as_str() {
             "root" => {}
-            "elements" => match value(&property.value, &strings(scope)) {
-                Some(Value::List(list)) if list == [Value::Text("html5".to_owned())] => {}
-                _ => return Err("element metadata of its own"),
-            },
+            "elements" => custom = custom_elements(&property.value)?,
             "rules" => {
                 let Expression::ObjectExpression(rules) = &property.value else {
                     return Err("rules not written as an object");
@@ -237,7 +284,7 @@ fn config_object(object: &ObjectExpression, rule: &str, scope: &Scope) -> Config
             _ => return Err("other configuration"),
         }
     }
-    options
+    options.map(|value| Options { value, custom })
 }
 
 /// The statements of a function's body.
@@ -434,6 +481,11 @@ struct It<'r> {
     config: Config,
     /// The reports validated, by the name they are held in.
     runs: Vec<(String, Run)>,
+    /// The documents parsed (`parser.parseHtml(markup)`), by the name they are held in.
+    documents: Vec<(String, String)>,
+    /// The results of a helper called on a document's element: their name, the helper, the
+    /// document and the tag.
+    results: Vec<(String, String, String, String)>,
     /// The checks read.
     checks: Vec<Checked>,
 }
@@ -455,12 +507,51 @@ impl It<'_> {
                 Some("validateFile") => return Err("a file of the repository"),
                 Some("getRuleDocumentation") => return Err("the rule's documentation"),
                 Some("autofix" | "validateSource") => return Err("a source object or an autofix"),
+                Some("parseHtml") => {
+                    let markup = argument(call, 0)
+                        .ok_or("a markup not written as a literal")
+                        .and_then(|markup| text_of(markup, &self.locals))?;
+                    self.documents.push((name.to_owned(), markup));
+                    return Ok(());
+                }
                 _ => {}
+            }
+            if let Some(result) = self.helper_call(call) {
+                self.results
+                    .push((name.to_owned(), result.0, result.1, result.2));
+                return Ok(());
             }
         }
         let text = text_of(init, &self.locals).map_err(|_| "reads the report's messages")?;
         self.locals.push((name.to_owned(), Value::Text(text)));
         Ok(())
+    }
+
+    /// A helper called on a document's element (`isSimpleTable(document.querySelector("table")!)`):
+    /// the helper, the document and the tag.
+    fn helper_call(&self, call: &CallExpression) -> Option<(String, String, String)> {
+        let Expression::Identifier(helper) = &call.callee else {
+            return None;
+        };
+        let Some(Expression::TSNonNullExpression(found)) = argument(call, 0) else {
+            return None;
+        };
+        let Expression::CallExpression(query) = &found.expression else {
+            return None;
+        };
+        let Expression::StaticMemberExpression(member) = &query.callee else {
+            return None;
+        };
+        let Expression::Identifier(document) = &member.object else {
+            return None;
+        };
+        let tag = argument(query, 0).and_then(|tag| text_of(tag, &self.locals).ok())?;
+        let known = self
+            .documents
+            .iter()
+            .any(|(name, _)| name == document.name.as_str());
+        (member.property.name == "querySelector" && known)
+            .then(|| (helper.name.to_string(), document.name.to_string(), tag))
     }
 
     /// A `validateString` read: its markup, rewritten as Angular binds it when the mock
@@ -476,9 +567,16 @@ impl It<'_> {
             .and_then(|markup| text_of(markup, &self.locals))
             .map(|markup| if transformed { bound(&markup) } else { markup });
         Ok(markup.and_then(|markup| {
-            self.config
-                .clone()
-                .map(|options| (markup, options, transformed))
+            let options = self.config.clone()?;
+            let lower = markup.to_lowercase();
+            if options
+                .custom
+                .iter()
+                .any(|name| lower.contains(&format!("<{name}")))
+            {
+                return Err("element metadata of its own");
+            }
+            Ok((markup, options.value, transformed))
         }))
     }
 
@@ -509,6 +607,24 @@ impl It<'_> {
         let Some(Expression::Identifier(target)) = argument(subject, 0) else {
             return Err("asserts other than the report");
         };
+        if let Some((_, helper, document, tag)) = self
+            .results
+            .iter()
+            .find(|(name, ..)| name == target.name.as_str())
+        {
+            let Some(Expression::BooleanLiteral(expected)) = argument(call, 0) else {
+                return Err("an assertion not read");
+            };
+            let markup = self
+                .documents
+                .iter()
+                .find(|(name, _)| name == document)
+                .map(|(_, markup)| markup.clone())
+                .unwrap_or_default();
+            let check = Check::Helper(helper.clone(), tag.clone(), expected.value);
+            self.checks.push((markup, None, check));
+            return Ok(());
+        }
         let Some((_, run)) = self
             .runs
             .iter()
@@ -596,6 +712,8 @@ fn read_it(
         locals: scope.clone(),
         config: config.clone(),
         runs: Vec::new(),
+        documents: Vec::new(),
+        results: Vec::new(),
         checks: Vec::new(),
     };
     for statement in statements {
@@ -884,10 +1002,24 @@ fn strip_period(message: &str) -> String {
 }
 
 /// Runs a check, or says why it failed; `Err(None)` when Angular's parser refuses the markup.
-fn run_check(rule: &dyn TemplateRule, markup: &str, check: &Check) -> Result<(), Option<String>> {
+fn run_check(
+    rule: &dyn TemplateRule,
+    markup: &str,
+    check: &Check,
+    helpers: Helpers,
+) -> Result<(), Option<String>> {
     let parsed = parse(markup);
     if !read_errors(&parsed).is_empty() {
         return Err(None);
+    }
+    if let Check::Helper(name, tag, expected) = check {
+        let doc = Doc::new(markup, &parsed.nodes);
+        let element = (0..doc.elements.len()).find(|index| doc.el(*index).tag == *tag);
+        let helper = helpers.iter().find(|(each, _)| each == name);
+        return match (helper, element) {
+            (Some((_, helper)), Some(element)) if helper(&doc, element) == *expected => Ok(()),
+            _ => Err(Some(format!("{name}({tag}) is not {expected}"))),
+        };
     }
     let found: Vec<Expected> = reports(rule, "a.component.html", markup, &parsed.nodes)
         .iter()
@@ -896,6 +1028,7 @@ fn run_check(rule: &dyn TemplateRule, markup: &str, check: &Check) -> Result<(),
     let ok = match check {
         Check::Valid => found.is_empty(),
         Check::Invalid => !found.is_empty(),
+        Check::Helper(..) => false,
         Check::Frame(expected) | Check::Errors(expected) => {
             let frame = matches!(check, Check::Frame(_));
             found.len() == expected.len()
@@ -960,10 +1093,23 @@ pub fn run(file: &str, rule: &str, build: Build) -> Tally {
     run_except(file, rule, &[], build)
 }
 
-/// Runs a rule on every case of its test file but those its known divergences set apart: each
-/// case's title, and why html-validate and Angular read its markup apart.
+/// Runs a rule on every case of its test file but those its known divergences set apart.
 #[must_use]
 pub fn run_except(file: &str, rule: &str, known: &[(&str, &'static str)], build: Build) -> Tally {
+    run_with(file, rule, known, &[], build)
+}
+
+/// Runs a rule on every case of its test file but those its known divergences set apart (each
+/// case's title, and why html-validate and Angular read its markup apart), the helpers its
+/// tests call given.
+#[must_use]
+pub fn run_with(
+    file: &str,
+    rule: &str,
+    known: &[(&str, &'static str)],
+    helpers: Helpers,
+    build: Build,
+) -> Tally {
     let path = Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("tests/fixtures/templates/html-validate")
         .join(file);
@@ -1002,7 +1148,7 @@ pub fn run_except(file: &str, rule: &str, known: &[(&str, &'static str)], build:
             tally.set_apart(case.title, reason);
             continue;
         }
-        tally.run_case(file, case, build);
+        tally.run_case(file, case, build, helpers);
     }
     tally
 }
@@ -1252,7 +1398,7 @@ fn check_is_empty(check: &Check) -> bool {
     match check {
         Check::Valid => true,
         Check::Frame(expected) | Check::Errors(expected) => expected.is_empty(),
-        Check::Invalid => false,
+        Check::Invalid | Check::Helper(..) => false,
     }
 }
 

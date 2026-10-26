@@ -102,6 +102,9 @@ pub struct Attr<'t> {
     pub written: String,
     /// Its value.
     pub value: Value,
+    /// Whether a property binding (`[x]`, `[attr.x]`, `[(x)]`), an alias of the attribute
+    /// rather than the attribute written (html-validate's `originalAttribute`).
+    pub bound: bool,
     /// The attribute written.
     pub attribute: &'t Attribute,
 }
@@ -586,6 +589,7 @@ fn attributes<'t>(text: &str, element: &'t Element) -> Vec<Attr<'t>> {
                 key: key.to_lowercase(),
                 written: key,
                 value,
+                bound: matches!(each.kind, AttributeKind::Property | AttributeKind::TwoWay),
                 attribute: each.attribute,
             })
         })

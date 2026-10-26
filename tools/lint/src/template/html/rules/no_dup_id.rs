@@ -4,10 +4,8 @@
 //! one `@if`, `@switch` or `@for` and its `@empty` are never rendered together, so may share one
 //! (our own reading of Angular's templates). `include` and `exclude` choose the ids checked.
 
-use regex::Regex;
-
 use super::super::view::Doc;
-use super::super::{MESSAGES, report};
+use super::super::{MESSAGES, is_pattern_ignored, report};
 use crate::template::rules::{Report, Template, TemplateRule};
 
 /// The rule and its options.
@@ -24,27 +22,6 @@ impl NoDupId {
         include: None,
         exclude: None,
     };
-}
-
-/// Whether a keyword matches one of a list of patterns (`keywordPatternMatcher`): `/…/` a
-/// regular expression, any other text with `*` standing for one character or more, anchored.
-fn matches_pattern(list: &[String], keyword: &str) -> bool {
-    list.iter().any(|pattern| {
-        let source = match pattern
-            .strip_prefix('/')
-            .and_then(|rest| rest.strip_suffix('/'))
-        {
-            Some(inner) => format!("^{inner}$"),
-            None => format!(
-                "^{}$",
-                Regex::new(r"\*+").map_or_else(
-                    |_| pattern.clone(),
-                    |stars| stars.replace_all(pattern, ".+").into_owned()
-                )
-            ),
-        };
-        Regex::new(&source).is_ok_and(|regex| regex.is_match(keyword))
-    })
 }
 
 impl TemplateRule for NoDupId {
@@ -66,15 +43,7 @@ impl TemplateRule for NoDupId {
             let Some(id) = attr.text().filter(|id| !id.is_empty()) else {
                 continue;
             };
-            let ignored = self
-                .include
-                .as_deref()
-                .is_some_and(|list| !matches_pattern(list, id))
-                || self
-                    .exclude
-                    .as_deref()
-                    .is_some_and(|list| matches_pattern(list, id));
-            if ignored {
+            if is_pattern_ignored(self.include.as_deref(), self.exclude.as_deref(), id) {
                 continue;
             }
             let group = doc.closest(index, "template");

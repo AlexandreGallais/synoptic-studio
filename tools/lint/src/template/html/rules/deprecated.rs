@@ -93,7 +93,7 @@ mod tests {
         assert_eq!(tally.failures, Vec::<String>::new());
         assert_eq!(
             (tally.valid, tally.invalid, tally.apart_count()),
-            (0, 0, 16),
+            (3, 1, 12),
             "{:#?}",
             tally.apart_cases
         );
