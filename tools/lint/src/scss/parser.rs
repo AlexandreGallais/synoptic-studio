@@ -907,6 +907,11 @@ mod tests {
             at(&read("a { cursor: url( http://ya.ru ) }"), &[0, 0]).value,
             "url( http://ya.ru )"
         );
+    }
+
+    /// The interpolation and nested-property cases of the same file.
+    #[test]
+    fn passes_the_interpolation_tests_of_postcss_scss() {
         // parses interpolation.
         let sheet = read("#{$selector}:hover { #{$prop}-size: #{$color} }");
         assert_eq!(at(&sheet, &[0]).selector, "#{$selector}:hover");

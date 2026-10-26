@@ -128,13 +128,16 @@ function unmatched(places: readonly Exception[], among: readonly Exception[]): r
     );
 }
 
-/** Every `.ts` and `.rs` file of the repository, tracked or new, with its content. */
+/**
+ * Every `.ts`, `.rs` and `.scss` file of the repository, tracked or new, with its content: the
+ * style sheets hold the project's linter's directives too (EN-167).
+ */
 const FILES = execFileSync("git", ["ls-files", "--cached", "--others", "--exclude-standard"], {
   cwd: ROOT,
   encoding: "utf8",
 })
   .split("\n")
-  .filter((file) => file.endsWith(".ts") || file.endsWith(".rs"))
+  .filter((file) => file.endsWith(".ts") || file.endsWith(".rs") || file.endsWith(".scss"))
   .map((file) => ({ code: readFileSync(join(ROOT, file), "utf8"), file }));
 
 /** The exceptions the code holds. */

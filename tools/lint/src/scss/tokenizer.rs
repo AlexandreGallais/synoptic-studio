@@ -93,8 +93,10 @@ pub struct Unclosed {
 
 /// The tokenizer over a sheet.
 pub struct Tokenizer<'t> {
-    /// The sheet's text.
+    /// The sheet's text, as bytes.
     css: &'t [u8],
+    /// The sheet's text.
+    source: &'t str,
     /// The next byte to read.
     pos: usize,
     /// The words read, the last of which `(` looks back at.
@@ -164,6 +166,7 @@ impl<'t> Tokenizer<'t> {
     pub fn new(css: &'t str) -> Self {
         Self {
             css: css.as_bytes(),
+            source: css,
             pos: 0,
             buffer: Vec::new(),
             returned: Vec::new(),
@@ -315,18 +318,19 @@ impl<'t> Tokenizer<'t> {
             // Unclosed, it reads to the end, its last byte past it as `PostCSS` gives it.
             return (Kind::Brackets, next);
         }
-        let close = self.css[pos + 1..]
+        // `indexOf(')')` then `RE_BAD_BRACKET` on the text up to it: the first of `)` and the
+        // bytes it refuses decides, read once, so that nested parentheses cost no quadratic time.
+        let first = self.css[pos + 1..]
             .iter()
-            .position(|byte| *byte == b')')
+            .position(|byte| {
+                matches!(
+                    byte,
+                    b')' | b'\r' | b'\n' | b'"' | b'\'' | b'(' | b'/' | b'\\'
+                )
+            })
             .map(|at| pos + 1 + at);
-        match close {
-            Some(close)
-                if !self.css[pos + 1..=close].iter().any(|byte| {
-                    matches!(byte, b'\r' | b'\n' | b'"' | b'\'' | b'(' | b'/' | b'\\')
-                }) =>
-            {
-                (Kind::Brackets, close)
-            }
+        match first {
+            Some(close) if self.css[close] == b')' => (Kind::Brackets, close),
             _ => (Kind::Open, pos),
         }
     }
@@ -419,8 +423,8 @@ impl<'t> Tokenizer<'t> {
     }
 
     /// The sheet's text.
-    fn text(&self) -> &'t str {
-        std::str::from_utf8(self.css).unwrap_or_default()
+    const fn text(&self) -> &'t str {
+        self.source
     }
 }
 

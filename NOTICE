@@ -72,3 +72,12 @@ of, the packages below, each under its licence; the full texts are in THIRD-PART
   Hallows; its test cases, from Stylelint's repository at the tag 17.16.0, under the same licence
 - stylelint-scss 7.3.0, MIT: Copyright (c) 2016 Krister Kari; its test cases, from stylelint-scss's
   repository at the tag v7.3.0, under the same licence
+- html-tags 5.1.0, MIT: Copyright (c) Sindre Sorhus <sindresorhus@gmail.com>
+- svg-tags 1.0.0, MIT: Copyright (c) 2014 Athan Reines
+- mathml-tag-names 4.0.0, MIT: Copyright (c) Titus Wormer <tituswormer@gmail.com>
+- known-css-properties 0.37.0, MIT: Copyright (c) 2017 Mavrix Technologies
+- postcss-selector-parser 7.1.6, MIT: Copyright (c) Ben Briggs <beneb.info@gmail.com>
+- postcss-resolve-nested-selector 0.1.6, MIT: Copyright (c) 2016 David Clark; Copyright © CSSTools
+  Contributors
+- @csstools/selector-resolve-nested 4.0.1, MIT-0: Copyright © CSSTools Contributors
+- jest-preset-stylelint 9.2.0, MIT: Copyright (c) 2018 - present stylelint
