@@ -16,7 +16,7 @@ use std::collections::HashMap;
 
 use super::empty_lines::{has_empty_line, report};
 use super::ordering::{
-    attached_comments, blocks, changes_meaning, insertion_sort, is_property, is_sortable, rewrite,
+    attached_comments, blocks, insertion_sort, is_property, is_sortable, rewrite, settle,
     unprefixed,
 };
 use super::prefixed::prefix;
@@ -365,7 +365,7 @@ impl PropertiesOrder {
     /// the comments on their own lines before a declaration and on its line after it moving with
     /// it; all of them written where the first of them was, the other nodes left in their order.
     /// None when the block cannot be sorted, or when the new order would change what the sheet
-    /// means (`changes_meaning`, our own guard).
+    /// means (`settle`, our own guard).
     fn fix(&self, sheet: &Context, block: usize) -> Option<(usize, usize, String)> {
         /// A node sorted: its rank, its name and bare name, whether a declaration, its rank among
         /// equals and the node.
@@ -458,9 +458,7 @@ impl PropertiesOrder {
                 order.extend(sorted.iter().map(|each| each.index));
             }
         }
-        if changes_meaning(sheet, block, &order) {
-            return None;
-        }
+        let order = settle(sheet, block, &order)?;
         rewrite(sheet, block, &order, false)
     }
 
@@ -691,7 +689,7 @@ mod tests {
             &build,
             &[],
         );
-        // Our own departure: the fixes the guard refuses (`changes_meaning`), the code left as it
+        // Our own departure: the fixes the guard refuses (`settle`), the code left as it
         // is; every other case passes.
         let (refused, failures): (Vec<&String>, Vec<&String>) = tally
             .failures
