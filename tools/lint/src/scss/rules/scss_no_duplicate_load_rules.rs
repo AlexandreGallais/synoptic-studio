@@ -3,6 +3,7 @@
 //! before (under the same media and conditions for `@import`), reported over the whole at-rule.
 
 use super::{Context, Report, SheetRule};
+use crate::javascript::{JsText, is_js_space};
 use crate::scss::tree::Kind;
 use crate::scss::value::{self, Kind as Part, Value};
 
@@ -15,16 +16,15 @@ fn without_clauses(params: &str) -> String {
     let mut rest = params;
     loop {
         let found = rest.char_indices().find_map(|(at, character)| {
-            if !character.is_whitespace() || (at > 0 && rest[..at].ends_with(char::is_whitespace)) {
+            if !is_js_space(character) || (at > 0 && rest[..at].ends_with(is_js_space)) {
                 return None;
             }
-            let spaces = rest[at..].len() - rest[at..].trim_start().len();
+            let spaces = rest[at..].len() - rest[at..].js_trim_start().len();
             let word = &rest[at + spaces..];
             ["as", "with", "show", "hide"]
                 .iter()
                 .find(|keyword| {
-                    word.starts_with(**keyword)
-                        && word[keyword.len()..].starts_with(char::is_whitespace)
+                    word.starts_with(**keyword) && word[keyword.len()..].starts_with(is_js_space)
                 })
                 .map(|_| at)
         });
@@ -49,7 +49,7 @@ fn condition(parsed: &Value, text: &str, parts: &[usize]) -> String {
             &text[part.start..part.end]
         })
         .collect::<String>()
-        .split_whitespace()
+        .js_split_whitespace()
         .collect()
 }
 

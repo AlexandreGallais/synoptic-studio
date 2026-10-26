@@ -14,6 +14,7 @@
 
 use super::elements::{Meta, meta_for};
 use super::selector::Selector;
+use crate::javascript::is_js_space;
 use crate::template::bindings::AttributeKind;
 use crate::template::lexer::{Span, TokenType};
 use crate::template::rules::r3::{R3, siblings};
@@ -487,7 +488,7 @@ impl<'t> Doc<'t> {
         let start = self.elements[index].element.start_span.start as usize + 1;
         let rest = self.text.get(start..).unwrap_or_default();
         let length = rest
-            .find(|character: char| character.is_whitespace() || matches!(character, '/' | '>'))
+            .find(|character: char| is_js_space(character) || matches!(character, '/' | '>'))
             .unwrap_or(rest.len());
         Span::new(start, start + length)
     }

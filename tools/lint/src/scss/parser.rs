@@ -8,6 +8,7 @@
 
 use super::tokenizer::{Kind as TokenKind, Token, Tokenizer, js_or};
 use super::tree::{Kind, Node, Sheet};
+use crate::javascript::{JsText, is_js_space};
 use crate::template::NESTING_LIMIT;
 
 /// An error of the reading: its message, `PostCSS`'s, and the byte it is reported at.
@@ -64,11 +65,6 @@ const fn is_trivia(token: &Token) -> bool {
 /// Whether a token is a space.
 const fn is_space(token: &Token) -> bool {
     matches!(token.kind, TokenKind::Space)
-}
-
-/// The text of a JavaScript `\s` class: white space or the byte order mark.
-fn is_js_space(character: char) -> bool {
-    character.is_whitespace() || character == '\u{feff}'
 }
 
 /// A comment's text split as `/^(\s*)([^]*\S)(\s*)$/` splits it: the spaces before, the text,
@@ -461,14 +457,14 @@ impl Parser<'_> {
                 let mut inner = index;
                 while inner > 0 {
                     let kind = cache[inner].kind;
-                    if string.trim().starts_with('!') && kind != TokenKind::Space {
+                    if string.js_trim().starts_with('!') && kind != TokenKind::Space {
                         break;
                     }
                     let popped = cache.pop().map(|each| self.text(&each).to_owned());
                     string = format!("{}{string}", popped.unwrap_or_default());
                     inner -= 1;
                 }
-                if string.trim().starts_with('!') {
+                if string.js_trim().starts_with('!') {
                     *tokens = cache;
                     return (true, Some(string));
                 }
@@ -649,7 +645,7 @@ impl Parser<'_> {
     /// A rule, or in SCSS a declaration with nested properties, from its tokens up to `{`.
     fn rule(&mut self, mut tokens: Vec<Token>) -> Read<()> {
         if let Some(value) = self.nested_value(&tokens)
-            && !value.trim().is_empty()
+            && !value.js_trim().is_empty()
             && !value.starts_with(|first: char| {
                 first == '#' || first == ':' || first == '-' || first.is_ascii_alphabetic()
             })
@@ -1110,6 +1106,22 @@ mod tests {
         assert_eq!(
             sheet.ancestors(sheet.walk()[14]),
             [sheet.walk()[13], sheet.walk()[8], 0]
+        );
+    }
+
+    #[test]
+    fn splits_a_comment_s_spaces_as_javascript_s_s_class_reads_them() {
+        // Own cases: `/^(\s*)([^]*\S)(\s*)$/` takes the byte order mark as a space, not NEL
+        // (U+0085), which Rust's white space holds.
+        let sheet = read("/*\u{feff}a\u{85}*/");
+        let comment = at(&sheet, &[0]);
+        assert_eq!(
+            (
+                comment.left.as_str(),
+                comment.text.as_str(),
+                comment.right.as_str()
+            ),
+            ("\u{feff}", "a\u{85}", "")
         );
     }
 

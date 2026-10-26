@@ -8,6 +8,7 @@ use super::scss_selectors::{
     has_interpolating_ampersand, is_standard_rule, is_standard_selector, resolve,
 };
 use super::{Context, Pattern, Report, SheetRule};
+use crate::javascript::JsText;
 use crate::scss::selector::{self, Kind as Part};
 use crate::scss::tree::Kind;
 
@@ -70,7 +71,7 @@ fn without_parameters(params: &str) -> &str {
         (Some(open), Some(close)) if close > open => {
             let name = &params[..open];
             if close + 1 == params.len() {
-                name.trim_end()
+                name.js_trim_end()
             } else {
                 params
             }

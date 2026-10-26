@@ -4,6 +4,7 @@
 //! leave out at-rules, rules, blockless at-rules and pseudo-class rules. The project's limit 3.
 
 use super::{Context, Matcher, Report, SheetRule, is_standard_rule, matches_any};
+use crate::javascript::is_js_space;
 use crate::scss::tree::Kind;
 
 /// The rule and its options.
@@ -56,11 +57,7 @@ impl MaxNestingDepth {
             return true;
         }
         if self.ignore_pseudo_class_rules && node.is(Kind::Rule) {
-            let normalized: String = node
-                .selector
-                .chars()
-                .filter(|c| !c.is_whitespace())
-                .collect();
+            let normalized: String = node.selector.chars().filter(|c| !is_js_space(*c)).collect();
             let only_pseudo = normalized
                 .split(',')
                 .filter(|each| !matches_any(&self.ignore_rules, each))

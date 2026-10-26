@@ -5,6 +5,7 @@
 //! or a name whose columns differ from row to row, reported over the string.
 
 use super::{Context, Report, SheetRule, is_standard_value};
+use crate::javascript::JsText;
 use crate::scss::tree::Kind;
 use crate::scss::value::{self, Kind as Part};
 
@@ -68,7 +69,7 @@ impl SheetRule for NamedGridAreasNoInvalid {
                 property.as_str(),
                 "grid" | "grid-template" | "grid-template-areas"
             ) || !is_standard_value(value)
-                || value.trim().eq_ignore_ascii_case("none")
+                || value.js_trim().eq_ignore_ascii_case("none")
             {
                 continue;
             }
@@ -89,7 +90,10 @@ impl SheetRule for NamedGridAreasNoInvalid {
                     return true;
                 }
                 areas.push((
-                    part.value.split_whitespace().map(str::to_owned).collect(),
+                    part.value
+                        .js_split_whitespace()
+                        .map(str::to_owned)
+                        .collect(),
                     part.start,
                     part.end,
                 ));

@@ -5,6 +5,7 @@
 
 use super::super::view::Doc;
 use super::super::{MESSAGES, report};
+use crate::javascript::{JsText, is_js_space};
 use crate::template::rules::{Report, Template, TemplateRule};
 use crate::template::tags::{definition, split_ns_name};
 use crate::template::tree::{Element, Node};
@@ -55,11 +56,11 @@ impl TemplateRule for NoImplicitClose {
                 .text
                 .get(content_end(element) as usize..)
                 .unwrap_or_default();
-            let next = rest.trim_start();
+            let next = rest.js_trim_start();
             let name_of = |text: &str| {
                 text.chars()
                     .take_while(|character| {
-                        !character.is_whitespace() && !matches!(character, '>' | '/')
+                        !is_js_space(*character) && !matches!(character, '>' | '/')
                     })
                     .collect::<String>()
                     .to_lowercase()

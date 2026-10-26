@@ -4,6 +4,7 @@
 //! condition and fixed by unwrapping it (a following `and`, `or` or `not` operand unwrapped too).
 
 use super::{Context, Report, SheetRule};
+use crate::javascript::{JsText, is_js_space};
 use crate::scss::tree::Kind;
 
 /// The rule.
@@ -20,15 +21,15 @@ fn logical(text: &str) -> String {
     let keyword = ["and", "or", "not"].iter().find_map(|word| {
         lower
             .strip_prefix(word)
-            .filter(|rest| rest.starts_with(char::is_whitespace))
-            .map(|rest| text.len() - rest.trim_start().len())
+            .filter(|rest| rest.starts_with(is_js_space))
+            .map(|rest| text.len() - rest.js_trim_start().len())
     });
     let Some(length) = keyword else {
         return text.to_owned();
     };
-    let (word, after) = (&text[..length], text[length..].trim());
+    let (word, after) = (&text[..length], text[length..].js_trim());
     if is_wrapped(after) {
-        format!("{word}{}", after[1..after.len() - 1].trim())
+        format!("{word}{}", after[1..after.len() - 1].js_trim())
     } else {
         format!("{word}{}", logical(after))
     }
@@ -36,7 +37,7 @@ fn logical(text: &str) -> String {
 
 /// A condition without its outer parentheses (`removeOuterParens`).
 fn unwrap(text: &str) -> String {
-    let trimmed = text.trim();
+    let trimmed = text.js_trim();
     if !is_wrapped(trimmed) {
         return text.to_owned();
     }
@@ -53,8 +54,8 @@ fn unwrap(text: &str) -> String {
             break;
         }
     }
-    let inside = trimmed[1..end].trim();
-    let after = trimmed[end + 1..].trim();
+    let inside = trimmed[1..end].js_trim();
+    let after = trimmed[end + 1..].js_trim();
     if after.is_empty() {
         inside.to_owned()
     } else {
@@ -90,7 +91,7 @@ impl SheetRule for AtRuleConditionalNoParentheses {
                 Some(None) => continue,
                 None => 0,
             };
-            if !is_wrapped(params[start..].trim()) {
+            if !is_wrapped(params[start..].js_trim()) {
                 continue;
             }
             let prefix = if node.name == "else" { "if " } else { "" };

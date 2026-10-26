@@ -5,6 +5,7 @@
 //! members maybe used by the sheets it loads.
 
 use super::{Context, Report, SheetRule};
+use crate::javascript::JsText;
 use crate::scss::tree::Kind;
 
 /// The rule.
@@ -71,7 +72,7 @@ fn private_names(text: &str) -> Vec<String> {
 /// original throws reading the name it lacks).
 fn call_name(params: &str) -> Option<&str> {
     let open = params.find('(')?;
-    let before = params[..open].trim_end();
+    let before = params[..open].js_trim_end();
     let start = before
         .bytes()
         .rposition(|byte| !(is_word(byte) || byte == b'$'))

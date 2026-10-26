@@ -7,6 +7,7 @@
 
 use super::empty_lines::{Lines, report};
 use super::{Context, Report, SheetRule};
+use crate::javascript::is_js_space;
 use crate::scss::tree::Kind;
 
 /// The rule and its options.
@@ -83,11 +84,9 @@ impl SheetRule for DoubleSlashCommentEmptyLineBefore {
                 options.primary == "always"
             };
             let has_empty = node.before.match_indices('\n').any(|(at, _)| {
-                node.before[at + 1..].find('\n').is_some_and(|next| {
-                    node.before[at + 1..at + 1 + next]
-                        .chars()
-                        .all(char::is_whitespace)
-                })
+                node.before[at + 1..]
+                    .find('\n')
+                    .is_some_and(|next| node.before[at + 1..at + 1 + next].chars().all(is_js_space))
             });
             if expected != has_empty {
                 reports.push(report(

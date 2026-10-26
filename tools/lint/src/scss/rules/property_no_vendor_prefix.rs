@@ -7,6 +7,7 @@
 use super::prefixed::{property as autoprefixable, unprefix};
 use super::reference::{BASIC_KEYWORDS, has};
 use super::{Context, Matcher, Report, SheetRule, matches_any};
+use crate::javascript::JsText;
 use crate::scss::tree::Kind;
 
 /// The rule and its option.
@@ -24,7 +25,7 @@ impl PropertyNoVendorPrefix {
 /// or `auto` or a CSS-wide keyword alone.
 fn is_safe_background_size(value: &str) -> bool {
     value.split(',').all(|background| {
-        let values: Vec<&str> = background.split_whitespace().collect();
+        let values: Vec<&str> = background.js_split_whitespace().collect();
         match values.as_slice() {
             [_, _] => true,
             [first] => *first == "auto" || has(BASIC_KEYWORDS, first),

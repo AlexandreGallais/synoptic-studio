@@ -7,6 +7,7 @@
 
 use super::keyframes_name_pattern::is_keyframes;
 use super::{Context, Report, SheetRule};
+use crate::javascript::JsText;
 use crate::scss::selector::{self, Kind as Part};
 use crate::scss::tree::Kind;
 
@@ -61,7 +62,7 @@ impl SheetRule for KeyframeSelectorNotation {
             let keyword_only = rules.iter().all(|(_, rule)| {
                 rule.selector
                     .split(',')
-                    .all(|each| is_keyword(&each.trim().to_lowercase()))
+                    .all(|each| is_keyword(&each.js_trim().to_lowercase()))
             });
             for (_, rule) in &rules {
                 let text = sheet.selector(rule);
@@ -77,7 +78,8 @@ impl SheetRule for KeyframeSelectorNotation {
                         .filter(|&part| {
                             let part = parsed.part(part);
                             part.kind != Part::Comment
-                                && !(part.kind == Part::Combinator && part.value.trim().is_empty())
+                                && !(part.kind == Part::Combinator
+                                    && part.value.js_trim().is_empty())
                         })
                         .collect();
                     let [only] = relevant.as_slice() else {

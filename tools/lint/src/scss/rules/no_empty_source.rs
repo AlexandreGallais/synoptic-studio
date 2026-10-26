@@ -3,6 +3,7 @@
 //! column past it, as `rangeBy` gives the root's end.
 
 use super::{Context, Report, SheetRule};
+use crate::javascript::JsText;
 
 /// The rule.
 pub struct NoEmptySource;
@@ -18,8 +19,8 @@ impl SheetRule for NoEmptySource {
 
     fn check(&self, sheet: &Context, reports: &mut Vec<Report>) {
         let root = sheet.node(0);
-        let notable = !sheet.text.trim().is_empty() && !root.nodes().is_empty();
-        if notable || (root.nodes().is_empty() && !root.after.trim().is_empty()) {
+        let notable = !sheet.text.js_trim().is_empty() && !root.nodes().is_empty();
+        if notable || (root.nodes().is_empty() && !root.after.js_trim().is_empty()) {
             return;
         }
         reports.push(Report::new(0, sheet.text.len() + 1, "rejected"));

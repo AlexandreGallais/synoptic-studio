@@ -5,6 +5,7 @@
 //! `:not()` of a list or of a compound, fixed when each item is simple by one `:not()` each.
 
 use super::{Context, Report, SheetRule, is_standard_rule};
+use crate::javascript::JsText;
 use crate::scss::selector::{self, Kind as Part, Selectors};
 use crate::scss::tree::Kind;
 
@@ -45,7 +46,7 @@ fn is_simple(parsed: &Selectors, index: usize) -> bool {
 /// A selector's text, trimmed.
 fn written<'t>(parsed: &Selectors, text: &'t str, selector: usize) -> &'t str {
     let part = parsed.part(selector);
-    text[part.start..part.end].trim()
+    text[part.start..part.end].js_trim()
 }
 
 impl SelectorNotNotation {
@@ -179,7 +180,7 @@ impl SheetRule for SelectorNotNotation {
                     }
                 };
                 let at = node.start + part.start;
-                let length = text[part.start..part.end].trim().len();
+                let length = text[part.start..part.end].js_trim().len();
                 let report = Report::new(at, at + length, "expected")
                     .with(&[option])
                     .scoped(scope.0, scope.1);

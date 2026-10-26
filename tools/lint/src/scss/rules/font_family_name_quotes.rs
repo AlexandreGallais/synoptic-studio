@@ -7,6 +7,7 @@
 use super::font_families::find;
 use super::reference::{FONT_FAMILY_KEYWORDS, PREFIXED_SYSTEM_FONTS, has};
 use super::{Context, Report, SheetRule, is_standard_value};
+use crate::javascript::JsText;
 use crate::scss::tree::Kind;
 
 /// When quotes are wanted.
@@ -44,7 +45,7 @@ fn recommended(family: &str) -> bool {
 /// Whether quotes are required: a word starting with a digit or `--`, or holding a character no
 /// identifier holds (`quotesRequired`).
 fn required(family: &str) -> bool {
-    family.split_whitespace().any(|word| {
+    family.js_split_whitespace().any(|word| {
         let digit = word
             .strip_prefix('-')
             .unwrap_or(word)

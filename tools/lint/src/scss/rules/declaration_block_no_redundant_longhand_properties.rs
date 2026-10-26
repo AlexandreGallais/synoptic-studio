@@ -9,6 +9,7 @@
 use super::prefixed::prefix;
 use super::reference::{BASIC_KEYWORDS, LONGHAND_SUB_PROPERTIES_OF_SHORTHAND_PROPERTIES, get, has};
 use super::{Context, Matcher, Report, SheetRule, matches_any};
+use crate::javascript::JsText;
 use crate::scss::tree::Node;
 use crate::scss::value::{self, Kind as Part};
 
@@ -61,7 +62,7 @@ fn comma_separated(input: Option<&str>) -> Vec<String> {
     }
     parts
         .into_iter()
-        .map(|each| each.trim().to_owned())
+        .map(|each| each.js_trim().to_owned())
         .filter(|each| !each.is_empty())
         .collect()
 }
@@ -311,7 +312,7 @@ impl SheetRule for DeclarationBlockNoRedundantLonghandProperties {
             let mut declared: Vec<(String, String)> = Vec::new();
             for &index in &block {
                 let node = sheet.node(index);
-                let value = node.value.trim().to_owned();
+                let value = node.value.js_trim().to_owned();
                 if has(BASIC_KEYWORDS, &value) {
                     continue;
                 }
@@ -357,7 +358,7 @@ impl SheetRule for DeclarationBlockNoRedundantLonghandProperties {
                             .iter()
                             .map(|&each| sheet.node(each))
                             .find(|each| each.prop.to_lowercase() == name)
-                            .map(|each| each.value.trim().to_owned())
+                            .map(|each| each.value.js_trim().to_owned())
                     };
                     let fix = resolve(&prefixed, &order, &values)
                         .and_then(|resolved| Self::fix(sheet, &group, &prefixed, &resolved));

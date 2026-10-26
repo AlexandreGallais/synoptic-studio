@@ -3,6 +3,7 @@
 //! over its `#name`; the project's pattern stylelint-config-standard's kebab-case.
 
 use super::{Context, Pattern, Report, SheetRule, is_standard_rule};
+use crate::javascript::JsText;
 use crate::scss::selector::{self, Kind as Part};
 use crate::scss::tree::Kind;
 
@@ -45,7 +46,7 @@ impl SheetRule for SelectorIdPattern {
                 if part.kind != Part::Id || self.pattern.matches(&part.value) {
                     continue;
                 }
-                let written = parsed.text(text, index).trim();
+                let written = parsed.text(text, index).js_trim();
                 let at = node.start + part.start;
                 reports.push(
                     Report::new(at, at + written.len(), "expected")

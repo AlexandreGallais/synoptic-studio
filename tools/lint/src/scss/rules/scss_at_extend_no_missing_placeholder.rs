@@ -3,6 +3,7 @@
 //! anything but a `%placeholder` or an interpolation, reported over its parameters.
 
 use super::{Context, Report, SheetRule};
+use crate::javascript::JsText;
 use crate::scss::tree::Kind;
 
 /// The rule.
@@ -22,7 +23,7 @@ impl SheetRule for AtExtendNoMissingPlaceholder {
 
     fn check(&self, sheet: &Context, reports: &mut Vec<Report>) {
         for (_, node) in sheet.all(Kind::AtRule) {
-            let param = node.params.trim();
+            let param = node.params.js_trim();
             let interpolated = param.starts_with("#{") && param[2..].contains('}');
             if node.name != "extend" || param.starts_with('%') || interpolated {
                 continue;

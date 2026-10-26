@@ -5,6 +5,7 @@
 //! one fix a pass.
 
 use super::{Context, Report, SheetRule};
+use crate::javascript::JsText;
 use crate::scss::tree::{Kind, Node};
 
 /// The rule and its option.
@@ -54,10 +55,14 @@ fn space_after(node: &Node) -> String {
 /// The comment without spaces inside (`"never"`'s fix).
 fn spaceless(node: &Node) -> String {
     let stars = node.text.len() - node.text.trim_start_matches('*').len();
-    let text = format!("{}{}", &node.text[..stars], node.text[stars..].trim_start());
+    let text = format!(
+        "{}{}",
+        &node.text[..stars],
+        node.text[stars..].js_trim_start()
+    );
     let kept = text.trim_end_matches('*');
     let trailing = &text[kept.len()..];
-    printed("", &format!("{}{trailing}", kept.trim_end()), "")
+    printed("", &format!("{}{trailing}", kept.js_trim_end()), "")
 }
 
 impl SheetRule for CommentWhitespaceInside {
@@ -89,14 +94,14 @@ impl SheetRule for CommentWhitespaceInside {
                 continue;
             }
             let opener = 1 + raw[1..].bytes().take_while(|byte| *byte == b'*').count();
-            let left = raw[opener..].len() - raw[opener..].trim_start().len();
+            let left = raw[opener..].len() - raw[opener..].js_trim_start().len();
             let closer = 1 + raw[..raw.len() - 1]
                 .bytes()
                 .rev()
                 .take_while(|byte| *byte == b'*')
                 .count();
             let body = &raw[..raw.len() - closer];
-            let right = body.len() - body.trim_end().len();
+            let right = body.len() - body.js_trim_end().len();
             let fix = |report: Report, text: String| report.fixed(start, end, text);
             if !self.always && left > 0 {
                 let at = start + opener;

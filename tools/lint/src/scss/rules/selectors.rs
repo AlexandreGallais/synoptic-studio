@@ -7,6 +7,7 @@ use super::reference::{
     LINGUISTIC_PSEUDO_CLASSES, MATHML_TAGS, NAMED_TIMELINE_RANGE_KEYWORDS,
     SHADOW_TREE_PSEUDO_ELEMENTS, SVG_TAGS, has,
 };
+use crate::javascript::{JsText, is_js_space};
 use crate::scss::selector::{Kind, Selectors};
 
 /// A pseudo's name: its colons dropped, in lower case (`normalizePseudoName`).
@@ -70,10 +71,10 @@ pub fn is_keyframe_selector(selector: &str) -> bool {
         return true;
     }
     selector
-        .split_once(char::is_whitespace)
+        .split_once(is_js_space)
         .is_some_and(|(range, rest)| {
             has(NAMED_TIMELINE_RANGE_KEYWORDS, &range.to_lowercase())
-                && percentage(rest.trim_start())
+                && percentage(rest.js_trim_start())
         })
 }
 
@@ -127,14 +128,14 @@ pub fn comma_list(text: &str) -> Vec<String> {
         } else if character == ')' {
             depth -= 1;
         } else if character == ',' && depth == 0 {
-            items.push(current.trim().to_owned());
+            items.push(current.js_trim().to_owned());
             current.clear();
             continue;
         }
         current.push(character);
     }
-    if !current.trim().is_empty() || !items.is_empty() {
-        items.push(current.trim().to_owned());
+    if !current.js_trim().is_empty() || !items.is_empty() {
+        items.push(current.js_trim().to_owned());
     }
     items.into_iter().filter(|item| !item.is_empty()).collect()
 }

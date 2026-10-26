@@ -6,6 +6,7 @@
 //! parent and its children by index; arguments nested deeper than `NESTING_LIMIT` are an error,
 //! as the library's own `maxNestingDepth`. Namespaces (`ns|a`) are read as a combinator `|`.
 
+use crate::javascript::{JsText, is_js_space};
 use crate::template::NESTING_LIMIT;
 
 /// What a part is.
@@ -811,7 +812,7 @@ fn is_keyframes_percent(word: &str) -> bool {
 
 /// An attribute selector's name, operator, value and flag from its text.
 fn read_attribute(inside: &str) -> Attribute {
-    let text = inside.trim();
+    let text = inside.js_trim();
     let operator_at = text.find('=').map(|at| {
         let before = text.as_bytes().get(at.wrapping_sub(1)).copied();
         if matches!(before, Some(b'~' | b'|' | b'^' | b'$' | b'*')) {
@@ -829,22 +830,22 @@ fn read_attribute(inside: &str) -> Attribute {
     let equals = text[operator_at..]
         .find('=')
         .map_or(operator_at, |at| operator_at + at);
-    let rest = text[equals + 1..].trim();
+    let rest = text[equals + 1..].js_trim();
     let (value, flag) = match rest.as_bytes().first() {
         Some(quote @ (b'"' | b'\'')) => {
             let close = rest[1..]
                 .find(char::from(*quote))
                 .map_or(rest.len(), |at| at + 2);
-            let flag = rest[close..].trim();
+            let flag = rest[close..].js_trim();
             (&rest[..close], (!flag.is_empty()).then(|| flag.to_owned()))
         }
-        _ => match rest.split_once(char::is_whitespace) {
-            Some((value, flag)) => (value, Some(flag.trim().to_owned())),
+        _ => match rest.split_once(is_js_space) {
+            Some((value, flag)) => (value, Some(flag.js_trim().to_owned())),
             None => (rest, None),
         },
     };
     Attribute {
-        name: text[..operator_at].trim().to_owned(),
+        name: text[..operator_at].js_trim().to_owned(),
         operator: Some(text[operator_at..=equals].to_owned()),
         value: Some(value.to_owned()),
         flag,

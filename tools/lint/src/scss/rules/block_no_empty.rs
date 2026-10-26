@@ -3,6 +3,7 @@
 //! its `{` to its end; a comment counts as content unless the option `ignore: ["comments"]` is set.
 
 use super::{Context, Report, SheetRule};
+use crate::javascript::is_js_space;
 use crate::scss::tree::Kind;
 
 /// The rule and its option.
@@ -37,12 +38,7 @@ impl SheetRule for BlockNoEmpty {
                 .nodes()
                 .iter()
                 .any(|&child| !(self.ignore_comments && sheet.node(child).is(Kind::Comment)));
-            if notable
-                || node
-                    .after
-                    .chars()
-                    .any(|character| !character.is_whitespace())
-            {
+            if notable || node.after.chars().any(|character| !is_js_space(character)) {
                 continue;
             }
             let start = node.start + sheet.prelude_length(node);

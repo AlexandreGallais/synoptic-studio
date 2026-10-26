@@ -2,6 +2,7 @@
 //! `id` is not empty, holds no whitespace and, unless relaxed, starts with a letter and holds only
 //! letters, digits, `-` and `_`. The project runs it strict, the rule's default.
 
+use crate::javascript::is_js_space;
 use regex::Regex;
 
 use super::super::view::Doc;
@@ -42,7 +43,7 @@ impl TemplateRule for ValidId {
                 };
                 let (span, problem) = if value.is_empty() {
                     (attr.span(), "must not be empty")
-                } else if value.chars().any(char::is_whitespace) {
+                } else if value.chars().any(is_js_space) {
                     (attr.value_span(), "must not contain whitespace")
                 } else if self.relaxed {
                     continue;

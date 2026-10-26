@@ -5,6 +5,7 @@
 //! removing the space.
 
 use super::{Context, Report, SheetRule};
+use crate::javascript::{JsText, is_js_space};
 use crate::scss::tree::Kind;
 
 /// The rule and its option.
@@ -32,22 +33,22 @@ impl SheetRule for DoubleSlashCommentWhitespaceInside {
 
     fn check(&self, sheet: &Context, reports: &mut Vec<Report>) {
         for (_, node) in sheet.all(Kind::Comment) {
-            if !node.inline || node.text.trim().is_empty() {
+            if !node.inline || node.text.js_trim().is_empty() {
                 continue;
             }
             // The comment's own text: its spaces before (`left`) and its text as written.
             let inside = &sheet.source(node)[2..];
-            let left = inside.len() - inside.trim_start().len();
-            let text = inside.trim();
+            let left = inside.len() - inside.js_trim_start().len();
+            let text = inside.js_trim();
             let slashes = text.len() - text.trim_start_matches('/').len();
             let after_slashes = &text[slashes..];
             let key = if !self.always
-                && (left > 0 || (slashes > 0 && after_slashes.starts_with(char::is_whitespace)))
+                && (left > 0 || (slashes > 0 && after_slashes.starts_with(is_js_space)))
             {
                 "rejected"
             } else if self.always
                 && left == 0
-                && !(after_slashes.is_empty() || after_slashes.starts_with(char::is_whitespace))
+                && !(after_slashes.is_empty() || after_slashes.starts_with(is_js_space))
             {
                 "expected"
             } else {
@@ -59,7 +60,7 @@ impl SheetRule for DoubleSlashCommentWhitespaceInside {
             reports.push(if self.always {
                 report.fixed(body + slashes, body + slashes, " ")
             } else {
-                let spaces = after_slashes.len() - after_slashes.trim_start().len();
+                let spaces = after_slashes.len() - after_slashes.js_trim_start().len();
                 let removed = if slashes > 0 { spaces } else { 0 };
                 report.fixed(node.start + 2, body + slashes + removed, &text[..slashes])
             });

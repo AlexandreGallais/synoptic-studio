@@ -3,6 +3,7 @@
 //! holds `&` outside interpolations, reported over its `@at-root` and fixed by dropping it.
 
 use super::{Context, Report, SheetRule};
+use crate::javascript::JsText;
 use crate::scss::tree::Kind;
 
 /// The rule.
@@ -47,7 +48,7 @@ impl SheetRule for AtRootNoRedundant {
             let word = "@at-root";
             let (start, end) = sheet.word_range(node, word);
             let text = sheet.source(node);
-            let spaces = text[word.len()..].len() - text[word.len()..].trim_start().len();
+            let spaces = text[word.len()..].len() - text[word.len()..].js_trim_start().len();
             let report = Report::new(start, end, "rejected");
             reports.push(if spaces > 0 {
                 report.fixed(node.start, node.start + word.len() + spaces, "")

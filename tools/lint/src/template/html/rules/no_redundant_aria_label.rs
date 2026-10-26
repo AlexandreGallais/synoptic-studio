@@ -4,6 +4,7 @@
 
 use super::super::view::Doc;
 use super::super::{MESSAGES, report};
+use crate::javascript::JsText;
 use crate::template::rules::{Report, Template, TemplateRule};
 
 /// The rule.
@@ -37,7 +38,7 @@ impl TemplateRule for NoRedundantAriaLabel {
                 continue;
             };
             let (text, _) = doc.text_content(label);
-            if attr.text() == Some(text.trim()) {
+            if attr.text() == Some(text.js_trim()) {
                 reports.push(report(
                     attr.key_span(),
                     "aria-label is redundant when label containing same text exists".to_owned(),

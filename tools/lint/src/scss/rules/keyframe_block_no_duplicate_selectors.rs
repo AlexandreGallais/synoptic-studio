@@ -4,6 +4,7 @@
 
 use super::keyframes_name_pattern::is_keyframes;
 use super::{Context, Report, SheetRule, is_standard_rule};
+use crate::javascript::JsText;
 use crate::scss::selector::{self, Kind as Part, Selectors};
 use crate::scss::tree::Kind;
 
@@ -25,9 +26,9 @@ pub fn stripped(parsed: &Selectors, text: &str, selector: usize) -> (String, usi
         (Some(&first), Some(&last)) => {
             let start = parsed.part(first).start;
             let end = parsed.part(last).end;
-            (text[start..end].trim().to_owned(), start)
+            (text[start..end].js_trim().to_owned(), start)
         }
-        _ => (text[part.start..part.end].trim().to_owned(), part.start),
+        _ => (text[part.start..part.end].js_trim().to_owned(), part.start),
     }
 }
 

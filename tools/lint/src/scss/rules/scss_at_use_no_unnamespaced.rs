@@ -3,6 +3,7 @@
 //! reported over `as *`.
 
 use super::{Context, Report, SheetRule};
+use crate::javascript::JsText;
 use crate::scss::tree::Kind;
 
 /// The rule.
@@ -12,15 +13,15 @@ pub struct AtUseNoUnnamespaced;
 fn unnamespaced(params: &str) -> Option<&str> {
     params.match_indices("as").find_map(|(at, _)| {
         let rest = &params[at + 2..];
-        let star = rest.len() - rest.trim_start().len();
+        let star = rest.len() - rest.js_trim_start().len();
         if !rest[star..].starts_with('*') {
             return None;
         }
-        let after = rest[star + 1..].trim_start();
+        let after = rest[star + 1..].js_trim_start();
         let ends = after.is_empty()
             || after
                 .strip_prefix("with")
-                .is_some_and(|tail| tail.trim_start().starts_with('('));
+                .is_some_and(|tail| tail.js_trim_start().starts_with('('));
         ends.then(|| &params[at..=(at + 2 + star)])
     })
 }
