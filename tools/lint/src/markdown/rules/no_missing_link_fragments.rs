@@ -7,10 +7,11 @@ use std::collections::HashSet;
 use markdown::mdast::Node;
 
 use crate::finding::Finding;
+use crate::javascript::is_js_space;
 use crate::markdown::MarkdownRule;
 use crate::markdown::page::{Page, start, value, walk};
 use crate::markdown::slugger::Slugger;
-use crate::markdown::text::{find_without_case, is_js_space, strip_html_comments, without_tags};
+use crate::markdown::text::{find_without_case, strip_html_comments, without_tags};
 
 /// The rule.
 pub struct NoMissingLinkFragments;

@@ -1,0 +1,74 @@
+The templates of Angular's control-flow guide, adev/src/content/guide/templates/control-flow.md at
+the tag v22.2.3 (REF-ANGULAR-CONTROL-FLOW), copied as they are: each angular-html block, and the
+template literal of each angular-ts block. Read by tools/lint/src/template/corpus.rs.
+
+@@@ template 1 @if
+@if (a > b) {
+  <p>{{ a }} is greater than {{ b }}</p>
+}
+@@@ template 2 @else if and @else
+@if (a > b) {
+  {{ a }} is greater than {{ b }}
+} @else if (b > a) {
+  {{ a }} is less than {{ b }}
+} @else {
+  {{ a }} is equal to {{ b }}
+}
+@@@ template 3 the conditional expression's result
+@if (user.profile.settings.startDate; as startDate) {
+  {{ startDate }}
+}
+@@@ template 4 @for
+@for (item of items; track item.id) {
+  {{ item.name }}
+}
+@@@ template 5 track
+@for (item of items; track item) {
+  {{ item.name }}
+}
+@@@ template 6 contextual variables
+@for (item of items; track item.id; let idx = $index, e = $even) {
+  <p>Item #{{ idx }}: {{ item.name }}</p>
+}
+@@@ template 7 @empty
+@for (item of items; track item.name) {
+  <li>{{ item.name }}</li>
+} @empty {
+  <li>There are no items.</li>
+}
+@@@ template 8 @switch
+@switch (userPermissions) {
+  @case ('admin') {
+    <app-admin-dashboard />
+  }
+  @case ('reviewer')
+  @case ('editor') {
+    <app-editor-dashboard />
+  }
+  @default {
+    <app-viewer-dashboard />
+  }
+}
+@@@ template 9 exhaustive type checking
+    @switch (state) {
+      @case ('loggedOut') {
+        <button>Login</button>
+      }
+
+      @case ('loggedIn') {
+        <p>Welcome back!</p>
+      }
+
+      @default never;
+      <!-- throws because @case ('loading') is missing -->
+    }
+
+@@@ template 10 exhaustive type checking of a nested expression
+    @switch (state.mode) {
+      @case ('show') {
+        {{ state.menu }};
+      }
+      @case ('hide') {}
+      @default never(state);
+    }
+

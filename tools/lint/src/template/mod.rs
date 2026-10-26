@@ -1,0 +1,275 @@
+//! The reader of Angular templates (F52, EN-163): a port of the lexer and the parser of
+//! `@angular/compiler`'s `ml_parser` (REF-ANGULAR-ML-PARSER, MIT, under ADR-0076), so that the
+//! template rules read a template as Angular's compiler reads it (REF-ANGULAR-TEMPLATES,
+//! REF-ANGULAR-CONTROL-FLOW): `lexer` gives the tokens, `tree` the nodes, `bindings` what each
+//! attribute, text and block binds, `expressions` each expression parsed by Oxc with its pipes.
+
+pub mod bindings;
+pub mod entities;
+pub mod expressions;
+pub mod lexer;
+pub mod rules;
+pub mod tags;
+pub mod tree;
+
+use std::fs;
+
+use crate::PARSE_RULE;
+use crate::finding::{Finding, unreadable};
+use crate::lines::Lines;
+use crate::project::Project;
+
+/// How deep elements and blocks, or an expression's brackets, may nest: deeper, the reader reports
+/// an error under `lint/parse` and reads no further, as the walks of the rules and Oxc's parser
+/// recurse and would overflow a thread's stack; at the limit of both, every rule runs on a thread
+/// of 2 MiB, a debug build's. Angular sets no limit; no template nests so deep.
+pub const NESTING_LIMIT: usize = 256;
+
+/// Whether a path is a component's template, which the reader reads (`*.component.html`).
+#[must_use]
+pub fn is_template(path: &str) -> bool {
+    path.ends_with(".component.html")
+}
+
+/// The findings of a template's text: each error of its reading, expressions included, at its
+/// line and column under `lint/parse`; once it reads cleanly, the reports of the template rules.
+#[must_use]
+pub fn lint_text(path: &str, text: &str) -> Vec<Finding> {
+    lint_with(path, text, rules::RULES)
+}
+
+/// The findings of a set of template rules on a template's text.
+#[must_use]
+pub fn lint_with(path: &str, text: &str, rules: &[&dyn rules::TemplateRule]) -> Vec<Finding> {
+    let lines = Lines::new(text);
+    let parsed = tree::parse(text);
+    let errors = bindings::check(&parsed);
+    let finding = |start: u32, rule: &'static str, message: String| {
+        let (line, column) = lines.place(text, start as usize);
+        Finding {
+            path: path.to_owned(),
+            line,
+            column,
+            rule,
+            message,
+            fix: None,
+        }
+    };
+    if !errors.is_empty() {
+        return errors
+            .into_iter()
+            .map(|error| {
+                let message = format!("{}.", error.message.trim_end_matches('.'));
+                finding(error.span.start, PARSE_RULE, message)
+            })
+            .collect();
+    }
+    let mut findings = Vec::new();
+    for rule in rules {
+        for report in rules::reports(*rule, path, text, &parsed.nodes) {
+            findings.push(Finding {
+                fix: report.fix.clone(),
+                ..finding(
+                    report.span.start,
+                    rule.name(),
+                    rules::message(*rule, &report),
+                )
+            });
+        }
+    }
+    findings.sort_by_key(|each| (each.line, each.column));
+    findings
+}
+
+/// The findings of a template read from the disk.
+#[must_use]
+pub fn lint_path(project: &Project, path: &str) -> Vec<Finding> {
+    match fs::read_to_string(project.root.join(path)) {
+        Ok(text) => lint_text(path, &text),
+        Err(error) => vec![unreadable(path, &error)],
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{is_template, lint_text};
+
+    #[test]
+    fn f52_ac1_reports_a_malformed_template_at_its_line_and_column() {
+        let findings = lint_text("a.component.html", "<p>\n  <b>{{ a + }}</b>\n</p>\n");
+
+        // Line 2 starts at byte 4; `{{` at 9, the expression ` a + ` at 11 (column 11 - 4 + 1 = 8);
+        // Oxc stops at its end, byte 11 + 5 = 16, column 13.
+        assert_eq!(
+            findings
+                .iter()
+                .map(|finding| (finding.line, finding.column, finding.rule))
+                .collect::<Vec<_>>(),
+            [(2, 13, "lint/parse")]
+        );
+        let tree = lint_text("a.component.html", "<div>\n</span>");
+        assert_eq!((tree[0].line, tree[0].column), (2, 1));
+        assert!(
+            tree[0]
+                .message
+                .starts_with("Unexpected closing tag \"span\"")
+        );
+        assert_eq!(
+            lint_text("a.component.html", "@if (a) {<b>{{ a | p: 1 }}</b>}"),
+            []
+        );
+    }
+
+    #[test]
+    fn reads_a_template_from_the_disk_and_reports_one_it_cannot_read() {
+        let root = crate::testing::fixture("templates");
+        let written = std::fs::write(root.join("a.component.html"), "<div/>\n");
+        let project = crate::project::Project::new(&root);
+
+        assert!(written.is_ok());
+        let found = super::lint_path(&project, "a.component.html");
+        assert_eq!(
+            found
+                .iter()
+                .map(|finding| finding.message.as_str())
+                .collect::<Vec<_>>(),
+            ["Only void, custom and foreign elements can be self closed \"div\"."]
+        );
+        let missing = super::lint_path(&project, "missing.component.html");
+        assert!(missing[0].message.starts_with("Cannot read the file"));
+    }
+
+    #[test]
+    fn f52_ac2_runs_the_template_rules_once_a_template_reads_cleanly() {
+        let findings = lint_text("a.component.html", "<button>\n  {{ a! }}</button>\n");
+
+        // The button without a type at 1:1; `a!` after `  {{ ` at line 2, column 6.
+        assert_eq!(
+            findings
+                .iter()
+                .map(|finding| (finding.line, finding.column, finding.rule))
+                .collect::<Vec<_>>(),
+            [
+                (1, 1, "@angular-eslint/template/button-has-type"),
+                (2, 6, "@angular-eslint/template/no-non-null-assertion"),
+            ]
+        );
+        assert_eq!(findings[0].message, "Type for <button> is missing");
+        // A template that does not read gives its error alone, no rule run on half a tree.
+        let broken = lint_text("a.component.html", "<button>{{ a! + }}</button>");
+        assert_eq!(
+            broken
+                .iter()
+                .map(|finding| finding.rule)
+                .collect::<Vec<_>>(),
+            ["lint/parse"]
+        );
+    }
+
+    #[test]
+    fn f52_ac1_places_a_report_after_crlf_line_ends_as_angular_does() {
+        let places = |text: &str| {
+            lint_text("a.component.html", text)
+                .iter()
+                .map(|finding| (finding.line, finding.column, finding.rule))
+                .collect::<Vec<_>>()
+        };
+        let eqeqeq = "@angular-eslint/template/eqeqeq";
+
+        // Angular 22.2.3's `parseTemplate` with `preserveLineEndings`, run by the auditor: the
+        // comparison `a == c` at 2:2 (after `{{\r\n `) and at 3:3 (after `\r\n  `).
+        assert_eq!(places("<p>{{\r\n a == c }}</p>"), [(2, 2, eqeqeq)]);
+        assert_eq!(
+            places("<p [title]=\"\r\n  b &&\r\n  a == c\"></p>"),
+            [(3, 3, eqeqeq)]
+        );
+    }
+
+    #[test]
+    fn f52_ac1_reads_nothing_under_ng_non_bindable_but_its_own_attributes() {
+        let rules = |text: &str| {
+            lint_text("a.component.html", text)
+                .iter()
+                .map(|finding| (finding.line, finding.column, finding.rule))
+                .collect::<Vec<_>>()
+        };
+
+        // Angular 22.2.3 reads the children of `ngNonBindable` as text (run by the auditor):
+        // no error, no rule on their expressions.
+        let skipped = "<div ngNonBindable>{{ a + }} <p [x]=\"b +\">{{ ) }}</p> @if (x) {y}</div>";
+        assert_eq!(rules(skipped), []);
+        assert_eq!(rules("<div ngNonBindable><p>{{ a == 'b' }}</p></div>"), []);
+        // Its own attributes are read, `b +` from byte 24, Oxc stopping at its end, 27 (column
+        // 28); the name is compared as written, ` a + ` from byte 21 to 26 (column 27).
+        assert_eq!(
+            rules("<div ngNonBindable [x]=\"b +\"></div>"),
+            [(1, 28, "lint/parse")]
+        );
+        assert_eq!(
+            rules("<div ngnonbindable>{{ a + }}</div>"),
+            [(1, 27, "lint/parse")]
+        );
+    }
+
+    #[test]
+    fn reports_a_nesting_too_deep_rather_than_overflowing_the_stack() {
+        let places = |text: &str| {
+            lint_text("a.component.html", text)
+                .iter()
+                .map(|finding| (finding.line, finding.column, finding.message.clone()))
+                .collect::<Vec<_>>()
+        };
+        let elements = "Elements and blocks nested more than 256 deep.".to_owned();
+
+        // 5,000 `<div>`s: the 257th, after 256 × 5 bytes, at column 1281.
+        assert_eq!(
+            places(&"<div>".repeat(5_000)),
+            [(1, 1281, elements.clone())]
+        );
+        // 5,000 `@if (a) {`, 9 bytes each: the 257th at column 2305.
+        assert_eq!(places(&"@if (a) {".repeat(5_000)), [(1, 2305, elements)]);
+        // 3,000 brackets after `<p>{{ `: the 258th, once 257 are open, at byte 5 + 1 + 257.
+        let brackets = format!(
+            "<p>{{{{ {}a{} }}}}</p>",
+            "(".repeat(3_000),
+            ")".repeat(3_000)
+        );
+        assert_eq!(
+            places(&brackets),
+            [(1, 264, "Brackets nested more than 256 deep.".to_owned())]
+        );
+        // At the limit, every rule runs on this test's thread, its stack 2 MiB: 256 elements, 256
+        // brackets.
+        let deepest = format!(
+            "{}{{{{ {}a == 'b'{} }}}}{}",
+            "<div>".repeat(256),
+            "(".repeat(256),
+            ")".repeat(256),
+            "</div>".repeat(256)
+        );
+        let found = lint_text("a.component.html", &deepest);
+        assert_eq!(
+            found.iter().map(|finding| finding.rule).collect::<Vec<_>>(),
+            ["@angular-eslint/template/eqeqeq"]
+        );
+    }
+
+    #[test]
+    fn runs_no_call_expression_by_the_product_owner_s_choice() {
+        // A signal read is a call: `no-call-expression` is off, so it passes.
+        assert_eq!(lint_text("a.component.html", "<p>{{ zoom() }}</p>\n"), []);
+        assert!(
+            super::rules::RULES
+                .iter()
+                .all(|rule| rule.name() != "@angular-eslint/template/no-call-expression")
+        );
+    }
+
+    #[test]
+    fn reads_only_component_templates() {
+        assert!(is_template("playground/src/app/app.component.html"));
+        assert!(!is_template("playground/src/index.html"));
+    }
+}
+#[cfg(test)]
+pub mod corpus;

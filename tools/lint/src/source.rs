@@ -9,6 +9,7 @@ use oxc_parser::Token;
 use oxc_semantic::Semantic;
 
 use crate::finding::{Finding, Fix};
+use crate::lines::Lines;
 use crate::project::Project;
 
 /// A top-level function declaration, exported or not, and where its `JSDoc` block is attached.
@@ -34,8 +35,8 @@ pub struct Source<'s, 'a> {
     pub tokens: &'s [Token],
     /// The repository.
     pub project: &'s Project,
-    /// The offset of each line's start.
-    lines: Vec<u32>,
+    /// Where each line starts.
+    lines: Lines,
 }
 
 impl<'s, 'a> Source<'s, 'a> {
@@ -49,12 +50,7 @@ impl<'s, 'a> Source<'s, 'a> {
         project: &'s Project,
     ) -> Self {
         let text = program.source_text;
-        let lines = std::iter::once(0)
-            .chain(
-                text.match_indices('\n')
-                    .map(|(at, _)| u32::try_from(at + 1).unwrap_or(u32::MAX)),
-            )
-            .collect();
+        let lines = Lines::new(text);
 
         Self {
             path,
@@ -90,21 +86,13 @@ impl<'s, 'a> Source<'s, 'a> {
     /// The line of an offset, from 1.
     #[must_use]
     pub fn line(&self, offset: u32) -> usize {
-        self.lines.partition_point(|start| *start <= offset)
+        self.lines.line(offset as usize)
     }
 
     /// The line and the column of an offset, from 1, the column in UTF-16 units.
     #[must_use]
     pub fn place(&self, offset: u32) -> (usize, usize) {
-        let line = self.line(offset);
-        let start = self.lines[line - 1] as usize;
-        let end = (offset as usize).min(self.text.len());
-        let column = self
-            .text
-            .get(start..end)
-            .map_or(0, |before| before.encode_utf16().count());
-
-        (line, column + 1)
+        self.lines.place(self.text, offset as usize)
     }
 
     /// A finding of a rule at an offset.

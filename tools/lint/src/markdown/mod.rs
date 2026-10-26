@@ -67,14 +67,7 @@ pub fn lint_text(path: &str, text: &str, rules: &[&dyn MarkdownRule]) -> Vec<Fin
 pub fn lint_path(project: &Project, path: &str) -> Vec<Finding> {
     match fs::read_to_string(project.root.join(path)) {
         Ok(text) => lint_text(path, &text, rules::ALL),
-        Err(error) => vec![Finding {
-            path: path.to_owned(),
-            line: 1,
-            column: 1,
-            rule: PARSE_RULE,
-            message: format!("Cannot read the file: {error}."),
-            fix: None,
-        }],
+        Err(error) => vec![crate::finding::unreadable(path, &error)],
     }
 }
 
