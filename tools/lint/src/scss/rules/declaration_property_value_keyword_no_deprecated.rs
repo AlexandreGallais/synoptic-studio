@@ -113,6 +113,16 @@ impl SheetRule for DeclarationPropertyValueKeywordNoDeprecated {
         ]
     }
 
+    fn computed(&self, key: &str, args: &[String]) -> Option<String> {
+        // The original's arguments are the property, then the keyword, which its message names
+        // first.
+        let [property, keyword] = args else {
+            return None;
+        };
+        (key == "rejected")
+            .then(|| format!("Deprecated keyword \"{keyword}\" for property \"{property}\""))
+    }
+
     fn check(&self, sheet: &Context, reports: &mut Vec<Report>) {
         for (index, node) in sheet.all(Kind::Declaration) {
             if !node.value.bytes().any(|byte| byte.is_ascii_alphabetic())

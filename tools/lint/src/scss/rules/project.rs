@@ -212,6 +212,7 @@ fn scss_rules() -> Vec<Box<dyn SheetRule>> {
 #[cfg(test)]
 mod tests {
     use super::{RULES, applies};
+    use crate::scss::rules::tester::reports;
 
     #[test]
     fn f53_ac2_runs_each_kept_rule_once() {
@@ -253,6 +254,159 @@ mod tests {
             "stylelint/color-no-hex",
             "playground/src/app/shared/styles/page.scss"
         ));
+    }
+
+    /// Own cases, one a rule whose message takes two or more arguments, under the project's
+    /// configuration: (rule, code, message as the original's `ruleMessages` function writes it).
+    /// The test files' `messages.<id>(…)` go through the same template as the reports, so they
+    /// cannot tell an order. `color-named`'s and
+    /// `declaration-block-no-redundant-longhand-properties`' two-argument messages are not
+    /// reported under the project's options; `order`, `properties-order` and `selector-max-id`
+    /// assert theirs in their own tests.
+    const MESSAGES: &[(&str, &str, &str)] = &[
+        (
+            "stylelint/container-name-pattern",
+            "@container Foo (width > 1px) {}",
+            "Expected \"Foo\" to match pattern \"^(--)?([a-z][a-z0-9]*)(-[a-z0-9]+)*$\"",
+        ),
+        (
+            "stylelint/custom-property-pattern",
+            ":root { --Foo: 1px; }",
+            "Expected \"--Foo\" to match pattern \"^([a-z][a-z0-9]*)(-[a-z0-9]+)*$\"",
+        ),
+        (
+            "stylelint/declaration-block-no-shorthand-property-overrides",
+            "a { padding-left: 1px; padding: 0; }",
+            "Overridden property \"padding-left\" by shorthand \"padding\"",
+        ),
+        (
+            "stylelint/declaration-property-value-keyword-no-deprecated",
+            "a { word-break: break-word; }",
+            "Deprecated keyword \"break-word\" for property \"word-break\"",
+        ),
+        (
+            "stylelint/declaration-property-value-keyword-no-deprecated",
+            "a { overflow: overlay; }",
+            "Expected \"overlay\" to be \"auto\"",
+        ),
+        (
+            "stylelint/function-name-case",
+            "a { width: CALC(1px); }",
+            "Expected \"CALC\" to be \"calc\"",
+        ),
+        (
+            "stylelint/keyframe-selector-notation",
+            "@keyframes a { from {} 100% {} }",
+            "Expected \"from\" to be \"0%\"",
+        ),
+        (
+            "stylelint/keyframes-name-pattern",
+            "@keyframes Foo {}",
+            "Expected \"Foo\" to match pattern \"^([a-z][a-z0-9]*)(-[a-z0-9]+)*$\"",
+        ),
+        (
+            "stylelint/layer-name-pattern",
+            "@layer Foo;",
+            "Expected \"Foo\" to match pattern \"^([a-z][a-z0-9]*)([.-][a-z0-9]+)*$\"",
+        ),
+        (
+            "stylelint/no-duplicate-selectors",
+            "a {}\nb {}\na {}",
+            "Duplicate selector \"a\", first used at line 1",
+        ),
+        (
+            "stylelint/number-max-precision",
+            "a { width: 0.123456px; }",
+            "Expected \"0.123456\" to be \"0.1235\"",
+        ),
+        (
+            "stylelint/property-no-deprecated",
+            "a { -khtml-box-flex: 1; }",
+            "Expected \"-khtml-box-flex\" to be \"flex-grow\"",
+        ),
+        (
+            "stylelint/selector-id-pattern",
+            "#Foo {}",
+            "Expected \"#Foo\" to match pattern \"^([a-z][a-z0-9]*)(-[a-z0-9]+)*$\"",
+        ),
+        (
+            "stylelint/selector-no-deprecated",
+            "a:focus-ring {}",
+            "Expected \":focus-ring\" to be \":focus-visible\"",
+        ),
+        (
+            "stylelint/selector-type-case",
+            "A {}",
+            "Expected \"A\" to be \"a\"",
+        ),
+        (
+            "stylelint/shorthand-property-no-redundant-values",
+            "a { margin: 1px 1px; }",
+            "Expected \"1px 1px\" to be \"1px\"",
+        ),
+        (
+            "stylelint/value-keyword-case",
+            "a { display: BLOCK; }",
+            "Expected \"BLOCK\" to be \"block\"",
+        ),
+        (
+            "scss/at-function-pattern",
+            "@function Foo() { @return 1; }",
+            "Expected \"Foo\" to match pattern \"^(-?[a-z][a-z0-9]*)(-[a-z0-9]+)*$\"",
+        ),
+        (
+            "scss/at-mixin-pattern",
+            "@mixin Foo {}",
+            "Expected \"Foo\" to match pattern \"^(-?[a-z][a-z0-9]*)(-[a-z0-9]+)*$\"",
+        ),
+        (
+            "scss/dimension-no-non-numeric-values",
+            "a { width: #{$value}px; }",
+            "Expected \"$value * 1px\" instead of \"#{$value}px\". Consider writing \"value\" in terms of px originally.",
+        ),
+        (
+            "scss/dollar-variable-no-missing-interpolation",
+            "$var: \"my-anim\";\n@keyframes $var {}",
+            "Expected variable $var to be interpolated when using it with @keyframes",
+        ),
+        (
+            "scss/dollar-variable-pattern",
+            "$Foo: 1;",
+            "Expected \"Foo\" to match pattern \"^(-?[a-z][a-z0-9]*)(-[a-z0-9]+)*$\"",
+        ),
+        (
+            "scss/load-partial-extension",
+            "@use \"a.scss\";",
+            "Unexpected extension \".scss\" in @use",
+        ),
+        (
+            "scss/percent-placeholder-pattern",
+            "%Foo {}",
+            "Expected \"Foo\" to match pattern \"^(-?[a-z][a-z0-9]*)(-[a-z0-9]+)*$\"",
+        ),
+        (
+            "scss/selector-class-pattern",
+            ".Foo {}",
+            "Expected \".Foo\" to match pattern \"^([a-z][a-z0-9]*)(-[a-z0-9]+)*$\"",
+        ),
+    ];
+
+    #[test]
+    fn prints_the_arguments_of_each_message_where_the_original_does() {
+        let wrong: Vec<(&str, Vec<String>)> = MESSAGES
+            .iter()
+            .filter_map(|&(name, code, expected)| {
+                let rule = RULES.iter().find(|rule| rule.name() == name);
+                let found: Vec<String> = rule
+                    .map(|rule| reports(rule.as_ref(), code))
+                    .unwrap_or_default()
+                    .into_iter()
+                    .map(|(_, _, message)| message)
+                    .collect();
+                (!found.iter().any(|each| each == expected)).then_some((name, found))
+            })
+            .collect();
+        assert_eq!(wrong, []);
     }
 
     #[test]
