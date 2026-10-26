@@ -1,7 +1,9 @@
 //! The lexer of Angular templates: a port of `ml_parser/lexer.ts` and `ml_parser/tokens.ts` of
 //! `@angular/compiler` 22.2.3 (MIT, REF-ANGULAR-ML-PARSER), with the options `parseTemplate`
 //! gives it: ICU expansions, `@` blocks and `@let` read, the leading trivia (space, line feed,
-//! carriage return, tab) left out of each token's start, line endings normalised in the text.
+//! carriage return, tab) left out of each token's start; and line endings kept as written, as
+//! `@angular-eslint/template-parser` asks (`preserveLineEndings`), so that every offset of an
+//! expression is the source's.
 //! Left out, as `parseTemplate` never asks them of a template file: the escaped-string cursor
 //! (an inline template's JavaScript escapes), a range of the source, the selectorless syntax
 //! (`<MyComp>`, `@Dir(…)`), and the `_inInterpolation` flag, which the compiler never sets.
@@ -850,20 +852,18 @@ impl Lexer<'_> {
         while !self.at_end(end) {
             let current = self.cursor;
             if self.attempt_str("{{") {
-                self.end_token_at(vec![process_carriage_returns(&parts)], current);
-                parts.clear();
+                self.end_token_at(vec![std::mem::take(&mut parts)], current);
                 self.consume_interpolation(interpolation_kind, current, interpolation_end)?;
                 self.begin_here(text_kind);
             } else if self.peek() == '&' {
-                self.end_token(vec![process_carriage_returns(&parts)]);
-                parts.clear();
+                self.end_token(vec![std::mem::take(&mut parts)]);
                 self.consume_entity(text_kind)?;
                 self.begin_here(text_kind);
             } else {
                 parts.push(self.read_char()?);
             }
         }
-        self.end_token(vec![process_carriage_returns(&parts)]);
+        self.end_token(vec![parts]);
         Ok(())
     }
 
@@ -878,17 +878,23 @@ impl Lexer<'_> {
         while self.peek() != EOF && !self.at_end(premature) {
             let current = self.cursor;
             if self.is_tag_start() {
-                parts.push(process_carriage_returns(
-                    self.text.get(expression_start..current).unwrap_or_default(),
-                ));
+                parts.push(
+                    self.text
+                        .get(expression_start..current)
+                        .unwrap_or_default()
+                        .to_owned(),
+                );
                 self.end_token(parts);
                 return Ok(());
             }
             if quote.is_none() {
                 if self.attempt_str("}}") {
-                    parts.push(process_carriage_returns(
-                        self.text.get(expression_start..current).unwrap_or_default(),
-                    ));
+                    parts.push(
+                        self.text
+                            .get(expression_start..current)
+                            .unwrap_or_default()
+                            .to_owned(),
+                    );
                     parts.push("}}".to_owned());
                     self.end_token(parts);
                     return Ok(());
@@ -906,7 +912,7 @@ impl Lexer<'_> {
                 quote = Some(character);
             }
         }
-        parts.push(process_carriage_returns(self.chars_from(expression_start)));
+        parts.push(self.chars_from(expression_start).to_owned());
         self.end_token(parts);
         Ok(())
     }
@@ -976,15 +982,14 @@ impl Lexer<'_> {
                 break;
             }
             if consume_entities && self.peek() == '&' {
-                self.end_token(vec![process_carriage_returns(&parts)]);
-                parts.clear();
+                self.end_token(vec![std::mem::take(&mut parts)]);
                 self.consume_entity(TokenType::EscapableRawText)?;
                 self.begin_here(TokenType::EscapableRawText);
             } else {
                 parts.push(self.read_char()?);
             }
         }
-        self.end_token(vec![process_carriage_returns(&parts)]);
+        self.end_token(vec![parts]);
         Ok(())
     }
 
@@ -1325,11 +1330,6 @@ fn two_words(name: &str, first: &str, second: &str) -> bool {
     after.len() < rest.len() && after.starts_with(second)
 }
 
-/// Line ends normalised to `\n`.
-fn process_carriage_returns(text: &str) -> String {
-    text.replace("\r\n", "\n").replace('\r', "\n")
-}
-
 /// The compiler's whitespace: tab to space, and the no-break space.
 fn is_whitespace(code: char) -> bool {
     ('\t'..=' ').contains(&code) || code == '\u{a0}'
@@ -1534,6 +1534,22 @@ mod tests {
             parts("{{ a <b>")[..2],
             [t(Text, &[""]), t(Interpolation, &["{{", " a "])]
         );
+        // Line ends are kept as written (`preserveLineEndings`), in a text, an interpolation
+        // left open or closed, and a raw text.
+        assert_eq!(
+            parts("a\r\n{{\r b }}\r\n{{ c\r")[..5],
+            [
+                t(Text, &["a\r\n"]),
+                t(Interpolation, &["{{", "\r b ", "}}"]),
+                t(Text, &["\r\n"]),
+                t(Interpolation, &["{{", " c\r"]),
+                t(Text, &[""]),
+            ]
+        );
+        assert_eq!(
+            parts("<textarea>a\r\nb</textarea>")[2],
+            t(EscapableRawText, &["a\r\nb"])
+        );
     }
 
     #[test]
@@ -1589,7 +1605,7 @@ mod tests {
                 t(CommentStart, &[]),
                 t(RawText, &[" a "]),
                 t(CommentEnd, &[]),
-                t(Text, &["\n"]),
+                t(Text, &["\r\n"]),
                 t(CdataStart, &[]),
                 t(RawText, &["b"]),
                 t(CdataEnd, &[]),

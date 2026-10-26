@@ -57,10 +57,12 @@ describe("the playground's project files", () => {
     expect(at(angular, ["extendedDiagnostics", "defaultCategory"])).toBe("error");
   });
 
-  it("[F52.AC2] makes each of Angular's 17 extended diagnostics an error", () => {
-    // The 17 checks of Angular's extended diagnostics (REF-ANGULAR-EXTENDED-DIAGNOSTICS): each
-    // takes its category from `checks`, else from `defaultCategory`, and emits only under
-    // `strictTemplates`; `tsconfig.app.json` and `tsconfig.spec.json` extend this file.
+  it("[F52.AC2] makes each of Angular's 18 extended diagnostics an error", () => {
+    // The 18 checks of Angular's extended diagnostics (REF-ANGULAR-EXTENDED-DIAGNOSTICS): the 17
+    // of its page and `controlFlowPreventingContentProjection`, which `@angular/compiler-cli`
+    // 22.2.3 adds to `ExtendedTemplateDiagnosticName`; each takes its category from `checks`, else
+    // from `defaultCategory`, and emits only under `strictTemplates`; `tsconfig.app.json` and
+    // `tsconfig.spec.json` extend this file.
     const names = [
       "invalidBananaInBox",
       "nullishCoalescingNotNullable",
@@ -79,11 +81,12 @@ describe("the playground's project files", () => {
       "missingStructuralDirective",
       "uninvokedFunctionInTextInterpolation",
       "deferTriggerMisconfiguration",
+      "controlFlowPreventingContentProjection",
     ];
     const angular = at(playgroundJson("tsconfig.json"), ["angularCompilerOptions"]);
     const fallback = at(angular, ["extendedDiagnostics", "defaultCategory"]);
 
-    expect(names).toHaveLength(17);
+    expect(names).toHaveLength(18);
     expect(at(angular, ["strictTemplates"])).toBe(true);
 
     expect(

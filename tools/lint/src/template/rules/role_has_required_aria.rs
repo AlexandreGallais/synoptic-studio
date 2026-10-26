@@ -80,4 +80,19 @@ mod tests {
         // The plugin's 7 valid and 2 invalid cases, all run; 2 suggestions, not carried.
         assert_eq!((tally.valid, tally.invalid, tally.suggestions), (7, 2, 2));
     }
+
+    #[test]
+    fn checks_a_plain_role_not_a_bound_one() {
+        let places = |text: &str| {
+            crate::template::lint_with("a.component.html", text, &[&RoleHasRequiredAria])
+                .iter()
+                .map(|finding| (finding.line, finding.column))
+                .collect::<Vec<_>>()
+        };
+
+        // Our own cases: `checkbox` requires `aria-checked`; the plugin reads a plain `role`
+        // (a `TextAttribute`), reported at it after `<div `, and leaves a bound one.
+        assert_eq!(places("<div role=\"checkbox\"></div>"), [(1, 6)]);
+        assert_eq!(places("<div [attr.role]=\"'checkbox'\"></div>"), []);
+    }
 }

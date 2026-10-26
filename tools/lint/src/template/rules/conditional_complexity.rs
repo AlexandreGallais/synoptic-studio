@@ -179,12 +179,26 @@ mod tests {
             Box::new(ConditionalComplexity {
                 max_complexity: options
                     .and_then(|each| each.number("maxComplexity"))
-                    .map_or(5, |each| format!("{each}").parse().unwrap_or(5)),
+                    .map_or(ConditionalComplexity::PROJECT.max_complexity, |each| {
+                        format!("{each}").parse().unwrap_or(u32::MAX)
+                    }),
             })
         });
 
         assert_eq!(tally.failures, Vec::<String>::new());
         // The plugin's 11 valid and 12 invalid cases, all run.
         assert_eq!((tally.valid, tally.invalid, tally.suggestions), (11, 12, 0));
+    }
+
+    #[test]
+    fn f52_ac2_reports_a_condition_above_the_project_s_limit_of_5() {
+        let found = |text: &str| {
+            crate::template::lint_with("a.component.html", text, &[&ConditionalComplexity::PROJECT])
+                .len()
+        };
+
+        // Each `&&` counts 1: five make 5, at the limit; six make 6, above it.
+        assert_eq!(found("{{ a && b && c && d && e && f }}"), 0);
+        assert_eq!(found("{{ a && b && c && d && e && f && g }}"), 1);
     }
 }

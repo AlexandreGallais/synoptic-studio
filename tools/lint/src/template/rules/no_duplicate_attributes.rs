@@ -156,4 +156,24 @@ mod tests {
             (13, 14, 31)
         );
     }
+
+    #[test]
+    fn leaves_the_i18n_marks_angular_takes_out_of_the_attributes() {
+        let places = |text: &str| {
+            crate::template::lint_with("a.component.html", text, &[&NoDuplicateAttributes::PROJECT])
+                .iter()
+                .map(|finding| (finding.line, finding.column))
+                .collect::<Vec<_>>()
+        };
+
+        // Our own cases: Angular 22.2.3 keeps no `i18n` mark among an element's attributes,
+        // so twice `i18n` or `i18n-title` is no duplicate; twice `title` is, each reported
+        // (after `<p ` and after `<p title="a" `).
+        assert_eq!(places("<p i18n i18n=\"x\">a</p>"), []);
+        assert_eq!(places("<p i18n-title i18n-title title=\"a\">b</p>"), []);
+        assert_eq!(
+            places("<p title=\"a\" title=\"b\">c</p>"),
+            [(1, 4), (1, 14)]
+        );
+    }
 }

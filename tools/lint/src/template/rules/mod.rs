@@ -62,7 +62,7 @@ use regex::Regex;
 
 use super::bindings::{
     AttributeKind, TemplateBinding, Value, attribute_kind, block_parameters, interpolations,
-    read_attribute,
+    is_non_bindable, read_attribute,
 };
 use super::expressions::{Bound, read};
 use super::lexer::{Span, TokenType};
@@ -184,11 +184,19 @@ impl<'t> Template<'t> {
         found
     }
 
-    /// Every expression of the template, read; what cannot be read was reported by the reader.
+    /// Every expression of the template, read, none under an `ngNonBindable` element, which binds
+    /// nothing; what cannot be read was reported by the reader.
     #[must_use]
     pub fn expressions(&self) -> Vec<Written<'t>> {
         let mut found = Vec::new();
-        self.walk(&mut |node, _| self.read_node(node, &mut found));
+        self.walk(&mut |node, ancestors| {
+            let bound = ancestors.iter().all(
+                |ancestor| !matches!(ancestor, Node::Element(element) if is_non_bindable(element)),
+            );
+            if bound {
+                self.read_node(node, &mut found);
+            }
+        });
         found
     }
 
@@ -298,7 +306,7 @@ pub struct Bound3<'t> {
 
 /// The inputs, outputs and plain attributes of an element, in Angular's order: the inputs, then
 /// the outputs, then the plain attributes, each in the order written; a two-way binding gives
-/// an input, then an output of the same source span.
+/// an input, then an output of the same source span. The `i18n` marks are none of them.
 #[must_use]
 pub fn bound3(element: &Element) -> Vec<Bound3<'_>> {
     let (mut inputs, mut outputs, mut texts) = (Vec::new(), Vec::new(), Vec::new());
@@ -332,6 +340,9 @@ pub fn bound3(element: &Element) -> Vec<Bound3<'_>> {
                 let name = inner.rsplit(':').next().unwrap_or(&inner).to_owned();
                 outputs.push(each(Role::Output, name, inner.clone()));
             }
+            // Angular's i18n pass takes the `i18n` and `i18n-x` marks out of the attributes before
+            // the tree is built (`I18nMetaVisitor`).
+            AttributeKind::Plain if inner == "i18n" || inner.starts_with("i18n-") => {}
             AttributeKind::Plain if interpolates(attribute) => {
                 inputs.push(each(Role::Input, inner.clone(), inner.clone()));
             }
@@ -741,8 +752,55 @@ pub fn reports(rule: &dyn TemplateRule, path: &str, text: &str, nodes: &[Node]) 
     };
     let mut found = Vec::new();
     rule.check(&template, &mut found);
+    let decoded = decoded_values(&template);
+    for report in &mut found {
+        if report
+            .fix
+            .as_ref()
+            .is_some_and(|fix| decoded.iter().any(|value| cuts_into(fix, *value)))
+        {
+            report.fix = None;
+        }
+    }
     found.sort_by_key(|report| report.span.start);
     found
+}
+
+/// The values read as expressions whose source is not the text read: an entity written in
+/// `[title]="a &amp;&amp; b"`, which the reader decodes, as Angular's does, before parsing, so
+/// that the offsets of the expression are the decoded text's, not the source's.
+fn decoded_values(template: &Template) -> Vec<Span> {
+    let mut found = Vec::new();
+    for (element, _) in template.elements() {
+        for attribute in &element.attrs {
+            let read_as_expression = matches!(
+                attribute_kind(&attribute.name).0,
+                AttributeKind::Property
+                    | AttributeKind::TwoWay
+                    | AttributeKind::Event
+                    | AttributeKind::Template
+            );
+            if let Some(span) = attribute.value_span
+                && read_as_expression
+                && template
+                    .text
+                    .get(span.full_start as usize..span.end as usize)
+                    != Some(attribute.value.as_str())
+            {
+                found.push(span);
+            }
+        }
+    }
+    found
+}
+
+/// Whether a fix replaces or inserts text inside a value without replacing it whole: a range
+/// placed from the offsets of a decoded value does not hold the text the rule read there, so
+/// the fix is dropped, its report kept, rather than writing over the wrong characters.
+fn cuts_into(fix: &Fix, value: Span) -> bool {
+    let overlaps = fix.start <= value.end && fix.end >= value.full_start;
+    let whole = fix.start <= value.full_start && fix.end >= value.end;
+    overlaps && !whole
 }
 
 /// The rules, in the order of their names, as the project runs them: every module's but
@@ -793,7 +851,17 @@ pub const RULES: &[&dyn TemplateRule] = &[
 
 #[cfg(test)]
 mod tests {
-    use super::{RULES, interpolate, matches_directive};
+    use super::{
+        RULES, attributes_order::AttributesOrder, banana_in_box::BananaInBox, eqeqeq::Eqeqeq,
+        interpolate, matches_directive, no_autofocus::NoAutofocus,
+        no_distracting_elements::NoDistractingElements,
+        no_interpolation_in_attributes::NoInterpolationInAttributes, prefer_at_else::PreferAtElse,
+        prefer_at_empty::PreferAtEmpty,
+        prefer_contextual_for_variables::PreferContextualForVariables,
+        prefer_self_closing_tags::PreferSelfClosingTags,
+        prefer_static_string_properties::PreferStaticStringProperties,
+        prefer_template_literal::PreferTemplateLiteral, table_scope::TableScope,
+    };
 
     #[test]
     fn matches_a_name_or_a_pattern_with_its_flags() {
@@ -814,6 +882,166 @@ mod tests {
         assert_eq!(interpolate("x {{name}} {{ name }} y", &data), "x a a y");
         // A name the data lacks is kept; an unclosed `{{` too.
         assert_eq!(interpolate("{{other}} {{name", &data), "{{other}} {{name");
+    }
+
+    /// A template with the fixes of one pass of a rule applied.
+    fn fixed_once(rule: &dyn super::TemplateRule, text: &str) -> String {
+        let parsed = crate::template::tree::parse(text);
+        assert_eq!(crate::template::bindings::check(&parsed), [], "{text:?}");
+        let found = super::reports(rule, "a.component.html", text, &parsed.nodes);
+        let fixes: Vec<&crate::finding::Fix> = found
+            .iter()
+            .filter_map(|report| report.fix.as_ref())
+            .collect();
+        crate::finding::apply(text, &fixes)
+    }
+
+    /// Each fixing rule on a template written with CRLF line ends, its fix at the source's
+    /// offsets; then with an entity: a value read decoded keeps the fixes that move it whole
+    /// or touch it not, and loses those that cut into it (eqeqeq, prefer-contextual-for-
+    /// variables, prefer-template-literal), their offsets the decoded text's.
+    const FIX_CASES: [(&dyn super::TemplateRule, &str, &str); 26] = [
+        (
+            &NoAutofocus,
+            "<input\r\n  autofocus\r\n>",
+            "<input\r\n \r\n>",
+        ),
+        (
+            &NoAutofocus,
+            "<input [title]=\"a &amp;&amp; b\" autofocus>",
+            "<input [title]=\"a &amp;&amp; b\">",
+        ),
+        (
+            &NoDistractingElements,
+            "<p></p>\r\n<marquee\r\n></marquee>",
+            "<p></p>\r\n",
+        ),
+        (
+            &NoDistractingElements,
+            "<marquee [title]=\"a &amp;&amp; b\"></marquee>",
+            "",
+        ),
+        (
+            &TableScope,
+            "<td\r\n  scope=\"col\"\r\n></td>",
+            "<td\r\n \r\n></td>",
+        ),
+        (
+            &TableScope,
+            "<td [title]=\"a &amp;&amp; b\" scope=\"col\"></td>",
+            "<td [title]=\"a &amp;&amp; b\"></td>",
+        ),
+        (
+            &AttributesOrder::PROJECT,
+            "<p\r\n  title=\"a\"\r\n  #r></p>",
+            "<p\r\n  #r\r\n  title=\"a\"></p>",
+        ),
+        (
+            &AttributesOrder::PROJECT,
+            "<p [title]=\"a &amp;&amp; b\" #r></p>",
+            "<p #r [title]=\"a &amp;&amp; b\"></p>",
+        ),
+        (
+            &BananaInBox,
+            "<input\r\n  ([ngModel])=\"\r\n x\">",
+            "<input\r\n  [(ngModel)]=\"\r\n x\">",
+        ),
+        (
+            &BananaInBox,
+            "<input ([ngModel])=\"x &amp;&amp; y\">",
+            "<input [(ngModel)]=\"x &amp;&amp; y\">",
+        ),
+        (
+            &Eqeqeq::PROJECT,
+            "<p [title]=\"\r\n  b &&\r\n  a == 'c'\"></p>",
+            "<p [title]=\"\r\n  b &&\r\n  a === 'c'\"></p>",
+        ),
+        (
+            &Eqeqeq::PROJECT,
+            "<p [title]=\"x &lt; y &lt; z || a == 'b' == 'c'\"></p>",
+            "<p [title]=\"x &lt; y &lt; z || a == 'b' == 'c'\"></p>",
+        ),
+        (
+            &NoInterpolationInAttributes::PROJECT,
+            "<p\r\n  title=\"{{\r\n a }}\"></p>",
+            "<p\r\n  [title]=\"a\"></p>",
+        ),
+        (
+            &NoInterpolationInAttributes::PROJECT,
+            "<p [x]=\"a &amp;&amp; b\" title=\"{{ a }}\"></p>",
+            "<p [x]=\"a &amp;&amp; b\" [title]=\"a\"></p>",
+        ),
+        (
+            &PreferAtElse,
+            "@if (a) {\r\nx\r\n}\r\n@if (!a) {\r\ny\r\n}",
+            "@if (a) {\r\nx\r\n}\r\n@else {\r\ny\r\n}",
+        ),
+        (
+            &PreferAtElse,
+            "@if (a) {&amp;}\n@if (!a) {&lt;}",
+            "@if (a) {&amp;}\n@else {&lt;}",
+        ),
+        (
+            &PreferAtEmpty,
+            "@for (i of l; track i) {\r\n{{ i }}\r\n}\r\n@if (l.length === 0) {\r\nnone\r\n}",
+            "@for (i of l; track i) {\r\n{{ i }}\r\n}\r\n@empty {\r\nnone\r\n}",
+        ),
+        (
+            &PreferAtEmpty,
+            "@for (i of l; track i) {&amp;}\n@if (l.length === 0) {&lt;}",
+            "@for (i of l; track i) {&amp;}\n@empty {&lt;}",
+        ),
+        (
+            &PreferContextualForVariables::PROJECT,
+            "@for (item of items; track item; let i = $index) {\r\n<p (click)=\"\r\n go(i)\"></p>}",
+            "@for (item of items; track item) {\r\n<p (click)=\"\r\n go($index)\"></p>}",
+        ),
+        (
+            &PreferContextualForVariables::PROJECT,
+            "@for (item of items; track item; let i = $index) {<p (click)=\"a &amp;&amp; go(i)\"></p>}",
+            "@for (item of items; track item; let i = $index) {<p (click)=\"a &amp;&amp; go(i)\"></p>}",
+        ),
+        (
+            &PreferSelfClosingTags,
+            "<app-a\r\n  title=\"&amp;\"\r\n></app-a>",
+            "<app-a\r\n  title=\"&amp;\"\r\n/>",
+        ),
+        (
+            &PreferSelfClosingTags,
+            "<app-a title=\"&amp;\">\r\n</app-a>",
+            "<app-a title=\"&amp;\" />",
+        ),
+        (
+            &PreferStaticStringProperties::PROJECT,
+            "<p\r\n  [title]=\"\r\n'a'\"></p>",
+            "<p\r\n  title=\"a\"></p>",
+        ),
+        (
+            &PreferStaticStringProperties::PROJECT,
+            "<p [title]=\"'a&amp;b'\"></p>",
+            "<p title=\"a&amp;b\"></p>",
+        ),
+        (
+            &PreferTemplateLiteral,
+            "<p>{{\r\n\r\n x + 'a' + y }}</p>",
+            "<p>{{\r\n\r\n `${x}a${y}` }}</p>",
+        ),
+        (
+            &PreferTemplateLiteral,
+            "<p [title]=\"b &amp;&amp; x + 'a'\"></p>",
+            "<p [title]=\"b &amp;&amp; x + 'a'\"></p>",
+        ),
+    ];
+
+    #[test]
+    fn f52_ac2_fixes_crlf_templates_and_no_value_whose_entities_moved_the_offsets() {
+        let failures: Vec<String> = FIX_CASES
+            .iter()
+            .map(|(rule, text, expected)| (rule, text, expected, fixed_once(*rule, text)))
+            .filter(|(_, _, expected, fixed)| fixed != *expected)
+            .map(|(rule, text, _, fixed)| format!("{} {text:?} -> {fixed:?}", rule.name()))
+            .collect();
+        assert_eq!(failures, Vec::<String>::new());
     }
 
     #[test]

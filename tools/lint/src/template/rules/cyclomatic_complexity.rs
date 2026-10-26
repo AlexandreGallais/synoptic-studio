@@ -183,7 +183,9 @@ mod tests {
             Box::new(CyclomaticComplexity {
                 max_complexity: options
                     .and_then(|each| each.number("maxComplexity"))
-                    .map_or(5, |each| format!("{each}").parse().unwrap_or(5)),
+                    .map_or(CyclomaticComplexity::PROJECT.max_complexity, |each| {
+                        format!("{each}").parse().unwrap_or(u32::MAX)
+                    }),
                 modified: options.and_then(|each| each.text("variant")) == Some("modified"),
             })
         });
@@ -191,5 +193,19 @@ mod tests {
         assert_eq!(tally.failures, Vec::<String>::new());
         // The plugin's 8 valid and 5 invalid cases, all run.
         assert_eq!((tally.valid, tally.invalid, tally.suggestions), (8, 5, 0));
+    }
+
+    #[test]
+    fn f52_ac2_reports_each_path_above_the_project_s_limit_of_5() {
+        let found = |count: usize| {
+            let text = "@if (a) {x}".repeat(count);
+            crate::template::lint_with("a.component.html", &text, &[&CyclomaticComplexity::PROJECT])
+                .len()
+        };
+
+        // Each `@if` counts 1: five make 5, at the limit; the sixth and the seventh are above it,
+        // each reported.
+        assert_eq!(found(5), 0);
+        assert_eq!(found(7), 2);
     }
 }

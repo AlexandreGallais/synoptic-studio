@@ -1,19 +1,20 @@
 //! The expressions of a template, parsed by Oxc once their pipes are split off. Angular's
 //! expression syntax is JavaScript's with pipes (`value | name: argument`), the lowest operator,
 //! which may also sit inside brackets (`(items | async)?.length`); Angular has no bitwise `|`, so
-//! every single `|` outside a string is a pipe. A text's top-level pipes are split off, each
-//! pipe kept as a node with its arguments (split at its `:`s, a ternary's `:` kept); a bracketed
-//! element holding pipes of its own is read the same way, as a nested expression, and replaced by
-//! underscores of the same length in the text handed to Oxc, so that every offset Oxc gives stays
-//! the text's. This splitting is the project's own, after the grammar of `parsePipe` in
-//! `expression_parser/parser.ts` of `@angular/compiler` 22.2.3 (REF-ANGULAR-ML-PARSER); the tests
-//! are this module's own cases.
+//! every single `|` outside a string or a regular expression is a pipe. A text's top-level pipes
+//! are split off, each pipe kept as a node with its arguments (split at its `:`s, a ternary's
+//! `:` kept); a bracketed element holding pipes of its own is read the same way, as a nested
+//! expression, and replaced by underscores of the same length in the text handed to Oxc, so that
+//! every offset Oxc gives stays the text's. This splitting is the project's own, after the
+//! grammar of `parsePipe` in `expression_parser/parser.ts` of `@angular/compiler` 22.2.3
+//! (REF-ANGULAR-ML-PARSER); the tests are this module's own cases.
 
 use oxc_allocator::Allocator;
 use oxc_ast::ast::Expression;
 use oxc_parser::Parser;
 use oxc_span::SourceType;
 
+use super::NESTING_LIMIT;
 use super::lexer::{ParseError, Span, offset};
 
 /// An expression with its pipes, as a binding or an interpolation writes it.
@@ -23,8 +24,8 @@ pub struct Bound<'a> {
     pub span: Span,
     /// The part before the first pipe, parsed; `None` when blank.
     pub expression: Option<Expression<'a>>,
-    /// The offset in the template of the text Oxc read: an Oxc offset plus this one. Exact when
-    /// the value is written as read, entities and line ends aside.
+    /// The offset in the template of the text Oxc read: an Oxc offset plus this one. Exact unless
+    /// the value, read decoded, writes an entity (`[x]="a &amp;&amp; b"`).
     pub start: u32,
     /// Its pipes, in order: the first applied first.
     pub pipes: Vec<Pipe<'a>>,
@@ -78,7 +79,15 @@ fn scan(text: &str) -> Result<Scan, (String, usize)> {
     let mut top = Vec::new();
     let mut groups = Vec::new();
     let mut index = 0;
+    // The last two significant characters, which tell a regular expression from a division.
+    let (mut previous, mut before) = (None, None);
     while let Some(&(at, character)) = characters.get(index) {
+        if stack.len() > NESTING_LIMIT {
+            return Err((
+                format!("Brackets nested more than {NESTING_LIMIT} deep"),
+                at,
+            ));
+        }
         let next = characters.get(index + 1).map(|each| each.1);
         if matches!(stack.last(), Some(Frame::Template)) {
             match character {
@@ -88,6 +97,7 @@ fn scan(text: &str) -> Result<Scan, (String, usize)> {
                 }
                 '$' if next == Some('{') => {
                     stack.push(Frame::Group('{', at + 2, true));
+                    (previous, before) = (Some('('), None);
                     index += 1;
                 }
                 _ => {}
@@ -95,6 +105,7 @@ fn scan(text: &str) -> Result<Scan, (String, usize)> {
             index += 1;
             continue;
         }
+        let mut seen = character;
         match character {
             '\'' | '"' => {
                 index += 1;
@@ -106,6 +117,12 @@ fn scan(text: &str) -> Result<Scan, (String, usize)> {
                         Some(_) => index += 1,
                     }
                 }
+            }
+            '/' if starts_regex(previous, before) => {
+                index = regex_end(&characters, index)
+                    .ok_or_else(|| ("Unterminated regular expression".to_owned(), at))?;
+                // A regular expression ends an operand, as `)` does.
+                seen = ')';
             }
             '`' => stack.push(Frame::Template),
             '(' | '[' | '{' => stack.push(Frame::Group(character, at + 1, false)),
@@ -134,6 +151,9 @@ fn scan(text: &str) -> Result<Scan, (String, usize)> {
                 }
             }
         }
+        if !character.is_whitespace() {
+            (previous, before) = (Some(seen), previous);
+        }
         index += 1;
     }
     if stack.is_empty() {
@@ -141,6 +161,58 @@ fn scan(text: &str) -> Result<Scan, (String, usize)> {
     } else {
         Err(("Missing closing bracket".to_owned(), text.len()))
     }
+}
+
+/// Whether a `/` starts a regular expression rather than divides, by the last two significant
+/// characters before it, as `isStartOfRegex` of the expression lexer of `@angular/compiler`
+/// 22.2.3 tells by the tokens: at the start, or after an operator, `(`, `[`, `,` or `:`; after a
+/// `!` only when it negates, which an operand before it (a name, `)` or `]`) denies.
+fn starts_regex(previous: Option<char>, before: Option<char>) -> bool {
+    match previous {
+        None => true,
+        Some('!') => !before.is_some_and(|each| {
+            each.is_ascii_alphanumeric() || matches!(each, '_' | '$' | ')' | ']')
+        }),
+        Some(each) => matches!(
+            each,
+            '+' | '-'
+                | '*'
+                | '/'
+                | '%'
+                | '^'
+                | '?'
+                | '='
+                | '<'
+                | '>'
+                | '&'
+                | '|'
+                | '('
+                | '['
+                | ','
+                | ':'
+        ),
+    }
+}
+
+/// The index of the closing `/` of the regular expression starting at an index (`scanRegex`):
+/// its body ends at a `/` neither escaped nor in a character class; `None` when it does not
+/// end. Its flags, letters, are read after it as a name, which ends an operand as they do.
+fn regex_end(characters: &[(usize, char)], start: usize) -> Option<usize> {
+    let mut index = start + 1;
+    let (mut escaped, mut class) = (false, false);
+    loop {
+        let &(_, character) = characters.get(index)?;
+        match character {
+            _ if escaped => escaped = false,
+            '\\' => escaped = true,
+            '[' => class = true,
+            ']' => class = false,
+            '/' if !class => break,
+            _ => {}
+        }
+        index += 1;
+    }
+    Some(index)
 }
 
 /// The bytes of a text's top-level pipes: single `|`s.
@@ -336,8 +408,10 @@ fn read_pipe<'a>(allocator: &'a Allocator, text: &str, start: u32) -> Result<Pip
             ));
         }
         let list = &text[colon + 1..];
-        let found = scan(list).map_err(|(message, at)| error(message, start, colon + 1 + at))?;
-        for (from, to) in split_ranges(list.len(), &colons(list, &found)) {
+        // A top-level part of a text scanned whole, the list scans cleanly; were it not, it would be
+        // read as one argument, whose reading reports the error at its place.
+        let at = scan(list).map_or_else(|_| Vec::new(), |found| colons(list, &found));
+        for (from, to) in split_ranges(list.len(), &at) {
             let base = start + offset(colon + 1 + from);
             arguments.push(read(allocator, &list[from..to], base)?);
         }
@@ -445,7 +519,7 @@ mod tests {
     use oxc_allocator::Allocator;
     use oxc_ast::ast::Expression;
 
-    use super::{read, read_action, split_top_level};
+    use super::{colons, read, read_action, scan, split_top_level};
 
     /// The source text of an expression, from its Oxc span.
     fn text_of<'t>(text: &'t str, expression: Option<&Expression>) -> &'t str {
@@ -569,6 +643,120 @@ mod tests {
         // Brackets that do not close inside a group are left to Oxc, which reports them.
         assert!(read(&allocator, "f([a | p)", 0).is_err());
         assert!(read(&allocator, "  ", 0).is_ok_and(|bound| bound.expression.is_none()));
+    }
+
+    #[test]
+    fn f52_ac1_reads_a_regular_expression_s_body_as_one_operand() {
+        let allocator = Allocator::default();
+        let pipe_names = |text: &str| {
+            read(&allocator, text, 0)
+                .map(|bound| {
+                    bound
+                        .pipes
+                        .iter()
+                        .map(|pipe| (pipe.name.clone(), pipe.arguments.len()))
+                        .collect::<Vec<_>>()
+                })
+                .map_err(|error| error.message)
+        };
+
+        // Angular 22.2.3 reads each without an error (run by the auditor): the `|` of the body
+        // is no pipe, its `:` no argument's end, its `)` in a class closes nothing.
+        assert_eq!(pipe_names(" /a|b/.test(x) "), Ok(vec![]));
+        assert_eq!(pipe_names(" a | p: /:/ "), Ok(vec![("p".to_owned(), 1)]));
+        assert_eq!(pipe_names(" x | p: /[)]/ "), Ok(vec![("p".to_owned(), 1)]));
+        assert_eq!(pipe_names(" !/a|b/i.test(x) "), Ok(vec![]));
+        assert_eq!(pipe_names(" f(/a\\/b|c/, !!/d|e/) "), Ok(vec![]));
+        assert_eq!(
+            pipe_names(" x | p: /[/]|a/ "),
+            Ok(vec![("p".to_owned(), 1)])
+        );
+        assert_eq!(
+            pipe_names(" `${/[(]/.source}` | p "),
+            Ok(vec![("p".to_owned(), 0)])
+        );
+        // A `/` after an operand divides: after a name, a `)`, a non-null `!`, a regular
+        // expression.
+        assert_eq!(pipe_names(" a / b | p "), Ok(vec![("p".to_owned(), 0)]));
+        assert_eq!(
+            pipe_names(" (a) / 2 + a! / b | p "),
+            Ok(vec![("p".to_owned(), 0)])
+        );
+        assert_eq!(
+            pipe_names(" /a/.source.length / 2 | p "),
+            Ok(vec![("p".to_owned(), 0)])
+        );
+        assert_eq!(
+            pipe_names(" /a "),
+            Err("Unterminated regular expression".to_owned())
+        );
+    }
+
+    #[test]
+    fn f52_ac1_ends_a_pipe_s_argument_at_a_colon_no_ternary_takes() {
+        let top_colons = |text: &str| scan(text).map(|found| colons(text, &found)).ok();
+
+        // `?.` and `??` open no ternary: their `:` ends the argument (b0 ?1 .2 c3 _4 :5;
+        // b0 _1 ?2 ?3 _4 c5 _6 :7); a ternary's `?` takes the first `:` after it.
+        assert_eq!(top_colons("b?.c : d"), Some(vec![5]));
+        assert_eq!(top_colons("b ?? c : d"), Some(vec![7]));
+        assert_eq!(top_colons("b??c:d"), Some(vec![4]));
+        assert_eq!(top_colons("a ? b : c : d"), Some(vec![10]));
+        assert_eq!(top_colons("?a : b"), Some(vec![]));
+        let allocator = Allocator::default();
+        let arguments = |text: &str| {
+            read(&allocator, text, 0).map(|bound| {
+                bound.pipes[0]
+                    .arguments
+                    .iter()
+                    .map(|argument| {
+                        text[argument.span.start as usize..argument.span.end as usize].to_owned()
+                    })
+                    .collect::<Vec<_>>()
+            })
+        };
+        assert_eq!(
+            arguments("a | p: b?.c : d").ok(),
+            Some(vec![" b?.c ".to_owned(), " d".to_owned()])
+        );
+        assert_eq!(
+            arguments("a | p: b ?? c : d").ok(),
+            Some(vec![" b ?? c ".to_owned(), " d".to_owned()])
+        );
+    }
+
+    #[test]
+    fn f52_ac1_skips_an_escaped_quote_or_backtick() {
+        let allocator = Allocator::default();
+        let pipe = |text: &str| {
+            read(&allocator, text, 0)
+                .map(|bound| {
+                    bound
+                        .pipes
+                        .iter()
+                        .map(|pipe| pipe.name.clone())
+                        .collect::<Vec<_>>()
+                })
+                .map_err(|error| error.message)
+        };
+
+        // The escaped quote or backtick does not close its string, the next one does.
+        assert_eq!(pipe("`\\`` | p"), Ok(vec!["p".to_owned()]));
+        assert_eq!(pipe("'\\'' | p"), Ok(vec!["p".to_owned()]));
+        assert_eq!(pipe("\"\\\"|\" | p"), Ok(vec!["p".to_owned()]));
+    }
+
+    #[test]
+    fn f52_ac1_reports_an_error_in_a_pipe_s_argument_at_its_byte() {
+        let allocator = Allocator::default();
+
+        // The list ` b + ` starts at byte 6 of `a | p: b + `; Oxc stops at its end, 6 + 5 = 11,
+        // and the text starts at 10: 21. The second argument ` c +` starts past the list's `:` at
+        // 9, at 10; Oxc stops at its end, 10 + 4 = 14.
+        let first = read(&allocator, "a | p: b + ", 10).err();
+        assert_eq!(first.map(|error| error.span.start), Some(21));
+        let second = read(&allocator, "a | p: b : c +", 0).err();
+        assert_eq!(second.map(|error| error.span.start), Some(14));
     }
 
     #[test]

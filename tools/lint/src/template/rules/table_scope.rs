@@ -58,4 +58,22 @@ mod tests {
         // The plugin's 8 valid and 3 invalid cases, all run.
         assert_eq!((tally.valid, tally.invalid, tally.suggestions), (8, 3, 0));
     }
+
+    #[test]
+    fn leaves_a_th_written_in_upper_case() {
+        let places = |text: &str| {
+            crate::template::lint_with("a.component.html", text, &[&TableScope])
+                .iter()
+                .map(|finding| (finding.line, finding.column))
+                .collect::<Vec<_>>()
+        };
+
+        // Our own cases: `<th>` and `<TH>` hold their `scope`; a `<td>` does not, reported at
+        // its `scope` after `<td `.
+        assert_eq!(
+            places("<table><tr><TH scope=\"col\">a</TH></tr></table>"),
+            []
+        );
+        assert_eq!(places("<td scope=\"col\"></td>"), [(1, 5)]);
+    }
 }

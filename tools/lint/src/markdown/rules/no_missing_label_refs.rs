@@ -5,9 +5,10 @@
 use markdown::mdast::Node;
 
 use crate::finding::Finding;
+use crate::javascript::is_js_space;
 use crate::markdown::MarkdownRule;
 use crate::markdown::page::{Page, nodes, start};
-use crate::markdown::text::{is_js_space, is_line_end, is_unescaped};
+use crate::markdown::text::{is_line_end, is_unescaped};
 
 /// The rule.
 pub struct NoMissingLabelRefs;

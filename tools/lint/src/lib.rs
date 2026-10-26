@@ -12,6 +12,7 @@ pub mod exits;
 pub mod expressions;
 pub mod finding;
 pub mod glob;
+pub mod javascript;
 pub mod jsdoc;
 pub mod lines;
 pub mod markdown;

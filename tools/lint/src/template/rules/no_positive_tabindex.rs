@@ -5,10 +5,10 @@
 //! above 0 (`[value>0]` of the plugin's selector: `true` is 1, a text its number). The
 //! replacements by `-1` and `0` are suggestions, not carried.
 
-use super::a11y::to_number;
 use super::dom::is_dom_name;
 use super::r3::{Literal, Ng, of_bound};
 use super::{Report, Role, Template, TemplateRule, bound3, is_plain_element};
+use crate::javascript::to_number;
 use crate::template::bindings::{Value, read_attribute};
 
 /// The rule.
@@ -85,5 +85,21 @@ mod tests {
         assert_eq!(tally.failures, Vec::<String>::new());
         // The plugin's 11 valid and 3 invalid cases, all run; 6 suggestions, not carried.
         assert_eq!((tally.valid, tally.invalid, tally.suggestions), (11, 3, 6));
+    }
+
+    #[test]
+    fn reports_a_positive_text_bound_as_a_literal() {
+        let places = |text: &str| {
+            crate::template::lint_with("a.component.html", text, &[&NoPositiveTabindex])
+                .iter()
+                .map(|finding| (finding.line, finding.column))
+                .collect::<Vec<_>>()
+        };
+
+        // Our own cases: the text `"1"` reads 1, above 0, reported at its value after
+        // `<div [tabindex]="`, 17 bytes; `"0"` and `"-1"` are not above 0.
+        assert_eq!(places("<div [tabindex]=\"'1'\"></div>"), [(1, 18)]);
+        assert_eq!(places("<div [tabindex]=\"'0'\"></div>"), []);
+        assert_eq!(places("<div [tabindex]=\"'-1'\"></div>"), []);
     }
 }
