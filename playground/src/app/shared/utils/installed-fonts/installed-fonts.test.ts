@@ -482,7 +482,7 @@ describe("Installed fonts", () => {
     await waitForPageTasks();
 
     expect(readText("#font-message")).toMatch(
-      /^The installed fonts could not be read: Error: Playground page without #installed-fonts-progress/u,
+      /^The installed fonts could not be read: TypeError: Playground page without #installed-fonts-progress/u,
     );
 
     // The reading stopped, the font list can be used again.
