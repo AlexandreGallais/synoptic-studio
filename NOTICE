@@ -57,3 +57,6 @@ of, the packages below, each under its licence; the full texts are in THIRD-PART
 - @angular/compiler 22.2.3, MIT: Copyright (c) 2010-2026 Google LLC. https://angular.dev/license; the
   templates of the control-flow guide, from the repository angular at the tag v22.2.3, under the
   same licence
+- aria-query 5.3.2, Apache-2.0: Copyright 2020 A11yance
+- @typescript-eslint/rule-tester 8.71.0, MIT: Copyright (c) 2023 typescript-eslint and other
+  contributors

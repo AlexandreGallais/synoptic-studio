@@ -8,6 +8,7 @@ pub mod bindings;
 pub mod entities;
 pub mod expressions;
 pub mod lexer;
+pub mod rules;
 pub mod tags;
 pub mod tree;
 
@@ -25,24 +26,53 @@ pub fn is_template(path: &str) -> bool {
 }
 
 /// The findings of a template's text: each error of its reading, expressions included, at its
-/// line and column under `lint/parse`.
+/// line and column under `lint/parse`; once it reads cleanly, the reports of the template rules.
 #[must_use]
 pub fn lint_text(path: &str, text: &str) -> Vec<Finding> {
+    lint_with(path, text, rules::RULES)
+}
+
+/// The findings of a set of template rules on a template's text.
+#[must_use]
+pub fn lint_with(path: &str, text: &str, rules: &[&dyn rules::TemplateRule]) -> Vec<Finding> {
     let lines = Lines::new(text);
-    bindings::check(&tree::parse(text))
-        .into_iter()
-        .map(|error| {
-            let (line, column) = lines.place(text, error.span.start as usize);
-            Finding {
-                path: path.to_owned(),
-                line,
-                column,
-                rule: PARSE_RULE,
-                message: format!("{}.", error.message.trim_end_matches('.')),
-                fix: None,
-            }
-        })
-        .collect()
+    let parsed = tree::parse(text);
+    let errors = bindings::check(&parsed);
+    let finding = |start: u32, rule: &'static str, message: String| {
+        let (line, column) = lines.place(text, start as usize);
+        Finding {
+            path: path.to_owned(),
+            line,
+            column,
+            rule,
+            message,
+            fix: None,
+        }
+    };
+    if !errors.is_empty() {
+        return errors
+            .into_iter()
+            .map(|error| {
+                let message = format!("{}.", error.message.trim_end_matches('.'));
+                finding(error.span.start, PARSE_RULE, message)
+            })
+            .collect();
+    }
+    let mut findings = Vec::new();
+    for rule in rules {
+        for report in rules::reports(*rule, text, &parsed.nodes) {
+            findings.push(Finding {
+                fix: report.fix.clone(),
+                ..finding(
+                    report.span.start,
+                    rule.name(),
+                    rules::message(*rule, &report),
+                )
+            });
+        }
+    }
+    findings.sort_by_key(|each| (each.line, each.column));
+    findings
 }
 
 /// The findings of a template read from the disk.
@@ -104,10 +134,37 @@ mod tests {
     }
 
     #[test]
+    fn f52_ac2_runs_the_template_rules_once_a_template_reads_cleanly() {
+        let findings = lint_text("a.component.html", "<button>\n  {{ a! }}</button>\n");
+
+        // The button without a type at 1:1; `a!` after `  {{ ` at line 2, column 6.
+        assert_eq!(
+            findings
+                .iter()
+                .map(|finding| (finding.line, finding.column, finding.rule))
+                .collect::<Vec<_>>(),
+            [
+                (1, 1, "@angular-eslint/template/button-has-type"),
+                (2, 6, "@angular-eslint/template/no-non-null-assertion"),
+            ]
+        );
+        assert_eq!(findings[0].message, "Type for <button> is missing");
+        // A template that does not read gives its error alone, no rule run on half a tree.
+        let broken = lint_text("a.component.html", "<button>{{ a! + }}</button>");
+        assert_eq!(
+            broken
+                .iter()
+                .map(|finding| finding.rule)
+                .collect::<Vec<_>>(),
+            ["lint/parse"]
+        );
+    }
+
+    #[test]
     fn reads_only_component_templates() {
         assert!(is_template("playground/src/app/app.component.html"));
         assert!(!is_template("playground/src/index.html"));
     }
 }
 #[cfg(test)]
-mod corpus;
+pub mod corpus;

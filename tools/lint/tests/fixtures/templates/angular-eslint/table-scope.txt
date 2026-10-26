@@ -28,7 +28,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
     messageId,
     annotatedOutput: `
         {{ test }}<div></div>
-
+                       
       `,
   }),
   convertAnnotatedSourceToFailureCase({
@@ -40,7 +40,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
     messageId,
     annotatedOutput: `
         <div></div><p></p>
-
+             
       `,
   }),
   convertAnnotatedSourceToFailureCase({
@@ -53,7 +53,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
     messageId,
     annotatedOutput: `
         <DIV></DIV><P></P>
-
+             
       `,
     settings: {
       hideFromDocs: true,

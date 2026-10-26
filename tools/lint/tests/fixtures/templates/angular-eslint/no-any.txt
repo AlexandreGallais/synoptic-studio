@@ -63,7 +63,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
         messageId: suggestRemoveAny,
         output: `
         {{ framework.name }}
-
+           
       `,
       },
     ],
@@ -80,7 +80,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
         messageId: suggestRemoveAny,
         output: `
         {{ this.framework.name }}
-
+           
       `,
       },
     ],
@@ -97,7 +97,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
         messageId: suggestRemoveAny,
         output: `
         <a [href]="getHref()">Click here</a>
-
+                   
       `,
       },
     ],
@@ -115,7 +115,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
         messageId: suggestRemoveAny,
         output: `
         <div *ngIf="attributeList['NPSScore']">Content</div>
-
+                    
       `,
       },
     ],
@@ -133,7 +133,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
         messageId: suggestRemoveAny,
         output: `
         <div>{{ attributeList['NPSScore'] }}</div>
-
+                
       `,
       },
     ],
@@ -151,7 +151,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
         messageId: suggestRemoveAny,
         output: `
         <div>{{ this.attributeList['NPSScore'] }}</div>
-
+                
       `,
       },
     ],
@@ -169,7 +169,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
         messageId: suggestRemoveAny,
         output: `
         <div>{{ attributeList['NPSScore']['another'] }}</div>
-
+                
       `,
       },
     ],
@@ -195,13 +195,13 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
             messageId: suggestRemoveAny,
             output: `
         {{ framework.name }}
-
+                          
         <div>
           {{ this.$any(framework).name }}
-
+                                 
         </div>
         <a [href]="$any(getHref())">Click here</a>'
-
+                   
       `,
           },
         ],
@@ -214,13 +214,13 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
             messageId: suggestRemoveAny,
             output: `
         {{ $any(framework).name }}
-
+                          
         <div>
           {{ this.framework.name }}
-
+                                 
         </div>
         <a [href]="$any(getHref())">Click here</a>'
-
+                   
       `,
           },
         ],
@@ -233,13 +233,13 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
             messageId: suggestRemoveAny,
             output: `
         {{ $any(framework).name }}
-
+                          
         <div>
           {{ this.$any(framework).name }}
-
+                                 
         </div>
         <a [href]="getHref()">Click here</a>'
-
+                   
       `,
           },
         ],

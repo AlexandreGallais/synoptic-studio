@@ -21,7 +21,7 @@ use std::path::Path;
 use oxc_allocator::Allocator;
 use oxc_ast::ast::{
     ArrayExpression, ArrayExpressionElement, BindingPattern, Declaration, Expression,
-    ObjectExpression, ObjectPropertyKind, Statement,
+    ObjectExpression, ObjectPropertyKind, Statement, UnaryOperator,
 };
 use oxc_parser::Parser;
 use oxc_span::SourceType;
@@ -29,21 +29,151 @@ use oxc_span::SourceType;
 use super::bindings::check;
 use super::tree::parse;
 
-/// What a test file gives: its templates and the cases left apart.
-#[derive(Debug, Default, PartialEq, Eq)]
-struct Corpus {
+/// What a test file gives: its templates, its cases and the cases left apart.
+#[derive(Debug, Default, PartialEq)]
+pub struct Corpus {
     /// Each template, with where it comes from.
-    templates: Vec<(String, String)>,
+    pub templates: Vec<(String, String)>,
+    /// Each case, as `RuleTester` runs it.
+    pub cases: Vec<Case>,
     /// The cases whose `filename` is a TypeScript file.
-    typescript: usize,
+    pub typescript: usize,
     /// The template literals with a `${…}` not built here.
-    dynamic: usize,
+    pub dynamic: usize,
     /// The array elements neither a string, an object, a call of the helper nor a mapped array.
-    other: usize,
+    pub other: usize,
 }
 
 /// The values of the names a mapped case reads.
 type Values = [(String, String)];
+
+/// A value of a case's `options` or `data`, as the test file writes it.
+#[derive(Clone, Debug, PartialEq)]
+pub enum Value {
+    /// `null` or `undefined`.
+    Null,
+    /// A boolean.
+    Bool(bool),
+    /// A number.
+    Number(f64),
+    /// A string.
+    Text(String),
+    /// An array.
+    List(Vec<Self>),
+    /// An object, its properties in order.
+    Object(Vec<(String, Self)>),
+}
+
+impl Value {
+    /// An object's property.
+    #[must_use]
+    pub fn get(&self, key: &str) -> Option<&Self> {
+        match self {
+            Self::Object(properties) => properties
+                .iter()
+                .find(|(each, _)| each == key)
+                .map(|(_, value)| value),
+            _ => None,
+        }
+    }
+
+    /// A boolean property.
+    #[must_use]
+    pub fn flag(&self, key: &str) -> Option<bool> {
+        match self.get(key) {
+            Some(Self::Bool(value)) => Some(*value),
+            _ => None,
+        }
+    }
+
+    /// A number property.
+    #[must_use]
+    pub fn number(&self, key: &str) -> Option<f64> {
+        match self.get(key) {
+            Some(Self::Number(value)) => Some(*value),
+            _ => None,
+        }
+    }
+
+    /// A string property.
+    #[must_use]
+    pub fn text(&self, key: &str) -> Option<&str> {
+        match self.get(key) {
+            Some(Self::Text(value)) => Some(value),
+            _ => None,
+        }
+    }
+
+    /// The strings of an array property.
+    #[must_use]
+    pub fn texts(&self, key: &str) -> Option<Vec<String>> {
+        match self.get(key) {
+            Some(Self::List(values)) => values
+                .iter()
+                .map(|value| match value {
+                    Self::Text(text) => Some(text.clone()),
+                    _ => None,
+                })
+                .collect(),
+            _ => None,
+        }
+    }
+
+    /// The value as JavaScript's `String(value)` writes it into a message.
+    #[must_use]
+    pub fn display(&self) -> String {
+        match self {
+            Self::Null => "null".to_owned(),
+            Self::Bool(value) => value.to_string(),
+            Self::Number(value) => format!("{value}"),
+            Self::Text(value) => value.clone(),
+            Self::List(values) => values
+                .iter()
+                .map(Self::display)
+                .collect::<Vec<_>>()
+                .join(","),
+            Self::Object(_) => "[object Object]".to_owned(),
+        }
+    }
+}
+
+/// An error a case expects: its message's id, its data, and where, as `RuleTester` checks it.
+#[derive(Clone, Debug, PartialEq)]
+pub struct Expected {
+    /// The message's id.
+    pub message_id: String,
+    /// The data the message is written with, when the case gives it.
+    pub data: Option<Value>,
+    /// The first line, from 1.
+    pub line: Option<usize>,
+    /// The first column, from 1.
+    pub column: Option<usize>,
+    /// The last line.
+    pub end_line: Option<usize>,
+    /// The column after the last character.
+    pub end_column: Option<usize>,
+}
+
+/// A case of a rule's tests, as `RuleTester` runs it.
+#[derive(Clone, Debug, PartialEq)]
+pub struct Case {
+    /// Where in the file.
+    pub origin: String,
+    /// Whether of `valid`.
+    pub valid: bool,
+    /// The template linted.
+    pub code: String,
+    /// The rule's first option, when given.
+    pub options: Option<Value>,
+    /// The errors expected, in order.
+    pub errors: Vec<Expected>,
+    /// The template after each pass of fixes; empty when the rule must fix nothing.
+    pub output: Vec<String>,
+    /// The suggestions the case expects, which the linter does not carry.
+    pub suggestions: usize,
+    /// What could not be read: an option, a datum or an error not built from a literal.
+    pub unresolved: Vec<String>,
+}
 
 /// A string literal's or a template literal's value, its `${name}` and `${'text'.repeat(n)}`
 /// built; `Err(())` for any other `${…}`, `None` for anything else.
@@ -187,6 +317,211 @@ fn marks(object: &ObjectExpression) -> Vec<char> {
         .collect()
 }
 
+/// Where a mark sits in an annotated source, as `parseInvalidSource` finds it: the first mark's
+/// line and character, and the line and the character after the last mark, from 0, each line
+/// the last one above that is not an annotation; `None` when the mark is absent.
+fn mark_place(source: &str, mark: char, others: &[char]) -> Option<Place> {
+    let (mut column, mut line, mut source_line) = (0, 0, 0);
+    let mut annotation = false;
+    let mut last = (0, 0);
+    let mut start = None;
+    for each in source.chars() {
+        if each == '\n' {
+            if annotation {
+                annotation = false;
+            } else {
+                source_line = line;
+            }
+            column = 0;
+            line += 1;
+            continue;
+        }
+        column += 1;
+        if others.contains(&each) {
+            annotation = true;
+        }
+        if each != mark {
+            continue;
+        }
+        annotation = true;
+        if start.is_none() {
+            start = Some((source_line, column - 1));
+        }
+        last = (source_line, column);
+    }
+    start.map(|start| (start, last))
+}
+
+/// A first and a last position, each a line and a character from 0.
+type Place = ((usize, usize), (usize, usize));
+
+/// The value an expression of a test file writes, its names given their values; `None` when it
+/// is built otherwise.
+fn value(expression: &Expression, values: &Values) -> Option<Value> {
+    match expression {
+        Expression::NullLiteral(_) => Some(Value::Null),
+        Expression::BooleanLiteral(boolean) => Some(Value::Bool(boolean.value)),
+        Expression::NumericLiteral(number) => Some(Value::Number(number.value)),
+        Expression::Identifier(name) if name.name == "undefined" => Some(Value::Null),
+        Expression::StaticMemberExpression(member) => {
+            let Expression::Identifier(object) = &member.object else {
+                return None;
+            };
+            let key = format!("{}.{}", object.name, member.property.name);
+            values
+                .iter()
+                .find(|(each, _)| *each == key)
+                .map(|(_, found)| Value::Text(found.clone()))
+        }
+        Expression::ArrayExpression(array) => array
+            .elements
+            .iter()
+            .map(|element| element.as_expression().and_then(|each| value(each, values)))
+            .collect::<Option<_>>()
+            .map(Value::List),
+        Expression::ObjectExpression(object) => object
+            .properties
+            .iter()
+            .map(|each| match each {
+                ObjectPropertyKind::ObjectProperty(property) => {
+                    let key = if property.computed {
+                        text(property.key.as_expression()?, values)?
+                    } else {
+                        property.key.static_name()?.to_string()
+                    };
+                    Some((key, value(&property.value, values)?))
+                }
+                ObjectPropertyKind::SpreadProperty(_) => None,
+            })
+            .collect::<Option<_>>()
+            .map(Value::Object),
+        Expression::TSAsExpression(cast) => value(&cast.expression, values),
+        Expression::TSSatisfiesExpression(cast) => value(&cast.expression, values),
+        Expression::ParenthesizedExpression(inner) => value(&inner.expression, values),
+        Expression::UnaryExpression(unary) if unary.operator == UnaryOperator::UnaryNegation => {
+            match value(&unary.argument, values)? {
+                Value::Number(number) => Some(Value::Number(-number)),
+                _ => None,
+            }
+        }
+        other => text(other, values).map(Value::Text),
+    }
+}
+
+/// A property's value, its name kept among the unresolved when it cannot be read.
+fn resolved(
+    object: &ObjectExpression,
+    name: &str,
+    values: &Values,
+    unresolved: &mut Vec<String>,
+) -> Option<Value> {
+    let expression = property(object, name)?;
+    let found = value(expression, values);
+    if found.is_none() {
+        unresolved.push(name.to_owned());
+    }
+    found
+}
+
+/// A number property, as a position.
+fn position(object: &ObjectExpression, name: &str, values: &Values) -> Option<usize> {
+    match property(object, name).and_then(|each| value(each, values)) {
+        Some(Value::Number(number)) => format!("{number}").parse().ok(),
+        _ => None,
+    }
+}
+
+/// The texts of a value: a string, or the strings of an array; empty for `null`.
+fn outputs(found: Option<Value>, clean: &dyn Fn(&str) -> String) -> Vec<String> {
+    match found {
+        Some(Value::Text(text)) => vec![clean(&text)],
+        Some(Value::List(list)) => list
+            .iter()
+            .filter_map(|each| match each {
+                Value::Text(text) => Some(clean(text)),
+                _ => None,
+            })
+            .collect(),
+        _ => Vec::new(),
+    }
+}
+
+/// The case an object of a test file describes: `{ code, options, errors, output }`, or the
+/// argument of `convertAnnotatedSourceToFailureCase`, its errors placed by their marks.
+fn case_of(origin: &str, object: &ObjectExpression, annotated: bool, values: &Values) -> Case {
+    let mut unresolved = Vec::new();
+    let options = match resolved(object, "options", values, &mut unresolved) {
+        Some(Value::List(list)) => list.into_iter().next(),
+        _ => None,
+    };
+    let suggestions = suggestions(object).len();
+    let mut errors = Vec::new();
+    let (code, output) = if annotated {
+        let messages: Vec<&ObjectExpression> = if property(object, "messageId").is_some() {
+            vec![object]
+        } else {
+            objects(object, "messages")
+        };
+        let marks = marks(object);
+        let source = property(object, "annotatedSource")
+            .and_then(|each| text(each, values))
+            .unwrap_or_default();
+        for (index, message) in messages.iter().enumerate() {
+            let mark = marks.get(index).copied().unwrap_or('~');
+            let others: Vec<char> = marks.iter().copied().filter(|each| *each != mark).collect();
+            let place = mark_place(&source, mark, &others);
+            if place.is_none() {
+                unresolved.push(format!("the mark {mark}"));
+            }
+            errors.push(Expected {
+                message_id: property(message, "messageId")
+                    .and_then(|each| text(each, values))
+                    .unwrap_or_default(),
+                data: resolved(message, "data", values, &mut unresolved),
+                line: place.map(|((line, _), _)| line + 1),
+                column: place.map(|((_, column), _)| column + 1),
+                end_line: place.map(|(_, (line, _))| line + 1),
+                end_column: place.map(|(_, (_, column))| column + 1),
+            });
+        }
+        let output = resolved(object, "annotatedOutput", values, &mut unresolved)
+            .or_else(|| resolved(object, "annotatedOutputs", values, &mut unresolved));
+        (
+            cleaned(&source, &marks),
+            outputs(output, &|text| cleaned(text, &['~'])),
+        )
+    } else {
+        for error in objects(object, "errors") {
+            errors.push(Expected {
+                message_id: property(error, "messageId")
+                    .and_then(|each| text(each, values))
+                    .unwrap_or_default(),
+                data: resolved(error, "data", values, &mut unresolved),
+                line: position(error, "line", values),
+                column: position(error, "column", values),
+                end_line: position(error, "endLine", values),
+                end_column: position(error, "endColumn", values),
+            });
+        }
+        let code = property(object, "code").and_then(|each| text(each, values));
+        if code.is_none() {
+            unresolved.push("code".to_owned());
+        }
+        let output = resolved(object, "output", values, &mut unresolved);
+        (code.unwrap_or_default(), outputs(output, &str::to_owned))
+    };
+    Case {
+        origin: origin.to_owned(),
+        valid: origin.starts_with("valid"),
+        code,
+        options,
+        errors,
+        output,
+        suggestions,
+        unresolved,
+    }
+}
+
 /// Adds the templates of a case's object to the corpus.
 fn add_case(
     corpus: &mut Corpus,
@@ -253,6 +588,8 @@ fn add_case(
     for suggestion in suggestions(object) {
         add("suggestion", property(suggestion, "output"), &str::to_owned);
     }
+    let case = case_of(origin, object, annotated, values);
+    corpus.cases.push(case);
 }
 
 /// Adds the templates of an element of a `valid` or `invalid` array to the corpus.
@@ -288,7 +625,19 @@ fn add_element(corpus: &mut Corpus, origin: &str, expression: &Expression, value
             }
         }
         other => match literal(other, values) {
-            Some(Ok(text)) => corpus.templates.push((origin.to_owned(), text)),
+            Some(Ok(text)) => {
+                corpus.cases.push(Case {
+                    origin: origin.to_owned(),
+                    valid: origin.starts_with("valid"),
+                    code: text.clone(),
+                    options: None,
+                    errors: Vec::new(),
+                    output: Vec::new(),
+                    suggestions: 0,
+                    unresolved: Vec::new(),
+                });
+                corpus.templates.push((origin.to_owned(), text));
+            }
             Some(Err(())) => corpus.dynamic += 1,
             None => corpus.other += 1,
         },
@@ -410,7 +759,13 @@ fn mapping<'r, 'a>(
 
 /// Adds the cases of a `...list.map(…)` or `.flatMap(…)`, each built with its values; whether
 /// the spread is one.
-fn add_mapped(corpus: &mut Corpus, origin: &str, expression: &Expression, arrays: &Arrays) -> bool {
+fn add_mapped(
+    corpus: &mut Corpus,
+    origin: &str,
+    expression: &Expression,
+    arrays: &Arrays,
+    base: &Values,
+) -> bool {
     let Some((object, pattern, body, _)) = mapping(expression) else {
         return false;
     };
@@ -418,9 +773,10 @@ fn add_mapped(corpus: &mut Corpus, origin: &str, expression: &Expression, arrays
         return false;
     };
     for (index, each) in each_input.iter().enumerate() {
-        let Some(values) = bound_values(pattern, each) else {
+        let Some(mut values) = bound_values(pattern, each) else {
             return false;
         };
+        values.extend_from_slice(base);
         add_element(corpus, &format!("{origin}({index})"), body, &values);
     }
     true
@@ -458,17 +814,23 @@ fn bound_values(pattern: &BindingPattern, input: &Input) -> Option<Vec<(String, 
 }
 
 /// Adds the templates of a `valid` or `invalid` array to the corpus.
-fn add_cases(corpus: &mut Corpus, name: &str, array: &ArrayExpression, arrays: &Arrays) {
+fn add_cases(
+    corpus: &mut Corpus,
+    name: &str,
+    array: &ArrayExpression,
+    arrays: &Arrays,
+    base: &Values,
+) {
     for (index, element) in array.elements.iter().enumerate() {
         let origin = format!("{name}[{index}]");
         match element {
             ArrayExpressionElement::SpreadElement(spread) => {
-                if !add_mapped(corpus, &origin, &spread.argument, arrays) {
+                if !add_mapped(corpus, &origin, &spread.argument, arrays, base) {
                     corpus.other += 1;
                 }
             }
             each => match each.as_expression() {
-                Some(expression) => add_element(corpus, &origin, expression, &[]),
+                Some(expression) => add_element(corpus, &origin, expression, base),
                 None => corpus.other += 1,
             },
         }
@@ -495,11 +857,22 @@ fn cases_array<'r, 'a>(init: &'r Expression<'a>) -> Option<&'r ArrayExpression<'
 
 /// The corpus of a test file: its exported `valid` and `invalid` arrays.
 fn read_cases(text: &str) -> Corpus {
+    read_rule_cases(text, &[])
+}
+
+/// The corpus and the cases of a rule's test file, the names it imports given their values
+/// (`OrderType.Attribute`, `INVALID_TYPE_DATA_KEY`) beside the strings it declares at its top.
+#[must_use]
+pub fn read_rule_cases(text: &str, constants: &[(&str, &str)]) -> Corpus {
     let allocator = Allocator::default();
     let parsed = Parser::new(&allocator, text, SourceType::ts()).parse();
     let mut corpus = Corpus::default();
     let mut arrays: Vec<(String, &ArrayExpression)> = Vec::new();
     let mut exported = Vec::new();
+    let mut base: Vec<(String, String)> = constants
+        .iter()
+        .map(|(name, value)| ((*name).to_owned(), (*value).to_owned()))
+        .collect();
     for statement in &parsed.program.body {
         let (variables, is_exported) = match statement {
             Statement::ExportDeclaration(export) => match &export.declaration {
@@ -513,6 +886,9 @@ fn read_cases(text: &str) -> Corpus {
             let Some(name) = declarator.id.get_identifier_name() else {
                 continue;
             };
+            if let Some(Expression::StringLiteral(string)) = &declarator.init {
+                base.push((name.to_string(), string.value.to_string()));
+            }
             let is_cases = is_exported && (name == "valid" || name == "invalid");
             match declarator.init.as_ref().and_then(cases_array) {
                 Some(array) if is_cases => exported.push((name.to_string(), array)),
@@ -524,7 +900,7 @@ fn read_cases(text: &str) -> Corpus {
         }
     }
     for (name, array) in exported {
-        add_cases(&mut corpus, &name, array, &arrays);
+        add_cases(&mut corpus, &name, array, &arrays, &base);
     }
     corpus
 }

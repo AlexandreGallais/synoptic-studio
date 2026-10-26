@@ -662,6 +662,7 @@ dependencies = [
  "oxc_parser",
  "oxc_semantic",
  "oxc_span",
+ "regex",
  "test-support",
  "tool-use",
 ]

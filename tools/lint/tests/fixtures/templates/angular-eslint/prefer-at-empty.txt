@@ -116,7 +116,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
       annotatedOutput: `
           @for (item of items; track $index) {}
           @empty {
-
+          
             No items
           }
         `,
@@ -140,9 +140,9 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
         `,
       messageId,
       annotatedOutput: `
-
+          
           @for (item of items; track $index) {} @empty {
-
+          
             No items
           }
         `,
@@ -169,8 +169,8 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
         `,
       messageId,
       annotatedOutput: `
-
-
+          
+          
             @for (item of items; track $index) {}
           @empty {
             No items
@@ -197,11 +197,11 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
         `,
       messageId,
       annotatedOutput: `
-
+          
             @for (item of items; track $index) {} @empty {
-
+          
             No items
-
+          
           }
         `,
     }),
@@ -219,13 +219,13 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
     `,
     messageId,
     annotatedOutput: `
-
-
+      
+      
         @for (item of items; track $index) {} @empty {
         No items
       }
-
-
+      
+      
     `,
   }),
   convertAnnotatedSourceToFailureCase({
@@ -241,12 +241,12 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
     `,
     messageId,
     annotatedOutput: `
-
-
-
+      
+      
+      
         @for (item of items; track $index) {} @empty {
         No items
-
+      
       }
     `,
   }),
@@ -264,8 +264,8 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
     `,
     messageId,
     annotatedOutput: `
-
-
+      
+      
         @for (item of items; track $index) {}
       @empty { @if (condition) {
        Condition is true
@@ -289,7 +289,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
       @for (item of items; track $index) {}
       <!-- comment -->
       @empty {
-
+      
         No items
       }
     `,
@@ -311,7 +311,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
       @for (item of items; track $index) {}
       &nbsp;
       @empty {
-
+      
         Not empty
       }
     `,
@@ -330,12 +330,12 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
     `,
     messageId,
     annotatedOutput: `
-
+      
       @for (item of items; track $index) {}
       @empty {
       ~~~~
         Not empty
-
+      
         Existing
       }
     `,
@@ -357,9 +357,9 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
       @for (item of items; track $index) {}
       @empty {
         Existing
-
-
-
+      
+      
+      
         Not empty
       }
     `,
@@ -379,10 +379,10 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
     `,
     messageId,
     annotatedOutput: `
-
-
+      
+      
         @for (item of items; track $index) {}
-
+        
       @empty {
         Empty
       }
@@ -403,13 +403,13 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
     `,
     messageId,
     annotatedOutput: `
-
+      
         @for (item of items; track $index) {}
         @empty {
-
+      
         Empty
       }
-
+      
     `,
   }),
   convertAnnotatedSourceToFailureCase({
@@ -424,11 +424,11 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
     `,
     messageId,
     annotatedOutput: `
-
+      
         @for (item of items; track $index) {} @empty {
-
+      
         Empty
-
+      
       }
     `,
   }),
@@ -446,8 +446,8 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
     `,
     messageId,
     annotatedOutput: `
-
-
+      
+      
         <!-- before -->
         @for (item of items; track $index) {}
         <!-- after -->
@@ -470,12 +470,12 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
     `,
     messageId,
     annotatedOutput: `
-
+      
         <!-- before -->
         @for (item of items; track $index) {} @empty {
-
+      
         Empty
-
+      
         <!-- after -->
       }
     `,
@@ -498,7 +498,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
         {{ evt }}
       }
       @empty {
-
+      
         Awaiting app bootstrap...
       }
     `,

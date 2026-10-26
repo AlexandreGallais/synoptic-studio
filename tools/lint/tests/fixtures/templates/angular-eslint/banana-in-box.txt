@@ -47,9 +47,9 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
     ],
     annotatedOutput: `
         <app-item [(bar)]="bar" [(item)]="item" [(test)]="test"></app-item>
-
+                                               
         <div [baz]="oneWay" (emitter)="emitter" [(twoWay)]="twoWay"></div>
-
+                                                
       `,
   }),
 ];

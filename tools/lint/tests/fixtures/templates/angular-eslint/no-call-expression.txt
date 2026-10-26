@@ -41,13 +41,13 @@ export const valid: readonly (string | ValidTestCase<Options>)[] = [
     <div></div>
   }`,
   `
-  @switch (condition) {
+  @switch (condition) { 
     @case(value) {
       <div></div>
-    }
+    } 
     @default {
       <div></div>
-    }
+    } 
   }`,
   `
   @for (item of list; track item.id) {
@@ -171,11 +171,11 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
             ^^^^^
         <div [id]="foo()"></div>
                    #####
-      }
+      } 
       @default {
         <div [id]="foo()"></div>
                    %%%%%
-      }
+      } 
     }`,
     messages: [
       { char: '~', messageId },

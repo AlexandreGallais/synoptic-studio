@@ -46,7 +46,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
     messageId,
     annotatedOutput: `
       <my-component name="foo"/>
-
+                    
     `,
   }),
   convertAnnotatedSourceToFailureCase({
@@ -58,7 +58,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
     messageId,
     annotatedOutput: `
       <my-component name="foo"/>
-
+                    
     `,
   }),
   convertAnnotatedSourceToFailureCase({
@@ -70,7 +70,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
     messageId,
     annotatedOutput: `
       <my-component name='foo'/>
-
+                    
     `,
   }),
   convertAnnotatedSourceToFailureCase({
@@ -82,7 +82,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
     messageId,
     annotatedOutput: `
       <my-component name="say &quot;hi&quot;"/>
-
+                    
     `,
   }),
   convertAnnotatedSourceToFailureCase({
@@ -94,7 +94,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
     messageId,
     annotatedOutput: `
       <my-component name='it&#39;s'/>
-
+                    
     `,
   }),
   convertAnnotatedSourceToFailureCase({
@@ -107,7 +107,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
     messageId,
     annotatedOutput: `
       <my-component name="a &amp;quot; b"/>
-
+                    
     `,
   }),
   convertAnnotatedSourceToFailureCase({
@@ -119,7 +119,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
     messageId,
     annotatedOutput: `
       <code highlightAuto="<ng-template #ref=&quot;poly&quot;>x</ng-template>"></code>
-
+            
     `,
   }),
 ];

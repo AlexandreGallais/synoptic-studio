@@ -3,7 +3,8 @@
 //! once, its semantic model built once, and every rule its scopes turn on runs over that one AST;
 //! the files are spread over the machine's threads. A Markdown page is parsed into its own tree
 //! and read by the Markdown rules (`markdown`, EN-077); a component's template is read into its
-//! own tree, every expression parsed, and reported where it cannot be read (`template`, EN-163).
+//! own tree, every expression parsed, and reported where it cannot be read (`template`, EN-163),
+//! then checked by the template rules (`template::rules`, EN-164).
 
 pub mod deep_readonly;
 pub mod directives;
