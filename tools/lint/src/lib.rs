@@ -18,6 +18,7 @@ pub mod rules;
 pub mod scopes;
 pub mod settings;
 pub mod source;
+pub mod template;
 #[cfg(test)]
 pub mod testing;
 pub mod walk;

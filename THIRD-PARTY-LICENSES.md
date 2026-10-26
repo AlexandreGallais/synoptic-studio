@@ -30,7 +30,7 @@ The project's tools (`tools/`) port code from, or copy test cases of, the packag
 | `structured-source` | 4.0.0 | BSD-2-Clause | its line and column of an index, in `tools/secret-scan/src/source.rs` |
 | `@angular-eslint/eslint-plugin` | 22.6.0 | MIT | its rules on the framework's bugs, the current form of each construct and the names, ported to `tools/lint/src/rules/angular/`, with the cases of their tests |
 | `@angular-eslint/utils` | 22.6.0 | MIT | its reading of Angular's decorators, lifecycle methods, metadata, bindings and selectors, ported to `tools/lint/src/rules/angular/classes.rs`, `metadata.rs`, `bindings.rs` and `selector_names.rs` |
-| `@angular/compiler` | 22.2.3 | MIT | its `CssSelector.parse`, ported to `tools/lint/src/rules/angular/selector_names.rs` |
+| `@angular/compiler` | 22.2.3 | MIT | its `CssSelector.parse`, ported to `tools/lint/src/rules/angular/selector_names.rs`; its template lexer and parser (`ml_parser`: the lexer, the tag definitions, the named entities, the tree builder), ported to `tools/lint/src/template/` |
 
 ## eslint-plugin-unicorn 78.0.0
 
