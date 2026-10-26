@@ -5,6 +5,7 @@
 pub mod angular;
 pub mod barrel_exports;
 pub mod canonical_import_path;
+pub mod component_files;
 pub mod folder_has_index;
 pub mod folder_layout;
 pub mod functional;
@@ -60,6 +61,7 @@ pub trait Rule: Sync {
 pub const ALL: &[&dyn Rule] = &[
     &barrel_exports::BarrelExports,
     &canonical_import_path::CanonicalImportPath,
+    &component_files::ComponentFiles,
     &folder_has_index::FolderHasIndex,
     &folder_layout::FolderLayout,
     &immutable_data::ImmutableData,

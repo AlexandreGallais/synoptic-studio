@@ -28,8 +28,9 @@ The project's tools (`tools/`) port code from, or copy test cases of, the packag
 | `@secretlint/core` | 13.0.7 | MIT | the clean-up of a file's findings (the comment filter applied, duplicates dropped, sorted) and the masking of their values, in `tools/secret-scan/src/rules/mod.rs` and `report.rs` |
 | `@secretlint/secretlint-rule-preset-recommend` | 13.0.7 | MIT | its 27 rules and its comment filter, ported to `tools/secret-scan/src/`, and its test snapshots, copied into `tools/secret-scan/tests/fixtures/preset/` |
 | `structured-source` | 4.0.0 | BSD-2-Clause | its line and column of an index, in `tools/secret-scan/src/source.rs` |
-| `@angular-eslint/eslint-plugin` | 22.6.0 | MIT | its rules on the framework's bugs, ported to `tools/lint/src/rules/angular/`, with the cases of their tests |
-| `@angular-eslint/utils` | 22.6.0 | MIT | its reading of Angular's decorators and lifecycle methods, ported to `tools/lint/src/rules/angular/classes.rs` |
+| `@angular-eslint/eslint-plugin` | 22.6.0 | MIT | its rules on the framework's bugs, the current form of each construct and the names, ported to `tools/lint/src/rules/angular/`, with the cases of their tests |
+| `@angular-eslint/utils` | 22.6.0 | MIT | its reading of Angular's decorators, lifecycle methods, metadata, bindings and selectors, ported to `tools/lint/src/rules/angular/classes.rs`, `metadata.rs`, `bindings.rs` and `selector_names.rs` |
+| `@angular/compiler` | 22.2.3 | MIT | its `CssSelector.parse`, ported to `tools/lint/src/rules/angular/selector_names.rs` |
 
 ## eslint-plugin-unicorn 78.0.0
 
@@ -791,4 +792,32 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+```
+
+## @angular/compiler 22.2.3
+
+From `https://registry.npmjs.org/@angular/compiler/-/compiler-22.2.3.tgz`, `package/LICENSE`, read in the playground's installed packages on 2026-10-26.
+
+```text
+The MIT License
+
+Copyright (c) 2010-2026 Google LLC. https://angular.dev/license
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
 ```
