@@ -1,7 +1,8 @@
 //! The names of a component's or a directive's selector, after `@angular-eslint/utils` 22.6.0's
 //! `selector-utils.ts`: the selector parsed as `@angular/compiler` 22.2.3's `CssSelector.parse`
 //! reads it (an element, classes, attributes and `:not()` parts, a list split at its commas),
-//! then its element or attribute names checked for a type, a prefix and a style.
+//! then its element or attribute names checked for a type, a prefix and a style
+//! (REF-ANGULAR-ESLINT-SOURCE, REF-ANGULAR-COMPILER-CSS-SELECTOR).
 
 use oxc_ast::ast::Expression;
 
