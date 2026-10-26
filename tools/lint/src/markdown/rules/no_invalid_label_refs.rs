@@ -45,7 +45,7 @@ impl MarkdownRule for NoInvalidLabelRefs {
                 let end = found + 2 + length + 1;
                 let blank = text[found + 2..end - 1]
                     .chars()
-                    .all(crate::markdown::text::is_js_space);
+                    .all(crate::javascript::is_js_space);
                 if blank {
                     let offset = start(node) + found;
                     let label = page.text[..offset]

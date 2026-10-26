@@ -9,73 +9,16 @@
 
 use std::cmp::Ordering;
 
-use super::a11y::{AttributeValue, is_js_space, to_number};
+use super::a11y::AttributeValue;
 use super::aria::{AriaProperty, PropertyKind, Token, property};
 use super::dom::is_dom_name;
 use super::r3::{Literal, Ng, of_bound};
 use super::{Report, Role, Template, TemplateRule, bound3, is_plain_element};
+use crate::javascript::{is_js_space, parse_int, to_number};
 use crate::template::bindings::{Value, read_attribute};
 
 /// The rule.
 pub struct ValidAria;
-
-/// The leading number of a text, as JavaScript's `parseInt(text, 10)` reads it; `NaN` when none.
-fn parse_int(text: &str) -> f64 {
-    let rest = text.trim_start_matches(is_js_space);
-    let (sign, digits) = match rest.as_bytes().first() {
-        Some(b'-') => (-1.0, &rest[1..]),
-        Some(b'+') => (1.0, &rest[1..]),
-        _ => (1.0, rest),
-    };
-    let end = digits
-        .find(|each: char| !each.is_ascii_digit())
-        .unwrap_or(digits.len());
-    digits[..end]
-        .parse::<f64>()
-        .map_or(f64::NAN, |value| sign * value)
-}
-
-/// The leading number of a text, as JavaScript's `parseFloat` reads it; `NaN` when none.
-fn parse_float(text: &str) -> f64 {
-    let rest = text.trim_start_matches(is_js_space);
-    let (sign, body) = match rest.as_bytes().first() {
-        Some(b'-') => (-1.0, &rest[1..]),
-        Some(b'+') => (1.0, &rest[1..]),
-        _ => (1.0, rest),
-    };
-    if body.starts_with("Infinity") {
-        return sign * f64::INFINITY;
-    }
-    let bytes = body.as_bytes();
-    let digits = |from: usize| {
-        bytes[from..]
-            .iter()
-            .take_while(|each| each.is_ascii_digit())
-            .count()
-    };
-    let whole = digits(0);
-    let mut end = whole;
-    let mut fraction = 0;
-    if bytes.get(end) == Some(&b'.') {
-        fraction = digits(end + 1);
-        if whole + fraction > 0 {
-            end += 1 + fraction;
-        }
-    }
-    if whole + fraction == 0 {
-        return f64::NAN;
-    }
-    if matches!(bytes.get(end), Some(b'e' | b'E')) {
-        let signed = usize::from(matches!(bytes.get(end + 1), Some(b'+' | b'-')));
-        let exponent = digits(end + 1 + signed);
-        if exponent > 0 {
-            end += 1 + signed + exponent;
-        }
-    }
-    body[..end]
-        .parse::<f64>()
-        .map_or(f64::NAN, |value| sign * value)
-}
 
 /// `parseInt(String(number))`: the integer part, or the first digit of the mantissa when
 /// JavaScript writes the number with an exponent (from `1e21` up, and below `1e-6`).
@@ -125,7 +68,7 @@ fn is_integer(value: &AttributeValue) -> bool {
 /// `isNumeric`.
 fn is_numeric(value: &AttributeValue) -> bool {
     match value {
-        AttributeValue::Text(text) => !parse_float(text).is_nan() && to_number(text).is_finite(),
+        AttributeValue::Text(text) => crate::javascript::is_numeric(text),
         AttributeValue::Number(number) => number.is_finite(),
         _ => false,
     }
@@ -269,9 +212,7 @@ impl TemplateRule for ValidAria {
 
 #[cfg(test)]
 mod tests {
-    use super::{
-        AttributeValue, ValidAria, is_integer, is_numeric, parse_float, parse_int, tokens,
-    };
+    use super::{AttributeValue, ValidAria, is_integer, is_numeric, tokens};
     use crate::template::rules::tester::run;
 
     #[test]
@@ -286,14 +227,6 @@ mod tests {
     #[test]
     fn reads_numbers_as_javascript_does() {
         // Our own cases, after the ECMAScript conversions.
-        assert_eq!(parse_int("  12abc"), 12.0);
-        assert_eq!(parse_int("-3.9"), -3.0);
-        assert!(parse_int("abc").is_nan() && parse_int("").is_nan());
-        assert_eq!(parse_float(" 1.5e2x"), 150.0);
-        assert_eq!(parse_float(".5"), 0.5);
-        assert_eq!(parse_float("1e"), 1.0);
-        assert_eq!(parse_float("-Infinity"), f64::NEG_INFINITY);
-        assert!(parse_float(".").is_nan());
         let text = |text: &str| AttributeValue::Text(text.to_owned());
         // "-1": parseInt(Number("-1")) is -1, loosely equal to "-1".
         assert!(is_integer(&text("-1")));

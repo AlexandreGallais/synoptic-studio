@@ -4,9 +4,10 @@
 use markdown::mdast::Node;
 
 use crate::finding::Finding;
+use crate::javascript::is_js_space;
 use crate::markdown::MarkdownRule;
 use crate::markdown::page::{Page, nodes, start};
-use crate::markdown::text::{attributes_end, find_without_case, is_js_space, strip_html_comments};
+use crate::markdown::text::{attributes_end, find_without_case, strip_html_comments};
 
 /// The rule.
 pub struct RequireAltText;

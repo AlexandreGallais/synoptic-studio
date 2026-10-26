@@ -5,10 +5,10 @@
 //! above 0 (`[value>0]` of the plugin's selector: `true` is 1, a text its number). The
 //! replacements by `-1` and `0` are suggestions, not carried.
 
-use super::a11y::to_number;
 use super::dom::is_dom_name;
 use super::r3::{Literal, Ng, of_bound};
 use super::{Report, Role, Template, TemplateRule, bound3, is_plain_element};
+use crate::javascript::to_number;
 use crate::template::bindings::{Value, read_attribute};
 
 /// The rule.

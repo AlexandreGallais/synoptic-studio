@@ -22,7 +22,7 @@ fn tag(html: &str) -> Option<(String, bool)> {
         + rest[first.len_utf8()..]
             .chars()
             .take_while(|character| {
-                !matches!(character, '/' | '>') && !crate::markdown::text::is_js_space(*character)
+                !matches!(character, '/' | '>') && !crate::javascript::is_js_space(*character)
             })
             .map(char::len_utf8)
             .sum::<usize>();

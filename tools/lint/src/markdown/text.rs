@@ -1,22 +1,8 @@
 //! What several Markdown rules read in a page's text, written as the patterns of
 //! `@eslint/markdown` (`util.js`, `REF-ESLINT-MARKDOWN-RULES`) read it: HTML comments, white
-//! space as JavaScript's `\s` counts it, escapes, identifiers, HTML tags.
+//! space as JavaScript's `\s` counts it (`crate::javascript`), escapes, identifiers, HTML tags.
 
-/// Whether a character is white space as JavaScript's `\s` counts it.
-#[must_use]
-pub const fn is_js_space(character: char) -> bool {
-    matches!(
-        character,
-        '\t' | '\n' | '\u{0b}' | '\u{0c}' | '\r' | ' ' | '\u{a0}' | '\u{1680}' | '\u{2000}'
-            ..='\u{200a}'
-                | '\u{2028}'
-                | '\u{2029}'
-                | '\u{202f}'
-                | '\u{205f}'
-                | '\u{3000}'
-                | '\u{feff}'
-    )
-}
+use crate::javascript::is_js_space;
 
 /// Whether a byte is a line terminator, which JavaScript's `.` does not match.
 #[must_use]

@@ -16,6 +16,7 @@ use super::ax_objects::{AX_OBJECTS, ax_object, element_ax_objects};
 use super::dom::is_dom_element;
 use super::r3::{Literal, Ng, of_bound};
 use super::{Bound3, Role, bound3, is_plain_element};
+use crate::javascript::is_js_space;
 use crate::template::bindings::{AttributeKind, Value, attribute_kind, read_attribute};
 use crate::template::tree::{Element, Node};
 
@@ -123,67 +124,6 @@ pub fn attribute_value(allocator: &Allocator, element: &Element, name: &str) -> 
 fn is_html_truthy(allocator: &Allocator, element: &Element, name: &str) -> bool {
     let value = attribute_value(allocator, element, name);
     value.text() == Some("") || value.is_true(false)
-}
-
-/// Whether a character is whitespace for JavaScript's `\s`.
-#[must_use]
-pub const fn is_js_space(character: char) -> bool {
-    matches!(
-        character,
-        '\t' | '\n' | '\u{b}' | '\u{c}' | '\r' | ' ' | '\u{a0}' | '\u{1680}' | '\u{2000}'
-            ..='\u{200a}'
-                | '\u{2028}'
-                | '\u{2029}'
-                | '\u{202f}'
-                | '\u{205f}'
-                | '\u{3000}'
-                | '\u{feff}'
-    )
-}
-
-/// A text as JavaScript's `Number(text)` reads it: its whitespace trimmed, empty as 0, a decimal
-/// literal, `Infinity` with its sign, or an unsigned `0x`, `0o` or `0b` integer; `NaN` otherwise.
-#[must_use]
-pub fn to_number(text: &str) -> f64 {
-    let trimmed = text.trim_matches(is_js_space);
-    if trimmed.is_empty() {
-        return 0.0;
-    }
-    let radix = match trimmed.get(..2) {
-        Some("0x" | "0X") => 16,
-        Some("0o" | "0O") => 8,
-        Some("0b" | "0B") => 2,
-        _ => 10,
-    };
-    if radix != 10 {
-        let digits = &trimmed[2..];
-        if digits.is_empty() || !digits.chars().all(|each| each.is_digit(radix)) {
-            return f64::NAN;
-        }
-        return digits.chars().fold(0.0, |value, each| {
-            value * f64::from(radix) + f64::from(each.to_digit(radix).unwrap_or(0))
-        });
-    }
-    let (sign, body) = match trimmed.as_bytes().first() {
-        Some(b'-') => (-1.0, &trimmed[1..]),
-        Some(b'+') => (1.0, &trimmed[1..]),
-        _ => (1.0, trimmed),
-    };
-    if body == "Infinity" {
-        return sign * f64::INFINITY;
-    }
-    // Rust reads `inf` and `nan` too, which JavaScript does not: only digits, a point and an
-    // exponent are let through, with a digit before the exponent.
-    let mantissa = body.split(['e', 'E']).next().unwrap_or_default();
-    let decimal = body
-        .chars()
-        .all(|each| each.is_ascii_digit() || matches!(each, '.' | 'e' | 'E' | '+' | '-'))
-        && mantissa.chars().any(|each| each.is_ascii_digit())
-        && !body.starts_with(['+', '-']);
-    if !decimal {
-        return f64::NAN;
-    }
-    body.parse::<f64>().map_or(f64::NAN, |value| sign * value)
 }
 
 /// Whether an element itself, its ancestors aside, is hidden from a screen reader: hidden by its
@@ -455,7 +395,7 @@ mod tests {
 
     use super::{
         AttributeValue, NON_INTERACTIVE_ROLES, attribute_value, interactive_roles,
-        is_hidden_from_screen_reader, is_inherently_interactive_element, is_js_space, to_number,
+        is_hidden_from_screen_reader, is_inherently_interactive_element,
     };
     use crate::template::tree::{Element, Node, parse};
 
@@ -571,26 +511,5 @@ mod tests {
         let ancestors = [&parsed.nodes[0]];
         assert!(is_hidden_from_screen_reader(&allocator, inner, &ancestors));
         assert!(!is_hidden_from_screen_reader(&allocator, inner, &[]));
-    }
-
-    #[test]
-    fn reads_a_number_as_javascript_does() {
-        // Our own cases, after ECMAScript's StringToNumber.
-        assert_eq!(to_number(" 12 "), 12.0);
-        assert_eq!(to_number(""), 0.0);
-        assert_eq!(to_number("-1.5e1"), -15.0);
-        assert_eq!(to_number(".5"), 0.5);
-        assert_eq!(to_number("0x1F"), 31.0);
-        assert_eq!(to_number("-Infinity"), f64::NEG_INFINITY);
-        for text in ["inf", "NaN", "1px", "0x", "-0x1", "+-1", "e5", "1e"] {
-            assert!(to_number(text).is_nan(), "{text}");
-        }
-    }
-
-    #[test]
-    fn reads_whitespace_as_javascript_does() {
-        assert!(is_js_space('\u{feff}') && is_js_space('\u{2009}'));
-        // NEL is whitespace for Rust, not for `\s`.
-        assert!(!is_js_space('\u{85}') && '\u{85}'.is_whitespace());
     }
 }

@@ -11,6 +11,7 @@ use oxc_span::GetSpan;
 
 use super::{Report, Template, TemplateRule, each_node, placed};
 use crate::finding::Fix;
+use crate::javascript::is_numeric;
 
 /// The rule and its option.
 pub struct Eqeqeq {
@@ -32,41 +33,6 @@ fn is_nil(expression: &Expression) -> bool {
         Expression::Identifier(name) => name.name == "undefined",
         _ => false,
     }
-}
-
-/// Whether a text is a number to JavaScript (`isNumeric`: `parseFloat` gives a number and
-/// `Number` a finite one): blank aside, an integer in hexadecimal, octal or binary, or a
-/// decimal with an optional sign, fraction and exponent, whitespace around.
-fn is_numeric(text: &str) -> bool {
-    let text = text.trim();
-    let radix = [
-        ("0x", 16),
-        ("0X", 16),
-        ("0o", 8),
-        ("0O", 8),
-        ("0b", 2),
-        ("0B", 2),
-    ];
-    for (prefix, base) in radix {
-        if let Some(digits) = text.strip_prefix(prefix) {
-            return !digits.is_empty() && digits.chars().all(|each| each.is_digit(base));
-        }
-    }
-    let unsigned = text.strip_prefix(['+', '-']).unwrap_or(text);
-    let (mantissa, exponent) = unsigned
-        .split_once(['e', 'E'])
-        .map_or((unsigned, None), |(mantissa, exponent)| {
-            (mantissa, Some(exponent))
-        });
-    let (whole, fraction) = mantissa.split_once('.').unwrap_or((mantissa, ""));
-    let digits = |part: &str| part.chars().all(|each| each.is_ascii_digit());
-    let mantissa_ok =
-        (!whole.is_empty() || !fraction.is_empty()) && digits(whole) && digits(fraction);
-    let exponent_ok = exponent.is_none_or(|exponent| {
-        let exponent = exponent.strip_prefix(['+', '-']).unwrap_or(exponent);
-        !exponent.is_empty() && digits(exponent)
-    });
-    mantissa_ok && exponent_ok && unsigned.parse::<f64>().is_ok_and(f64::is_finite)
 }
 
 /// Whether an expression is a string that is not a number (`isStringNonNumericValue`).
@@ -140,7 +106,7 @@ impl TemplateRule for Eqeqeq {
 
 #[cfg(test)]
 mod tests {
-    use super::{Eqeqeq, is_numeric};
+    use super::Eqeqeq;
     use crate::template::rules::tester::run;
 
     #[test]
@@ -159,15 +125,18 @@ mod tests {
     }
 
     #[test]
-    fn tells_a_number_as_javascript_does() {
-        // Our own cases: `Number` and `parseFloat` both give a finite number.
-        for numeric in ["3", " 3 ", "-1.5e3", ".5", "5.", "0x1F", "0b10"] {
-            assert!(is_numeric(numeric), "{numeric}");
-        }
-        for text in [
-            "", " ", "null", "3abc", "Infinity", "1e", "0x", "inf", "1_0", "+",
-        ] {
-            assert!(!is_numeric(text), "{text}");
-        }
+    fn fixes_a_comparison_with_a_string_only_when_it_is_no_number() {
+        let fixed = |text: &str| {
+            crate::template::lint_text("a.component.html", text)
+                .iter()
+                .map(|finding| finding.fix.is_some())
+                .collect::<Vec<_>>()
+        };
+
+        // Our own cases: `'x'` is no number, fixed; `'3'` and `'\u{feff}3'` are, as
+        // JavaScript trims U+FEFF, which Rust's `trim` keeps: a suggestion, not carried.
+        assert_eq!(fixed("{{ a == 'x' }}"), [true]);
+        assert_eq!(fixed("{{ a == '3' }}"), [false]);
+        assert_eq!(fixed("{{ a == '\u{feff}3' }}"), [false]);
     }
 }
