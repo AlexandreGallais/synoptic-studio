@@ -512,11 +512,12 @@ mod tests {
 
         // Own case: `display` (Recess's 19th) before `width` (74th). The comment on its own line
         // before the first `width` and the one on its line after it move with it; the two
-        // `width`s keep their order; the block's last declaration still has no `;`.
+        // `width`s keep their order; the block's last declaration takes a `;`, as postcss-sorting's
+        // `sortNode` forces it and the formatter writes it (AUD-060).
         assert_eq!(
             fixed(code),
             (
-                "a {\n  display: block;\n  /* why */\n  width: 1px; /* px */\n  width: 2px\n}\n"
+                "a {\n  display: block;\n  /* why */\n  width: 1px; /* px */\n  width: 2px;\n}\n"
                     .to_owned(),
                 1
             )

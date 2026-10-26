@@ -363,9 +363,11 @@ impl PropertiesOrder {
     /// sorted by their ranks in the flattened order, a prefixed form before the plain one, the
     /// unplaced ones last (first with `unspecified: "top"`), each keeping its rank among equals,
     /// the comments on their own lines before a declaration and on its line after it moving with
-    /// it; all of them written where the first of them was, the other nodes left in their order.
-    /// None when the block cannot be sorted, or when the new order would change what the sheet
-    /// means (`settle`, our own guard).
+    /// it; all of them written where the first of them was, the other nodes left in their order;
+    /// the block's last `;` forced, as `sortNode` forces it and the formatter writes it (our own
+    /// departure, AUD-060: `sortNodeProperties` keeps a last declaration without one). None when
+    /// the block cannot be sorted, or when the new order would change what the sheet means
+    /// (`settle`, our own guard).
     fn fix(&self, sheet: &Context, block: usize) -> Option<(usize, usize, String)> {
         /// A node sorted: its rank, its name and bare name, whether a declaration, its rank among
         /// equals and the node.
@@ -459,7 +461,7 @@ impl PropertiesOrder {
             }
         }
         let order = settle(sheet, block, &order)?;
-        rewrite(sheet, block, &order, false)
+        rewrite(sheet, block, &order, true)
     }
 
     /// Whether a declaration has an empty line before it, or before the comment just before it

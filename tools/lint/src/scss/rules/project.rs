@@ -180,7 +180,7 @@ fn scss_rules() -> Vec<Box<dyn SheetRule>> {
         Box::new(scss_at_rule_no_unknown::AtRuleNoUnknown::PROJECT),
         Box::new(scss_at_use_no_redundant_alias::AtUseNoRedundantAlias),
         Box::new(scss_at_use_no_unnamespaced::AtUseNoUnnamespaced),
-        Box::new(scss_block_no_redundant_nesting::BlockNoRedundantNesting),
+        Box::new(scss_block_no_redundant_nesting::BlockNoRedundantNesting::PROJECT),
         Box::new(scss_comment_no_empty::CommentNoEmpty),
         Box::new(scss_declaration_nested_properties::DeclarationNestedProperties::PROJECT),
         Box::new(scss_dimension_no_non_numeric_values::DimensionNoNonNumericValues),

@@ -41,3 +41,41 @@ fn succeeds_on_a_clean_tree_and_fails_on_a_finding() {
     assert!(!clean);
     assert!(!lint(&root, &[]).1);
 }
+
+/// A formatted sheet whose fixes move a declaration, drop an overridden longhand and join a
+/// redundant nesting.
+const UNSORTED: &str = ".a {\n  color: var(--c);\n  margin-top: 0;\n  margin: 8px;\n  display: block;\n\n  .d {\n    .e {\n      display: none;\n    }\n  }\n}\n";
+
+#[cfg(unix)]
+#[test]
+fn leaves_a_formatted_sheet_formatted_once_fixed() {
+    let root = std::env::temp_dir().join(format!("lint-cli-format-{}", std::process::id()));
+    let project = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../..");
+    let _ = fs::remove_dir_all(&root);
+    fs::create_dir_all(root.join("playground")).unwrap_or_default();
+    let sheet = root.join("playground/a.scss");
+    fs::write(&sheet, UNSORTED).unwrap_or_default();
+
+    let _ = test_support::command(env!("CARGO_BIN_EXE_lint"))
+        .args(["--fix", "playground"])
+        .current_dir(&root)
+        .output();
+    let fixed = fs::read_to_string(&sheet).unwrap_or_default();
+    let oxfmt = test_support::command(project.join("node_modules/.bin/oxfmt"))
+        .arg("--list-different")
+        .arg("-c")
+        .arg(project.join(".oxfmtrc.json"))
+        .arg("playground/a.scss")
+        .current_dir(&root)
+        .output()
+        .unwrap_or_else(|error| panic!("cannot run oxfmt: {error}"));
+
+    // `display` (Recess's 19th) first, `margin-top` dropped under `margin`, `color` last; `.e`'s
+    // content one level up: nothing left for oxfmt to change.
+    assert_eq!(
+        fixed,
+        ".a {\n  display: block;\n  margin: 8px;\n  color: var(--c);\n\n  .d .e {\n    display: none;\n  }\n}\n"
+    );
+    assert_eq!(String::from_utf8_lossy(&oxfmt.stdout), "");
+    assert!(oxfmt.status.success());
+}
