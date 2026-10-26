@@ -1,5 +1,5 @@
 //! The rules the project runs on its style sheets, each with its configuration (EN-167): the 62
-//! of Stylelint and the 39 of stylelint-scss the catalogue keeps, in the catalogue's order, the two
+//! of Stylelint and the 40 of stylelint-scss the catalogue keeps, in the catalogue's order, the two
 //! of stylelint-order with the Recess order (EN-168), and
 //! the files where a rule is off. The colours come from the tokens (the Product Owner's
 //! preference): a hexadecimal colour, a named one or a colour function is refused everywhere but
@@ -39,15 +39,15 @@ use super::{
     scss_dimension_no_non_numeric_values, scss_dollar_variable_empty_line_before,
     scss_dollar_variable_no_missing_interpolation, scss_dollar_variable_no_namespaced_assignment,
     scss_double_slash_comment_empty_line_before, scss_double_slash_comment_whitespace_inside,
-    scss_function_calculation_no_interpolation, scss_map_keys_quotes,
-    scss_no_duplicate_dollar_variables, scss_no_duplicate_load_rules, scss_no_duplicate_mixins,
-    scss_no_global_function_names, scss_no_unused_private_members, scss_property_no_unknown,
-    scss_selector_class_pattern, selector_anb_no_unmatchable, selector_id_pattern, selector_max_id,
-    selector_no_deprecated, selector_no_vendor_prefix, selector_not_notation,
-    selector_pseudo_class_no_unknown, selector_pseudo_element_colon_notation,
-    selector_pseudo_element_no_unknown, selector_type_case, selector_type_no_unknown,
-    shorthand_property_no_redundant_values, unit_no_unknown, value_keyword_case,
-    value_no_vendor_prefix,
+    scss_function_calculation_no_interpolation, scss_function_disallowed_list,
+    scss_map_keys_quotes, scss_no_duplicate_dollar_variables, scss_no_duplicate_load_rules,
+    scss_no_duplicate_mixins, scss_no_global_function_names, scss_no_unused_private_members,
+    scss_property_no_unknown, scss_selector_class_pattern, selector_anb_no_unmatchable,
+    selector_id_pattern, selector_max_id, selector_no_deprecated, selector_no_vendor_prefix,
+    selector_not_notation, selector_pseudo_class_no_unknown,
+    selector_pseudo_element_colon_notation, selector_pseudo_element_no_unknown, selector_type_case,
+    selector_type_no_unknown, shorthand_property_no_redundant_values, unit_no_unknown,
+    value_keyword_case, value_no_vendor_prefix,
 };
 
 /// The tokens' files, where colours are written (the design tokens of EN-169).
@@ -62,6 +62,7 @@ pub const COLOUR_RULES: &[&str] = &[
     "stylelint/color-named",
     "stylelint/color-no-hex",
     "stylelint/function-disallowed-list",
+    "scss/function-disallowed-list",
 ];
 
 /// The rules the sheets written before the tokens are spared until their restyling (US-092): the
@@ -70,6 +71,7 @@ pub const BEFORE_TOKENS_RULES: &[&str] = &[
     "stylelint/color-named",
     "stylelint/color-no-hex",
     "stylelint/function-disallowed-list",
+    "scss/function-disallowed-list",
     "stylelint/selector-max-id",
 ];
 
@@ -189,6 +191,7 @@ fn scss_rules() -> Vec<Box<dyn SheetRule>> {
         Box::new(scss_double_slash_comment_empty_line_before::DoubleSlashCommentEmptyLineBefore::project()),
         Box::new(scss_double_slash_comment_whitespace_inside::DoubleSlashCommentWhitespaceInside::PROJECT),
         Box::new(scss_function_calculation_no_interpolation::FunctionCalculationNoInterpolation),
+        Box::new(scss_function_disallowed_list::FunctionDisallowedList::project()),
         Box::new(ColorFunctions { colour: Colour::Channel }),
         Box::new(ColorFunctions { colour: Colour::Relative }),
         Box::new(QuoteFunctions { quoting: Quoting::Quote }),
@@ -221,14 +224,14 @@ mod tests {
         names.sort_unstable();
         names.dedup();
 
-        // 62 of Stylelint, 39 of stylelint-scss, 2 of stylelint-order.
-        assert_eq!((count, names.len()), (103, 103));
+        // 62 of Stylelint, 40 of stylelint-scss, 2 of stylelint-order.
+        assert_eq!((count, names.len()), (104, 104));
         assert_eq!(
             names
                 .iter()
                 .filter(|name| name.starts_with("scss/"))
                 .count(),
-            39
+            40
         );
     }
 

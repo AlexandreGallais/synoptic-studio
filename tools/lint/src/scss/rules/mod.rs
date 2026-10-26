@@ -85,6 +85,7 @@ pub mod scss_dollar_variable_no_namespaced_assignment;
 pub mod scss_double_slash_comment_empty_line_before;
 pub mod scss_double_slash_comment_whitespace_inside;
 pub mod scss_function_calculation_no_interpolation;
+pub mod scss_function_disallowed_list;
 pub mod scss_load_rules;
 pub mod scss_map_keys_quotes;
 pub mod scss_no_duplicate_dollar_variables;

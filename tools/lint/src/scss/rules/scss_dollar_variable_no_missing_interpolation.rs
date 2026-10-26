@@ -161,7 +161,8 @@ const NATIVE_FUNCTIONS: &[&str] = &[
 ];
 
 /// Whether a function is CSS's own.
-fn is_native(name: &str) -> bool {
+#[must_use]
+pub fn is_native(name: &str) -> bool {
     NATIVE_FUNCTIONS.contains(&name)
 }
 
