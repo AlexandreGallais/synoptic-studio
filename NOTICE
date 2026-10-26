@@ -83,3 +83,5 @@ of, the packages below, each under its licence; the full texts are in THIRD-PART
 - jest-preset-stylelint 9.2.0, MIT: Copyright (c) 2018 - present stylelint
 - stylelint-config-recess-order 7.9.0, ISC: Copyright Jeff Nelson; its property groups
   (`groups.js`), copied as data and into the tests, under the same licence
+- stylelint-order 8.1.2, MIT: Copyright 2016–present Aleks Hudochenkov <aleks@hudochenkov.com>;
+  its test cases, from stylelint-order's repository at the tag 8.1.2, under the same licence

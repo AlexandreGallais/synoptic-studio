@@ -6,10 +6,6 @@
  */
 
 :root {
-  color-scheme: light dark;
-  font-family: system-ui, sans-serif;
-  font-size: 15px;
-
   --accent: #4a7bd0;
   --accent-soft: #4a7bd022;
   --line: #8884;
@@ -18,6 +14,9 @@
   --muted: light-dark(#666, #999);
   --radius: 0.6rem;
   --shadow: 0 4px 16px #0003;
+  font-family: system-ui, sans-serif;
+  font-size: 15px;
+  color-scheme: light dark;
 }
 
 /* Side by side: the drawing, the options, the pipeline when shown;
@@ -160,10 +159,10 @@ body {
   display: flex;
   gap: 0.75rem;
   padding: 0.35rem;
-  transform: translateX(-50%);
   background: var(--panel);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
+  transform: translateX(-50%);
 }
 
 #toolbar [role="group"] {
@@ -185,10 +184,10 @@ body {
   padding: 0 0.7rem;
   font: inherit;
   color: inherit;
+  cursor: pointer;
   background: none;
   border: none;
   border-radius: 0.4rem;
-  cursor: pointer;
 }
 
 #toolbar button:hover {
@@ -203,8 +202,8 @@ body {
 /* Undo and Redo, disabled while there is nothing to undo or redo. */
 #toolbar button:disabled {
   cursor: default;
-  opacity: 0.4;
   background: none;
+  opacity: 0.4;
 }
 
 #history-size,
@@ -223,8 +222,8 @@ body {
 }
 
 #history-steps-box summary {
-  cursor: pointer;
   white-space: nowrap;
+  cursor: pointer;
 }
 
 #history-list {
@@ -233,8 +232,8 @@ body {
   left: 0;
   z-index: 1;
   min-width: 11rem;
-  margin: 0;
   padding: 0.35rem;
+  margin: 0;
   list-style: none;
   background: var(--panel);
   border-radius: var(--radius);
@@ -252,8 +251,8 @@ body {
 }
 
 #history-list button[data-place="future"] {
-  color: var(--muted);
   font-style: italic;
+  color: var(--muted);
 }
 
 #history-list .history-left-out {
@@ -270,8 +269,8 @@ body {
 
 #zoom-box summary {
   min-width: 4.2rem;
-  cursor: pointer;
   white-space: nowrap;
+  cursor: pointer;
 }
 
 #zoom-menu {
@@ -327,8 +326,8 @@ body {
 }
 
 aside {
-  flex: 0 0 20rem;
   box-sizing: border-box;
+  flex: 0 0 20rem;
   padding: 1rem;
   overflow: auto;
   background: var(--panel);
@@ -350,21 +349,21 @@ aside h1 {
 
 aside section,
 aside fieldset {
-  margin: 0 0 0.75rem;
   padding: 0.6rem 0.75rem;
+  margin: 0 0 0.75rem;
   border: 1px solid var(--line);
   border-radius: var(--radius);
 }
 
 aside h2,
 aside legend {
-  margin: 0 0 0.3rem;
   padding: 0;
+  margin: 0 0 0.3rem;
   font-size: 0.75rem;
   font-weight: 600;
-  letter-spacing: 0.04em;
   color: var(--muted);
   text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 /* Two fields side by side (width and height, x and y). */
@@ -389,8 +388,8 @@ label {
   box-sizing: border-box;
   width: 2.1rem;
   height: 2.1rem;
-  margin-block: 0.35rem;
   padding: 0;
+  margin-block: 0.35rem;
   cursor: pointer;
 }
 
@@ -406,8 +405,8 @@ label {
   display: inline-flex;
   align-items: center;
   min-height: 2.1rem;
-  margin: 0;
   padding: 0 0.7rem;
+  margin: 0;
   cursor: pointer;
   border: 1px solid var(--line);
   border-radius: 0.35rem;
@@ -440,8 +439,8 @@ label {
 
 /* The faces a drawing does not embed, one per line. */
 #font-left-out {
-  margin: 0.35rem 0;
   padding-left: 1.1rem;
+  margin: 0.35rem 0;
 }
 
 .color-message {
@@ -538,8 +537,8 @@ label {
   box-sizing: border-box;
   display: block;
   width: 100%;
-  margin-top: 0.2rem;
   padding: 0.3rem 0.4rem;
+  margin-top: 0.2rem;
   font: inherit;
   border: 1px solid var(--line);
   border-radius: 0.35rem;
@@ -555,8 +554,8 @@ input[data-number-field] {
   display: block;
   width: 100%;
   height: 2.1rem;
-  margin-top: 0.2rem;
   padding: 0.3rem 0.4rem;
+  margin-top: 0.2rem;
   font: inherit;
   border: 1px solid var(--line);
   border-radius: 0.35rem;
@@ -633,13 +632,13 @@ input[aria-invalid="true"] {
   margin: 0.75rem 0 0.25rem;
   font-size: 0.75rem;
   font-weight: 600;
-  letter-spacing: 0.04em;
   color: var(--muted);
   text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 pre {
   font-size: 0.75rem;
-  white-space: pre-wrap;
   word-break: break-all;
+  white-space: pre-wrap;
 }

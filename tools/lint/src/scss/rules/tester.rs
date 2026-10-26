@@ -673,6 +673,17 @@ struct Found {
     scope: Option<(usize, usize)>,
 }
 
+/// The line, column and message of each report of a rule on a code, in order, for a test's own
+/// cases; none when the code does not read.
+#[must_use]
+pub fn reports(rule: &dyn SheetRule, code: &str) -> Vec<(usize, usize, String)> {
+    lint(rule, code)
+        .unwrap_or_default()
+        .into_iter()
+        .map(|found| (found.placed.1.0, found.placed.1.1, found.placed.0))
+        .collect()
+}
+
 /// The reports of a rule on a code, placed, in order; `None` when the code does not read.
 fn lint(rule: &dyn SheetRule, code: &str) -> Option<Vec<Found>> {
     let sheet = parse(code).ok()?;

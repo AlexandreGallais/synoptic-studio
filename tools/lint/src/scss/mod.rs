@@ -163,11 +163,18 @@ mod tests {
                 ("scss/property-no-unknown", 5, 3),
                 ("stylelint/color-named", 5, 9),
                 // The unit, after its number.
+                // `width` (Recess's 74th) after `color` (179th), `colr` unplaced (EN-168).
+                ("order/properties-order", 6, 3),
                 ("stylelint/unit-no-unknown", 6, 11),
                 ("stylelint/color-named", 7, 10),
                 ("stylelint/declaration-no-important", 7, 15),
                 ("stylelint/no-duplicate-selectors", 10, 1),
                 ("stylelint/max-nesting-depth", 18, 9),
+                // Each declaration after the rule nested before it (EN-168).
+                ("order/order", 22, 9),
+                ("order/order", 25, 7),
+                ("order/order", 28, 5),
+                ("order/order", 31, 3),
                 ("scss/at-rule-no-unknown", 34, 1),
             ]
         );
