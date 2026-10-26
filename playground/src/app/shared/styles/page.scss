@@ -1,6 +1,9 @@
-// The page's style, as `index.html` held it before the page moved into Angular (EN-160): global,
-// the app's `styles` entry in `angular.json`, for its rules cross the layout components, until the
-// zones are restyled after Figma (F56). A component's own style stays in its `.scss`, encapsulated.
+/*
+ * The page's style, as `index.html` held it before the page moved into Angular (EN-160): global,
+ * the app's `styles` entry in `angular.json`, for its rules cross the layout components, until the
+ * zones are restyled after Figma (F56). A component's own style stays in its `.scss`, encapsulated.
+ * Plain CSS, so that the tests' `loadPage` puts it in the head as it is (EN-162).
+ */
 
 :root {
   color-scheme: light dark;

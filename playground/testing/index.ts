@@ -20,6 +20,7 @@ export * from "./metrics-table-fixtures";
 export * from "./name-table-fixtures";
 export * from "./open-on-hexagon";
 export * from "./open-page";
+export * from "./page-style-fixtures";
 export * from "./press-and-click";
 export * from "./press-key";
 export * from "./press-pointer";
