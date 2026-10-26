@@ -13,14 +13,19 @@ pub mod attributes_order;
 pub mod ax_objects;
 pub mod banana_in_box;
 pub mod button_has_type;
+pub mod click_events_have_key_events;
 pub mod conditional_complexity;
 pub mod cyclomatic_complexity;
 pub mod dom;
 pub mod elements_content;
 pub mod eqeqeq;
+pub mod interactive_supports_focus;
 pub mod label_has_associated_control;
+pub mod mouse_events_have_key_events;
 pub mod no_any;
+pub mod no_autofocus;
 pub mod no_call_expression;
+pub mod no_distracting_elements;
 pub mod no_duplicate_attributes;
 pub mod no_empty_control_flow;
 pub mod no_inline_styles;
@@ -29,6 +34,7 @@ pub mod no_negated_async;
 pub mod no_nested_tags;
 pub mod no_non_null_assertion;
 pub mod no_outerhtml;
+pub mod no_positive_tabindex;
 pub mod prefer_at_else;
 pub mod prefer_at_empty;
 pub mod prefer_built_in_pipes;
@@ -43,6 +49,7 @@ pub mod prefer_template_literal;
 pub mod r3;
 pub mod require_switch_default;
 pub mod role_has_required_aria;
+pub mod table_scope;
 #[cfg(test)]
 pub mod tester;
 pub mod use_track_by_function;
@@ -738,19 +745,25 @@ pub fn reports(rule: &dyn TemplateRule, path: &str, text: &str, nodes: &[Node]) 
     found
 }
 
-/// The rules, in the order of their names, as the project runs them.
+/// The rules, in the order of their names, as the project runs them: every module's but
+/// `no_call_expression`, off by the Product Owner's choice (a signal read in a template is a
+/// call), its module and tests kept.
 pub const RULES: &[&dyn TemplateRule] = &[
     &alt_text::AltText,
     &attributes_order::AttributesOrder::PROJECT,
     &banana_in_box::BananaInBox,
     &button_has_type::ButtonHasType::PROJECT,
+    &click_events_have_key_events::ClickEventsHaveKeyEvents::PROJECT,
     &conditional_complexity::ConditionalComplexity::PROJECT,
     &cyclomatic_complexity::CyclomaticComplexity::PROJECT,
     &elements_content::ElementsContent::PROJECT,
     &eqeqeq::Eqeqeq::PROJECT,
+    &interactive_supports_focus::InteractiveSupportsFocus::PROJECT,
     &label_has_associated_control::LabelHasAssociatedControl::PROJECT,
+    &mouse_events_have_key_events::MouseEventsHaveKeyEvents,
     &no_any::NoAny,
-    &no_call_expression::NoCallExpression::PROJECT,
+    &no_autofocus::NoAutofocus,
+    &no_distracting_elements::NoDistractingElements,
     &no_duplicate_attributes::NoDuplicateAttributes::PROJECT,
     &no_empty_control_flow::NoEmptyControlFlow,
     &no_inline_styles::NoInlineStyles::PROJECT,
@@ -759,6 +772,7 @@ pub const RULES: &[&dyn TemplateRule] = &[
     &no_nested_tags::NoNestedTags,
     &no_non_null_assertion::NoNonNullAssertion,
     &no_outerhtml::NoOuterhtml,
+    &no_positive_tabindex::NoPositiveTabindex,
     &prefer_at_else::PreferAtElse,
     &prefer_at_empty::PreferAtEmpty,
     &prefer_built_in_pipes::PreferBuiltInPipes::PROJECT,
@@ -772,6 +786,7 @@ pub const RULES: &[&dyn TemplateRule] = &[
     &prefer_template_literal::PreferTemplateLiteral,
     &require_switch_default::RequireSwitchDefault,
     &role_has_required_aria::RoleHasRequiredAria,
+    &table_scope::TableScope,
     &use_track_by_function::UseTrackByFunction::PROJECT,
     &valid_aria::ValidAria,
 ];
