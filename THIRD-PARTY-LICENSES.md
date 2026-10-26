@@ -37,6 +37,9 @@ The project's tools (`tools/`) port code from, or copy test cases of, the packag
 | `axobject-query` | 4.1.0 | Apache-2.0 | its accessibility objects (`AXObjects`), their roles (`AXObjectRoles`) and the building of `elementAXObjects`, in `tools/lint/src/template/rules/ax_objects.rs` |
 | `@typescript-eslint/rule-tester` | 8.71.0 | MIT | how `RuleTester` checks a case (its errors, messages, places and passes of fixes), followed in `tools/lint/src/template/rules/tester.rs` |
 | `html-validate` | 11.17.0 | MIT | the rules the catalogue keeps, ported to `tools/lint/src/template/html/rules/`, with their element metadata (`src/elements/html5.ts`), its validator (`src/meta/`), the helpers of its rules (`src/rules/helper/`: `a11y`, `has-accessible-name`, `text`, `is-focusable`, `aria-naming`, `is-keyword-ignored`, `case-style`), its patterns (`src/pattern.ts`) and the selectors they match, in `tools/lint/src/template/html/`; the test files of those rules, and the element test files with their snapshot (`test-files/elements/`, `src/elements/__snapshots__/html5.spec.ts.snap`), copied into `tools/lint/tests/fixtures/templates/html-validate/` |
+| `postcss` | 8.5.30 | MIT | its parser (`lib/parser.js`), ported to `tools/lint/src/scss/parser.rs` |
+| `postcss-scss` | 4.0.9 | MIT | its tokenizer and the overrides of its parser, ported to `tools/lint/src/scss/tokenizer.rs` and `parser.rs`, with the cases of its tests |
+| `postcss-value-parser` | 4.2.0 | MIT | its reading of a value and of a number's unit, ported to `tools/lint/src/scss/value.rs`; its test files `test/parse.js` and `test/unit.js`, copied into `tools/lint/tests/fixtures/scss/postcss-value-parser/` |
 
 ## eslint-plugin-unicorn 78.0.0
 
@@ -1149,4 +1152,87 @@ FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
 COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
 IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+```
+
+## postcss 8.5.30
+
+From `https://registry.npmjs.org/postcss/-/postcss-8.5.30.tgz`, `package/LICENSE`, read on 2026-10-26.
+
+```text
+The MIT License (MIT)
+
+Copyright 2013 Andrey Sitnik <andrey@sitnik.es>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+the Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+```
+
+## postcss-scss 4.0.9
+
+From `https://registry.npmjs.org/postcss-scss/-/postcss-scss-4.0.9.tgz`, `package/LICENSE`, read on 2026-10-26; the cases of its tests (`test/parse.test.js`, `test/tokenize.test.js`, `test/location.test.js`) come from the repository postcss-scss at the tag 4.0.9, under the same licence.
+
+```text
+The MIT License (MIT)
+
+Copyright 2013 Andrey Sitnik <andrey@sitnik.ru>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+the Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+```
+
+## postcss-value-parser 4.2.0
+
+From `https://registry.npmjs.org/postcss-value-parser/-/postcss-value-parser-4.2.0.tgz`, `package/LICENSE`, read on 2026-10-26; its test files `test/parse.js` and `test/unit.js` come from the repository postcss-value-parser at the tag v4.2.0, under the same licence.
+
+```text
+Copyright (c) Bogdan Chadkin <trysound@yandex.ru>
+
+Permission is hereby granted, free of charge, to any person
+obtaining a copy of this software and associated documentation
+files (the "Software"), to deal in the Software without
+restriction, including without limitation the rights to use,
+copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the
+Software is furnished to do so, subject to the following
+conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+OTHER DEALINGS IN THE SOFTWARE.
 ```

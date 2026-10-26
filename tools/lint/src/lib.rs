@@ -4,7 +4,8 @@
 //! the files are spread over the machine's threads. A Markdown page is parsed into its own tree
 //! and read by the Markdown rules (`markdown`, EN-077); a component's template is read into its
 //! own tree, every expression parsed, and reported where it cannot be read (`template`, EN-163),
-//! then checked by the template rules (`template::rules`, EN-164).
+//! then checked by the template rules (`template::rules`, EN-164); a style sheet is read into its
+//! own tree as Stylelint reads SCSS, and reported where it cannot be read (`scss`, EN-167).
 
 pub mod deep_readonly;
 pub mod directives;
@@ -20,6 +21,7 @@ pub mod package;
 pub mod project;
 pub mod rules;
 pub mod scopes;
+pub mod scss;
 pub mod settings;
 pub mod source;
 pub mod template;
@@ -139,6 +141,9 @@ fn lint_path(project: &Project, path: &str, allocator: &Allocator) -> Vec<Findin
     }
     if template::is_template(path) {
         return template::lint_path(project, path);
+    }
+    if scss::is_sheet(path) {
+        return scss::lint_path(project, path);
     }
     let rules = rules::named(&scopes::linted_by(path));
     if rules.is_empty() {

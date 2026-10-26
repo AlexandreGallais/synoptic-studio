@@ -63,3 +63,8 @@ of, the packages below, each under its licence; the full texts are in THIRD-PART
   contributors
 - html-validate 11.17.0, MIT: Copyright (c) 2017 David Sveningsson <ext@sidvind.com>; its test
   cases, from html-validate's repository at the tag v11.17.0, under the same licence
+- postcss 8.5.30, MIT: Copyright 2013 Andrey Sitnik <andrey@sitnik.es>
+- postcss-scss 4.0.9, MIT: Copyright 2013 Andrey Sitnik <andrey@sitnik.ru>; its test cases, from
+  postcss-scss's repository at the tag 4.0.9, under the same licence
+- postcss-value-parser 4.2.0, MIT: Copyright (c) Bogdan Chadkin <trysound@yandex.ru>; its test
+  cases, from postcss-value-parser's repository at the tag v4.2.0, under the same licence
