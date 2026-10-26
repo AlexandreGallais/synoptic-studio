@@ -1,4 +1,4 @@
-//! The rules the project runs on its style sheets, each with its configuration (EN-167): the 61
+//! The rules the project runs on its style sheets, each with its configuration (EN-167): the 62
 //! of Stylelint and the 39 of stylelint-scss the catalogue keeps, in the catalogue's order, the two
 //! of stylelint-order with the Recess order (EN-168), and
 //! the files where a rule is off. The colours come from the tokens (the Product Owner's
@@ -42,7 +42,7 @@ use super::{
     scss_function_calculation_no_interpolation, scss_map_keys_quotes,
     scss_no_duplicate_dollar_variables, scss_no_duplicate_load_rules, scss_no_duplicate_mixins,
     scss_no_global_function_names, scss_no_unused_private_members, scss_property_no_unknown,
-    scss_selector_class_pattern, selector_anb_no_unmatchable, selector_id_pattern,
+    scss_selector_class_pattern, selector_anb_no_unmatchable, selector_id_pattern, selector_max_id,
     selector_no_deprecated, selector_no_vendor_prefix, selector_not_notation,
     selector_pseudo_class_no_unknown, selector_pseudo_element_colon_notation,
     selector_pseudo_element_no_unknown, selector_type_case, selector_type_no_unknown,
@@ -64,11 +64,20 @@ pub const COLOUR_RULES: &[&str] = &[
     "stylelint/function-disallowed-list",
 ];
 
+/// The rules the sheets written before the tokens are spared until their restyling (US-092): the
+/// colour rules, and `selector-max-id`, as the page's global style selects its zones by id.
+pub const BEFORE_TOKENS_RULES: &[&str] = &[
+    "stylelint/color-named",
+    "stylelint/color-no-hex",
+    "stylelint/function-disallowed-list",
+    "stylelint/selector-max-id",
+];
+
 /// Whether a rule runs on a sheet.
 #[must_use]
 pub fn applies(rule: &str, path: &str) -> bool {
-    !(COLOUR_RULES.contains(&rule)
-        && (crate::glob::matches_any(TOKEN_FILES, path) || BEFORE_TOKENS.contains(&path)))
+    !((COLOUR_RULES.contains(&rule) && crate::glob::matches_any(TOKEN_FILES, path))
+        || (BEFORE_TOKENS_RULES.contains(&rule) && BEFORE_TOKENS.contains(&path)))
 }
 
 /// The rules, built once.
@@ -131,6 +140,7 @@ fn core_rules() -> Vec<Box<dyn SheetRule>> {
         Box::new(rule_empty_line_before::RuleEmptyLineBefore::project()),
         Box::new(selector_anb_no_unmatchable::SelectorAnbNoUnmatchable),
         Box::new(selector_id_pattern::SelectorIdPattern::project()),
+        Box::new(selector_max_id::SelectorMaxId::project()),
         Box::new(selector_no_deprecated::SelectorNoDeprecated::PROJECT),
         Box::new(selector_no_vendor_prefix::SelectorNoVendorPrefix::PROJECT),
         Box::new(selector_not_notation::SelectorNotNotation::PROJECT),
@@ -210,8 +220,8 @@ mod tests {
         names.sort_unstable();
         names.dedup();
 
-        // 61 of Stylelint, 39 of stylelint-scss, 2 of stylelint-order.
-        assert_eq!((count, names.len()), (102, 102));
+        // 62 of Stylelint, 39 of stylelint-scss, 2 of stylelint-order.
+        assert_eq!((count, names.len()), (103, 103));
         assert_eq!(
             names
                 .iter()
@@ -241,6 +251,26 @@ mod tests {
         ));
         assert!(!applies(
             "stylelint/color-no-hex",
+            "playground/src/app/shared/styles/page.scss"
+        ));
+    }
+
+    #[test]
+    fn refuses_ids_everywhere_but_in_the_page_s_global_style_until_us_092() {
+        assert!(applies(
+            "stylelint/selector-max-id",
+            "playground/src/app/app.component.scss"
+        ));
+        assert!(applies(
+            "stylelint/selector-max-id",
+            "playground/src/styles/_tokens.scss"
+        ));
+        assert!(!applies(
+            "stylelint/selector-max-id",
+            "playground/src/app/shared/styles/page.scss"
+        ));
+        assert!(applies(
+            "stylelint/declaration-no-important",
             "playground/src/app/shared/styles/page.scss"
         ));
     }

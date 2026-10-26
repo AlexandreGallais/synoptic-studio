@@ -99,6 +99,7 @@ pub mod scss_selector_class_pattern;
 pub mod scss_selectors;
 pub mod selector_anb_no_unmatchable;
 pub mod selector_id_pattern;
+pub mod selector_max_id;
 pub mod selector_no_deprecated;
 pub mod selector_no_vendor_prefix;
 pub mod selector_not_notation;
