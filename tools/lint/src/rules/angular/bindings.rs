@@ -4,10 +4,9 @@
 //! `inputs` and `outputs` metadata.
 
 use oxc_ast::ast::{
-    Argument, ArrayExpressionElement, Class, ClassElement, Decorator, Expression,
+    Argument, ArrayExpressionElement, CallExpression, Class, ClassElement, Decorator, Expression,
     MethodDefinitionKind, ObjectExpression, PropertyKey,
 };
-use oxc_span::GetSpan;
 
 use super::classes::{called_name, key_identifier};
 use super::metadata::{class_decorator_of, decorator_properties, names_metadata, properties};
@@ -117,11 +116,14 @@ fn call_aliases<'a>(arguments: &[Argument<'a>], strings: bool) -> Vec<Written<'a
         .collect()
 }
 
-/// Whether a value calls a signal function: `input(…)`, `input.required(…)` or `output(…)`.
-fn signal_call<'b, 'a>(
+/// The call of a signal function a value makes, `input(…)`, `input.required(…)` or `output(…)`,
+/// with the place of its options among the call's arguments: `input(initial, options)`,
+/// `input.required(options)`, `output(options)`.
+#[must_use]
+pub fn signal_call<'b, 'a>(
     value: &'b Expression<'a>,
     direction: Direction,
-) -> Option<&'b [Argument<'a>]> {
+) -> Option<(&'b CallExpression<'a>, usize)> {
     let Expression::CallExpression(call) = value else {
         return None;
     };
@@ -129,16 +131,21 @@ fn signal_call<'b, 'a>(
         Direction::Input => "input",
         Direction::Output => "output",
     };
-    let calls = match &call.callee {
-        Expression::Identifier(callee) => callee.name == function,
-        Expression::StaticMemberExpression(member) => {
-            direction == Direction::Input
+    let options = match &call.callee {
+        Expression::Identifier(callee) if callee.name == function => match direction {
+            Direction::Input => Some(1),
+            Direction::Output => Some(0),
+        },
+        Expression::StaticMemberExpression(member)
+            if direction == Direction::Input
                 && member.property.name == "required"
-                && matches!(&member.object, Expression::Identifier(object) if object.name == "input")
+                && matches!(&member.object, Expression::Identifier(object) if object.name == "input") =>
+        {
+            Some(0)
         }
-        _ => false,
+        _ => None,
     };
-    calls.then_some(call.arguments.as_slice())
+    options.map(|index| (&**call, index))
 }
 
 /// The aliases a member's binding gives (`INPUT_ALIAS`, `OUTPUT_ALIAS`): the strings and the
@@ -155,8 +162,8 @@ pub fn aliases<'a>(member: &Member<'_, 'a>, direction: Direction) -> Vec<Written
     {
         found.extend(call_aliases(&call.arguments, true));
     }
-    if let Some(arguments) = member.value.and_then(|value| signal_call(value, direction)) {
-        found.extend(call_aliases(arguments, false));
+    if let Some((call, _)) = member.value.and_then(|value| signal_call(value, direction)) {
+        found.extend(call_aliases(&call.arguments, false));
     }
     found
 }
@@ -296,12 +303,6 @@ pub fn alias_allowed(
             || (direction == Direction::Input && selectors.1.as_deref() == Some(alias))
             || format!("{selector}{capitalised}") == alias
     })
-}
-
-/// The start of a member's key.
-#[must_use]
-pub fn key_start(member: &Member) -> u32 {
-    member.key.span().start
 }
 
 /// Every name an output of a class is bound by, in the order of the code: its `outputs`

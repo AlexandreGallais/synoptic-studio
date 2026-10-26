@@ -122,20 +122,6 @@ pub fn implemented_names<'a>(class: &Class<'a>) -> Vec<&'a str> {
         .collect()
 }
 
-/// The text of a string or of a template's first part, as the selectors'
-/// `:matches(Literal, TemplateElement)` read it.
-#[must_use]
-pub fn literal_text<'a>(expression: &Expression<'a>) -> Option<&'a str> {
-    match expression {
-        Expression::StringLiteral(literal) => Some(literal.value.as_str()),
-        Expression::TemplateLiteral(template) => template
-            .quasis
-            .first()
-            .map(|quasi| quasi.value.raw.as_str()),
-        _ => None,
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use oxc_allocator::Allocator;
@@ -143,7 +129,7 @@ mod tests {
     use oxc_parser::Parser;
     use oxc_span::SourceType;
 
-    use super::{class_decorator, decorator_property, literal_text, metadata_property};
+    use super::{class_decorator, decorator_property, metadata_property};
 
     #[test]
     fn reads_a_class_decorator_s_metadata_by_its_keys() {
@@ -163,7 +149,5 @@ mod tests {
         // `metadataProperty` reads strings and templates, never a computed identifier.
         assert!(metadata_property(decorator, "styles").is_some());
         assert!(metadata_property(decorator, "host").is_some());
-        let styles = metadata_property(decorator, "styles").expect("styles");
-        assert_eq!(literal_text(&styles.value), Some("b"));
     }
 }

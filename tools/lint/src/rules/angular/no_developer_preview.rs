@@ -4,7 +4,7 @@
 
 use oxc_semantic::AstNode;
 
-use super::tagged_use::tagged_use;
+use super::tagged_use::{report_unread_declarations, tagged_use};
 use crate::finding::Finding;
 use crate::rules::Rule;
 use crate::source::Source;
@@ -22,6 +22,7 @@ impl Rule for NoDeveloperPreview {
     }
 
     fn check_node(&self, node: &AstNode, source: &Source, findings: &mut Vec<Finding>) {
+        report_unread_declarations(source, node, self.name(), findings);
         if let Some((name, at)) = tagged_use(source, node, "developerPreview") {
             findings.push(source.finding(
                 self.name(),
@@ -99,10 +100,16 @@ mod tests {
             ),
             []
         );
-        // A package not installed, or not Angular's, is not read.
+        // An Angular package whose declarations cannot be read is reported at its specifier:
+        // `import { previewFunction } from ` is 32 columns, the quote at 33; a package not
+        // Angular's is not read.
         assert_eq!(
             at("import { previewFunction } from '@angular/common';\npreviewFunction();\n"),
-            []
+            [(
+                1,
+                33,
+                "The declarations of `@angular/common` cannot be read: install the packages (`npm ci --prefix playground`)".to_owned()
+            )]
         );
         assert_eq!(
             at("import { previewFunction } from './dev-preview';\npreviewFunction();\n"),

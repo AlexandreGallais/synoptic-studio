@@ -2,7 +2,8 @@
 //! 22.6.0, `utils/jsdoc.ts`): a name read, outside an import or an export, whose declaration
 //! carries a tag in its `JSDoc` block, a declaration of the file or one an Angular package exports
 //! (`declarations`). The plugin follows any symbol TypeScript resolves, a member of a typed object
-//! among them; the tree follows names only (`lint_rules`).
+//! among them; the tree follows names only (`lint_rules`). An import from an Angular package
+//! whose declarations cannot be read is reported, so that a missing install never passes silent.
 
 use oxc_ast::AstKind;
 use oxc_semantic::{AstNode, NodeId};
@@ -10,6 +11,7 @@ use oxc_span::GetSpan;
 
 use super::declarations::{entry_of, exported_tags};
 use crate::expressions::symbol;
+use crate::finding::Finding;
 use crate::source::Source;
 
 /// Whether a node sits in an import or an export, before any block, class, function, union or
@@ -96,6 +98,29 @@ pub fn tagged_use<'a>(
     tagged.then_some((name.name.as_str(), name.span.start))
 }
 
+/// Reports an import from an Angular package whose declarations cannot be read, at its
+/// specifier: a package not installed would leave its tags unread and the rule silent.
+pub fn report_unread_declarations(
+    source: &Source,
+    node: &AstNode,
+    rule: &'static str,
+    findings: &mut Vec<Finding>,
+) {
+    let AstKind::ImportDeclaration(import) = node.kind() else {
+        return;
+    };
+    let specifier = import.source.value.as_str();
+    if specifier.starts_with("@angular/") && entry_of(&source.folder(), specifier).is_none() {
+        findings.push(source.finding(
+            rule,
+            import.source.span.start,
+            format!(
+                "The declarations of `{specifier}` cannot be read: install the packages (`npm ci --prefix playground`)"
+            ),
+        ));
+    }
+}
+
 /// A project whose playground holds an `@angular/core` of declarations, for the rules' tests:
 /// `experimentalFunction` and `ExperimentalClass` tagged `@experimental`, `previewFunction` and
 /// `PreviewClass` (`Preview$1` in its chunk) `@developerPreview`, `regularFunction` neither.
@@ -112,8 +137,9 @@ pub fn angular_project() -> std::path::PathBuf {
     root
 }
 
-/// The plugin's cases of a name declared in the file with a tag, the same for both rules: the
-/// code, then the line, the column and the name of the one finding.
+/// The plugin's cases of a name declared in the file with a tag, `no-developer-preview`'s then
+/// the five `no-experimental` adds, run by both rules: the code, then the line, the column and
+/// the name of the one finding.
 #[cfg(test)]
 #[must_use]
 pub fn invalid_cases(tag: &str) -> Vec<(String, usize, usize, &'static str)> {
@@ -145,7 +171,7 @@ pub fn invalid_cases(tag: &str) -> Vec<(String, usize, usize, &'static str)> {
             16,
             "$localize2",
         ),
-        // Exported, the block before `export`.
+        // Ours: exported, the block before `export`.
         ("export function test() {}\ntest();", 1, "test"),
     ]
     .into_iter()
@@ -154,6 +180,48 @@ pub fn invalid_cases(tag: &str) -> Vec<(String, usize, usize, &'static str)> {
         let line = code.lines().count();
         (code, line, column, name)
     })
+    .chain(
+        [
+            // `no-experimental`'s own cases: the use on the line and at the column given.
+            (
+                "/** @TAG */\nvar test = true;\nconst value = test ? 'yes' : 'no';",
+                3,
+                15,
+                "test",
+            ),
+            // In a block: `  i++;` on line 4, `i` at 3.
+            (
+                "/** @TAG */\nlet i = 0;\nwhile(false) {\n  i++;\n}",
+                4,
+                3,
+                "i",
+            ),
+            // `await ` is 6 columns, the name at 7.
+            (
+                "/** @TAG */\nasync function test() {}\n\nawait test();",
+                4,
+                7,
+                "test",
+            ),
+            (
+                "/** @TAG */\nfunction test(param = ''): any {}\ntest()?.a()?.b();",
+                3,
+                1,
+                "test",
+            ),
+            // Another tag beside it.
+            (
+                "/** @TAG @deprecated */\nconst test = 'test';\nconst myString = test + '-suffix';",
+                3,
+                18,
+                "test",
+            ),
+        ]
+        .into_iter()
+        .map(|(code, line, column, name)| {
+            (format!("{}\n", code.replace("TAG", tag)), line, column, name)
+        }),
+    )
     .collect()
 }
 

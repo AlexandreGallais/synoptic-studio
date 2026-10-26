@@ -3,30 +3,17 @@
 //! The plugin's removal is a suggestion, never applied by `--fix`: none here.
 
 use oxc_ast::AstKind;
-use oxc_ast::ast::{Expression, PropertyKey, UnaryOperator};
+use oxc_ast::ast::{Expression, UnaryOperator};
 use oxc_semantic::AstNode;
 
 use super::classes::enclosing_decorators;
+use super::metadata::names_metadata;
 use crate::finding::Finding;
 use crate::rules::Rule;
 use crate::source::Source;
 
 /// The rule.
 pub struct NoPipeImpure;
-
-/// Whether a key names `pure` as the plugin's `metadataProperty('pure')` does: an identifier not
-/// computed, a string, or a template whose first part is `pure`.
-fn names_pure(key: &PropertyKey, computed: bool) -> bool {
-    match key {
-        PropertyKey::StaticIdentifier(key) => !computed && key.name == "pure",
-        PropertyKey::StringLiteral(key) => key.value == "pure",
-        PropertyKey::TemplateLiteral(key) => key
-            .quasis
-            .first()
-            .is_some_and(|quasi| quasi.value.raw == "pure"),
-        _ => false,
-    }
-}
 
 /// Whether a value is `false` or `!true`.
 fn is_false(value: &Expression) -> bool {
@@ -53,7 +40,7 @@ impl Rule for NoPipeImpure {
         let AstKind::ObjectProperty(property) = node.kind() else {
             return;
         };
-        if names_pure(&property.key, property.computed)
+        if names_metadata(property, "pure")
             && is_false(&property.value)
             && enclosing_decorators(source, node.id()).contains(&"Pipe")
         {
