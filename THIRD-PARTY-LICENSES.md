@@ -30,10 +30,11 @@ The project's tools (`tools/`) port code from, or copy test cases of, the packag
 | `structured-source` | 4.0.0 | BSD-2-Clause | its line and column of an index, in `tools/secret-scan/src/source.rs` |
 | `@angular-eslint/eslint-plugin` | 22.6.0 | MIT | its rules on the framework's bugs, the current form of each construct and the names, ported to `tools/lint/src/rules/angular/`, with the cases of their tests |
 | `@angular-eslint/utils` | 22.6.0 | MIT | its reading of Angular's decorators, lifecycle methods, metadata, bindings and selectors, ported to `tools/lint/src/rules/angular/classes.rs`, `metadata.rs`, `bindings.rs` and `selector_names.rs` |
-| `@angular-eslint/eslint-plugin-template` | 22.6.0 | MIT | the test cases of its template rules, copied into `tools/lint/tests/fixtures/templates/angular-eslint/` as the corpus the template reader is held to and the cases its rules pass; its template rules and their helpers (`get-original-attribute-name`, `has-ignored-directive`, `get-dom-elements`, `are-equivalent-asts`, `ast-types`, `literal-primitive`, `is-constant-expression`), ported to `tools/lint/src/template/rules/` |
+| `@angular-eslint/eslint-plugin-template` | 22.6.0 | MIT | the test cases of its template rules, copied into `tools/lint/tests/fixtures/templates/angular-eslint/` as the corpus the template reader is held to and the cases its rules pass; its template rules and their helpers (`get-original-attribute-name`, `has-ignored-directive`, `get-dom-elements`, `are-equivalent-asts`, `ast-types`, `literal-primitive`, `is-constant-expression`, and the accessibility ones: `get-attribute-value`, `is-hidden-from-screen-reader`, `is-presentation-role`, `is-content-editable`, `is-disabled-element`, `is-child-node-of`, `attributes-comparator`, `is-interactive-element`, `is-semantic-role-element`), ported to `tools/lint/src/template/rules/` |
 | `@angular-eslint/test-utils` | 22.6.0 | MIT | its cleaning of an annotated source and the places of its marks (`convertAnnotatedSourceToFailureCase`, `parseInvalidSource`), followed in `tools/lint/src/template/corpus.rs` |
 | `@angular/compiler` | 22.2.3 | MIT | its `CssSelector.parse`, ported to `tools/lint/src/rules/angular/selector_names.rs`; its template lexer and parser (`ml_parser`: the lexer, the tag definitions, the named entities, the tree builder), ported to `tools/lint/src/template/`; the grouping of a `@switch`'s cases (`createSwitchBlock`), the joining of connected blocks (`findConnectedBlocks`) and the spans of a `@for`'s aliases (`parseLetParameters`), in `tools/lint/src/template/rules/mod.rs` and `r3.rs` |
-| `aria-query` | 5.3.2 | Apache-2.0 | the names of the DOM's elements (`dom`), copied into `tools/lint/src/template/rules/dom.rs` |
+| `aria-query` | 5.3.2 | Apache-2.0 | the names of the DOM's elements (`dom`), copied into `tools/lint/src/template/rules/dom.rs`; its ARIA properties (`aria`) and roles (`roles`), and the building of `elementRoles`, in `tools/lint/src/template/rules/aria.rs` |
+| `axobject-query` | 4.1.0 | Apache-2.0 | its accessibility objects (`AXObjects`), their roles (`AXObjectRoles`) and the building of `elementAXObjects`, in `tools/lint/src/template/rules/ax_objects.rs` |
 | `@typescript-eslint/rule-tester` | 8.71.0 | MIT | how `RuleTester` checks a case (its errors, messages, places and passes of fixes), followed in `tools/lint/src/template/rules/tester.rs` |
 
 ## eslint-plugin-unicorn 78.0.0
@@ -884,7 +885,7 @@ THE SOFTWARE.
 
 ## aria-query 5.3.2
 
-From `https://registry.npmjs.org/aria-query/-/aria-query-5.3.2.tgz`, `package/LICENSE`, read on 2026-10-26; `src/domMap.js` comes from the repository aria-query at the tag v5.3.2, under the same licence.
+From `https://registry.npmjs.org/aria-query/-/aria-query-5.3.2.tgz`, `package/LICENSE`, read on 2026-10-26; `src/domMap.js` comes from the repository aria-query at the tag v5.3.2, the properties and roles from the tarball's `package/lib/`, under the same licence.
 
 ```text
 Apache License
@@ -1089,6 +1090,10 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 ```
+
+## axobject-query 4.1.0
+
+From `https://registry.npmjs.org/axobject-query/-/axobject-query-4.1.0.tgz`, `package/LICENSE`, read on 2026-10-26, its objects from the tarball's `package/lib/`: the text of `aria-query` 5.3.2 above, the same file.
 
 ## @typescript-eslint/rule-tester 8.71.0
 

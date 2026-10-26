@@ -6,13 +6,19 @@
 //! that does not read is reported under `lint/parse` instead. Each rule is tested on every case
 //! of its file of the plugin's tests (`tester`), counted.
 
+pub mod a11y;
+pub mod alt_text;
+pub mod aria;
 pub mod attributes_order;
+pub mod ax_objects;
 pub mod banana_in_box;
 pub mod button_has_type;
 pub mod conditional_complexity;
 pub mod cyclomatic_complexity;
 pub mod dom;
+pub mod elements_content;
 pub mod eqeqeq;
+pub mod label_has_associated_control;
 pub mod no_any;
 pub mod no_call_expression;
 pub mod no_duplicate_attributes;
@@ -36,13 +42,16 @@ pub mod prefer_style_binding;
 pub mod prefer_template_literal;
 pub mod r3;
 pub mod require_switch_default;
+pub mod role_has_required_aria;
 #[cfg(test)]
 pub mod tester;
 pub mod use_track_by_function;
+pub mod valid_aria;
 
 use oxc_allocator::Allocator;
 use oxc_ast::AstKind;
 use oxc_ast_visit::Visit;
+use regex::Regex;
 
 use super::bindings::{
     AttributeKind, TemplateBinding, Value, attribute_kind, block_parameters, interpolations,
@@ -461,6 +470,45 @@ fn interpolates(attribute: &Attribute) -> bool {
         .any(|token| token.kind == TokenType::AttrValueInterpolation && token.parts.len() == 3)
 }
 
+/// Whether a name matches an entry of `ignoreWithDirectives`: a pattern `/…/flags`, its `i`,
+/// `m` and `s` flags kept, or the name itself; a pattern Rust's `regex` cannot read matches
+/// nothing.
+fn matches_directive(entry: &str, name: &str) -> bool {
+    let pattern = entry
+        .strip_prefix('/')
+        .and_then(|rest| rest.rsplit_once('/'))
+        .filter(|(pattern, flags)| {
+            !pattern.is_empty() && flags.chars().all(|flag| flag.is_ascii_lowercase())
+        });
+    match pattern {
+        Some((pattern, flags)) => {
+            let inline: String = flags.chars().filter(|flag| "ims".contains(*flag)).collect();
+            let written = if inline.is_empty() {
+                pattern.to_owned()
+            } else {
+                format!("(?{inline}){pattern}")
+            };
+            Regex::new(&written).is_ok_and(|regex| regex.is_match(name))
+        }
+        None => entry == name,
+    }
+}
+
+/// Whether an element carries one of `ignoreWithDirectives` (a name, or a pattern written
+/// `/…/flags`) among its inputs and plain attributes (`createIgnoredDirectiveMatcher` of
+/// `src/utils/has-ignored-directive.ts` of `@angular-eslint/eslint-plugin-template` 22.6.0).
+#[must_use]
+pub fn has_ignored_directive(element: &Element, entries: &[&str]) -> bool {
+    bound3(element)
+        .iter()
+        .filter(|each| each.role != Role::Output)
+        .any(|each| {
+            entries
+                .iter()
+                .any(|entry| matches_directive(entry, &each.name))
+        })
+}
+
 /// Whether an element is Angular's element rather than a template or a content projection:
 /// neither `<ng-template>` nor `<ng-content>`, its namespace aside.
 #[must_use]
@@ -692,12 +740,15 @@ pub fn reports(rule: &dyn TemplateRule, path: &str, text: &str, nodes: &[Node]) 
 
 /// The rules, in the order of their names, as the project runs them.
 pub const RULES: &[&dyn TemplateRule] = &[
+    &alt_text::AltText,
     &attributes_order::AttributesOrder::PROJECT,
     &banana_in_box::BananaInBox,
     &button_has_type::ButtonHasType::PROJECT,
     &conditional_complexity::ConditionalComplexity::PROJECT,
     &cyclomatic_complexity::CyclomaticComplexity::PROJECT,
+    &elements_content::ElementsContent::PROJECT,
     &eqeqeq::Eqeqeq::PROJECT,
+    &label_has_associated_control::LabelHasAssociatedControl::PROJECT,
     &no_any::NoAny,
     &no_call_expression::NoCallExpression::PROJECT,
     &no_duplicate_attributes::NoDuplicateAttributes::PROJECT,
@@ -720,12 +771,26 @@ pub const RULES: &[&dyn TemplateRule] = &[
     &prefer_style_binding::PreferStyleBinding,
     &prefer_template_literal::PreferTemplateLiteral,
     &require_switch_default::RequireSwitchDefault,
+    &role_has_required_aria::RoleHasRequiredAria,
     &use_track_by_function::UseTrackByFunction::PROJECT,
+    &valid_aria::ValidAria,
 ];
 
 #[cfg(test)]
 mod tests {
-    use super::{RULES, interpolate};
+    use super::{RULES, interpolate, matches_directive};
+
+    #[test]
+    fn matches_a_name_or_a_pattern_with_its_flags() {
+        // Our own cases, after `createIgnoredDirectiveMatcher`.
+        assert!(matches_directive("/^tui/", "tuiButton"));
+        assert!(matches_directive("/^TUI/i", "tuiButton"));
+        assert!(!matches_directive("/^TUI/", "tuiButton"));
+        assert!(!matches_directive("tui", "tuiButton"));
+        assert!(matches_directive("tuiButton", "tuiButton"));
+        // `//` is no pattern, so compared as a name.
+        assert!(!matches_directive("//", "a"));
+    }
 
     #[test]
     fn interpolates_a_message_as_eslint_does() {

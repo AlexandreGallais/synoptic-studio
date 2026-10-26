@@ -147,3 +147,24 @@ pub const DOM_ELEMENTS: [&str; 135] = [
 pub fn is_dom_element(name: &str) -> bool {
     DOM_ELEMENTS.contains(&name)
 }
+
+/// Whether a name is one of the DOM's elements written in lower or upper case, as the rules
+/// that match `toPattern([...domElements, ...uppercaseDomElements])` read it.
+#[must_use]
+pub fn is_dom_name(name: &str) -> bool {
+    is_dom_element(name) || (name == name.to_uppercase() && is_dom_element(&name.to_lowercase()))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::is_dom_name;
+
+    #[test]
+    fn reads_a_dom_name_in_lower_or_upper_case_only() {
+        // Our own cases, after `toPattern([...domElements, ...uppercaseDomElements])`.
+        assert!(is_dom_name("div") && is_dom_name("DIV"));
+        assert!(!is_dom_name("Div") && !is_dom_name("app-x"));
+        // `:svg:svg` upper-cased is `:SVG:SVG`.
+        assert!(is_dom_name(":svg:svg") && is_dom_name(":SVG:SVG"));
+    }
+}
