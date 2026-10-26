@@ -501,22 +501,18 @@ fn schema_apart(schema: &Js) -> Option<&'static str> {
     }
 }
 
-/// Runs a rule on every case of its test file, under `tests/fixtures/scss/`; the cases whose
-/// code holds one of `apart`'s texts are set apart for its reason.
-#[must_use]
-pub fn run(file: &str, build: Build, apart: &[(&str, &'static str)]) -> Tally {
+/// The text of a file under `tests/fixtures/scss/`, empty when it cannot be read.
+fn fixture(file: &str) -> String {
     let path = Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("tests/fixtures/scss")
         .join(file);
-    let source = fs::read_to_string(&path).unwrap_or_default();
-    let allocator = Allocator::default();
-    let parsed = Parser::new(&allocator, &source, SourceType::mjs()).parse();
-    let mut calls = Calls {
-        source: &source,
-        env: Vec::new(),
-        schemas: Vec::new(),
-    };
-    for statement in &parsed.program.body {
+    fs::read_to_string(&path).unwrap_or_default()
+}
+
+/// The constants a file's top level declares with a value written in literals, in order.
+fn top_level(body: &[Statement], source: &str) -> Env {
+    let mut env = Vec::new();
+    for statement in body {
         let declarations = match statement {
             Statement::VariableDeclaration(variables) => Some(variables),
             _ => None,
@@ -524,12 +520,37 @@ pub fn run(file: &str, build: Build, apart: &[(&str, &'static str)]) -> Tally {
         for declarator in declarations.into_iter().flat_map(|each| &each.declarations) {
             if let (Some(name), Some(init)) =
                 (declarator.id.get_identifier_name(), &declarator.init)
-                && let Some(value) = eval(init, &source, &calls.env)
+                && let Some(value) = eval(init, source, &env)
             {
-                calls.env.push((name.to_string(), value));
+                env.push((name.to_string(), value));
             }
         }
     }
+    env
+}
+
+/// The constants a file under `tests/fixtures/scss/` declares at its top, with their values: the
+/// data a package exports, read without running it.
+#[must_use]
+pub fn constants(file: &str) -> Vec<(String, Js)> {
+    let source = fixture(file);
+    let allocator = Allocator::default();
+    let parsed = Parser::new(&allocator, &source, SourceType::mjs()).parse();
+    top_level(&parsed.program.body, &source)
+}
+
+/// Runs a rule on every case of its test file, under `tests/fixtures/scss/`; the cases whose
+/// code holds one of `apart`'s texts are set apart for its reason.
+#[must_use]
+pub fn run(file: &str, build: Build, apart: &[(&str, &'static str)]) -> Tally {
+    let source = fixture(file);
+    let allocator = Allocator::default();
+    let parsed = Parser::new(&allocator, &source, SourceType::mjs()).parse();
+    let mut calls = Calls {
+        source: &source,
+        env: top_level(&parsed.program.body, &source),
+        schemas: Vec::new(),
+    };
     calls.visit_program(&parsed.program);
     let mut tally = Tally::default();
     if calls.schemas.is_empty() {
@@ -650,6 +671,17 @@ struct Found {
     fix: Option<Fix>,
     /// The node its fix rewrites, as `fix.node` gives it to Stylelint.
     scope: Option<(usize, usize)>,
+}
+
+/// The line, column and message of each report of a rule on a code, in order, for a test's own
+/// cases; none when the code does not read.
+#[must_use]
+pub fn reports(rule: &dyn SheetRule, code: &str) -> Vec<(usize, usize, String)> {
+    lint(rule, code)
+        .unwrap_or_default()
+        .into_iter()
+        .map(|found| (found.placed.1.0, found.placed.1.1, found.placed.0))
+        .collect()
 }
 
 /// The reports of a rule on a code, placed, in order; `None` when the code does not read.
@@ -895,6 +927,8 @@ fn check_fix(rule: &dyn SheetRule, code: &str, case: &Js) -> Option<String> {
     }
     match wanted {
         Some(wanted) if wanted == output && output != code => None,
+        // A code left as it is: a fix the rule refuses, told apart for a rule that refuses some.
+        Some(wanted) if output == code => Some(format!("unfixed {code:?}, expected {wanted:?}")),
         Some(wanted) => Some(format!("fix {code:?}: {output:?}, expected {wanted:?}")),
         None => Some(format!("fix {code:?}: no fixed given")),
     }

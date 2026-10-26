@@ -163,11 +163,18 @@ mod tests {
                 ("scss/property-no-unknown", 5, 3),
                 ("stylelint/color-named", 5, 9),
                 // The unit, after its number.
+                // `width` (Recess's 74th) after `color` (179th), `colr` unplaced (EN-168).
+                ("order/properties-order", 6, 3),
                 ("stylelint/unit-no-unknown", 6, 11),
                 ("stylelint/color-named", 7, 10),
                 ("stylelint/declaration-no-important", 7, 15),
                 ("stylelint/no-duplicate-selectors", 10, 1),
                 ("stylelint/max-nesting-depth", 18, 9),
+                // Each declaration after the rule nested before it (EN-168).
+                ("order/order", 22, 9),
+                ("order/order", 25, 7),
+                ("order/order", 28, 5),
+                ("order/order", 31, 3),
                 ("scss/at-rule-no-unknown", 34, 1),
             ]
         );
@@ -204,6 +211,31 @@ mod tests {
             places(&lint_text("a.scss", &fixed)),
             [("stylelint/color-named", 2, 10)]
         );
+    }
+
+    #[test]
+    fn f53_ac3_fix_puts_a_crlf_sheet_in_the_recess_order_and_a_second_run_changes_nothing() {
+        let text = "a {\r\n  width: 1px; /* why */\r\n  position: relative;\r\n}\r\n";
+        let mut fixed = text.to_owned();
+        let mut passes = 0;
+        // As `lint --fix` does, every rule of the project, one pass after another.
+        for _ in 0..crate::FIX_PASSES {
+            let findings = lint_text("a.scss", &fixed);
+            if findings.iter().all(|each| each.fix.is_none()) {
+                break;
+            }
+            fixed = crate::testing::fixed(&fixed, &findings);
+            passes += 1;
+        }
+
+        // Own case: `position` (Recess's 3rd) before `width` (74th), the comment on `width`'s
+        // line moving with it, each line still ending in CR LF; one pass, then nothing to report.
+        assert_eq!(
+            fixed,
+            "a {\r\n  position: relative;\r\n  width: 1px; /* why */\r\n}\r\n"
+        );
+        assert_eq!(passes, 1);
+        assert_eq!(places(&lint_text("a.scss", &fixed)), []);
     }
 
     #[test]

@@ -1,5 +1,6 @@
 //! The rules the project runs on its style sheets, each with its configuration (EN-167): the 61
-//! of Stylelint and the 39 of stylelint-scss the catalogue keeps, in the catalogue's order, and
+//! of Stylelint and the 39 of stylelint-scss the catalogue keeps, in the catalogue's order, the two
+//! of stylelint-order with the Recess order (EN-168), and
 //! the files where a rule is off. The colours come from the tokens (the Product Owner's
 //! preference): a hexadecimal colour, a named one or a colour function is refused everywhere but
 //! in the tokens' files.
@@ -29,7 +30,7 @@ use super::{
     layer_name_pattern, length_zero_no_unit, max_nesting_depth, media_feature_name_no_unknown,
     media_feature_name_no_vendor_prefix, media_type_no_deprecated, named_grid_areas_no_invalid,
     nesting_selector_no_missing_scoping_root, no_duplicate_selectors, no_empty_source,
-    no_irregular_whitespace, number_max_precision, property_no_deprecated,
+    no_irregular_whitespace, number_max_precision, order, properties_order, property_no_deprecated,
     property_no_vendor_prefix, rule_empty_line_before, scss_at_extend_no_missing_placeholder,
     scss_at_if_no_null, scss_at_mixin_argumentless_call_parentheses, scss_at_root_no_redundant,
     scss_at_rule_conditional_no_parentheses, scss_at_rule_no_unknown,
@@ -74,6 +75,7 @@ pub fn applies(rule: &str, path: &str) -> bool {
 pub static RULES: LazyLock<Vec<Box<dyn SheetRule>>> = LazyLock::new(|| {
     let mut rules = core_rules();
     rules.extend(scss_rules());
+    rules.extend(order_rules());
     rules
 });
 
@@ -144,6 +146,14 @@ fn core_rules() -> Vec<Box<dyn SheetRule>> {
     ]
 }
 
+/// stylelint-order's rules: the content of a block in its order, its properties in the Recess order.
+fn order_rules() -> Vec<Box<dyn SheetRule>> {
+    vec![
+        Box::new(order::Order::project()),
+        Box::new(properties_order::PropertiesOrder::project()),
+    ]
+}
+
 /// stylelint-scss's rules.
 fn scss_rules() -> Vec<Box<dyn SheetRule>> {
     vec![
@@ -200,8 +210,8 @@ mod tests {
         names.sort_unstable();
         names.dedup();
 
-        // 61 of Stylelint, 39 of stylelint-scss.
-        assert_eq!((count, names.len()), (100, 100));
+        // 61 of Stylelint, 39 of stylelint-scss, 2 of stylelint-order.
+        assert_eq!((count, names.len()), (102, 102));
         assert_eq!(
             names
                 .iter()
