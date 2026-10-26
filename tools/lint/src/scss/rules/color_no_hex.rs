@@ -66,7 +66,16 @@ impl SheetRule for ColorNoHex {
 #[cfg(test)]
 mod tests {
     use super::ColorNoHex;
-    use crate::scss::rules::tester::{matchers, run, secondary};
+    use crate::scss::rules::tester::{matchers, reports, run, secondary};
+
+    #[test]
+    fn refuses_a_hex_colour_of_one_digit() {
+        // Own case: `#a` matches `/^#[\da-z]+$/i`, one character after `#` enough.
+        assert_eq!(
+            reports(&ColorNoHex::PROJECT, "a { color: #a; }"),
+            [(1, 12, "Disallowed hex color \"#a\"".to_owned())]
+        );
+    }
 
     #[test]
     fn f53_ac2_passes_the_cases_of_stylelint() {

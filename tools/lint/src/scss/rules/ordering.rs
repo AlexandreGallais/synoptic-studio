@@ -676,9 +676,33 @@ mod tests {
             "a {\n  width: $c;\n  $c: 1px;\n}\n",
             "a {\n  width: 1px;\n  @include m;\n  position: relative;\n}\n",
             "a {\n  & {\n    position: static;\n  }\n\n  position: relative;\n}\n",
+            // A mixin's `@content` and nested properties hold declarations not read here.
+            "@mixin m {\n  width: 1px;\n  @content;\n  position: relative;\n}\n",
+            "a {\n  width: 1px;\n  font: 12px {\n    family: x;\n  }\n  position: relative;\n}\n",
         ] {
             assert_eq!(fixed(code), (code.to_owned(), 0), "{code}");
         }
+    }
+
+    #[test]
+    fn f53_ac3_reads_a_variable_by_its_whole_name() {
+        // Own cases: `$a_b` and `$a-b` are other variables than `$a`, which may then move
+        // before the declaration, as `order` wants variables first.
+        for (code, expected) in [
+            (
+                "a {\n  width: $a_b;\n  $a: 1px;\n}\n",
+                "a {\n  $a: 1px;\n  width: $a_b;\n}\n",
+            ),
+            (
+                "a {\n  width: $a-b;\n  $a: 1px;\n}\n",
+                "a {\n  $a: 1px;\n  width: $a-b;\n}\n",
+            ),
+        ] {
+            assert_eq!(fixed(code), (expected.to_owned(), 1), "{code}");
+        }
+        // A shorthand of a shorthand: `border` sets `border-color`, which sets
+        // `border-left-color`.
+        assert!(related("border", "border-left-color") && related("border-left-color", "border"));
     }
 
     #[test]

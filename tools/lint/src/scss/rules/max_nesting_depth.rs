@@ -156,7 +156,31 @@ impl SheetRule for MaxNestingDepth {
 #[cfg(test)]
 mod tests {
     use super::MaxNestingDepth;
-    use crate::scss::rules::tester::{Js, matchers, primary, run, secondary};
+    use crate::scss::rules::Matcher;
+    use crate::scss::rules::tester::{Js, matchers, primary, reports, run, secondary};
+
+    #[test]
+    fn counts_nothing_inside_an_ignored_at_rule() {
+        let code = "@media print {\n  a {\n    b {\n      c {}\n    }\n  }\n}\n";
+        let ignoring = MaxNestingDepth {
+            depth: 1,
+            ignore_at_rules: vec![Matcher::new("media")],
+            ..MaxNestingDepth::project()
+        };
+
+        // Own case: `c` is two deep from `a` (an at-rule at the root not counting), one past
+        // the limit 1; under an `@media` the option leaves out, nothing is counted
+        // (`nestingDepth` gives 0 from an ignored parent up).
+        let limited = MaxNestingDepth {
+            depth: 1,
+            ..MaxNestingDepth::project()
+        };
+        assert_eq!(
+            reports(&limited, code),
+            [(4, 7, "Too deep nesting, maximum 1".to_owned())]
+        );
+        assert_eq!(reports(&ignoring, code), []);
+    }
 
     #[test]
     fn f53_ac2_passes_the_cases_of_stylelint() {

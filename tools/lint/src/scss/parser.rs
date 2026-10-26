@@ -1126,6 +1126,50 @@ mod tests {
     }
 
     #[test]
+    fn reads_a_word_before_a_colon_comments_in_a_value_and_a_spaced_nested_declaration() {
+        // Own cases. A word of `\w` between a property and its `:` is an unknown word, `_` too;
+        // `%` is not, and goes to `between` with the spaces after the colon.
+        assert_eq!(
+            parse("a { b _: c }"),
+            Err(ParseError {
+                message: "Unknown word _".to_owned(),
+                offset: 6
+            })
+        );
+        assert_eq!(at(&read("a { b %: c }"), &[0, 0]).between, " %: ");
+        // A comment after a space leaves the value, kept in the raw text (`a /**/b`); one
+        // between two words stays in it (`a/**/b`).
+        let sheet = read("a { b: c /**/d; e: f/**/g }");
+        assert_eq!(
+            (
+                at(&sheet, &[0, 0]).value.as_str(),
+                at(&sheet, &[0, 0]).raw.as_deref()
+            ),
+            ("c d", Some("c /**/d"))
+        );
+        assert_eq!(
+            (
+                at(&sheet, &[0, 1]).value.as_str(),
+                at(&sheet, &[0, 1]).raw.as_deref()
+            ),
+            ("f/**/g", None)
+        );
+        // `margin :0 {`: a space before the colon on the same line, still a nested declaration
+        // (postcss-scss's `rule`), its value `0`.
+        let sheet = read("a { margin :0 { left: 1px } }");
+        let nested = at(&sheet, &[0, 0]);
+        assert_eq!(
+            (
+                nested.is(Kind::Declaration),
+                nested.prop.as_str(),
+                nested.between.as_str(),
+                nested.value.as_str()
+            ),
+            (true, "margin", " :", "0")
+        );
+    }
+
+    #[test]
     fn reads_important_comments_and_hacks_into_their_raws() {
         let sheet = read("a { _b: c ! important; d: e/**/f !IMPORTANT; g: h /* i */; }");
         let (first, second, third) = (
