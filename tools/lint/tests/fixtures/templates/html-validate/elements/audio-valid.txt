@@ -1,0 +1,50 @@
+<!-- should allow flow as parent -->
+<div>
+	<audio></audio>
+</div>
+
+<!-- should be transparent -->
+<span><audio><span>foo</span></audio></span>
+
+<!-- should allow <source> and <track> when used transparently -->
+<div>
+	<audio>
+		<source>
+		<track src="video.vtt">
+	</audio>
+</div>
+
+<!-- should allow children in proper order -->
+<audio>
+	<source>
+	<div>foo</div>
+</audio>
+<audio src="audio.mp3">
+	<track src="video.vtt">
+	<div>foo</div>
+</audio>
+
+<!-- should allow non-empty src -->
+<audio src="audio.mp3"></audio>
+
+<!-- should allow attributes -->
+<audio autoplay></audio>
+<audio loop></audio>
+<audio muted></audio>
+<audio controls></audio>
+
+<!-- should not be interactive if missing controls attribute (and thus allowed as content in button) -->
+<button type="button">
+	Audio:
+	<audio></audio>
+</button>
+
+<!-- should allow preload attribute -->
+<audio preload></audio>
+<audio preload=""></audio>
+<audio preload="none"></audio>
+<audio preload="metadata"></audio>
+<audio preload="auto"></audio>
+
+<!-- should be allowed if src is present -->
+<audio src="audio.mp3" itemprop></audio>

@@ -1,0 +1,168 @@
+import { beforeAll, describe, expect, it } from "@jest/globals";
+import { HtmlValidate } from "../htmlvalidate";
+import "html-validate/jest";
+
+describe("rule no-implicit-close", () => {
+	let htmlvalidate: HtmlValidate;
+
+	beforeAll(() => {
+		htmlvalidate = new HtmlValidate({
+			root: true,
+			rules: { "no-implicit-close": "error" },
+		});
+	});
+
+	it("should not report when element is explicitly closed", async () => {
+		expect.assertions(1);
+		const markup = /* HTML */ ` <li></li> `;
+		const report = await htmlvalidate.validateString(markup);
+		expect(report).toBeValid();
+	});
+
+	it("should report error when element is implicitly closed by parent", async () => {
+		expect.assertions(2);
+		const markup = /* RAW */ `
+			<ul>
+				<li>foo
+			</ul>
+		`;
+		const report = await htmlvalidate.validateString(markup);
+		expect(report).toBeInvalid();
+		expect(report).toMatchInlineCodeframe(`
+			"error: Element <li> is implicitly closed by parent </ul> (no-implicit-close)
+			  1 |
+			  2 | 			<ul>
+			> 3 | 				<li>foo
+			    | 				 ^^
+			  4 | 			</ul>
+			  5 |
+			Selector: ul > li"
+		`);
+	});
+
+	it("should report error when element is implicitly closed by sibling", async () => {
+		expect.assertions(2);
+		const markup = /* RAW */ `
+			<ul>
+				<li>foo
+				<li>bar
+			</ul>
+		`;
+		const report = await htmlvalidate.validateString(markup);
+		expect(report).toBeInvalid();
+		expect(report).toMatchInlineCodeframe(`
+			"error: Element <li> is implicitly closed by sibling (no-implicit-close)
+			  1 |
+			  2 | 			<ul>
+			> 3 | 				<li>foo
+			    | 				 ^^
+			  4 | 				<li>bar
+			  5 | 			</ul>
+			  6 |
+			Selector: ul > li:nth-child(1)
+			error: Element <li> is implicitly closed by parent </ul> (no-implicit-close)
+			  2 | 			<ul>
+			  3 | 				<li>foo
+			> 4 | 				<li>bar
+			    | 				 ^^
+			  5 | 			</ul>
+			  6 |
+			Selector: ul > li:nth-child(2)"
+		`);
+	});
+
+	it("should report error when element is implicitly closed by adjacent block element", async () => {
+		expect.assertions(2);
+		const markup = /* RAW */ `
+			<p>foo
+			<div>bar</div>
+		`;
+		const report = await htmlvalidate.validateString(markup);
+		expect(report).toBeInvalid();
+		expect(report).toMatchInlineCodeframe(`
+			"error: Element <p> is implicitly closed by adjacent <div> (no-implicit-close)
+			  1 |
+			> 2 | 			<p>foo
+			    | 			 ^
+			  3 | 			<div>bar</div>
+			  4 |
+			Selector: p"
+		`);
+	});
+
+	it("should report error when element is implicitly closed by ancestor end tag", async () => {
+		expect.assertions(2);
+		const markup = /* RAW */ `
+			<table><tbody><tr><td>foo</table>
+		`;
+		const report = await htmlvalidate.validateString(markup);
+		expect(report).toBeInvalid();
+		expect(report).toMatchInlineCodeframe(`
+		"error: Element <tbody> is implicitly closed by parent </table> (no-implicit-close)
+		  1 |
+		> 2 | 			<table><tbody><tr><td>foo</table>
+		    | 			        ^^^^^
+		  3 |
+		Selector: table > tbody
+		error: Element <tr> is implicitly closed by ancestor </table> (no-implicit-close)
+		  1 |
+		> 2 | 			<table><tbody><tr><td>foo</table>
+		    | 			               ^^
+		  3 |
+		Selector: table > tbody > tr
+		error: Element <td> is implicitly closed by ancestor </table> (no-implicit-close)
+		  1 |
+		> 2 | 			<table><tbody><tr><td>foo</table>
+		    | 			                   ^^
+		  3 |
+		Selector: table > tbody > tr > td"
+	`);
+	});
+
+	it("should report error when nested element is implicitly closed by document ending", async () => {
+		expect.assertions(2);
+		const markup = /* RAW */ `
+			<div><p>foo
+		`;
+		const report = await htmlvalidate.validateString(markup);
+		expect(report).toBeInvalid();
+		expect(report).toMatchInlineCodeframe(`
+		"error: Element <p> is implicitly closed by document ending (no-implicit-close)
+		  1 |
+		> 2 | 			<div><p>foo
+		    | 			      ^
+		  3 |
+		Selector: div > p"
+	`);
+	});
+
+	it("should report error when element is implicitly closed by implicit document element end tag", async () => {
+		expect.assertions(2);
+		const markup = /* RAW */ `
+			<p>foo
+		`;
+		const report = await htmlvalidate.validateString(markup);
+		expect(report).toBeInvalid();
+		expect(report).toMatchInlineCodeframe(`
+			"error: Element <p> is implicitly closed by document ending (no-implicit-close)
+			  1 |
+			> 2 | 			<p>foo
+			    | 			 ^
+			  3 |
+			Selector: p"
+		`);
+	});
+
+	it("smoketest", async () => {
+		expect.assertions(1);
+		const report = await htmlvalidate.validateFile("test-files/rules/no-implicit-close.html");
+		expect(report).toMatchCodeframe();
+	});
+
+	it("should contain documentation", async () => {
+		expect.assertions(1);
+		/* eslint-disable-next-line @typescript-eslint/no-deprecated -- technical debt */
+		const docs = await htmlvalidate.getRuleDocumentation("no-implicit-close");
+		expect(docs).toMatchSnapshot();
+	});
+});

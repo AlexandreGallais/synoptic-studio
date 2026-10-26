@@ -1,0 +1,17 @@
+<!-- should be allowed under flow -->
+<div>
+	<fieldset>
+		<legend>foo</legend>
+	</fieldset>
+</div>
+
+<!-- should allow legend and flow content in correct order -->
+<fieldset>
+	<legend>foo</legend>
+	<div>bar</div>
+</fieldset>
+
+<!-- should allow any non-empty name -->
+<fieldset name="foobar">
+	<legend>foo</legend>
+</fieldset>

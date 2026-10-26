@@ -1,0 +1,94 @@
+<!-- should allow phrasing as content -->
+<button type="button"><span>foo</span></button>
+
+<!-- should allow phrasing as parent -->
+<span><button type="button">foo</button></span>
+
+<!-- should allow flow as parent -->
+<span><button type="button">foo</button></span>
+
+<!-- allowed boolean attributes -->
+<button type="button" autofocus disabled>foo</button>
+
+<!-- type variants -->
+<button type="button">foo</button>
+<button type="submit">foo</button>
+<button type="reset">foo</button>
+
+<!-- allow valid formmethods -->
+<button type="submit" formmethod="get">lorem ipsum</button>
+<button type="submit" formmethod="post">lorem ipsum</button>
+<button type="submit" formmethod="dialog">lorem ipsum</button>
+
+<!-- allow boolean formnovalidate -->
+<button type="submit" formnovalidate>lorem ipsum</button>
+<button type="submit" formnovalidate="">lorem ipsum</button>
+<button type="submit" formnovalidate="formnovalidate">lorem ipsum</button>
+
+<!-- should allow target keywords and custom name (must not start with _) -->
+<button type="submit" formtarget="_blank">lorem ipsum</button>
+<button type="submit" formtarget="_parent">lorem ipsum</button>
+<button type="submit" formtarget="_self">lorem ipsum</button>
+<button type="submit" formtarget="_top">lorem ipsum</button>
+<button type="submit" formtarget="foobar">lorem ipsum</button>
+
+<!-- should allow aria-label -->
+<button type="button" aria-label="foobar">
+	<i class="icon icon-foo"></i>
+</button>
+
+<!-- should be allowed if type="submit" or omitted -->
+<div id="valid-form-overrides">
+	<button type="submit" formaction formenctype formmethod="post" formnovalidate formtarget="_blank">
+		lorem ipsum
+	</button>
+	<!-- [html-validate-disable-next no-implicit-button-type] -->
+	<button formaction formenctype formmethod="post" formnovalidate formtarget="_blank">
+		lorem ipsum
+	</button>
+</div>
+
+<!-- should not require type when used as first child of <select> -->
+<select>
+	<button>lorem ipsum</button>
+</select>
+
+<!-- should allow label with for attribute -->
+<label for="label-for">Lorem ipsum</label>
+<button id="label-for" type="submit">Lorem ipsum</button>
+
+<!-- should allow any non-empty name -->
+<button type="submit" name="foobar">Lorem ipsum</button>
+
+<!-- should allow any value -->
+<button type="submit" value>Lorem ipsum</button>
+<button type="submit" value="">Lorem ipsum</button>
+<button type="submit" value="foobar">Lorem ipsum</button>
+
+<!-- form should reference a form by id -->
+<form id="myform"></form>
+<button type="submit" form="myform">lorem ipsum</button>
+
+<!-- popovertarget should reference element by id -->
+<div id="mypopover" popover></div>
+<button type="button" popovertarget="mypopover">lorem ipsum</button>
+
+<!-- popovertargetaction should allow valid values -->
+<button type="button" popovertargetaction="toggle">Toggle</button>
+<button type="button" popovertargetaction="show">Show</button>
+<button type="button" popovertargetaction="hide">Hide</button>
+
+<!-- commandfor should reference dialog by id -->
+<dialog id="mydialog"></dialog>
+<button type="button" commandfor="mydialog">lorem ipsum</button>
+
+<!-- command should allow valid values -->
+<button type="button" command="show-modal">Open dialog</button>
+<button type="button" command="close">Close dialog</button>
+<button type="button" command="toggle-popover">Toggle popover</button>
+<button type="button" command="show-popover">Show popover</button>
+<button type="button" command="hide-popover">Hide popover</button>
+<button type="button" command="request-close">Request close</button>
+
+<!-- command should allow custom commands (must start with --) -->
+<button type="button" command="--custom-action">Custom</button>

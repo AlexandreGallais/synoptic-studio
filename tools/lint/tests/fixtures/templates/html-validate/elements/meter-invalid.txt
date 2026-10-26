@@ -1,0 +1,33 @@
+<!-- should not allow flow -->
+<meter>
+	<div>foo</div>
+</meter>
+
+<!-- should not allow nesting -->
+<meter>
+	<meter></meter>
+</meter>
+
+<!-- should not allow omitted values -->
+<meter value></meter>
+<meter min></meter>
+<meter low></meter>
+<meter high></meter>
+<meter max></meter>
+<meter optimum></meter>
+
+<!-- should not allow empty values -->
+<meter value=""></meter>
+<meter min=""></meter>
+<meter low=""></meter>
+<meter high=""></meter>
+<meter max=""></meter>
+<meter optimum=""></meter>
+
+<!-- should not allow invalid values -->
+<meter value="invalid"></meter>
+<meter min="invalid"></meter>
+<meter low="invalid"></meter>
+<meter high="invalid"></meter>
+<meter max="invalid"></meter>
+<meter optimum="invalid"></meter>

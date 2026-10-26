@@ -1,0 +1,33 @@
+<!-- should allow under <ul> -->
+<ul>
+	<li>foo</li>
+</ul>
+
+<!-- should allow under <ol> -->
+<ol>
+	<li>foo</li>
+</ol>
+
+<!-- should allow under <menu> -->
+<menu>
+	<li>foo</li>
+</menu>
+
+<!-- should allow <template> -->
+<ul>
+	<template>
+		<li>foo</li>
+	</template>
+</ul>
+
+<!-- should allow flow content -->
+<ul>
+	<li>
+		<div>foo</div>
+	</li>
+</ul>
+
+<!-- value attribute -->
+<ol>
+	<li value="3">item 3</li>
+</ol>

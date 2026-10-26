@@ -1,0 +1,24 @@
+<!-- should be allowed under flow -->
+<div>
+	<dl></dl>
+</div>
+
+<!-- should allow content -->
+<dl>
+	<dt>foo</dt>
+	<dd>bar</dd>
+	<script></script>
+	<template></template>
+</dl>
+
+<!-- should allow grouping within divs -->
+<dl>
+	<div>
+		<dt>foo</dt>
+		<dd>bar</dd>
+	</div>
+	<div>
+		<dt>fred</dt>
+		<dd>barney</dd>
+	</div>
+</dl>

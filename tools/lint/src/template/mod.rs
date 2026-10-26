@@ -7,6 +7,7 @@
 pub mod bindings;
 pub mod entities;
 pub mod expressions;
+pub mod html;
 pub mod lexer;
 pub mod rules;
 pub mod tags;
@@ -32,10 +33,16 @@ pub fn is_template(path: &str) -> bool {
 }
 
 /// The findings of a template's text: each error of its reading, expressions included, at its
-/// line and column under `lint/parse`; once it reads cleanly, the reports of the template rules.
+/// line and column under `lint/parse`; once it reads cleanly, the reports of the template rules
+/// and of the HTML rules.
 #[must_use]
 pub fn lint_text(path: &str, text: &str) -> Vec<Finding> {
-    lint_with(path, text, rules::RULES)
+    let all: Vec<&dyn rules::TemplateRule> = rules::RULES
+        .iter()
+        .chain(html::rules::RULES)
+        .copied()
+        .collect();
+    lint_with(path, text, &all)
 }
 
 /// The findings of a set of template rules on a template's text.
@@ -262,6 +269,20 @@ mod tests {
             super::rules::RULES
                 .iter()
                 .all(|rule| rule.name() != "@angular-eslint/template/no-call-expression")
+        );
+    }
+
+    #[test]
+    fn f53_ac1_runs_the_html_rules_on_a_template() {
+        // Our own case: a class written twice is html-validate's `no-dup-class`, at the second.
+        let findings = lint_text("a.component.html", "<p class=\"a a\"></p>\n");
+
+        assert_eq!(
+            findings
+                .iter()
+                .map(|finding| (finding.line, finding.column, finding.rule))
+                .collect::<Vec<_>>(),
+            [(1, 13, "html-validate/no-dup-class")]
         );
     }
 

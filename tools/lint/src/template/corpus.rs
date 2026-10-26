@@ -179,7 +179,8 @@ pub struct Case {
 
 /// A string literal's or a template literal's value, its `${name}` and `${'text'.repeat(n)}`
 /// built; `Err(())` for any other `${…}`, `None` for anything else.
-fn literal(expression: &Expression, values: &Values) -> Option<Result<String, ()>> {
+#[must_use]
+pub fn literal(expression: &Expression, values: &Values) -> Option<Result<String, ()>> {
     match expression {
         Expression::StringLiteral(string) => Some(Ok(string.value.to_string())),
         Expression::TemplateLiteral(template) => {
@@ -359,7 +360,7 @@ type Place = ((usize, usize), (usize, usize));
 
 /// The value an expression of a test file writes, its names given their values; `None` when it
 /// is built otherwise.
-fn value(expression: &Expression, values: &Values) -> Option<Value> {
+pub fn value(expression: &Expression, values: &Values) -> Option<Value> {
     match expression {
         Expression::NullLiteral(_) => Some(Value::Null),
         Expression::BooleanLiteral(boolean) => Some(Value::Bool(boolean.value)),

@@ -1,0 +1,27 @@
+<!-- should omit end tag -->
+<meta></meta>
+
+<!-- should not be allowed where flow content is expected unless itemprop is set -->
+<div>
+	<meta>
+	<video>
+		<meta>
+	</video>
+</div>
+
+<!-- should not be allowed where phrasing content is expected unless itemprop is set -->
+<span>
+	<meta>
+	<audio>
+		<meta>
+	</audio>
+</span>
+
+<!-- should not allow "content" if neither of "name", "http-equiv" or "itemprop" is present -->
+<meta content="...">
+
+<!-- should not combine "name", "http-equiv" and "itemprop" -->
+<meta content="..." name http-equiv itemprop>
+
+<!-- should not allow other than utf-8 -->
+<meta charset="iso-8859-1">

@@ -36,6 +36,7 @@ The project's tools (`tools/`) port code from, or copy test cases of, the packag
 | `aria-query` | 5.3.2 | Apache-2.0 | the names of the DOM's elements (`dom`), copied into `tools/lint/src/template/rules/dom.rs`; its ARIA properties (`aria`) and roles (`roles`), and the building of `elementRoles`, in `tools/lint/src/template/rules/aria.rs` |
 | `axobject-query` | 4.1.0 | Apache-2.0 | its accessibility objects (`AXObjects`), their roles (`AXObjectRoles`) and the building of `elementAXObjects`, in `tools/lint/src/template/rules/ax_objects.rs` |
 | `@typescript-eslint/rule-tester` | 8.71.0 | MIT | how `RuleTester` checks a case (its errors, messages, places and passes of fixes), followed in `tools/lint/src/template/rules/tester.rs` |
+| `html-validate` | 11.17.0 | MIT | the rules the catalogue keeps, ported to `tools/lint/src/template/html/rules/`, with their element metadata (`src/elements/html5.ts`), its validator (`src/meta/`), the helpers of its rules (`src/rules/helper/`: `a11y`, `has-accessible-name`, `text`, `is-focusable`, `aria-naming`, `is-keyword-ignored`, `case-style`), its patterns (`src/pattern.ts`) and the selectors they match, in `tools/lint/src/template/html/`; the test files of those rules, and the element test files with their snapshot (`test-files/elements/`, `src/elements/__snapshots__/html5.spec.ts.snap`), copied into `tools/lint/tests/fixtures/templates/html-validate/` |
 
 ## eslint-plugin-unicorn 78.0.0
 
@@ -1121,4 +1122,31 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+```
+
+## html-validate 11.17.0
+
+From `https://registry.npmjs.org/html-validate/-/html-validate-11.17.0.tgz`, `package/LICENSE`, read on 2026-10-26; the test files of its rules (`src/rules/*.spec.ts`), its element test files (`test-files/elements/`) and their snapshot come from the repository html-validate at the tag v11.17.0, under the same licence.
+
+```text
+MIT License
+
+Copyright (c) 2017 David Sveningsson <ext@sidvind.com>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+the Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```

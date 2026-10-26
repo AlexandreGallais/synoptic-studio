@@ -1,0 +1,12 @@
+<!-- should not be allowed to have end tag -->
+<embed src="url" title="My embedded thing"></embed>
+
+<!-- should have src and title -->
+<embed>
+<embed src="" title="">
+
+<!-- should not allow invalid width and height -->
+<embed src="url" title="My embedded thing" width="" height="">
+<embed src="url" title="My embedded thing" width="foo" height="foo">
+<embed src="url" title="My embedded thing" width="-1" height="-1">
+<embed src="url" title="My embedded thing" width="1.5" height="1.5">

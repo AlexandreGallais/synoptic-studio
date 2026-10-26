@@ -1,0 +1,18 @@
+<!-- should be allowed under fieldset -->
+<fieldset>
+	<legend></legend>
+</fieldset>
+
+<!-- should allow phrasing -->
+<fieldset>
+	<legend>
+		<span>foo</span>
+	</legend>
+</fieldset>
+
+<!-- should allow headings -->
+<fieldset>
+	<legend>
+		<h1>foo</h1>
+	</legend>
+</fieldset>

@@ -1,0 +1,45 @@
+<!-- should be allowed under select -->
+<select>
+	<option>foo</option>
+</select>
+
+<!-- should be allowed under optgroup -->
+<select>
+	<optgroup>
+		<option>foo</option>
+	</optgroup>
+</select>
+
+<!-- should be allowed under datalist -->
+<datalist>
+	<option>foo</option>
+</datalist>
+
+<!-- should be allow optional end tag -->
+<select>
+	<option>foo
+	<option>bar
+	<option>baz
+</select>
+
+<!-- should allow optional end tag before <optgroup> -->
+<select>
+	<option>foo
+	<optgroup label="Group A">
+		<option>bar
+	</optgroup>
+	<optgroup label="Group B">
+		<option>baz
+	</optgroup>
+</select>
+
+<!-- should allow <div> and phrasing when used as a descendant of <select> -->
+<select>
+	<option><div></div></option>
+	<option><span></span></option>
+</select>
+
+<!-- label attribute -->
+<select>
+	<option value="a" label="Option A"></option>
+</select>

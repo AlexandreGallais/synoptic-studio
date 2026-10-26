@@ -1,0 +1,4 @@
+<!-- should not allow non-phrasing content -->
+<p>
+	<summary>foo</summary>
+</p>
