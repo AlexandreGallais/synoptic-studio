@@ -54,7 +54,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
             messageId: suggestRemoveAttribute,
             output: `
         <input [name]="bar">
-
+                            
       `,
             data: { attributeName: 'name' },
           },
@@ -69,7 +69,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
             messageId: suggestRemoveAttribute,
             output: `
         <input [name]="foo">
-
+                            
       `,
             data: { attributeName: 'name' },
           },
@@ -94,7 +94,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
             messageId: suggestRemoveAttribute,
             output: `
         <input name="bar">
-
+                            
       `,
             data: { attributeName: 'name' },
           },
@@ -109,7 +109,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
             messageId: suggestRemoveAttribute,
             output: `
         <input [name]="foo">
-
+                            
       `,
             data: { attributeName: 'name' },
           },
@@ -133,7 +133,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
             messageId: suggestRemoveAttribute,
             output: `
         <input name="bar">
-
+                          
       `,
             data: { attributeName: 'name' },
           },
@@ -148,7 +148,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
             messageId: suggestRemoveAttribute,
             output: `
         <input name="foo">
-
+                          
       `,
             data: { attributeName: 'name' },
           },
@@ -172,7 +172,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
             messageId: suggestRemoveAttribute,
             output: `
         <input (change)="bar($event)">
-
+                                      
       `,
             data: { attributeName: 'change' },
           },
@@ -187,7 +187,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
             messageId: suggestRemoveAttribute,
             output: `
         <input (change)="foo($event)">
-
+                                      
       `,
             data: { attributeName: 'change' },
           },
@@ -211,7 +211,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
             messageId: suggestRemoveAttribute,
             output: `
         <input [(ngModel)]="otherModel">
-
+                                   
       `,
             data: { attributeName: 'ngModel' },
           },
@@ -226,7 +226,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
             messageId: suggestRemoveAttribute,
             output: `
         <input [(ngModel)]="model">
-
+                                   
       `,
             data: { attributeName: 'ngModel' },
           },
@@ -251,7 +251,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
             messageId: suggestRemoveAttribute,
             output: `
         <input [other]="bam" [name]="bar">
-
+                                          
       `,
             data: { attributeName: 'name' },
           },
@@ -266,7 +266,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
             messageId: suggestRemoveAttribute,
             output: `
         <input [name]="foo" [other]="bam">
-
+                                          
       `,
             data: { attributeName: 'name' },
           },
@@ -290,7 +290,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
             messageId: suggestRemoveAttribute,
             output: `
         <input [name]="bar" [name]="bam">
-
+                                         
       `,
             data: { attributeName: 'name' },
           },
@@ -305,7 +305,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
             messageId: suggestRemoveAttribute,
             output: `
         <input [name]="foo" [name]="bam">
-
+                                         
       `,
             data: { attributeName: 'name' },
           },
@@ -320,7 +320,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
             messageId: suggestRemoveAttribute,
             output: `
         <input [name]="foo" [name]="bar">
-
+                                         
       `,
             data: { attributeName: 'name' },
           },
@@ -344,7 +344,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
             messageId: suggestRemoveAttribute,
             output: `
         <input [name]="foo" [(ngModel)]="otherModel" name="bar">
-
+                                                                         
       `,
             data: { attributeName: 'ngModel' },
           },
@@ -359,7 +359,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
             messageId: suggestRemoveAttribute,
             output: `
         <input [(ngModel)]="model" [(ngModel)]="otherModel" name="bar">
-
+                                                                         
       `,
             data: { attributeName: 'name' },
           },
@@ -374,7 +374,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
             messageId: suggestRemoveAttribute,
             output: `
         <input [(ngModel)]="model" [name]="foo" name="bar">
-
+                                                                         
       `,
             data: { attributeName: 'ngModel' },
           },
@@ -389,7 +389,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
             messageId: suggestRemoveAttribute,
             output: `
         <input [(ngModel)]="model" [name]="foo" [(ngModel)]="otherModel">
-
+                                                                         
       `,
             data: { attributeName: 'name' },
           },
@@ -413,7 +413,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
             messageId: suggestRemoveAttribute,
             output: `
         <input (@fade.start)="animationStarted($event)">
-
+                                                        
       `,
             data: { attributeName: '@fade.start' },
           },
@@ -428,7 +428,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
             messageId: suggestRemoveAttribute,
             output: `
         <input (@fade.start)="animationStarted($event)">
-
+                                                        
       `,
             data: { attributeName: '@fade.start' },
           },
@@ -452,7 +452,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
             messageId: suggestRemoveAttribute,
             output: `
         <input (resize)="resize()" (window:resize)="windowResized2($event)">
-
+                                                                           
       `,
             data: { attributeName: 'window:resize' },
           },
@@ -467,7 +467,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
             messageId: suggestRemoveAttribute,
             output: `
         <input (window:resize)="windowResized($event)" (resize)="resize()">
-
+                                                                           
       `,
             data: { attributeName: 'window:resize' },
           },
@@ -492,7 +492,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
             messageId: suggestRemoveAttribute,
             output: `
         <input (ngModelChange)="modelChanged()">
-
+                                   
       `,
             data: { attributeName: 'ngModelChange' },
           },
@@ -507,7 +507,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
             messageId: suggestRemoveAttribute,
             output: `
         <input [(ngModel)]="model">
-
+                                   
       `,
             data: { attributeName: 'ngModelChange' },
           },
@@ -532,7 +532,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
             messageId: suggestRemoveAttribute,
             output: `
         <input class="css-static" name="bar" [class]="dynamic">
-
+                                               
       `,
             data: { attributeName: 'name' },
           },
@@ -547,7 +547,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
             messageId: suggestRemoveAttribute,
             output: `
         <input [name]="foo" class="css-static" [class]="dynamic">
-
+                                               
       `,
             data: { attributeName: 'name' },
           },
@@ -559,7 +559,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
     description: 'should report duplicate static binding for class attribute',
     annotatedSource: `
         <input class="foo" class="bar" [class]="dynamic">
-               ~~~~~~~~~~~ ^^^^^^^^^^^
+               ~~~~~~~~~~~ ^^^^^^^^^^^     
       `,
     options: [{ allowStylePrecedenceDuplicates: true }],
     messages: [
@@ -572,7 +572,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
             messageId: suggestRemoveAttribute,
             output: `
         <input class="bar" [class]="dynamic">
-
+                                
       `,
             data: { attributeName: 'class' },
           },
@@ -587,7 +587,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
             messageId: suggestRemoveAttribute,
             output: `
         <input class="foo" [class]="dynamic">
-
+                                
       `,
             data: { attributeName: 'class' },
           },
@@ -612,7 +612,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
             messageId: suggestRemoveAttribute,
             output: `
         <input [style]="styleExpression" style="width:50px">
-
+                                                             
       `,
             data: { attributeName: 'style' },
           },
@@ -627,7 +627,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
             messageId: suggestRemoveAttribute,
             output: `
         <input style="color: blue" [style]="styleExpression">
-
+                                                             
       `,
             data: { attributeName: 'style' },
           },

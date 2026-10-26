@@ -204,13 +204,13 @@ export const valid: readonly (string | ValidTestCase<Options>)[] = [
   },
   {
     code: `
-      <img
+      <img 
         [src]="logo"
         i18n-title="Logo for the app"
         title="App Logo"
         i18n-alt="Translated alt logo"
         alt="Alternate logo"
-      />
+      /> 
     `,
     options: [{ checkId: false, requireDescription: true }],
   },
@@ -414,7 +414,7 @@ export const valid: readonly (string | ValidTestCase<Options>)[] = [
   `,
   `
     <ng-container i18n="@@foo">
-      Foo @if (bar) { Bar <a>Bam</a> }
+      Foo @if (bar) { Bar <a>Bam</a> } 
     </ng-container>
   `,
 ];
@@ -447,7 +447,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
     annotatedOutput: `
       <div>
         <span i18n>test{{data_from_backend}}</span>
-
+              
       </div>
     `,
   }),
@@ -460,7 +460,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
     messageId: i18nAttributeOnIcuOrText,
     annotatedOutput: `
       <ng-container i18n>{ value, plural, =0 {No elements} =1 {111} }</ng-container>
-
+      
     `,
   }),
   convertAnnotatedSourceToFailureCase({
@@ -474,7 +474,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
     options: [{ checkAttributes: false }],
     annotatedOutput: `
       <ng-container i18n>{ value, plural, =0 {<div>No elements</div>} =1 {111} }</ng-container>
-
+      
     `,
   }),
   convertAnnotatedSourceToFailureCase({
@@ -491,7 +491,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
     annotatedOutput: `
       <div>
         <ng-container i18n>Some text&nbsp;t&#64; tr1nslate</ng-container>
-
+                      
       </div>
     `,
   }),
@@ -512,7 +512,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
             messageId: suggestAddI18nAttribute,
             output: `
       <p i18n>Lorem ipsum <em i18n="@@dolor">dolor</em> sit amet.</p>
-
+                                                   
     `,
           },
         ],
@@ -525,7 +525,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
             messageId: suggestAddI18nAttribute,
             output: `
       <p i18n>Lorem ipsum <em i18n="@@dolor">dolor</em> sit amet.</p>
-
+                                                   
     `,
           },
         ],
@@ -706,23 +706,23 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
     annotatedOutput: `
       <div
         tooltip="This requires translation" i18n-tooltip
-
+               
         i18n-placeholder
         placeholder="More translation, please"
-
+                   
         class="red"
       >
         <div
           *ngIf="true"
           width="100px"
           label="Templates need translation too." i18n-label
-
+               
         >
           <span i18n label="label is ignored in 'ignoreAttributes'">
-
+          
             Missing custom ID
           </span>
-
+                
         </div>
         <ng-template i18n="@@template">
           <div>test{{binding}}</div>
@@ -753,7 +753,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
     description: 'should fail if i18n-<attr> description is missing',
     annotatedSource: `
       <span i18n="A balloon that displays data" data-balloon="Translated title" i18n-data-balloon>
-                                                ~~~~~~~~~~~~
+                                                ~~~~~~~~~~~~  
         Hello
       </span>
     `,
@@ -835,7 +835,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
     messageId: i18nAttributeOnIcuOrText,
     annotatedOutput: `
       <ng-template i18n>No people or teams matched your search</ng-template>
-
+                   
     `,
   }),
   convertAnnotatedSourceToFailureCase({
@@ -849,7 +849,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
     options: [{ checkAttributes: false }],
     annotatedOutput: `
       <ng-container i18n>{ value, plural, =0 {<ng-template>No elements</ng-template>} =1 {111} }</ng-container>
-
+      
     `,
   }),
   convertAnnotatedSourceToFailureCase({
@@ -866,7 +866,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
     annotatedOutput: `
       <div>
         <ng-template i18n>Some text&nbsp;t&#64; tr1nslate</ng-template>
-
+                     
       </div>
     `,
   }),
@@ -887,7 +887,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
             messageId: suggestAddI18nAttribute,
             output: `
       <ng-template i18n>Lorem ipsum <ng-template i18n="@@dolor">dolor</ng-template> sit amet.</ng-template>
-
+                                                                               
     `,
           },
         ],
@@ -900,7 +900,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
             messageId: suggestAddI18nAttribute,
             output: `
       <ng-template i18n>Lorem ipsum <ng-template i18n="@@dolor">dolor</ng-template> sit amet.</ng-template>
-
+                                                                               
     `,
           },
         ],
@@ -983,13 +983,13 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
         <div>
           @if (a > b) {
             <span i18n>{{a}} is greater than {{b}}</span>
-
+                                             
           } @else if (b > a) {
             <span i18n>{{a}} is less than {{b}}</span>
-
+                                          
           } @else {
             <span i18n>{{a}} is equal to {{b}}</span>
-
+                  
           }
         </div>
     `,
@@ -1021,10 +1021,10 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
         <div>
           @for (item of items; track item.id) {
             <span i18n>Item: {{ item.name }}</span>
-
+                                       
           } @empty {
              <span i18n>There are no items.</span>
-
+                   
           }
         </div>
     `,
@@ -1068,15 +1068,15 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
           @switch (condition) {
             @case (caseA) {
               <span i18n>Case A.</span>
-
+                           
             }
             @case (caseB) {
               <span i18n>Case B.</span>
-
+                           
             }
             @default {
               <span i18n>Default case.</span>
-
+                    
             }
           }
         </div>
@@ -1123,16 +1123,16 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
         <div>
           @defer {
             <p i18n>Large component:</p> <large-component />
-
+                               
           } @loading {
             <p i18n>Loading...</p>
-
+                         
           } @error {
             <p i18n>Error</p>
-
+                    
           } @placeholder (minimum 500ms) {
             <p i18n>Placeholder content</p>
-
+               
           }
         </div>
     `,

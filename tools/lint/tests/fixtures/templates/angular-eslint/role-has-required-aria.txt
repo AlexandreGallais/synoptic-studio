@@ -39,7 +39,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
         messageId: suggestRemoveRole,
         output: `
         <div></div>
-
+             
       `,
       },
     ],
@@ -62,7 +62,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
         messageId: suggestRemoveRole,
         output: `
         <DIV></DIV>
-
+             
       `,
       },
     ],

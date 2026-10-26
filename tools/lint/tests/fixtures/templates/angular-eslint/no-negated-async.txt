@@ -44,21 +44,21 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
         messageId: suggestFalseComparison,
         output: `
         {{      (foo | async) === false }}
-
+                
       `,
       },
       {
         messageId: suggestNullComparison,
         output: `
         {{      (foo | async) === null }}
-
+                
       `,
       },
       {
         messageId: suggestUndefinedComparison,
         output: `
         {{      (foo | async) === undefined }}
-
+                
       `,
       },
     ],
@@ -76,21 +76,21 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
         messageId: suggestFalseComparison,
         output: `
         {{ (foo | somethingElse | async) === false }}
-
+           
       `,
       },
       {
         messageId: suggestNullComparison,
         output: `
         {{ (foo | somethingElse | async) === null }}
-
+           
       `,
       },
       {
         messageId: suggestUndefinedComparison,
         output: `
         {{ (foo | somethingElse | async) === undefined }}
-
+           
       `,
       },
     ],
@@ -107,21 +107,21 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
         messageId: suggestFalseComparison,
         output: `
         <div *ngIf="(a | async) === false"></div>
-
+                    
       `,
       },
       {
         messageId: suggestNullComparison,
         output: `
         <div *ngIf="(a | async) === null"></div>
-
+                    
       `,
       },
       {
         messageId: suggestUndefinedComparison,
         output: `
         <div *ngIf="(a | async) === undefined"></div>
-
+                    
       `,
       },
     ],
@@ -139,21 +139,21 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
         messageId: suggestFalseComparison,
         output: `
         {{ nullable ?? (obsVar | async) === false }}
-
+                       
       `,
       },
       {
         messageId: suggestNullComparison,
         output: `
         {{ nullable ?? (obsVar | async) === null }}
-
+                       
       `,
       },
       {
         messageId: suggestUndefinedComparison,
         output: `
         {{ nullable ?? (obsVar | async) === undefined }}
-
+                       
       `,
       },
     ],
@@ -170,7 +170,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
         messageId: suggestUsingNonNegatedValue,
         output: `
         <button [disabled]="buttonDisabled$ | async">Click me!</button>
-
+                            
       `,
       },
     ],

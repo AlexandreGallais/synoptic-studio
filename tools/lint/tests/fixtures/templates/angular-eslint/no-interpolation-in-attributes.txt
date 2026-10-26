@@ -33,7 +33,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
     messageId,
     annotatedOutput: `
         <input type="text" [name]="foo">
-
+                                 
       `,
   }),
   convertAnnotatedSourceToFailureCase({
@@ -55,7 +55,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
     messageId,
     annotatedOutput: `
         <input type="text" [attr.data-myExample]="foo">
-
+                                                
       `,
   }),
   convertAnnotatedSourceToFailureCase({
@@ -79,7 +79,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
     options: [{ allowSubstringInterpolation: true }],
     annotatedOutput: `
        <img alt="{{username}} is online" [src]="src">
-
+                                              
       `,
   }),
 ];

@@ -57,6 +57,47 @@ describe("the playground's project files", () => {
     expect(at(angular, ["extendedDiagnostics", "defaultCategory"])).toBe("error");
   });
 
+  it("[F52.AC2] makes each of Angular's 17 extended diagnostics an error", () => {
+    // The 17 checks of Angular's extended diagnostics (REF-ANGULAR-EXTENDED-DIAGNOSTICS): each
+    // takes its category from `checks`, else from `defaultCategory`, and emits only under
+    // `strictTemplates`; `tsconfig.app.json` and `tsconfig.spec.json` extend this file.
+    const names = [
+      "invalidBananaInBox",
+      "nullishCoalescingNotNullable",
+      "missingControlFlowDirective",
+      "textAttributeNotBinding",
+      "missingNgForOfLet",
+      "suffixNotSupported",
+      "optionalChainNotNullable",
+      "skipHydrationNotStatic",
+      "interpolatedSignalNotInvoked",
+      "uninvokedFunctionInEventBinding",
+      "unusedLetDeclaration",
+      "unusedStandaloneImports",
+      "unparenthesizedNullishCoalescing",
+      "uninvokedTrackFunction",
+      "missingStructuralDirective",
+      "uninvokedFunctionInTextInterpolation",
+      "deferTriggerMisconfiguration",
+    ];
+    const angular = at(playgroundJson("tsconfig.json"), ["angularCompilerOptions"]);
+    const fallback = at(angular, ["extendedDiagnostics", "defaultCategory"]);
+
+    expect(names).toHaveLength(17);
+    expect(at(angular, ["strictTemplates"])).toBe(true);
+
+    expect(
+      names.filter(
+        (name) => (at(angular, ["extendedDiagnostics", "checks", name]) ?? fallback) !== "error",
+      ),
+    ).toEqual([]);
+
+    for (const file of ["tsconfig.app.json", "tsconfig.spec.json"]) {
+      expect(at(playgroundJson(file), ["extends"]), file).toBe("./tsconfig.json");
+      expect(at(playgroundJson(file), ["angularCompilerOptions"]), file).toBeUndefined();
+    }
+  });
+
   it("[F50.AC2] imports the library by its name through the tsconfig's paths, no vite.config", () => {
     expect(at(playgroundJson("tsconfig.json"), ["compilerOptions", "paths", "editor"])).toEqual([
       "../src/index.ts",

@@ -106,7 +106,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
     },
     annotatedOutput: `
       <li><input id="input" type="text"></li>
-
+                 
     `,
   }),
   convertAnnotatedSourceToFailureCase({
@@ -119,7 +119,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
     data: { expected: '`*ngIf`, `#inputRef`', actual: '`#inputRef`, `*ngIf`' },
     annotatedOutput: `
       <input *ngIf="flag" #inputRef class="className">
-
+             
     `,
   }),
   convertAnnotatedSourceToFailureCase({
@@ -135,7 +135,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
     },
     annotatedOutput: `
       <input *ngIf="flag" #inputRef class="className" [binding]="true" [(ngModel)]="model" (output)="handleOutput($event)">
-
+                          
     `,
   }),
   convertAnnotatedSourceToFailureCase({
@@ -151,7 +151,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
     },
     annotatedOutput: `
       <input *ngFor="inputs" class="className" [binding]="true" (output)="handleOutput($event)">
-
+                             
     `,
   }),
   convertAnnotatedSourceToFailureCase({
@@ -167,7 +167,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
     },
     annotatedOutput: `
       <input *ngIf="flag" #inputRef class="className" [binding]="true" [(ngModel)]="model" (output)="handleOutput($event)">
-
+                                                      
     `,
   }),
   convertAnnotatedSourceToFailureCase({
@@ -183,7 +183,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
     },
     annotatedOutput: `
       <input *ngIf="flag" #inputRef class="className" [binding]="true" (output)="handleOutput($event)">
-
+                                                      
     `,
   }),
   convertAnnotatedSourceToFailureCase({
@@ -213,7 +213,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
     },
     annotatedOutput: `
       <input class="className" *ngIf="flag">
-
+             
     `,
   }),
   convertAnnotatedSourceToFailureCase({
@@ -244,7 +244,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
     },
     annotatedOutput: `
       <input #inputRef *ngIf="flag" class="className" id="input" [binding]="true" (output)="handleOutput($event)" [(ngModel)]="model">
-
+             
     `,
   }),
   convertAnnotatedSourceToFailureCase({
@@ -276,19 +276,19 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
     annotatedOutput: `
       <input
         *ngIf="flag"
-
+        
         #inputRef
-
+        
         id="input"
-
+        
         class="className"
-
+        
         [binding]="true"
-
+        
         [(ngModel)]="model"
-
+        
         (output)="handleOutput($event)">
-
+        
     `,
   }),
   convertAnnotatedSourceToFailureCase({
@@ -304,7 +304,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
     },
     annotatedOutput: `
       <ng-container *ngFor="let foo of bar" id="issue" (click)="bar = []"></ng-container>
-
+                    
     `,
   }),
   convertAnnotatedSourceToFailureCase({
@@ -320,7 +320,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
     },
     annotatedOutput: `
       <ng-container *ngFor="let foo of bar; index as i; first as isFirst" id="issue" (click)="bar = []"></ng-container>
-
+                    
     `,
   }),
   convertAnnotatedSourceToFailureCase({
@@ -336,7 +336,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
     },
     annotatedOutput: `
       <div *ngIf="bar as foo" id="id"></div>
-
+           
     `,
   }),
   convertAnnotatedSourceToFailureCase({
@@ -352,7 +352,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
     },
     annotatedOutput: `
       <div *ngIf="condition then foo else bar" id="id"></div>
-
+           
     `,
   }),
   convertAnnotatedSourceToFailureCase({
@@ -369,7 +369,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
     },
     annotatedOutput: `
       <div [class.disabled]="disabled" [disabled]="disabled"></div>
-
+           
     `,
   }),
   convertAnnotatedSourceToFailureCase({
@@ -386,7 +386,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
     },
     annotatedOutput: `
       <ng-template #Template let-value></ng-template>
-
+                   
     `,
   }),
   convertAnnotatedSourceToFailureCase({
@@ -404,7 +404,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
     },
     annotatedOutput: `
       <ng-template #Template let-anotherValue="else" let-value="something"></ng-template>
-
+                   
     `,
   }),
   convertAnnotatedSourceToFailureCase({
@@ -424,7 +424,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
     annotatedOutput: `
       <svg>
         <ng-template #Template let-value></ng-template>
-
+                     
       </svg>
     `,
   }),
@@ -442,7 +442,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
     },
     annotatedOutput: `
       <td *matCellDef="let element" mat-cell></td>
-
+          
     `,
   }),
   convertAnnotatedSourceToFailureCase({
@@ -464,11 +464,11 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
     },
     annotatedOutput: `
       <td *matCellDef="
-
+          
         let element
-
+        
       " mat-cell></td>
-
+      
     `,
   }),
   convertAnnotatedSourceToFailureCase({
@@ -486,7 +486,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
     },
     annotatedOutput: `
       <div *ngIf="sth.property as property " class="abc"></div>
-
+           
     `,
   }),
   convertAnnotatedSourceToFailureCase({
@@ -515,7 +515,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
     },
     annotatedOutput: `
       <div class="abc" *structuralDirective></div>
-
+           
     `,
   }),
   convertAnnotatedSourceToFailureCase({
@@ -533,7 +533,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
     },
     annotatedOutput: `
       <div *structuralDirective abbr="abc" title="abc"></div>
-
+           
     `,
   }),
   convertAnnotatedSourceToFailureCase({
@@ -550,7 +550,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
     },
     annotatedOutput: `
       <div *structuralDirective class="abc"></div>
-
+           
     `,
   }),
   convertAnnotatedSourceToFailureCase({
@@ -568,7 +568,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
     },
     annotatedOutput: `
       <div alpha="a" i18n-alpha="a1" beta="b" i18n-beta="b1"></div>
-
+           
     `,
   }),
   convertAnnotatedSourceToFailureCase({
@@ -606,7 +606,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
     },
     annotatedOutput: `
       <div *ngIf="true" #alpha beta="b" i18n-beta="b18" pi="p" [gamma]="'g'" [(delta)]="d" (epsilon)="e"></div>
-
+           
     `,
   }),
   convertAnnotatedSourceToFailureCase({
@@ -624,7 +624,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
     },
     annotatedOutput: `
       <div alpha="a" i18n-alpha="a18" [beta]="'b'" i18n-beta="b18" [gamma]="g"></div>
-
+           
     `,
   }),
   convertAnnotatedSourceToFailureCase({
@@ -641,7 +641,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
     },
     annotatedOutput: `
       <ng-template #template i18n="@@a:b" let-foo>The value is {{ foo }}.</ng-template>
-
+                   
     `,
   }),
   convertAnnotatedSourceToFailureCase({
@@ -671,7 +671,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
     },
     annotatedOutput: `
       <div alpha="a" beta="{{ b }}" (gamma)="g()" [delta]="d"></div>
-
+                     
     `,
   }),
 ];

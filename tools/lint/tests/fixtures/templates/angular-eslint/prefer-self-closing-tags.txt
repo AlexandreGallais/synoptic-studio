@@ -92,7 +92,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
     messageId,
     annotatedOutput: `
       <my-component />
-
+                    
     `,
   }),
   convertAnnotatedSourceToFailureCase({
@@ -104,7 +104,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
     `,
     annotatedOutput: `
       <my-component *ngIf="condition" type="text" [name]="foo" />
-
+                                                               
     `,
     messageId,
   }),
@@ -124,7 +124,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
         type="text"
         [name]="foo"
         [items]="items" />
-
+      
     `,
     messageId,
   }),
@@ -145,7 +145,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
         [name]="foo"
         [items]="items"
       />
-
+       
     `,
     messageId,
   }),
@@ -157,7 +157,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
     `,
     annotatedOutput: `
       <ng-template />
-
+                   
     `,
     messageId,
   }),
@@ -169,7 +169,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
     `,
     annotatedOutput: `
       <ng-template />
-
+                    
     `,
     messageId,
   }),
@@ -181,7 +181,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
     `,
     annotatedOutput: `
       <ng-content />
-
+                  
     `,
     messageId,
   }),
@@ -197,7 +197,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
       <ng-content
         selector="my-selector"
       />
-
+       
     `,
     messageId,
   }),
@@ -210,7 +210,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
     `,
     annotatedOutput: `
       <ng-content />
-
+      
     `,
     messageId,
   }),
@@ -224,7 +224,7 @@ export const invalid: readonly InvalidTestCase<MessageIds, Options>[] = [
     `,
     annotatedOutput: `
       <ng-content select="foo>bar" />
-
+      
     `,
     messageId,
   }),
