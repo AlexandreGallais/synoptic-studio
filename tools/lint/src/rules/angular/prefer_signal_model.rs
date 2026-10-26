@@ -5,13 +5,11 @@
 //! none. The rewrite into `model()` is not carried.
 
 use oxc_ast::AstKind;
-use oxc_ast::ast::{
-    Argument, CallExpression, ClassElement, Expression, ObjectPropertyKind, PropertyDefinition,
-    PropertyKey,
-};
+use oxc_ast::ast::{Argument, ClassElement, ObjectPropertyKind, PropertyDefinition, PropertyKey};
 use oxc_semantic::AstNode;
 use oxc_span::{GetSpan, Span};
 
+use super::bindings::{Direction, signal_call};
 use crate::expressions::text;
 use crate::finding::Finding;
 use crate::rules::Rule;
@@ -28,25 +26,6 @@ struct Declared<'a> {
     start: u32,
     /// The span of its first type argument.
     type_argument: Option<Span>,
-}
-
-/// The kind of signal a property's value makes, and the place of its options among the call's
-/// arguments: `input(initial, options)`, `input.required(options)`, `output(options)`.
-fn signal_call<'b, 'a>(value: &'b Expression<'a>) -> Option<(bool, usize, &'b CallExpression<'a>)> {
-    let Expression::CallExpression(call) = value else {
-        return None;
-    };
-    match &call.callee {
-        Expression::Identifier(callee) if callee.name == "input" => Some((true, 1, call)),
-        Expression::Identifier(callee) if callee.name == "output" => Some((false, 0, call)),
-        Expression::StaticMemberExpression(member)
-            if member.property.name == "required"
-                && matches!(&member.object, Expression::Identifier(object) if object.name == "input") =>
-        {
-            Some((true, 0, call))
-        }
-        _ => None,
-    }
 }
 
 /// Whether options hold a `transform` (`hasTransformOption`).
@@ -96,9 +75,15 @@ impl Rule for PreferSignalModel {
             let ClassElement::PropertyDefinition(property) = element else {
                 continue;
             };
-            let Some((is_input, options, call)) = property.value.as_ref().and_then(signal_call)
-            else {
+            let Some(value) = &property.value else {
                 continue;
+            };
+            let (is_input, (call, options)) = match signal_call(value, Direction::Input) {
+                Some(found) => (true, found),
+                None => match signal_call(value, Direction::Output) {
+                    Some(found) => (false, found),
+                    None => continue,
+                },
             };
             let Some(name) = property_name(source, property) else {
                 continue;
