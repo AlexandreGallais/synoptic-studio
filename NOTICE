@@ -68,3 +68,7 @@ of, the packages below, each under its licence; the full texts are in THIRD-PART
   postcss-scss's repository at the tag 4.0.9, under the same licence
 - postcss-value-parser 4.2.0, MIT: Copyright (c) Bogdan Chadkin <trysound@yandex.ru>; its test
   cases, from postcss-value-parser's repository at the tag v4.2.0, under the same licence
+- stylelint 17.16.0, MIT: Copyright (c) 2015 - present Maxime Thirouin, David Clark & Richard
+  Hallows; its test cases, from Stylelint's repository at the tag 17.16.0, under the same licence
+- stylelint-scss 7.3.0, MIT: Copyright (c) 2016 Krister Kari; its test cases, from stylelint-scss's
+  repository at the tag v7.3.0, under the same licence

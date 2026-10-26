@@ -488,7 +488,8 @@ mod tests {
     use crate::template::corpus::{Value as Js, value as js_value};
 
     /// The array `var tests = […]` of a test file of `postcss-value-parser` 4.2.0, copied as it
-    /// is into `tests/fixtures/scss/postcss-value-parser/`.
+    /// is into `tests/fixtures/scss/postcss-value-parser/`, named `.txt` so that the formatter
+    /// leaves it byte for byte.
     fn upstream(file: &str) -> Vec<Js> {
         let path = format!(
             "{}/tests/fixtures/scss/postcss-value-parser/{file}",
@@ -590,7 +591,7 @@ mod tests {
     /// Every case of `test/parse.js`: 74, each value read into the parts it expects.
     #[test]
     fn passes_the_parse_tests_of_postcss_value_parser() {
-        let cases = upstream("parse.js");
+        let cases = upstream("parse.txt");
 
         assert_eq!(cases.len(), 74);
         let failures: Vec<String> = cases
@@ -610,7 +611,7 @@ mod tests {
     /// writing `fixture` twice read by its last.
     #[test]
     fn passes_the_unit_tests_of_postcss_value_parser() {
-        let cases = upstream("unit.js");
+        let cases = upstream("unit.txt");
 
         assert_eq!(cases.len(), 67);
         for case in &cases {

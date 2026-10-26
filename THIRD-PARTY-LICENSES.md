@@ -40,6 +40,8 @@ The project's tools (`tools/`) port code from, or copy test cases of, the packag
 | `postcss` | 8.5.30 | MIT | its parser (`lib/parser.js`), ported to `tools/lint/src/scss/parser.rs` |
 | `postcss-scss` | 4.0.9 | MIT | its tokenizer and the overrides of its parser, ported to `tools/lint/src/scss/tokenizer.rs` and `parser.rs`, with the cases of its tests |
 | `postcss-value-parser` | 4.2.0 | MIT | its reading of a value and of a number's unit, ported to `tools/lint/src/scss/value.rs`; its test files `test/parse.js` and `test/unit.js`, copied into `tools/lint/tests/fixtures/scss/postcss-value-parser/` |
+| `stylelint` | 17.16.0 | MIT | the test files of the rules the catalogue keeps, copied into `tools/lint/tests/fixtures/scss/stylelint/` |
+| `stylelint-scss` | 7.3.0 | MIT | the test files of the rules the catalogue keeps, copied into `tools/lint/tests/fixtures/scss/stylelint-scss/` |
 
 ## eslint-plugin-unicorn 78.0.0
 
@@ -1235,4 +1237,59 @@ HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
+```
+
+## stylelint 17.16.0
+
+From `https://registry.npmjs.org/stylelint/-/stylelint-17.16.0.tgz`, `package/LICENSE`, read on 2026-10-26; the test files of its rules (`lib/rules/*/__tests__/index.mjs`) come from the repository stylelint at the tag 17.16.0, under the same licence.
+
+```text
+The MIT License (MIT)
+
+Copyright (c) 2015 - present Maxime Thirouin, David Clark & Richard Hallows
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+the Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+```
+
+## stylelint-scss 7.3.0
+
+From `https://registry.npmjs.org/stylelint-scss/-/stylelint-scss-7.3.0.tgz`, `package/LICENSE`, read on 2026-10-26; the test files of its rules (`src/rules/*/__tests__/index.js`) come from the repository stylelint-scss at the tag v7.3.0, under the same licence.
+
+```text
+The MIT License (MIT)
+
+Copyright (c) 2016 Krister Kari
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
 ```
