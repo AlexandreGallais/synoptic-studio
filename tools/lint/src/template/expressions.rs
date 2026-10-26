@@ -408,8 +408,10 @@ fn read_pipe<'a>(allocator: &'a Allocator, text: &str, start: u32) -> Result<Pip
             ));
         }
         let list = &text[colon + 1..];
-        let found = scan(list).map_err(|(message, at)| error(message, start, colon + 1 + at))?;
-        for (from, to) in split_ranges(list.len(), &colons(list, &found)) {
+        // A top-level part of a text scanned whole, the list scans cleanly; were it not, it would be
+        // read as one argument, whose reading reports the error at its place.
+        let at = scan(list).map_or_else(|_| Vec::new(), |found| colons(list, &found));
+        for (from, to) in split_ranges(list.len(), &at) {
             let base = start + offset(colon + 1 + from);
             arguments.push(read(allocator, &list[from..to], base)?);
         }
@@ -517,7 +519,7 @@ mod tests {
     use oxc_allocator::Allocator;
     use oxc_ast::ast::Expression;
 
-    use super::{read, read_action, split_top_level};
+    use super::{colons, read, read_action, scan, split_top_level};
 
     /// The source text of an expression, from its Oxc span.
     fn text_of<'t>(text: &'t str, expression: Option<&Expression>) -> &'t str {
@@ -688,6 +690,73 @@ mod tests {
             pipe_names(" /a "),
             Err("Unterminated regular expression".to_owned())
         );
+    }
+
+    #[test]
+    fn f52_ac1_ends_a_pipe_s_argument_at_a_colon_no_ternary_takes() {
+        let top_colons = |text: &str| scan(text).map(|found| colons(text, &found)).ok();
+
+        // `?.` and `??` open no ternary: their `:` ends the argument (b0 ?1 .2 c3 _4 :5;
+        // b0 _1 ?2 ?3 _4 c5 _6 :7); a ternary's `?` takes the first `:` after it.
+        assert_eq!(top_colons("b?.c : d"), Some(vec![5]));
+        assert_eq!(top_colons("b ?? c : d"), Some(vec![7]));
+        assert_eq!(top_colons("b??c:d"), Some(vec![4]));
+        assert_eq!(top_colons("a ? b : c : d"), Some(vec![10]));
+        assert_eq!(top_colons("?a : b"), Some(vec![]));
+        let allocator = Allocator::default();
+        let arguments = |text: &str| {
+            read(&allocator, text, 0).map(|bound| {
+                bound.pipes[0]
+                    .arguments
+                    .iter()
+                    .map(|argument| {
+                        text[argument.span.start as usize..argument.span.end as usize].to_owned()
+                    })
+                    .collect::<Vec<_>>()
+            })
+        };
+        assert_eq!(
+            arguments("a | p: b?.c : d").ok(),
+            Some(vec![" b?.c ".to_owned(), " d".to_owned()])
+        );
+        assert_eq!(
+            arguments("a | p: b ?? c : d").ok(),
+            Some(vec![" b ?? c ".to_owned(), " d".to_owned()])
+        );
+    }
+
+    #[test]
+    fn f52_ac1_skips_an_escaped_quote_or_backtick() {
+        let allocator = Allocator::default();
+        let pipe = |text: &str| {
+            read(&allocator, text, 0)
+                .map(|bound| {
+                    bound
+                        .pipes
+                        .iter()
+                        .map(|pipe| pipe.name.clone())
+                        .collect::<Vec<_>>()
+                })
+                .map_err(|error| error.message)
+        };
+
+        // The escaped quote or backtick does not close its string, the next one does.
+        assert_eq!(pipe("`\\`` | p"), Ok(vec!["p".to_owned()]));
+        assert_eq!(pipe("'\\'' | p"), Ok(vec!["p".to_owned()]));
+        assert_eq!(pipe("\"\\\"|\" | p"), Ok(vec!["p".to_owned()]));
+    }
+
+    #[test]
+    fn f52_ac1_reports_an_error_in_a_pipe_s_argument_at_its_byte() {
+        let allocator = Allocator::default();
+
+        // The list ` b + ` starts at byte 6 of `a | p: b + `; Oxc stops at its end, 6 + 5 = 11,
+        // and the text starts at 10: 21. The second argument ` c +` starts past the list's `:` at
+        // 9, at 10; Oxc stops at its end, 10 + 4 = 14.
+        let first = read(&allocator, "a | p: b + ", 10).err();
+        assert_eq!(first.map(|error| error.span.start), Some(21));
+        let second = read(&allocator, "a | p: b : c +", 0).err();
+        assert_eq!(second.map(|error| error.span.start), Some(14));
     }
 
     #[test]

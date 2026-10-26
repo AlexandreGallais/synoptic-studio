@@ -86,4 +86,20 @@ mod tests {
         // The plugin's 11 valid and 3 invalid cases, all run; 6 suggestions, not carried.
         assert_eq!((tally.valid, tally.invalid, tally.suggestions), (11, 3, 6));
     }
+
+    #[test]
+    fn reports_a_positive_text_bound_as_a_literal() {
+        let places = |text: &str| {
+            crate::template::lint_with("a.component.html", text, &[&NoPositiveTabindex])
+                .iter()
+                .map(|finding| (finding.line, finding.column))
+                .collect::<Vec<_>>()
+        };
+
+        // Our own cases: the text `"1"` reads 1, above 0, reported at its value after
+        // `<div [tabindex]="`, 17 bytes; `"0"` and `"-1"` are not above 0.
+        assert_eq!(places("<div [tabindex]=\"'1'\"></div>"), [(1, 18)]);
+        assert_eq!(places("<div [tabindex]=\"'0'\"></div>"), []);
+        assert_eq!(places("<div [tabindex]=\"'-1'\"></div>"), []);
+    }
 }

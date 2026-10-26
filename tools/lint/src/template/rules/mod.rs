@@ -850,13 +850,14 @@ pub const RULES: &[&dyn TemplateRule] = &[
 mod tests {
     use super::{
         RULES, attributes_order::AttributesOrder, banana_in_box::BananaInBox, eqeqeq::Eqeqeq,
-        interpolate, matches_directive,
+        interpolate, matches_directive, no_autofocus::NoAutofocus,
+        no_distracting_elements::NoDistractingElements,
         no_interpolation_in_attributes::NoInterpolationInAttributes, prefer_at_else::PreferAtElse,
         prefer_at_empty::PreferAtEmpty,
         prefer_contextual_for_variables::PreferContextualForVariables,
         prefer_self_closing_tags::PreferSelfClosingTags,
         prefer_static_string_properties::PreferStaticStringProperties,
-        prefer_template_literal::PreferTemplateLiteral,
+        prefer_template_literal::PreferTemplateLiteral, table_scope::TableScope,
     };
 
     #[test]
@@ -896,7 +897,37 @@ mod tests {
     /// offsets; then with an entity: a value read decoded keeps the fixes that move it whole
     /// or touch it not, and loses those that cut into it (eqeqeq, prefer-contextual-for-
     /// variables, prefer-template-literal), their offsets the decoded text's.
-    const FIX_CASES: [(&dyn super::TemplateRule, &str, &str); 20] = [
+    const FIX_CASES: [(&dyn super::TemplateRule, &str, &str); 26] = [
+        (
+            &NoAutofocus,
+            "<input\r\n  autofocus\r\n>",
+            "<input\r\n \r\n>",
+        ),
+        (
+            &NoAutofocus,
+            "<input [title]=\"a &amp;&amp; b\" autofocus>",
+            "<input [title]=\"a &amp;&amp; b\">",
+        ),
+        (
+            &NoDistractingElements,
+            "<p></p>\r\n<marquee\r\n></marquee>",
+            "<p></p>\r\n",
+        ),
+        (
+            &NoDistractingElements,
+            "<marquee [title]=\"a &amp;&amp; b\"></marquee>",
+            "",
+        ),
+        (
+            &TableScope,
+            "<td\r\n  scope=\"col\"\r\n></td>",
+            "<td\r\n \r\n></td>",
+        ),
+        (
+            &TableScope,
+            "<td [title]=\"a &amp;&amp; b\" scope=\"col\"></td>",
+            "<td [title]=\"a &amp;&amp; b\"></td>",
+        ),
         (
             &AttributesOrder::PROJECT,
             "<p\r\n  title=\"a\"\r\n  #r></p>",

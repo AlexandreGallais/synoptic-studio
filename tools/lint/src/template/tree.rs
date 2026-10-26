@@ -1178,6 +1178,11 @@ mod tests {
                 "  Text \"b\"",
             ]
         );
+        // Only the first child's: a line feed after another child is kept.
+        assert_eq!(
+            humanize("<pre><b></b>\nc</pre>"),
+            ["Element pre []", "  Element b []", "  Text \"\\nc\"",]
+        );
     }
 
     #[test]

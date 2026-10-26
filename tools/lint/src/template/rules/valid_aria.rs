@@ -245,4 +245,20 @@ mod tests {
         assert_eq!(tokens("  a   b "), ["a", "b"]);
         assert_eq!(tokens("   "), [""]);
     }
+
+    #[test]
+    fn reads_an_empty_number_as_no_number() {
+        let places = |text: &str| {
+            crate::template::lint_with("a.component.html", text, &[&ValidAria])
+                .iter()
+                .map(|finding| (finding.line, finding.column))
+                .collect::<Vec<_>>()
+        };
+
+        // Our own cases: `parseFloat("")` is `NaN`, though `Number("")` is 0, so an empty
+        // `aria-valuenow` is no number, reported at it after `<p `; `"1"` is one.
+        assert_eq!(places("<p aria-valuenow=\"\">a</p>"), [(1, 4)]);
+        assert_eq!(places("<p aria-valuenow=\" \">a</p>"), [(1, 4)]);
+        assert_eq!(places("<p aria-valuenow=\"1\">a</p>"), []);
+    }
 }
