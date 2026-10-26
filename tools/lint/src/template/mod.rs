@@ -23,7 +23,8 @@ use crate::project::Project;
 /// How deep elements and blocks, or an expression's brackets, may nest: deeper, the reader reports
 /// an error under `lint/parse` and reads no further, as the walks of the rules and Oxc's parser
 /// recurse and would overflow a thread's stack; at the limit of both, every rule runs on a thread
-/// of 2 MiB, a debug build's. Angular sets no limit; no template nests so deep.
+/// of 2 MiB, a debug build's. Angular sets no limit; no template nests so deep. The style sheets'
+/// reader holds their blocks to the same limit (`scss::parser`).
 pub const NESTING_LIMIT: usize = 256;
 
 /// Whether a path is a component's template, which the reader reads (`*.component.html`).

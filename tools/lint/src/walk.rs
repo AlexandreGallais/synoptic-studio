@@ -1,5 +1,5 @@
-//! The files a run lints: the TypeScript files, the Markdown pages and the components' templates
-//! of its targets, each a file or a folder walked down, the ignored paths left out, as oxlint and
+//! The files a run lints: the TypeScript files, the Markdown pages, the components' templates and
+//! the style sheets of its targets, each a file or a folder walked down, the ignored paths left out, as oxlint and
 //! `ESLint` take the same targets.
 
 use std::fs;
@@ -54,7 +54,8 @@ fn collect(root: &Path, path: &str, found: &mut Vec<String>) {
         .extension()
         .is_some_and(|extension| extension == "ts")
         || crate::markdown::is_page(path)
-        || crate::template::is_template(path))
+        || crate::template::is_template(path)
+        || crate::scss::is_sheet(path))
         && absolute.is_file()
     {
         found.push(path.to_owned());
