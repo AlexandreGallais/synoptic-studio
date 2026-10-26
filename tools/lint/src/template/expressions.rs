@@ -23,8 +23,8 @@ pub struct Bound<'a> {
     pub span: Span,
     /// The part before the first pipe, parsed; `None` when blank.
     pub expression: Option<Expression<'a>>,
-    /// The offset in the template of the text Oxc read: an Oxc offset plus this one. Exact when
-    /// the value is written as read, entities and line ends aside.
+    /// The offset in the template of the text Oxc read: an Oxc offset plus this one. Exact unless
+    /// the value, read decoded, writes an entity (`[x]="a &amp;&amp; b"`).
     pub start: u32,
     /// Its pipes, in order: the first applied first.
     pub pipes: Vec<Pipe<'a>>,

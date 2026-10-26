@@ -161,6 +161,25 @@ mod tests {
     }
 
     #[test]
+    fn f52_ac1_places_a_report_after_crlf_line_ends_as_angular_does() {
+        let places = |text: &str| {
+            lint_text("a.component.html", text)
+                .iter()
+                .map(|finding| (finding.line, finding.column, finding.rule))
+                .collect::<Vec<_>>()
+        };
+        let eqeqeq = "@angular-eslint/template/eqeqeq";
+
+        // Angular 22.2.3's `parseTemplate` with `preserveLineEndings`, run by the auditor: the
+        // comparison `a == c` at 2:2 (after `{{\r\n `) and at 3:3 (after `\r\n  `).
+        assert_eq!(places("<p>{{\r\n a == c }}</p>"), [(2, 2, eqeqeq)]);
+        assert_eq!(
+            places("<p [title]=\"\r\n  b &&\r\n  a == c\"></p>"),
+            [(3, 3, eqeqeq)]
+        );
+    }
+
+    #[test]
     fn runs_no_call_expression_by_the_product_owner_s_choice() {
         // A signal read is a call: `no-call-expression` is off, so it passes.
         assert_eq!(lint_text("a.component.html", "<p>{{ zoom() }}</p>\n"), []);
