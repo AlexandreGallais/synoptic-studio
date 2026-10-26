@@ -927,6 +927,8 @@ fn check_fix(rule: &dyn SheetRule, code: &str, case: &Js) -> Option<String> {
     }
     match wanted {
         Some(wanted) if wanted == output && output != code => None,
+        // A code left as it is: a fix the rule refuses, told apart for a rule that refuses some.
+        Some(wanted) if output == code => Some(format!("unfixed {code:?}, expected {wanted:?}")),
         Some(wanted) => Some(format!("fix {code:?}: {output:?}, expected {wanted:?}")),
         None => Some(format!("fix {code:?}: no fixed given")),
     }

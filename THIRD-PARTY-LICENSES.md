@@ -44,6 +44,7 @@ The project's tools (`tools/`) port code from, or copy test cases of, the packag
 | `stylelint-scss` | 7.3.0 | MIT | the test files of the rules the catalogue keeps, copied into `tools/lint/tests/fixtures/scss/stylelint-scss/` |
 | `stylelint-config-recess-order` | 7.9.0 | ISC | its property groups (`groups.js`), copied as data into `tools/lint/src/scss/rules/recess_order.rs` and as it is into `tools/lint/tests/fixtures/scss/stylelint-config-recess-order/` |
 | `stylelint-order` | 8.1.2 | MIT | its rules `order` and `properties-order`, ported to `tools/lint/src/scss/rules/order.rs`, `properties_order.rs` and `ordering.rs`, and their test files, copied into `tools/lint/tests/fixtures/scss/stylelint-order/` |
+| `postcss-sorting` | 10.0.0 | MIT | the sorting of a block (`sortNode`, `sortNodeProperties`, `getComments`), ported to `tools/lint/src/scss/rules/ordering.rs`, `order.rs` and `properties_order.rs` as the fixes of stylelint-order's rules |
 
 ## eslint-plugin-unicorn 78.0.0
 
@@ -1538,6 +1539,33 @@ From `https://registry.npmjs.org/stylelint-order/-/stylelint-order-8.1.2.tgz`, `
 The MIT License (MIT)
 
 Copyright 2016–present Aleks Hudochenkov <aleks@hudochenkov.com>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+the Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+```
+
+## postcss-sorting 10.0.0
+
+From `https://registry.npmjs.org/postcss-sorting/-/postcss-sorting-10.0.0.tgz`, `package/LICENSE.md`, read on 2026-10-26.
+
+```text
+The MIT License (MIT)
+
+Copyright 2015-present Aleks Hudochenkov <aleks@hudochenkov.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in

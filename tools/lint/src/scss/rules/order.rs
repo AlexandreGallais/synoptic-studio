@@ -6,10 +6,14 @@
 //! (`top`, `bottom`, `ignore`) is ported; Less's `@`-variables and mixins, which the SCSS reader
 //! never gives, are not. The project's order, after the acceptance criterion: custom properties,
 //! then `$`-variables, then declarations, then nested rules, the rest left where it is (F53.AC3).
+//! Fixed by sorting the block as postcss-sorting does (`fix`), within the guard of `ordering`.
 
 use regex::Regex;
 
-use super::ordering::{blocks, is_standard_property};
+use super::ordering::{
+    attached_comments, blocks, changes_meaning, insertion_sort, is_sortable, is_standard_property,
+    rewrite,
+};
 use super::{Context, Report, SheetRule};
 use crate::scss::tree::{Kind, Node};
 
@@ -194,6 +198,7 @@ impl Order {
 
     /// The reports of one block (`checkNode`).
     fn check_block(&self, sheet: &Context, block: usize, reports: &mut Vec<Report>) {
+        let first = reports.len();
         let mut seen: Vec<Place> = Vec::new();
         for &child in sheet.node(block).nodes() {
             let node = sheet.node(child);
@@ -220,6 +225,63 @@ impl Order {
             }
             seen.push(place);
         }
+        // The first report carries the fix of the whole block, as the original's fixer sorts
+        // the node once and reports the rest without a fixer.
+        if first < reports.len()
+            && let Some((start, end, text)) = self.fix(sheet, block)
+        {
+            reports[first] = reports[first].clone().fixed(start, end, text);
+        }
+    }
+
+    /// The fix of a block (`sortNode` of postcss-sorting 10.0.0): its nodes sorted by their
+    /// places, those without one last, each keeping its rank among equals, the comments on their
+    /// own lines before a node and on its line after it moving with it, the others last; every
+    /// declaration then ends with `;`. None when the block cannot be sorted, or when the new order
+    /// would change what the sheet means (`changes_meaning`, our own guard).
+    fn fix(&self, sheet: &Context, block: usize) -> Option<(usize, usize, String)> {
+        let node = sheet.node(block);
+        if !is_sortable(node) {
+            return None;
+        }
+        // (place, rank among equals, child): a comment just before a node ranks just before it.
+        let mut keyed: Vec<(usize, isize, usize)> = Vec::new();
+        let mut attached: Vec<usize> = Vec::new();
+        let rank = |at: usize| isize::try_from(at).unwrap_or(isize::MAX / 2) * 10_000;
+        for (at, &child) in node.nodes().iter().enumerate() {
+            if sheet.node(child).is(Kind::Comment) {
+                continue;
+            }
+            let place = self.place(sheet.node(child)).position.unwrap_or(usize::MAX);
+            let (before, after) = attached_comments(sheet, child, true);
+            for (back, &comment) in before.iter().rev().enumerate() {
+                keyed.push((
+                    place,
+                    rank(at) - 1 - isize::try_from(back).unwrap_or(0),
+                    comment,
+                ));
+            }
+            keyed.push((place, rank(at), child));
+            for (forth, &comment) in after.iter().enumerate() {
+                keyed.push((
+                    place,
+                    rank(at) + 1 + isize::try_from(forth).unwrap_or(0),
+                    comment,
+                ));
+            }
+            attached.extend(before.iter().chain(&after));
+        }
+        for (at, &child) in node.nodes().iter().enumerate() {
+            if sheet.node(child).is(Kind::Comment) && !attached.contains(&child) {
+                keyed.push((usize::MAX, rank(at), child));
+            }
+        }
+        insertion_sort(&mut keyed, |one, two| (one.0, one.1).cmp(&(two.0, two.1)));
+        let order: Vec<usize> = keyed.iter().map(|each| each.2).collect();
+        if changes_meaning(sheet, block, &order) {
+            return None;
+        }
+        rewrite(sheet, block, &order, true)
     }
 }
 
@@ -423,14 +485,19 @@ mod tests {
     #[test]
     fn f53_ac3_passes_the_cases_of_stylelint_order() {
         let tally = cases();
-        // The fixes come with the reordering of a block (EN-168.T3).
-        let (fixes, failures): (Vec<&String>, Vec<&String>) = tally
+        // Our own departure: 12 fixes the guard refuses, each moving a node across an
+        // `@include` or `@extend`, whose declarations it cannot read, or a declaration across a
+        // nested rule setting the same property (`changes_meaning`).
+        let (refused, failures): (Vec<&String>, Vec<&String>) = tally
             .failures
             .iter()
-            .partition(|each| each.starts_with("fix "));
+            .partition(|each| each.starts_with("unfixed "));
 
         assert_eq!(failures, Vec::<&String>::new());
-        assert_eq!(fixes.len(), 27);
+        assert_eq!(refused.len(), 12);
+        assert!(refused.iter().all(|each| each.contains("@include")
+            || each.contains("@extend")
+            || each.contains("color: tomato")));
         assert_eq!(
             (tally.accepted, tally.rejected, tally.apart_count()),
             (31, 29, 16),

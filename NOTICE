@@ -85,3 +85,4 @@ of, the packages below, each under its licence; the full texts are in THIRD-PART
   (`groups.js`), copied as data and into the tests, under the same licence
 - stylelint-order 8.1.2, MIT: Copyright 2016–present Aleks Hudochenkov <aleks@hudochenkov.com>;
   its test cases, from stylelint-order's repository at the tag 8.1.2, under the same licence
+- postcss-sorting 10.0.0, MIT: Copyright 2015-present Aleks Hudochenkov <aleks@hudochenkov.com>

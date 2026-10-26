@@ -214,6 +214,31 @@ mod tests {
     }
 
     #[test]
+    fn f53_ac3_fix_puts_a_crlf_sheet_in_the_recess_order_and_a_second_run_changes_nothing() {
+        let text = "a {\r\n  width: 1px; /* why */\r\n  position: relative;\r\n}\r\n";
+        let mut fixed = text.to_owned();
+        let mut passes = 0;
+        // As `lint --fix` does, every rule of the project, one pass after another.
+        for _ in 0..crate::FIX_PASSES {
+            let findings = lint_text("a.scss", &fixed);
+            if findings.iter().all(|each| each.fix.is_none()) {
+                break;
+            }
+            fixed = crate::testing::fixed(&fixed, &findings);
+            passes += 1;
+        }
+
+        // Own case: `position` (Recess's 3rd) before `width` (74th), the comment on `width`'s
+        // line moving with it, each line still ending in CR LF; one pass, then nothing to report.
+        assert_eq!(
+            fixed,
+            "a {\r\n  position: relative;\r\n  width: 1px; /* why */\r\n}\r\n"
+        );
+        assert_eq!(passes, 1);
+        assert_eq!(places(&lint_text("a.scss", &fixed)), []);
+    }
+
+    #[test]
     fn f53_ac2_reads_a_deep_sheet_without_overflowing_its_stack() {
         let deep = 100_000;
         let blocks = format!("{}{}", "a {".repeat(deep), "}".repeat(deep));

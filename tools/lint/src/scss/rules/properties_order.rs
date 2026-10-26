@@ -8,12 +8,17 @@
 //! `order: "flexible"` and `groupName` are ported; `unspecified: "bottomAlphabetical"`, which
 //! needs the plugin's own table of shorthands, is not. The project's order: the groups of
 //! stylelint-config-recess-order (`recess_order`), none asking for an empty line, so that one is
-//! allowed between groups and nowhere asked (F53.AC3).
+//! allowed between groups and nowhere asked (F53.AC3). Fixed by sorting the block as
+//! postcss-sorting does (`fix`), within the guard of `ordering`.
 
+use std::cmp::Ordering;
 use std::collections::HashMap;
 
 use super::empty_lines::{has_empty_line, report};
-use super::ordering::{blocks, is_property, unprefixed};
+use super::ordering::{
+    attached_comments, blocks, changes_meaning, insertion_sort, is_property, is_sortable, rewrite,
+    unprefixed,
+};
 use super::prefixed::prefix;
 use super::recess_order::GROUPS;
 use super::{Context, Report, SheetRule};
@@ -108,6 +113,10 @@ struct Builder {
     separated_group: usize,
     /// The group's rank given last.
     group_position: usize,
+    /// The rank in the flattened order of each property.
+    ranks: HashMap<String, usize>,
+    /// The properties flattened so far.
+    flat: usize,
 }
 
 impl Builder {
@@ -125,6 +134,8 @@ impl Builder {
     fn entry(&mut self, entry: &Entry, flexible: bool, group: &Group) {
         match entry {
             Entry::Property(property) => {
+                self.ranks.insert(property.clone(), self.flat);
+                self.flat += 1;
                 if !flexible {
                     self.expected_position += 1;
                 }
@@ -184,6 +195,9 @@ pub struct PropertiesOrder {
     pub threshold: usize,
     /// The places of the order's properties.
     places: HashMap<String, Place>,
+    /// The rank of each property in the order flattened, the last written of a name kept
+    /// (`createFlatOrder`, then `createExpectedPropertiesOrder` of postcss-sorting).
+    ranks: HashMap<String, usize>,
 }
 
 impl PropertiesOrder {
@@ -200,6 +214,8 @@ impl PropertiesOrder {
             expected_position: 0,
             separated_group: 1,
             group_position: 0,
+            ranks: HashMap::new(),
+            flat: 0,
         };
         builder.group(
             &Group {
@@ -217,6 +233,7 @@ impl PropertiesOrder {
             empty_line_before_unspecified,
             threshold,
             places: builder.places,
+            ranks: builder.ranks,
         }
     }
 
@@ -317,6 +334,7 @@ impl PropertiesOrder {
             .filter(|&&child| is_property(sheet.node(child)))
             .map(|&child| self.property(sheet, child))
             .collect();
+        let first = reports.len();
         for at in 1..properties.len() {
             if let Err((first, second)) =
                 self.in_order(&properties[at - 1], &properties[at], &properties[..at])
@@ -332,6 +350,118 @@ impl PropertiesOrder {
                 );
             }
         }
+        // The first report carries the fix of the whole block, as the original's fixer sorts
+        // the node once and reports the rest without a fixer.
+        if first < reports.len()
+            && let Some((start, end, text)) = self.fix(sheet, block)
+        {
+            reports[first] = reports[first].clone().fixed(start, end, text);
+        }
+    }
+
+    /// The fix of a block (`sortNodeProperties` of postcss-sorting 10.0.0): its declarations
+    /// sorted by their ranks in the flattened order, a prefixed form before the plain one, the
+    /// unplaced ones last (first with `unspecified: "top"`), each keeping its rank among equals,
+    /// the comments on their own lines before a declaration and on its line after it moving with
+    /// it; all of them written where the first of them was, the other nodes left in their order.
+    /// None when the block cannot be sorted, or when the new order would change what the sheet
+    /// means (`changes_meaning`, our own guard).
+    fn fix(&self, sheet: &Context, block: usize) -> Option<(usize, usize, String)> {
+        /// A node sorted: its rank, its name and bare name, whether a declaration, its rank among
+        /// equals and the node.
+        struct Sorted<'n> {
+            rank: Option<usize>,
+            name: &'n str,
+            bare: String,
+            declaration: bool,
+            initial: isize,
+            index: usize,
+        }
+        let node = sheet.node(block);
+        if !is_sortable(node) {
+            return None;
+        }
+        let children = node.nodes();
+        let mut sorted: Vec<Sorted> = Vec::new();
+        let mut taken: Vec<usize> = Vec::new();
+        let rank = |at: usize| isize::try_from(at).unwrap_or(isize::MAX / 2) * 10_000;
+        for (at, &child) in children.iter().enumerate() {
+            let declaration = sheet.node(child);
+            if !is_property(declaration) {
+                continue;
+            }
+            let bare = unprefixed(&declaration.prop);
+            let place = self.ranks.get(&bare).copied();
+            let entry = |index: usize, initial: isize, is_declaration: bool| Sorted {
+                rank: place,
+                name: &declaration.prop,
+                bare: bare.clone(),
+                declaration: is_declaration,
+                initial,
+                index,
+            };
+            let (before, after) = attached_comments(sheet, child, false);
+            for (back, &comment) in before.iter().rev().enumerate() {
+                sorted.push(entry(
+                    comment,
+                    rank(at) - 1 - isize::try_from(back).unwrap_or(0),
+                    false,
+                ));
+            }
+            sorted.push(entry(child, rank(at), true));
+            for (forth, &comment) in after.iter().enumerate() {
+                sorted.push(entry(
+                    comment,
+                    rank(at) + 1 + isize::try_from(forth).unwrap_or(0),
+                    false,
+                ));
+            }
+            taken.push(child);
+            taken.extend(before.iter().chain(&after));
+        }
+        let top = self.unspecified == Unspecified::Top;
+        // `sortDeclarations`.
+        insertion_sort(&mut sorted, |one, two| {
+            if one.declaration && two.declaration && one.bare == two.bare {
+                match (prefix(one.name).is_empty(), prefix(two.name).is_empty()) {
+                    (true, false) => return Ordering::Greater,
+                    (false, true) => return Ordering::Less,
+                    _ => {}
+                }
+            }
+            match (one.rank, two.rank) {
+                (Some(first), Some(second)) if first != second => first.cmp(&second),
+                (Some(_), None) => {
+                    if top {
+                        Ordering::Greater
+                    } else {
+                        Ordering::Less
+                    }
+                }
+                (None, Some(_)) => {
+                    if top {
+                        Ordering::Less
+                    } else {
+                        Ordering::Greater
+                    }
+                }
+                _ => one.initial.cmp(&two.initial),
+            }
+        });
+        let mut order: Vec<usize> = Vec::with_capacity(children.len());
+        let mut written = false;
+        for &child in children {
+            if !taken.contains(&child) {
+                order.push(child);
+            } else if !written {
+                written = true;
+                order.extend(sorted.iter().map(|each| each.index));
+            }
+        }
+        if changes_meaning(sheet, block, &order) {
+            return None;
+        }
+        rewrite(sheet, block, &order, false)
     }
 
     /// Whether a declaration has an empty line before it, or before the comment just before it
@@ -553,25 +683,26 @@ mod tests {
         )))
     }
 
-    /// The accepted, rejected and set apart cases of a test file, and its fix failures, once
-    /// every other case passes.
+    /// The accepted, rejected and set apart cases of a test file, and the fixes the guard
+    /// refuses, once every other case passes.
     fn counts(file: &str) -> (usize, usize, usize, usize) {
         let tally = run(
             &format!("stylelint-order/properties-order/{file}.txt"),
             &build,
             &[],
         );
-        // The fixes come with the reordering of a block (EN-168.T3).
-        let (fixes, failures): (Vec<&String>, Vec<&String>) = tally
+        // Our own departure: the fixes the guard refuses (`changes_meaning`), the code left as it
+        // is; every other case passes.
+        let (refused, failures): (Vec<&String>, Vec<&String>) = tally
             .failures
             .iter()
-            .partition(|each| each.starts_with("fix "));
+            .partition(|each| each.starts_with("unfixed "));
         assert_eq!(failures, Vec::<&String>::new(), "{file}");
         (
             tally.accepted,
             tally.rejected,
             tally.apart_count(),
-            fixes.len(),
+            refused.len(),
         )
     }
 
@@ -620,15 +751,17 @@ mod tests {
     fn f53_ac3_passes_the_cases_of_stylelint_order() {
         // (accepted, rejected, set apart, fixes awaiting the reordering) of each file.
         // Set apart in `flat`: 17 cases of CSS-in-JS, HTML or Less, 5 of `bottomAlphabetical`,
-        // 1 of a `stylelint-disable` comment; in `no-empty-line-between`, 2 of CSS-in-JS.
-        assert_eq!(counts("flat"), (30, 17, 23, 17));
-        assert_eq!(counts("grouped-flexible"), (17, 9, 0, 7));
-        assert_eq!(counts("grouped-strict"), (7, 12, 0, 10));
-        assert_eq!(counts("empty-line-before"), (53, 33, 0, 1));
+        // 1 of a `stylelint-disable` comment; in `no-empty-line-between`, 2 of CSS-in-JS. Refused
+        // in `flat`: `transform` moved after its `-webkit-` form, which it overrides where both
+        // are read.
+        assert_eq!(counts("flat"), (30, 17, 23, 1));
+        assert_eq!(counts("grouped-flexible"), (17, 9, 0, 0));
+        assert_eq!(counts("grouped-strict"), (7, 12, 0, 0));
+        assert_eq!(counts("empty-line-before"), (53, 33, 0, 0));
         assert_eq!(counts("empty-line-before-unspecified"), (18, 7, 0, 0));
         assert_eq!(
             counts("empty-line-minimum-property-threshold"),
-            (28, 19, 0, 1)
+            (28, 19, 0, 0)
         );
         assert_eq!(counts("no-empty-line-between"), (7, 5, 2, 0));
     }
