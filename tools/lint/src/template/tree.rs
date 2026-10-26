@@ -6,6 +6,7 @@
 //! joins its parent when it closes, which gives the same order. The tests are this module's own
 //! cases.
 
+use super::NESTING_LIMIT;
 use super::lexer::{ParseError, Span, Token, TokenType, tokenize};
 use super::tags::{TagDefinition, definition, merge_ns_and_name, ns_prefix, split_ns_name};
 
@@ -260,6 +261,8 @@ struct TreeBuilder {
     root: Vec<Node>,
     /// The errors.
     errors: Vec<ParseError>,
+    /// Whether the reading stopped at a nesting too deep, the blocks left open not its errors.
+    stopped: bool,
 }
 
 impl TreeBuilder {
@@ -271,6 +274,7 @@ impl TreeBuilder {
             stack: Vec::new(),
             root: Vec::new(),
             errors: Vec::new(),
+            stopped: false,
         }
     }
 
@@ -338,7 +342,9 @@ impl TreeBuilder {
             }
         }
         for container in &self.stack {
-            if let Container::Block(block) = container {
+            if let Container::Block(block) = container
+                && !self.stopped
+            {
                 self.errors.push(ParseError {
                     span: block.span,
                     message: format!("Unclosed block \"{}\"", block.name),
@@ -414,6 +420,20 @@ impl TreeBuilder {
     fn push_container(&mut self, container: Container, is_closed_by_child: bool) {
         if is_closed_by_child {
             self.pop_one();
+        }
+        if self.stack.len() >= NESTING_LIMIT {
+            // Deeper, a rule's walk would overflow the stack: the reading stops at its error.
+            let span = match &container {
+                Container::Element(element) => element.span,
+                Container::Block(block) => block.span,
+            };
+            self.errors.push(ParseError {
+                span,
+                message: format!("Elements and blocks nested more than {NESTING_LIMIT} deep"),
+            });
+            self.index = self.tokens.len();
+            self.stopped = true;
+            return;
         }
         self.stack.push(container);
     }

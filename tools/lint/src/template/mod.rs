@@ -19,6 +19,12 @@ use crate::finding::{Finding, unreadable};
 use crate::lines::Lines;
 use crate::project::Project;
 
+/// How deep elements and blocks, or an expression's brackets, may nest: deeper, the reader reports
+/// an error under `lint/parse` and reads no further, as the walks of the rules and Oxc's parser
+/// recurse and would overflow a thread's stack; at the limit of both, every rule runs on a thread
+/// of 2 MiB, a debug build's. Angular sets no limit; no template nests so deep.
+pub const NESTING_LIMIT: usize = 256;
+
 /// Whether a path is a component's template, which the reader reads (`*.component.html`).
 #[must_use]
 pub fn is_template(path: &str) -> bool {
@@ -202,6 +208,49 @@ mod tests {
         assert_eq!(
             rules("<div ngnonbindable>{{ a + }}</div>"),
             [(1, 27, "lint/parse")]
+        );
+    }
+
+    #[test]
+    fn reports_a_nesting_too_deep_rather_than_overflowing_the_stack() {
+        let places = |text: &str| {
+            lint_text("a.component.html", text)
+                .iter()
+                .map(|finding| (finding.line, finding.column, finding.message.clone()))
+                .collect::<Vec<_>>()
+        };
+        let elements = "Elements and blocks nested more than 256 deep.".to_owned();
+
+        // 5,000 `<div>`s: the 257th, after 256 × 5 bytes, at column 1281.
+        assert_eq!(
+            places(&"<div>".repeat(5_000)),
+            [(1, 1281, elements.clone())]
+        );
+        // 5,000 `@if (a) {`, 9 bytes each: the 257th at column 2305.
+        assert_eq!(places(&"@if (a) {".repeat(5_000)), [(1, 2305, elements)]);
+        // 3,000 brackets after `<p>{{ `: the 258th, once 257 are open, at byte 5 + 1 + 257.
+        let brackets = format!(
+            "<p>{{{{ {}a{} }}}}</p>",
+            "(".repeat(3_000),
+            ")".repeat(3_000)
+        );
+        assert_eq!(
+            places(&brackets),
+            [(1, 264, "Brackets nested more than 256 deep.".to_owned())]
+        );
+        // At the limit, every rule runs on this test's thread, its stack 2 MiB: 256 elements, 256
+        // brackets.
+        let deepest = format!(
+            "{}{{{{ {}a == 'b'{} }}}}{}",
+            "<div>".repeat(256),
+            "(".repeat(256),
+            ")".repeat(256),
+            "</div>".repeat(256)
+        );
+        let found = lint_text("a.component.html", &deepest);
+        assert_eq!(
+            found.iter().map(|finding| finding.rule).collect::<Vec<_>>(),
+            ["@angular-eslint/template/eqeqeq"]
         );
     }
 

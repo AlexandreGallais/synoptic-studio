@@ -14,6 +14,7 @@ use oxc_ast::ast::Expression;
 use oxc_parser::Parser;
 use oxc_span::SourceType;
 
+use super::NESTING_LIMIT;
 use super::lexer::{ParseError, Span, offset};
 
 /// An expression with its pipes, as a binding or an interpolation writes it.
@@ -81,6 +82,12 @@ fn scan(text: &str) -> Result<Scan, (String, usize)> {
     // The last two significant characters, which tell a regular expression from a division.
     let (mut previous, mut before) = (None, None);
     while let Some(&(at, character)) = characters.get(index) {
+        if stack.len() > NESTING_LIMIT {
+            return Err((
+                format!("Brackets nested more than {NESTING_LIMIT} deep"),
+                at,
+            ));
+        }
         let next = characters.get(index + 1).map(|each| each.1);
         if matches!(stack.last(), Some(Frame::Template)) {
             match character {
